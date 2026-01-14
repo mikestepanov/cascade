@@ -37,15 +37,13 @@ export function LinkedRepositories() {
 
   return (
     <div>
-      <h4 className="text-sm font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-4">
-        Linked Repositories
-      </h4>
+      <h4 className="text-sm font-semibold text-ui-text-primary mb-4">Linked Repositories</h4>
 
       {/* Project selector */}
       <div className="mb-4">
         <label
           htmlFor="project-selector"
-          className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-2"
+          className="block text-sm font-medium text-ui-text-primary mb-2"
         >
           Select Project
         </label>
@@ -53,7 +51,7 @@ export function LinkedRepositories() {
           value={selectedWorkspace || ""}
           onValueChange={(value) => setSelectedWorkspace(value as Id<"projects">)}
         >
-          <SelectTrigger className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-md bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark">
+          <SelectTrigger className="w-full px-3 py-2 border border-ui-border-primary rounded-md bg-ui-bg-primary text-ui-text-primary">
             <SelectValue placeholder="-- Select a project --" />
           </SelectTrigger>
           <SelectContent>
@@ -71,7 +69,7 @@ export function LinkedRepositories() {
       {selectedWorkspace && (
         <Flex direction="column" gap="sm">
           {repositories && repositories.length === 0 && (
-            <Typography className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark italic">
+            <Typography className="text-sm text-ui-text-secondary italic">
               No repositories linked to this project yet.
             </Typography>
           )}
@@ -80,15 +78,15 @@ export function LinkedRepositories() {
               key={repo._id}
               justify="between"
               align="center"
-              className="p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg"
+              className="p-3 bg-ui-bg-secondary rounded-lg"
             >
               <Flex gap="md" align="center">
-                <Github className="h-5 w-5 text-ui-text-tertiary dark:text-ui-text-tertiary-dark" />
+                <Github className="h-5 w-5 text-ui-text-tertiary" />
                 <div>
-                  <Typography className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+                  <Typography className="text-sm font-medium text-ui-text-primary">
                     {repo.repoFullName}
                   </Typography>
-                  <Typography className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark">
+                  <Typography className="text-xs text-ui-text-secondary">
                     {repo.syncPRs && "PRs"} {repo.syncPRs && repo.autoLinkCommits && "• "}
                     {repo.autoLinkCommits && "Auto-link commits"}
                   </Typography>

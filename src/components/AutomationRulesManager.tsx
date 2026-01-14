@@ -74,9 +74,7 @@ export function AutomationRulesManager({ projectId }: AutomationRulesManagerProp
       {/* Header */}
       <Flex align="center" justify="between">
         <div>
-          <h3 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
-            Automation Rules
-          </h3>
+          <h3 className="text-lg font-semibold text-ui-text-primary">Automation Rules</h3>
           <Typography variant="p" color="secondary" className="text-sm mt-1">
             Automate workflows with trigger-based actions
           </Typography>
@@ -91,7 +89,7 @@ export function AutomationRulesManager({ projectId }: AutomationRulesManagerProp
         </Card>
       ) : rules.length === 0 ? (
         <Card className="p-8 text-center">
-          <div className="text-ui-text-secondary dark:text-ui-text-secondary-dark">
+          <div className="text-ui-text-secondary">
             <Typography variant="p" className="mb-2">
               No automation rules yet
             </Typography>

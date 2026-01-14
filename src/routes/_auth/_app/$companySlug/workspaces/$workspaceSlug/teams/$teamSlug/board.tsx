@@ -35,10 +35,8 @@ function TeamBoardPage() {
 
   return (
     <div className="h-full flex flex-col">
-      <div className="px-6 py-4 border-b border-ui-border-primary dark:border-ui-border-primary-dark">
-        <h1 className="text-2xl font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
-          {team.name} Board
-        </h1>
+      <div className="px-6 py-4 border-b border-ui-border-primary">
+        <h1 className="text-2xl font-semibold text-ui-text-primary">{team.name} Board</h1>
       </div>
       <KanbanBoard teamId={team._id} />
     </div>

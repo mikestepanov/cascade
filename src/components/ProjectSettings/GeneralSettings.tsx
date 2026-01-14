@@ -87,7 +87,7 @@ export function GeneralSettings({
               </Typography>
               <Typography
                 variant="muted"
-                className="font-mono bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark px-3 py-2 rounded block"
+                className="font-mono bg-ui-bg-secondary px-3 py-2 rounded block"
               >
                 {projectKey}
               </Typography>

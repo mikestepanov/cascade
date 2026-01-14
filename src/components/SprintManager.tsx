@@ -76,9 +76,7 @@ export function SprintManager({ projectId, canEdit = true }: SprintManagerProps)
     return (
       <div className="p-3 sm:p-6">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
-            Sprint Management
-          </h2>
+          <h2 className="text-xl font-semibold text-ui-text-primary">Sprint Management</h2>
         </div>
         <div className="space-y-4">
           <SkeletonProjectCard />
@@ -92,9 +90,7 @@ export function SprintManager({ projectId, canEdit = true }: SprintManagerProps)
   return (
     <div className="p-3 sm:p-6">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-6">
-        <h2 className="text-xl font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
-          Sprint Management
-        </h2>
+        <h2 className="text-xl font-semibold text-ui-text-primary">Sprint Management</h2>
         {canEdit && (
           <Button onClick={() => setShowCreateForm(true)} variant="primary">
             <span className="hidden sm:inline">Create Sprint</span>
@@ -105,7 +101,7 @@ export function SprintManager({ projectId, canEdit = true }: SprintManagerProps)
 
       {/* Create Sprint Form */}
       {showCreateForm && (
-        <div className="bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark p-4 rounded-lg mb-6 border border-ui-border-primary dark:border-ui-border-primary-dark">
+        <div className="bg-ui-bg-secondary p-4 rounded-lg mb-6 border border-ui-border-primary">
           <form onSubmit={(e) => void handleCreateSprint(e)} className="space-y-4">
             <Input
               label="Sprint Name"
@@ -144,35 +140,33 @@ export function SprintManager({ projectId, canEdit = true }: SprintManagerProps)
       {/* Sprints List */}
       <div className="space-y-4">
         {sprints.length === 0 ? (
-          <div className="text-center py-12 text-ui-text-secondary dark:text-ui-text-secondary-dark">
+          <div className="text-center py-12 text-ui-text-secondary">
             No sprints created yet. Create your first sprint to get started.
           </div>
         ) : (
           sprints.map((sprint: Doc<"sprints"> & { issueCount: number }) => (
             <div
               key={sprint._id}
-              className="bg-ui-bg-primary dark:bg-ui-bg-primary-dark border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg p-4"
+              className="bg-ui-bg-primary border border-ui-border-primary rounded-lg p-4"
             >
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div className="flex-1 w-full sm:w-auto">
                   <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-2">
-                    <h3 className="text-base sm:text-lg font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+                    <h3 className="text-base sm:text-lg font-medium text-ui-text-primary">
                       {sprint.name}
                     </h3>
                     <Badge size="md" className={getStatusColor(sprint.status)}>
                       {sprint.status}
                     </Badge>
-                    <span className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
+                    <span className="text-sm text-ui-text-secondary">
                       {sprint.issueCount} issues
                     </span>
                   </div>
                   {sprint.goal && (
-                    <Typography className="text-ui-text-secondary dark:text-ui-text-secondary-dark mb-2">
-                      {sprint.goal}
-                    </Typography>
+                    <Typography className="text-ui-text-secondary mb-2">{sprint.goal}</Typography>
                   )}
                   {sprint.startDate && sprint.endDate && (
-                    <Typography className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
+                    <Typography className="text-sm text-ui-text-secondary">
                       {formatDate(sprint.startDate)} - {formatDate(sprint.endDate)}
                     </Typography>
                   )}

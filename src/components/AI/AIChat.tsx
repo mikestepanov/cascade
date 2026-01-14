@@ -63,7 +63,7 @@ function MessageItem({
             variant="ghost"
             size="icon"
             onClick={() => onCopy(message.content, messageId)}
-            className="absolute -right-2 -top-2 h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity shadow-sm hover:shadow-md border border-ui-border-primary dark:border-ui-border-primary-dark bg-ui-bg-primary dark:bg-ui-bg-primary-dark"
+            className="absolute -right-2 -top-2 h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity shadow-sm hover:shadow-md border border-ui-border-primary bg-ui-bg-primary"
             title="Copy message"
           >
             {isCopied ? (
@@ -83,7 +83,7 @@ function MessageItem({
               </svg>
             ) : (
               <svg
-                className="w-4 h-4 text-ui-text-secondary dark:text-ui-text-secondary-dark"
+                className="w-4 h-4 text-ui-text-secondary"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -159,7 +159,7 @@ export const AIChat = React.memo(function AIChat({
   }
 
   return (
-    <Flex direction="column" className="h-full bg-ui-bg-primary dark:bg-ui-bg-primary-dark">
+    <Flex direction="column" className="h-full bg-ui-bg-primary">
       {/* Messages Area */}
       <Flex direction="column" gap="lg" className="flex-1 overflow-y-auto p-4">
         {!messages ? (
@@ -172,20 +172,11 @@ export const AIChat = React.memo(function AIChat({
           <Flex align="center" justify="center" className="h-full text-center">
             <div>
               <div className="text-4xl mb-4">🤖</div>
-              <h3 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-2">
-                AI Assistant
-              </h3>
-              <Typography
-                variant="p"
-                className="text-ui-text-secondary dark:text-ui-text-secondary-dark mb-4"
-              >
+              <h3 className="text-lg font-semibold text-ui-text-primary mb-2">AI Assistant</h3>
+              <Typography variant="p" className="text-ui-text-secondary mb-4">
                 Ask me anything about your project, or use natural language commands.
               </Typography>
-              <Flex
-                direction="column"
-                gap="xs"
-                className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark"
-              >
+              <Flex direction="column" gap="xs" className="text-sm text-ui-text-tertiary">
                 <Typography variant="muted">💡 "What's our team velocity?"</Typography>
                 <Typography variant="muted">💡 "Which issues are blocking the sprint?"</Typography>
                 <Typography variant="muted">💡 "Summarize this week's progress"</Typography>
@@ -208,25 +199,23 @@ export const AIChat = React.memo(function AIChat({
               ))}
             {isSending && (
               <div className="flex justify-start">
-                <div className="bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg px-4 py-3">
+                <div className="bg-ui-bg-secondary rounded-lg px-4 py-3">
                   <Flex align="center" gap="sm">
                     <Flex gap="xs">
                       <div
-                        className="w-2 h-2 bg-ui-text-tertiary dark:bg-ui-text-tertiary-dark rounded-full animate-bounce"
+                        className="w-2 h-2 bg-ui-text-tertiary rounded-full animate-bounce"
                         style={{ animationDelay: "0ms" }}
                       />
                       <div
-                        className="w-2 h-2 bg-ui-text-tertiary dark:bg-ui-text-tertiary-dark rounded-full animate-bounce"
+                        className="w-2 h-2 bg-ui-text-tertiary rounded-full animate-bounce"
                         style={{ animationDelay: "150ms" }}
                       />
                       <div
-                        className="w-2 h-2 bg-ui-text-tertiary dark:bg-ui-text-tertiary-dark rounded-full animate-bounce"
+                        className="w-2 h-2 bg-ui-text-tertiary rounded-full animate-bounce"
                         style={{ animationDelay: "300ms" }}
                       />
                     </Flex>
-                    <span className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
-                      AI is thinking...
-                    </span>
+                    <span className="text-sm text-ui-text-secondary">AI is thinking...</span>
                   </Flex>
                 </div>
               </div>
@@ -237,7 +226,7 @@ export const AIChat = React.memo(function AIChat({
       </Flex>
 
       {/* Input Area */}
-      <div className="border-t border-ui-border-primary dark:border-ui-border-primary-dark p-3 sm:p-4 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark safe-area-inset-bottom">
+      <div className="border-t border-ui-border-primary p-3 sm:p-4 bg-ui-bg-secondary safe-area-inset-bottom">
         <Flex gap="sm" align="end">
           <textarea
             ref={textareaRef}
@@ -246,7 +235,7 @@ export const AIChat = React.memo(function AIChat({
             onKeyPress={handleKeyPress}
             placeholder="Ask me anything about your project..."
             disabled={isSending}
-            className="flex-1 resize-none rounded-lg border border-ui-border-primary dark:border-ui-border-primary-dark bg-ui-bg-primary dark:bg-ui-bg-primary-dark px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base text-ui-text-primary dark:text-ui-text-primary-dark placeholder-ui-text-tertiary dark:placeholder-ui-text-tertiary-dark focus:outline-none focus:ring-2 focus:ring-brand-500 disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden transition-all"
+            className="flex-1 resize-none rounded-lg border border-ui-border-primary bg-ui-bg-primary px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base text-ui-text-primary placeholder-ui-text-tertiary dark:placeholder-ui-text-tertiary-dark focus:outline-none focus:ring-2 focus:ring-brand-500 disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden transition-all"
             rows={1}
             style={{
               minHeight: `${AI_CONFIG.textarea.minHeight}px`,
@@ -259,7 +248,7 @@ export const AIChat = React.memo(function AIChat({
             onClick={handleSendMessage}
             disabled={!inputMessage.trim() || isSending}
             aria-label="Send message"
-            className="flex-shrink-0"
+            className="shrink-0"
           >
             {isSending ? (
               <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />

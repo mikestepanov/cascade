@@ -145,7 +145,7 @@ export function LabelsManager({ projectId }: LabelsManagerProps) {
                   key={label._id}
                   justify="between"
                   align="center"
-                  className="p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark transition-colors"
+                  className="p-3 bg-ui-bg-secondary rounded-lg hover:bg-ui-bg-tertiary transition-colors"
                 >
                   <Flex gap="md" align="center">
                     <span
@@ -154,9 +154,7 @@ export function LabelsManager({ projectId }: LabelsManagerProps) {
                     >
                       {label.name}
                     </span>
-                    <span className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
-                      {label.color}
-                    </span>
+                    <span className="text-xs text-ui-text-tertiary">{label.color}</span>
                   </Flex>
 
                   <Flex gap="sm">
@@ -239,9 +237,7 @@ export function LabelsManager({ projectId }: LabelsManagerProps) {
 
               {/* Preview */}
               <div>
-                <div className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-2">
-                  Preview
-                </div>
+                <div className="block text-sm font-medium text-ui-text-primary mb-2">Preview</div>
                 <span
                   className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium text-white"
                   style={{ backgroundColor: form.formData.color }}

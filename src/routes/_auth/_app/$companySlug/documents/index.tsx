@@ -7,7 +7,7 @@ export const Route = createFileRoute("/_auth/_app/$companySlug/documents/")({
 
 function DocumentsListPage() {
   return (
-    <div className="flex-1 flex items-center justify-center text-ui-text-tertiary dark:text-ui-text-tertiary-dark p-4 h-full">
+    <div className="flex-1 flex items-center justify-center text-ui-text-tertiary p-4 h-full">
       <div className="text-center">
         <Typography variant="h2" className="text-xl font-medium mb-2">
           Welcome to your project

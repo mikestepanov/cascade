@@ -139,12 +139,12 @@ export function CreateProjectFromTemplate({
                     type="button"
                     key={template._id}
                     onClick={() => handleSelectTemplate(template._id)}
-                    className="text-left p-6 border-2 border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg hover:border-brand-500 hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark transition-colors"
+                    className="text-left p-6 border-2 border-ui-border-primary rounded-lg hover:border-brand-500 hover:bg-ui-bg-secondary transition-colors"
                   >
                     <div className="flex items-start gap-4">
-                      <div className="text-4xl flex-shrink-0">{template.icon}</div>
+                      <div className="text-4xl shrink-0">{template.icon}</div>
                       <div className="flex-1 min-w-0">
-                        <h3 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
+                        <h3 className="text-lg font-semibold text-ui-text-primary mb-1">
                           {template.name}
                         </h3>
                         <Typography variant="p" color="secondary" className="text-sm mb-3">
@@ -159,7 +159,7 @@ export function CreateProjectFromTemplate({
                           >
                             {template.category}
                           </span>
-                          <span className="text-xs px-2 py-1 rounded bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark text-ui-text-secondary dark:text-ui-text-secondary-dark capitalize">
+                          <span className="text-xs px-2 py-1 rounded bg-ui-bg-tertiary text-ui-text-secondary capitalize">
                             {template.boardType}
                           </span>
                         </div>
@@ -175,13 +175,11 @@ export function CreateProjectFromTemplate({
           <div className="space-y-6">
             {/* Template Info */}
             {selectedTemplate && (
-              <div className="p-4 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg">
+              <div className="p-4 bg-ui-bg-secondary rounded-lg">
                 <div className="flex items-center gap-3">
                   <span className="text-3xl">{selectedTemplate.icon}</span>
                   <div>
-                    <h3 className="font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
-                      {selectedTemplate.name}
-                    </h3>
+                    <h3 className="font-semibold text-ui-text-primary">{selectedTemplate.name}</h3>
                     <Typography variant="p" color="secondary" className="text-sm">
                       {selectedTemplate.workflowStates.length} workflow states,{" "}
                       {selectedTemplate.defaultLabels.length} default labels
@@ -235,9 +233,7 @@ export function CreateProjectFromTemplate({
             {/* Preview */}
             {selectedTemplate && (
               <div>
-                <h4 className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-3">
-                  What's Included:
-                </h4>
+                <h4 className="text-sm font-medium text-ui-text-primary mb-3">What's Included:</h4>
                 <div className="space-y-2 text-sm">
                   <div className="flex items-center gap-2">
                     <svg
@@ -252,7 +248,7 @@ export function CreateProjectFromTemplate({
                         clipRule="evenodd"
                       />
                     </svg>
-                    <span className="text-ui-text-primary dark:text-ui-text-primary-dark">
+                    <span className="text-ui-text-primary">
                       {selectedTemplate.workflowStates.length} workflow states
                     </span>
                   </div>
@@ -269,7 +265,7 @@ export function CreateProjectFromTemplate({
                         clipRule="evenodd"
                       />
                     </svg>
-                    <span className="text-ui-text-primary dark:text-ui-text-primary-dark">
+                    <span className="text-ui-text-primary">
                       {selectedTemplate.defaultLabels.length} pre-configured labels
                     </span>
                   </div>
@@ -286,7 +282,7 @@ export function CreateProjectFromTemplate({
                         clipRule="evenodd"
                       />
                     </svg>
-                    <span className="text-ui-text-primary dark:text-ui-text-primary-dark capitalize">
+                    <span className="text-ui-text-primary capitalize">
                       {selectedTemplate.boardType} board type
                     </span>
                   </div>

@@ -70,9 +70,7 @@ export function CustomFieldsManager({ projectId }: CustomFieldsManagerProps) {
       {/* Header */}
       <Flex align="center" justify="between">
         <div>
-          <h2 className="text-xl font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
-            Custom Fields
-          </h2>
+          <h2 className="text-xl font-semibold text-ui-text-primary">Custom Fields</h2>
           <Typography variant="p" color="secondary" className="text-sm">
             Add custom metadata fields to your issues
           </Typography>

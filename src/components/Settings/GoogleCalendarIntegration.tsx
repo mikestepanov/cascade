@@ -126,10 +126,8 @@ export function GoogleCalendarIntegration() {
               <Calendar className="h-6 w-6 text-white" />
             </div>
             <div>
-              <h3 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
-                Google Calendar
-              </h3>
-              <Typography className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mt-1">
+              <h3 className="text-lg font-semibold text-ui-text-primary">Google Calendar</h3>
+              <Typography className="text-sm text-ui-text-secondary mt-1">
                 Sync calendar events between Nixelo and Google Calendar
               </Typography>
               {calendarConnection && (
@@ -138,7 +136,7 @@ export function GoogleCalendarIntegration() {
                     ✓ Connected to {calendarConnection.providerAccountId}
                   </Typography>
                   {calendarConnection.lastSyncAt && (
-                    <Typography className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+                    <Typography className="text-xs text-ui-text-tertiary">
                       Last synced: {new Date(calendarConnection.lastSyncAt).toLocaleString()}
                     </Typography>
                   )}
@@ -165,18 +163,12 @@ export function GoogleCalendarIntegration() {
         </Flex>
 
         {calendarConnection && (
-          <Flex
-            direction="column"
-            gap="xl"
-            className="mt-6 pt-6 border-t border-ui-border-primary dark:border-ui-border-primary-dark"
-          >
+          <Flex direction="column" gap="xl" className="mt-6 pt-6 border-t border-ui-border-primary">
             {/* Sync Toggle */}
             <Flex justify="between" align="center">
               <div>
-                <h4 className="text-sm font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
-                  Enable Sync
-                </h4>
-                <Typography className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mt-1">
+                <h4 className="text-sm font-semibold text-ui-text-primary">Enable Sync</h4>
+                <Typography className="text-sm text-ui-text-secondary mt-1">
                   Automatically sync events between Nixelo and Google Calendar
                 </Typography>
               </div>
@@ -190,16 +182,10 @@ export function GoogleCalendarIntegration() {
             {/* Sync Direction */}
             {calendarConnection.syncEnabled && (
               <div>
-                <h4 className="text-sm font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-3">
-                  Sync Direction
-                </h4>
+                <h4 className="text-sm font-semibold text-ui-text-primary mb-3">Sync Direction</h4>
                 <Flex direction="column" gap="sm">
-                  <label className="cursor-pointer hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark">
-                    <Flex
-                      gap="md"
-                      align="center"
-                      className="p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg"
-                    >
+                  <label className="cursor-pointer hover:bg-ui-bg-tertiary">
+                    <Flex gap="md" align="center" className="p-3 bg-ui-bg-secondary rounded-lg">
                       <input
                         type="radio"
                         name="syncDirection"
@@ -209,22 +195,18 @@ export function GoogleCalendarIntegration() {
                         className="h-4 w-4 text-brand-600"
                       />
                       <div>
-                        <Typography className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+                        <Typography className="text-sm font-medium text-ui-text-primary">
                           Bidirectional
                         </Typography>
-                        <Typography className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+                        <Typography className="text-xs text-ui-text-tertiary">
                           Sync both ways (recommended)
                         </Typography>
                       </div>
                     </Flex>
                   </label>
 
-                  <label className="cursor-pointer hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark">
-                    <Flex
-                      gap="md"
-                      align="center"
-                      className="p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg"
-                    >
+                  <label className="cursor-pointer hover:bg-ui-bg-tertiary">
+                    <Flex gap="md" align="center" className="p-3 bg-ui-bg-secondary rounded-lg">
                       <input
                         type="radio"
                         name="syncDirection"
@@ -234,22 +216,18 @@ export function GoogleCalendarIntegration() {
                         className="h-4 w-4 text-brand-600"
                       />
                       <div>
-                        <Typography className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+                        <Typography className="text-sm font-medium text-ui-text-primary">
                           Import Only
                         </Typography>
-                        <Typography className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+                        <Typography className="text-xs text-ui-text-tertiary">
                           Only import from Google → Nixelo
                         </Typography>
                       </div>
                     </Flex>
                   </label>
 
-                  <label className="cursor-pointer hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark">
-                    <Flex
-                      gap="md"
-                      align="center"
-                      className="p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg"
-                    >
+                  <label className="cursor-pointer hover:bg-ui-bg-tertiary">
+                    <Flex gap="md" align="center" className="p-3 bg-ui-bg-secondary rounded-lg">
                       <input
                         type="radio"
                         name="syncDirection"
@@ -259,10 +237,10 @@ export function GoogleCalendarIntegration() {
                         className="h-4 w-4 text-brand-600"
                       />
                       <div>
-                        <Typography className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+                        <Typography className="text-sm font-medium text-ui-text-primary">
                           Export Only
                         </Typography>
-                        <Typography className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+                        <Typography className="text-xs text-ui-text-tertiary">
                           Only export from Nixelo → Google
                         </Typography>
                       </div>

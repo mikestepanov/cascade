@@ -109,7 +109,7 @@ function NoRecordingState({
   isScheduling: boolean;
 }) {
   return (
-    <div className="bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg p-4">
+    <div className="bg-ui-bg-secondary rounded-lg p-4">
       <Typography variant="muted" className="mb-3">
         Schedule a bot to join this meeting and automatically generate transcripts and summaries.
       </Typography>
@@ -130,10 +130,7 @@ function ScheduledState({ onCancel }: { onCancel: () => void }) {
     <div className="bg-brand-50 dark:bg-brand-900/20 rounded-lg p-4">
       <Flex justify="between" align="center">
         <div>
-          <Typography
-            variant="p"
-            className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark"
-          >
+          <Typography variant="p" className="font-medium text-ui-text-primary">
             Bot scheduled to join
           </Typography>
           <Typography variant="muted" size="xs">
@@ -151,7 +148,7 @@ function ScheduledState({ onCancel }: { onCancel: () => void }) {
 
 function FailedState({ errorMessage, onRetry }: { errorMessage?: string; onRetry: () => void }) {
   return (
-    <div className="bg-status-error-bg dark:bg-status-error-bg-dark rounded-lg p-4">
+    <div className="bg-status-error-bg rounded-lg p-4">
       <Typography variant="p" className="font-medium text-status-error">
         Recording failed
       </Typography>
@@ -168,14 +165,11 @@ function FailedState({ errorMessage, onRetry }: { errorMessage?: string; onRetry
 function InProgressState({ status }: { status: string }) {
   const message = IN_PROGRESS_MESSAGES[status] || "Processing...";
   return (
-    <div className="bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg p-4">
+    <div className="bg-ui-bg-secondary rounded-lg p-4">
       <Flex gap="md" align="center">
         <LoadingSpinner size="sm" />
         <div>
-          <Typography
-            variant="p"
-            className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark"
-          >
+          <Typography variant="p" className="font-medium text-ui-text-primary">
             {message}
           </Typography>
           <Typography variant="muted" size="xs">
@@ -285,17 +279,15 @@ export function MeetingRecordingSection({
   };
 
   return (
-    <div className="border-t border-ui-border-primary dark:border-ui-border-primary-dark pt-4">
+    <div className="border-t border-ui-border-primary pt-4">
       <button
         type="button"
         onClick={() => setIsExpanded(!isExpanded)}
         className="w-full flex items-center justify-between text-left"
       >
         <Flex gap="sm" align="center">
-          <Mic className="w-5 h-5 text-ui-text-tertiary dark:text-ui-text-tertiary-dark" />
-          <span className="text-sm font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
-            AI Meeting Notes
-          </span>
+          <Mic className="w-5 h-5 text-ui-text-tertiary" />
+          <span className="text-sm font-semibold text-ui-text-primary">AI Meeting Notes</span>
           {recording && <StatusBadge status={recording.status} />}
         </Flex>
         {isExpanded ? (
@@ -345,10 +337,8 @@ function RecordingResults({ recordingId }: { recordingId: Id<"meetingRecordings"
     <div className="space-y-4">
       {/* Executive Summary */}
       {summary && (
-        <div className="bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg p-4">
-          <h4 className="text-sm font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-2">
-            Summary
-          </h4>
+        <div className="bg-ui-bg-secondary rounded-lg p-4">
+          <h4 className="text-sm font-semibold text-ui-text-primary mb-2">Summary</h4>
           <Typography variant="muted">{summary.executiveSummary}</Typography>
         </div>
       )}
@@ -356,15 +346,10 @@ function RecordingResults({ recordingId }: { recordingId: Id<"meetingRecordings"
       {/* Key Points */}
       {summary && summary.keyPoints.length > 0 && (
         <div>
-          <h4 className="text-sm font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-2">
-            Key Points
-          </h4>
+          <h4 className="text-sm font-semibold text-ui-text-primary mb-2">Key Points</h4>
           <ul className="space-y-1">
             {summary.keyPoints.map((point: string) => (
-              <li
-                key={point}
-                className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark flex items-start gap-2"
-              >
+              <li key={point} className="text-sm text-ui-text-secondary flex items-start gap-2">
                 <span className="text-brand-600">•</span>
                 {point}
               </li>
@@ -376,9 +361,7 @@ function RecordingResults({ recordingId }: { recordingId: Id<"meetingRecordings"
       {/* Action Items */}
       {summary && summary.actionItems.length > 0 && (
         <div>
-          <h4 className="text-sm font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-2">
-            Action Items
-          </h4>
+          <h4 className="text-sm font-semibold text-ui-text-primary mb-2">Action Items</h4>
           <ul className="space-y-2">
             {summary.actionItems.map(
               (
@@ -387,12 +370,10 @@ function RecordingResults({ recordingId }: { recordingId: Id<"meetingRecordings"
               ) => (
                 <li
                   key={`action-${index}-${item.description.slice(0, 20)}`}
-                  className="text-sm bg-status-warning-bg dark:bg-status-warning-bg-dark rounded p-2"
+                  className="text-sm bg-status-warning-bg rounded p-2"
                 >
                   <Flex justify="between" align="start">
-                    <span className="text-ui-text-primary dark:text-ui-text-primary-dark">
-                      {item.description}
-                    </span>
+                    <span className="text-ui-text-primary">{item.description}</span>
                     {item.assignee && (
                       <Badge size="sm" className="ml-2 shrink-0">
                         {item.assignee}
@@ -414,15 +395,10 @@ function RecordingResults({ recordingId }: { recordingId: Id<"meetingRecordings"
       {/* Decisions */}
       {summary && summary.decisions.length > 0 && (
         <div>
-          <h4 className="text-sm font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-2">
-            Decisions Made
-          </h4>
+          <h4 className="text-sm font-semibold text-ui-text-primary mb-2">Decisions Made</h4>
           <ul className="space-y-1">
             {summary.decisions.map((decision: string) => (
-              <li
-                key={decision}
-                className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark flex items-start gap-2"
-              >
+              <li key={decision} className="text-sm text-ui-text-secondary flex items-start gap-2">
                 <CheckCircle className="w-4 h-4 text-status-success shrink-0 mt-0.5" />
                 {decision}
               </li>
@@ -449,8 +425,8 @@ function RecordingResults({ recordingId }: { recordingId: Id<"meetingRecordings"
           </button>
 
           {showTranscript && (
-            <div className="mt-2 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg p-4 max-h-96 overflow-y-auto">
-              <pre className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark whitespace-pre-wrap font-sans">
+            <div className="mt-2 bg-ui-bg-secondary rounded-lg p-4 max-h-96 overflow-y-auto">
+              <pre className="text-xs text-ui-text-secondary whitespace-pre-wrap font-sans">
                 {transcript.fullText}
               </pre>
             </div>
@@ -460,7 +436,7 @@ function RecordingResults({ recordingId }: { recordingId: Id<"meetingRecordings"
 
       {/* Stats */}
       {transcript && (
-        <Flex gap="md" className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+        <Flex gap="md" className="text-xs text-ui-text-tertiary">
           <span>{transcript.wordCount.toLocaleString()} words</span>
           <span>•</span>
           <span>{recording.duration ? Math.round(recording.duration / 60) : "?"} min</span>

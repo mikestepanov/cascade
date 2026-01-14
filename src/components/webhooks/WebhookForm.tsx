@@ -157,10 +157,10 @@ export function WebhookForm({ projectId, webhook, open, onOpenChange }: WebhookF
           </form.Field>
 
           <div>
-            <div className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-2">
+            <div className="block text-sm font-medium text-ui-text-primary mb-2">
               Events to Subscribe <span className="text-status-error">*</span>
             </div>
-            <div className="space-y-2 p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg">
+            <div className="space-y-2 p-3 bg-ui-bg-secondary rounded-lg">
               {AVAILABLE_EVENTS.map((event) => (
                 <Checkbox
                   key={event.value}

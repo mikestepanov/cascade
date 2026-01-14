@@ -54,27 +54,27 @@ export function IssueDetailModal({
           <DialogHeader>
             <DialogTitle className="sr-only">Loading issue details</DialogTitle>
             <div className="flex items-center space-x-3">
-              <div className="animate-pulse bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark h-8 w-8 rounded" />
+              <div className="animate-pulse bg-ui-bg-tertiary h-8 w-8 rounded" />
               <div className="space-y-2">
-                <div className="animate-pulse bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded h-4 w-24" />
-                <div className="animate-pulse bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded h-4 w-16" />
+                <div className="animate-pulse bg-ui-bg-tertiary rounded h-4 w-24" />
+                <div className="animate-pulse bg-ui-bg-tertiary rounded h-4 w-16" />
               </div>
             </div>
           </DialogHeader>
           <DialogDescription className="sr-only">Loading content...</DialogDescription>
           <output aria-live="polite" aria-busy="true" className="space-y-6 block">
             <span className="sr-only">Loading...</span>
-            <div className="animate-pulse bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded h-8 w-3/4" />
+            <div className="animate-pulse bg-ui-bg-tertiary rounded h-8 w-3/4" />
             <div className="space-y-2">
-              <div className="animate-pulse bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded h-4 w-full" />
-              <div className="animate-pulse bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded h-4 w-full" />
-              <div className="animate-pulse bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded h-4 w-2/3" />
+              <div className="animate-pulse bg-ui-bg-tertiary rounded h-4 w-full" />
+              <div className="animate-pulse bg-ui-bg-tertiary rounded h-4 w-full" />
+              <div className="animate-pulse bg-ui-bg-tertiary rounded h-4 w-2/3" />
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg">
-              <div className="animate-pulse bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded h-12 w-full" />
-              <div className="animate-pulse bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded h-12 w-full" />
-              <div className="animate-pulse bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded h-12 w-full" />
-              <div className="animate-pulse bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded h-12 w-full" />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 bg-ui-bg-secondary rounded-lg">
+              <div className="animate-pulse bg-ui-bg-tertiary rounded h-12 w-full" />
+              <div className="animate-pulse bg-ui-bg-tertiary rounded h-12 w-full" />
+              <div className="animate-pulse bg-ui-bg-tertiary rounded h-12 w-full" />
+              <div className="animate-pulse bg-ui-bg-tertiary rounded h-12 w-full" />
             </div>
           </output>
         </DialogContent>

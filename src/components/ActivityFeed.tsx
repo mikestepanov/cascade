@@ -135,7 +135,7 @@ export function ActivityFeed({ projectId, limit = 50, compact = false }: Activit
 
   if (activities.length === 0) {
     return (
-      <div className="text-center py-12 text-ui-text-secondary dark:text-ui-text-secondary-dark">
+      <div className="text-center py-12 text-ui-text-secondary">
         <svg
           aria-hidden="true"
           className="w-16 h-16 mx-auto mb-4 text-ui-text-tertiary"
@@ -173,12 +173,12 @@ export function ActivityFeed({ projectId, limit = 50, compact = false }: Activit
           }
         >
           {/* Timeline dot */}
-          <Flex direction="column" align="center" className="flex-shrink-0">
+          <Flex direction="column" align="center" className="shrink-0">
             <div className={cn("text-2xl", compact && "text-lg")}>
               {getActionIcon(activity.action)}
             </div>
             {!compact && index < activities.length - 1 && (
-              <div className="w-0.5 flex-1 bg-ui-border-primary dark:bg-ui-border-primary-dark mt-2" />
+              <div className="w-0.5 flex-1 bg-ui-border-primary mt-2" />
             )}
           </Flex>
 

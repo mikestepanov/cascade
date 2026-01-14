@@ -83,17 +83,13 @@ export function PreferencesTab() {
     <div className="space-y-6">
       <Card>
         <div className="p-6">
-          <h3 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-4">
-            Appearance
-          </h3>
+          <h3 className="text-lg font-semibold text-ui-text-primary mb-4">Appearance</h3>
 
           <div className="flex flex-col gap-4">
             <div className="flex items-center justify-between">
               <div>
-                <Typography className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
-                  Theme
-                </Typography>
-                <Typography className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
+                <Typography className="text-sm font-medium text-ui-text-primary">Theme</Typography>
+                <Typography className="text-sm text-ui-text-secondary">
                   Select your preferred interface theme
                 </Typography>
               </div>
@@ -124,15 +120,13 @@ export function PreferencesTab() {
 
       <Card>
         <div className="p-6">
-          <h3 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-4">
-            Regional
-          </h3>
+          <h3 className="text-lg font-semibold text-ui-text-primary mb-4">Regional</h3>
           <div className="flex items-center justify-between">
             <div>
               <Label htmlFor="timezone" className="text-base">
                 Timezone
               </Label>
-              <Typography className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mt-1">
+              <Typography className="text-sm text-ui-text-secondary mt-1">
                 Your timestamp display preference
               </Typography>
             </div>
@@ -156,15 +150,13 @@ export function PreferencesTab() {
 
       <Card>
         <div className="p-6">
-          <h3 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-4">
-            Desktop Notifications
-          </h3>
+          <h3 className="text-lg font-semibold text-ui-text-primary mb-4">Desktop Notifications</h3>
           <div className="flex items-center justify-between">
             <div>
               <Label htmlFor="desktop-notifs" className="text-base">
                 Browser Push Notifications
               </Label>
-              <Typography className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mt-1">
+              <Typography className="text-sm text-ui-text-secondary mt-1">
                 Receive pop-up notifications when you are active
               </Typography>
             </div>

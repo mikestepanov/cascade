@@ -83,14 +83,14 @@ export function IssueWatchers({ issueId }: IssueWatchersProps) {
       {/* Watchers List */}
       {watchers && watchers.length > 0 && (
         <div>
-          <h4 className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-2">
+          <h4 className="text-sm font-medium text-ui-text-primary mb-2">
             Watchers ({watchers.length})
           </h4>
           <div className="space-y-2">
             {watchers.map((watcher: Watcher) => (
               <div
                 key={watcher._id}
-                className="flex items-center gap-3 p-2 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg"
+                className="flex items-center gap-3 p-2 bg-ui-bg-secondary rounded-lg"
               >
                 {/* Avatar */}
                 <Avatar name={watcher.userName} size="md" />
@@ -114,7 +114,7 @@ export function IssueWatchers({ issueId }: IssueWatchersProps) {
 
       {/* Empty State */}
       {watchers && watchers.length === 0 && (
-        <div className="text-center py-4 text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
+        <div className="text-center py-4 text-sm text-ui-text-secondary">
           No watchers yet. Be the first to watch this issue!
         </div>
       )}

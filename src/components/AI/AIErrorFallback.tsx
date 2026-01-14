@@ -20,25 +20,16 @@ export function AIErrorFallback({
   message = "Something went wrong with the AI assistant. Please try again.",
 }: AIErrorFallbackProps) {
   return (
-    <Flex
-      align="center"
-      justify="center"
-      className="h-full p-6 bg-ui-bg-primary dark:bg-ui-bg-primary-dark"
-    >
+    <Flex align="center" justify="center" className="h-full p-6 bg-ui-bg-primary">
       <div className="text-center max-w-md">
         <div className="text-6xl mb-4">⚠️</div>
-        <h3 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-2">
-          {title}
-        </h3>
-        <Typography
-          variant="p"
-          className="text-ui-text-secondary dark:text-ui-text-secondary-dark mb-4"
-        >
+        <h3 className="text-lg font-semibold text-ui-text-primary mb-2">{title}</h3>
+        <Typography variant="p" className="text-ui-text-secondary mb-4">
           {message}
         </Typography>
 
         {error && process.env.NODE_ENV === "development" && (
-          <details className="text-left text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark mb-4 p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded">
+          <details className="text-left text-sm text-ui-text-tertiary mb-4 p-3 bg-ui-bg-secondary rounded">
             <summary className="cursor-pointer font-medium mb-2">Error Details</summary>
             <pre className="whitespace-pre-wrap overflow-auto max-h-32 text-xs">
               {error.message}

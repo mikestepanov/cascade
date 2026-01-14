@@ -106,7 +106,7 @@ export function KanbanBoard({ projectId, teamId, sprintId }: KanbanBoardProps) {
         </div>
         <div className="flex space-x-3 sm:space-x-6 px-4 sm:px-6 pb-6 overflow-x-auto">
           {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="flex-shrink-0 w-72 sm:w-80 bg-ui-bg-secondary rounded-lg">
+            <div key={i} className="shrink-0 w-72 sm:w-80 bg-ui-bg-secondary rounded-lg">
               <div className="p-3 sm:p-4 border-b border-ui-border-primary bg-ui-bg-primary rounded-t-lg">
                 <SkeletonText lines={1} className="w-24" />
               </div>

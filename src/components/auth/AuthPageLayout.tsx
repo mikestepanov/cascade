@@ -12,7 +12,7 @@ interface AuthPageLayoutProps {
 
 export function AuthPageLayout({ title, subtitle, children }: AuthPageLayoutProps) {
   return (
-    <div className="min-h-screen w-full bg-ui-bg-secondary dark:bg-ui-bg-primary-dark flex items-center justify-center p-4">
+    <div className="min-h-screen w-full bg-ui-bg-secondary flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="mb-4">
           <Link
@@ -36,7 +36,7 @@ export function AuthPageLayout({ title, subtitle, children }: AuthPageLayoutProp
             Back to Home
           </Link>
         </div>
-        <div className="bg-ui-bg-primary dark:bg-ui-bg-secondary-dark border border-ui-border-primary dark:border-ui-border-primary-dark rounded-2xl p-8 backdrop-blur-sm">
+        <div className="bg-ui-bg-primary border border-ui-border-primary rounded-2xl p-8 backdrop-blur-sm">
           <div className="flex flex-col items-center mb-6">
             <Link to={ROUTE_PATTERNS.home} className="hover:opacity-80 transition-opacity">
               <NixeloLogo size={48} />

@@ -68,7 +68,7 @@ export function KeyboardShortcutsHelp({ open, onOpenChange }: KeyboardShortcutsH
         <div className="space-y-6">
           {shortcuts.map((section) => (
             <div key={section.category}>
-              <h3 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-3">
+              <h3 className="text-lg font-semibold text-ui-text-primary mb-3">
                 {section.category}
               </h3>
               <div className="space-y-2">
@@ -77,9 +77,7 @@ export function KeyboardShortcutsHelp({ open, onOpenChange }: KeyboardShortcutsH
                     key={shortcut.description}
                     className="flex items-center justify-between py-2"
                   >
-                    <span className="text-sm text-ui-text-primary dark:text-ui-text-primary-dark">
-                      {shortcut.description}
-                    </span>
+                    <span className="text-sm text-ui-text-primary">{shortcut.description}</span>
                     <div className="flex gap-2">
                       {shortcut.keys.map((key) => (
                         <KeyboardShortcut key={key} shortcut={key} />
@@ -91,7 +89,7 @@ export function KeyboardShortcutsHelp({ open, onOpenChange }: KeyboardShortcutsH
             </div>
           ))}
 
-          <div className="pt-4 border-t border-ui-border-primary dark:border-ui-border-primary-dark">
+          <div className="pt-4 border-t border-ui-border-primary">
             <Typography variant="muted" className="text-sm">
               <strong>Tip:</strong> Press <KeyboardShortcut shortcut="⌘+K" /> to quickly access all
               commands and features.

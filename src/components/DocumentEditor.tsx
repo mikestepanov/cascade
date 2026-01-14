@@ -36,9 +36,9 @@ export function DocumentEditor({ documentId }: DocumentEditorProps) {
 
   if (!(document && userId)) {
     return (
-      <div className="flex flex-col h-full bg-ui-bg-primary dark:bg-ui-bg-primary-dark">
+      <div className="flex flex-col h-full bg-ui-bg-primary">
         {/* Document Header Skeleton */}
-        <div className="border-b border-ui-border-primary dark:border-ui-border-primary-dark p-6">
+        <div className="border-b border-ui-border-primary p-6">
           <div className="flex items-center justify-between mb-4">
             <Skeleton className="h-8 w-1/2" />
             <div className="flex items-center space-x-4">
@@ -142,7 +142,7 @@ export function DocumentEditor({ documentId }: DocumentEditorProps) {
   };
 
   return (
-    <div className="flex flex-col h-full bg-ui-bg-primary dark:bg-ui-bg-primary-dark">
+    <div className="flex flex-col h-full bg-ui-bg-primary">
       {/* Document Header */}
       <DocumentHeader
         document={document}

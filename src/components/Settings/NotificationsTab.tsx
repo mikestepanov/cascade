@@ -16,12 +16,12 @@ export function NotificationsTab() {
       <Card>
         <div className="p-6">
           <div className="animate-pulse space-y-4">
-            <div className="h-6 bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded w-1/3" />
-            <div className="h-4 bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded w-2/3" />
+            <div className="h-6 bg-ui-bg-tertiary rounded w-1/3" />
+            <div className="h-4 bg-ui-bg-tertiary rounded w-2/3" />
             <div className="space-y-3">
-              <div className="h-10 bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded" />
-              <div className="h-10 bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded" />
-              <div className="h-10 bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded" />
+              <div className="h-10 bg-ui-bg-tertiary rounded" />
+              <div className="h-10 bg-ui-bg-tertiary rounded" />
+              <div className="h-10 bg-ui-bg-tertiary rounded" />
             </div>
           </div>
         </div>
@@ -85,7 +85,7 @@ export function NotificationsTab() {
 
           <div className="space-y-4">
             {/* Mentions */}
-            <div className="flex items-start justify-between py-3 border-b border-ui-border-secondary dark:border-ui-border-secondary-dark last:border-0">
+            <div className="flex items-start justify-between py-3 border-b border-ui-border-secondary last:border-0">
               <div className="flex-1">
                 <div className="flex items-center gap-2">
                   <span className="text-xl">@</span>
@@ -106,7 +106,7 @@ export function NotificationsTab() {
             </div>
 
             {/* Assignments */}
-            <div className="flex items-start justify-between py-3 border-b border-ui-border-secondary dark:border-ui-border-secondary-dark last:border-0">
+            <div className="flex items-start justify-between py-3 border-b border-ui-border-secondary last:border-0">
               <div className="flex-1">
                 <div className="flex items-center gap-2">
                   <span className="text-xl">👤</span>
@@ -127,7 +127,7 @@ export function NotificationsTab() {
             </div>
 
             {/* Comments */}
-            <div className="flex items-start justify-between py-3 border-b border-ui-border-secondary dark:border-ui-border-secondary-dark last:border-0">
+            <div className="flex items-start justify-between py-3 border-b border-ui-border-secondary last:border-0">
               <div className="flex-1">
                 <div className="flex items-center gap-2">
                   <span className="text-xl">💬</span>
@@ -182,7 +182,7 @@ export function NotificationsTab() {
           </Typography>
 
           <div className="space-y-2">
-            <label className="flex items-center gap-3 p-3 rounded-lg border border-ui-border-primary dark:border-ui-border-primary-dark cursor-pointer hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark transition-colors">
+            <label className="flex items-center gap-3 p-3 rounded-lg border border-ui-border-primary cursor-pointer hover:bg-ui-bg-secondary transition-colors">
               <input
                 type="radio"
                 name="digest"
@@ -193,16 +193,14 @@ export function NotificationsTab() {
                 className="w-4 h-4 text-brand-600 focus:ring-brand-500 focus:ring-2"
               />
               <div>
-                <div className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
-                  No digest
-                </div>
-                <div className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
+                <div className="font-medium text-ui-text-primary">No digest</div>
+                <div className="text-sm text-ui-text-secondary">
                   Receive emails as events happen
                 </div>
               </div>
             </label>
 
-            <label className="flex items-center gap-3 p-3 rounded-lg border border-ui-border-primary dark:border-ui-border-primary-dark cursor-pointer hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark transition-colors">
+            <label className="flex items-center gap-3 p-3 rounded-lg border border-ui-border-primary cursor-pointer hover:bg-ui-bg-secondary transition-colors">
               <input
                 type="radio"
                 name="digest"
@@ -213,16 +211,14 @@ export function NotificationsTab() {
                 className="w-4 h-4 text-brand-600 focus:ring-brand-500 focus:ring-2"
               />
               <div>
-                <div className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
-                  Daily digest
-                </div>
-                <div className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
+                <div className="font-medium text-ui-text-primary">Daily digest</div>
+                <div className="text-sm text-ui-text-secondary">
                   One email per day with all activity (coming soon)
                 </div>
               </div>
             </label>
 
-            <label className="flex items-center gap-3 p-3 rounded-lg border border-ui-border-primary dark:border-ui-border-primary-dark cursor-pointer hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark transition-colors">
+            <label className="flex items-center gap-3 p-3 rounded-lg border border-ui-border-primary cursor-pointer hover:bg-ui-bg-secondary transition-colors">
               <input
                 type="radio"
                 name="digest"
@@ -233,10 +229,8 @@ export function NotificationsTab() {
                 className="w-4 h-4 text-brand-600 focus:ring-brand-500 focus:ring-2"
               />
               <div>
-                <div className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
-                  Weekly digest
-                </div>
-                <div className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
+                <div className="font-medium text-ui-text-primary">Weekly digest</div>
+                <div className="text-sm text-ui-text-secondary">
                   One email per week with all activity (coming soon)
                 </div>
               </div>

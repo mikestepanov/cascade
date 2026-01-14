@@ -47,7 +47,7 @@ export function ImportExportModal({
         </DialogHeader>
         <div className="space-y-6">
           {/* Mode Selection */}
-          <div className="flex gap-2 p-1 bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded-lg">
+          <div className="flex gap-2 p-1 bg-ui-bg-tertiary rounded-lg">
             <button
               type="button"
               onClick={() => setMode("export")}

@@ -42,12 +42,12 @@ export function PumbleIntegration() {
   const projects = useQuery(api.projects.getCurrentUserProjects);
 
   return (
-    <div className="bg-ui-bg-primary dark:bg-ui-bg-primary-dark rounded-lg shadow-sm border border-ui-border-primary dark:border-ui-border-primary-dark">
+    <div className="bg-ui-bg-primary rounded-lg shadow-sm border border-ui-border-primary">
       {/* Header */}
-      <div className="p-6 border-b border-ui-border-primary dark:border-ui-border-primary-dark">
+      <div className="p-6 border-b border-ui-border-primary">
         <Flex justify="between" align="start">
           <Flex gap="md" align="center">
-            <div className="flex-shrink-0">
+            <div className="shrink-0">
               <div className="w-12 h-12 bg-linear-to-br from-accent-500 to-pink-500 rounded-lg flex items-center justify-center">
                 <svg
                   className="w-6 h-6 text-white"
@@ -66,10 +66,8 @@ export function PumbleIntegration() {
               </div>
             </div>
             <div>
-              <h3 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
-                Pumble Integration
-              </h3>
-              <Typography className="mt-1 text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
+              <h3 className="text-lg font-semibold text-ui-text-primary">Pumble Integration</h3>
+              <Typography className="mt-1 text-sm text-ui-text-secondary">
                 Send notifications to Pumble channels when issues are created or updated
               </Typography>
             </div>
@@ -88,9 +86,7 @@ export function PumbleIntegration() {
       <div className="p-6">
         {webhooks === undefined ? (
           <div className="flex items-center justify-center py-12">
-            <div className="text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
-              Loading webhooks...
-            </div>
+            <div className="text-ui-text-tertiary">Loading webhooks...</div>
           </div>
         ) : webhooks.length === 0 ? (
           <EmptyState onAddWebhook={() => setShowAddModal(true)} />
@@ -103,7 +99,7 @@ export function PumbleIntegration() {
         )}
 
         {/* Documentation Link */}
-        <div className="mt-6 pt-6 border-t border-ui-border-primary dark:border-ui-border-primary-dark">
+        <div className="mt-6 pt-6 border-t border-ui-border-primary">
           <a
             href="https://help.pumble.com/hc/en-us/articles/360041954051-Incoming-webhooks"
             target="_blank"
@@ -161,10 +157,10 @@ function EmptyState({ onAddWebhook }: { onAddWebhook: () => void }) {
           />
         </svg>
       </div>
-      <h3 className="text-lg font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-2">
+      <h3 className="text-lg font-medium text-ui-text-primary mb-2">
         No Pumble webhooks configured
       </h3>
-      <Typography className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mb-6 max-w-md mx-auto">
+      <Typography className="text-sm text-ui-text-secondary mb-6 max-w-md mx-auto">
         Connect Nixelo to Pumble channels to receive notifications when issues are created, updated,
         or assigned.
       </Typography>
@@ -229,28 +225,24 @@ function WebhookCard({ webhook, projects }: WebhookCardProps) {
   const maskedUrl = webhook.url.replace(/([^/]{8})[^/]+/, "$1***");
 
   return (
-    <div className="border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg p-4 hover:border-accent-300 dark:hover:border-accent-700 transition-colors">
+    <div className="border border-ui-border-primary rounded-lg p-4 hover:border-accent-300 dark:hover:border-accent-700 transition-colors">
       <Flex justify="between" align="start" className="mb-3">
         <div className="flex-1">
           <Flex gap="sm" align="center" className="mb-1">
-            <h4 className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
-              {webhook.name}
-            </h4>
+            <h4 className="font-medium text-ui-text-primary">{webhook.name}</h4>
             {webhook.isActive ? (
-              <span className="px-2 py-0.5 text-xs font-medium bg-status-success-bg dark:bg-status-success-bg-dark text-status-success-text dark:text-status-success-text-dark rounded">
+              <span className="px-2 py-0.5 text-xs font-medium bg-status-success-bg text-status-success-text rounded">
                 Active
               </span>
             ) : (
-              <span className="px-2 py-0.5 text-xs font-medium bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark text-ui-text-primary dark:text-ui-text-primary-dark rounded">
+              <span className="px-2 py-0.5 text-xs font-medium bg-ui-bg-tertiary text-ui-text-primary rounded">
                 Inactive
               </span>
             )}
           </Flex>
-          <Typography className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark font-mono">
-            {maskedUrl}
-          </Typography>
+          <Typography className="text-sm text-ui-text-secondary font-mono">{maskedUrl}</Typography>
           {project && (
-            <Typography className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark mt-1">
+            <Typography className="text-xs text-ui-text-tertiary mt-1">
               Project: {project.name}
             </Typography>
           )}
@@ -271,17 +263,13 @@ function WebhookCard({ webhook, projects }: WebhookCardProps) {
 
       {/* Stats */}
       {webhook.lastTriggered && (
-        <div className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark mb-3">
+        <div className="text-xs text-ui-text-tertiary mb-3">
           Last triggered: {new Date(webhook.lastTriggered).toLocaleDateString()}
         </div>
       )}
 
       {/* Actions */}
-      <Flex
-        gap="sm"
-        align="center"
-        className="pt-3 border-t border-ui-border-primary dark:border-ui-border-primary-dark"
-      >
+      <Flex gap="sm" align="center" className="pt-3 border-t border-ui-border-primary">
         <Button
           onClick={handleTest}
           variant="ghost"
@@ -413,7 +401,7 @@ function AddWebhookModal({ open, onOpenChange, projects }: AddWebhookModalProps)
           <div>
             <label
               htmlFor="project-select"
-              className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
+              className="block text-sm font-medium text-ui-text-primary mb-1"
             >
               Project (Optional)
             </label>
@@ -423,7 +411,7 @@ function AddWebhookModal({ open, onOpenChange, projects }: AddWebhookModalProps)
               onChange={(e) =>
                 setProjectId(e.target.value ? (e.target.value as Id<"projects">) : undefined)
               }
-              className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark"
+              className="w-full px-3 py-2 border border-ui-border-primary rounded-lg bg-ui-bg-primary text-ui-text-primary"
             >
               <option value="">All Projects</option>
               {projects?.map((project: Doc<"projects">) => (
@@ -439,7 +427,7 @@ function AddWebhookModal({ open, onOpenChange, projects }: AddWebhookModalProps)
 
           {/* Events */}
           <div>
-            <div className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-3">
+            <div className="block text-sm font-medium text-ui-text-primary mb-3">
               Events to Send <span className="text-status-error">*</span>
             </div>
             <div className="grid grid-cols-2 gap-3">
@@ -581,7 +569,7 @@ function EditWebhookModal({ open, onOpenChange, webhook }: EditWebhookModalProps
 
           {/* Events */}
           <div>
-            <div className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-3">
+            <div className="block text-sm font-medium text-ui-text-primary mb-3">
               Events to Send <span className="text-status-error">*</span>
             </div>
             <div className="grid grid-cols-2 gap-3">

@@ -51,12 +51,10 @@ export function MarkdownPreviewModal({
           </DialogDescription>
         </DialogHeader>
         {/* File Info */}
-        <div className="mb-4 p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg">
+        <div className="mb-4 p-3 bg-ui-bg-secondary rounded-lg">
           <Flex align="center" justify="between" className="text-sm">
-            <span className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
-              📄 {filename}
-            </span>
-            <span className="text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+            <span className="font-medium text-ui-text-primary">📄 {filename}</span>
+            <span className="text-ui-text-tertiary">
               {lines.length} lines • {headings} headings • {lists} lists • {codeBlocks} code blocks
             </span>
           </Flex>
@@ -84,7 +82,7 @@ export function MarkdownPreviewModal({
         </div>
 
         {/* Tab Selector */}
-        <Flex className="border-b border-ui-border-primary dark:border-ui-border-primary-dark mb-4">
+        <Flex className="border-b border-ui-border-primary mb-4">
           <button
             type="button"
             onClick={() => setActiveTab("preview")}
@@ -112,13 +110,13 @@ export function MarkdownPreviewModal({
         </Flex>
 
         {/* Content */}
-        <div className="max-h-96 overflow-y-auto border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg">
+        <div className="max-h-96 overflow-y-auto border border-ui-border-primary rounded-lg">
           {activeTab === "preview" ? (
             <div className="p-4 prose dark:prose-invert max-w-none">
               <ReactMarkdown remarkPlugins={[remarkGfm]}>{markdown}</ReactMarkdown>
             </div>
           ) : (
-            <pre className="p-4 text-sm text-ui-text-primary dark:text-ui-text-primary-dark whitespace-pre-wrap font-mono">
+            <pre className="p-4 text-sm text-ui-text-primary whitespace-pre-wrap font-mono">
               {markdown}
             </pre>
           )}

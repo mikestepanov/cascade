@@ -78,16 +78,14 @@ export function WebhookLogs({ webhookId, open, onOpenChange }: WebhookLogsProps)
         {!executions || executions.length === 0 ? (
           <div className="text-center py-12">
             <div className="text-4xl mb-3">📊</div>
-            <h3 className="text-lg font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
-              No delivery logs yet
-            </h3>
-            <Typography className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
+            <h3 className="text-lg font-medium text-ui-text-primary mb-1">No delivery logs yet</h3>
+            <Typography className="text-sm text-ui-text-secondary">
               Webhook deliveries will appear here once triggered
             </Typography>
           </div>
         ) : (
           <div className="space-y-4">
-            <div className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mb-4">
+            <div className="text-sm text-ui-text-secondary mb-4">
               Showing {executions.length} most recent deliveries
             </div>
 
@@ -95,23 +93,23 @@ export function WebhookLogs({ webhookId, open, onOpenChange }: WebhookLogsProps)
               {executions.map((execution) => (
                 <div
                   key={execution._id}
-                  className="border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg p-4 hover:border-ui-border-secondary dark:hover:border-ui-border-secondary-dark transition-colors"
+                  className="border border-ui-border-primary rounded-lg p-4 hover:border-ui-border-secondary transition-colors"
                 >
                   {/* Header */}
                   <Flex justify="between" align="center" className="mb-3">
                     <Flex gap="md" align="center">
                       {getStatusBadge(execution.status)}
-                      <span className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+                      <span className="text-sm font-medium text-ui-text-primary">
                         {execution.event}
                       </span>
                       {execution.responseStatus && (
-                        <span className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark">
+                        <span className="text-xs text-ui-text-secondary">
                           HTTP {execution.responseStatus}
                         </span>
                       )}
                     </Flex>
                     <Flex gap="md" align="center">
-                      <span className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark">
+                      <span className="text-xs text-ui-text-secondary">
                         {formatDate(execution.createdAt)}
                       </span>
                       {execution.status === "failed" && (
@@ -138,7 +136,7 @@ export function WebhookLogs({ webhookId, open, onOpenChange }: WebhookLogsProps)
                   </Flex>
 
                   {/* Metadata */}
-                  <div className="grid grid-cols-3 gap-4 text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark mb-2">
+                  <div className="grid grid-cols-3 gap-4 text-xs text-ui-text-secondary mb-2">
                     <div>
                       <span className="font-medium">Attempts:</span> {execution.attempts}
                     </div>
@@ -165,13 +163,13 @@ export function WebhookLogs({ webhookId, open, onOpenChange }: WebhookLogsProps)
 
                   {/* Expandable Details */}
                   {selectedExecution === execution._id && (
-                    <div className="mt-3 pt-3 border-t border-ui-border-primary dark:border-ui-border-primary-dark space-y-3">
+                    <div className="mt-3 pt-3 border-t border-ui-border-primary space-y-3">
                       {/* Request Payload */}
                       <div>
-                        <div className="text-xs font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
+                        <div className="text-xs font-medium text-ui-text-primary mb-1">
                           Request Payload:
                         </div>
-                        <pre className="bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark border border-ui-border-primary dark:border-ui-border-primary-dark rounded p-3 text-xs overflow-x-auto">
+                        <pre className="bg-ui-bg-secondary border border-ui-border-primary rounded p-3 text-xs overflow-x-auto">
                           {JSON.stringify(JSON.parse(execution.requestPayload), null, 2)}
                         </pre>
                       </div>
@@ -179,10 +177,10 @@ export function WebhookLogs({ webhookId, open, onOpenChange }: WebhookLogsProps)
                       {/* Response Body */}
                       {execution.responseBody && (
                         <div>
-                          <div className="text-xs font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
+                          <div className="text-xs font-medium text-ui-text-primary mb-1">
                             Response Body:
                           </div>
-                          <pre className="bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark border border-ui-border-primary dark:border-ui-border-primary-dark rounded p-3 text-xs overflow-x-auto max-h-48">
+                          <pre className="bg-ui-bg-secondary border border-ui-border-primary rounded p-3 text-xs overflow-x-auto max-h-48">
                             {execution.responseBody}
                           </pre>
                         </div>

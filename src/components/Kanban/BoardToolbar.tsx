@@ -32,19 +32,19 @@ export function BoardToolbar({
         {sprintId ? "Sprint Board" : "Kanban Board"}
       </Typography>
       {showControls && (
-        <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
+        <div className="flex items-center gap-1 sm:gap-2 shrink-0">
           {/* Undo/Redo buttons */}
           <div className="hidden sm:flex items-center gap-1 mr-2 sm:mr-4">
             <button
               type="button"
               onClick={onUndo}
               disabled={historyStack.length === 0}
-              className="p-2.5 sm:p-3 rounded hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="p-2.5 sm:p-3 rounded hover:bg-ui-bg-secondary disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               aria-label="Undo (Ctrl+Z)"
             >
               <svg
                 aria-hidden="true"
-                className="w-4 h-4 sm:w-5 sm:h-5 text-ui-text-primary dark:text-ui-text-primary-dark"
+                className="w-4 h-4 sm:w-5 sm:h-5 text-ui-text-primary"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -61,12 +61,12 @@ export function BoardToolbar({
               type="button"
               onClick={onRedo}
               disabled={redoStack.length === 0}
-              className="p-2.5 sm:p-3 rounded hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="p-2.5 sm:p-3 rounded hover:bg-ui-bg-secondary disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               aria-label="Redo (Ctrl+Shift+Z)"
             >
               <svg
                 aria-hidden="true"
-                className="w-4 h-4 sm:w-5 sm:h-5 text-ui-text-primary dark:text-ui-text-primary-dark"
+                className="w-4 h-4 sm:w-5 sm:h-5 text-ui-text-primary"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"

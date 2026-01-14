@@ -29,7 +29,7 @@ function ProjectLayout() {
       <Flex align="center" justify="center" className="h-full">
         <div className="text-center">
           <h2 className="text-xl font-semibold mb-2">Project Not Found</h2>
-          <Typography className="text-ui-text-secondary dark:text-ui-text-secondary-dark">
+          <Typography className="text-ui-text-secondary">
             The project "{key}" doesn't exist or you don't have access to it.
           </Typography>
         </div>
@@ -63,7 +63,7 @@ function ProjectLayout() {
   return (
     <div className="h-full flex flex-col">
       {/* Breadcrumb */}
-      <div className="px-4 py-2 border-b border-ui-border-primary dark:border-ui-border-primary-dark bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark text-sm">
+      <div className="px-4 py-2 border-b border-ui-border-primary bg-ui-bg-secondary text-sm">
         <Link
           to={ROUTE_PATTERNS.workspaces.list}
           params={{ companySlug }}
@@ -92,7 +92,7 @@ function ProjectLayout() {
       </div>
 
       {/* Tab Navigation */}
-      <div className="border-b border-ui-border-primary dark:border-ui-border-primary-dark bg-ui-bg-primary dark:bg-ui-bg-primary-dark">
+      <div className="border-b border-ui-border-primary bg-ui-bg-primary">
         <nav className="flex space-x-4 px-4" aria-label="Tabs">
           {tabs.map((tab) => (
             <Link

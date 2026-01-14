@@ -47,9 +47,9 @@ export function SignInForm() {
     <div className="w-full">
       <GoogleAuthButton redirectTo={ROUTE_PATTERNS.app} text="Sign in with Google" />
       <div className="flex items-center justify-center my-4">
-        <hr className="grow border-ui-border-primary dark:border-ui-border-primary-dark" />
+        <hr className="grow border-ui-border-primary" />
         <span className="mx-4 text-ui-text-secondary text-sm">or</span>
-        <hr className="grow border-ui-border-primary dark:border-ui-border-primary-dark" />
+        <hr className="grow border-ui-border-primary" />
       </div>
       <form className="flex flex-col" onSubmit={handleSubmit} data-form-ready={formReady}>
         <div

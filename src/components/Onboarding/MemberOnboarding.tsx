@@ -71,7 +71,7 @@ export function MemberOnboarding({
         <button
           type="button"
           onClick={onBack}
-          className="flex items-center gap-2 text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark transition-colors"
+          className="flex items-center gap-2 text-ui-text-secondary hover:text-ui-text-primary transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Back</span>
@@ -136,7 +136,7 @@ export function MemberOnboarding({
       <button
         type="button"
         onClick={() => setStep("project")}
-        className="flex items-center gap-2 text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark transition-colors"
+        className="flex items-center gap-2 text-ui-text-secondary hover:text-ui-text-primary transition-colors"
       >
         <ArrowLeft className="w-4 h-4" />
         <span>Back</span>
@@ -152,54 +152,44 @@ export function MemberOnboarding({
 
       {/* What you can do */}
       <div className="space-y-4">
-        <h3 className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
-          Here's what you can do in Nixelo:
-        </h3>
+        <h3 className="font-medium text-ui-text-primary">Here's what you can do in Nixelo:</h3>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="flex items-start gap-3 p-4 rounded-lg bg-ui-bg-primary dark:bg-ui-bg-secondary-dark">
-            <Kanban className="w-5 h-5 text-priority-low mt-0.5 flex-shrink-0" />
+          <div className="flex items-start gap-3 p-4 rounded-lg bg-ui-bg-primary">
+            <Kanban className="w-5 h-5 text-priority-low mt-0.5 shrink-0" />
             <div>
-              <h4 className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark text-sm">
-                Work on Issues
-              </h4>
-              <Typography className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark">
+              <h4 className="font-medium text-ui-text-primary text-sm">Work on Issues</h4>
+              <Typography className="text-xs text-ui-text-secondary">
                 Drag issues across the board as you progress
               </Typography>
             </div>
           </div>
 
-          <div className="flex items-start gap-3 p-4 rounded-lg bg-ui-bg-primary dark:bg-ui-bg-secondary-dark">
-            <FileText className="w-5 h-5 text-status-success mt-0.5 flex-shrink-0" />
+          <div className="flex items-start gap-3 p-4 rounded-lg bg-ui-bg-primary">
+            <FileText className="w-5 h-5 text-status-success mt-0.5 shrink-0" />
             <div>
-              <h4 className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark text-sm">
-                Collaborate on Docs
-              </h4>
-              <Typography className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark">
+              <h4 className="font-medium text-ui-text-primary text-sm">Collaborate on Docs</h4>
+              <Typography className="text-xs text-ui-text-secondary">
                 Edit documents together in real-time
               </Typography>
             </div>
           </div>
 
-          <div className="flex items-start gap-3 p-4 rounded-lg bg-ui-bg-primary dark:bg-ui-bg-secondary-dark">
-            <Clock className="w-5 h-5 text-status-warning mt-0.5 flex-shrink-0" />
+          <div className="flex items-start gap-3 p-4 rounded-lg bg-ui-bg-primary">
+            <Clock className="w-5 h-5 text-status-warning mt-0.5 shrink-0" />
             <div>
-              <h4 className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark text-sm">
-                Track Time
-              </h4>
-              <Typography className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark">
+              <h4 className="font-medium text-ui-text-primary text-sm">Track Time</h4>
+              <Typography className="text-xs text-ui-text-secondary">
                 Log time spent on tasks
               </Typography>
             </div>
           </div>
 
-          <div className="flex items-start gap-3 p-4 rounded-lg bg-ui-bg-primary dark:bg-ui-bg-secondary-dark">
-            <Bell className="w-5 h-5 text-issue-type-story mt-0.5 flex-shrink-0" />
+          <div className="flex items-start gap-3 p-4 rounded-lg bg-ui-bg-primary">
+            <Bell className="w-5 h-5 text-issue-type-story mt-0.5 shrink-0" />
             <div>
-              <h4 className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark text-sm">
-                Stay Updated
-              </h4>
-              <Typography className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark">
+              <h4 className="font-medium text-ui-text-primary text-sm">Stay Updated</h4>
+              <Typography className="text-xs text-ui-text-secondary">
                 Get notified when mentioned or assigned
               </Typography>
             </div>
@@ -208,17 +198,12 @@ export function MemberOnboarding({
       </div>
 
       {/* Keyboard shortcuts tip */}
-      <div className="bg-ui-bg-primary dark:bg-ui-bg-secondary-dark rounded-xl p-4 text-center">
-        <Typography className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
+      <div className="bg-ui-bg-primary rounded-xl p-4 text-center">
+        <Typography className="text-sm text-ui-text-secondary">
           <span className="font-medium">Pro tip:</span> Press{" "}
-          <kbd className="px-2 py-0.5 rounded bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark text-xs font-mono">
-            Ctrl+K
-          </kbd>{" "}
-          or{" "}
-          <kbd className="px-2 py-0.5 rounded bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark text-xs font-mono">
-            Cmd+K
-          </kbd>{" "}
-          to open the command palette
+          <kbd className="px-2 py-0.5 rounded bg-ui-bg-tertiary text-xs font-mono">Ctrl+K</kbd> or{" "}
+          <kbd className="px-2 py-0.5 rounded bg-ui-bg-tertiary text-xs font-mono">Cmd+K</kbd> to
+          open the command palette
         </Typography>
       </div>
 

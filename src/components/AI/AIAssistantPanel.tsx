@@ -56,7 +56,7 @@ export function AIAssistantPanel({ projectId, isOpen, onClose }: AIAssistantPane
         )}
       >
         {/* Header */}
-        <div className="p-4 border-b border-ui-border-primary dark:border-ui-border-primary-dark bg-linear-to-r from-brand-600 to-accent-600">
+        <div className="p-4 border-b border-ui-border-primary bg-linear-to-r from-brand-600 to-accent-600">
           <SheetHeader className="text-left">
             <Flex align="center" gap="md">
               <div className="text-2xl">🤖</div>
@@ -71,7 +71,7 @@ export function AIAssistantPanel({ projectId, isOpen, onClose }: AIAssistantPane
         </div>
 
         {/* Tabs */}
-        <div className="flex border-b border-ui-border-primary dark:border-ui-border-primary-dark bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark">
+        <div className="flex border-b border-ui-border-primary bg-ui-bg-secondary">
           <button
             type="button"
             onClick={() => handleTabChange("chat")}
@@ -84,7 +84,7 @@ export function AIAssistantPanel({ projectId, isOpen, onClose }: AIAssistantPane
           >
             💬 Chat
             {chats && chats.length > 0 && (
-              <span className="ml-2 text-xs bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark px-2 py-0.5 rounded-full">
+              <span className="ml-2 text-xs bg-ui-bg-tertiary px-2 py-0.5 rounded-full">
                 {chats.length}
               </span>
             )}

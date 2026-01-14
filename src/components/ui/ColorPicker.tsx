@@ -29,11 +29,7 @@ export function ColorPicker({
 }: ColorPickerProps) {
   return (
     <div>
-      <Typography
-        as="div"
-        variant="small"
-        className="block font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-2"
-      >
+      <Typography as="div" variant="small" className="block font-medium text-ui-text-primary mb-2">
         {label}
       </Typography>
       <Flex gap="sm" wrap align="center">
@@ -57,11 +53,11 @@ export function ColorPicker({
             type="color"
             value={value}
             onChange={(e) => onChange(e.target.value)}
-            className="w-8 h-8 rounded cursor-pointer border border-ui-border-primary dark:border-ui-border-primary-dark"
+            className="w-8 h-8 rounded cursor-pointer border border-ui-border-primary"
             title="Custom color"
             aria-label="Custom color picker"
           />
-          <span className="absolute -bottom-5 left-0 text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark whitespace-nowrap">
+          <span className="absolute -bottom-5 left-0 text-xs text-ui-text-tertiary whitespace-nowrap">
             Custom
           </span>
         </div>

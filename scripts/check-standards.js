@@ -107,8 +107,10 @@ function checkFile(filePath) {
     }
 
     // Flag redundant dark mode classes for semantic tokens
-    // Pattern: dark:.*-dark
-    if (classText.includes("dark:") && /dark:.*-dark/.test(classText)) {
+    const classes = classText.split(/\s+/);
+    const REDUNDANT_PATTERN = /(bg|text|border)-(ui-bg|ui-text|ui-border|status)-[a-z-]+-dark/;
+
+    if (classes.some((cls) => cls.includes("dark:") && REDUNDANT_PATTERN.test(cls))) {
       reportError(
         filePath,
         node,

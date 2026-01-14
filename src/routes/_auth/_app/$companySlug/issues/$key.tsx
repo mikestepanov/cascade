@@ -60,7 +60,7 @@ function IssuePage() {
           ← Back to {projectKey} board
         </Link>
       </div>
-      <div className="bg-ui-bg-primary dark:bg-ui-bg-secondary-dark rounded-lg border border-ui-border-primary dark:border-ui-border-primary-dark p-6">
+      <div className="bg-ui-bg-primary rounded-lg border border-ui-border-primary p-6">
         <div className="flex items-center gap-2 mb-2">
           <span className="text-sm font-medium text-ui-text-secondary">{issue.key}</span>
           <span
@@ -86,7 +86,7 @@ function IssuePage() {
             </Typography>
           </div>
         )}
-        <div className="mt-6 pt-4 border-t border-ui-border-primary dark:border-ui-border-primary-dark">
+        <div className="mt-6 pt-4 border-t border-ui-border-primary">
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div>
               <span className="text-ui-text-tertiary">Type:</span>

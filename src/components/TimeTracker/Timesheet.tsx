@@ -78,35 +78,27 @@ export function Timesheet() {
       <div className="mb-6">
         <Flex justify="between" align="center" className="mb-4">
           <div>
-            <h2 className="text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark">
-              My Timesheet
-            </h2>
-            <Typography className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+            <h2 className="text-2xl font-bold text-ui-text-primary">My Timesheet</h2>
+            <Typography className="text-sm text-ui-text-tertiary">
               Week of {formatDate(timesheet.startDate)}
             </Typography>
           </div>
           <Flex gap="lg">
             <div className="text-right">
-              <div className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
-                Total Hours
-              </div>
-              <div className="text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark">
+              <div className="text-sm text-ui-text-tertiary">Total Hours</div>
+              <div className="text-2xl font-bold text-ui-text-primary">
                 {formatHours(timesheet.totalHours)}
               </div>
             </div>
             <div className="text-right">
-              <div className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
-                Billable
-              </div>
+              <div className="text-sm text-ui-text-tertiary">Billable</div>
               <div className="text-2xl font-bold text-status-success">
                 {formatHours(timesheet.billableHours)}
               </div>
             </div>
             {billableRevenue > 0 && (
               <div className="text-right">
-                <div className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
-                  Revenue
-                </div>
+                <div className="text-sm text-ui-text-tertiary">Revenue</div>
                 <div className="text-2xl font-bold text-brand-600">
                   ${billableRevenue.toFixed(2)}
                 </div>
@@ -117,7 +109,7 @@ export function Timesheet() {
 
         {/* Progress bar */}
         <Progress value={Math.min((timesheet.totalHours / 40) * 100, 100)} />
-        <div className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark mt-1">
+        <div className="text-xs text-ui-text-tertiary mt-1">
           {formatHours(timesheet.totalHours)} / 40 hours (full-time week)
         </div>
       </div>
@@ -143,12 +135,10 @@ export function Timesheet() {
             >
               {/* Day header */}
               <div className="mb-2">
-                <div className="font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
+                <div className="font-semibold text-ui-text-primary">
                   {day.date.toLocaleDateString("en-US", { weekday: "short" })}
                 </div>
-                <div className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
-                  {day.date.getDate()}
-                </div>
+                <div className="text-xs text-ui-text-tertiary">{day.date.getDate()}</div>
                 {dayHours > 0 && (
                   <div className="text-xs font-medium text-brand-600 mt-1">
                     {formatHours(dayHours)}h
@@ -161,36 +151,36 @@ export function Timesheet() {
                 {day.entries.map((entry: TimeEntryWithHours) => (
                   <div
                     key={entry._id}
-                    className="p-2 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded border border-ui-border-primary dark:border-ui-border-primary-dark"
+                    className="p-2 bg-ui-bg-secondary rounded border border-ui-border-primary"
                   >
                     <Flex justify="between" align="start" className="mb-1">
                       <div className="flex-1 min-w-0">
-                        <div className="text-xs font-mono font-medium text-ui-text-primary dark:text-ui-text-primary-dark truncate">
+                        <div className="text-xs font-mono font-medium text-ui-text-primary truncate">
                           {entry.projectKey}
                         </div>
-                        <div className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark truncate">
+                        <div className="text-xs text-ui-text-secondary truncate">
                           {entry.issueKey}
                         </div>
                       </div>
                       {entry.billable && (
-                        <DollarSign className="w-3 h-3 text-status-success flex-shrink-0" />
+                        <DollarSign className="w-3 h-3 text-status-success shrink-0" />
                       )}
                     </Flex>
                     <Flex justify="between" align="center">
-                      <span className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+                      <span className="text-sm font-medium text-ui-text-primary">
                         {formatHours(entry.hours)}h
                       </span>
                       <button
                         type="button"
                         onClick={() => handleDelete(entry._id)}
-                        className="p-1 text-ui-text-tertiary dark:text-ui-text-tertiary-dark hover:text-status-error rounded"
+                        className="p-1 text-ui-text-tertiary hover:text-status-error rounded"
                         title="Delete"
                       >
                         <Trash2 className="w-3 h-3" />
                       </button>
                     </Flex>
                     {entry.description && (
-                      <div className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark mt-1 line-clamp-1">
+                      <div className="text-xs text-ui-text-tertiary mt-1 line-clamp-1">
                         {entry.description}
                       </div>
                     )}
@@ -205,8 +195,8 @@ export function Timesheet() {
       {/* Empty state */}
       {timesheet.totalHours === 0 && (
         <div className="text-center py-12">
-          <Calendar className="w-12 h-12 text-ui-text-tertiary dark:text-ui-text-tertiary-dark mx-auto mb-3" />
-          <Typography className="text-ui-text-secondary dark:text-ui-text-secondary-dark">
+          <Calendar className="w-12 h-12 text-ui-text-tertiary mx-auto mb-3" />
+          <Typography className="text-ui-text-secondary">
             No time entries this week. Start a timer to begin tracking!
           </Typography>
         </div>

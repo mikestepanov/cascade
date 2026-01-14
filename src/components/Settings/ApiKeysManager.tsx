@@ -32,13 +32,13 @@ export function ApiKeysManager() {
         {/* Header */}
         <Flex justify="between" align="center" className="mb-6">
           <div>
-            <h3 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
+            <h3 className="text-lg font-semibold text-ui-text-primary">
               <Flex gap="sm" align="center">
                 <Key className="h-5 w-5" />
                 API Keys
               </Flex>
             </h3>
-            <Typography className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mt-1">
+            <Typography className="text-sm text-ui-text-secondary mt-1">
               Generate API keys for CLI tools, AI agents, and external integrations
             </Typography>
           </div>
@@ -52,12 +52,10 @@ export function ApiKeysManager() {
 
         {/* API Keys List */}
         {!apiKeys || apiKeys.length === 0 ? (
-          <div className="text-center py-12 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg border-2 border-dashed border-ui-border-primary dark:border-ui-border-primary-dark">
-            <Key className="h-12 w-12 text-ui-text-tertiary dark:text-ui-text-tertiary-dark mx-auto mb-3" />
-            <h4 className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
-              No API keys yet
-            </h4>
-            <Typography className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mb-4">
+          <div className="text-center py-12 bg-ui-bg-secondary rounded-lg border-2 border-dashed border-ui-border-primary">
+            <Key className="h-12 w-12 text-ui-text-tertiary mx-auto mb-3" />
+            <h4 className="text-sm font-medium text-ui-text-primary mb-1">No API keys yet</h4>
+            <Typography className="text-sm text-ui-text-secondary mb-4">
               Generate your first API key to access Nixelo programmatically
             </Typography>
             <Button
@@ -161,14 +159,12 @@ function ApiKeyCard({ apiKey, onViewStats }: { apiKey: Doc<"apiKeys">; onViewSta
   };
 
   return (
-    <div className="p-4 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg border border-ui-border-primary dark:border-ui-border-primary-dark">
+    <div className="p-4 bg-ui-bg-secondary rounded-lg border border-ui-border-primary">
       <Flex justify="between" align="start">
         <div className="flex-1">
           {/* Name & Status */}
           <Flex gap="sm" align="center" className="mb-2">
-            <h4 className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
-              {apiKey.name}
-            </h4>
+            <h4 className="font-medium text-ui-text-primary">{apiKey.name}</h4>
             {apiKey.isActive ? (
               <Badge variant="success">Active</Badge>
             ) : (
@@ -178,7 +174,7 @@ function ApiKeyCard({ apiKey, onViewStats }: { apiKey: Doc<"apiKeys">; onViewSta
 
           {/* Key Prefix */}
           <Flex gap="sm" align="center" className="mb-3">
-            <code className="text-sm font-mono bg-ui-bg-primary dark:bg-ui-bg-primary-dark px-2 py-1 rounded border border-ui-border-primary dark:border-ui-border-primary-dark">
+            <code className="text-sm font-mono bg-ui-bg-primary px-2 py-1 rounded border border-ui-border-primary">
               {apiKey.keyPrefix}...
             </code>
             <Button
@@ -205,11 +201,7 @@ function ApiKeyCard({ apiKey, onViewStats }: { apiKey: Doc<"apiKeys">; onViewSta
           </Flex>
 
           {/* Stats */}
-          <Flex
-            gap="lg"
-            align="center"
-            className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark"
-          >
+          <Flex gap="lg" align="center" className="text-xs text-ui-text-secondary">
             <span>
               <strong>{apiKey.usageCount}</strong> API calls
             </span>
@@ -240,7 +232,7 @@ function ApiKeyCard({ apiKey, onViewStats }: { apiKey: Doc<"apiKeys">; onViewSta
             onClick={onViewStats}
             variant="ghost"
             size="sm"
-            className="p-2 min-w-0 text-ui-text-tertiary dark:text-ui-text-tertiary-dark hover:text-brand-600 dark:hover:text-brand-400"
+            className="p-2 min-w-0 text-ui-text-tertiary hover:text-brand-600 dark:hover:text-brand-400"
             aria-label="View usage statistics"
           >
             <TrendingUp className="h-4 w-4" />
@@ -251,7 +243,7 @@ function ApiKeyCard({ apiKey, onViewStats }: { apiKey: Doc<"apiKeys">; onViewSta
               variant="ghost"
               size="sm"
               isLoading={isRevoking}
-              className="text-status-warning hover:bg-status-warning-bg dark:hover:bg-status-warning-bg-dark"
+              className="text-status-warning hover:bg-status-warning-bg"
               aria-label="Revoke key"
             >
               {isRevoking ? "Revoking..." : "Revoke"}
@@ -262,7 +254,7 @@ function ApiKeyCard({ apiKey, onViewStats }: { apiKey: Doc<"apiKeys">; onViewSta
             variant="ghost"
             size="sm"
             isLoading={isDeleting}
-            className="p-2 min-w-0 text-ui-text-tertiary dark:text-ui-text-tertiary-dark hover:text-status-error dark:hover:text-status-error"
+            className="p-2 min-w-0 text-ui-text-tertiary hover:text-status-error dark:hover:text-status-error"
             aria-label="Delete key"
           >
             <Trash2 className="h-4 w-4" />
@@ -364,7 +356,7 @@ function GenerateKeyModal({
 
               {/* Scopes */}
               <div>
-                <div className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-2">
+                <div className="block text-sm font-medium text-ui-text-primary mb-2">
                   Permissions (Scopes) <span className="text-status-error">*</span>
                 </div>
                 <div className="space-y-2 max-h-64 overflow-y-auto">
@@ -372,7 +364,7 @@ function GenerateKeyModal({
                     <label
                       key={scope.value}
                       htmlFor={`scope-${scope.value}`}
-                      className="flex items-start p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg cursor-pointer hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark"
+                      className="flex items-start p-3 bg-ui-bg-secondary rounded-lg cursor-pointer hover:bg-ui-bg-tertiary"
                     >
                       <Checkbox
                         id={`scope-${scope.value}`}
@@ -381,10 +373,10 @@ function GenerateKeyModal({
                         className="mt-0.5"
                       />
                       <div className="ml-3">
-                        <Typography className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+                        <Typography className="text-sm font-medium text-ui-text-primary">
                           {scope.label}
                         </Typography>
-                        <Typography className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+                        <Typography className="text-xs text-ui-text-tertiary">
                           {scope.description}
                         </Typography>
                       </div>
@@ -421,30 +413,30 @@ function GenerateKeyModal({
                 <Flex
                   justify="center"
                   align="center"
-                  className="mx-auto h-12 w-12 rounded-full bg-status-success-bg dark:bg-status-success-bg-dark mb-4"
+                  className="mx-auto h-12 w-12 rounded-full bg-status-success-bg mb-4"
                 >
                   <Key className="h-6 w-6 text-status-success dark:text-status-success" />
                 </Flex>
-                <h3 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-2">
+                <h3 className="text-lg font-semibold text-ui-text-primary mb-2">
                   API Key Generated!
                 </h3>
-                <Typography className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mb-6">
+                <Typography className="text-sm text-ui-text-secondary mb-6">
                   ⚠️ <strong>Save this key now!</strong> You won't be able to see it again.
                 </Typography>
 
                 {/* Generated Key Display */}
-                <div className="mb-6 p-4 bg-ui-bg-primary-dark dark:bg-ui-bg-primary-dark rounded-lg">
+                <div className="mb-6 p-4 bg-ui-bg-primary-dark rounded-lg">
                   <code className="text-sm font-mono text-status-success break-all select-all">
                     {generatedKey}
                   </code>
                 </div>
 
                 {/* Copy Instructions */}
-                <div className="text-left mb-6 p-4 bg-status-info-bg dark:bg-status-info-bg-dark rounded-lg text-sm">
-                  <Typography className="font-medium text-status-info-text dark:text-status-info-text-dark mb-2">
+                <div className="text-left mb-6 p-4 bg-status-info-bg rounded-lg text-sm">
+                  <Typography className="font-medium text-status-info-text mb-2">
                     Usage Example:
                   </Typography>
-                  <code className="block bg-ui-bg-primary dark:bg-ui-bg-primary-dark p-2 rounded text-xs font-mono">
+                  <code className="block bg-ui-bg-primary p-2 rounded text-xs font-mono">
                     curl -H "Authorization: Bearer {generatedKey.substring(0, 20)}..."
                     https://nixelo.app/api/issues
                   </code>
@@ -494,7 +486,7 @@ function UsageStatsModal({
         {!stats ? (
           <div className="text-center py-8">
             <LoadingSpinner size="lg" />
-            <Typography className="mt-2 text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+            <Typography className="mt-2 text-sm text-ui-text-tertiary">
               Loading statistics...
             </Typography>
           </div>
@@ -502,24 +494,22 @@ function UsageStatsModal({
           <div className="space-y-6">
             {/* Overview Stats */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-              <div className="p-4 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg">
-                <Typography className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark mb-1">
-                  Total Calls
-                </Typography>
-                <Typography className="text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark">
+              <div className="p-4 bg-ui-bg-secondary rounded-lg">
+                <Typography className="text-xs text-ui-text-secondary mb-1">Total Calls</Typography>
+                <Typography className="text-2xl font-bold text-ui-text-primary">
                   {stats.totalCalls.toLocaleString()}
                 </Typography>
               </div>
-              <div className="p-4 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg">
-                <Typography className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark mb-1">
+              <div className="p-4 bg-ui-bg-secondary rounded-lg">
+                <Typography className="text-xs text-ui-text-secondary mb-1">
                   Last 24 Hours
                 </Typography>
-                <Typography className="text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark">
+                <Typography className="text-2xl font-bold text-ui-text-primary">
                   {stats.last24Hours.toLocaleString()}
                 </Typography>
               </div>
-              <div className="p-4 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg">
-                <Typography className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark mb-1">
+              <div className="p-4 bg-ui-bg-secondary rounded-lg">
+                <Typography className="text-xs text-ui-text-secondary mb-1">
                   Success Rate
                 </Typography>
                 <Typography className="text-2xl font-bold text-status-success dark:text-status-success">
@@ -529,11 +519,11 @@ function UsageStatsModal({
                   %
                 </Typography>
               </div>
-              <div className="p-4 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg">
-                <Typography className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark mb-1">
+              <div className="p-4 bg-ui-bg-secondary rounded-lg">
+                <Typography className="text-xs text-ui-text-secondary mb-1">
                   Avg Response
                 </Typography>
-                <Typography className="text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark">
+                <Typography className="text-2xl font-bold text-ui-text-primary">
                   {stats.avgResponseTime}ms
                 </Typography>
               </div>
@@ -541,11 +531,9 @@ function UsageStatsModal({
 
             {/* Recent Requests */}
             <div>
-              <h4 className="text-sm font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-3">
-                Recent Requests
-              </h4>
+              <h4 className="text-sm font-semibold text-ui-text-primary mb-3">Recent Requests</h4>
               {stats.recentLogs.length === 0 ? (
-                <Typography className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark py-4 text-center">
+                <Typography className="text-sm text-ui-text-tertiary py-4 text-center">
                   No recent requests
                 </Typography>
               ) : (
@@ -559,12 +547,10 @@ function UsageStatsModal({
                     >
                       <Flex justify="between" align="center" className="mb-1">
                         <Flex gap="sm" align="center">
-                          <span className="font-mono font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+                          <span className="font-mono font-medium text-ui-text-primary">
                             {log.method}
                           </span>
-                          <span className="text-ui-text-secondary dark:text-ui-text-secondary-dark">
-                            {log.endpoint}
-                          </span>
+                          <span className="text-ui-text-secondary">{log.endpoint}</span>
                         </Flex>
                         <span
                           className={cn(
@@ -577,11 +563,7 @@ function UsageStatsModal({
                           {log.statusCode}
                         </span>
                       </Flex>
-                      <Flex
-                        gap="lg"
-                        align="center"
-                        className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark"
-                      >
+                      <Flex gap="lg" align="center" className="text-xs text-ui-text-tertiary">
                         <span>{log.responseTime}ms</span>
                         <span>•</span>
                         <span>{new Date(log.createdAt).toLocaleString()}</span>

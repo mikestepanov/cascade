@@ -173,7 +173,7 @@ export function FileAttachments({ issueId }: FileAttachmentsProps) {
       {/* Attachments List */}
       {attachments && attachments.length > 0 && (
         <div className="space-y-2">
-          <h4 className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+          <h4 className="text-sm font-medium text-ui-text-primary">
             Attachments ({attachments.length})
           </h4>
           {attachments.map((attachment: Attachment) => (
@@ -181,10 +181,10 @@ export function FileAttachments({ issueId }: FileAttachmentsProps) {
               key={attachment.storageId}
               align="center"
               justify="between"
-              className="p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark transition-colors"
+              className="p-3 bg-ui-bg-secondary rounded-lg hover:bg-ui-bg-tertiary transition-colors"
             >
               <Flex align="center" gap="md" className="flex-1 min-w-0">
-                <span className="text-2xl flex-shrink-0">{getFileIcon(attachment.filename)}</span>
+                <span className="text-2xl shrink-0">{getFileIcon(attachment.filename)}</span>
                 <div className="flex-1 min-w-0">
                   <a
                     href={attachment.url || "#"}
@@ -198,11 +198,11 @@ export function FileAttachments({ issueId }: FileAttachmentsProps) {
                   </Typography>
                 </div>
               </Flex>
-              <Flex align="center" gap="sm" className="flex-shrink-0">
+              <Flex align="center" gap="sm" className="shrink-0">
                 <a
                   href={attachment.url || "#"}
                   download={attachment.filename}
-                  className="p-1 text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-brand-600 dark:hover:text-brand-400 rounded"
+                  className="p-1 text-ui-text-secondary hover:text-brand-600 dark:hover:text-brand-400 rounded"
                   title="Download"
                 >
                   <span className="sr-only">Download {attachment.filename}</span>
@@ -224,7 +224,7 @@ export function FileAttachments({ issueId }: FileAttachmentsProps) {
                 <button
                   type="button"
                   onClick={() => setDeleteConfirm(attachment.storageId)}
-                  className="p-1 text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-status-error dark:hover:text-status-error-dark rounded"
+                  className="p-1 text-ui-text-secondary hover:text-status-error rounded"
                   title="Delete"
                 >
                   <svg

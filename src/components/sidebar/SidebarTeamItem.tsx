@@ -101,7 +101,7 @@ function SidebarTeamProjects({
   }
 
   return (
-    <div className="ml-6 border-l border-ui-border-primary dark:border-ui-border-primary-dark pl-1">
+    <div className="ml-6 border-l border-ui-border-primary pl-1">
       {projects.map((project) => (
         <div key={project._id}>
           <Link

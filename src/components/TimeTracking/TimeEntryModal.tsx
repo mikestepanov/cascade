@@ -82,7 +82,7 @@ function TagsInput({
     <div>
       <label
         htmlFor="time-entry-tags"
-        className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
+        className="block text-sm font-medium text-ui-text-primary mb-1"
       >
         Tags
       </label>
@@ -99,7 +99,7 @@ function TagsInput({
             }
           }}
           placeholder="Add tag..."
-          className="flex-1 px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-primary-dark dark:text-ui-text-primary-dark"
+          className="flex-1 px-3 py-2 border border-ui-border-primary rounded-lg focus:ring-2 focus:ring-brand-500"
         />
         <Button type="button" onClick={onAddTag} variant="secondary" size="sm">
           Add
@@ -156,7 +156,7 @@ function DurationModeFields({
       <div>
         <label
           htmlFor="time-entry-date"
-          className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
+          className="block text-sm font-medium text-ui-text-primary mb-1"
         >
           Date *
         </label>
@@ -166,14 +166,14 @@ function DurationModeFields({
           value={date}
           onChange={(e) => onDateChange(e.target.value)}
           max={formatDateForInput(Date.now())}
-          className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-primary-dark dark:text-ui-text-primary-dark"
+          className="w-full px-3 py-2 border border-ui-border-primary rounded-lg focus:ring-2 focus:ring-brand-500"
           required
         />
       </div>
       <div>
         <label
           htmlFor="time-entry-duration"
-          className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
+          className="block text-sm font-medium text-ui-text-primary mb-1"
         >
           Duration *
         </label>
@@ -190,7 +190,7 @@ function DurationModeFields({
               : "border-status-error dark:border-status-error",
           )}
         />
-        <Typography className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark mt-1">
+        <Typography className="text-xs text-ui-text-tertiary mt-1">
           Accepts: 1:30, 1.5, 1h 30m, 90m
         </Typography>
         <Flex gap="sm" className="mt-2">
@@ -244,7 +244,7 @@ function TimeRangeModeFields({
       <div>
         <label
           htmlFor="time-entry-date-range"
-          className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
+          className="block text-sm font-medium text-ui-text-primary mb-1"
         >
           Date *
         </label>
@@ -254,7 +254,7 @@ function TimeRangeModeFields({
           value={date}
           onChange={(e) => onDateChange(e.target.value)}
           max={formatDateForInput(Date.now())}
-          className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-primary-dark dark:text-ui-text-primary-dark"
+          className="w-full px-3 py-2 border border-ui-border-primary rounded-lg focus:ring-2 focus:ring-brand-500"
           required
         />
       </div>
@@ -262,7 +262,7 @@ function TimeRangeModeFields({
         <div>
           <label
             htmlFor="time-entry-start"
-            className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
+            className="block text-sm font-medium text-ui-text-primary mb-1"
           >
             Start Time *
           </label>
@@ -271,14 +271,14 @@ function TimeRangeModeFields({
             type="time"
             value={startTime}
             onChange={(e) => onStartTimeChange(e.target.value)}
-            className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-primary-dark dark:text-ui-text-primary-dark"
+            className="w-full px-3 py-2 border border-ui-border-primary rounded-lg focus:ring-2 focus:ring-brand-500"
             required
           />
         </div>
         <div>
           <label
             htmlFor="time-entry-end"
-            className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
+            className="block text-sm font-medium text-ui-text-primary mb-1"
           >
             End Time *
           </label>
@@ -287,7 +287,7 @@ function TimeRangeModeFields({
             type="time"
             value={endTime}
             onChange={(e) => onEndTimeChange(e.target.value)}
-            className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-primary-dark dark:text-ui-text-primary-dark"
+            className="w-full px-3 py-2 border border-ui-border-primary rounded-lg focus:ring-2 focus:ring-brand-500"
             required
           />
         </div>
@@ -413,7 +413,7 @@ export function TimeEntryModal({
           className="space-y-4"
         >
           {/* Mode Toggle */}
-          <div className="flex gap-1 p-1 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg">
+          <div className="flex gap-1 p-1 bg-ui-bg-secondary rounded-lg">
             <ModeToggleButton
               mode="timer"
               currentMode={state.entryMode}
@@ -441,7 +441,7 @@ export function TimeEntryModal({
           <div>
             <label
               htmlFor="time-entry-project"
-              className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
+              className="block text-sm font-medium text-ui-text-primary mb-1"
             >
               Project
             </label>
@@ -471,7 +471,7 @@ export function TimeEntryModal({
             <div>
               <label
                 htmlFor="time-entry-issue"
-                className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
+                className="block text-sm font-medium text-ui-text-primary mb-1"
               >
                 Issue
               </label>
@@ -511,7 +511,7 @@ export function TimeEntryModal({
           <div>
             <label
               htmlFor="time-entry-activity"
-              className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
+              className="block text-sm font-medium text-ui-text-primary mb-1"
             >
               Activity
             </label>
@@ -544,9 +544,7 @@ export function TimeEntryModal({
                     onChange={(e) => actions.setBillable(e.target.checked)}
                     className="w-4 h-4 text-brand-600 rounded focus:ring-2 focus:ring-brand-500"
                   />
-                  <span className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
-                    Billable time
-                  </span>
+                  <span className="text-sm font-medium text-ui-text-primary">Billable time</span>
                 </Flex>
               </label>
             </div>

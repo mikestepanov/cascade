@@ -120,14 +120,12 @@ export function IssueDependencies({ issueId, projectId: _workspaceId }: IssueDep
       {/* Outgoing Links */}
       {links && links.outgoing.length > 0 && (
         <div>
-          <h4 className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-2">
-            Dependencies
-          </h4>
+          <h4 className="text-sm font-medium text-ui-text-primary mb-2">Dependencies</h4>
           <div className="space-y-2">
             {links.outgoing.map((link: IssueLinkWithDetails) => (
               <div
                 key={link._id}
-                className="flex items-center justify-between p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg"
+                className="flex items-center justify-between p-3 bg-ui-bg-secondary rounded-lg"
               >
                 <div className="flex items-center gap-3 flex-1 min-w-0">
                   <Badge variant="brand" size="md">
@@ -150,7 +148,7 @@ export function IssueDependencies({ issueId, projectId: _workspaceId }: IssueDep
                 <button
                   type="button"
                   onClick={() => setDeleteConfirm(link._id)}
-                  className="text-ui-text-tertiary dark:text-ui-text-tertiary-dark hover:text-status-error dark:hover:text-status-error-dark p-1"
+                  className="text-ui-text-tertiary hover:text-status-error p-1"
                   title="Remove dependency"
                 >
                   ✕
@@ -164,14 +162,12 @@ export function IssueDependencies({ issueId, projectId: _workspaceId }: IssueDep
       {/* Incoming Links */}
       {links && links.incoming.length > 0 && (
         <div>
-          <h4 className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-2">
-            Referenced By
-          </h4>
+          <h4 className="text-sm font-medium text-ui-text-primary mb-2">Referenced By</h4>
           <div className="space-y-2">
             {links.incoming.map((link: IssueLinkWithDetails) => (
               <div
                 key={link._id}
-                className="flex items-center justify-between p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg"
+                className="flex items-center justify-between p-3 bg-ui-bg-secondary rounded-lg"
               >
                 <div className="flex items-center gap-3 flex-1 min-w-0">
                   <Badge variant="accent" size="md">
@@ -194,7 +190,7 @@ export function IssueDependencies({ issueId, projectId: _workspaceId }: IssueDep
                 <button
                   type="button"
                   onClick={() => setDeleteConfirm(link._id)}
-                  className="text-ui-text-tertiary dark:text-ui-text-tertiary-dark hover:text-status-error dark:hover:text-status-error-dark p-1"
+                  className="text-ui-text-tertiary hover:text-status-error p-1"
                   title="Remove dependency"
                 >
                   ✕
@@ -252,7 +248,7 @@ export function IssueDependencies({ issueId, projectId: _workspaceId }: IssueDep
 
             {/* Search Results */}
             {searchResults?.page && searchResults.page.length > 0 && (
-              <div className="max-h-48 overflow-y-auto border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg">
+              <div className="max-h-48 overflow-y-auto border border-ui-border-primary rounded-lg">
                 {searchResults.page
                   .filter((issue: Issue) => issue._id !== issueId)
                   .map((issue: Issue) => (
@@ -286,7 +282,7 @@ export function IssueDependencies({ issueId, projectId: _workspaceId }: IssueDep
 
             {/* Selected Issue */}
             {selectedIssueKey && (
-              <div className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
+              <div className="text-sm text-ui-text-secondary">
                 Selected: <span className="font-medium">{selectedIssueKey}</span>
               </div>
             )}

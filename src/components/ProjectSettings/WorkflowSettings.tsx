@@ -161,7 +161,7 @@ export function WorkflowSettings({ projectId, workflowStates }: WorkflowSettings
               {states.map((state, index) => (
                 <div
                   key={state.id}
-                  className="flex items-center gap-3 p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg"
+                  className="flex items-center gap-3 p-3 bg-ui-bg-secondary rounded-lg"
                 >
                   <Flex gap="xs" direction="column">
                     <Button
@@ -211,10 +211,7 @@ export function WorkflowSettings({ projectId, workflowStates }: WorkflowSettings
               + Add State
             </Button>
 
-            <Flex
-              gap="sm"
-              className="pt-4 border-t border-ui-border-primary dark:border-ui-border-primary-dark"
-            >
+            <Flex gap="sm" className="pt-4 border-t border-ui-border-primary">
               <Button onClick={handleSave} disabled={isSaving}>
                 {isSaving ? "Saving..." : "Save Changes"}
               </Button>

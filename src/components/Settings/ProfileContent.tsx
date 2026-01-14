@@ -23,45 +23,35 @@ interface UserStats {
 export function UserStatsCards({ stats }: { stats: UserStats }) {
   return (
     <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-      <div className="bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg p-4 text-center">
+      <div className="bg-ui-bg-secondary rounded-lg p-4 text-center">
         <div className="text-2xl font-bold text-brand-600 dark:text-brand-400">
           {stats.projects}
         </div>
-        <div className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
-          Workspaces
-        </div>
+        <div className="text-sm text-ui-text-secondary">Workspaces</div>
       </div>
-      <div className="bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg p-4 text-center">
+      <div className="bg-ui-bg-secondary rounded-lg p-4 text-center">
         <div className="text-2xl font-bold text-brand-600 dark:text-brand-400">
           {stats.issuesCreated}
         </div>
-        <div className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
-          Created
-        </div>
+        <div className="text-sm text-ui-text-secondary">Created</div>
       </div>
-      <div className="bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg p-4 text-center">
+      <div className="bg-ui-bg-secondary rounded-lg p-4 text-center">
         <div className="text-2xl font-bold text-brand-600 dark:text-brand-400">
           {stats.issuesAssigned}
         </div>
-        <div className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
-          Assigned
-        </div>
+        <div className="text-sm text-ui-text-secondary">Assigned</div>
       </div>
-      <div className="bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg p-4 text-center">
+      <div className="bg-ui-bg-secondary rounded-lg p-4 text-center">
         <div className="text-2xl font-bold text-brand-600 dark:text-brand-400">
           {stats.issuesCompleted}
         </div>
-        <div className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
-          Completed
-        </div>
+        <div className="text-sm text-ui-text-secondary">Completed</div>
       </div>
-      <div className="bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg p-4 text-center">
+      <div className="bg-ui-bg-secondary rounded-lg p-4 text-center">
         <div className="text-2xl font-bold text-brand-600 dark:text-brand-400">
           {stats.comments}
         </div>
-        <div className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
-          Comments
-        </div>
+        <div className="text-sm text-ui-text-secondary">Comments</div>
       </div>
     </div>
   );
@@ -72,24 +62,16 @@ export function UserStatsCards({ stats }: { stats: UserStats }) {
  */
 export function AccountInfo({ user }: { user: Doc<"users"> }) {
   return (
-    <div className="border-t border-ui-border-primary dark:border-ui-border-primary-dark pt-6">
-      <h3 className="text-lg font-semibold mb-4 text-ui-text-primary dark:text-ui-text-primary-dark">
-        Account Information
-      </h3>
+    <div className="border-t border-ui-border-primary pt-6">
+      <h3 className="text-lg font-semibold mb-4 text-ui-text-primary">Account Information</h3>
       <div className="space-y-3 text-sm">
         <div className="flex justify-between">
-          <span className="text-ui-text-secondary dark:text-ui-text-secondary-dark">User ID:</span>
-          <span className="font-mono text-ui-text-primary dark:text-ui-text-primary-dark">
-            {user._id}
-          </span>
+          <span className="text-ui-text-secondary">User ID:</span>
+          <span className="font-mono text-ui-text-primary">{user._id}</span>
         </div>
         <div className="flex justify-between">
-          <span className="text-ui-text-secondary dark:text-ui-text-secondary-dark">
-            Email Verified:
-          </span>
-          <span className="text-ui-text-primary dark:text-ui-text-primary-dark">
-            {user.emailVerificationTime ? "Yes" : "No"}
-          </span>
+          <span className="text-ui-text-secondary">Email Verified:</span>
+          <span className="text-ui-text-primary">{user.emailVerificationTime ? "Yes" : "No"}</span>
         </div>
       </div>
     </div>
@@ -163,12 +145,10 @@ export function ProfileHeader({
           </div>
         ) : (
           <>
-            <h2 className="text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark">
+            <h2 className="text-2xl font-bold text-ui-text-primary">
               {user.name || "Anonymous User"}
             </h2>
-            <Typography className="text-ui-text-secondary dark:text-ui-text-secondary-dark">
-              {user.email}
-            </Typography>
+            <Typography className="text-ui-text-secondary">{user.email}</Typography>
             {isOwnProfile && (
               <Button onClick={onEditClick} variant="secondary" size="sm" className="mt-3">
                 Edit Profile

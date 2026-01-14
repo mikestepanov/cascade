@@ -30,7 +30,7 @@ function AppLayout() {
   // Loading state
   if (isAuthLoading || userCompanies === undefined) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-ui-bg-secondary dark:bg-ui-bg-primary-dark">
+      <div className="min-h-screen flex items-center justify-center bg-ui-bg-secondary">
         <LoadingSpinner size="lg" />
       </div>
     );
@@ -84,7 +84,7 @@ function InitializeCompany() {
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-ui-bg-secondary dark:bg-ui-bg-primary-dark">
+      <div className="min-h-screen flex items-center justify-center bg-ui-bg-secondary">
         <div className="text-center">
           <Typography variant="h2" className="text-xl font-medium mb-2 text-red-600">
             Error
@@ -98,7 +98,7 @@ function InitializeCompany() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-ui-bg-secondary dark:bg-ui-bg-primary-dark">
+    <div className="min-h-screen flex items-center justify-center bg-ui-bg-secondary">
       <div className="text-center">
         <LoadingSpinner size="lg" />
         <Typography variant="p" color="secondary" className="mt-4">

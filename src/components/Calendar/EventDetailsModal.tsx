@@ -129,9 +129,9 @@ export function EventDetailsModal({ eventId, open, onOpenChange }: EventDetailsM
           <Flex direction="column" gap="lg">
             {/* Date and Time */}
             <Flex gap="md" align="start">
-              <Calendar className="w-5 h-5 text-ui-text-tertiary dark:text-ui-text-tertiary-dark mt-0.5" />
+              <Calendar className="w-5 h-5 text-ui-text-tertiary mt-0.5" />
               <div>
-                <div className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+                <div className="font-medium text-ui-text-primary">
                   {formatDate(event.startTime, {
                     weekday: "long",
                     month: "long",
@@ -139,7 +139,7 @@ export function EventDetailsModal({ eventId, open, onOpenChange }: EventDetailsM
                     year: "numeric",
                   })}
                 </div>
-                <div className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
+                <div className="text-sm text-ui-text-secondary">
                   {event.allDay ? (
                     "All day"
                   ) : (
@@ -158,27 +158,19 @@ export function EventDetailsModal({ eventId, open, onOpenChange }: EventDetailsM
                 {event.organizerName?.[0]?.toUpperCase()}
               </div>
               <div>
-                <div className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
-                  Organizer
-                </div>
-                <div className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
-                  {event.organizerName}
-                </div>
+                <div className="text-sm text-ui-text-secondary">Organizer</div>
+                <div className="font-medium text-ui-text-primary">{event.organizerName}</div>
                 {event.organizerEmail && (
-                  <div className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
-                    {event.organizerEmail}
-                  </div>
+                  <div className="text-sm text-ui-text-secondary">{event.organizerEmail}</div>
                 )}
               </div>
             </Flex>
 
             {/* Description */}
             {event.description && (
-              <div className="border-t border-ui-border-primary dark:border-ui-border-primary-dark pt-4">
-                <div className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-2">
-                  Description
-                </div>
-                <div className="text-ui-text-secondary dark:text-ui-text-secondary-dark whitespace-pre-wrap">
+              <div className="border-t border-ui-border-primary pt-4">
+                <div className="text-sm font-medium text-ui-text-primary mb-2">Description</div>
+                <div className="text-ui-text-secondary whitespace-pre-wrap">
                   {event.description}
                 </div>
               </div>
@@ -186,35 +178,21 @@ export function EventDetailsModal({ eventId, open, onOpenChange }: EventDetailsM
 
             {/* Location */}
             {event.location && (
-              <Flex
-                gap="md"
-                align="start"
-                className="border-t border-ui-border-primary dark:border-ui-border-primary-dark pt-4"
-              >
-                <MapPin className="w-5 h-5 text-ui-text-tertiary dark:text-ui-text-tertiary-dark mt-0.5" />
+              <Flex gap="md" align="start" className="border-t border-ui-border-primary pt-4">
+                <MapPin className="w-5 h-5 text-ui-text-tertiary mt-0.5" />
                 <div>
-                  <div className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
-                    Location
-                  </div>
-                  <div className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
-                    {event.location}
-                  </div>
+                  <div className="text-sm text-ui-text-secondary">Location</div>
+                  <div className="font-medium text-ui-text-primary">{event.location}</div>
                 </div>
               </Flex>
             )}
 
             {/* Meeting URL */}
             {event.meetingUrl && (
-              <Flex
-                gap="md"
-                align="start"
-                className="border-t border-ui-border-primary dark:border-ui-border-primary-dark pt-4"
-              >
-                <LinkIcon className="w-5 h-5 text-ui-text-tertiary dark:text-ui-text-tertiary-dark mt-0.5" />
+              <Flex gap="md" align="start" className="border-t border-ui-border-primary pt-4">
+                <LinkIcon className="w-5 h-5 text-ui-text-tertiary mt-0.5" />
                 <div>
-                  <div className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
-                    Meeting Link
-                  </div>
+                  <div className="text-sm text-ui-text-secondary">Meeting Link</div>
                   <a
                     href={event.meetingUrl}
                     target="_blank"
@@ -229,24 +207,18 @@ export function EventDetailsModal({ eventId, open, onOpenChange }: EventDetailsM
 
             {/* Notes */}
             {event.notes && (
-              <div className="border-t border-ui-border-primary dark:border-ui-border-primary-dark pt-4">
-                <div className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-2">
-                  Notes
-                </div>
-                <div className="text-ui-text-secondary dark:text-ui-text-secondary-dark whitespace-pre-wrap">
-                  {event.notes}
-                </div>
+              <div className="border-t border-ui-border-primary pt-4">
+                <div className="text-sm font-medium text-ui-text-primary mb-2">Notes</div>
+                <div className="text-ui-text-secondary whitespace-pre-wrap">{event.notes}</div>
               </div>
             )}
 
             {/* Recurring */}
             {event.isRecurring && (
-              <div className="border-t border-ui-border-primary dark:border-ui-border-primary-dark pt-4">
+              <div className="border-t border-ui-border-primary pt-4">
                 <Flex gap="sm" align="center">
-                  <Clock className="w-4 h-4 text-ui-text-tertiary dark:text-ui-text-tertiary-dark" />
-                  <span className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
-                    Recurring event
-                  </span>
+                  <Clock className="w-4 h-4 text-ui-text-tertiary" />
+                  <span className="text-sm text-ui-text-secondary">Recurring event</span>
                 </Flex>
               </div>
             )}
@@ -263,9 +235,9 @@ export function EventDetailsModal({ eventId, open, onOpenChange }: EventDetailsM
 
             {/* Attendance Tracking (only for required meetings, only visible to organizer) */}
             {event.isRequired && attendance && (
-              <div className="border-t border-ui-border-primary dark:border-ui-border-primary-dark pt-4">
+              <div className="border-t border-ui-border-primary pt-4">
                 <Flex justify="between" align="center" className="mb-3">
-                  <h4 className="text-sm font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
+                  <h4 className="text-sm font-semibold text-ui-text-primary">
                     Attendance ({attendance.markedCount}/{attendance.totalAttendees} marked)
                   </h4>
                 </Flex>
@@ -276,7 +248,7 @@ export function EventDetailsModal({ eventId, open, onOpenChange }: EventDetailsM
                       key={attendee.userId}
                       justify="between"
                       align="center"
-                      className="p-2 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-md"
+                      className="p-2 bg-ui-bg-secondary rounded-md"
                     >
                       <Flex gap="sm" align="center" className="flex-1">
                         {/* Status Icon */}
@@ -292,7 +264,7 @@ export function EventDetailsModal({ eventId, open, onOpenChange }: EventDetailsM
                         {!attendee.status && <div className="w-4 h-4" />}
 
                         {/* Attendee Name */}
-                        <span className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+                        <span className="text-sm font-medium text-ui-text-primary">
                           {attendee.userName}
                         </span>
                       </Flex>
@@ -308,7 +280,7 @@ export function EventDetailsModal({ eventId, open, onOpenChange }: EventDetailsM
                         }
                         disabled={isSavingAttendance}
                       >
-                        <SelectTrigger className="text-sm px-2 py-1 border border-ui-border-primary dark:border-ui-border-primary-dark rounded bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark">
+                        <SelectTrigger className="text-sm px-2 py-1 border border-ui-border-primary rounded bg-ui-bg-primary text-ui-text-primary">
                           <SelectValue placeholder="Not marked" />
                         </SelectTrigger>
                         <SelectContent>

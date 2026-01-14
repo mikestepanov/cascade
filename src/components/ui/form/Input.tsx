@@ -27,10 +27,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     return (
       <div className="w-full">
         {label && (
-          <label
-            htmlFor={inputId}
-            className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
-          >
+          <label htmlFor={inputId} className="block text-sm font-medium text-ui-text-primary mb-1">
             {label}
           </label>
         )}
@@ -64,10 +61,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           </p>
         )}
         {helperText && !error && (
-          <p
-            id={`${inputId}-helper`}
-            className="mt-1 text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark"
-          >
+          <p id={`${inputId}-helper`} className="mt-1 text-xs text-ui-text-tertiary">
             {helperText}
           </p>
         )}

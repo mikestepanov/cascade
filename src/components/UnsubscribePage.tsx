@@ -49,8 +49,8 @@ export function UnsubscribePage({ token }: UnsubscribePageProps) {
   }, [getUserFromToken, token, unsubscribe]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark">
-      <div className="max-w-md w-full bg-ui-bg-primary dark:bg-ui-bg-primary-dark rounded-lg shadow-lg p-8">
+    <div className="min-h-screen flex items-center justify-center bg-ui-bg-secondary">
+      <div className="max-w-md w-full bg-ui-bg-primary rounded-lg shadow-lg p-8">
         {status === "loading" && (
           <div className="text-center">
             <LoadingSpinner size="lg" className="mx-auto mb-4" />
@@ -63,9 +63,9 @@ export function UnsubscribePage({ token }: UnsubscribePageProps) {
 
         {status === "success" && (
           <div className="text-center">
-            <div className="w-12 h-12 rounded-full bg-status-success-bg dark:bg-status-success-dark flex items-center justify-center mx-auto mb-4">
+            <div className="w-12 h-12 rounded-full bg-status-success-bg flex items-center justify-center mx-auto mb-4">
               <svg
-                className="w-6 h-6 text-status-success dark:text-status-success-dark"
+                className="w-6 h-6 text-status-success"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -94,9 +94,9 @@ export function UnsubscribePage({ token }: UnsubscribePageProps) {
 
         {status === "invalid" && (
           <div className="text-center">
-            <div className="w-12 h-12 rounded-full bg-status-warning-bg dark:bg-status-warning-dark flex items-center justify-center mx-auto mb-4">
+            <div className="w-12 h-12 rounded-full bg-status-warning-bg flex items-center justify-center mx-auto mb-4">
               <svg
-                className="w-6 h-6 text-status-warning dark:text-status-warning-dark"
+                className="w-6 h-6 text-status-warning"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -122,9 +122,9 @@ export function UnsubscribePage({ token }: UnsubscribePageProps) {
 
         {status === "error" && (
           <div className="text-center">
-            <div className="w-12 h-12 rounded-full bg-status-error-bg dark:bg-status-error-dark flex items-center justify-center mx-auto mb-4">
+            <div className="w-12 h-12 rounded-full bg-status-error-bg flex items-center justify-center mx-auto mb-4">
               <svg
-                className="w-6 h-6 text-status-error dark:text-status-error-dark"
+                className="w-6 h-6 text-status-error"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -149,7 +149,7 @@ export function UnsubscribePage({ token }: UnsubscribePageProps) {
               <Typography
                 variant="muted"
                 color="error"
-                className="bg-status-error-bg dark:bg-status-error-dark p-3 rounded-md"
+                className="bg-status-error-bg p-3 rounded-md"
               >
                 {errorMessage}
               </Typography>

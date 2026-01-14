@@ -246,7 +246,7 @@ export function ManualTimeEntryModal({
           className="space-y-4"
         >
           {/* Mode Toggle */}
-          <div className="flex gap-1 p-1 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg">
+          <div className="flex gap-1 p-1 bg-ui-bg-secondary rounded-lg">
             <ModeToggleButton
               mode="duration"
               currentMode={entryMode}
@@ -269,7 +269,7 @@ export function ManualTimeEntryModal({
               <div>
                 <label
                   htmlFor="time-entry-date"
-                  className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
+                  className="block text-sm font-medium text-ui-text-primary mb-1"
                 >
                   Date *
                 </label>
@@ -279,7 +279,7 @@ export function ManualTimeEntryModal({
                   value={field.state.value}
                   onChange={(e) => field.handleChange(e.target.value)}
                   max={formatDateForInput(Date.now())}
-                  className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-primary-dark dark:text-ui-text-primary-dark"
+                  className="w-full px-3 py-2 border border-ui-border-primary rounded-lg focus:ring-2 focus:ring-brand-500"
                   required
                 />
               </div>
@@ -293,7 +293,7 @@ export function ManualTimeEntryModal({
                 <div>
                   <label
                     htmlFor="time-entry-duration"
-                    className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
+                    className="block text-sm font-medium text-ui-text-primary mb-1"
                   >
                     Duration *
                   </label>
@@ -315,7 +315,7 @@ export function ManualTimeEntryModal({
                       Invalid format. Try: 1:30, 1.5, 1h 30m, or 90m
                     </Typography>
                   ) : (
-                    <Typography className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark mt-1">
+                    <Typography className="text-xs text-ui-text-tertiary mt-1">
                       Accepts: 1:30, 1.5, 1h 30m, 90m
                     </Typography>
                   )}
@@ -383,7 +383,7 @@ export function ManualTimeEntryModal({
                     <div>
                       <label
                         htmlFor="time-entry-start"
-                        className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
+                        className="block text-sm font-medium text-ui-text-primary mb-1"
                       >
                         Start Time *
                       </label>
@@ -392,7 +392,7 @@ export function ManualTimeEntryModal({
                         type="time"
                         value={field.state.value}
                         onChange={(e) => field.handleChange(e.target.value)}
-                        className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-primary-dark dark:text-ui-text-primary-dark"
+                        className="w-full px-3 py-2 border border-ui-border-primary rounded-lg focus:ring-2 focus:ring-brand-500"
                         required
                       />
                     </div>
@@ -403,7 +403,7 @@ export function ManualTimeEntryModal({
                     <div>
                       <label
                         htmlFor="time-entry-end"
-                        className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
+                        className="block text-sm font-medium text-ui-text-primary mb-1"
                       >
                         End Time *
                       </label>
@@ -412,7 +412,7 @@ export function ManualTimeEntryModal({
                         type="time"
                         value={field.state.value}
                         onChange={(e) => field.handleChange(e.target.value)}
-                        className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-primary-dark dark:text-ui-text-primary-dark"
+                        className="w-full px-3 py-2 border border-ui-border-primary rounded-lg focus:ring-2 focus:ring-brand-500"
                         required
                       />
                     </div>
@@ -435,7 +435,7 @@ export function ManualTimeEntryModal({
           <div>
             <label
               htmlFor="time-entry-project"
-              className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
+              className="block text-sm font-medium text-ui-text-primary mb-1"
             >
               Project
             </label>
@@ -465,7 +465,7 @@ export function ManualTimeEntryModal({
             <div>
               <label
                 htmlFor="time-entry-issue"
-                className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
+                className="block text-sm font-medium text-ui-text-primary mb-1"
               >
                 Issue (optional)
               </label>
@@ -508,7 +508,7 @@ export function ManualTimeEntryModal({
               <div>
                 <label
                   htmlFor="time-entry-activity"
-                  className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
+                  className="block text-sm font-medium text-ui-text-primary mb-1"
                 >
                   Activity
                 </label>
@@ -536,7 +536,7 @@ export function ManualTimeEntryModal({
           <div>
             <label
               htmlFor="time-entry-tags"
-              className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
+              className="block text-sm font-medium text-ui-text-primary mb-1"
             >
               Tags
             </label>
@@ -553,7 +553,7 @@ export function ManualTimeEntryModal({
                   }
                 }}
                 placeholder="Add tag..."
-                className="flex-1 px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-primary-dark dark:text-ui-text-primary-dark"
+                className="flex-1 px-3 py-2 border border-ui-border-primary rounded-lg focus:ring-2 focus:ring-brand-500"
               />
               <Button onClick={handleAddTag} variant="secondary" size="sm" type="button">
                 Add
@@ -597,12 +597,10 @@ export function ManualTimeEntryModal({
                       onChange={(e) => field.handleChange(e.target.checked)}
                       className="w-4 h-4 text-brand-600 rounded focus:ring-2 focus:ring-brand-500"
                     />
-                    <span className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
-                      Billable time
-                    </span>
+                    <span className="text-sm font-medium text-ui-text-primary">Billable time</span>
                   </Flex>
                 </label>
-                <Typography className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark mt-1 ml-6">
+                <Typography className="text-xs text-ui-text-tertiary mt-1 ml-6">
                   Mark this time as billable to clients
                 </Typography>
               </div>

@@ -67,16 +67,12 @@ const Checkbox = React.forwardRef<React.ElementRef<typeof CheckboxPrimitive.Root
           {label && (
             <label
               htmlFor={checkboxId}
-              className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark cursor-pointer peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              className="text-sm font-medium text-ui-text-primary cursor-pointer peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
             >
               {label}
             </label>
           )}
-          {description && (
-            <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
-              {description}
-            </p>
-          )}
+          {description && <p className="text-sm text-ui-text-secondary">{description}</p>}
         </div>
       </Flex>
     );

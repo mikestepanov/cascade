@@ -307,7 +307,7 @@ export function ProjectBoard({ projectId }: ProjectBoardProps) {
           <div className="hidden lg:block h-6 w-px bg-ui-border-primary mx-2 sm:mx-4 md:mx-6" />
 
           {/* Analysis & Views Tabs */}
-          <div className="flex gap-2 sm:gap-3 md:gap-6 flex-shrink-0">
+          <div className="flex gap-2 sm:gap-3 md:gap-6 shrink-0">
             <TabButton
               activeTab={activeTab}
               tab="roadmap"

@@ -48,7 +48,7 @@ function CompanyLayout() {
   // Loading state - wait for auth AND queries
   if (isAuthLoading || company === undefined || userCompanies === undefined) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-ui-bg-secondary dark:bg-ui-bg-primary-dark">
+      <div className="min-h-screen flex items-center justify-center bg-ui-bg-secondary">
         <LoadingSpinner size="lg" />
       </div>
     );
@@ -57,7 +57,7 @@ function CompanyLayout() {
   // Not authenticated - parent _auth route should handle this, but just in case
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-ui-bg-secondary dark:bg-ui-bg-primary-dark">
+      <div className="min-h-screen flex items-center justify-center bg-ui-bg-secondary">
         <LoadingSpinner size="lg" />
       </div>
     );
@@ -66,7 +66,7 @@ function CompanyLayout() {
   // Company not found
   if (company === null) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-ui-bg-secondary dark:bg-ui-bg-primary-dark p-4">
+      <div className="min-h-screen flex items-center justify-center bg-ui-bg-secondary p-4">
         <div className="text-center">
           <Typography variant="h2" className="text-xl font-medium mb-2">
             Company not found
@@ -84,7 +84,7 @@ function CompanyLayout() {
 
   if (!userCompany) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-ui-bg-secondary dark:bg-ui-bg-primary-dark p-4">
+      <div className="min-h-screen flex items-center justify-center bg-ui-bg-secondary p-4">
         <div className="text-center">
           <Typography variant="h2" className="text-xl font-medium mb-2">
             Access denied
@@ -156,7 +156,7 @@ function CompanyLayoutInner() {
 
   return (
     <SidebarProvider>
-      <div className="min-h-screen flex bg-ui-bg-secondary dark:bg-ui-bg-primary-dark">
+      <div className="min-h-screen flex bg-ui-bg-secondary">
         {/* Unified sidebar */}
         <AppSidebar />
 

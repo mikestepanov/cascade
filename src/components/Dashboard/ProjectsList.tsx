@@ -86,14 +86,12 @@ export function WorkspacesList({ projects, projectNavigation }: WorkspacesListPr
                 style={{ animationDelay: `${index * 50}ms` }}
               >
                 <Flex justify="between" align="center" gap="sm" className="mb-1">
-                  <h4 className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark truncate">
-                    {project.name}
-                  </h4>
-                  <Badge variant="primary" className="capitalize flex-shrink-0">
+                  <h4 className="font-medium text-ui-text-primary truncate">{project.name}</h4>
+                  <Badge variant="primary" className="capitalize shrink-0">
                     {project.role}
                   </Badge>
                 </Flex>
-                <div className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark">
+                <div className="text-xs text-ui-text-secondary">
                   {project.myIssues} my issues
                   {project.totalIssues > 0 && ` • ${project.totalIssues} total`}
                 </div>

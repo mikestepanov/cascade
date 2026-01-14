@@ -79,14 +79,11 @@ export function FilterBar({ projectId, onFilterChange }: FilterBarProps) {
   const hasActiveFilters = Object.keys(activeFilters).length > 0;
 
   return (
-    <div className="bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark border-b border-ui-border-primary dark:border-ui-border-primary-dark p-4">
+    <div className="bg-ui-bg-secondary border-b border-ui-border-primary p-4">
       <Flex align="center" gap="md" className="flex-wrap">
         {/* Saved Filters Dropdown */}
         <Flex align="center" gap="sm">
-          <label
-            htmlFor="savedFilters"
-            className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark"
-          >
+          <label htmlFor="savedFilters" className="text-sm font-medium text-ui-text-primary">
             Saved Filters:
           </label>
           <Select
@@ -100,7 +97,7 @@ export function FilterBar({ projectId, onFilterChange }: FilterBarProps) {
               }
             }}
           >
-            <SelectTrigger className="px-3 py-1.5 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-sm">
+            <SelectTrigger className="px-3 py-1.5 border border-ui-border-primary rounded-lg bg-ui-bg-primary text-sm">
               <SelectValue placeholder="Select a filter..." />
             </SelectTrigger>
             <SelectContent>
@@ -132,7 +129,7 @@ export function FilterBar({ projectId, onFilterChange }: FilterBarProps) {
 
         {/* Active Filters Indicator */}
         {hasActiveFilters && (
-          <div className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
+          <div className="text-sm text-ui-text-secondary">
             {Object.keys(activeFilters).length} filter(s) active
           </div>
         )}
@@ -191,7 +188,7 @@ export function FilterBar({ projectId, onFilterChange }: FilterBarProps) {
           {savedFilters.slice(0, 5).map((filter: Doc<"savedFilters"> & { isOwner?: boolean }) => (
             <div
               key={filter._id}
-              className="inline-flex items-center gap-2 px-3 py-1 bg-ui-bg-primary dark:bg-ui-bg-primary-dark border border-ui-border-primary dark:border-ui-border-primary-dark rounded-full text-sm"
+              className="inline-flex items-center gap-2 px-3 py-1 bg-ui-bg-primary border border-ui-border-primary rounded-full text-sm"
             >
               <Button
                 variant="ghost"

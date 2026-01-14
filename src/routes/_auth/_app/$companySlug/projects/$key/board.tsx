@@ -29,7 +29,7 @@ function BoardPage() {
       <Flex align="center" justify="center" className="h-full">
         <div className="text-center">
           <h2 className="text-xl font-semibold mb-2">Project Not Found</h2>
-          <Typography className="text-ui-text-secondary dark:text-ui-text-secondary-dark">
+          <Typography className="text-ui-text-secondary">
             The project "{key}" doesn't exist or you don't have access to it.
           </Typography>
         </div>

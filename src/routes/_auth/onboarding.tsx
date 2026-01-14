@@ -95,23 +95,21 @@ function OnboardingPage() {
   // Loading state
   if (step === "loading") {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-ui-bg-secondary dark:bg-ui-bg-primary-dark">
+      <div className="min-h-screen flex items-center justify-center bg-ui-bg-secondary">
         <LoadingSpinner size="lg" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-ui-bg-secondary dark:bg-ui-bg-primary-dark">
+    <div className="min-h-screen flex flex-col bg-ui-bg-secondary">
       {/* Header */}
       <header className="p-6 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <div className="h-8 w-8 rounded-lg bg-primary-600 flex items-center justify-center">
             <span className="text-white font-bold text-sm">N</span>
           </div>
-          <span className="font-semibold text-lg text-ui-text-primary dark:text-ui-text-primary-dark">
-            Nixelo
-          </span>
+          <span className="font-semibold text-lg text-ui-text-primary">Nixelo</span>
         </div>
         {step !== "invited" && (
           <Button variant="ghost" size="sm" onClick={handleSkip}>
@@ -175,7 +173,7 @@ function OnboardingPage() {
 
       {/* Footer */}
       <footer className="p-6 text-center">
-        <Typography className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+        <Typography className="text-sm text-ui-text-tertiary">
           Need help?{" "}
           <a href="mailto:support@nixelo.com" className="text-primary-600 hover:underline">
             Contact support

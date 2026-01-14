@@ -44,7 +44,7 @@ export function UserMenu() {
             <Typography className="text-sm font-medium leading-none">
               {user.name || "User"}
             </Typography>
-            <Typography className="text-xs leading-none text-ui-text-secondary dark:text-ui-text-secondary-dark truncate">
+            <Typography className="text-xs leading-none text-ui-text-secondary truncate">
               {user.email}
             </Typography>
           </div>
@@ -65,7 +65,7 @@ export function UserMenu() {
         <DropdownMenuSeparator />
         <DropdownMenuItem
           onClick={() => void signOut()}
-          className="cursor-pointer text-status-error dark:text-status-error-dark focus:text-status-error dark:focus:text-status-error-dark"
+          className="cursor-pointer text-status-error focus:text-status-error"
         >
           <LogOut className="mr-2 h-4 w-4" />
           <span>Sign out</span>

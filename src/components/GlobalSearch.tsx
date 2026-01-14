@@ -131,7 +131,7 @@ function SearchListContent({
 }) {
   if (query.length < 2) {
     return (
-      <div className="p-8 text-center text-ui-text-secondary dark:text-ui-text-secondary-dark">
+      <div className="p-8 text-center text-ui-text-secondary">
         <Typography variant="p" className="text-sm">
           Type at least 2 characters to search
         </Typography>
@@ -141,7 +141,7 @@ function SearchListContent({
 
   if (isLoading) {
     return (
-      <div className="p-8 text-center text-ui-text-secondary dark:text-ui-text-secondary-dark">
+      <div className="p-8 text-center text-ui-text-secondary">
         <div className="inline-block w-6 h-6 border-2 border-brand-500 border-t-transparent rounded-full animate-spin mb-2" />
         <Typography variant="p" className="text-sm">
           Searching...
@@ -168,7 +168,7 @@ function SearchListContent({
         </CommandGroup>
       )}
       {hasMore && (
-        <div className="p-4 border-t border-ui-border-primary dark:border-ui-border-primary-dark">
+        <div className="p-4 border-t border-ui-border-primary">
           <Button
             variant="ghost"
             size="sm"
@@ -201,7 +201,7 @@ function SearchResultItem({ result, onClose }: { result: SearchResult; onClose: 
     >
       <div className="flex items-start gap-3 w-full">
         {/* Icon */}
-        <div className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark">
+        <div className="shrink-0 w-8 h-8 flex items-center justify-center rounded bg-ui-bg-tertiary">
           {result.type === "issue" ? (
             <svg
               aria-hidden="true"
@@ -235,9 +235,7 @@ function SearchResultItem({ result, onClose }: { result: SearchResult; onClose: 
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
             {result.type === "issue" && (
-              <span className="text-xs font-mono text-ui-text-secondary dark:text-ui-text-secondary-dark">
-                {result.key}
-              </span>
+              <span className="text-xs font-mono text-ui-text-secondary">{result.key}</span>
             )}
             <Badge variant="neutral" shape="pill">
               {result.type}
@@ -299,7 +297,7 @@ export function GlobalSearch() {
         size="sm"
         onClick={() => setIsOpen(true)}
         aria-label="Open search (⌘K)"
-        className="bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark"
+        className="bg-ui-bg-tertiary hover:bg-ui-bg-secondary"
       >
         <svg
           aria-hidden="true"
@@ -316,7 +314,7 @@ export function GlobalSearch() {
           />
         </svg>
         <span>Search...</span>
-        <kbd className="hidden sm:inline-block px-2 py-0.5 text-xs font-semibold text-ui-text-secondary dark:text-ui-text-secondary-dark bg-ui-bg-primary dark:bg-ui-bg-primary-dark border border-ui-border-primary dark:border-ui-border-primary-dark rounded">
+        <kbd className="hidden sm:inline-block px-2 py-0.5 text-xs font-semibold text-ui-text-secondary bg-ui-bg-primary border border-ui-border-primary rounded">
           ⌘K
         </kbd>
       </Button>
@@ -325,18 +323,18 @@ export function GlobalSearch() {
       <CommandDialog open={isOpen} onOpenChange={(open) => !open && setIsOpen(false)}>
         <Command
           data-testid="global-search-modal"
-          className="bg-ui-bg-primary dark:bg-ui-bg-primary-dark"
+          className="bg-ui-bg-primary"
           shouldFilter={false}
         >
           <CommandInput
             placeholder="Search issues and documents..."
             value={query}
             onValueChange={setQuery}
-            className="text-ui-text-primary dark:text-ui-text-primary-dark"
+            className="text-ui-text-primary"
           />
 
           {/* Tabs with counts */}
-          <div className="flex gap-2 sm:gap-4 px-4 pt-2 border-b border-ui-border-primary dark:border-ui-border-primary-dark overflow-x-auto">
+          <div className="flex gap-2 sm:gap-4 px-4 pt-2 border-b border-ui-border-primary overflow-x-auto">
             <SearchTab
               label="All"
               isActive={activeTab === "all"}
@@ -373,25 +371,23 @@ export function GlobalSearch() {
           </CommandList>
 
           {/* Footer */}
-          <div className="p-3 border-t border-ui-border-primary dark:border-ui-border-primary-dark flex items-center justify-between text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark">
+          <div className="p-3 border-t border-ui-border-primary flex items-center justify-between text-xs text-ui-text-secondary">
             <div className="flex items-center gap-4">
               <span>
-                <CommandShortcut className="bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark px-2 py-1 rounded">
+                <CommandShortcut className="bg-ui-bg-tertiary px-2 py-1 rounded">
                   ↑↓
                 </CommandShortcut>{" "}
                 Navigate
               </span>
               <span>
-                <CommandShortcut className="bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark px-2 py-1 rounded">
+                <CommandShortcut className="bg-ui-bg-tertiary px-2 py-1 rounded">
                   Enter
                 </CommandShortcut>{" "}
                 Open
               </span>
             </div>
             <span>
-              <CommandShortcut className="bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark px-2 py-1 rounded">
-                Esc
-              </CommandShortcut>{" "}
+              <CommandShortcut className="bg-ui-bg-tertiary px-2 py-1 rounded">Esc</CommandShortcut>{" "}
               Close
             </span>
           </div>

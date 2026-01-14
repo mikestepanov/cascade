@@ -29,7 +29,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
         {label && (
           <label
             htmlFor={textareaId}
-            className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
+            className="block text-sm font-medium text-ui-text-primary mb-1"
           >
             {label}
           </label>
@@ -64,10 +64,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
           </p>
         )}
         {helperText && !error && (
-          <p
-            id={`${textareaId}-helper`}
-            className="mt-1 text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark"
-          >
+          <p id={`${textareaId}-helper`} className="mt-1 text-xs text-ui-text-tertiary">
             {helperText}
           </p>
         )}

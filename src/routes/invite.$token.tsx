@@ -57,12 +57,10 @@ function InviteRoute() {
   // Loading state
   if (invite === undefined) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-ui-bg-secondary dark:bg-ui-bg-primary-dark">
+      <div className="min-h-screen flex items-center justify-center bg-ui-bg-secondary">
         <div className="text-center">
           <Loader2 className="w-8 h-8 animate-spin text-primary-600 mx-auto mb-4" />
-          <Typography className="text-ui-text-secondary dark:text-ui-text-secondary-dark">
-            Loading invitation...
-          </Typography>
+          <Typography className="text-ui-text-secondary">Loading invitation...</Typography>
         </div>
       </div>
     );
@@ -71,10 +69,10 @@ function InviteRoute() {
   // Invalid token
   if (invite === null) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-ui-bg-secondary dark:bg-ui-bg-primary-dark p-6">
+      <div className="min-h-screen flex items-center justify-center bg-ui-bg-secondary p-6">
         <div className="max-w-md w-full text-center">
-          <div className="p-4 rounded-full bg-status-error-bg dark:bg-status-error-bg-dark w-fit mx-auto mb-6">
-            <AlertCircle className="w-12 h-12 text-status-error dark:text-status-error-text-dark" />
+          <div className="p-4 rounded-full bg-status-error-bg w-fit mx-auto mb-6">
+            <AlertCircle className="w-12 h-12 text-status-error" />
           </div>
           <Typography variant="h1" className="text-2xl font-bold mb-3">
             Invalid Invitation
@@ -94,10 +92,10 @@ function InviteRoute() {
   // Expired invite (isExpired is computed from status === "pending" && expiresAt < now)
   if (invite.isExpired) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-ui-bg-secondary dark:bg-ui-bg-primary-dark p-6">
+      <div className="min-h-screen flex items-center justify-center bg-ui-bg-secondary p-6">
         <div className="max-w-md w-full text-center">
-          <div className="p-4 rounded-full bg-status-warning-bg dark:bg-status-warning-bg-dark w-fit mx-auto mb-6">
-            <Clock className="w-12 h-12 text-status-warning-text dark:text-status-warning-text-dark" />
+          <div className="p-4 rounded-full bg-status-warning-bg w-fit mx-auto mb-6">
+            <Clock className="w-12 h-12 text-status-warning-text" />
           </div>
           <Typography variant="h1" className="text-2xl font-bold mb-3">
             Invitation Expired
@@ -117,10 +115,10 @@ function InviteRoute() {
   // Already accepted
   if (invite.status === "accepted") {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-ui-bg-secondary dark:bg-ui-bg-primary-dark p-6">
+      <div className="min-h-screen flex items-center justify-center bg-ui-bg-secondary p-6">
         <div className="max-w-md w-full text-center">
-          <div className="p-4 rounded-full bg-status-success-bg dark:bg-status-success-bg-dark w-fit mx-auto mb-6">
-            <CheckCircle className="w-12 h-12 text-status-success dark:text-status-success-text-dark" />
+          <div className="p-4 rounded-full bg-status-success-bg w-fit mx-auto mb-6">
+            <CheckCircle className="w-12 h-12 text-status-success" />
           </div>
           <Typography variant="h1" className="text-2xl font-bold mb-3">
             Already Accepted
@@ -139,10 +137,10 @@ function InviteRoute() {
   // Revoked invite
   if (invite.status === "revoked") {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-ui-bg-secondary dark:bg-ui-bg-primary-dark p-6">
+      <div className="min-h-screen flex items-center justify-center bg-ui-bg-secondary p-6">
         <div className="max-w-md w-full text-center">
-          <div className="p-4 rounded-full bg-status-error-bg dark:bg-status-error-bg-dark w-fit mx-auto mb-6">
-            <AlertCircle className="w-12 h-12 text-status-error dark:text-status-error-text-dark" />
+          <div className="p-4 rounded-full bg-status-error-bg w-fit mx-auto mb-6">
+            <AlertCircle className="w-12 h-12 text-status-error" />
           </div>
           <Typography variant="h1" className="text-2xl font-bold mb-3">
             Invitation Revoked
@@ -164,16 +162,14 @@ function InviteRoute() {
 
   // Valid pending invite - show different UI based on auth state
   return (
-    <div className="min-h-screen flex flex-col bg-ui-bg-secondary dark:bg-ui-bg-primary-dark">
+    <div className="min-h-screen flex flex-col bg-ui-bg-secondary">
       {/* Header */}
       <header className="p-6 flex items-center justify-center">
         <div className="flex items-center gap-2">
           <div className="h-8 w-8 rounded-lg bg-brand-main flex items-center justify-center">
             <span className="text-ui-bg-primary font-bold text-sm">N</span>
           </div>
-          <span className="font-semibold text-lg text-ui-text-primary dark:text-ui-text-primary-dark">
-            Nixelo
-          </span>
+          <span className="font-semibold text-lg text-ui-text-primary">Nixelo</span>
         </div>
       </header>
 
@@ -181,21 +177,17 @@ function InviteRoute() {
       <main className="flex-1 flex items-center justify-center p-6">
         <div className="max-w-md w-full">
           {/* Invitation Card */}
-          <div className="bg-ui-bg-primary dark:bg-ui-bg-secondary-dark rounded-2xl shadow-lg p-8 mb-6">
+          <div className="bg-ui-bg-primary rounded-2xl shadow-lg p-8 mb-6">
             <div className="text-center mb-6">
               <Typography variant="h1" className="text-2xl font-bold mb-2">
                 You're Invited!
               </Typography>
               <Typography variant="p" color="secondary">
-                <span className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
-                  {invite.inviterName}
-                </span>{" "}
+                <span className="font-medium text-ui-text-primary">{invite.inviterName}</span>{" "}
                 {isProjectInvite ? (
                   <>
                     has invited you to join the project{" "}
-                    <span className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
-                      {invite.projectName}
-                    </span>
+                    <span className="font-medium text-ui-text-primary">{invite.projectName}</span>
                   </>
                 ) : (
                   "has invited you to join Nixelo"
@@ -204,42 +196,28 @@ function InviteRoute() {
             </div>
 
             {/* Invite Details */}
-            <div className="bg-ui-bg-secondary dark:bg-ui-bg-primary-dark rounded-lg p-4 mb-6">
+            <div className="bg-ui-bg-secondary rounded-lg p-4 mb-6">
               <div className="flex justify-between items-center text-sm">
-                <span className="text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
-                  Invited email
-                </span>
-                <span className="text-ui-text-primary dark:text-ui-text-primary-dark font-medium">
-                  {invite.email}
-                </span>
+                <span className="text-ui-text-tertiary">Invited email</span>
+                <span className="text-ui-text-primary font-medium">{invite.email}</span>
               </div>
               {isProjectInvite ? (
                 <>
                   <div className="flex justify-between items-center text-sm mt-2">
-                    <span className="text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
-                      Project
-                    </span>
-                    <span className="text-ui-text-primary dark:text-ui-text-primary-dark font-medium">
-                      {invite.projectName}
-                    </span>
+                    <span className="text-ui-text-tertiary">Project</span>
+                    <span className="text-ui-text-primary font-medium">{invite.projectName}</span>
                   </div>
                   <div className="flex justify-between items-center text-sm mt-2">
-                    <span className="text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
-                      Project Role
-                    </span>
-                    <span className="text-ui-text-primary dark:text-ui-text-primary-dark font-medium capitalize">
+                    <span className="text-ui-text-tertiary">Project Role</span>
+                    <span className="text-ui-text-primary font-medium capitalize">
                       {invite.projectRole || "editor"}
                     </span>
                   </div>
                 </>
               ) : (
                 <div className="flex justify-between items-center text-sm mt-2">
-                  <span className="text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
-                    Role
-                  </span>
-                  <span className="text-ui-text-primary dark:text-ui-text-primary-dark font-medium capitalize">
-                    {invite.role}
-                  </span>
+                  <span className="text-ui-text-tertiary">Role</span>
+                  <span className="text-ui-text-primary font-medium capitalize">{invite.role}</span>
                 </div>
               )}
             </div>
@@ -249,7 +227,7 @@ function InviteRoute() {
               {/* User is logged in - show accept button */}
               <div className="space-y-4">
                 {acceptError && (
-                  <div className="p-3 rounded-lg bg-status-error-bg dark:bg-status-error-bg-dark text-status-error-text dark:text-status-error-text-dark text-sm">
+                  <div className="p-3 rounded-lg bg-status-error-bg text-status-error-text text-sm">
                     {acceptError}
                   </div>
                 )}
@@ -269,7 +247,7 @@ function InviteRoute() {
                     "Accept Invitation"
                   )}
                 </Button>
-                <Typography className="text-xs text-center text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+                <Typography className="text-xs text-center text-ui-text-tertiary">
                   By accepting, you'll join the team and can start collaborating
                 </Typography>
               </div>
@@ -278,7 +256,7 @@ function InviteRoute() {
             <Unauthenticated>
               {/* User is not logged in - show sign up/in form */}
               <div className="space-y-4">
-                <Typography className="text-sm text-center text-ui-text-secondary dark:text-ui-text-secondary-dark mb-4">
+                <Typography className="text-sm text-center text-ui-text-secondary mb-4">
                   Sign in or create an account with{" "}
                   <span className="font-medium">{invite.email}</span> to accept this invitation
                 </Typography>

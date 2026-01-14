@@ -40,9 +40,7 @@ export function CommentRenderer({ content, mentions: _mentions = [] }: CommentRe
   };
 
   return (
-    <div className="text-ui-text-primary dark:text-ui-text-primary-dark whitespace-pre-wrap break-words">
-      {renderContent()}
-    </div>
+    <div className="text-ui-text-primary whitespace-pre-wrap break-words">{renderContent()}</div>
   );
 }
 

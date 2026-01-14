@@ -29,10 +29,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
     return (
       <div className="w-full">
         {label && (
-          <label
-            htmlFor={selectId}
-            className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
-          >
+          <label htmlFor={selectId} className="block text-sm font-medium text-ui-text-primary mb-1">
             {label}
           </label>
         )}
@@ -73,10 +70,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
           </p>
         )}
         {helperText && !error && (
-          <p
-            id={`${selectId}-helper`}
-            className="mt-1 text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark"
-          >
+          <p id={`${selectId}-helper`} className="mt-1 text-xs text-ui-text-tertiary">
             {helperText}
           </p>
         )}

@@ -26,56 +26,34 @@ export function IssueMetadataSection({
   return (
     <>
       {/* Metadata Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 bg-ui-bg-secondary rounded-lg">
         <div>
-          <span className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
-            Status:
-          </span>
-          <Typography
-            variant="p"
-            className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark"
-          >
+          <span className="text-sm text-ui-text-tertiary">Status:</span>
+          <Typography variant="p" className="font-medium text-ui-text-primary">
             {status}
           </Typography>
         </div>
         <div>
-          <span className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
-            Type:
-          </span>
+          <span className="text-sm text-ui-text-tertiary">Type:</span>
           <Typography variant="p" className="font-medium capitalize dark:text-white">
             {type}
           </Typography>
         </div>
         <div>
-          <span className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
-            Assignee:
-          </span>
-          <Typography
-            variant="p"
-            className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark"
-          >
+          <span className="text-sm text-ui-text-tertiary">Assignee:</span>
+          <Typography variant="p" className="font-medium text-ui-text-primary">
             {assignee?.name || "Unassigned"}
           </Typography>
         </div>
         <div>
-          <span className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
-            Reporter:
-          </span>
-          <Typography
-            variant="p"
-            className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark"
-          >
+          <span className="text-sm text-ui-text-tertiary">Reporter:</span>
+          <Typography variant="p" className="font-medium text-ui-text-primary">
             {reporter?.name || "Unknown"}
           </Typography>
         </div>
         <div>
-          <span className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
-            Story Points:
-          </span>
-          <Typography
-            variant="p"
-            className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark"
-          >
+          <span className="text-sm text-ui-text-tertiary">Story Points:</span>
+          <Typography variant="p" className="font-medium text-ui-text-primary">
             {storyPoints ?? "Not set"}
           </Typography>
         </div>
@@ -84,9 +62,7 @@ export function IssueMetadataSection({
       {/* Labels */}
       {labels.length > 0 && (
         <div>
-          <h3 className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-2">
-            Labels
-          </h3>
+          <h3 className="text-sm font-medium text-ui-text-primary mb-2">Labels</h3>
           <Flex wrap gap="sm">
             {labels.map((label) => (
               <span

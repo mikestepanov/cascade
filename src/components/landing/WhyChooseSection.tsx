@@ -14,10 +14,10 @@ export function WhyChooseSection() {
   return (
     <section className="px-6 py-24">
       <div className="max-w-6xl mx-auto">
-        <div className="bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark border border-ui-border-primary dark:border-ui-border-primary-dark rounded-3xl p-12 backdrop-blur-sm">
+        <div className="bg-ui-bg-secondary border border-ui-border-primary rounded-3xl p-12 backdrop-blur-sm">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">Teams actually like using it</h2>
-            <Typography className="text-ui-text-secondary dark:text-ui-text-secondary-dark max-w-2xl mx-auto">
+            <Typography className="text-ui-text-secondary max-w-2xl mx-auto">
               No training required. No "change management" needed. It just works.
             </Typography>
           </div>
@@ -79,10 +79,7 @@ function StatItem({
       <div className={cn("text-4xl md:text-5xl font-bold mb-2", categoryStyles[category].text)}>
         {value}%
       </div>
-      <Typography
-        variant="small"
-        className="text-ui-text-tertiary dark:text-ui-text-tertiary-dark mb-4"
-      >
+      <Typography variant="small" className="text-ui-text-tertiary mb-4">
         {label}
       </Typography>
       <Progress

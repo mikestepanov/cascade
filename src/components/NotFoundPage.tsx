@@ -4,11 +4,8 @@ import { ROUTE_PATTERNS } from "@/config/routes";
 
 export function NotFoundPage() {
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-ui-bg-secondary dark:bg-ui-bg-primary-dark">
-      <Typography
-        variant="h1"
-        className="text-6xl text-ui-text-primary dark:text-ui-text-primary-dark"
-      >
+    <div className="flex min-h-screen flex-col items-center justify-center bg-ui-bg-secondary">
+      <Typography variant="h1" className="text-6xl text-ui-text-primary">
         404
       </Typography>
       <Typography variant="lead" className="mt-4">

@@ -81,9 +81,7 @@ export function BurnRateDashboard({ projectId }: BurnRateDashboardProps) {
     <Flex direction="column" gap="xl">
       {/* Header with date range selector */}
       <Flex justify="between" align="center">
-        <h2 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
-          Burn Rate & Team Costs
-        </h2>
+        <h2 className="text-lg font-semibold text-ui-text-primary">Burn Rate & Team Costs</h2>
 
         <Flex gap="sm">
           {(["week", "month", "quarter"] as const).map((range) => (
@@ -134,26 +132,22 @@ export function BurnRateDashboard({ projectId }: BurnRateDashboardProps) {
 
       {/* Hours Breakdown */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="p-4 bg-ui-bg-primary dark:bg-ui-bg-primary-dark border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg">
-          <h3 className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-2">
-            Total Hours
-          </h3>
-          <div className="text-3xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark">
+        <div className="p-4 bg-ui-bg-primary border border-ui-border-primary rounded-lg">
+          <h3 className="text-sm font-medium text-ui-text-primary mb-2">Total Hours</h3>
+          <div className="text-3xl font-bold text-ui-text-primary">
             {formatHours(burnRate.totalHours)}h
           </div>
-          <Typography className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark mt-1">
+          <Typography className="text-xs text-ui-text-tertiary mt-1">
             {burnRate.entriesCount} time entries
           </Typography>
         </div>
 
-        <div className="p-4 bg-ui-bg-primary dark:bg-ui-bg-primary-dark border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg">
-          <h3 className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-2">
-            Billable Hours
-          </h3>
+        <div className="p-4 bg-ui-bg-primary border border-ui-border-primary rounded-lg">
+          <h3 className="text-sm font-medium text-ui-text-primary mb-2">Billable Hours</h3>
           <div className="text-3xl font-bold text-status-success dark:text-status-success">
             {formatHours(burnRate.billableHours)}h
           </div>
-          <Typography className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark mt-1">
+          <Typography className="text-xs text-ui-text-tertiary mt-1">
             {formatCurrency(burnRate.billableCost)} billable
           </Typography>
         </div>
@@ -161,13 +155,11 @@ export function BurnRateDashboard({ projectId }: BurnRateDashboardProps) {
 
       {/* Team Costs Breakdown */}
       <div>
-        <h3 className="text-sm font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-3">
-          Team Costs Breakdown
-        </h3>
+        <h3 className="text-sm font-semibold text-ui-text-primary mb-3">Team Costs Breakdown</h3>
 
         {teamCosts.length === 0 ? (
-          <div className="text-center p-8 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg">
-            <Typography className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+          <div className="text-center p-8 bg-ui-bg-secondary rounded-lg">
+            <Typography className="text-sm text-ui-text-tertiary">
               No time entries for this period
             </Typography>
           </div>
@@ -180,7 +172,7 @@ export function BurnRateDashboard({ projectId }: BurnRateDashboardProps) {
               return (
                 <div
                   key={member.user?._id || "unknown"}
-                  className="p-4 bg-ui-bg-primary dark:bg-ui-bg-primary-dark border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg"
+                  className="p-4 bg-ui-bg-primary border border-ui-border-primary rounded-lg"
                 >
                   <div className="mb-2">
                     <Flex justify="between" align="center">
@@ -192,15 +184,15 @@ export function BurnRateDashboard({ projectId }: BurnRateDashboardProps) {
                             className="w-8 h-8 rounded-full"
                           />
                         ) : (
-                          <div className="w-8 h-8 rounded-full bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark flex items-center justify-center text-sm font-medium text-ui-text-secondary dark:text-ui-text-secondary-dark">
+                          <div className="w-8 h-8 rounded-full bg-ui-bg-tertiary flex items-center justify-center text-sm font-medium text-ui-text-secondary">
                             {member.user?.name?.[0] || "?"}
                           </div>
                         )}
                         <div>
-                          <div className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+                          <div className="text-sm font-medium text-ui-text-primary">
                             {member.user?.name || "Unknown"}
                           </div>
-                          <div className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+                          <div className="text-xs text-ui-text-tertiary">
                             {formatHours(member.hours)}h total ({formatHours(member.billableHours)}h
                             billable)
                           </div>
@@ -208,16 +200,16 @@ export function BurnRateDashboard({ projectId }: BurnRateDashboardProps) {
                       </Flex>
 
                       <div className="flex flex-col items-end">
-                        <div className="py-2 text-right text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+                        <div className="py-2 text-right text-sm font-medium text-ui-text-primary">
                           {formatHours(member.hours)}
                         </div>
-                        <div className="py-2 text-right text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+                        <div className="py-2 text-right text-sm font-medium text-ui-text-primary">
                           {formatHours(member.billableHours)}
                         </div>
-                        <div className="text-sm font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
+                        <div className="text-sm font-semibold text-ui-text-primary">
                           {formatCurrency(member.cost)}
                         </div>
-                        <div className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+                        <div className="text-xs text-ui-text-tertiary">
                           {percentOfTotal.toFixed(0)}% of total
                         </div>
                       </div>
@@ -257,13 +249,9 @@ function MetricCard({ label, value, icon, color }: MetricCardProps) {
     <div className={cn("p-4 border rounded-lg", colorClasses[color])}>
       <Flex align="center" gap="sm" className="mb-2">
         <span className="text-2xl">{icon}</span>
-        <span className="text-xs font-medium text-ui-text-secondary dark:text-ui-text-secondary-dark">
-          {label}
-        </span>
+        <span className="text-xs font-medium text-ui-text-secondary">{label}</span>
       </Flex>
-      <div className="text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark">
-        {value}
-      </div>
+      <div className="text-2xl font-bold text-ui-text-primary">{value}</div>
     </div>
   );
 }

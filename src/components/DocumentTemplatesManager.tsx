@@ -239,7 +239,7 @@ export function DocumentTemplatesManager({
               {/* Built-in Templates */}
               {builtInTemplates.length > 0 && (
                 <div>
-                  <h3 className="text-sm font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-3">
+                  <h3 className="text-sm font-semibold text-ui-text-primary mb-3">
                     Built-in Templates
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -253,7 +253,7 @@ export function DocumentTemplatesManager({
                         <div className="flex items-start gap-3">
                           <span className="text-3xl">{template.icon}</span>
                           <div className="flex-1">
-                            <h4 className="font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
+                            <h4 className="font-semibold text-ui-text-primary mb-1">
                               {template.name}
                             </h4>
                             {template.description && (
@@ -279,14 +279,14 @@ export function DocumentTemplatesManager({
               {/* Custom Templates */}
               {customTemplates.length > 0 && (
                 <div>
-                  <h3 className="text-sm font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-3">
+                  <h3 className="text-sm font-semibold text-ui-text-primary mb-3">
                     Custom Templates
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {customTemplates.map((template: Doc<"documentTemplates">) => (
                       <div
                         key={template._id}
-                        className="p-4 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark transition-colors border border-ui-border-primary dark:border-ui-border-primary-dark"
+                        className="p-4 bg-ui-bg-secondary rounded-lg hover:bg-ui-bg-tertiary transition-colors border border-ui-border-primary"
                       >
                         <div className="flex items-start gap-3">
                           <button
@@ -296,7 +296,7 @@ export function DocumentTemplatesManager({
                           >
                             <span className="text-2xl">{template.icon}</span>
                             <div className="flex-1">
-                              <h4 className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
+                              <h4 className="font-medium text-ui-text-primary mb-1">
                                 {template.name}
                               </h4>
                               {template.description && (
@@ -444,12 +444,9 @@ export function DocumentTemplatesManager({
                       checked={field.state.value as boolean}
                       onChange={(e) => field.handleChange(e.target.checked)}
                       onBlur={field.handleBlur}
-                      className="w-4 h-4 text-brand-600 bg-ui-bg-primary border-ui-border-primary rounded focus:ring-brand-500 dark:focus:ring-brand-600 dark:ring-offset-ui-bg-primary-dark focus:ring-2 dark:bg-ui-bg-primary-dark dark:border-ui-border-primary-dark"
+                      className="w-4 h-4 text-brand-600 bg-ui-bg-primary border-ui-border-primary rounded focus:ring-brand-500 dark:focus:ring-brand-600 dark:ring-offset-ui-bg-primary-dark focus:ring-2"
                     />
-                    <label
-                      htmlFor="isPublic"
-                      className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark"
-                    >
+                    <label htmlFor="isPublic" className="text-sm font-medium text-ui-text-primary">
                       Make public (visible to all users)
                     </label>
                   </div>

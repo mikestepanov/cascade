@@ -31,7 +31,7 @@ export function AttachmentList({ attachmentIds, issueId, canEdit = false }: Atta
 
   return (
     <div className="space-y-2">
-      <h4 className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+      <h4 className="text-sm font-medium text-ui-text-primary">
         Attachments ({attachmentIds.length})
       </h4>
       <div className="grid grid-cols-1 gap-2">
@@ -64,10 +64,10 @@ function AttachmentItem({
       <Flex
         align="center"
         gap="sm"
-        className="p-2 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded border border-ui-border-primary dark:border-ui-border-primary-dark"
+        className="p-2 bg-ui-bg-secondary rounded border border-ui-border-primary"
       >
-        <div className="animate-pulse h-8 w-8 bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded" />
-        <div className="flex-1 animate-pulse h-4 bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded" />
+        <div className="animate-pulse h-8 w-8 bg-ui-bg-tertiary rounded" />
+        <div className="flex-1 animate-pulse h-4 bg-ui-bg-tertiary rounded" />
       </Flex>
     );
   }
@@ -79,7 +79,7 @@ function AttachmentItem({
     <Flex
       align="center"
       gap="sm"
-      className="p-2 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded border border-ui-border-primary dark:border-ui-border-primary-dark hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark transition-colors"
+      className="p-2 bg-ui-bg-secondary rounded border border-ui-border-primary hover:bg-ui-bg-tertiary transition-colors"
     >
       <div className="text-2xl">{fileIcon}</div>
       <div className="flex-1 min-w-0">
@@ -93,11 +93,7 @@ function AttachmentItem({
         </a>
       </div>
       <Flex gap="xs">
-        <a
-          href={url}
-          download
-          className="text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark"
-        >
+        <a href={url} download className="text-ui-text-secondary hover:text-ui-text-primary">
           <span className="sr-only">Download attachment</span>
           <svg
             aria-hidden="true"
@@ -119,7 +115,7 @@ function AttachmentItem({
             variant="ghost"
             size="sm"
             onClick={onRemove}
-            className="text-status-error dark:text-status-error-dark hover:text-status-error-hover dark:hover:text-status-error-hover-dark"
+            className="text-status-error hover:text-status-error-hover"
           >
             <svg
               aria-hidden="true"

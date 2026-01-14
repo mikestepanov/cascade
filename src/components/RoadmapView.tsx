@@ -123,7 +123,7 @@ export function RoadmapView({ projectId, sprintId, canEdit = true }: RoadmapView
           )}
         >
           {/* Issue Info */}
-          <div className="w-64 flex-shrink-0 pr-4">
+          <div className="w-64 shrink-0 pr-4">
             <div className="flex items-center gap-2 mb-1">
               <span className="text-sm">{getTypeIcon(issue.type)}</span>
               <button
@@ -185,7 +185,7 @@ export function RoadmapView({ projectId, sprintId, canEdit = true }: RoadmapView
     return (
       <div className="flex-1 overflow-hidden p-6 flex flex-col h-full">
         {/* Skeleton Header */}
-        <div className="mb-6 flex items-center justify-between flex-shrink-0">
+        <div className="mb-6 flex items-center justify-between shrink-0">
           <div>
             <Skeleton className="h-8 w-48 mb-2" />
             <Skeleton className="h-4 w-64" />
@@ -199,9 +199,9 @@ export function RoadmapView({ projectId, sprintId, canEdit = true }: RoadmapView
         {/* Skeleton Timeline */}
         <div className="flex-1 bg-ui-bg-primary rounded-lg border border-ui-border-primary overflow-hidden flex flex-col">
           {/* Skeleton Dates Header */}
-          <div className="border-b border-ui-border-primary bg-ui-bg-secondary p-4 flex-shrink-0">
+          <div className="border-b border-ui-border-primary bg-ui-bg-secondary p-4 shrink-0">
             <div className="flex">
-              <div className="w-64 flex-shrink-0">
+              <div className="w-64 shrink-0">
                 <Skeleton className="h-5 w-24" />
               </div>
               <div className="flex-1 grid grid-cols-6 gap-2">
@@ -215,11 +215,8 @@ export function RoadmapView({ projectId, sprintId, canEdit = true }: RoadmapView
           {/* Skeleton Rows */}
           <div className="flex-1 overflow-auto">
             {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
-              <div
-                key={i}
-                className="flex items-center p-3 border-b border-ui-border-primary dark:border-ui-border-primary-dark"
-              >
-                <div className="w-64 flex-shrink-0 pr-4 space-y-2">
+              <div key={i} className="flex items-center p-3 border-b border-ui-border-primary">
+                <div className="w-64 shrink-0 pr-4 space-y-2">
                   <div className="flex items-center gap-2">
                     <Skeleton className="h-4 w-4 rounded-full" />
                     <Skeleton className="h-4 w-16" />
@@ -248,7 +245,7 @@ export function RoadmapView({ projectId, sprintId, canEdit = true }: RoadmapView
   return (
     <div className="flex-1 overflow-hidden p-6 flex flex-col h-full">
       {/* Header */}
-      <div className="mb-6 flex items-center justify-between flex-shrink-0">
+      <div className="mb-6 flex items-center justify-between shrink-0">
         <div>
           <Typography variant="h2" className="text-2xl font-bold">
             Roadmap
@@ -295,9 +292,9 @@ export function RoadmapView({ projectId, sprintId, canEdit = true }: RoadmapView
       {/* Timeline Container */}
       <div className="flex-1 bg-ui-bg-primary rounded-lg border border-ui-border-primary overflow-hidden flex flex-col">
         {/* Timeline Header (Fixed) */}
-        <div className="border-b border-ui-border-primary bg-ui-bg-secondary p-4 flex-shrink-0">
+        <div className="border-b border-ui-border-primary bg-ui-bg-secondary p-4 shrink-0">
           <div className="flex">
-            <div className="w-64 flex-shrink-0 font-medium text-ui-text-primary">Issue</div>
+            <div className="w-64 shrink-0 font-medium text-ui-text-primary">Issue</div>
             <div className="flex-1 grid grid-cols-6">
               {timelineMonths.map((month) => (
                 <div

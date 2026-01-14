@@ -39,7 +39,7 @@ export function SampleProjectModal({
           <DialogTitle>Welcome to Nixelo! 🎉</DialogTitle>
         </DialogHeader>
         <div className="space-y-4">
-          <Typography className="text-ui-text-secondary dark:text-ui-text-secondary-dark">
+          <Typography className="text-ui-text-secondary">
             Would you like us to create a sample project with demo issues to help you explore
             Nixelo?
           </Typography>

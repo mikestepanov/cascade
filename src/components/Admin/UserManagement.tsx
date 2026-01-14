@@ -41,33 +41,31 @@ function UserRow({
               {(user.name || user.email || "?")[0].toUpperCase()}
             </Flex>
           )}
-          <div className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
-            {user.name || "Anonymous"}
-          </div>
+          <div className="text-sm font-medium text-ui-text-primary">{user.name || "Anonymous"}</div>
         </Flex>
       </td>
-      <td className="px-6 py-4 whitespace-nowrap text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
+      <td className="px-6 py-4 whitespace-nowrap text-sm text-ui-text-secondary">
         {user.email || "No email"}
       </td>
       <td className="px-6 py-4 whitespace-nowrap text-sm">
         {user.isAnonymous ? (
-          <span className="px-2 py-1 rounded text-xs font-medium bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark text-ui-text-secondary dark:text-ui-text-secondary-dark">
+          <span className="px-2 py-1 rounded text-xs font-medium bg-ui-bg-tertiary text-ui-text-secondary">
             Anonymous
           </span>
         ) : user.emailVerificationTime ? (
-          <span className="px-2 py-1 rounded text-xs font-medium bg-status-success-bg dark:bg-status-success-dark text-status-success dark:text-status-success-dark">
+          <span className="px-2 py-1 rounded text-xs font-medium bg-status-success-bg text-status-success">
             Verified
           </span>
         ) : (
-          <span className="px-2 py-1 rounded text-xs font-medium bg-status-warning-bg dark:bg-status-warning-dark text-status-warning dark:text-status-warning-dark">
+          <span className="px-2 py-1 rounded text-xs font-medium bg-status-warning-bg text-status-warning">
             Unverified
           </span>
         )}
       </td>
-      <td className="px-6 py-4 whitespace-nowrap text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
+      <td className="px-6 py-4 whitespace-nowrap text-sm text-ui-text-secondary">
         {user.projectsCreated}
       </td>
-      <td className="px-6 py-4 whitespace-nowrap text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
+      <td className="px-6 py-4 whitespace-nowrap text-sm text-ui-text-secondary">
         {user.projectMemberships}
       </td>
     </tr>
@@ -158,13 +156,8 @@ export function UserManagement() {
       {/* Header */}
       <Flex justify="between" align="center">
         <div>
-          <h2 className="text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark">
-            User Management
-          </h2>
-          <Typography
-            variant="p"
-            className="text-ui-text-secondary dark:text-ui-text-secondary-dark mt-1"
-          >
+          <h2 className="text-2xl font-bold text-ui-text-primary">User Management</h2>
+          <Typography variant="p" className="text-ui-text-secondary mt-1">
             Manage user invitations and platform access
           </Typography>
         </div>
@@ -174,7 +167,7 @@ export function UserManagement() {
       </Flex>
 
       {/* Tabs */}
-      <div className="border-b border-ui-border-primary dark:border-ui-border-primary-dark">
+      <div className="border-b border-ui-border-primary">
         <nav className="-mb-px flex space-x-8" aria-label="User management tabs">
           <button
             type="button"
@@ -216,7 +209,7 @@ export function UserManagement() {
                 <div>
                   <label
                     htmlFor="email"
-                    className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-2"
+                    className="block text-sm font-medium text-ui-text-primary mb-2"
                   >
                     Email Address
                   </label>
@@ -234,7 +227,7 @@ export function UserManagement() {
                 <div>
                   <label
                     htmlFor="role"
-                    className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-2"
+                    className="block text-sm font-medium text-ui-text-primary mb-2"
                   >
                     Role
                   </label>
@@ -242,7 +235,7 @@ export function UserManagement() {
                     value={role}
                     onValueChange={(value) => setRole(value as "user" | "superAdmin")}
                   >
-                    <SelectTrigger className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-md bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark focus:outline-none focus:ring-2 focus:ring-brand-500">
+                    <SelectTrigger className="w-full px-3 py-2 border border-ui-border-primary rounded-md bg-ui-bg-primary text-ui-text-primary focus:outline-none focus:ring-2 focus:ring-brand-500">
                       <SelectValue placeholder="Select role" />
                     </SelectTrigger>
                     <SelectContent>
@@ -250,10 +243,7 @@ export function UserManagement() {
                       <SelectItem value="superAdmin">Super Admin</SelectItem>
                     </SelectContent>
                   </Select>
-                  <Typography
-                    variant="p"
-                    className="mt-1 text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark"
-                  >
+                  <Typography variant="p" className="mt-1 text-sm text-ui-text-secondary">
                     Super Admins have full system access and can manage all users
                   </Typography>
                 </div>
@@ -305,59 +295,59 @@ export function UserManagement() {
                   className="min-w-full divide-y divide-ui-border-primary dark:divide-ui-border-primary-dark"
                   aria-label="User invitations"
                 >
-                  <thead className="bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark">
+                  <thead className="bg-ui-bg-secondary">
                     <tr>
                       <th
                         scope="col"
-                        className="px-6 py-3 text-left text-xs font-medium text-ui-text-secondary dark:text-ui-text-secondary-dark uppercase tracking-wider"
+                        className="px-6 py-3 text-left text-xs font-medium text-ui-text-secondary uppercase tracking-wider"
                       >
                         Email
                       </th>
                       <th
                         scope="col"
-                        className="px-6 py-3 text-left text-xs font-medium text-ui-text-secondary dark:text-ui-text-secondary-dark uppercase tracking-wider"
+                        className="px-6 py-3 text-left text-xs font-medium text-ui-text-secondary uppercase tracking-wider"
                       >
                         Role
                       </th>
                       <th
                         scope="col"
-                        className="px-6 py-3 text-left text-xs font-medium text-ui-text-secondary dark:text-ui-text-secondary-dark uppercase tracking-wider"
+                        className="px-6 py-3 text-left text-xs font-medium text-ui-text-secondary uppercase tracking-wider"
                       >
                         Status
                       </th>
                       <th
                         scope="col"
-                        className="px-6 py-3 text-left text-xs font-medium text-ui-text-secondary dark:text-ui-text-secondary-dark uppercase tracking-wider"
+                        className="px-6 py-3 text-left text-xs font-medium text-ui-text-secondary uppercase tracking-wider"
                       >
                         Invited By
                       </th>
                       <th
                         scope="col"
-                        className="px-6 py-3 text-left text-xs font-medium text-ui-text-secondary dark:text-ui-text-secondary-dark uppercase tracking-wider"
+                        className="px-6 py-3 text-left text-xs font-medium text-ui-text-secondary uppercase tracking-wider"
                       >
                         Sent
                       </th>
                       <th
                         scope="col"
-                        className="px-6 py-3 text-left text-xs font-medium text-ui-text-secondary dark:text-ui-text-secondary-dark uppercase tracking-wider"
+                        className="px-6 py-3 text-left text-xs font-medium text-ui-text-secondary uppercase tracking-wider"
                       >
                         Expires
                       </th>
                       <th
                         scope="col"
-                        className="px-6 py-3 text-right text-xs font-medium text-ui-text-secondary dark:text-ui-text-secondary-dark uppercase tracking-wider"
+                        className="px-6 py-3 text-right text-xs font-medium text-ui-text-secondary uppercase tracking-wider"
                       >
                         Actions
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="bg-ui-bg-primary dark:bg-ui-bg-primary-dark divide-y divide-ui-border-primary dark:divide-ui-border-primary-dark">
+                  <tbody className="bg-ui-bg-primary divide-y divide-ui-border-primary dark:divide-ui-border-primary-dark">
                     {invites.map(
                       (
                         invite: Doc<"invites"> & { acceptedByName?: string; inviterName?: string },
                       ) => (
                         <tr key={invite._id}>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-ui-text-primary dark:text-ui-text-primary-dark">
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-ui-text-primary">
                             {invite.email}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm">
@@ -375,13 +365,13 @@ export function UserManagement() {
                               {invite.status}
                             </span>
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-ui-text-secondary">
                             {invite.inviterName}
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-ui-text-secondary">
                             {formatDate(invite.createdAt)}
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-ui-text-secondary">
                             {invite.status === "pending" ? formatDate(invite.expiresAt) : "-"}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
@@ -409,7 +399,7 @@ export function UserManagement() {
                                 </>
                               )}
                               {invite.status === "accepted" && invite.acceptedByName && (
-                                <span className="text-ui-text-secondary dark:text-ui-text-secondary-dark text-xs">
+                                <span className="text-ui-text-secondary text-xs">
                                   Accepted by {invite.acceptedByName}
                                 </span>
                               )}
@@ -441,41 +431,41 @@ export function UserManagement() {
                   className="min-w-full divide-y divide-ui-border-primary dark:divide-ui-border-primary-dark"
                   aria-label="Platform users"
                 >
-                  <thead className="bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark">
+                  <thead className="bg-ui-bg-secondary">
                     <tr>
                       <th
                         scope="col"
-                        className="px-6 py-3 text-left text-xs font-medium text-ui-text-secondary dark:text-ui-text-secondary-dark uppercase tracking-wider"
+                        className="px-6 py-3 text-left text-xs font-medium text-ui-text-secondary uppercase tracking-wider"
                       >
                         User
                       </th>
                       <th
                         scope="col"
-                        className="px-6 py-3 text-left text-xs font-medium text-ui-text-secondary dark:text-ui-text-secondary-dark uppercase tracking-wider"
+                        className="px-6 py-3 text-left text-xs font-medium text-ui-text-secondary uppercase tracking-wider"
                       >
                         Email
                       </th>
                       <th
                         scope="col"
-                        className="px-6 py-3 text-left text-xs font-medium text-ui-text-secondary dark:text-ui-text-secondary-dark uppercase tracking-wider"
+                        className="px-6 py-3 text-left text-xs font-medium text-ui-text-secondary uppercase tracking-wider"
                       >
                         Type
                       </th>
                       <th
                         scope="col"
-                        className="px-6 py-3 text-left text-xs font-medium text-ui-text-secondary dark:text-ui-text-secondary-dark uppercase tracking-wider"
+                        className="px-6 py-3 text-left text-xs font-medium text-ui-text-secondary uppercase tracking-wider"
                       >
                         Workspaces Created
                       </th>
                       <th
                         scope="col"
-                        className="px-6 py-3 text-left text-xs font-medium text-ui-text-secondary dark:text-ui-text-secondary-dark uppercase tracking-wider"
+                        className="px-6 py-3 text-left text-xs font-medium text-ui-text-secondary uppercase tracking-wider"
                       >
                         Project Memberships
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="bg-ui-bg-primary dark:bg-ui-bg-primary-dark divide-y divide-ui-border-primary dark:divide-ui-border-primary-dark">
+                  <tbody className="bg-ui-bg-primary divide-y divide-ui-border-primary dark:divide-ui-border-primary-dark">
                     {users.map(
                       (
                         user: Doc<"users"> & {

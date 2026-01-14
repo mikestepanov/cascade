@@ -57,8 +57,8 @@ export function EmailVerificationRequired() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-ui-bg-secondary dark:bg-ui-bg-primary-dark p-4">
-      <div className="w-full max-w-md bg-ui-bg-primary dark:bg-ui-bg-secondary-dark rounded-xl shadow-lg p-8">
+    <div className="min-h-screen flex items-center justify-center bg-ui-bg-secondary p-4">
+      <div className="w-full max-w-md bg-ui-bg-primary rounded-xl shadow-lg p-8">
         <div className="text-center mb-6">
           <div className="w-16 h-16 bg-brand-100 dark:bg-brand-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
             <svg
@@ -81,8 +81,7 @@ export function EmailVerificationRequired() {
             Verify your email
           </Typography>
           <Typography variant="p" color="secondary">
-            We sent a verification code to{" "}
-            <strong className="text-ui-text-primary dark:text-ui-text-primary-dark">{email}</strong>
+            We sent a verification code to <strong className="text-ui-text-primary">{email}</strong>
           </Typography>
         </div>
 

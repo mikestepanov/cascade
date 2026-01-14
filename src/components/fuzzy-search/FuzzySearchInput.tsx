@@ -204,7 +204,7 @@ export function FuzzySearchInput<T>({
           <button
             type="button"
             onClick={handleClear}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-ui-text-tertiary hover:text-ui-text-secondary dark:hover:text-ui-text-secondary-dark"
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-ui-text-tertiary hover:text-ui-text-secondary"
             aria-label="Clear search"
           >
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -226,10 +226,10 @@ export function FuzzySearchInput<T>({
           ref={dropdownRef}
           id="fuzzy-search-results"
           role="listbox"
-          className="absolute z-50 w-full mt-1 bg-ui-bg-primary dark:bg-ui-bg-secondary-dark border border-ui-border-secondary dark:border-ui-border-secondary-dark rounded-lg shadow-lg max-h-60 overflow-y-auto"
+          className="absolute z-50 w-full mt-1 bg-ui-bg-primary border border-ui-border-secondary rounded-lg shadow-lg max-h-60 overflow-y-auto"
         >
           {results.length === 0 ? (
-            <div className="px-4 py-3 text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+            <div className="px-4 py-3 text-sm text-ui-text-tertiary">
               No results found for "{query}"
             </div>
           ) : (
@@ -252,7 +252,7 @@ export function FuzzySearchInput<T>({
               >
                 <div className="flex-1">{renderItem(result)}</div>
                 {showScore && result.score !== undefined && result.score > 0 && (
-                  <span className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark ml-2">
+                  <span className="text-xs text-ui-text-tertiary ml-2">
                     {((1 - result.score) * 100).toFixed(0)}%
                   </span>
                 )}

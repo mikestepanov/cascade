@@ -103,7 +103,7 @@ export const KanbanColumn = memo(function KanbanColumn({
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center space-x-2 min-w-0">
             <h3 className="font-medium text-ui-text-primary truncate">{state.name}</h3>
-            <Badge variant="neutral" shape="pill" className="flex-shrink-0">
+            <Badge variant="neutral" shape="pill" className="shrink-0">
               {hiddenCount > 0 ? `${stateIssues.length}/${totalCount}` : stateIssues.length}
             </Badge>
           </div>
@@ -111,7 +111,7 @@ export const KanbanColumn = memo(function KanbanColumn({
             <button
               type="button"
               onClick={handleCreateIssue}
-              className="text-ui-text-tertiary hover:text-ui-text-primary p-2.5 sm:p-3 flex-shrink-0"
+              className="text-ui-text-tertiary hover:text-ui-text-primary p-2.5 sm:p-3 shrink-0"
               aria-label={`Add issue to ${state.name}`}
               {...(columnIndex === 0 ? { "data-tour": "create-issue" } : {})}
             >

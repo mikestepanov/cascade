@@ -19,13 +19,10 @@ export const BarChart = memo(function BarChart({
     <Flex direction="column" justify="end" gap="sm" className="h-full">
       {data.map((item) => (
         <Flex key={item.label} gap="sm" align="center">
-          <div
-            className="w-24 text-sm text-ui-text-primary dark:text-ui-text-primary-dark truncate"
-            title={item.label}
-          >
+          <div className="w-24 text-sm text-ui-text-primary truncate" title={item.label}>
             {item.label}
           </div>
-          <div className="flex-1 bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded-full h-6 relative">
+          <div className="flex-1 bg-ui-bg-tertiary rounded-full h-6 relative">
             <div
               className={cn(
                 color,

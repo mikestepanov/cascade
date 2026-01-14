@@ -105,9 +105,7 @@ export function ExportPanel({ projectId, sprintId, status }: ExportPanelProps) {
   return (
     <Flex direction="column" gap="lg">
       <div>
-        <h3 className="text-sm font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-3">
-          Select Export Format
-        </h3>
+        <h3 className="text-sm font-semibold text-ui-text-primary mb-3">Select Export Format</h3>
         <div className="grid grid-cols-2 gap-3">
           <Card
             onClick={() => setExportFormat("csv")}
@@ -121,12 +119,8 @@ export function ExportPanel({ projectId, sprintId, status }: ExportPanelProps) {
             <Flex gap="md" align="center">
               <div className="text-3xl">📊</div>
               <div>
-                <div className="font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
-                  CSV
-                </div>
-                <div className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
-                  Spreadsheet format
-                </div>
+                <div className="font-semibold text-ui-text-primary">CSV</div>
+                <div className="text-xs text-ui-text-tertiary">Spreadsheet format</div>
               </div>
             </Flex>
           </Card>
@@ -143,12 +137,8 @@ export function ExportPanel({ projectId, sprintId, status }: ExportPanelProps) {
             <Flex gap="md" align="center">
               <div className="text-3xl">📄</div>
               <div>
-                <div className="font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
-                  JSON
-                </div>
-                <div className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
-                  Data interchange format
-                </div>
+                <div className="font-semibold text-ui-text-primary">JSON</div>
+                <div className="text-xs text-ui-text-tertiary">Data interchange format</div>
               </div>
             </Flex>
           </Card>

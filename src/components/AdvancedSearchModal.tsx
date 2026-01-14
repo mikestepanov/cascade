@@ -132,7 +132,7 @@ export function AdvancedSearchModal({
           {/* Results */}
           <div>
             <Flex align="center" justify="between" className="mb-3">
-              <h3 className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+              <h3 className="text-sm font-medium text-ui-text-primary">
                 Results {searchQuery.length >= 2 && `(${total} total, showing ${results.length})`}
               </h3>
               {(selectedType.length > 0 ||
@@ -152,7 +152,7 @@ export function AdvancedSearchModal({
               )}
             </Flex>
 
-            <div className="border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg overflow-hidden">
+            <div className="border border-ui-border-primary rounded-lg overflow-hidden">
               <SearchResultsList
                 searchQuery={searchQuery}
                 results={results}

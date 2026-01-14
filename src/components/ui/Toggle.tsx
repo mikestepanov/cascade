@@ -160,12 +160,8 @@ export function ToggleField({
 }: ToggleFieldProps) {
   const labelContent = (
     <div className={cn("flex-1", labelPosition === "right" && "order-2")}>
-      <div className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">{label}</div>
-      {description && (
-        <div className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mt-1">
-          {description}
-        </div>
-      )}
+      <div className="font-medium text-ui-text-primary">{label}</div>
+      {description && <div className="text-sm text-ui-text-secondary mt-1">{description}</div>}
     </div>
   );
 

@@ -69,9 +69,7 @@ export function AutomationRuleCard({ rule, onEdit, onDelete }: AutomationRuleCar
       <Flex justify="between" align="start" gap="lg">
         <div className="flex-1 min-w-0">
           <Flex gap="md" align="center" className="mb-2">
-            <h4 className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
-              {rule.name}
-            </h4>
+            <h4 className="font-medium text-ui-text-primary">{rule.name}</h4>
             <Badge variant={rule.isActive ? "success" : "neutral"} size="md">
               {rule.isActive ? "Active" : "Inactive"}
             </Badge>
@@ -85,7 +83,7 @@ export function AutomationRuleCard({ rule, onEdit, onDelete }: AutomationRuleCar
 
           <Flex gap="lg" align="center" className="text-sm">
             <Flex gap="sm" align="center">
-              <span className="text-ui-text-tertiary dark:text-ui-text-tertiary-dark">When:</span>
+              <span className="text-ui-text-tertiary">When:</span>
               <Badge variant="brand" size="md">
                 {getTriggerLabel(rule.trigger)}
                 {rule.triggerValue && ` → ${rule.triggerValue}`}
@@ -93,23 +91,21 @@ export function AutomationRuleCard({ rule, onEdit, onDelete }: AutomationRuleCar
             </Flex>
 
             <Flex gap="sm" align="center">
-              <span className="text-ui-text-tertiary dark:text-ui-text-tertiary-dark">Then:</span>
+              <span className="text-ui-text-tertiary">Then:</span>
               <Badge variant="accent" size="md">
                 {getActionLabel(rule.actionType)}
               </Badge>
             </Flex>
 
-            <div className="text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
-              Executed: {rule.executionCount} times
-            </div>
+            <div className="text-ui-text-tertiary">Executed: {rule.executionCount} times</div>
           </Flex>
         </div>
 
-        <Flex gap="sm" align="center" className="flex-shrink-0">
+        <Flex gap="sm" align="center" className="shrink-0">
           <button
             type="button"
             onClick={handleToggle}
-            className="p-2 hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark rounded transition-colors"
+            className="p-2 hover:bg-ui-bg-secondary rounded transition-colors"
             title={rule.isActive ? "Disable rule" : "Enable rule"}
             aria-label={rule.isActive ? "Disable rule" : "Enable rule"}
           >
@@ -118,7 +114,7 @@ export function AutomationRuleCard({ rule, onEdit, onDelete }: AutomationRuleCar
           <button
             type="button"
             onClick={onEdit}
-            className="p-2 hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark rounded transition-colors"
+            className="p-2 hover:bg-ui-bg-secondary rounded transition-colors"
             title="Edit rule"
             aria-label="Edit rule"
           >
@@ -127,7 +123,7 @@ export function AutomationRuleCard({ rule, onEdit, onDelete }: AutomationRuleCar
           <button
             type="button"
             onClick={onDelete}
-            className="p-2 hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark rounded transition-colors"
+            className="p-2 hover:bg-ui-bg-secondary rounded transition-colors"
             title="Delete rule"
             aria-label="Delete rule"
           >

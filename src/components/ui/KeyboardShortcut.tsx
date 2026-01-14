@@ -78,7 +78,7 @@ export function KeyboardShortcut({
             {formatKey(key)}
           </kbd>
           {index < keysWithIds.length - 1 && (
-            <span className="text-ui-text-tertiary dark:text-ui-text-tertiary-dark mx-0.5">+</span>
+            <span className="text-ui-text-tertiary mx-0.5">+</span>
           )}
         </span>
       ))}
@@ -132,9 +132,7 @@ export function ShortcutList({ shortcuts, className = "" }: ShortcutListProps) {
     <Flex direction="column" gap="sm" className={className}>
       {shortcuts.map((shortcut) => (
         <Flex key={shortcut.keys} align="center" justify="between" gap="lg" className="text-sm">
-          <span className="text-ui-text-secondary dark:text-ui-text-secondary-dark">
-            {shortcut.description}
-          </span>
+          <span className="text-ui-text-secondary">{shortcut.description}</span>
           <KeyboardShortcut shortcut={shortcut.keys} />
         </Flex>
       ))}
