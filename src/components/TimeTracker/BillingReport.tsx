@@ -21,6 +21,16 @@ function formatHours(hours: number): string {
   return hours.toFixed(2);
 }
 
+// Define BillingStats interface
+interface BillingStats {
+  hours: number;
+  billableHours: number;
+  cost: number;
+  name: string;
+  revenue: number;
+  totalCost?: number;
+}
+
 interface BillingReportProps {
   projectId: Id<"projects">;
 }
@@ -55,17 +65,16 @@ export function BillingReport({ projectId }: BillingReportProps) {
       return {
         utilizationRate: 0,
         averageRate: 0,
-        sortedUsers: [] as [
-          string,
-          { name: string; hours: number; billableHours: number; revenue: number },
-        ][],
+        sortedUsers: [] as [string, BillingStats][],
       };
     }
 
     const utilRate =
       billing.totalHours > 0 ? (billing.billableHours / billing.totalHours) * 100 : 0;
     const avgRate = billing.billableHours > 0 ? billing.totalRevenue / billing.billableHours : 0;
-    const sorted = Object.entries(billing.byUser).sort(([, a], [, b]) => b.revenue - a.revenue);
+    const sorted = (Object.entries(billing.byUser) as [string, BillingStats][]).sort(
+      (a, b) => (b[1].totalCost || 0) - (a[1].totalCost || 0),
+    );
 
     return { utilizationRate: utilRate, averageRate: avgRate, sortedUsers: sorted };
   }, [billing]);
@@ -208,8 +217,11 @@ export function BillingReport({ projectId }: BillingReportProps) {
         ) : (
           <Flex direction="column" gap="md">
             {sortedUsers.map(([userId, stats]) => {
+              const billingStats = stats as BillingStats;
               const userUtilization =
-                stats.hours > 0 ? (stats.billableHours / stats.hours) * 100 : 0;
+                billingStats.hours > 0
+                  ? (billingStats.billableHours / billingStats.hours) * 100
+                  : 0;
 
               return (
                 <div
@@ -219,16 +231,17 @@ export function BillingReport({ projectId }: BillingReportProps) {
                   <Flex justify="between" align="center" className="mb-2">
                     <div>
                       <div className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
-                        {stats.name}
+                        {billingStats.name}
                       </div>
                       <div className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
-                        {formatHours(stats.billableHours)} / {formatHours(stats.hours)} hours (
-                        {userUtilization.toFixed(0)}% billable)
+                        {formatHours(billingStats.billableHours)} /{" "}
+                        {formatHours(billingStats.hours)} hours ({userUtilization.toFixed(0)}%
+                        billable)
                       </div>
                     </div>
                     <div className="text-right">
                       <div className="text-lg font-bold text-status-success">
-                        {formatCurrency(stats.revenue)}
+                        {formatCurrency(billingStats.revenue)}
                       </div>
                       <div className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
                         revenue

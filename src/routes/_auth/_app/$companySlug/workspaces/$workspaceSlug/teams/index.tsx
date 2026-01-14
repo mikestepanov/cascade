@@ -1,4 +1,5 @@
 import { api } from "@convex/_generated/api";
+import type { Doc } from "@convex/_generated/dataModel";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { usePaginatedQuery, useQuery } from "convex/react";
 import { Button } from "@/components/ui/Button";
@@ -7,7 +8,7 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { Flex } from "@/components/ui/Flex";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { Typography } from "@/components/ui/Typography";
-import { ROUTES } from "@/config/routes";
+import { ROUTE_PATTERNS } from "@/config/routes";
 import { useCompany } from "@/hooks/useCompanyContext";
 
 export const Route = createFileRoute("/_auth/_app/$companySlug/workspaces/$workspaceSlug/teams/")({
@@ -41,7 +42,7 @@ function TeamsList() {
   return (
     <Flex direction="column" gap="lg">
       {/* Header */}
-      <Flex justify="space-between" align="center">
+      <Flex justify="between" align="center">
         <div>
           <Typography variant="h2">Teams</Typography>
           <Typography variant="p" color="secondary">
@@ -54,16 +55,18 @@ function TeamsList() {
       {/* Teams Grid */}
       {teams.length === 0 ? (
         <EmptyState
+          icon="👥"
           title="No teams yet"
           description="Create your first team to start organizing work"
           action={<Button variant="primary">+ Create Team</Button>}
         />
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {teams.map((team) => (
+          {teams.map((team: Doc<"teams">) => (
             <Link
               key={team._id}
-              to={ROUTES.workspaces.teams.detail(companySlug, workspaceSlug, team.slug)}
+              to={ROUTE_PATTERNS.workspaces.teams.detail}
+              params={{ companySlug, workspaceSlug, teamSlug: team.slug }}
             >
               <Card className="p-6 hover:shadow-lg transition-shadow cursor-pointer">
                 <Flex direction="column" gap="md">

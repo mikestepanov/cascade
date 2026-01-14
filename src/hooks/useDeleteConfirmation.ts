@@ -3,7 +3,7 @@
  * Pairs with ConfirmDialog component for consistent delete UX
  */
 
-import type { Id } from "@convex/_generated/dataModel";
+import type { Id, TableNames } from "@convex/_generated/dataModel";
 import { useCallback, useState } from "react";
 import { showError, showSuccess } from "../lib/toast";
 
@@ -14,7 +14,7 @@ export interface UseDeleteConfirmationOptions {
   errorMessage?: string;
 }
 
-export interface UseDeleteConfirmationReturn<T extends string> {
+export interface UseDeleteConfirmationReturn<T extends TableNames> {
   /** ID pending deletion (null if no confirmation dialog open) */
   deleteId: Id<T> | null;
   /** Whether delete is in progress */
@@ -50,7 +50,7 @@ export interface UseDeleteConfirmationReturn<T extends string> {
  *   isLoading={isDeleting}
  * />
  */
-export function useDeleteConfirmation<T extends string>(
+export function useDeleteConfirmation<T extends TableNames>(
   options: UseDeleteConfirmationOptions = {},
 ): UseDeleteConfirmationReturn<T> {
   const {

@@ -2,7 +2,7 @@ import { api } from "@convex/_generated/api";
 import { useLocation, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
 import { useEffect } from "react";
-import { ROUTES } from "@/config/routes";
+import { ROUTE_PATTERNS } from "@/config/routes";
 import { AppSplashScreen } from "./AppSplashScreen";
 
 /**
@@ -14,11 +14,15 @@ export function SmartAuthGuard({ children }: { children?: React.ReactNode }) {
   const location = useLocation();
   const redirectPath = useQuery(api.auth.getRedirectDestination);
 
-  const publicPaths = [ROUTES.home as string, ROUTES.signin as string, ROUTES.signup as string];
+  const publicPaths = [
+    ROUTE_PATTERNS.home as string,
+    ROUTE_PATTERNS.signin as string,
+    ROUTE_PATTERNS.signup as string,
+  ];
   const isPublicPath = publicPaths.includes(location.pathname);
-  const isAppGate = location.pathname === ROUTES.app;
-  const isOnboarding = location.pathname === ROUTES.onboarding;
-  const shouldBeOnboarding = redirectPath === ROUTES.onboarding;
+  const isAppGate = location.pathname === ROUTE_PATTERNS.app;
+  const isOnboarding = location.pathname === ROUTE_PATTERNS.onboarding;
+  const shouldBeOnboarding = redirectPath === ROUTE_PATTERNS.onboarding;
 
   useEffect(() => {
     if (redirectPath === undefined || !redirectPath) return;

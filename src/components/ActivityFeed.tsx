@@ -7,6 +7,17 @@ import { Flex } from "./ui/Flex";
 import { SkeletonList } from "./ui/Skeleton";
 import { Typography, type TypographyProps } from "./ui/Typography";
 
+interface Activity {
+  _id: string;
+  action: string;
+  field?: string;
+  oldValue?: string;
+  newValue?: string;
+  issueKey?: string;
+  userName: string;
+  createdAt: number;
+}
+
 interface ActivityFeedProps {
   projectId: Id<"projects">;
   limit?: number;
@@ -151,7 +162,7 @@ export function ActivityFeed({ projectId, limit = 50, compact = false }: Activit
 
   return (
     <Flex direction="column" gap="lg">
-      {activities.map((activity, index) => (
+      {activities.map((activity: Activity, index: number) => (
         <Flex
           key={`${activity._id}-${index}`}
           gap="lg"

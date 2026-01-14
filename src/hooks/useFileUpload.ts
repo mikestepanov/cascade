@@ -27,7 +27,7 @@ export interface FileUploadReturn {
   /** Whether upload is in progress */
   isUploading: boolean;
   /** Ref to attach to file input */
-  fileInputRef: React.RefObject<HTMLInputElement>;
+  fileInputRef: React.RefObject<HTMLInputElement | null>;
   /** Handler for file input change */
   handleFileSelect: (event: React.ChangeEvent<HTMLInputElement>) => Promise<void>;
   /** Programmatically trigger file picker */

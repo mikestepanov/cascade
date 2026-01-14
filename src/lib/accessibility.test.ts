@@ -149,7 +149,11 @@ describe("accessibility utilities", () => {
         expect(e.key).toBeDefined();
       });
 
-      const keyboardHandler = handleKeyboardClickWithEvent<HTMLDivElement>(handler);
+      const keyboardHandler = handleKeyboardClickWithEvent<HTMLDivElement>(
+        handler as unknown as (
+          e: React.KeyboardEvent<HTMLDivElement> | React.MouseEvent<HTMLDivElement>,
+        ) => void,
+      );
 
       const event = {
         key: "Enter",

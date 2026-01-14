@@ -1,6 +1,7 @@
 import { api } from "@convex/_generated/api";
 import { createFileRoute, Outlet, useNavigate } from "@tanstack/react-router";
 import { useConvexAuth, useQuery } from "convex/react";
+import type { FunctionReturnType } from "convex/server";
 import { useCallback, useState } from "react";
 import { AppHeader } from "@/components/AppHeader";
 import { AppSidebar } from "@/components/AppSidebar";
@@ -21,6 +22,8 @@ import { SidebarProvider } from "@/hooks/useSidebarState";
 // Re-export hooks for backwards compatibility with existing imports
 export { useCompany, useCompanyOptional };
 
+type UserCompany = FunctionReturnType<typeof api.companies.getUserCompanies>[number];
+
 export const Route = createFileRoute("/_auth/_app/$companySlug")({
   component: CompanyLayout,
   ssr: false, // Disable SSR to prevent hydration issues with CompanyContext
@@ -34,7 +37,7 @@ function CompanyLayout() {
   const userCompanies = useQuery(
     api.companies.getUserCompanies,
     isAuthenticated ? undefined : "skip",
-  );
+  ) as UserCompany[] | undefined;
 
   // Fetch company by slug - also skip until authenticated
   const company = useQuery(
@@ -76,8 +79,8 @@ function CompanyLayout() {
     );
   }
 
-  // Check user has access to this company
-  const userCompany = userCompanies.find((c) => c._id === company._id);
+  // Check if user has access to this company
+  const userCompany = userCompanies?.find((c) => c._id === company._id);
 
   if (!userCompany) {
     return (

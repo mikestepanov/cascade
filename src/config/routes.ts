@@ -4,4 +4,4 @@
  * making them accessible to both frontend and backend.
  */
 
-export { NAV_PATHS, ROUTE_PATTERNS, ROUTES } from "@convex/shared/routes";
+export { ROUTE_PATTERNS } from "@convex/shared/routes";

@@ -1,11 +1,11 @@
 import { api } from "@convex/_generated/api";
-import type { Id } from "@convex/_generated/dataModel";
-import { Link, useLocation, useNavigate } from "@tanstack/react-router";
+import type { Doc, Id } from "@convex/_generated/dataModel";
+import { Link, type LinkProps, useLocation, useNavigate } from "@tanstack/react-router";
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
 import { CreateTeamModal } from "@/components/CreateTeamModal";
 import { SidebarTeamItem } from "@/components/sidebar/SidebarTeamItem";
-import { ROUTES } from "@/config/routes";
+import { ROUTE_PATTERNS } from "@/config/routes";
 import { useCompany } from "@/hooks/useCompanyContext";
 import { useSidebarState } from "@/hooks/useSidebarState";
 import {
@@ -26,7 +26,7 @@ import { showError, showSuccess } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 import { Button } from "./ui/Button";
 import { Flex } from "./ui/Flex";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/Tooltip";
+import { Tooltip, TooltipProvider } from "./ui/Tooltip";
 import { Typography } from "./ui/Typography";
 
 export function AppSidebar() {
@@ -74,7 +74,10 @@ export function AppSidebar() {
         title: "Untitled Document",
         isPublic: false,
       });
-      navigate({ to: ROUTES.documents.detail(companySlug, docId) });
+      navigate({
+        to: ROUTE_PATTERNS.documents.detail,
+        params: { companySlug, id: docId },
+      });
       showSuccess("Document created");
       closeMobile();
     } catch (error) {
@@ -90,7 +93,10 @@ export function AppSidebar() {
         slug,
         companyId,
       });
-      navigate({ to: ROUTES.workspaces.detail(companySlug, slug) });
+      navigate({
+        to: ROUTE_PATTERNS.workspaces.detail,
+        params: { companySlug, workspaceSlug: slug },
+      });
       showSuccess("Workspace created");
       closeMobile();
     } catch (error) {
@@ -157,7 +163,7 @@ export function AppSidebar() {
             className="p-4 border-b border-ui-border-primary dark:border-ui-border-primary-dark"
           >
             {!isCollapsed && (
-              <Link to={ROUTES.dashboard(companySlug)} onClick={handleNavClick}>
+              <Link to={ROUTE_PATTERNS.dashboard} params={{ companySlug }} onClick={handleNavClick}>
                 <Typography variant="h3" className="text-lg font-bold truncate max-w-[160px]">
                   {companyName}
                 </Typography>
@@ -182,7 +188,8 @@ export function AppSidebar() {
           <Flex as="nav" direction="column" gap="xs" className="flex-1 overflow-y-auto p-2">
             {/* Dashboard */}
             <NavItem
-              to={ROUTES.dashboard(companySlug)}
+              to={ROUTE_PATTERNS.dashboard}
+              params={{ companySlug }}
               icon={Home}
               label="Dashboard"
               isActive={isActive("/dashboard")}
@@ -193,7 +200,8 @@ export function AppSidebar() {
             {/* Calendar - Links to first project's calendar */}
             {defaultProject && (
               <NavItem
-                to={ROUTES.projects.calendar(companySlug, defaultProject.key)}
+                to={ROUTE_PATTERNS.projects.calendar}
+                params={{ companySlug, key: defaultProject.key }}
                 icon={Calendar}
                 label="Calendar"
                 isActive={isActive("/calendar")}
@@ -211,22 +219,25 @@ export function AppSidebar() {
               isActive={isActive("/documents")}
               isCollapsed={isCollapsed}
               onAdd={handleCreateDocument}
-              navigateTo={ROUTES.documents.list(companySlug)}
+              to={ROUTE_PATTERNS.documents.list}
+              params={{ companySlug }}
               onClick={handleNavClick}
               data-tour="nav-documents"
             >
               <NavSubItem
-                to={ROUTES.documents.templates(companySlug)}
+                to={ROUTE_PATTERNS.documents.templates}
+                params={{ companySlug }}
                 label="Templates"
                 isActive={location.pathname.includes("/documents/templates")}
                 onClick={handleNavClick}
                 icon={Copy}
               />
               <div className="h-px bg-ui-border-primary dark:bg-ui-border-primary-dark my-1 mx-2" />
-              {(documents?.documents ?? []).slice(0, 10).map((doc) => (
+              {(documents?.documents ?? []).slice(0, 10).map((doc: Doc<"documents">) => (
                 <NavSubItem
                   key={doc._id}
-                  to={ROUTES.documents.detail(companySlug, doc._id)}
+                  to={ROUTE_PATTERNS.documents.detail}
+                  params={{ companySlug, id: doc._id }}
                   label={doc.title}
                   isActive={location.pathname.includes(`/documents/${doc._id}`)}
                   onClick={handleNavClick}
@@ -247,12 +258,14 @@ export function AppSidebar() {
               isActive={isActive("/workspaces")}
               isCollapsed={isCollapsed}
               onAdd={handleCreateWorkspace}
-              navigateTo={ROUTES.workspaces.list(companySlug)}
+              to={ROUTE_PATTERNS.workspaces.list}
+              params={{ companySlug }}
               onClick={handleNavClick}
               data-tour="nav-projects"
             >
-              {workspaces?.map((workspace) => {
-                const workspaceTeams = teams?.filter((t) => t.workspaceId === workspace._id) || [];
+              {workspaces?.map((workspace: Doc<"workspaces">) => {
+                const workspaceTeams =
+                  teams?.filter((t: Doc<"teams">) => t.workspaceId === workspace._id) || [];
                 const isWorkspaceExpanded = expandedWorkspaces.has(workspace.slug);
 
                 return (
@@ -272,7 +285,8 @@ export function AppSidebar() {
                         )}
                       </Button>
                       <NavSubItem
-                        to={ROUTES.workspaces.detail(companySlug, workspace.slug)}
+                        to={ROUTE_PATTERNS.workspaces.detail}
+                        params={{ companySlug, workspaceSlug: workspace.slug }}
                         label={workspace.name}
                         isActive={location.pathname.includes(`/workspaces/${workspace.slug}`)}
                         onClick={handleNavClick}
@@ -293,7 +307,7 @@ export function AppSidebar() {
 
                     {/* Teams under workspace */}
                     {isWorkspaceExpanded &&
-                      workspaceTeams.map((team) => (
+                      workspaceTeams.map((team: Doc<"teams">) => (
                         <SidebarTeamItem
                           key={team._id}
                           team={team}
@@ -311,7 +325,8 @@ export function AppSidebar() {
             {/* Time Tracking (admin only) */}
             {showTimeTracking && (
               <NavItem
-                to={ROUTES.timeTracking(companySlug)}
+                to={ROUTE_PATTERNS.timeTracking}
+                params={{ companySlug }}
                 icon={Clock}
                 label="Time Tracking"
                 isActive={isActive("/time-tracking")}
@@ -325,7 +340,8 @@ export function AppSidebar() {
           {/* Bottom section - Settings */}
           <div className="p-2 border-t border-ui-border-primary dark:border-ui-border-primary-dark">
             <NavItem
-              to={ROUTES.settings.profile(companySlug)}
+              to={ROUTE_PATTERNS.settings.profile}
+              params={{ companySlug }}
               icon={Settings}
               label="Settings"
               isActive={isActive("/settings")}
@@ -348,29 +364,35 @@ export function AppSidebar() {
 }
 
 // Nav Item Component
-interface NavItemProps {
-  to: string;
+type NavItemProps = Omit<LinkProps, "to"> & {
+  to: LinkProps["to"];
   icon: React.ComponentType<{ className?: string }>;
   label: string;
   isActive: boolean;
   isCollapsed: boolean;
-  onClick?: () => void;
   "data-tour"?: string;
-}
+  onClick?: (event: React.MouseEvent) => void;
+};
 
 function NavItem({
-  to,
   icon: Icon,
   label,
   isActive,
   isCollapsed,
-  onClick,
   "data-tour": dataTour,
+  to,
+  params,
+  search,
+  onClick,
+  ...props
 }: NavItemProps) {
   const content = (
     <Link
       to={to}
+      params={params}
+      search={search}
       onClick={onClick}
+      {...props}
       data-tour={dataTour}
       className={cn(
         "flex items-center gap-3 px-3 py-2 rounded-md transition-colors",
@@ -388,9 +410,8 @@ function NavItem({
 
   if (isCollapsed) {
     return (
-      <Tooltip>
-        <TooltipTrigger asChild>{content}</TooltipTrigger>
-        <TooltipContent side="right">{label}</TooltipContent>
+      <Tooltip content={label} side="right">
+        {content}
       </Tooltip>
     );
   }
@@ -399,7 +420,9 @@ function NavItem({
 }
 
 // Collapsible Section Component
-interface CollapsibleSectionProps {
+// We use a union validation here: either it acts as a link (with valid to/params) or it doesn't.
+// CollapsibleSection Component
+type CollapsibleSectionProps = {
   icon: React.ComponentType<{ className?: string }>;
   label: string;
   isExpanded: boolean;
@@ -407,11 +430,13 @@ interface CollapsibleSectionProps {
   isActive: boolean;
   isCollapsed: boolean;
   onAdd: () => void;
-  navigateTo: string;
-  onClick?: () => void;
+  onClick?: (event: React.MouseEvent) => void;
   children: React.ReactNode;
   "data-tour"?: string;
-}
+} & (
+  | (Omit<LinkProps, "to"> & { to: LinkProps["to"] })
+  | { to?: never; params?: never; search?: never }
+);
 
 function CollapsibleSection({
   icon: Icon,
@@ -421,18 +446,22 @@ function CollapsibleSection({
   isActive,
   isCollapsed,
   onAdd,
-  navigateTo,
-  onClick,
   children,
   "data-tour": dataTour,
+  ...props
 }: CollapsibleSectionProps) {
+  // Safe type narrowing check
+  const isLink = "to" in props && !!props.to;
+
   if (isCollapsed) {
     return (
-      <Tooltip>
-        <TooltipTrigger asChild>
+      <Tooltip content={label} side="right">
+        {isLink ? (
           <Link
-            to={navigateTo}
-            onClick={onClick}
+            {...props}
+            to={props.to}
+            params={props.params}
+            search={props.search}
             data-tour={dataTour}
             className={cn(
               "flex items-center justify-center px-2 py-2 rounded-md transition-colors",
@@ -443,8 +472,11 @@ function CollapsibleSection({
           >
             <Icon className="w-5 h-5" />
           </Link>
-        </TooltipTrigger>
-        <TooltipContent side="right">{label}</TooltipContent>
+        ) : (
+          <div className="flex items-center justify-center px-2 py-2 rounded-md text-ui-text-secondary">
+            <Icon className="w-5 h-5" />
+          </div>
+        )}
       </Tooltip>
     );
   }
@@ -476,20 +508,26 @@ function CollapsibleSection({
             <ChevronRight className="w-4 h-4 text-ui-text-tertiary" />
           )}
         </Button>
-        <Link
-          to={navigateTo}
-          onClick={onClick}
-          data-tour={dataTour}
-          className={cn(
-            "flex-1 flex items-center gap-2 text-sm font-medium",
-            isActive
-              ? "text-brand-700 dark:text-brand-300"
-              : "text-ui-text-secondary dark:text-ui-text-secondary-dark",
-          )}
-        >
-          <Icon className="w-5 h-5" />
-          <span>{label}</span>
-        </Link>
+        {isLink ? (
+          <Link
+            {...props}
+            to={props.to}
+            className={cn(
+              "flex-1 flex items-center gap-2 text-sm font-medium",
+              isActive
+                ? "text-brand-700 dark:text-brand-300"
+                : "text-ui-text-secondary dark:text-ui-text-secondary-dark",
+            )}
+          >
+            <Icon className="w-5 h-5" />
+            <span>{label}</span>
+          </Link>
+        ) : (
+          <div className="flex-1 flex items-center gap-2 text-sm font-medium text-ui-text-secondary">
+            <Icon className="w-5 h-5" />
+            <span>{label}</span>
+          </div>
+        )}
         <Button
           variant="ghost"
           size="icon"
@@ -515,19 +553,28 @@ function CollapsibleSection({
 }
 
 // Sub-item Component
-interface NavSubItemProps {
-  to: string;
+type NavSubItemProps = Omit<LinkProps, "to"> & {
+  to: LinkProps["to"];
   label: string;
   isActive: boolean;
-  onClick?: () => void;
   icon?: React.ComponentType<{ className?: string }>;
-}
+  onClick?: (event: React.MouseEvent) => void;
+};
 
-function NavSubItem({ to, label, isActive, onClick, icon: Icon }: NavSubItemProps) {
+function NavSubItem({
+  label,
+  isActive,
+  icon: Icon,
+  to,
+  params,
+  onClick,
+  ...props
+}: NavSubItemProps) {
   return (
     <Link
       to={to}
-      onClick={onClick}
+      params={params}
+      {...props}
       className={cn(
         "flex items-center gap-2 px-3 py-1.5 rounded-md text-sm truncate transition-colors",
         isActive

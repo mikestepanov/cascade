@@ -1,5 +1,5 @@
 import { api } from "@convex/_generated/api";
-import type { Id } from "@convex/_generated/dataModel";
+import type { Doc, Id } from "@convex/_generated/dataModel";
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
 import { showError, showSuccess } from "@/lib/toast";
@@ -180,7 +180,7 @@ export function BulkOperationsBar({
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="unassigned">Unassigned</SelectItem>
-                      {members?.map((member) => (
+                      {members?.map((member: { userId: string; userName: string }) => (
                         <SelectItem key={member.userId} value={member.userId}>
                           {member.userName}
                         </SelectItem>
@@ -198,7 +198,7 @@ export function BulkOperationsBar({
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="backlog">Backlog</SelectItem>
-                      {sprints?.map((sprint) => (
+                      {sprints?.map((sprint: Doc<"sprints">) => (
                         <SelectItem key={sprint._id} value={sprint._id}>
                           {sprint.name}
                         </SelectItem>

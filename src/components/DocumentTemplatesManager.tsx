@@ -1,9 +1,10 @@
 import { api } from "@convex/_generated/api";
-import type { Id } from "@convex/_generated/dataModel";
+import type { Doc, Id } from "@convex/_generated/dataModel";
+import { useForm } from "@tanstack/react-form";
 import { useMutation, useQuery } from "convex/react";
 import { useEffect, useState } from "react";
 import { z } from "zod";
-import { FormInput, FormSelect, FormTextarea, useAppForm } from "@/lib/form";
+import { FormInput, FormSelect, FormTextarea } from "@/lib/form";
 import { showError, showSuccess } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 import { Badge } from "./ui/Badge";
@@ -22,7 +23,7 @@ const categories = ["meeting", "planning", "engineering", "design", "other"] as 
 
 const templateSchema = z.object({
   name: z.string().min(1, "Name is required"),
-  description: z.string().optional(),
+  description: z.string(),
   category: z.enum(categories),
   icon: z.string().min(1, "Icon is required").max(2),
   isPublic: z.boolean(),
@@ -51,16 +52,26 @@ export function DocumentTemplatesManager({
   const updateTemplate = useMutation(api.documentTemplates.update);
   const deleteTemplate = useMutation(api.documentTemplates.remove);
 
-  const form = useAppForm({
+  const form = useForm({
     defaultValues: {
       name: "",
       description: "",
-      category: "planning" as const,
+      category: "planning" as (typeof categories)[number],
       icon: "📄",
       isPublic: false,
     },
     validators: { onChange: templateSchema },
-    onSubmit: async ({ value }) => {
+    onSubmit: async ({
+      value,
+    }: {
+      value: {
+        name: string;
+        description?: string;
+        category: string;
+        icon: string;
+        [key: string]: unknown;
+      };
+    }) => {
       try {
         const templateData = {
           name: value.name.trim(),
@@ -157,8 +168,8 @@ export function DocumentTemplatesManager({
   ];
 
   // Group templates by built-in vs custom
-  const builtInTemplates = templates?.filter((t) => t.isBuiltIn) || [];
-  const customTemplates = templates?.filter((t) => !t.isBuiltIn) || [];
+  const builtInTemplates = templates?.filter((t: Doc<"documentTemplates">) => t.isBuiltIn) || [];
+  const customTemplates = templates?.filter((t: Doc<"documentTemplates">) => !t.isBuiltIn) || [];
 
   return (
     <>
@@ -232,7 +243,7 @@ export function DocumentTemplatesManager({
                     Built-in Templates
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {builtInTemplates.map((template) => (
+                    {builtInTemplates.map((template: Doc<"documentTemplates">) => (
                       <button
                         key={template._id}
                         type="button"
@@ -272,7 +283,7 @@ export function DocumentTemplatesManager({
                     Custom Templates
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {customTemplates.map((template) => (
+                    {customTemplates.map((template: Doc<"documentTemplates">) => (
                       <div
                         key={template._id}
                         className="p-4 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark transition-colors border border-ui-border-primary dark:border-ui-border-primary-dark"
@@ -430,7 +441,7 @@ export function DocumentTemplatesManager({
                     <input
                       type="checkbox"
                       id="isPublic"
-                      checked={field.state.value}
+                      checked={field.state.value as boolean}
                       onChange={(e) => field.handleChange(e.target.checked)}
                       onBlur={field.handleBlur}
                       className="w-4 h-4 text-brand-600 bg-ui-bg-primary border-ui-border-primary rounded focus:ring-brand-500 dark:focus:ring-brand-600 dark:ring-offset-ui-bg-primary-dark focus:ring-2 dark:bg-ui-bg-primary-dark dark:border-ui-border-primary-dark"

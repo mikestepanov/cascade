@@ -1,5 +1,5 @@
 import { api } from "@convex/_generated/api";
-import type { Id } from "@convex/_generated/dataModel";
+import type { Doc, Id } from "@convex/_generated/dataModel";
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -58,7 +58,7 @@ export function LinkedRepositories() {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="">-- Select a project --</SelectItem>
-            {projects?.page?.map((project) => (
+            {projects?.page?.map((project: Doc<"projects">) => (
               <SelectItem key={project._id} value={project._id}>
                 {project.name} ({project.key})
               </SelectItem>
@@ -75,7 +75,7 @@ export function LinkedRepositories() {
               No repositories linked to this project yet.
             </Typography>
           )}
-          {repositories?.map((repo) => (
+          {repositories?.map((repo: Doc<"githubRepositories">) => (
             <Flex
               key={repo._id}
               justify="between"

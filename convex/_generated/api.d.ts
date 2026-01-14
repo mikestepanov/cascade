@@ -104,6 +104,7 @@ import type * as router from "../router.js";
 import type * as savedFilters from "../savedFilters.js";
 import type * as serviceRotation from "../serviceRotation.js";
 import type * as shared_routes from "../shared/routes.js";
+import type * as shared_types from "../shared/types.js";
 import type * as softDeleteCleanup from "../softDeleteCleanup.js";
 import type * as sprints from "../sprints.js";
 import type * as teams from "../teams.js";
@@ -222,6 +223,7 @@ declare const fullApi: ApiFromModules<{
   savedFilters: typeof savedFilters;
   serviceRotation: typeof serviceRotation;
   "shared/routes": typeof shared_routes;
+  "shared/types": typeof shared_types;
   softDeleteCleanup: typeof softDeleteCleanup;
   sprints: typeof sprints;
   teams: typeof teams;

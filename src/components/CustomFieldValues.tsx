@@ -1,5 +1,5 @@
 import { api } from "@convex/_generated/api";
-import type { Id } from "@convex/_generated/dataModel";
+import type { Doc, Id } from "@convex/_generated/dataModel";
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -28,7 +28,7 @@ export function CustomFieldValues({ issueId, projectId }: CustomFieldValuesProps
   }
 
   const getFieldValue = (fieldId: Id<"customFields">) => {
-    return fieldValues?.find((v) => v.fieldId === fieldId);
+    return fieldValues?.find((v: Doc<"customFieldValues">) => v.fieldId === fieldId);
   };
 
   const handleEdit = (fieldId: Id<"customFields">, currentValue?: string) => {
@@ -209,7 +209,7 @@ export function CustomFieldValues({ issueId, projectId }: CustomFieldValuesProps
         Custom Fields
       </Typography>
 
-      {customFields.map((field) => {
+      {customFields.map((field: Doc<"customFields">) => {
         const fieldValue = getFieldValue(field._id);
         const isEditing = editingFieldId === field._id;
 

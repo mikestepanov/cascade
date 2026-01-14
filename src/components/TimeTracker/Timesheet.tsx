@@ -1,6 +1,7 @@
 import { api } from "@convex/_generated/api";
-import type { Doc, Id } from "@convex/_generated/dataModel";
+import type { Id } from "@convex/_generated/dataModel";
 import { useMutation, useQuery } from "convex/react";
+import type { FunctionReturnType } from "convex/server";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Calendar, DollarSign, Trash2 } from "@/lib/icons";
@@ -11,9 +12,9 @@ import { Progress } from "../ui/progress";
 import { Typography } from "../ui/Typography";
 
 // Type for time entry with computed hours field
-type TimeEntryWithHours = Doc<"timeEntries"> & {
-  hours: number;
-};
+type TimesheetData = FunctionReturnType<typeof api.timeTracking.getCurrentWeekTimesheet>;
+// Extract the entry type from the byDay record
+type TimeEntryWithHours = NonNullable<TimesheetData>["byDay"][string][number];
 
 export function Timesheet() {
   const timesheet = useQuery(api.timeTracking.getCurrentWeekTimesheet);

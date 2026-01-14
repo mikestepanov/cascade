@@ -4,7 +4,7 @@ import { Link, useLocation } from "@tanstack/react-router";
 import { usePaginatedQuery } from "convex/react";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/Button";
-import { ROUTES } from "@/config/routes";
+import { ROUTE_PATTERNS } from "@/config/routes";
 import { cn } from "@/lib/utils";
 
 interface SidebarTeamItemProps {
@@ -44,7 +44,8 @@ export function SidebarTeamItem({
           {isExpanded ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
         </Button>
         <Link
-          to={ROUTES.workspaces.teams.detail(companySlug, workspaceSlug, team.slug)}
+          to={ROUTE_PATTERNS.workspaces.teams.detail}
+          params={{ companySlug, workspaceSlug, teamSlug: team.slug }}
           onClick={onNavClick}
           className={cn(
             "block px-3 py-1.5 rounded-md text-sm truncate transition-colors flex-1",
@@ -104,12 +105,13 @@ function SidebarTeamProjects({
       {projects.map((project) => (
         <div key={project._id}>
           <Link
-            to={ROUTES.workspaces.teams.projects.board(
+            to={ROUTE_PATTERNS.workspaces.teams.projects.board}
+            params={{
               companySlug,
               workspaceSlug,
               teamSlug,
-              project.key,
-            )}
+              key: project.key,
+            }}
             onClick={onNavClick}
             className={cn(
               "block px-3 py-1.5 rounded-md text-sm truncate transition-colors",

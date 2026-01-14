@@ -1,8 +1,9 @@
 import { api } from "@convex/_generated/api";
+import type { Doc } from "@convex/_generated/dataModel";
 import { useNavigate } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
 import { useEffect, useState } from "react";
-import { ROUTES } from "@/config/routes";
+import { ROUTE_PATTERNS } from "@/config/routes";
 import { useCompany } from "@/hooks/useCompanyContext";
 import {
   Command,
@@ -42,7 +43,7 @@ export function CommandPalette({ isOpen, onClose, commands }: CommandPaletteProp
 
   // Group commands
   const groupedCommands = commands.reduce(
-    (acc, cmd) => {
+    (acc: Record<string, CommandAction[]>, cmd: CommandAction) => {
       const group = cmd.group || "Other";
       if (!acc[group]) acc[group] = [];
       acc[group].push(cmd);
@@ -160,7 +161,7 @@ export function useCommands({
       icon: "🏠",
       description: "View your personal dashboard",
       keywords: ["home", "my work"],
-      action: () => navigate({ to: ROUTES.dashboard(companySlug) }),
+      action: () => navigate({ to: ROUTE_PATTERNS.dashboard, params: { companySlug } }),
       group: "Navigation",
     },
     {
@@ -169,7 +170,7 @@ export function useCommands({
       icon: "📄",
       description: "View all documents",
       keywords: ["docs", "files"],
-      action: () => navigate({ to: ROUTES.documents.list(companySlug) }),
+      action: () => navigate({ to: ROUTE_PATTERNS.documents.list, params: { companySlug } }),
       group: "Navigation",
     },
     {
@@ -178,18 +179,22 @@ export function useCommands({
       icon: "📋",
       description: "View all workspaces",
       keywords: ["boards", "kanban", "projects", "workspaces"],
-      action: () => navigate({ to: ROUTES.workspaces.list(companySlug) }),
+      action: () => navigate({ to: ROUTE_PATTERNS.workspaces.list, params: { companySlug } }),
       group: "Navigation",
     },
 
     // Projects navigation
-    ...(projects?.map((project) => ({
+    ...(projects?.map((project: Doc<"projects">) => ({
       id: `project-${project._id}`,
       label: project.name,
       icon: "⬜",
       description: `Go to ${project.name} board`,
       keywords: [project.key, "board", "project"],
-      action: () => navigate({ to: ROUTES.projects.board(companySlug, project.key) }),
+      action: () =>
+        navigate({
+          to: ROUTE_PATTERNS.projects.board,
+          params: { companySlug, key: project.key },
+        }),
       group: "Projects",
     })) || []),
 
@@ -235,17 +240,22 @@ export function useCommands({
       : []),
 
     // Quick access to recent issues
-    ...(myIssues?.page?.slice(0, 5)?.map((issue) => ({
-      id: `issue-${issue._id}`,
-      label: issue.title,
-      icon: issue.type === "bug" ? "🐛" : issue.type === "story" ? "📖" : "📋",
-      description: `${issue.key} • ${issue.projectName}`,
-      keywords: [issue.key, issue.projectName || ""],
-      action: () => {
-        navigate({ to: ROUTES.projects.board(companySlug, issue.projectKey) });
-      },
-      group: "Recent Issues",
-    })) ?? []),
+    ...(myIssues?.page
+      ?.slice(0, 5)
+      ?.map((issue: Doc<"issues"> & { projectName?: string; projectKey: string }) => ({
+        id: `issue-${issue._id}`,
+        label: issue.title,
+        icon: issue.type === "bug" ? "🐛" : issue.type === "story" ? "📖" : "📋",
+        description: `${issue.key} • ${issue.projectName}`,
+        keywords: [issue.projectKey, issue.projectName || ""],
+        action: () => {
+          navigate({
+            to: ROUTE_PATTERNS.projects.board,
+            params: { companySlug, key: issue.projectKey },
+          });
+        },
+        group: "Recent Issues",
+      })) ?? []),
   ];
 
   return commands;

@@ -19,6 +19,8 @@ const buttonVariants = cva(
         ghost:
           "text-ui-text-secondary dark:text-ui-text-secondary-dark hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark focus-visible:ring-brand-500",
         link: "text-brand-600 dark:text-brand-400 underline-offset-4 hover:underline",
+        outline:
+          "bg-transparent text-ui-text-primary dark:text-ui-text-primary-dark border border-ui-border-primary dark:border-ui-border-primary-dark hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark focus-visible:ring-brand-500",
       },
       size: {
         sm: "h-9 px-3 text-sm",

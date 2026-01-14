@@ -1,8 +1,8 @@
 import { api } from "@convex/_generated/api";
 import type { Id } from "@convex/_generated/dataModel";
+import type { EnrichedIssue } from "@convex/lib/issueHelpers";
 import { useMutation } from "convex/react";
 import { useCallback, useState } from "react";
-import type { EnrichedIssue } from "@/convex/lib/issueHelpers";
 import { showError } from "@/lib/toast";
 import type { BoardAction } from "./useBoardHistory";
 import type { UseSmartBoardDataOptions } from "./useSmartBoardData";

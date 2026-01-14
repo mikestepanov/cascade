@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { Typography } from "@/components/ui/Typography";
-import { ROUTES } from "@/config/routes";
+import { ROUTE_PATTERNS } from "@/config/routes";
 
 export function NotFoundPage() {
   return (
@@ -15,7 +15,7 @@ export function NotFoundPage() {
         Page not found
       </Typography>
       <Link
-        to={ROUTES.home}
+        to={ROUTE_PATTERNS.home}
         className="mt-8 rounded-lg bg-ui-brand px-6 py-3 text-white transition-colors hover:bg-ui-brand-hover"
       >
         Go home

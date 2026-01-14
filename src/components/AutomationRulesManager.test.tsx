@@ -1,4 +1,5 @@
-import type { Id } from "@convex/_generated/dataModel";
+// Helper to create properly typed mock IDs
+import type { Id, TableNames } from "@convex/_generated/dataModel";
 import userEvent from "@testing-library/user-event";
 import { useMutation, useQuery } from "convex/react";
 import { toast } from "sonner";
@@ -7,8 +8,7 @@ import { showError, showSuccess } from "@/lib/toast";
 import { fireEvent, render, screen, waitFor } from "@/test/custom-render";
 import { AutomationRulesManager } from "./AutomationRulesManager";
 
-// Helper to create properly typed mock IDs
-function mockId<T extends string>(id: string): Id<T> {
+function mockId<T extends TableNames>(id: string): Id<T> {
   return id as Id<T>;
 }
 
@@ -50,14 +50,14 @@ describe("AutomationRulesManager - Component Behavior", () => {
     // This is a limitation of mocking at the hook level - we can't distinguish
     // between create, update, and remove mutations since they're all called via useMutation()
     // Return mockUpdateRule for most cases since it's used most frequently
-    (useMutation as vi.Mock).mockReturnValue(mockUpdateRule);
+    (useMutation as any).mockReturnValue(mockUpdateRule);
 
-    (useQuery as vi.Mock).mockReturnValue([]);
+    (useQuery as any).mockReturnValue([]);
   });
 
   describe("Empty State", () => {
     it("should show empty state message when no rules exist", () => {
-      (useQuery as ReturnType<typeof vi.fn>).mockReturnValue([]);
+      (useQuery as any).mockReturnValue([]);
 
       render(<AutomationRulesManager projectId={mockProjectId} />);
 

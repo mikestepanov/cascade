@@ -1,5 +1,5 @@
 import { api } from "@convex/_generated/api";
-import type { Id } from "@convex/_generated/dataModel";
+import type { Doc, Id } from "@convex/_generated/dataModel";
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -93,7 +93,7 @@ export function FilterBar({ projectId, onFilterChange }: FilterBarProps) {
             value=""
             onValueChange={(value) => {
               if (value) {
-                const selected = savedFilters?.find((f) => f._id === value);
+                const selected = savedFilters?.find((f: Doc<"savedFilters">) => f._id === value);
                 if (selected) {
                   handleLoadFilter(selected.filters);
                 }
@@ -104,12 +104,14 @@ export function FilterBar({ projectId, onFilterChange }: FilterBarProps) {
               <SelectValue placeholder="Select a filter..." />
             </SelectTrigger>
             <SelectContent>
-              {savedFilters?.map((filter) => (
-                <SelectItem key={filter._id} value={filter._id}>
-                  {filter.name} {filter.isPublic && "(Public)"}{" "}
-                  {!filter.isOwner && `- by ${filter.creatorName}`}
-                </SelectItem>
-              ))}
+              {savedFilters?.map(
+                (filter: Doc<"savedFilters"> & { isOwner?: boolean; creatorName?: string }) => (
+                  <SelectItem key={filter._id} value={filter._id}>
+                    {filter.name} {filter.isPublic && "(Public)"}{" "}
+                    {!filter.isOwner && `- by ${filter.creatorName}`}
+                  </SelectItem>
+                ),
+              )}
             </SelectContent>
           </Select>
         </Flex>
@@ -186,7 +188,7 @@ export function FilterBar({ projectId, onFilterChange }: FilterBarProps) {
       {/* My Filters List (if any saved) */}
       {savedFilters && savedFilters.length > 0 && (
         <div className="mt-3 flex flex-wrap gap-2">
-          {savedFilters.slice(0, 5).map((filter) => (
+          {savedFilters.slice(0, 5).map((filter: Doc<"savedFilters"> & { isOwner?: boolean }) => (
             <div
               key={filter._id}
               className="inline-flex items-center gap-2 px-3 py-1 bg-ui-bg-primary dark:bg-ui-bg-primary-dark border border-ui-border-primary dark:border-ui-border-primary-dark rounded-full text-sm"

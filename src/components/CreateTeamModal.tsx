@@ -18,7 +18,7 @@ import { Flex } from "@/components/ui/Flex";
 import { Input } from "@/components/ui/Input";
 import { Label } from "@/components/ui/Label";
 import { Textarea } from "@/components/ui/Textarea";
-import { ROUTES } from "@/config/routes";
+import { ROUTE_PATTERNS } from "@/config/routes";
 import { useCompany } from "@/hooks/useCompanyContext";
 
 interface CreateTeamModalProps {
@@ -59,7 +59,8 @@ export function CreateTeamModal({
 
       toast.success("Team created successfully");
       navigate({
-        to: ROUTES.workspaces.teams.detail(companySlug, workspaceSlug, teamSlug),
+        to: ROUTE_PATTERNS.workspaces.teams.detail,
+        params: { companySlug, workspaceSlug, teamSlug },
       });
       onClose();
 
@@ -119,7 +120,7 @@ export function CreateTeamModal({
             <Button type="button" variant="outline" onClick={onClose} disabled={isSubmitting}>
               Cancel
             </Button>
-            <Button type="submit" variant="primary" loading={isSubmitting}>
+            <Button type="submit" variant="primary" isLoading={isSubmitting}>
               Create Team
             </Button>
           </DialogFooter>

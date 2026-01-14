@@ -5,9 +5,27 @@
  * Perfect for Kanban columns with 50+ cards.
  */
 
-import { forwardRef, useCallback, useEffect, useRef } from "react";
-import { FixedSizeList, type ListChildComponentProps } from "react-window";
+import {
+  type CSSProperties,
+  type ElementType,
+  forwardRef,
+  useCallback,
+  useEffect,
+  useRef,
+} from "react";
+import * as ReactWindow from "react-window";
 import { cn } from "@/lib/utils";
+
+// Manually define the props interface since default export types are failing
+export interface ListChildComponentProps<T = unknown> {
+  index: number;
+  style: CSSProperties;
+  data: T;
+  isScrolling?: boolean;
+}
+
+// Cast ReactWindow to access FixedSizeList while satisfying "no any" rule by using unknown
+const FixedSizeList = (ReactWindow as unknown as { FixedSizeList: ElementType }).FixedSizeList;
 
 export interface VirtualListProps<T> {
   /** Items to render */
@@ -71,7 +89,7 @@ function VirtualListInner<T>(
     onEndReached,
     endReachedThreshold = 100,
   }: VirtualListProps<T>,
-  ref: React.ForwardedRef<FixedSizeList<ItemData<T>>>,
+  ref: React.ForwardedRef<unknown>,
 ) {
   // Track if onEndReached has been called to prevent multiple calls
   const endReachedCalledRef = useRef(false);
@@ -135,5 +153,5 @@ function VirtualListInner<T>(
 
 // Export with proper typing for forwardRef with generics
 export const VirtualList = forwardRef(VirtualListInner) as <T>(
-  props: VirtualListProps<T> & { ref?: React.ForwardedRef<FixedSizeList<ItemData<T>>> },
+  props: VirtualListProps<T> & { ref?: React.ForwardedRef<unknown> },
 ) => React.ReactElement;

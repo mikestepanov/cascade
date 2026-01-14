@@ -1,6 +1,7 @@
 import { api } from "@convex/_generated/api";
 import type { Id } from "@convex/_generated/dataModel";
 import { useMutation, useQuery } from "convex/react";
+import type { FunctionReturnType } from "convex/server";
 import { Clock, Hourglass, Play } from "lucide-react";
 import { ACTIVITY_TYPES } from "@/lib/constants";
 import { formatDateForInput, formatDurationHuman } from "@/lib/formatting";
@@ -18,6 +19,9 @@ import {
   validateLogTimeSubmission,
 } from "./timeEntryValidation";
 import { type EntryMode, useTimeEntryForm } from "./useTimeEntryForm";
+
+type ProjectItem = FunctionReturnType<typeof api.projects.getCurrentUserProjects>["page"][number];
+type IssueItem = FunctionReturnType<typeof api.issues.listSelectableIssues>[number];
 
 interface TimeEntryModalProps {
   open: boolean;
@@ -453,7 +457,7 @@ export function TimeEntryModal({
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="none">No project</SelectItem>
-                {projects?.page?.map((project) => (
+                {projects?.page?.map((project: ProjectItem) => (
                   <SelectItem key={project._id} value={project._id}>
                     {project.name}
                   </SelectItem>
@@ -482,11 +486,13 @@ export function TimeEntryModal({
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="none">No issue</SelectItem>
-                  {projectIssues.map((issue) => (
-                    <SelectItem key={issue._id} value={issue._id}>
-                      {issue.key} - {issue.title}
-                    </SelectItem>
-                  ))}
+                  {projectIssues
+                    .sort((a: IssueItem, b: IssueItem) => (a.title > b.title ? 1 : -1))
+                    .map((issue: IssueItem) => (
+                      <SelectItem key={issue._id} value={issue._id}>
+                        {issue.key} - {issue.title}
+                      </SelectItem>
+                    ))}
                 </SelectContent>
               </Select>
             </div>

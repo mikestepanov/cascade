@@ -4,7 +4,7 @@ import { useQuery } from "convex/react";
 import { Flex } from "@/components/ui/Flex";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { Typography } from "@/components/ui/Typography";
-import { ROUTES } from "@/config/routes";
+import { ROUTE_PATTERNS } from "@/config/routes";
 import { useCompany } from "@/hooks/useCompanyContext";
 
 export const Route = createFileRoute("/_auth/_app/$companySlug/workspaces/$workspaceSlug")({
@@ -40,7 +40,11 @@ function WorkspaceLayout() {
     <div className="container mx-auto p-6">
       {/* Breadcrumb */}
       <div className="mb-6 text-sm">
-        <Link to={ROUTES.workspaces.list(companySlug)} className="text-blue-600 hover:underline">
+        <Link
+          to={ROUTE_PATTERNS.workspaces.list}
+          params={{ companySlug }}
+          className="text-blue-600 hover:underline"
+        >
           Workspaces
         </Link>
         <span className="mx-2">/</span>
@@ -64,13 +68,15 @@ function WorkspaceLayout() {
       <div className="border-b border-gray-200 mb-6">
         <nav className="flex gap-6">
           <Link
-            to={ROUTES.workspaces.detail(companySlug, workspaceSlug)}
+            to={ROUTE_PATTERNS.workspaces.detail}
+            params={{ companySlug, workspaceSlug }}
             className="px-1 py-3 border-b-2 border-blue-600 font-medium text-blue-600"
           >
             Teams
           </Link>
           <Link
-            to={ROUTES.workspaces.settings(companySlug, workspaceSlug)}
+            to={ROUTE_PATTERNS.workspaces.settings}
+            params={{ companySlug, workspaceSlug }}
             className="px-1 py-3 border-b-2 border-transparent hover:border-gray-300 text-gray-600"
           >
             Settings

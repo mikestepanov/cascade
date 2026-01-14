@@ -1,22 +1,14 @@
 import type {
   FilterBuilder,
   GenericDocument,
-  GenericTableIndexes,
-  GenericTableSearchIndexes,
-  GenericTableVectorIndexes,
+  GenericTableInfo,
   PaginationOptions,
   PaginationResult,
 } from "convex/server";
 import type { QueryCtx } from "../_generated/server";
 
 // Helper to wrap T into a TableInfo structure for FilterBuilder
-type TableInfoFor = {
-  document: GenericDocument; // Keeping document as generic record
-  fieldPaths: string;
-  indexes: GenericTableIndexes;
-  searchIndexes: GenericTableSearchIndexes;
-  vectorIndexes: GenericTableVectorIndexes;
-};
+type TableInfoFor = GenericTableInfo;
 
 export async function fetchPaginatedQuery<T extends GenericDocument>(
   ctx: QueryCtx,

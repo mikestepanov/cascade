@@ -1,5 +1,5 @@
 import { createFileRoute, Navigate } from "@tanstack/react-router";
-import { ROUTES } from "@/config/routes";
+import { ROUTE_PATTERNS } from "@/config/routes";
 
 export const Route = createFileRoute(
   "/_auth/_app/$companySlug/workspaces/$workspaceSlug/teams/$teamSlug/projects/$key/",
@@ -13,7 +13,8 @@ function ProjectIndexPage() {
   // Redirect to board by default
   return (
     <Navigate
-      to={ROUTES.workspaces.teams.projects.board(companySlug, workspaceSlug, teamSlug, key)}
+      to={ROUTE_PATTERNS.workspaces.teams.projects.board}
+      params={{ companySlug, workspaceSlug, teamSlug, key }}
       replace
     />
   );

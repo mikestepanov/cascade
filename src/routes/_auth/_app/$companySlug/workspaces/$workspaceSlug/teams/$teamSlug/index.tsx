@@ -2,7 +2,7 @@ import { api } from "@convex/_generated/api";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
 import { useEffect } from "react";
-import { ROUTES } from "@/config/routes";
+import { ROUTE_PATTERNS } from "@/config/routes";
 import { useCompany } from "@/hooks/useCompanyContext";
 
 export const Route = createFileRoute(
@@ -12,12 +12,12 @@ export const Route = createFileRoute(
 });
 
 function TeamHome() {
-  const { company } = useCompany();
+  const { companyId, companySlug } = useCompany();
   const { workspaceSlug, teamSlug } = Route.useParams();
   const navigate = useNavigate();
 
   const team = useQuery(api.teams.getBySlug, {
-    companyId: company._id,
+    companyId: companyId,
     slug: teamSlug,
   });
 
@@ -25,11 +25,12 @@ function TeamHome() {
   useEffect(() => {
     if (team) {
       navigate({
-        to: ROUTES.workspaces.teams.projects.list(company.slug, workspaceSlug, teamSlug),
+        to: ROUTE_PATTERNS.workspaces.teams.projects.list,
+        params: { companySlug, workspaceSlug, teamSlug },
         replace: true,
       });
     }
-  }, [team, company.slug, workspaceSlug, teamSlug, navigate]);
+  }, [team, companySlug, workspaceSlug, teamSlug, navigate]);
 
   return null;
 }

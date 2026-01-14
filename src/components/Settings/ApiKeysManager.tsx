@@ -74,8 +74,12 @@ export function ApiKeysManager() {
           </div>
         ) : (
           <Flex direction="column" gap="lg">
-            {apiKeys.map((key) => (
-              <ApiKeyCard key={key.id} apiKey={key} onViewStats={() => setSelectedKeyId(key.id)} />
+            {apiKeys.map((key: Doc<"apiKeys">) => (
+              <ApiKeyCard
+                key={key._id}
+                apiKey={key}
+                onViewStats={() => setSelectedKeyId(key._id)}
+              />
             ))}
           </Flex>
         )}
@@ -126,7 +130,7 @@ function ApiKeyCard({ apiKey, onViewStats }: { apiKey: Doc<"apiKeys">; onViewSta
 
     setIsRevoking(true);
     try {
-      await revokeKey({ keyId: apiKey.id });
+      await revokeKey({ keyId: apiKey._id });
       showSuccess("API key revoked successfully");
     } catch (error) {
       showError(error, "Failed to revoke API key");
@@ -142,7 +146,7 @@ function ApiKeyCard({ apiKey, onViewStats }: { apiKey: Doc<"apiKeys">; onViewSta
 
     setIsDeleting(true);
     try {
-      await deleteKey({ keyId: apiKey.id });
+      await deleteKey({ keyId: apiKey._id });
       showSuccess("API key deleted successfully");
     } catch (error) {
       showError(error, "Failed to delete API key");
@@ -350,11 +354,7 @@ function GenerateKeyModal({
             <>
               {/* Key Name */}
               <Input
-                label={
-                  <>
-                    Key Name <span className="text-status-error">*</span>
-                  </>
-                }
+                label="Key Name *"
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}

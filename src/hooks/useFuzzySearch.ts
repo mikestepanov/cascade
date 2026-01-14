@@ -151,7 +151,7 @@ export function highlightMatches(
 export function useFuzzySearch<T>(items: T[] | undefined, options: FuzzySearchOptions) {
   const [query, setQuery] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");
-  const debounceTimerRef = useRef<ReturnType<typeof setTimeout>>();
+  const debounceTimerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   // Debounce query updates
   useEffect(() => {
@@ -282,7 +282,9 @@ export function useFuzzySearch<T>(items: T[] | undefined, options: FuzzySearchOp
  * const { results, search, query } = useUserFuzzySearch(members);
  * ```
  */
-export function useUserFuzzySearch(users: Array<{ name?: string; email?: string }> | undefined) {
+export function useUserFuzzySearch<T extends { name?: string; email?: string }>(
+  users: T[] | undefined,
+) {
   return useFuzzySearch(users, {
     keys: [
       { name: "name", weight: 2 }, // Prioritize name matches

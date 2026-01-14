@@ -5,14 +5,28 @@ interface EmptyStateProps {
   icon: string;
   title: string;
   description?: string;
-  action?: {
-    label: string;
-    onClick: () => void;
-  };
-  children?: ReactNode;
+  action?:
+    | ReactNode
+    | {
+        label: string;
+        onClick: () => void;
+      };
 }
 
-export function EmptyState({ icon, title, description, action, children }: EmptyStateProps) {
+export function EmptyState({ icon, title, description, action }: EmptyStateProps) {
+  const renderAction = () => {
+    if (!action) return null;
+
+    // Check if action is a button configuration object
+    if (typeof action === "object" && action !== null && "label" in action && "onClick" in action) {
+      const act = action as { label: string; onClick: () => void };
+      if (typeof act.label === "string" && typeof act.onClick === "function") {
+        return <Button onClick={act.onClick}>{act.label}</Button>;
+      }
+    }
+    return action as ReactNode;
+  };
+
   return (
     <div className="text-center py-12 px-4">
       <div className="text-6xl mb-3 animate-in fade-in duration-500">{icon}</div>
@@ -24,8 +38,7 @@ export function EmptyState({ icon, title, description, action, children }: Empty
           {description}
         </p>
       )}
-      {action && <Button onClick={action.onClick}>{action.label}</Button>}
-      {children}
+      {renderAction()}
     </div>
   );
 }

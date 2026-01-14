@@ -1,7 +1,7 @@
 import { api } from "@convex/_generated/api";
 import type { Id } from "@convex/_generated/dataModel";
+import type { EnrichedIssue } from "@convex/lib/issueHelpers";
 import type { OptimisticLocalStore, OptimisticUpdate } from "convex/browser";
-import type { EnrichedIssue } from "@/convex/lib/issueHelpers";
 
 function updateSingleIssue(
   localStore: OptimisticLocalStore,

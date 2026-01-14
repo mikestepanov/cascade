@@ -1,5 +1,5 @@
 import { api } from "@convex/_generated/api";
-import type { Id } from "@convex/_generated/dataModel";
+import type { Doc, Id } from "@convex/_generated/dataModel";
 import { useMutation, useQuery } from "convex/react";
 import { useAsyncMutation } from "@/hooks/useAsyncMutation";
 import { useDeleteConfirmation } from "@/hooks/useDeleteConfirmation";
@@ -22,6 +22,7 @@ interface LabelsManagerProps {
 interface LabelFormData {
   name: string;
   color: string;
+  [key: string]: unknown;
 }
 
 // Default to brand-500 color from theme
@@ -139,7 +140,7 @@ export function LabelsManager({ projectId }: LabelsManagerProps) {
             />
           ) : (
             <Flex direction="column" gap="sm">
-              {labels.map((label) => (
+              {labels.map((label: Doc<"labels">) => (
                 <Flex
                   key={label._id}
                   justify="between"

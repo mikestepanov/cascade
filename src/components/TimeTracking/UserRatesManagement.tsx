@@ -1,5 +1,5 @@
 import { api } from "@convex/_generated/api";
-import type { Id } from "@convex/_generated/dataModel";
+import type { Doc, Id } from "@convex/_generated/dataModel";
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
 import { showError, showSuccess } from "@/lib/toast";
@@ -92,7 +92,7 @@ export function UserRatesManagement() {
       {/* Current Rates List */}
       {userRates && userRates.length > 0 ? (
         <Flex direction="column" gap="md">
-          {userRates.map((rate) => (
+          {userRates.map((rate: Doc<"userRates"> & { user?: Doc<"users"> }) => (
             <div
               key={rate._id}
               className="p-4 bg-ui-bg-primary dark:bg-ui-bg-primary-dark border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg"
@@ -194,7 +194,7 @@ export function UserRatesManagement() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="default">All Projects (Default)</SelectItem>
-                  {projects?.page?.map((project) => (
+                  {projects?.page?.map((project: Doc<"projects">) => (
                     <SelectItem key={project._id} value={project._id}>
                       {project.name} (Override)
                     </SelectItem>

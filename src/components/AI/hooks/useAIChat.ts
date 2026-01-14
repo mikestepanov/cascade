@@ -22,8 +22,8 @@ export interface UseAIChatReturn {
   copiedMessageId: string | null;
 
   // Refs
-  messagesEndRef: React.RefObject<HTMLDivElement>;
-  textareaRef: React.RefObject<HTMLTextAreaElement>;
+  messagesEndRef: React.RefObject<HTMLDivElement | null>;
+  textareaRef: React.RefObject<HTMLTextAreaElement | null>;
 
   // Data
   messages: Doc<"aiMessages">[] | undefined;

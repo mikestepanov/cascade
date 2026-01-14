@@ -210,7 +210,7 @@ export function parseFrontmatter(markdown: string): {
     let value: unknown = line.slice(colonIndex + 1).trim();
 
     // Remove quotes
-    if (value.startsWith('"') && value.endsWith('"')) {
+    if (typeof value === "string" && value.startsWith('"') && value.endsWith('"')) {
       value = value.slice(1, -1);
     }
 

@@ -12,11 +12,11 @@ export const Route = createFileRoute(
 });
 
 function TeamBoardPage() {
-  const { company } = useCompany();
+  const { companyId } = useCompany();
   const { teamSlug } = Route.useParams();
 
   const team = useQuery(api.teams.getBySlug, {
-    companyId: company._id,
+    companyId: companyId,
     slug: teamSlug,
   });
 

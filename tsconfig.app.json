@@ -19,12 +19,14 @@
     "strict": true,
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true,
+    "esModuleInterop": true,
 
     /* Import paths */
     "paths": {
       "@/*": ["./src/*"],
       "@convex/*": ["./convex/*"]
-    }
+    },
+    "types": ["vitest/globals", "node", "react", "react-dom"]
   },
   "include": ["src"]
 }

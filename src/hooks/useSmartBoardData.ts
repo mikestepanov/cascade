@@ -293,7 +293,7 @@ export function useSmartBoardData({
     const allLoadedIssues = getAllLoadedIssues(additionalDoneIssues, smartData);
     if (allLoadedIssues.length === 0) return undefined;
 
-    const oldest = allLoadedIssues.reduce((min, issue) =>
+    const oldest = allLoadedIssues.reduce((min: EnrichedIssue, issue: EnrichedIssue) =>
       issue.updatedAt < min.updatedAt ? issue : min,
     );
     return { timestamp: oldest.updatedAt, id: oldest._id.toString() };

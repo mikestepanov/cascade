@@ -491,23 +491,50 @@ export const getCurrentWeekTimesheet = query({
       .collect();
 
     // Group by day
-    const byDay: Record<string, Array<Doc<"timeEntries"> & { hours: number }>> = {};
+
+    // Batch fetch project and issue data
+    const projectIds = [
+      ...new Set(entries.map((e) => e.projectId).filter((id): id is Id<"projects"> => !!id)),
+    ];
+    const issueIds = [
+      ...new Set(entries.map((e) => e.issueId).filter((id): id is Id<"issues"> => !!id)),
+    ];
+
+    const [projectMap, issueMap] = await Promise.all([
+      batchFetchProjects(ctx, projectIds),
+      batchFetchIssues(ctx, issueIds),
+    ]);
+
+    // Enrich entries first to let TypeScript infer the type
+    const enrichedEntries = entries.map((entry) => {
+      const project = entry.projectId ? projectMap.get(entry.projectId) : undefined;
+      const issue = entry.issueId ? issueMap.get(entry.issueId) : undefined;
+      const hours = entry.duration / 3600;
+
+      return {
+        ...entry,
+        hours,
+        projectKey: project?.key,
+        issueKey: issue?.key,
+      };
+    });
+
+    const byDay: Record<string, typeof enrichedEntries> = {};
     let totalHours = 0;
     let billableHours = 0;
 
-    for (const entry of entries) {
+    for (const entry of enrichedEntries) {
       const dayKey = new Date(entry.date).toISOString().split("T")[0];
-      const hours = entry.duration / 3600;
 
       if (!byDay[dayKey]) {
         byDay[dayKey] = [];
       }
 
-      byDay[dayKey].push({ ...entry, hours });
-      totalHours += hours;
+      byDay[dayKey].push(entry);
+      totalHours += entry.hours;
 
       if (entry.billable) {
-        billableHours += hours;
+        billableHours += entry.hours;
       }
     }
 

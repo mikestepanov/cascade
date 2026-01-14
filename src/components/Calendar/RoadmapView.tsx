@@ -1,5 +1,5 @@
 import { api } from "@convex/_generated/api";
-import type { Id } from "@convex/_generated/dataModel";
+import type { Doc, Id } from "@convex/_generated/dataModel";
 import { useQuery } from "convex/react";
 import { useState } from "react";
 import { ChevronLeft, ChevronRight } from "@/lib/icons";
@@ -28,10 +28,12 @@ export function RoadmapView({ projectId }: RoadmapViewProps) {
   const roadmapItems = [
     ...(sprints
       ?.filter(
-        (sprint): sprint is typeof sprint & { startDate: number; endDate: number } =>
+        (
+          sprint: Doc<"sprints">,
+        ): sprint is typeof sprint & { startDate: number; endDate: number } =>
           sprint.startDate !== undefined && sprint.endDate !== undefined,
       )
-      .map((sprint) => ({
+      .map((sprint: Doc<"sprints">) => ({
         type: "sprint" as const,
         id: sprint._id,
         title: sprint.name,
@@ -40,8 +42,11 @@ export function RoadmapView({ projectId }: RoadmapViewProps) {
         status: sprint.status,
       })) || []),
     ...(issues
-      ?.filter((issue): issue is typeof issue & { dueDate: number } => issue.dueDate !== undefined)
-      .map((issue) => ({
+      ?.filter(
+        (issue: Doc<"issues">): issue is typeof issue & { dueDate: number } =>
+          issue.dueDate !== undefined,
+      )
+      .map((issue: Doc<"issues">) => ({
         type: "issue" as const,
         id: issue._id,
         title: `${issue.key}: ${issue.title}`,
@@ -262,7 +267,7 @@ export function RoadmapView({ projectId }: RoadmapViewProps) {
 
 // Render a date bar for an item
 function renderDateBar(
-  item: { startDate: number; endDate: number },
+  item: { startDate: number; endDate: number; [key: string]: unknown },
   rangeStart: Date,
   rangeEnd: Date,
   _columnCount: number,

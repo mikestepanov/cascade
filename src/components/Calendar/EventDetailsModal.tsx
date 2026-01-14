@@ -15,6 +15,12 @@ import { Flex } from "../ui/Flex";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/Select";
 import { Typography } from "../ui/Typography";
 
+interface AttendanceParticipant {
+  userId: string;
+  userName?: string;
+  status: "present" | "tardy" | "absent";
+}
+
 interface EventDetailsModalProps {
   eventId: Id<"calendarEvents">;
   open: boolean;
@@ -265,7 +271,7 @@ export function EventDetailsModal({ eventId, open, onOpenChange }: EventDetailsM
                 </Flex>
 
                 <Flex direction="column" gap="sm">
-                  {attendance.attendees.map((attendee) => (
+                  {attendance.attendees.map((attendee: AttendanceParticipant) => (
                     <Flex
                       key={attendee.userId}
                       justify="between"
@@ -296,7 +302,7 @@ export function EventDetailsModal({ eventId, open, onOpenChange }: EventDetailsM
                         value={attendee.status || ""}
                         onValueChange={(value) =>
                           handleMarkAttendance(
-                            attendee.userId,
+                            attendee.userId as Id<"users">,
                             value as "present" | "tardy" | "absent",
                           )
                         }

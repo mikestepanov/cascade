@@ -1,9 +1,10 @@
 import { api } from "@convex/_generated/api";
-import type { Id } from "@convex/_generated/dataModel";
+import type { Doc, Id } from "@convex/_generated/dataModel";
+import { useForm } from "@tanstack/react-form";
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
 import { z } from "zod";
-import { FormInput, FormTextarea, useAppForm } from "@/lib/form";
+import { FormInput, FormTextarea } from "@/lib/form";
 import { Calendar, Clock, LinkIcon, MapPin } from "@/lib/icons";
 import { showError, showSuccess } from "@/lib/toast";
 import { cn } from "@/lib/utils";
@@ -21,14 +22,14 @@ const eventTypes = ["meeting", "deadline", "timeblock", "personal"] as const;
 
 const createEventSchema = z.object({
   title: z.string().min(1, "Title is required"),
-  description: z.string().optional(),
+  description: z.string(),
   startDate: z.string().min(1, "Date is required"),
   startTime: z.string(),
   endTime: z.string(),
   allDay: z.boolean(),
   eventType: z.enum(eventTypes),
-  location: z.string().optional(),
-  meetingUrl: z.union([z.string().url(), z.literal("")]).optional(),
+  location: z.string(),
+  meetingUrl: z.union([z.string().url(), z.literal("")]),
   isRequired: z.boolean(),
 });
 
@@ -59,7 +60,9 @@ export function CreateEventModal({
     projectId,
   );
 
-  const form = useAppForm({
+  type CreateEventForm = z.infer<typeof createEventSchema>;
+
+  const form = useForm({
     defaultValues: {
       title: "",
       description: "",
@@ -67,13 +70,13 @@ export function CreateEventModal({
       startTime: "09:00",
       endTime: "10:00",
       allDay: false,
-      eventType: "meeting" as const,
+      eventType: "meeting" as CreateEventForm["eventType"],
       location: "",
       meetingUrl: "",
       isRequired: false,
     },
     validators: { onChange: createEventSchema },
-    onSubmit: async ({ value }) => {
+    onSubmit: async ({ value }: { value: CreateEventForm }) => {
       try {
         // Parse start and end times
         const [startHour, startMinute] = value.startTime.split(":").map(Number);
@@ -120,14 +123,8 @@ export function CreateEventModal({
             form.handleSubmit();
           }}
         >
-          <form.Subscribe
-            selector={(state) => [
-              state.values.eventType,
-              state.values.allDay,
-              state.values.isRequired,
-            ]}
-          >
-            {([eventType, allDay, isRequired]) => (
+          <form.Subscribe selector={(state) => state.values}>
+            {({ eventType, allDay, isRequired }) => (
               <Flex direction="column" gap="lg" className="p-6">
                 {/* Title */}
                 <form.Field name="title">
@@ -151,7 +148,9 @@ export function CreateEventModal({
                       <button
                         key={type}
                         type="button"
-                        onClick={() => form.setFieldValue("eventType", type)}
+                        onClick={() =>
+                          form.setFieldValue("eventType", type as (typeof eventTypes)[number])
+                        }
                         className={cn(
                           "px-3 py-2 rounded-md text-sm font-medium capitalize",
                           eventType === type
@@ -181,7 +180,7 @@ export function CreateEventModal({
                           <input
                             id="event-date"
                             type="date"
-                            value={field.state.value}
+                            value={field.state.value as string}
                             onChange={(e) => field.handleChange(e.target.value)}
                             onBlur={field.handleBlur}
                             required
@@ -205,7 +204,7 @@ export function CreateEventModal({
                           <input
                             id="event-start-time"
                             type="time"
-                            value={field.state.value}
+                            value={field.state.value as string}
                             onChange={(e) => field.handleChange(e.target.value)}
                             onBlur={field.handleBlur}
                             disabled={allDay as boolean}
@@ -228,7 +227,7 @@ export function CreateEventModal({
                           <input
                             id="event-end-time"
                             type="time"
-                            value={field.state.value}
+                            value={field.state.value as string}
                             onChange={(e) => field.handleChange(e.target.value)}
                             onBlur={field.handleBlur}
                             disabled={allDay as boolean}
@@ -248,7 +247,7 @@ export function CreateEventModal({
                         <Flex gap="sm" align="center" className="cursor-pointer">
                           <input
                             type="checkbox"
-                            checked={field.state.value}
+                            checked={field.state.value as boolean}
                             onChange={(e) => field.handleChange(e.target.checked)}
                             className="w-4 h-4 text-brand-600 rounded focus:ring-2 focus:ring-brand-500"
                           />
@@ -270,7 +269,7 @@ export function CreateEventModal({
                           <Flex gap="sm" align="center" className="cursor-pointer">
                             <input
                               type="checkbox"
-                              checked={field.state.value}
+                              checked={field.state.value as boolean}
                               onChange={(e) => field.handleChange(e.target.checked)}
                               className="w-4 h-4 text-brand-600 rounded focus:ring-2 focus:ring-brand-500"
                             />
@@ -315,7 +314,7 @@ export function CreateEventModal({
                       <input
                         id="event-location"
                         type="text"
-                        value={field.state.value ?? ""}
+                        value={(field.state.value as string) ?? ""}
                         onChange={(e) => field.handleChange(e.target.value)}
                         onBlur={field.handleBlur}
                         className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-md bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark"
@@ -340,7 +339,7 @@ export function CreateEventModal({
                         <input
                           id="event-meeting-url"
                           type="url"
-                          value={field.state.value ?? ""}
+                          value={(field.state.value as string) ?? ""}
                           onChange={(e) => field.handleChange(e.target.value)}
                           onBlur={field.handleBlur}
                           className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-md bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark"
@@ -372,7 +371,7 @@ export function CreateEventModal({
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="none">No project</SelectItem>
-                      {projects?.map((project) => (
+                      {projects?.map((project: Doc<"projects">) => (
                         <SelectItem key={project._id} value={project._id}>
                           {project.name} ({project.key})
                         </SelectItem>

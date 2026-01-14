@@ -23,6 +23,15 @@ export function FileAttachments({ issueId }: FileAttachmentsProps) {
   const generateUploadUrl = useMutation(api.files.generateUploadUrl);
   const addAttachment = useMutation(api.files.addAttachment);
   const removeAttachment = useMutation(api.files.removeAttachment);
+  // Define type for attachment if not available globally
+  interface Attachment {
+    storageId: Id<"_storage">;
+    filename: string;
+    url: string | null;
+    contentType: string;
+    size: number;
+    uploadedAt: number;
+  }
 
   const handleFileSelect = async (files: FileList | null) => {
     if (!files || files.length === 0) return;
@@ -167,7 +176,7 @@ export function FileAttachments({ issueId }: FileAttachmentsProps) {
           <h4 className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
             Attachments ({attachments.length})
           </h4>
-          {attachments.map((attachment) => (
+          {attachments.map((attachment: Attachment) => (
             <Flex
               key={attachment.storageId}
               align="center"

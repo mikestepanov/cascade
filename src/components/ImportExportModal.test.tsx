@@ -2,7 +2,7 @@ import type { Id } from "@convex/_generated/dataModel";
 import userEvent from "@testing-library/user-event";
 import { useMutation, useQuery } from "convex/react";
 import { toast } from "sonner";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, type Mock, vi } from "vitest";
 import { showError, showSuccess } from "@/lib/toast";
 import { render, screen, waitFor } from "@/test/custom-render";
 import { ImportExportModal } from "./ImportExportModal";
@@ -70,13 +70,13 @@ describe("ImportExportModal - Component Behavior", () => {
     vi.mocked(showError).mockClear();
 
     // Set up mutation mocks to persist across re-renders
-    (useMutation as vi.Mock).mockImplementation(() => {
+    (useMutation as any).mockImplementation(() => {
       mutationCallCount++;
       if (mutationCallCount % 2 === 1) return mockImportCSV; // Odd calls = importCSV
       return mockImportJSON; // Even calls = importJSON
     });
 
-    (useQuery as vi.Mock).mockReturnValue(undefined);
+    (useQuery as any).mockReturnValue(undefined);
   });
 
   afterEach(() => {
@@ -147,7 +147,7 @@ describe("ImportExportModal - Component Behavior", () => {
 
       // First query call returns undefined, second returns empty string
       let queryCallCount = 0;
-      (useQuery as vi.Mock).mockImplementation(() => {
+      (useQuery as any).mockImplementation(() => {
         queryCallCount++;
         return queryCallCount > 1 ? "" : undefined;
       });
@@ -167,7 +167,7 @@ describe("ImportExportModal - Component Behavior", () => {
       const user = userEvent.setup();
 
       let queryCallCount = 0;
-      (useQuery as vi.Mock).mockImplementation(() => {
+      (useQuery as any).mockImplementation(() => {
         queryCallCount++;
         return queryCallCount > 1 ? "   " : undefined;
       });
@@ -187,7 +187,7 @@ describe("ImportExportModal - Component Behavior", () => {
       const user = userEvent.setup();
 
       // Mock useQuery to return CSV data when called
-      (useQuery as vi.Mock).mockImplementation((_apiRef, args) => {
+      (useQuery as unknown as Mock).mockImplementation((_apiRef: unknown, args: unknown) => {
         // Return undefined initially, then return data when isExporting becomes true
         if (args === "skip") return undefined;
         return "key,title\nTEST-1,Issue";
@@ -228,7 +228,7 @@ describe("ImportExportModal - Component Behavior", () => {
   describe("Export Button State", () => {
     it("should show 'Exporting...' text when isExporting is true", async () => {
       const user = userEvent.setup();
-      (useQuery as vi.Mock).mockReturnValue(undefined); // Keep loading
+      (useQuery as any).mockReturnValue(undefined); // Keep loading
 
       render(
         <ImportExportModal open={true} onOpenChange={mockOnOpenChange} projectId={mockProjectId} />,
@@ -241,7 +241,7 @@ describe("ImportExportModal - Component Behavior", () => {
 
     it("should disable export button while exporting", async () => {
       const user = userEvent.setup();
-      (useQuery as vi.Mock).mockReturnValue(undefined);
+      (useQuery as any).mockReturnValue(undefined);
 
       render(
         <ImportExportModal open={true} onOpenChange={mockOnOpenChange} projectId={mockProjectId} />,

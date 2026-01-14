@@ -1,10 +1,11 @@
 import { api } from "@convex/_generated/api";
-import type { Id } from "@convex/_generated/dataModel";
+import type { Doc, Id } from "@convex/_generated/dataModel";
+import { useForm } from "@tanstack/react-form";
 import { useAction, useMutation, useQuery } from "convex/react";
 import { useEffect, useState } from "react";
 import { z } from "zod";
 import { toggleInArray } from "@/lib/array-utils";
-import { FormInput, FormSelect, FormTextarea, useAppForm } from "@/lib/form";
+import { FormInput, FormSelect, FormTextarea } from "@/lib/form";
 import { showError, showSuccess } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 import { Button } from "./ui/Button";
@@ -28,11 +29,11 @@ const priorities = ["lowest", "low", "medium", "high", "highest"] as const;
 
 const createIssueSchema = z.object({
   title: z.string().min(1, "Title is required"),
-  description: z.string().optional(),
+  description: z.string(),
   type: z.enum(issueTypes),
   priority: z.enum(priorities),
-  assigneeId: z.string().optional(),
-  storyPoints: z.string().optional(),
+  assigneeId: z.string(),
+  storyPoints: z.string(),
 });
 
 // =============================================================================
@@ -69,18 +70,20 @@ export function CreateIssueModal({
   const createIssue = useMutation(api.issues.create);
   const generateSuggestions = useAction(api.ai.actions.generateIssueSuggestions);
 
+  type CreateIssueForm = z.infer<typeof createIssueSchema>;
+
   // Form
-  const form = useAppForm({
+  const form = useForm({
     defaultValues: {
       title: "",
       description: "",
-      type: "task" as const,
-      priority: "medium" as const,
+      type: "task" as CreateIssueForm["type"],
+      priority: "medium" as CreateIssueForm["priority"],
       assigneeId: "",
       storyPoints: "",
     },
     validators: { onChange: createIssueSchema },
-    onSubmit: async ({ value }) => {
+    onSubmit: async ({ value }: { value: CreateIssueForm }) => {
       try {
         await createIssue({
           projectId,
@@ -106,7 +109,7 @@ export function CreateIssueModal({
   useEffect(() => {
     if (!(selectedTemplate && templates)) return;
 
-    const template = templates.find((t) => t._id === selectedTemplate);
+    const template = templates.find((t: Doc<"issueTemplates">) => t._id === selectedTemplate);
     if (!template) return;
 
     form.setFieldValue("type", template.type);
@@ -117,8 +120,8 @@ export function CreateIssueModal({
     // Apply default labels if they exist
     if (template.defaultLabels && template.defaultLabels.length > 0 && labels) {
       const labelIds = labels
-        .filter((label) => template.defaultLabels?.includes(label.name))
-        .map((label) => label._id);
+        .filter((label: Doc<"labels">) => template.defaultLabels?.includes(label.name))
+        .map((label: Doc<"labels">) => label._id);
       setSelectedLabels(labelIds);
     }
   }, [selectedTemplate, templates, labels, form]);
@@ -128,7 +131,7 @@ export function CreateIssueModal({
   };
 
   const handleGenerateAISuggestions = async () => {
-    const title = form.getFieldValue("title");
+    const title = form.getFieldValue("title") as string;
     const description = form.getFieldValue("description");
 
     if (!title?.trim()) {
@@ -146,21 +149,18 @@ export function CreateIssueModal({
       });
 
       // Apply AI suggestions
-      if (suggestions.description && !description?.trim()) {
+      if (suggestions.description && !(description as string)?.trim()) {
         form.setFieldValue("description", suggestions.description);
       }
 
       if (suggestions.priority) {
-        form.setFieldValue(
-          "priority",
-          suggestions.priority as "lowest" | "low" | "medium" | "high" | "highest",
-        );
+        form.setFieldValue("priority", suggestions.priority as (typeof priorities)[number]);
       }
 
       if (suggestions.labels && suggestions.labels.length > 0 && labels) {
         const suggestedLabelIds = labels
-          .filter((label) => suggestions.labels.includes(label.name))
-          .map((label) => label._id);
+          .filter((label: Doc<"labels">) => suggestions.labels.includes(label.name))
+          .map((label: Doc<"labels">) => label._id);
         setSelectedLabels((prev) => [...new Set([...prev, ...suggestedLabelIds])]);
       }
 
@@ -197,7 +197,7 @@ export function CreateIssueModal({
               onChange={(e) => setSelectedTemplate(e.target.value as Id<"issueTemplates"> | "")}
             >
               <option value="">Start from scratch</option>
-              {templates.map((template) => (
+              {templates.map((template: Doc<"issueTemplates">) => (
                 <option key={template._id} value={template._id}>
                   {template.name} ({template.type})
                 </option>
@@ -288,7 +288,7 @@ export function CreateIssueModal({
             {(field) => (
               <FormSelect field={field} label="Assignee">
                 <option value="">Unassigned</option>
-                {project.members.map((member) => (
+                {project.members.map((member: Doc<"users">) => (
                   <option key={member._id} value={member._id}>
                     {member.name}
                   </option>
@@ -316,7 +316,7 @@ export function CreateIssueModal({
             <div>
               <div className="block text-sm font-medium text-ui-text-primary mb-2">Labels</div>
               <div className="flex flex-wrap gap-2">
-                {labels.map((label) => (
+                {labels.map((label: Doc<"labels">) => (
                   <button
                     key={label._id}
                     type="button"

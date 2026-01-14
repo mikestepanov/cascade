@@ -1,11 +1,13 @@
 import { api } from "@convex/_generated/api";
 import type { Id } from "@convex/_generated/dataModel";
+import { useForm, useStore } from "@tanstack/react-form";
 import { useMutation, useQuery } from "convex/react";
+import type { FunctionReturnType } from "convex/server";
 import { Clock, Hourglass } from "lucide-react";
 import { useEffect, useState } from "react";
 import { z } from "zod";
 import { ACTIVITY_TYPES } from "@/lib/constants";
-import { FormTextarea, useAppForm } from "@/lib/form";
+import { FormTextarea } from "@/lib/form";
 import { formatDateForInput, formatDurationHuman, parseDuration } from "@/lib/formatting";
 import { showError, showSuccess } from "@/lib/toast";
 import { cn } from "@/lib/utils";
@@ -20,6 +22,9 @@ import { calculateManualEntryTimes, validateManualTimeEntry } from "./manualTime
 // Types & Schema
 // =============================================================================
 
+type ProjectItem = FunctionReturnType<typeof api.projects.getCurrentUserProjects>["page"][number];
+type IssueItem = FunctionReturnType<typeof api.issues.listSelectableIssues>[number];
+
 type EntryMode = "duration" | "timeRange";
 
 const timeEntrySchema = z.object({
@@ -27,8 +32,8 @@ const timeEntrySchema = z.object({
   startTime: z.string(),
   endTime: z.string(),
   durationInput: z.string(),
-  description: z.string().optional(),
-  activity: z.string().optional(),
+  description: z.string(),
+  activity: z.string(),
   billable: z.boolean(),
 });
 
@@ -135,7 +140,9 @@ export function ManualTimeEntryModal({
     projectId ? { projectId } : "skip",
   );
 
-  const form = useAppForm({
+  type TimeEntryForm = z.infer<typeof timeEntrySchema>;
+
+  const form = useForm({
     defaultValues: {
       date: formatDateForInput(Date.now()),
       startTime: "09:00",
@@ -146,7 +153,7 @@ export function ManualTimeEntryModal({
       billable: false,
     },
     validators: { onChange: timeEntrySchema },
-    onSubmit: async ({ value }) => {
+    onSubmit: async ({ value }: { value: TimeEntryForm }) => {
       const effectiveDuration = entryMode === "duration" ? durationSeconds : timeRangeDuration;
 
       // Validate using extracted helper
@@ -189,10 +196,10 @@ export function ManualTimeEntryModal({
   });
 
   // Subscribe to form values for derived calculations
-  const date = form.useStore((state) => state.values.date);
-  const startTime = form.useStore((state) => state.values.startTime);
-  const endTime = form.useStore((state) => state.values.endTime);
-  const durationInput = form.useStore((state) => state.values.durationInput);
+  const date = useStore(form.store, (state) => state.values.date);
+  const startTime = useStore(form.store, (state) => state.values.startTime);
+  const endTime = useStore(form.store, (state) => state.values.endTime);
+  const durationInput = useStore(form.store, (state) => state.values.durationInput);
 
   // Parse duration input when it changes
   useEffect(() => {
@@ -444,7 +451,7 @@ export function ManualTimeEntryModal({
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="none">No project</SelectItem>
-                {projects?.page?.map((project) => (
+                {projects?.page?.map((project: ProjectItem) => (
                   <SelectItem key={project._id} value={project._id}>
                     {project.name}
                   </SelectItem>
@@ -473,7 +480,7 @@ export function ManualTimeEntryModal({
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="none">No issue</SelectItem>
-                  {projectIssues.map((issue) => (
+                  {projectIssues.map((issue: IssueItem) => (
                     <SelectItem key={issue._id} value={issue._id}>
                       {issue.key} - {issue.title}
                     </SelectItem>

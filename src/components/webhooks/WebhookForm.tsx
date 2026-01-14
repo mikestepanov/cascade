@@ -1,10 +1,11 @@
 import { api } from "@convex/_generated/api";
 import type { Id } from "@convex/_generated/dataModel";
+import { useForm } from "@tanstack/react-form";
 import { useMutation } from "convex/react";
 import { useEffect, useState } from "react";
 import { z } from "zod";
 import { toggleInArray } from "@/lib/array-utils";
-import { FormInput, useAppForm } from "@/lib/form";
+import { FormInput } from "@/lib/form";
 import { showError, showSuccess } from "@/lib/toast";
 import { Button } from "../ui/Button";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "../ui/Dialog";
@@ -18,7 +19,7 @@ import { Typography } from "../ui/Typography";
 const webhookSchema = z.object({
   name: z.string().min(1, "Name is required"),
   url: z.string().url("Invalid URL"),
-  secret: z.string().optional(),
+  secret: z.string(),
 });
 
 const AVAILABLE_EVENTS = [
@@ -54,14 +55,14 @@ export function WebhookForm({ projectId, webhook, open, onOpenChange }: WebhookF
   const createWebhook = useMutation(api.webhooks.createWebhook);
   const updateWebhook = useMutation(api.webhooks.updateWebhook);
 
-  const form = useAppForm({
+  const form = useForm({
     defaultValues: {
       name: "",
       url: "",
       secret: "",
     },
     validators: { onChange: webhookSchema },
-    onSubmit: async ({ value }) => {
+    onSubmit: async ({ value }: { value: { name: string; url: string; secret: string } }) => {
       if (selectedEvents.length === 0) {
         showError("Select at least one event");
         return;

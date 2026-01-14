@@ -1,4 +1,5 @@
 import { api } from "@convex/_generated/api";
+import type { Doc } from "@convex/_generated/dataModel";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
 import { useState } from "react";
@@ -9,7 +10,7 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { Flex } from "@/components/ui/Flex";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { Typography } from "@/components/ui/Typography";
-import { ROUTES } from "@/config/routes";
+import { ROUTE_PATTERNS } from "@/config/routes";
 import { useCompany } from "@/hooks/useCompanyContext";
 
 export const Route = createFileRoute("/_auth/_app/$companySlug/workspaces/")({
@@ -25,7 +26,10 @@ function WorkspacesList() {
   });
 
   const handleWorkspaceCreated = (_workspaceId: string, slug: string) => {
-    navigate({ to: ROUTES.workspaces.teams.list(companySlug, slug) });
+    navigate({
+      to: ROUTE_PATTERNS.workspaces.teams.list,
+      params: { companySlug, workspaceSlug: slug },
+    });
   };
 
   if (workspaces === undefined) {
@@ -40,7 +44,7 @@ function WorkspacesList() {
     <div className="container mx-auto p-6">
       <Flex direction="column" gap="lg">
         {/* Header */}
-        <Flex justify="space-between" align="center">
+        <Flex justify="between" align="center">
           <div>
             <Typography variant="h1">Workspaces</Typography>
             <Typography variant="p" color="secondary">
@@ -61,6 +65,7 @@ function WorkspacesList() {
         {/* Workspaces Grid */}
         {workspaces.length === 0 ? (
           <EmptyState
+            icon="🏢"
             title="No workspaces yet"
             description="Create your first workspace to organize teams and projects"
             action={
@@ -71,8 +76,12 @@ function WorkspacesList() {
           />
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {workspaces.map((workspace) => (
-              <Link key={workspace._id} to={ROUTES.workspaces.detail(companySlug, workspace.slug)}>
+            {workspaces?.map((workspace: Doc<"workspaces">) => (
+              <Link
+                key={workspace._id}
+                to={ROUTE_PATTERNS.workspaces.detail}
+                params={{ companySlug, workspaceSlug: workspace.slug }}
+              >
                 <Card className="p-6 hover:shadow-lg transition-shadow cursor-pointer">
                   <Flex direction="column" gap="md">
                     <Flex align="center" gap="sm">

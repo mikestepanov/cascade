@@ -1,17 +1,11 @@
 import type { Id } from "@convex/_generated/dataModel";
+import type { WorkflowState } from "@convex/shared/types";
 import { Flex } from "../ui/Flex";
 import { Typography } from "../ui/Typography";
 import { DangerZone } from "./DangerZone";
 import { GeneralSettings } from "./GeneralSettings";
 import { MemberManagement } from "./MemberManagement";
 import { WorkflowSettings } from "./WorkflowSettings";
-
-interface WorkflowState {
-  id: string;
-  name: string;
-  category: "todo" | "inprogress" | "done";
-  order: number;
-}
 
 interface Member {
   _id: Id<"users">;

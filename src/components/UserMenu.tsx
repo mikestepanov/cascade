@@ -3,7 +3,7 @@ import { useAuthActions } from "@convex-dev/auth/react";
 import { Link } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
 import { LogOut, Settings } from "lucide-react";
-import { ROUTES } from "@/config/routes";
+import { ROUTE_PATTERNS } from "@/config/routes";
 import { useCompany } from "@/hooks/useCompanyContext";
 import { Avatar } from "./ui/Avatar";
 import {
@@ -52,7 +52,11 @@ export function UserMenu() {
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <DropdownMenuItem asChild>
-            <Link to={ROUTES.settings.profile(companySlug)} className="cursor-pointer w-full">
+            <Link
+              to={ROUTE_PATTERNS.settings.profile}
+              params={{ companySlug }}
+              className="cursor-pointer w-full"
+            >
               <Settings className="mr-2 h-4 w-4" />
               <span>Settings</span>
             </Link>

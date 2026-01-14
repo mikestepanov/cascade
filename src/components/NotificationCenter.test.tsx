@@ -31,19 +31,20 @@ describe("NotificationCenter", () => {
     mockRemove.mockReset();
 
     // Set up mutation mocks to persist across re-renders
-    (useMutation as vi.Mock).mockImplementation(() => {
+    vi.mocked(useMutation).mockImplementation(() => {
       mutationCallCount++;
-      if (mutationCallCount % 3 === 1) return mockMarkAsRead; // 1st, 4th, 7th calls
-      if (mutationCallCount % 3 === 2) return mockMarkAllAsRead; // 2nd, 5th, 8th calls
-      return mockRemove; // 3rd, 6th, 9th calls
+      if (mutationCallCount % 3 === 1) return mockMarkAsRead as any; // 1st, 4th, 7th calls
+      if (mutationCallCount % 3 === 2) return mockMarkAllAsRead as any; // 2nd, 5th, 8th calls
+      return mockRemove as any; // 3rd, 6th, 9th calls
     });
 
     // Default mock for useQuery
-    (useQuery as vi.Mock).mockReturnValue(undefined);
+    vi.mocked(useQuery).mockReturnValue(undefined);
     // Default mock for usePaginatedQuery
-    (usePaginatedQuery as vi.Mock).mockReturnValue({
+    vi.mocked(usePaginatedQuery).mockReturnValue({
       results: [],
       status: "Exhausted",
+      isLoading: false,
       loadMore: vi.fn(),
     });
   });
@@ -53,7 +54,7 @@ describe("NotificationCenter", () => {
   });
 
   it("should render notification bell button", () => {
-    (useQuery as vi.Mock).mockReturnValue(undefined);
+    vi.mocked(useQuery).mockReturnValue(undefined);
 
     render(<NotificationCenter />);
 
@@ -62,12 +63,13 @@ describe("NotificationCenter", () => {
 
   it("should show unread count badge when there are unread notifications", () => {
     // Component calls usePaginatedQuery for list, useQuery for unread count
-    (usePaginatedQuery as vi.Mock).mockReturnValue({
+    vi.mocked(usePaginatedQuery).mockReturnValue({
       results: [],
       status: "Exhausted",
+      isLoading: false,
       loadMore: vi.fn(),
     });
-    (useQuery as vi.Mock).mockReturnValue(5); // Unread count
+    vi.mocked(useQuery).mockReturnValue(5); // Unread count
 
     render(<NotificationCenter />);
 
@@ -75,12 +77,13 @@ describe("NotificationCenter", () => {
   });
 
   it("should not show badge when unread count is 0", () => {
-    (usePaginatedQuery as vi.Mock).mockReturnValue({
+    vi.mocked(usePaginatedQuery).mockReturnValue({
       results: [],
       status: "Exhausted",
+      isLoading: false,
       loadMore: vi.fn(),
     });
-    (useQuery as vi.Mock).mockReturnValue(0); // Unread count
+    vi.mocked(useQuery).mockReturnValue(0); // Unread count
 
     render(<NotificationCenter />);
 
@@ -90,12 +93,13 @@ describe("NotificationCenter", () => {
   });
 
   it("should show 99+ when unread count exceeds 99", () => {
-    (usePaginatedQuery as vi.Mock).mockReturnValue({
+    vi.mocked(usePaginatedQuery).mockReturnValue({
       results: [],
       status: "Exhausted",
+      isLoading: false,
       loadMore: vi.fn(),
     });
-    (useQuery as vi.Mock).mockReturnValue(150); // Unread count
+    vi.mocked(useQuery).mockReturnValue(150); // Unread count
 
     render(<NotificationCenter />);
 
@@ -104,12 +108,13 @@ describe("NotificationCenter", () => {
 
   it("should open dropdown when bell is clicked", async () => {
     const user = userEvent.setup();
-    (usePaginatedQuery as vi.Mock).mockReturnValue({
+    vi.mocked(usePaginatedQuery).mockReturnValue({
       results: [],
       status: "Exhausted",
+      isLoading: false,
       loadMore: vi.fn(),
     });
-    (useQuery as vi.Mock).mockReturnValue(0); // Unread count
+    vi.mocked(useQuery).mockReturnValue(0); // Unread count
 
     render(<NotificationCenter />);
 
@@ -121,12 +126,13 @@ describe("NotificationCenter", () => {
 
   it("should show empty state when no notifications", async () => {
     const user = userEvent.setup();
-    (usePaginatedQuery as vi.Mock).mockReturnValue({
+    vi.mocked(usePaginatedQuery).mockReturnValue({
       results: [],
       status: "Exhausted",
+      isLoading: false,
       loadMore: vi.fn(),
     });
-    (useQuery as vi.Mock).mockReturnValue(0); // Unread count
+    vi.mocked(useQuery).mockReturnValue(0); // Unread count
 
     render(<NotificationCenter />);
 
@@ -157,12 +163,13 @@ describe("NotificationCenter", () => {
       },
     ];
 
-    (usePaginatedQuery as vi.Mock).mockReturnValue({
+    vi.mocked(usePaginatedQuery).mockReturnValue({
       results: mockNotifications,
       status: "Exhausted",
+      isLoading: false,
       loadMore: vi.fn(),
     });
-    (useQuery as vi.Mock).mockReturnValue(1); // Unread count
+    vi.mocked(useQuery).mockReturnValue(1); // Unread count
 
     render(<NotificationCenter />);
 
@@ -188,12 +195,13 @@ describe("NotificationCenter", () => {
       },
     ];
 
-    (usePaginatedQuery as vi.Mock).mockReturnValue({
+    vi.mocked(usePaginatedQuery).mockReturnValue({
       results: mockNotifications,
       status: "Exhausted",
+      isLoading: false,
       loadMore: vi.fn(),
     });
-    (useQuery as vi.Mock).mockReturnValue(1); // Unread count
+    vi.mocked(useQuery).mockReturnValue(1); // Unread count
 
     render(<NotificationCenter />);
 
@@ -220,12 +228,13 @@ describe("NotificationCenter", () => {
       },
     ];
 
-    (usePaginatedQuery as vi.Mock).mockReturnValue({
+    vi.mocked(usePaginatedQuery).mockReturnValue({
       results: mockNotifications,
       status: "Exhausted",
+      isLoading: false,
       loadMore: vi.fn(),
     });
-    (useQuery as vi.Mock).mockReturnValue(1); // Unread count
+    vi.mocked(useQuery).mockReturnValue(1); // Unread count
     mockMarkAsRead.mockResolvedValue(undefined);
 
     render(<NotificationCenter />);
@@ -254,12 +263,13 @@ describe("NotificationCenter", () => {
       },
     ];
 
-    (usePaginatedQuery as vi.Mock).mockReturnValue({
+    vi.mocked(usePaginatedQuery).mockReturnValue({
       results: mockNotifications,
       status: "Exhausted",
+      isLoading: false,
       loadMore: vi.fn(),
     });
-    (useQuery as vi.Mock).mockReturnValue(1); // Unread count
+    vi.mocked(useQuery).mockReturnValue(1); // Unread count
     mockMarkAllAsRead.mockResolvedValue(undefined);
 
     render(<NotificationCenter />);
@@ -288,12 +298,13 @@ describe("NotificationCenter", () => {
       },
     ];
 
-    (usePaginatedQuery as vi.Mock).mockReturnValue({
+    vi.mocked(usePaginatedQuery).mockReturnValue({
       results: mockNotifications,
       status: "Exhausted",
+      isLoading: false,
       loadMore: vi.fn(),
     });
-    (useQuery as vi.Mock).mockReturnValue(0); // Unread count
+    vi.mocked(useQuery).mockReturnValue(0); // Unread count
     mockRemove.mockResolvedValue(undefined);
 
     render(<NotificationCenter />);
@@ -339,12 +350,13 @@ describe("NotificationCenter", () => {
       },
     ];
 
-    (usePaginatedQuery as vi.Mock).mockReturnValue({
+    vi.mocked(usePaginatedQuery).mockReturnValue({
       results: mockNotifications,
       status: "Exhausted",
+      isLoading: false,
       loadMore: vi.fn(),
     });
-    (useQuery as vi.Mock).mockReturnValue(3); // Unread count
+    vi.mocked(useQuery).mockReturnValue(3); // Unread count
 
     render(<NotificationCenter />);
 
@@ -381,12 +393,13 @@ describe("NotificationCenter", () => {
       },
     ];
 
-    (usePaginatedQuery as vi.Mock).mockReturnValue({
+    vi.mocked(usePaginatedQuery).mockReturnValue({
       results: mockNotifications,
       status: "Exhausted",
+      isLoading: false,
       loadMore: vi.fn(),
     });
-    (useQuery as vi.Mock).mockReturnValue(2); // Unread count
+    vi.mocked(useQuery).mockReturnValue(2); // Unread count
 
     render(<NotificationCenter />);
 
@@ -404,12 +417,13 @@ describe("NotificationCenter", () => {
 
   it("should close dropdown when backdrop is clicked", async () => {
     const user = userEvent.setup();
-    (usePaginatedQuery as vi.Mock).mockReturnValue({
+    vi.mocked(usePaginatedQuery).mockReturnValue({
       results: [],
       status: "Exhausted",
+      isLoading: false,
       loadMore: vi.fn(),
     });
-    (useQuery as vi.Mock).mockReturnValue(0); // Unread count
+    vi.mocked(useQuery).mockReturnValue(0); // Unread count
 
     render(<NotificationCenter />);
 

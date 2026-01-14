@@ -3,7 +3,7 @@
  */
 
 import { api } from "@convex/_generated/api";
-import type { Id } from "@convex/_generated/dataModel";
+import type { Doc, Id } from "@convex/_generated/dataModel";
 import { useQuery } from "convex/react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
@@ -32,7 +32,8 @@ export function AIAssistantPanel({ projectId, isOpen, onClose }: AIAssistantPane
     projectId ? { projectId } : "skip",
   );
 
-  const unreadSuggestions = suggestions?.filter((s) => !(s.accepted || s.dismissed)).length || 0;
+  const unreadSuggestions =
+    suggestions?.filter((s: Doc<"aiSuggestions">) => !(s.accepted || s.dismissed)).length || 0;
 
   const handleTabChange = (tab: "chat" | "suggestions") => {
     if (tab === activeTab) return;

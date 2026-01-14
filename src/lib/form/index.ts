@@ -5,8 +5,9 @@
  *
  * @example
  * ```tsx
- * import { useAppForm } from "@/lib/form";
+ * import { useForm } from "@tanstack/react-form";
  * import { z } from "zod";
+ * import { FormInput, FormSelect } from "@/lib/form";
  *
  * const schema = z.object({
  *   title: z.string().min(1, "Title is required"),
@@ -14,8 +15,8 @@
  * });
  *
  * function MyForm() {
- *   const form = useAppForm({
- *     defaultValues: { title: "", priority: "medium" },
+ *   const form = useForm({
+ *     defaultValues: { title: "", priority: "medium" as "low" | "medium" | "high" },
  *     validators: { onChange: schema },
  *     onSubmit: async ({ value }) => {
  *       await saveToDB(value);
@@ -44,5 +45,4 @@
  */
 
 export { FormCheckbox, FormInput, FormSelect, FormTextarea } from "./FormFields";
-export type { AppFormOptions, FormFieldProps } from "./types";
-export { useAppForm } from "./useAppForm";
+export type { AppFieldApi, AppFormApi, FormFieldProps } from "./types";

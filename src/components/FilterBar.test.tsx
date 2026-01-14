@@ -97,10 +97,10 @@ describe("FilterBar", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mutationCallCount = 0;
-    (useQuery as vi.Mock).mockReturnValue(mockSavedFilters);
+    (useQuery as any).mockReturnValue(mockSavedFilters);
 
     // Return mutations alternating between create and remove
-    (useMutation as vi.Mock).mockImplementation(() => {
+    (useMutation as any).mockImplementation(() => {
       mutationCallCount++;
       return mutationCallCount % 2 === 1 ? mockCreateFilter : mockRemoveFilter;
     });
@@ -131,7 +131,7 @@ describe("FilterBar", () => {
     });
 
     it("should render empty state when no saved filters", () => {
-      (useQuery as vi.Mock).mockReturnValue([]);
+      (useQuery as any).mockReturnValue([]);
 
       render(<FilterBar projectId={mockProjectId} onFilterChange={mockOnFilterChange} />);
 
@@ -144,7 +144,7 @@ describe("FilterBar", () => {
     });
 
     it("should render loading state when data is undefined", () => {
-      (useQuery as vi.Mock).mockReturnValue(undefined);
+      (useQuery as any).mockReturnValue(undefined);
 
       render(<FilterBar projectId={mockProjectId} onFilterChange={mockOnFilterChange} />);
 
@@ -486,7 +486,7 @@ describe("FilterBar", () => {
         creatorName: "Test User",
       }));
 
-      (useQuery as vi.Mock).mockReturnValue(manyFilters);
+      (useQuery as any).mockReturnValue(manyFilters);
 
       const { container } = render(
         <FilterBar projectId={mockProjectId} onFilterChange={mockOnFilterChange} />,

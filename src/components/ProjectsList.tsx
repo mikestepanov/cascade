@@ -8,7 +8,7 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { Flex } from "@/components/ui/Flex";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { Typography } from "@/components/ui/Typography";
-import { ROUTES } from "@/config/routes";
+import { ROUTE_PATTERNS } from "@/config/routes";
 import { useCompany } from "@/hooks/useCompanyContext";
 import { CreateProjectFromTemplate } from "./CreateProjectFromTemplate";
 
@@ -30,7 +30,10 @@ export function ProjectsList() {
 
   const handleProjectCreated = async (_projectId: string, projectKey: string) => {
     setIsCreateOpen(false);
-    await navigate({ to: ROUTES.projects.board(companySlug, projectKey) });
+    await navigate({
+      to: ROUTE_PATTERNS.projects.board,
+      params: { companySlug, key: projectKey },
+    });
   };
 
   if (status === "LoadingFirstPage") {
@@ -44,7 +47,7 @@ export function ProjectsList() {
   return (
     <Flex direction="column" gap="lg">
       {/* Header */}
-      <Flex justify="space-between" align="center">
+      <Flex justify="between" align="center">
         <div>
           <Typography variant="h2">Projects</Typography>
           <Typography variant="p" color="secondary">
@@ -59,6 +62,7 @@ export function ProjectsList() {
       {/* Projects Grid */}
       {projects.length === 0 ? (
         <EmptyState
+          icon="📁"
           title="No projects yet"
           description="Create your first project to organize work"
           action={
@@ -70,10 +74,14 @@ export function ProjectsList() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {projects.map((project) => (
-            <Link key={project._id} to={ROUTES.projects.board(companySlug, project.key)}>
+            <Link
+              key={project._id}
+              to={ROUTE_PATTERNS.projects.board}
+              params={{ companySlug, key: project.key }}
+            >
               <Card className="p-6 hover:shadow-lg transition-shadow cursor-pointer">
                 <Flex direction="column" gap="md">
-                  <Flex justify="space-between" align="start">
+                  <Flex justify="between" align="start">
                     <Typography variant="h3">{project.name}</Typography>
                     <Typography variant="inlineCode">{project.key}</Typography>
                   </Flex>

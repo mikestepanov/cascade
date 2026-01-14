@@ -102,7 +102,7 @@ export function AutomationRulesManager({ projectId }: AutomationRulesManagerProp
         </Card>
       ) : (
         <div className="space-y-3">
-          {rules.map((rule) => (
+          {rules.map((rule: AutomationRule) => (
             <AutomationRuleCard
               key={rule._id}
               rule={rule}

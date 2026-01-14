@@ -15,7 +15,7 @@ describe("GlobalSearch", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     queryCallCount = 0;
-    (useQuery as vi.Mock).mockReturnValue([]);
+    (useQuery as any).mockReturnValue([]);
   });
 
   afterEach(() => {
@@ -108,7 +108,7 @@ describe("GlobalSearch", () => {
     const mockDocuments = [{ _id: "2", title: "Test Doc" }];
 
     // Component calls useQuery twice per render: first for issues, second for documents
-    (useQuery as vi.Mock).mockImplementation(() => {
+    (useQuery as any).mockImplementation(() => {
       queryCallCount++;
       if (queryCallCount % 2 === 1) return { results: mockIssues, total: 1, hasMore: false }; // Odd calls = issues
       return { results: mockDocuments, total: 1, hasMore: false }; // Even calls = documents
@@ -167,7 +167,7 @@ describe("GlobalSearch", () => {
 
   it("should show empty state when query is empty", async () => {
     const user = userEvent.setup();
-    (useQuery as vi.Mock).mockReturnValue([]);
+    (useQuery as any).mockReturnValue([]);
 
     render(<GlobalSearch />);
 
@@ -181,7 +181,7 @@ describe("GlobalSearch", () => {
 
   it("should show empty state when no results found", async () => {
     const user = userEvent.setup();
-    (useQuery as vi.Mock).mockReturnValue([]);
+    (useQuery as any).mockReturnValue([]);
 
     render(<GlobalSearch />);
 
@@ -209,7 +209,7 @@ describe("GlobalSearch", () => {
       },
     ];
 
-    (useQuery as vi.Mock).mockImplementation(() => {
+    (useQuery as any).mockImplementation(() => {
       queryCallCount++;
       if (queryCallCount % 2 === 1) return { results: mockIssues, total: 1, hasMore: false }; // Odd calls = issues
       return { results: [], total: 0, hasMore: false }; // Even calls = documents
@@ -240,7 +240,7 @@ describe("GlobalSearch", () => {
       },
     ];
 
-    (useQuery as vi.Mock).mockImplementation(() => {
+    (useQuery as any).mockImplementation(() => {
       queryCallCount++;
       if (queryCallCount % 2 === 1) return { results: [], total: 0, hasMore: false }; // Odd calls = issues (empty)
       return { results: mockDocuments, total: 1, hasMore: false }; // Even calls = documents
@@ -263,7 +263,7 @@ describe("GlobalSearch", () => {
 
   it("should close modal when backdrop is clicked", async () => {
     const user = userEvent.setup();
-    (useQuery as vi.Mock).mockReturnValue([]);
+    (useQuery as any).mockReturnValue([]);
 
     render(<GlobalSearch />);
 
@@ -286,7 +286,7 @@ describe("GlobalSearch", () => {
 
   it("should close modal when Escape is pressed", async () => {
     const user = userEvent.setup();
-    (useQuery as vi.Mock).mockReturnValue([]);
+    (useQuery as any).mockReturnValue([]);
 
     render(<GlobalSearch />);
 
@@ -313,7 +313,7 @@ describe("GlobalSearch", () => {
       { _id: "3", key: "TEST-3", title: "Issue 3", type: "story", projectId: "proj-1" },
     ];
 
-    (useQuery as vi.Mock).mockImplementation(() => {
+    (useQuery as any).mockImplementation(() => {
       queryCallCount++;
       if (queryCallCount % 2 === 1) return { results: mockIssues, total: 3, hasMore: false }; // Odd calls = issues
       return { results: [], total: 0, hasMore: false }; // Even calls = documents
@@ -347,7 +347,7 @@ describe("GlobalSearch", () => {
       },
     ];
 
-    (useQuery as vi.Mock).mockImplementation(() => {
+    (useQuery as any).mockImplementation(() => {
       queryCallCount++;
       if (queryCallCount % 2 === 1) return { results: mockIssues, total: 1, hasMore: false }; // Odd calls = issues
       return { results: [], total: 0, hasMore: false }; // Even calls = documents

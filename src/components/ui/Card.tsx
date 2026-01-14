@@ -1,6 +1,5 @@
 import { cva, type VariantProps } from "class-variance-authority";
 import * as React from "react";
-import { handleKeyboardClick } from "@/lib/accessibility";
 import { cn } from "@/lib/utils";
 import { Flex } from "./Flex";
 
@@ -42,7 +41,12 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
           role: "button" as const,
           tabIndex: 0,
           onClick,
-          onKeyDown: handleKeyboardClick(onClick),
+          onKeyDown: (e: React.KeyboardEvent<HTMLDivElement>) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              onClick(e as unknown as React.MouseEvent<HTMLDivElement>);
+            }
+          },
         }
       : {};
 
@@ -60,9 +64,9 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
 );
 Card.displayName = "Card";
 
-export interface CardHeaderProps extends React.HTMLAttributes<HTMLDivElement> {
-  title?: string;
-  description?: string;
+export interface CardHeaderProps extends Omit<React.HTMLAttributes<HTMLDivElement>, "title"> {
+  title?: React.ReactNode;
+  description?: React.ReactNode;
   action?: React.ReactNode;
 }
 

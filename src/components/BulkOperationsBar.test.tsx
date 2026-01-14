@@ -71,14 +71,14 @@ describe("BulkOperationsBar - Component Behavior", () => {
 
     // Setup queries to cycle through values on each render
     let queryCallCount = 0;
-    (useQuery as vi.Mock).mockImplementation(() => {
+    (useQuery as any).mockImplementation(() => {
       const results = [mockProject, mockSprints, mockMembers];
       return results[queryCallCount++ % 3];
     });
 
     // Setup mutations - each useMutation call gets the corresponding mock
     let mutationCallCount = 0;
-    (useMutation as vi.Mock).mockImplementation(() => {
+    (useMutation as any).mockImplementation(() => {
       const mocks = [
         mockBulkUpdateStatus,
         mockBulkUpdatePriority,

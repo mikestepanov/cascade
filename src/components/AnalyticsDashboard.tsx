@@ -13,9 +13,32 @@ interface Props {
   projectId: Id<"projects">;
 }
 
+interface AnalyticsData {
+  totalIssues: number;
+  issuesByStatus: Record<string, number>;
+  issuesByType: Record<string, number>;
+  issuesByPriority: Record<string, number>;
+  issuesByAssignee: Record<string, { count: number; name: string }>;
+  unassignedCount: number;
+}
+
+interface VelocityData {
+  velocityData: {
+    sprintName: string;
+    sprintId: Id<"sprints">;
+    points: number;
+    issuesCompleted: number;
+  }[];
+  averageVelocity: number;
+}
+
 export function AnalyticsDashboard({ projectId }: Props) {
-  const analytics = useQuery(api.analytics.getProjectAnalytics, { projectId });
-  const velocity = useQuery(api.analytics.getTeamVelocity, { projectId });
+  const analytics = useQuery(api.analytics.getProjectAnalytics, { projectId }) as
+    | AnalyticsData
+    | undefined;
+  const velocity = useQuery(api.analytics.getTeamVelocity, { projectId }) as
+    | VelocityData
+    | undefined;
   const recentActivity = useQuery(api.analytics.getRecentActivity, {
     projectId,
     limit: 10,

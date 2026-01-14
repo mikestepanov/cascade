@@ -1,11 +1,11 @@
 import { api } from "@convex/_generated/api";
 import type { Doc, Id } from "@convex/_generated/dataModel";
-import { useStore } from "@tanstack/react-form";
+import { useForm } from "@tanstack/react-form";
 import { useMutation, useQuery } from "convex/react";
 import { useEffect, useState } from "react";
 import { z } from "zod";
 import { toggleInArray } from "@/lib/array-utils";
-import { FormInput, useAppForm } from "@/lib/form";
+import { FormInput } from "@/lib/form";
 import { showError, showSuccess } from "@/lib/toast";
 import { Button } from "../ui/Button";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "../ui/Dialog";
@@ -25,9 +25,6 @@ const webhookSchema = z.object({
     .refine((url) => url.includes("pumble.com"), {
       message: "Must be a valid Pumble webhook URL",
     }),
-  sendMentions: z.boolean(),
-  sendAssignments: z.boolean(),
-  sendStatusChanges: z.boolean(),
 });
 
 const AVAILABLE_EVENTS = [
@@ -99,7 +96,7 @@ export function PumbleIntegration() {
           <EmptyState onAddWebhook={() => setShowAddModal(true)} />
         ) : (
           <Flex direction="column" gap="lg">
-            {webhooks.map((webhook) => (
+            {webhooks.map((webhook: Doc<"webhooks">) => (
               <WebhookCard key={webhook._id} webhook={webhook} projects={projects || []} />
             ))}
           </Flex>
@@ -182,8 +179,10 @@ function EmptyState({ onAddWebhook }: { onAddWebhook: () => void }) {
   );
 }
 
+// WebhookCard component for displaying webhook details
+// WebhookCard component for displaying webhook details
 interface WebhookCardProps {
-  webhook: Doc<"pumbleWebhooks">;
+  webhook: Doc<"webhooks">;
   projects: Doc<"projects">[];
 }
 
@@ -227,7 +226,7 @@ function WebhookCard({ webhook, projects }: WebhookCardProps) {
     }
   };
 
-  const maskedUrl = webhook.webhookUrl.replace(/([^/]{8})[^/]+/, "$1***");
+  const maskedUrl = webhook.url.replace(/([^/]{8})[^/]+/, "$1***");
 
   return (
     <div className="border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg p-4 hover:border-accent-300 dark:hover:border-accent-700 transition-colors">
@@ -270,65 +269,10 @@ function WebhookCard({ webhook, projects }: WebhookCardProps) {
         ))}
       </Flex>
 
-      {/* Settings */}
-      <Flex className="flex-wrap gap-md mb-3 text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark">
-        {webhook.sendMentions && (
-          <Flex gap="xs" align="center">
-            <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
-              <path
-                fillRule="evenodd"
-                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                clipRule="evenodd"
-              />
-            </svg>
-            <span>Mentions</span>
-          </Flex>
-        )}
-        {webhook.sendAssignments && (
-          <Flex gap="xs" align="center">
-            <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
-              <path
-                fillRule="evenodd"
-                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                clipRule="evenodd"
-              />
-            </svg>
-            <span>Assignments</span>
-          </Flex>
-        )}
-        {webhook.sendStatusChanges && (
-          <Flex gap="xs" align="center">
-            <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
-              <path
-                fillRule="evenodd"
-                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                clipRule="evenodd"
-              />
-            </svg>
-            <span>Status Changes</span>
-          </Flex>
-        )}
-      </Flex>
-
       {/* Stats */}
-      <Flex gap="lg" align="center" className="mb-3 text-sm">
-        <div className="text-ui-text-secondary dark:text-ui-text-secondary-dark">
-          <span className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
-            {webhook.messagesSent}
-          </span>{" "}
-          messages sent
-        </div>
-        {webhook.lastMessageAt && (
-          <div className="text-ui-text-secondary dark:text-ui-text-secondary-dark">
-            Last: {new Date(webhook.lastMessageAt).toLocaleDateString()}
-          </div>
-        )}
-      </Flex>
-
-      {/* Error */}
-      {webhook.lastError && (
-        <div className="mb-3 p-2 bg-status-error/10 dark:bg-status-error/20 border border-status-error/30 dark:border-status-error/40 rounded text-xs text-status-error dark:text-status-error">
-          Last error: {webhook.lastError}
+      {webhook.lastTriggered && (
+        <div className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark mb-3">
+          Last triggered: {new Date(webhook.lastTriggered).toLocaleDateString()}
         </div>
       )}
 
@@ -385,16 +329,13 @@ function AddWebhookModal({ open, onOpenChange, projects }: AddWebhookModalProps)
 
   const addWebhook = useMutation(api.pumble.addWebhook);
 
-  const form = useAppForm({
+  const form = useForm({
     defaultValues: {
       name: "",
       webhookUrl: "",
-      sendMentions: true,
-      sendAssignments: true,
-      sendStatusChanges: true,
     },
     validators: { onChange: webhookSchema },
-    onSubmit: async ({ value }) => {
+    onSubmit: async ({ value }: { value: { name: string; webhookUrl: string } }) => {
       if (selectedEvents.length === 0) {
         showError("Please select at least one event");
         return;
@@ -403,12 +344,9 @@ function AddWebhookModal({ open, onOpenChange, projects }: AddWebhookModalProps)
       try {
         await addWebhook({
           name: value.name.trim(),
-          webhookUrl: value.webhookUrl.trim(),
+          url: value.webhookUrl.trim(),
           projectId,
           events: selectedEvents,
-          sendMentions: value.sendMentions,
-          sendAssignments: value.sendAssignments,
-          sendStatusChanges: value.sendStatusChanges,
         });
         showSuccess("Webhook added successfully!");
         onOpenChange(false);
@@ -430,10 +368,6 @@ function AddWebhookModal({ open, onOpenChange, projects }: AddWebhookModalProps)
   const toggleEvent = (event: string) => {
     setSelectedEvents((prev) => toggleInArray(prev, event));
   };
-
-  const sendMentions = useStore(form.store, (state) => state.values.sendMentions);
-  const sendAssignments = useStore(form.store, (state) => state.values.sendAssignments);
-  const sendStatusChanges = useStore(form.store, (state) => state.values.sendStatusChanges);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -492,7 +426,7 @@ function AddWebhookModal({ open, onOpenChange, projects }: AddWebhookModalProps)
               className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark"
             >
               <option value="">All Projects</option>
-              {projects.page?.map((project) => (
+              {projects?.map((project: Doc<"projects">) => (
                 <option key={project._id} value={project._id}>
                   {project.name}
                 </option>
@@ -523,30 +457,6 @@ function AddWebhookModal({ open, onOpenChange, projects }: AddWebhookModalProps)
                 Select at least one event
               </Typography>
             )}
-          </div>
-
-          {/* Additional Settings */}
-          <div>
-            <div className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-3">
-              Additional Settings
-            </div>
-            <div className="space-y-2">
-              <Checkbox
-                label="Send notifications for @mentions"
-                checked={sendMentions}
-                onChange={(e) => form.setFieldValue("sendMentions", e.target.checked)}
-              />
-              <Checkbox
-                label="Send notifications for assignments"
-                checked={sendAssignments}
-                onChange={(e) => form.setFieldValue("sendAssignments", e.target.checked)}
-              />
-              <Checkbox
-                label="Send notifications for status changes"
-                checked={sendStatusChanges}
-                onChange={(e) => form.setFieldValue("sendStatusChanges", e.target.checked)}
-              />
-            </div>
           </div>
 
           {/* Actions */}
@@ -583,31 +493,23 @@ function AddWebhookModal({ open, onOpenChange, projects }: AddWebhookModalProps)
 interface EditWebhookModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  webhook: Doc<"pumbleWebhooks">;
+  webhook: Doc<"webhooks">;
   projects: Doc<"projects">[];
 }
 
-function EditWebhookModal({
-  open,
-  onOpenChange,
-  webhook,
-  projects: _projects,
-}: EditWebhookModalProps) {
+function EditWebhookModal({ open, onOpenChange, webhook }: EditWebhookModalProps) {
   // Events kept outside form due to checkbox array pattern
   const [selectedEvents, setSelectedEvents] = useState<string[]>(webhook.events);
 
   const updateWebhook = useMutation(api.pumble.updateWebhook);
 
-  const form = useAppForm({
+  const form = useForm({
     defaultValues: {
       name: webhook.name,
-      webhookUrl: webhook.webhookUrl,
-      sendMentions: webhook.sendMentions,
-      sendAssignments: webhook.sendAssignments,
-      sendStatusChanges: webhook.sendStatusChanges,
+      webhookUrl: webhook.url,
     },
     validators: { onChange: webhookSchema },
-    onSubmit: async ({ value }) => {
+    onSubmit: async ({ value }: { value: { name: string; webhookUrl: string } }) => {
       if (selectedEvents.length === 0) {
         showError("Please select at least one event");
         return;
@@ -617,11 +519,8 @@ function EditWebhookModal({
         await updateWebhook({
           webhookId: webhook._id,
           name: value.name.trim(),
-          webhookUrl: value.webhookUrl.trim(),
+          url: value.webhookUrl.trim(),
           events: selectedEvents,
-          sendMentions: value.sendMentions,
-          sendAssignments: value.sendAssignments,
-          sendStatusChanges: value.sendStatusChanges,
         });
         showSuccess("Webhook updated successfully!");
         onOpenChange(false);
@@ -634,20 +533,13 @@ function EditWebhookModal({
   // Reset form when webhook changes
   useEffect(() => {
     form.setFieldValue("name", webhook.name);
-    form.setFieldValue("webhookUrl", webhook.webhookUrl);
-    form.setFieldValue("sendMentions", webhook.sendMentions);
-    form.setFieldValue("sendAssignments", webhook.sendAssignments);
-    form.setFieldValue("sendStatusChanges", webhook.sendStatusChanges);
+    form.setFieldValue("webhookUrl", webhook.url);
     setSelectedEvents(webhook.events);
   }, [webhook, form]);
 
   const toggleEvent = (event: string) => {
     setSelectedEvents((prev) => toggleInArray(prev, event));
   };
-
-  const sendMentions = useStore(form.store, (state) => state.values.sendMentions);
-  const sendAssignments = useStore(form.store, (state) => state.values.sendAssignments);
-  const sendStatusChanges = useStore(form.store, (state) => state.values.sendStatusChanges);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -707,30 +599,6 @@ function EditWebhookModal({
                 Select at least one event
               </Typography>
             )}
-          </div>
-
-          {/* Additional Settings */}
-          <div>
-            <div className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-3">
-              Additional Settings
-            </div>
-            <div className="space-y-2">
-              <Checkbox
-                label="Send notifications for @mentions"
-                checked={sendMentions}
-                onChange={(e) => form.setFieldValue("sendMentions", e.target.checked)}
-              />
-              <Checkbox
-                label="Send notifications for assignments"
-                checked={sendAssignments}
-                onChange={(e) => form.setFieldValue("sendAssignments", e.target.checked)}
-              />
-              <Checkbox
-                label="Send notifications for status changes"
-                checked={sendStatusChanges}
-                onChange={(e) => form.setFieldValue("sendStatusChanges", e.target.checked)}
-              />
-            </div>
           </div>
 
           {/* Actions */}
