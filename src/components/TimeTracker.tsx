@@ -42,9 +42,7 @@ function TimeProgress({
           {remainingHours !== null && (
             <span
               className={
-                isOverEstimate
-                  ? "text-status-error dark:text-status-error-dark font-medium"
-                  : "text-ui-text-secondary dark:text-ui-text-secondary-dark"
+                isOverEstimate ? "text-status-error font-medium" : "text-ui-text-secondary"
               }
             >
               {isOverEstimate ? "+" : ""}

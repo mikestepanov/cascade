@@ -85,7 +85,7 @@ export function MarkdownPreviewModal({
               "px-4 py-2 text-sm font-medium border-b-2 transition-colors",
               activeTab === "preview"
                 ? "border-brand-500 text-brand-600 dark:text-brand-400"
-                : "border-transparent text-ui-text-tertiary dark:text-ui-text-tertiary-dark hover:text-ui-text-secondary dark:hover:text-ui-text-secondary-dark",
+                : "border-transparent text-ui-text-tertiary hover:text-ui-text-secondary",
             )}
           >
             Preview
@@ -97,7 +97,7 @@ export function MarkdownPreviewModal({
               "px-4 py-2 text-sm font-medium border-b-2 transition-colors",
               activeTab === "raw"
                 ? "border-brand-500 text-brand-600 dark:text-brand-400"
-                : "border-transparent text-ui-text-tertiary dark:text-ui-text-tertiary-dark hover:text-ui-text-secondary dark:hover:text-ui-text-secondary-dark",
+                : "border-transparent text-ui-text-tertiary hover:text-ui-text-secondary",
             )}
           >
             Raw Markdown

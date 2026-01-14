@@ -95,7 +95,7 @@ export function BurnRateDashboard({ projectId }: BurnRateDashboardProps) {
                 "px-3 py-1 text-sm font-medium rounded-lg transition-colors",
                 dateRange === range
                   ? "bg-brand-600 text-white"
-                  : "bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark text-ui-text-primary dark:text-ui-text-primary-dark hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark",
+                  : "bg-ui-bg-tertiary text-ui-text-primary hover:bg-ui-bg-secondary",
               )}
             >
               {ranges[range].label}
@@ -150,7 +150,7 @@ export function BurnRateDashboard({ projectId }: BurnRateDashboardProps) {
           <Typography variant="h3" className="text-sm font-medium text-ui-text-primary mb-2">
             Billable Hours
           </Typography>
-          <div className="text-3xl font-bold text-status-success dark:text-status-success">
+          <div className="text-3xl font-bold text-status-success">
             {formatHours(burnRate.billableHours)}h
           </div>
           <Typography className="text-xs text-ui-text-tertiary mt-1">
@@ -249,12 +249,10 @@ interface MetricCardProps {
 
 function MetricCard({ label, value, icon, color }: MetricCardProps) {
   const colorClasses = {
-    info: "bg-status-info-bg dark:bg-status-info-bg-dark border-status-info/30 dark:border-status-info/40",
-    success:
-      "bg-status-success-bg dark:bg-status-success-bg-dark border-status-success/30 dark:border-status-success/40",
-    accent: "bg-accent-50 dark:bg-accent-900/20 border-accent-200 dark:border-accent-800",
-    warning:
-      "bg-status-warning-bg dark:bg-status-warning-bg-dark border-status-warning/30 dark:border-status-warning/40",
+    info: "bg-status-info-bg border-status-info/30",
+    success: "bg-status-success-bg border-status-success/30",
+    accent: "bg-accent-50 border-accent-200",
+    warning: "bg-status-warning-bg border-status-warning/30",
   };
 
   return (

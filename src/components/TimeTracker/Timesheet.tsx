@@ -132,7 +132,7 @@ export function Timesheet() {
                 "border rounded-lg p-3",
                 isToday
                   ? "border-brand-500 bg-brand-50 dark:bg-brand-900/20"
-                  : "border-ui-border-primary dark:border-ui-border-primary-dark bg-ui-bg-primary dark:bg-ui-bg-primary-dark",
+                  : "border-ui-border-primary bg-ui-bg-primary",
               )}
             >
               {/* Day header */}

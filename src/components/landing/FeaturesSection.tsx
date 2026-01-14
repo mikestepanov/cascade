@@ -1,5 +1,5 @@
 import { FileText, PanelsTopLeft, Users } from "lucide-react";
-import { Flex } from "@/components/ui/Flex";
+
 import { cn } from "@/lib/utils";
 import { Typography } from "../ui/Typography";
 import { ArrowIcon } from "./icons";

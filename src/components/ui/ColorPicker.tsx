@@ -39,9 +39,8 @@ export function ColorPicker({
             type="button"
             onClick={() => onChange(presetColor)}
             className={cn(
-              "w-8 h-8 rounded-full transition-transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ui-border-primary dark:focus:ring-ui-border-primary-dark",
-              value === presetColor &&
-                "ring-2 ring-offset-2 ring-ui-border-primary dark:ring-ui-border-primary-dark scale-110",
+              "w-8 h-8 rounded-full transition-transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ui-border-primary",
+              value === presetColor && "ring-2 ring-offset-2 ring-ui-border-primary scale-110",
             )}
             style={{ backgroundColor: presetColor }}
             title={presetColor}

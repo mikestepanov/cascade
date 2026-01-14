@@ -304,10 +304,8 @@ export function ManualTimeEntryModal({
                     onChange={(e) => field.handleChange(e.target.value)}
                     placeholder="e.g., 1:30, 1.5, 1h 30m, 90m"
                     className={cn(
-                      "w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-primary-dark dark:text-ui-text-primary-dark",
-                      isDurationInputValid
-                        ? "border-ui-border-primary dark:border-ui-border-primary-dark"
-                        : "border-status-error dark:border-status-error",
+                      "w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-brand-500",
+                      isDurationInputValid ? "border-ui-border-primary" : "border-status-error",
                     )}
                   />
                   {!isDurationInputValid ? (
@@ -565,7 +563,7 @@ export function ManualTimeEntryModal({
                   {tags.map((tag) => (
                     <span
                       key={tag}
-                      className="inline-flex items-center gap-1 px-2 py-1 bg-brand-100 dark:bg-brand-900/30 text-brand-700 dark:text-brand-300 text-xs rounded"
+                      className="inline-flex items-center gap-1 px-2 py-1 bg-brand-100 text-brand-700 text-xs rounded"
                     >
                       {tag}
                       <Button
@@ -573,7 +571,7 @@ export function ManualTimeEntryModal({
                         variant="ghost"
                         size="sm"
                         type="button"
-                        className="p-0 min-w-0 h-auto hover:text-brand-900 dark:hover:text-brand-100"
+                        className="p-0 min-w-0 h-auto hover:text-brand-900"
                         aria-label={`Remove tag ${tag}`}
                       >
                         ×

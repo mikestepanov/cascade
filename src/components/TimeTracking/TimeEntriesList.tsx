@@ -141,7 +141,7 @@ export function TimeEntriesList({
             <span>{formatDurationDisplay(duration)}</span>
           </Flex>
 
-          <div className="bg-ui-bg-primary border border-ui-border-primary rounded-lg divide-y divide-ui-border-primary dark:divide-ui-border-primary-dark">
+          <div className="bg-ui-bg-primary border border-ui-border-primary rounded-lg divide-y divide-ui-border-primary">
             {dateEntries.map((entry) => (
               <Flex
                 align="start"
@@ -195,11 +195,7 @@ export function TimeEntriesList({
                     {entry.billable && <Badge variant="success">Billable</Badge>}
 
                     {entry.isLocked && (
-                      <Flex
-                        align="center"
-                        gap="xs"
-                        className="inline-flex text-status-warning dark:text-status-warning"
-                      >
+                      <Flex align="center" gap="xs" className="inline-flex text-status-warning">
                         <svg
                           className="w-3 h-3"
                           fill="currentColor"
@@ -237,7 +233,7 @@ export function TimeEntriesList({
                       onClick={() => handleDelete(entry._id)}
                       variant="ghost"
                       size="sm"
-                      className="p-1 min-w-0 text-ui-text-tertiary hover:text-status-error dark:hover:text-status-error"
+                      className="p-1 min-w-0 text-ui-text-tertiary hover:text-status-error"
                       aria-label="Delete entry"
                     >
                       <svg
