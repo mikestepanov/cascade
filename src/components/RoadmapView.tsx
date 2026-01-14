@@ -7,7 +7,7 @@ import { List, type ListImperativeAPI } from "react-window";
 
 import { useListNavigation } from "@/hooks/useListNavigation";
 import { formatDate } from "@/lib/dates";
-import { getTypeIcon } from "@/lib/issue-utils";
+import { getPriorityColor, getTypeIcon } from "@/lib/issue-utils";
 import { cn } from "@/lib/utils";
 import { IssueDetailModal } from "./IssueDetailModal";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/Select";
@@ -16,16 +16,6 @@ import { ToggleGroup, ToggleGroupItem } from "./ui/ToggleGroup";
 import { Typography } from "./ui/Typography";
 
 // Pure function - no need to be inside component
-function getRoadmapPriorityColor(priority: string): string {
-  const colorMap: Record<string, string> = {
-    highest: "bg-status-error",
-    high: "bg-status-warning",
-    medium: "bg-accent-500",
-    low: "bg-brand-500",
-    lowest: "bg-ui-text-secondary dark:bg-ui-text-secondary-dark",
-  };
-  return colorMap[priority] || "bg-ui-text-secondary dark:bg-ui-text-secondary-dark";
-}
 
 interface RoadmapViewProps {
   projectId: Id<"projects">;
@@ -161,7 +151,7 @@ export function RoadmapView({ projectId, sprintId, canEdit = true }: RoadmapView
                 type="button"
                 className={cn(
                   "absolute h-6 rounded-full opacity-80 hover:opacity-100 transition-opacity cursor-pointer flex items-center px-2",
-                  getRoadmapPriorityColor(issue.priority),
+                  getPriorityColor(issue.priority, "bg"),
                 )}
                 style={{
                   left: `${getPositionOnTimeline(issue.dueDate)}%`,

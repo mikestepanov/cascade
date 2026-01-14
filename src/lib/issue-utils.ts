@@ -160,12 +160,12 @@ export function getWorkflowCategoryColor(
     },
     inprogress: {
       border: "border-t-status-info",
-      text: "text-status-info dark:text-status-info-text-dark",
+      text: "text-status-info-text dark:text-status-info-text-dark",
       bg: "bg-status-info-bg dark:bg-status-info-bg-dark",
     },
     done: {
       border: "border-t-status-success",
-      text: "text-status-success dark:text-status-success-text-dark",
+      text: "text-status-success-text dark:text-status-success-text-dark",
       bg: "bg-status-success-bg dark:bg-status-success-bg-dark",
     },
   };
