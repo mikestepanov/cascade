@@ -46,7 +46,6 @@ test-results/
 
 # TanStack
 .tanstack
-src/routeTree.gen.ts
 
 # Windows reserved names (created by cross-platform issues)
 nul
