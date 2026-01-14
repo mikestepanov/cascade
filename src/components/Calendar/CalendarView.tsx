@@ -295,11 +295,13 @@ function WeekView({
                       type="button"
                       key={event._id}
                       onClick={() => onEventClick(event._id)}
-                      className="absolute left-0 right-0 mx-0.5 sm:mx-1 px-1 sm:px-2 py-0.5 sm:py-1 text-xs rounded text-left overflow-hidden hover:opacity-80 transition-opacity"
+                      className={cn(
+                        "absolute left-0 right-0 mx-0.5 sm:mx-1 px-1 sm:px-2 py-0.5 sm:py-1 text-xs rounded text-left overflow-hidden hover:opacity-80 transition-opacity",
+                        `bg-event-${event.eventType || "default"}`,
+                      )}
                       style={{
                         top: `${top}px`,
                         height: `${height}px`,
-                        backgroundColor: getEventColor(event.eventType),
                       }}
                     >
                       <div className="font-medium text-white truncate text-xs">{event.title}</div>
@@ -397,11 +399,10 @@ function MonthView({
                     type="button"
                     key={event._id}
                     onClick={() => onEventClick(event._id)}
-                    className="block w-full text-left px-0.5 sm:px-1 py-0.5 text-xs rounded truncate hover:opacity-80"
-                    style={{
-                      backgroundColor: getEventColor(event.eventType),
-                      color: "white",
-                    }}
+                    className={cn(
+                      "block w-full text-left px-0.5 sm:px-1 py-0.5 text-xs rounded truncate hover:opacity-80 text-white",
+                      `bg-event-${event.eventType || "default"}`,
+                    )}
                     title={`${formatTime(event.startTime)} ${event.title}`}
                   >
                     <span className="hidden sm:inline">{formatTime(event.startTime)} </span>
@@ -462,12 +463,3 @@ function formatTime(timestamp: number): string {
   return `${displayHours}:${minutes.toString().padStart(2, "0")} ${ampm}`;
 }
 
-function getEventColor(eventType: string): string {
-  const colors: Record<string, string> = {
-    meeting: "var(--color-event-meeting)",
-    deadline: "var(--color-event-deadline)",
-    timeblock: "var(--color-event-timeblock)",
-    personal: "var(--color-event-personal)",
-  };
-  return colors[eventType] || "var(--color-event-default)";
-}

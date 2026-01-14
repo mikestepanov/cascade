@@ -57,8 +57,8 @@ describe("CreateIssueModal", () => {
   ];
 
   const mockLabels = [
-    { _id: "label-1" as Id<"labels">, name: "bug", color: "#ff0000" },
-    { _id: "label-2" as Id<"labels">, name: "feature", color: "#00ff00" },
+    { _id: "label-1" as Id<"labels">, name: "bug", color: "#EF4444" },
+    { _id: "label-2" as Id<"labels">, name: "feature", color: "#10B981" },
   ];
 
   beforeEach(() => {

@@ -110,25 +110,25 @@ export function BurnRateDashboard({ projectId }: BurnRateDashboardProps) {
           label="Total Cost"
           value={formatCurrency(burnRate.totalCost)}
           icon="💰"
-          color="blue"
+          color="info"
         />
         <MetricCard
           label="Per Day"
           value={formatCurrency(burnRate.burnRatePerDay)}
           icon="📅"
-          color="green"
+          color="success"
         />
         <MetricCard
           label="Per Week"
           value={formatCurrency(burnRate.burnRatePerWeek)}
           icon="📊"
-          color="purple"
+          color="accent"
         />
         <MetricCard
           label="Per Month"
           value={formatCurrency(burnRate.burnRatePerMonth)}
           icon="🗓️"
-          color="orange"
+          color="warning"
         />
       </div>
 
@@ -240,17 +240,17 @@ interface MetricCardProps {
   label: string;
   value: string;
   icon: string;
-  color: "blue" | "green" | "purple" | "orange";
+  color: "info" | "success" | "accent" | "warning";
 }
 
 function MetricCard({ label, value, icon, color }: MetricCardProps) {
   const colorClasses = {
-    blue: "bg-brand-50 dark:bg-brand-900/20 border-brand-200 dark:border-brand-800",
-    green:
-      "bg-status-success/10 dark:bg-status-success/20 border-status-success/30 dark:border-status-success/40",
-    purple: "bg-accent-50 dark:bg-accent-900/20 border-accent-200 dark:border-accent-800",
-    orange:
-      "bg-status-warning/10 dark:bg-status-warning/20 border-status-warning/30 dark:border-status-warning/40",
+    info: "bg-status-info-bg dark:bg-status-info-bg-dark border-status-info/30 dark:border-status-info/40",
+    success:
+      "bg-status-success-bg dark:bg-status-success-bg-dark border-status-success/30 dark:border-status-success/40",
+    accent: "bg-accent-50 dark:bg-accent-900/20 border-accent-200 dark:border-accent-800",
+    warning:
+      "bg-status-warning-bg dark:bg-status-warning-bg-dark border-status-warning/30 dark:border-status-warning/40",
   };
 
   return (

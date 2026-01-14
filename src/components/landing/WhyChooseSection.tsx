@@ -5,19 +5,19 @@ import { Typography } from "../ui/Typography";
 
 export function WhyChooseSection() {
   const stats = [
-    { value: 30, label: "Less time in meetings", color: "cyan" as const },
-    { value: 10, label: "Fewer tools to manage", color: "teal" as const },
-    { value: 95, label: "Actually use it daily", color: "purple" as const },
-    { value: 95, label: "Would recommend", color: "emerald" as const },
+    { value: 30, label: "Less time in meetings", category: "info" as const },
+    { value: 10, label: "Fewer tools to manage", category: "warning" as const },
+    { value: 95, label: "Actually use it daily", category: "accent" as const },
+    { value: 95, label: "Would recommend", category: "success" as const },
   ];
 
   return (
     <section className="px-6 py-24">
       <div className="max-w-6xl mx-auto">
-        <div className="bg-linear-to-b from-gray-800/30 to-gray-900/30 border border-gray-700/30 rounded-3xl p-12 backdrop-blur-sm">
+        <div className="bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark border border-ui-border-primary dark:border-ui-border-primary-dark rounded-3xl p-12 backdrop-blur-sm">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">Teams actually like using it</h2>
-            <Typography className="text-gray-400 max-w-2xl mx-auto">
+            <Typography className="text-ui-text-secondary dark:text-ui-text-secondary-dark max-w-2xl mx-auto">
               No training required. No "change management" needed. It just works.
             </Typography>
           </div>
@@ -36,12 +36,12 @@ export function WhyChooseSection() {
 function StatItem({
   value,
   label,
-  color,
+  category,
   delay,
 }: {
   value: number;
   label: string;
-  color: "cyan" | "teal" | "purple" | "emerald";
+  category: "info" | "warning" | "accent" | "success";
   delay: number;
 }) {
   const [progress, setProgress] = useState(0);
@@ -51,31 +51,47 @@ function StatItem({
     return () => clearTimeout(timer);
   }, [value, delay]);
 
-  const colors = {
-    cyan: { text: "text-cyan-400", bar: "bg-cyan-500 dark:bg-cyan-500", track: "bg-cyan-500/20" },
-    teal: { text: "text-teal-400", bar: "bg-teal-500 dark:bg-teal-500", track: "bg-teal-500/20" },
-    purple: {
-      text: "text-purple-400",
-      bar: "bg-purple-500 dark:bg-purple-500",
-      track: "bg-purple-500/20",
+  const categoryStyles = {
+    info: {
+      text: "text-status-info",
+      bar: "bg-status-info",
+      track: "bg-status-info-bg dark:bg-status-info-bg-dark",
     },
-    emerald: {
-      text: "text-emerald-400",
-      bar: "bg-emerald-500 dark:bg-emerald-500",
-      track: "bg-emerald-500/20",
+    warning: {
+      text: "text-status-warning",
+      bar: "bg-status-warning",
+      track: "bg-status-warning-bg dark:bg-status-warning-bg-dark",
+    },
+    accent: {
+      text: "text-accent-500 dark:text-accent-400",
+      bar: "bg-accent-500 dark:bg-accent-500",
+      track: "bg-accent-100 dark:bg-accent-950/30",
+    },
+    success: {
+      text: "text-status-success",
+      bar: "bg-status-success",
+      track: "bg-status-success-bg dark:bg-status-success-bg-dark",
     },
   };
 
   return (
     <div className="text-center">
-      <div className={cn("text-4xl md:text-5xl font-bold mb-2", colors[color].text)}>{value}%</div>
-      <Typography variant="small" className="text-gray-400 mb-4">
+      <div className={cn("text-4xl md:text-5xl font-bold mb-2", categoryStyles[category].text)}>
+        {value}%
+      </div>
+      <Typography
+        variant="small"
+        className="text-ui-text-tertiary dark:text-ui-text-tertiary-dark mb-4"
+      >
         {label}
       </Typography>
       <Progress
         value={progress}
-        className={cn("h-1.5", colors[color].track)}
-        indicatorClassName={cn(colors[color].bar, "transition-all duration-1000 ease-out")}
+        className={cn("h-1.5", categoryStyles[category].track)}
+        indicatorClassName={cn(
+          categoryStyles[category].bar,
+          "transition-all duration-1000 ease-out",
+        )}
       />
     </div>
   );

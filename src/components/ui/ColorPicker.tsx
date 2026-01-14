@@ -9,15 +9,16 @@ interface ColorPickerProps {
   presetColors?: string[];
 }
 
+// Preset colors that align with our theme tokens (status, brand, accent)
 const DEFAULT_PRESET_COLORS = [
-  "#EF4444", // red
-  "#F59E0B", // amber
-  "#10B981", // emerald
-  "#3B82F6", // blue
-  "#8B5CF6", // violet
-  "#EC4899", // pink
-  "#6B7280", // gray
-  "#14B8A6", // teal
+  "#EF4444", // matches --color-status-error
+  "#F59E0B", // matches --color-status-warning
+  "#10B981", // matches --color-status-success
+  "#3B82F6", // matches --color-status-info
+  "#8B5CF6", // matches --color-issue-type-story
+  "#EC4899", // matches --color-accent-400
+  "#6B7280", // matches --color-ui-text-secondary
+  "#14B8A6", // matches --color-landing-accent-teal
 ];
 
 export function ColorPicker({

@@ -25,8 +25,8 @@ interface LabelFormData {
   [key: string]: unknown;
 }
 
-// Default to brand-500 color from theme
-const DEFAULT_LABEL_COLOR = "#6366F1";
+// Default to brand-500 equivalent color
+const DEFAULT_LABEL_COLOR = "#6366F1"; // matches --color-brand-500
 
 const DEFAULT_FORM: LabelFormData = {
   name: "",

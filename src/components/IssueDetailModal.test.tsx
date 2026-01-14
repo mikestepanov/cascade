@@ -40,12 +40,12 @@ vi.mock("@/lib/issue-utils", () => ({
   getPriorityColor: vi.fn((priority: string, type: string) => {
     if (type === "badge") {
       const colors = {
-        urgent: "bg-red-100 text-red-800",
-        high: "bg-orange-100 text-orange-800",
-        medium: "bg-yellow-100 text-yellow-800",
-        low: "bg-green-100 text-green-800",
+        urgent: "bg-status-error-bg dark:bg-status-error-bg-dark text-status-error-text dark:text-status-error-text-dark",
+        high: "bg-status-warning-bg dark:bg-status-warning-bg-dark text-status-warning-text dark:text-status-warning-text-dark",
+        medium: "bg-status-warning-bg dark:bg-status-warning-bg-dark text-status-warning-text dark:text-status-warning-text-dark",
+        low: "bg-status-info-bg dark:bg-status-info-bg-dark text-status-info-text dark:text-status-info-text-dark",
       };
-      return colors[priority as keyof typeof colors] || "bg-gray-100 text-gray-800";
+      return colors[priority as keyof typeof colors] || "bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark text-ui-text-secondary dark:text-ui-text-secondary-dark";
     }
     return "";
   }),
@@ -162,8 +162,8 @@ describe("IssueDetailModal", () => {
     renderModal();
 
     const priorityBadge = screen.getByText("high");
-    expect(priorityBadge.className).toContain("bg-orange-100");
-    expect(priorityBadge.className).toContain("text-orange-800");
+    expect(priorityBadge.className).toContain("bg-status-warning-bg");
+    expect(priorityBadge.className).toContain("text-status-warning-text");
   });
 
   it("should render TimeTracker component", () => {
