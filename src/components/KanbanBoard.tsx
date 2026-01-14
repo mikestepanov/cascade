@@ -1,6 +1,6 @@
 import { api } from "@convex/_generated/api";
 import type { Id } from "@convex/_generated/dataModel";
-import type { WorkflowStateDisplay as WorkflowState } from "@convex/shared/types";
+import type { WorkflowState } from "@convex/shared/types";
 import { useQuery } from "convex/react";
 import { useCallback, useMemo, useState } from "react";
 import { useBoardDragAndDrop } from "@/hooks/useBoardDragAndDrop";
