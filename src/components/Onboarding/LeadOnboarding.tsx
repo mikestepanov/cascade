@@ -3,6 +3,7 @@ import type { Id } from "@convex/_generated/dataModel";
 import { useMutation } from "convex/react";
 import { ArrowLeft, Building2, FolderPlus, Sparkles, UserPlus } from "lucide-react";
 import { useState } from "react";
+import { Flex } from "@/components/ui/Flex";
 import { showError, showSuccess } from "@/lib/toast";
 import { Button } from "../ui/Button";
 import { Input } from "../ui/Input";
@@ -136,11 +137,11 @@ export function LeadOnboarding({
         </div>
 
         {/* Continue */}
-        <div className="flex justify-center">
+        <Flex justify="center">
           <Button variant="primary" size="lg" onClick={() => setStep("project")}>
             Let's set up your project
           </Button>
-        </div>
+        </Flex>
       </div>
     );
   }
@@ -160,9 +161,14 @@ export function LeadOnboarding({
 
         {/* Header */}
         <div className="text-center">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary-100 dark:bg-primary-900/30 mb-4">
+          <Flex
+            inline
+            align="center"
+            justify="center"
+            className="w-16 h-16 rounded-full bg-primary-100 dark:bg-primary-900/30 mb-4"
+          >
             <Building2 className="w-8 h-8 text-primary-600" />
-          </div>
+          </Flex>
           <Typography variant="h1" className="text-3xl font-bold mb-3">
             Name Your Project
           </Typography>
@@ -243,7 +249,7 @@ export function LeadOnboarding({
             disabled={isCreating}
             className="p-6 rounded-xl border-2 border-ui-border-primary bg-ui-bg-primary text-left transition-all hover:border-primary-500 hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <div className="flex flex-col gap-4">
+            <Flex direction="column" gap="lg">
               <div className="p-3 rounded-lg bg-primary-100 dark:bg-primary-900/30 w-fit">
                 <Sparkles className="w-6 h-6 text-primary-600" />
               </div>
@@ -256,7 +262,7 @@ export function LeadOnboarding({
                 </Typography>
               </div>
               <span className="text-xs text-primary-600 font-medium">Recommended</span>
-            </div>
+            </Flex>
           </button>
 
           {/* Start Fresh */}
@@ -266,7 +272,7 @@ export function LeadOnboarding({
             disabled={isCreating}
             className="p-6 rounded-xl border-2 border-ui-border-primary bg-ui-bg-primary text-left transition-all hover:border-primary-500 hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <div className="flex flex-col gap-4">
+            <Flex direction="column" gap="lg">
               <div className="p-3 rounded-lg bg-ui-bg-tertiary w-fit">
                 <FolderPlus className="w-6 h-6 text-ui-text-secondary" />
               </div>
@@ -279,7 +285,7 @@ export function LeadOnboarding({
                 </Typography>
               </div>
               <span className="text-xs text-ui-text-tertiary">For experienced users</span>
-            </div>
+            </Flex>
           </button>
         </div>
 

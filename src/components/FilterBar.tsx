@@ -184,11 +184,14 @@ export function FilterBar({ projectId, onFilterChange }: FilterBarProps) {
 
       {/* My Filters List (if any saved) */}
       {savedFilters && savedFilters.length > 0 && (
-        <div className="mt-3 flex flex-wrap gap-2">
+        <Flex wrap gap="sm" className="mt-3">
           {savedFilters.slice(0, 5).map((filter: Doc<"savedFilters"> & { isOwner?: boolean }) => (
-            <div
+            <Flex
+              inline
+              align="center"
+              gap="sm"
+              className="px-3 py-1 bg-ui-bg-primary border border-ui-border-primary rounded-full text-sm"
               key={filter._id}
-              className="inline-flex items-center gap-2 px-3 py-1 bg-ui-bg-primary border border-ui-border-primary rounded-full text-sm"
             >
               <Button
                 variant="ghost"
@@ -210,9 +213,9 @@ export function FilterBar({ projectId, onFilterChange }: FilterBarProps) {
                   ✕
                 </Button>
               )}
-            </div>
+            </Flex>
           ))}
-        </div>
+        </Flex>
       )}
     </div>
   );

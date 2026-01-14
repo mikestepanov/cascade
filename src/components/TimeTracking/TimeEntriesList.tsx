@@ -143,9 +143,11 @@ export function TimeEntriesList({
 
           <div className="bg-ui-bg-primary border border-ui-border-primary rounded-lg divide-y divide-ui-border-primary dark:divide-ui-border-primary-dark">
             {dateEntries.map((entry) => (
-              <div
+              <Flex
+                align="start"
+                gap="md"
+                className="p-3 hover:bg-ui-bg-tertiary transition-colors group"
                 key={entry._id}
-                className="p-3 hover:bg-ui-bg-tertiary transition-colors group flex items-start gap-3"
               >
                 {/* Details */}
                 <div className="flex-1 min-w-0">
@@ -253,7 +255,7 @@ export function TimeEntriesList({
                     </Button>
                   </div>
                 )}
-              </div>
+              </Flex>
             ))}
           </div>
         </div>

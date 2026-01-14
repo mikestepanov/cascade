@@ -2,6 +2,7 @@ import { api } from "@convex/_generated/api";
 import { useMutation, useQuery } from "convex/react";
 import { Settings2 } from "lucide-react";
 import { useEffect, useState } from "react";
+import { Flex } from "@/components/ui/Flex";
 import { Button } from "../ui/Button";
 import {
   Dialog,
@@ -58,7 +59,7 @@ export function DashboardCustomizeModal() {
         </DialogHeader>
 
         <div className="space-y-4 py-4">
-          <div className="flex items-center justify-between space-x-2">
+          <Flex align="center" justify="between" className="space-x-2">
             <Label htmlFor="show-stats" className="flex flex-col space-y-1">
               <span>Quick Stats</span>
               <span className="font-normal text-xs text-muted-foreground">
@@ -70,9 +71,9 @@ export function DashboardCustomizeModal() {
               checked={preferences.showStats}
               onCheckedChange={() => handleToggle("showStats")}
             />
-          </div>
+          </Flex>
 
-          <div className="flex items-center justify-between space-x-2">
+          <Flex align="center" justify="between" className="space-x-2">
             <Label htmlFor="show-activity" className="flex flex-col space-y-1">
               <span>Recent Activity</span>
               <span className="font-normal text-xs text-muted-foreground">
@@ -84,9 +85,9 @@ export function DashboardCustomizeModal() {
               checked={preferences.showRecentActivity}
               onCheckedChange={() => handleToggle("showRecentActivity")}
             />
-          </div>
+          </Flex>
 
-          <div className="flex items-center justify-between space-x-2">
+          <Flex align="center" justify="between" className="space-x-2">
             <Label htmlFor="show-workspaces" className="flex flex-col space-y-1">
               <span>My Workspaces</span>
               <span className="font-normal text-xs text-muted-foreground">
@@ -98,7 +99,7 @@ export function DashboardCustomizeModal() {
               checked={preferences.showWorkspaces}
               onCheckedChange={() => handleToggle("showWorkspaces")}
             />
-          </div>
+          </Flex>
         </div>
       </DialogContent>
     </Dialog>

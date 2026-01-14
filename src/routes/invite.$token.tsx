@@ -5,6 +5,7 @@ import { AlertCircle, CheckCircle, Clock, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { SignInForm, SmartAuthGuard } from "@/components/auth";
 import { Button } from "@/components/ui/Button";
+import { Flex } from "@/components/ui/Flex";
 import { Typography } from "@/components/ui/Typography";
 import { ROUTE_PATTERNS } from "@/config/routes";
 import { showError, showSuccess } from "@/lib/toast";
@@ -57,19 +58,19 @@ function InviteRoute() {
   // Loading state
   if (invite === undefined) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-ui-bg-secondary">
+      <Flex align="center" justify="center" className="min-h-screen bg-ui-bg-secondary">
         <div className="text-center">
           <Loader2 className="w-8 h-8 animate-spin text-primary-600 mx-auto mb-4" />
           <Typography className="text-ui-text-secondary">Loading invitation...</Typography>
         </div>
-      </div>
+      </Flex>
     );
   }
 
   // Invalid token
   if (invite === null) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-ui-bg-secondary p-6">
+      <Flex align="center" justify="center" className="min-h-screen bg-ui-bg-secondary p-6">
         <div className="max-w-md w-full text-center">
           <div className="p-4 rounded-full bg-status-error-bg w-fit mx-auto mb-6">
             <AlertCircle className="w-12 h-12 text-status-error" />
@@ -85,14 +86,14 @@ function InviteRoute() {
             Go to Home
           </Button>
         </div>
-      </div>
+      </Flex>
     );
   }
 
   // Expired invite (isExpired is computed from status === "pending" && expiresAt < now)
   if (invite.isExpired) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-ui-bg-secondary p-6">
+      <Flex align="center" justify="center" className="min-h-screen bg-ui-bg-secondary p-6">
         <div className="max-w-md w-full text-center">
           <div className="p-4 rounded-full bg-status-warning-bg w-fit mx-auto mb-6">
             <Clock className="w-12 h-12 text-status-warning-text" />
@@ -108,14 +109,14 @@ function InviteRoute() {
             Go to Home
           </Button>
         </div>
-      </div>
+      </Flex>
     );
   }
 
   // Already accepted
   if (invite.status === "accepted") {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-ui-bg-secondary p-6">
+      <Flex align="center" justify="center" className="min-h-screen bg-ui-bg-secondary p-6">
         <div className="max-w-md w-full text-center">
           <div className="p-4 rounded-full bg-status-success-bg w-fit mx-auto mb-6">
             <CheckCircle className="w-12 h-12 text-status-success" />
@@ -130,14 +131,14 @@ function InviteRoute() {
             Go to Dashboard
           </Button>
         </div>
-      </div>
+      </Flex>
     );
   }
 
   // Revoked invite
   if (invite.status === "revoked") {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-ui-bg-secondary p-6">
+      <Flex align="center" justify="center" className="min-h-screen bg-ui-bg-secondary p-6">
         <div className="max-w-md w-full text-center">
           <div className="p-4 rounded-full bg-status-error-bg w-fit mx-auto mb-6">
             <AlertCircle className="w-12 h-12 text-status-error" />
@@ -153,7 +154,7 @@ function InviteRoute() {
             Go to Home
           </Button>
         </div>
-      </div>
+      </Flex>
     );
   }
 
@@ -162,15 +163,15 @@ function InviteRoute() {
 
   // Valid pending invite - show different UI based on auth state
   return (
-    <div className="min-h-screen flex flex-col bg-ui-bg-secondary">
+    <Flex direction="column" className="min-h-screen bg-ui-bg-secondary">
       {/* Header */}
       <header className="p-6 flex items-center justify-center">
-        <div className="flex items-center gap-2">
-          <div className="h-8 w-8 rounded-lg bg-brand-main flex items-center justify-center">
+        <Flex align="center" gap="sm">
+          <Flex align="center" justify="center" className="h-8 w-8 rounded-lg bg-brand-main">
             <span className="text-ui-bg-primary font-bold text-sm">N</span>
-          </div>
+          </Flex>
           <span className="font-semibold text-lg text-ui-text-primary">Nixelo</span>
-        </div>
+        </Flex>
       </header>
 
       {/* Main Content */}
@@ -197,28 +198,28 @@ function InviteRoute() {
 
             {/* Invite Details */}
             <div className="bg-ui-bg-secondary rounded-lg p-4 mb-6">
-              <div className="flex justify-between items-center text-sm">
+              <Flex justify="between" align="center" className="text-sm">
                 <span className="text-ui-text-tertiary">Invited email</span>
                 <span className="text-ui-text-primary font-medium">{invite.email}</span>
-              </div>
+              </Flex>
               {isProjectInvite ? (
                 <>
-                  <div className="flex justify-between items-center text-sm mt-2">
+                  <Flex justify="between" align="center" className="text-sm mt-2">
                     <span className="text-ui-text-tertiary">Project</span>
                     <span className="text-ui-text-primary font-medium">{invite.projectName}</span>
-                  </div>
-                  <div className="flex justify-between items-center text-sm mt-2">
+                  </Flex>
+                  <Flex justify="between" align="center" className="text-sm mt-2">
                     <span className="text-ui-text-tertiary">Project Role</span>
                     <span className="text-ui-text-primary font-medium capitalize">
                       {invite.projectRole || "editor"}
                     </span>
-                  </div>
+                  </Flex>
                 </>
               ) : (
-                <div className="flex justify-between items-center text-sm mt-2">
+                <Flex justify="between" align="center" className="text-sm mt-2">
                   <span className="text-ui-text-tertiary">Role</span>
                   <span className="text-ui-text-primary font-medium capitalize">{invite.role}</span>
-                </div>
+                </Flex>
               )}
             </div>
 
@@ -266,6 +267,6 @@ function InviteRoute() {
           </div>
         </div>
       </main>
-    </div>
+    </Flex>
   );
 }

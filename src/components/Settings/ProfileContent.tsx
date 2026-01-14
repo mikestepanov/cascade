@@ -2,6 +2,7 @@ import { api } from "@convex/_generated/api";
 import type { Doc, Id } from "@convex/_generated/dataModel";
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
+import { Flex } from "@/components/ui/Flex";
 import { showError, showSuccess } from "@/lib/toast";
 import { Button } from "../ui/Button";
 import { Card } from "../ui/Card";
@@ -67,14 +68,14 @@ export function AccountInfo({ user }: { user: Doc<"users"> }) {
         Account Information
       </Typography>
       <div className="space-y-3 text-sm">
-        <div className="flex justify-between">
+        <Flex justify="between">
           <span className="text-ui-text-secondary">User ID:</span>
           <span className="font-mono text-ui-text-primary">{user._id}</span>
-        </div>
-        <div className="flex justify-between">
+        </Flex>
+        <Flex justify="between">
           <span className="text-ui-text-secondary">Email Verified:</span>
           <span className="text-ui-text-primary">{user.emailVerificationTime ? "Yes" : "No"}</span>
-        </div>
+        </Flex>
       </div>
     </div>
   );
@@ -107,15 +108,19 @@ export function ProfileHeader({
   onCancel: () => void;
 }) {
   return (
-    <div className="flex items-center gap-6">
+    <Flex align="center" gap="xl">
       {/* Avatar */}
       <div className="relative">
         {user.image ? (
           <img src={user.image} alt={user.name || "User"} className="w-24 h-24 rounded-full" />
         ) : (
-          <div className="w-24 h-24 rounded-full bg-brand-600 text-white flex items-center justify-center text-3xl font-bold">
+          <Flex
+            align="center"
+            justify="center"
+            className="w-24 h-24 rounded-full bg-brand-600 text-white text-3xl font-bold"
+          >
             {(user.name || user.email || "?").charAt(0).toUpperCase()}
-          </div>
+          </Flex>
         )}
       </div>
 
@@ -136,14 +141,14 @@ export function ProfileHeader({
               placeholder="your.email@example.com"
               type="email"
             />
-            <div className="flex gap-2 mt-2">
+            <Flex gap="sm" className="mt-2">
               <Button onClick={onSave} size="sm">
                 Save
               </Button>
               <Button onClick={onCancel} variant="secondary" size="sm">
                 Cancel
               </Button>
-            </div>
+            </Flex>
           </div>
         ) : (
           <>
@@ -159,7 +164,7 @@ export function ProfileHeader({
           </>
         )}
       </div>
-    </div>
+    </Flex>
   );
 }
 
@@ -213,9 +218,9 @@ export function ProfileContent({ userId }: ProfileContentProps) {
 
   if (!viewUser) {
     return (
-      <div className="flex items-center justify-center py-8">
+      <Flex align="center" justify="center" className="py-8">
         <LoadingSpinner size="lg" />
-      </div>
+      </Flex>
     );
   }
 

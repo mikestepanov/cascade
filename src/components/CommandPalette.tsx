@@ -3,6 +3,7 @@ import type { Doc } from "@convex/_generated/dataModel";
 import { useNavigate } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
 import { useEffect, useState } from "react";
+import { Flex } from "@/components/ui/Flex";
 import { ROUTE_PATTERNS } from "@/config/routes";
 import { useCompany } from "@/hooks/useCompanyContext";
 import {
@@ -86,7 +87,7 @@ export function CommandPalette({ isOpen, onClose, commands }: CommandPaletteProp
             <CommandGroup
               key={group}
               heading={group}
-              className="text-ui-text-secondary [&_[cmdk-group-heading]]:text-ui-text-tertiary dark:[&_[cmdk-group-heading]]:text-ui-text-tertiary-dark"
+              className="text-ui-text-secondary [&_[cmdk-group-heading]]:text-ui-text-tertiary"
             >
               {cmds.map((cmd) => (
                 <CommandItem
@@ -107,7 +108,11 @@ export function CommandPalette({ isOpen, onClose, commands }: CommandPaletteProp
             </CommandGroup>
           ))}
         </CommandList>
-        <div className="px-4 py-2 border-t border-ui-border-primary bg-ui-bg-secondary text-xs text-ui-text-secondary flex flex-wrap gap-3 sm:gap-4">
+        <Flex
+          wrap
+          gap="md"
+          className="px-4 py-2 border-t border-ui-border-primary bg-ui-bg-secondary text-xs text-ui-text-secondary sm:gap-4"
+        >
           <span>
             <CommandShortcut className="bg-ui-bg-primary border border-ui-border-primary px-2 py-1 rounded text-ui-text-primary">
               ↑↓
@@ -126,7 +131,7 @@ export function CommandPalette({ isOpen, onClose, commands }: CommandPaletteProp
             </CommandShortcut>{" "}
             Close
           </span>
-        </div>
+        </Flex>
       </Command>
     </CommandDialog>
   );

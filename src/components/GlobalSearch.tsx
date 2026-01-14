@@ -1,6 +1,7 @@
 import { api } from "@convex/_generated/api";
 import type { Doc, Id } from "@convex/_generated/dataModel";
 import { useQuery } from "convex/react";
+import { Flex } from "@/components/ui/Flex";
 import { useSearchKeyboard, useSearchPagination } from "@/hooks/useGlobalSearch";
 import { cn } from "@/lib/utils";
 import { Badge } from "./ui/Badge";
@@ -199,9 +200,13 @@ function SearchResultItem({ result, onClose }: { result: SearchResult; onClose: 
       }}
       className="p-3 sm:p-4 cursor-pointer data-[selected=true]:bg-ui-bg-secondary"
     >
-      <div className="flex items-start gap-3 w-full">
+      <Flex align="start" gap="md" className="w-full">
         {/* Icon */}
-        <div className="shrink-0 w-8 h-8 flex items-center justify-center rounded bg-ui-bg-tertiary">
+        <Flex
+          align="center"
+          justify="center"
+          className="shrink-0 w-8 h-8 rounded bg-ui-bg-tertiary"
+        >
           {result.type === "issue" ? (
             <svg
               aria-hidden="true"
@@ -229,18 +234,18 @@ function SearchResultItem({ result, onClose }: { result: SearchResult; onClose: 
               />
             </svg>
           )}
-        </div>
+        </Flex>
 
         {/* Content */}
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 flex-wrap">
+          <Flex align="center" gap="sm" wrap>
             {result.type === "issue" && (
               <span className="text-xs font-mono text-ui-text-secondary">{result.key}</span>
             )}
             <Badge variant="neutral" shape="pill">
               {result.type}
             </Badge>
-          </div>
+          </Flex>
           <Typography variant="p" className="font-medium mt-1 truncate">
             {result.title}
           </Typography>
@@ -248,7 +253,7 @@ function SearchResultItem({ result, onClose }: { result: SearchResult; onClose: 
             {result.description || "No description"}
           </Typography>
         </div>
-      </div>
+      </Flex>
     </CommandItem>
   );
 }
@@ -334,7 +339,10 @@ export function GlobalSearch() {
           />
 
           {/* Tabs with counts */}
-          <div className="flex gap-2 sm:gap-4 px-4 pt-2 border-b border-ui-border-primary overflow-x-auto">
+          <Flex
+            gap="sm"
+            className="sm:gap-4 px-4 pt-2 border-b border-ui-border-primary overflow-x-auto"
+          >
             <SearchTab
               label="All"
               isActive={activeTab === "all"}
@@ -356,7 +364,7 @@ export function GlobalSearch() {
               showCount={query.length >= 2}
               onClick={() => setActiveTab("documents")}
             />
-          </div>
+          </Flex>
 
           <CommandList className="max-h-80 sm:max-h-96">
             <SearchListContent
@@ -371,8 +379,12 @@ export function GlobalSearch() {
           </CommandList>
 
           {/* Footer */}
-          <div className="p-3 border-t border-ui-border-primary flex items-center justify-between text-xs text-ui-text-secondary">
-            <div className="flex items-center gap-4">
+          <Flex
+            align="center"
+            justify="between"
+            className="p-3 border-t border-ui-border-primary text-xs text-ui-text-secondary"
+          >
+            <Flex align="center" gap="lg">
               <span>
                 <CommandShortcut className="bg-ui-bg-tertiary px-2 py-1 rounded">
                   ↑↓
@@ -385,12 +397,12 @@ export function GlobalSearch() {
                 </CommandShortcut>{" "}
                 Open
               </span>
-            </div>
+            </Flex>
             <span>
               <CommandShortcut className="bg-ui-bg-tertiary px-2 py-1 rounded">Esc</CommandShortcut>{" "}
               Close
             </span>
-          </div>
+          </Flex>
         </Command>
       </CommandDialog>
     </>

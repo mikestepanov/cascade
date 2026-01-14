@@ -1,3 +1,4 @@
+import { Flex } from "@/components/ui/Flex";
 import { useSidebarState } from "@/hooks/useSidebarState";
 import { Menu } from "@/lib/icons";
 import { GlobalSearch } from "./GlobalSearch";
@@ -15,7 +16,7 @@ export function AppHeader({ onShowCommandPalette, onShowShortcutsHelp }: AppHead
 
   return (
     <header className="bg-ui-bg-primary border-b border-ui-border-primary px-4 sm:px-6 py-3 flex justify-between items-center gap-2">
-      <div className="flex items-center gap-2 sm:gap-4">
+      <Flex align="center" gap="sm" className="sm:gap-4">
         {/* Mobile Hamburger Menu */}
         <button
           type="button"
@@ -26,9 +27,9 @@ export function AppHeader({ onShowCommandPalette, onShowShortcutsHelp }: AppHead
         >
           <Menu className="w-5 h-5" />
         </button>
-      </div>
+      </Flex>
 
-      <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+      <Flex align="center" gap="sm" className="sm:gap-3 shrink-0">
         {onShowCommandPalette && (
           <button
             type="button"
@@ -86,7 +87,7 @@ export function AppHeader({ onShowCommandPalette, onShowShortcutsHelp }: AppHead
         <GlobalSearch />
         <NotificationCenter />
         <UserMenu />
-      </div>
+      </Flex>
     </header>
   );
 }

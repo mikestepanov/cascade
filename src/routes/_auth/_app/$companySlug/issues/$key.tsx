@@ -1,6 +1,7 @@
 import { api } from "@convex/_generated/api";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
+import { Flex } from "@/components/ui/Flex";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { Typography } from "@/components/ui/Typography";
 import { ROUTE_PATTERNS } from "@/config/routes";
@@ -21,15 +22,15 @@ function IssuePage() {
 
   if (issue === undefined) {
     return (
-      <div className="flex h-full items-center justify-center">
+      <Flex align="center" justify="center" className="h-full">
         <LoadingSpinner size="lg" />
-      </div>
+      </Flex>
     );
   }
 
   if (issue === null) {
     return (
-      <div className="flex h-full items-center justify-center text-ui-text-tertiary">
+      <Flex align="center" justify="center" className="h-full text-ui-text-tertiary">
         <div className="text-center">
           <Typography variant="h2" className="text-xl font-medium mb-2">
             Issue not found
@@ -45,7 +46,7 @@ function IssuePage() {
             Back to dashboard
           </Link>
         </div>
-      </div>
+      </Flex>
     );
   }
 
@@ -61,7 +62,7 @@ function IssuePage() {
         </Link>
       </div>
       <div className="bg-ui-bg-primary rounded-lg border border-ui-border-primary p-6">
-        <div className="flex items-center gap-2 mb-2">
+        <Flex align="center" gap="sm" className="mb-2">
           <span className="text-sm font-medium text-ui-text-secondary">{issue.key}</span>
           <span
             className={cn(
@@ -75,7 +76,7 @@ function IssuePage() {
           >
             {issue.status}
           </span>
-        </div>
+        </Flex>
         <Typography variant="h1" className="text-2xl font-semibold mb-4">
           {issue.title}
         </Typography>

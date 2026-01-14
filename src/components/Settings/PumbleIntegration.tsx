@@ -48,7 +48,11 @@ export function PumbleIntegration() {
         <Flex justify="between" align="start">
           <Flex gap="md" align="center">
             <div className="shrink-0">
-              <div className="w-12 h-12 bg-linear-to-br from-accent-500 to-pink-500 rounded-lg flex items-center justify-center">
+              <Flex
+                align="center"
+                justify="center"
+                className="w-12 h-12 bg-linear-to-br from-accent-500 to-pink-500 rounded-lg"
+              >
                 <svg
                   className="w-6 h-6 text-white"
                   fill="none"
@@ -63,7 +67,7 @@ export function PumbleIntegration() {
                     d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
                   />
                 </svg>
-              </div>
+              </Flex>
             </div>
             <div>
               <Typography variant="h3" className="text-lg font-semibold text-ui-text-primary">
@@ -87,9 +91,9 @@ export function PumbleIntegration() {
       {/* Content */}
       <div className="p-6">
         {webhooks === undefined ? (
-          <div className="flex items-center justify-center py-12">
+          <Flex align="center" justify="center" className="py-12">
             <div className="text-ui-text-tertiary">Loading webhooks...</div>
-          </div>
+          </Flex>
         ) : webhooks.length === 0 ? (
           <EmptyState onAddWebhook={() => setShowAddModal(true)} />
         ) : (
@@ -142,7 +146,11 @@ export function PumbleIntegration() {
 function EmptyState({ onAddWebhook }: { onAddWebhook: () => void }) {
   return (
     <div className="text-center py-12">
-      <div className="mx-auto w-16 h-16 bg-accent-100 dark:bg-accent-900/20 rounded-full flex items-center justify-center mb-4">
+      <Flex
+        align="center"
+        justify="center"
+        className="mx-auto w-16 h-16 bg-accent-100 dark:bg-accent-900/20 rounded-full mb-4"
+      >
         <svg
           className="w-8 h-8 text-accent-600 dark:text-accent-400"
           fill="none"
@@ -158,7 +166,7 @@ function EmptyState({ onAddWebhook }: { onAddWebhook: () => void }) {
             d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
           />
         </svg>
-      </div>
+      </Flex>
       <Typography variant="h3" className="text-lg font-medium text-ui-text-primary mb-2">
         No Pumble webhooks configured
       </Typography>

@@ -3,6 +3,7 @@ import type { Id } from "@convex/_generated/dataModel";
 import { useMutation, useQuery } from "convex/react";
 import type { FunctionReturnType } from "convex/server";
 import { useState } from "react";
+import { Flex } from "@/components/ui/Flex";
 import { showError, showSuccess } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 import { Badge } from "./ui/Badge";
@@ -125,16 +126,18 @@ export function IssueDependencies({ issueId, projectId: _workspaceId }: IssueDep
           </Typography>
           <div className="space-y-2">
             {links.outgoing.map((link: IssueLinkWithDetails) => (
-              <div
+              <Flex
+                align="center"
+                justify="between"
+                className="p-3 bg-ui-bg-secondary rounded-lg"
                 key={link._id}
-                className="flex items-center justify-between p-3 bg-ui-bg-secondary rounded-lg"
               >
-                <div className="flex items-center gap-3 flex-1 min-w-0">
+                <Flex align="center" gap="md" className="flex-1 min-w-0">
                   <Badge variant="brand" size="md">
                     {getLinkTypeLabel(link.linkType, "outgoing")}
                   </Badge>
                   {link.issue && (
-                    <div className="flex items-center gap-2 flex-1 min-w-0">
+                    <Flex align="center" gap="sm" className="flex-1 min-w-0">
                       <Typography as="span" className="text-sm">
                         {getTypeIcon(link.issue.type)}
                       </Typography>
@@ -144,9 +147,9 @@ export function IssueDependencies({ issueId, projectId: _workspaceId }: IssueDep
                       <Typography as="span" className="text-sm truncate">
                         {link.issue.title}
                       </Typography>
-                    </div>
+                    </Flex>
                   )}
-                </div>
+                </Flex>
                 <button
                   type="button"
                   onClick={() => setDeleteConfirm(link._id)}
@@ -155,7 +158,7 @@ export function IssueDependencies({ issueId, projectId: _workspaceId }: IssueDep
                 >
                   ✕
                 </button>
-              </div>
+              </Flex>
             ))}
           </div>
         </div>
@@ -169,16 +172,18 @@ export function IssueDependencies({ issueId, projectId: _workspaceId }: IssueDep
           </Typography>
           <div className="space-y-2">
             {links.incoming.map((link: IssueLinkWithDetails) => (
-              <div
+              <Flex
+                align="center"
+                justify="between"
+                className="p-3 bg-ui-bg-secondary rounded-lg"
                 key={link._id}
-                className="flex items-center justify-between p-3 bg-ui-bg-secondary rounded-lg"
               >
-                <div className="flex items-center gap-3 flex-1 min-w-0">
+                <Flex align="center" gap="md" className="flex-1 min-w-0">
                   <Badge variant="accent" size="md">
                     {getLinkTypeLabel(link.linkType, "incoming")}
                   </Badge>
                   {link.issue && (
-                    <div className="flex items-center gap-2 flex-1 min-w-0">
+                    <Flex align="center" gap="sm" className="flex-1 min-w-0">
                       <Typography as="span" className="text-sm">
                         {getTypeIcon(link.issue.type)}
                       </Typography>
@@ -188,9 +193,9 @@ export function IssueDependencies({ issueId, projectId: _workspaceId }: IssueDep
                       <Typography as="span" className="text-sm truncate">
                         {link.issue.title}
                       </Typography>
-                    </div>
+                    </Flex>
                   )}
-                </div>
+                </Flex>
                 <button
                   type="button"
                   onClick={() => setDeleteConfirm(link._id)}
@@ -199,7 +204,7 @@ export function IssueDependencies({ issueId, projectId: _workspaceId }: IssueDep
                 >
                   ✕
                 </button>
-              </div>
+              </Flex>
             ))}
           </div>
         </div>
@@ -268,7 +273,7 @@ export function IssueDependencies({ issueId, projectId: _workspaceId }: IssueDep
                         selectedIssueKey === issue._id && "bg-brand-50 dark:bg-brand-950",
                       )}
                     >
-                      <div className="flex items-center gap-2">
+                      <Flex align="center" gap="sm">
                         <Typography as="span" className="text-sm">
                           {getTypeIcon(issue.type)}
                         </Typography>
@@ -278,7 +283,7 @@ export function IssueDependencies({ issueId, projectId: _workspaceId }: IssueDep
                         <Typography as="span" className="text-sm truncate">
                           {issue.title}
                         </Typography>
-                      </div>
+                      </Flex>
                     </button>
                   ))}
               </div>

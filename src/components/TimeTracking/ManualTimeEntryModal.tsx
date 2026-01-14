@@ -246,7 +246,7 @@ export function ManualTimeEntryModal({
           className="space-y-4"
         >
           {/* Mode Toggle */}
-          <div className="flex gap-1 p-1 bg-ui-bg-secondary rounded-lg">
+          <Flex gap="xs" className="p-1 bg-ui-bg-secondary rounded-lg">
             <ModeToggleButton
               mode="duration"
               currentMode={entryMode}
@@ -261,7 +261,7 @@ export function ManualTimeEntryModal({
               label="Start/End Time"
               onClick={() => setEntryMode("timeRange")}
             />
-          </div>
+          </Flex>
 
           {/* Date */}
           <form.Field name="date">

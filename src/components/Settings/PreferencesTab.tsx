@@ -2,6 +2,7 @@ import { api } from "@convex/_generated/api";
 import { useMutation, useQuery } from "convex/react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { Flex } from "@/components/ui/Flex";
 import { useTheme } from "../../contexts/ThemeContext";
 import { Card } from "../ui/Card";
 import { Label } from "../ui/Label";
@@ -87,8 +88,8 @@ export function PreferencesTab() {
             Appearance
           </Typography>
 
-          <div className="flex flex-col gap-4">
-            <div className="flex items-center justify-between">
+          <Flex direction="column" gap="lg">
+            <Flex align="center" justify="between">
               <div>
                 <Typography className="text-sm font-medium text-ui-text-primary">Theme</Typography>
                 <Typography className="text-sm text-ui-text-secondary">
@@ -115,8 +116,8 @@ export function PreferencesTab() {
                   <span className="mr-2">💻</span> System
                 </ToggleGroupItem>
               </ToggleGroup>
-            </div>
-          </div>
+            </Flex>
+          </Flex>
         </div>
       </Card>
 
@@ -125,7 +126,7 @@ export function PreferencesTab() {
           <Typography variant="h3" className="text-lg font-semibold text-ui-text-primary mb-4">
             Regional
           </Typography>
-          <div className="flex items-center justify-between">
+          <Flex align="center" justify="between">
             <div>
               <Label htmlFor="timezone" className="text-base">
                 Timezone
@@ -148,7 +149,7 @@ export function PreferencesTab() {
                 </SelectContent>
               </Select>
             </div>
-          </div>
+          </Flex>
         </div>
       </Card>
 
@@ -157,7 +158,7 @@ export function PreferencesTab() {
           <Typography variant="h3" className="text-lg font-semibold text-ui-text-primary mb-4">
             Desktop Notifications
           </Typography>
-          <div className="flex items-center justify-between">
+          <Flex align="center" justify="between">
             <div>
               <Label htmlFor="desktop-notifs" className="text-base">
                 Browser Push Notifications
@@ -171,7 +172,7 @@ export function PreferencesTab() {
               checked={userSettings?.desktopNotifications ?? false}
               onCheckedChange={handleDesktopNotificationsChange}
             />
-          </div>
+          </Flex>
         </div>
       </Card>
     </div>

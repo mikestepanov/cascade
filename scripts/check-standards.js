@@ -70,25 +70,34 @@ function checkFile(filePath) {
     }
   }
 
-  function checkFlexHeuristic(node, _filePath) {
-    // Check for "flex" usage heuristic
-    let classText = "";
-    if (node.initializer && ts.isStringLiteral(node.initializer)) {
-      classText = node.initializer.text;
-    } else if (
-      node.initializer &&
-      ts.isJsxExpression(node.initializer) &&
-      node.initializer.expression &&
-      ts.isStringLiteral(node.initializer.expression)
-    ) {
-      classText = node.initializer.expression.text;
+  function getClassNameText(node) {
+    const attr = node.attributes.properties.find(
+      (p) => ts.isJsxAttribute(p) && p.name.getText() === "className",
+    );
+    const init = attr?.initializer;
+    if (!init) return "";
+    if (ts.isStringLiteral(init)) return init.text;
+    if (ts.isJsxExpression(init) && init.expression && ts.isStringLiteral(init.expression)) {
+      return init.expression.text;
     }
+    return "";
+  }
 
-    const hasFlex = classText.includes("flex");
-    const hasAlignment = classText.includes("items-") || classText.includes("justify-");
+  function checkFlexStandard(node, filePath) {
+    if (!(ts.isJsxOpeningElement(node) || ts.isJsxSelfClosingElement(node))) return;
 
-    if (hasFlex && hasAlignment && !classText.includes("hidden")) {
-      // Logic for suggesting <Flex> component could go here if enabled
+    if (node.tagName.getText() !== "div") return;
+
+    const classText = getClassNameText(node);
+    const classes = classText.split(/\s+/);
+
+    if (classes.includes("flex") || classes.includes("inline-flex")) {
+      reportError(
+        filePath,
+        node,
+        'Use <Flex> component instead of <div className="flex"> for one-dimensional layouts.',
+        "warning",
+      );
     }
   }
 
@@ -159,13 +168,13 @@ function checkFile(filePath) {
   function checkClassName(node, filePath) {
     if (!ts.isJsxAttribute(node) || node.name.getText() !== "className") return;
     checkClassNameConcatenation(node, filePath);
-    checkFlexHeuristic(node, filePath);
     checkDarkModeStandard(node, filePath);
     checkTailwindShorthands(node, filePath);
   }
 
   function visit(node) {
     checkTypographyTags(node, filePath);
+    checkFlexStandard(node, filePath);
     checkClassName(node, filePath);
     ts.forEachChild(node, visit);
   }

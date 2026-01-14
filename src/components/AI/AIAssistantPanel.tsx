@@ -71,7 +71,7 @@ export function AIAssistantPanel({ projectId, isOpen, onClose }: AIAssistantPane
         </div>
 
         {/* Tabs */}
-        <div className="flex border-b border-ui-border-primary bg-ui-bg-secondary">
+        <Flex className="border-b border-ui-border-primary bg-ui-bg-secondary">
           <button
             type="button"
             onClick={() => handleTabChange("chat")}
@@ -106,7 +106,7 @@ export function AIAssistantPanel({ projectId, isOpen, onClose }: AIAssistantPane
               </span>
             )}
           </button>
-        </div>
+        </Flex>
 
         {/* Content */}
         <div className="flex-1 overflow-hidden">

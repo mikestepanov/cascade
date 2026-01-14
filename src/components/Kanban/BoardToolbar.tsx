@@ -9,6 +9,7 @@ interface BoardToolbarProps {
   showControls?: boolean;
 }
 
+import { Flex } from "@/components/ui/Flex";
 import { cn } from "@/lib/utils";
 import { Typography } from "../ui/Typography";
 
@@ -27,12 +28,12 @@ export function BoardToolbar({
   showControls = true,
 }: BoardToolbarProps) {
   return (
-    <div className="px-4 sm:px-6 pt-4 sm:pt-6 pb-2 flex items-center justify-between gap-2">
+    <Flex align="center" justify="between" gap="sm" className="px-4 sm:px-6 pt-4 sm:pt-6 pb-2">
       <Typography variant="h2" className="text-base sm:text-lg font-semibold">
         {sprintId ? "Sprint Board" : "Kanban Board"}
       </Typography>
       {showControls && (
-        <div className="flex items-center gap-1 sm:gap-2 shrink-0">
+        <Flex align="center" gap="xs" className="sm:gap-2 shrink-0">
           {/* Undo/Redo buttons */}
           <div className="hidden sm:flex items-center gap-1 mr-2 sm:mr-4">
             <button
@@ -98,8 +99,8 @@ export function BoardToolbar({
             </span>
             <span className="sm:hidden">{selectionMode ? "Exit" : "Select"}</span>
           </button>
-        </div>
+        </Flex>
       )}
-    </div>
+    </Flex>
   );
 }

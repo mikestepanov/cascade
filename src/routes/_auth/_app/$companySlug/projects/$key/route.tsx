@@ -75,7 +75,7 @@ function ProjectLayout() {
   ];
 
   return (
-    <div className="h-full flex flex-col">
+    <Flex direction="column" className="h-full">
       {/* Tab Navigation */}
       <div className="border-b border-ui-border-primary bg-ui-bg-primary">
         <nav className="flex space-x-4 px-4" aria-label="Tabs">
@@ -104,6 +104,6 @@ function ProjectLayout() {
       <div className="flex-1 overflow-hidden">
         <Outlet />
       </div>
-    </div>
+    </Flex>
   );
 }

@@ -1,5 +1,6 @@
 import type { Id } from "@convex/_generated/dataModel";
 import { memo, useEffect, useRef } from "react";
+import { Flex } from "@/components/ui/Flex";
 import { getPriorityColor, getPriorityIcon, getTypeIcon, getTypeLabel } from "@/lib/issue-utils";
 import { cn } from "@/lib/utils";
 import { Tooltip } from "./ui/Tooltip";
@@ -82,8 +83,8 @@ export const IssueCard = memo(function IssueCard({
       )}
     >
       {/* Header */}
-      <div className="flex items-start justify-between mb-2">
-        <div className="flex items-center space-x-2">
+      <Flex align="start" justify="between" className="mb-2">
+        <Flex align="center" className="space-x-2">
           {/* Checkbox in selection mode */}
           {selectionMode && (
             <input
@@ -101,7 +102,7 @@ export const IssueCard = memo(function IssueCard({
             </span>
           </Tooltip>
           <span className="text-xs text-ui-text-secondary font-mono">{issue.key}</span>
-        </div>
+        </Flex>
         <Tooltip
           content={`Priority: ${issue.priority.charAt(0).toUpperCase() + issue.priority.slice(1)}`}
         >
@@ -113,7 +114,7 @@ export const IssueCard = memo(function IssueCard({
             {getPriorityIcon(issue.priority)}
           </div>
         </Tooltip>
-      </div>
+      </Flex>
 
       {/* Title */}
       <Typography
@@ -125,7 +126,7 @@ export const IssueCard = memo(function IssueCard({
 
       {/* Labels */}
       {issue.labels.length > 0 && (
-        <div className="flex flex-wrap gap-1 mb-2">
+        <Flex wrap gap="xs" className="mb-2">
           {issue.labels.slice(0, 3).map((label) => (
             <Typography
               key={label.name}
@@ -141,15 +142,21 @@ export const IssueCard = memo(function IssueCard({
               +{issue.labels.length - 3}
             </Typography>
           )}
-        </div>
+        </Flex>
       )}
 
       {/* Footer */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
-        <div className="flex items-center space-x-2">
+      <Flex
+        direction="column"
+        align="start"
+        justify="between"
+        gap="sm"
+        className="sm:flex-row sm:items-center"
+      >
+        <Flex align="center" className="space-x-2">
           {issue.assignee && (
             <Tooltip content={`Assigned to: ${issue.assignee.name}`}>
-              <div className="flex items-center space-x-1">
+              <Flex align="center" className="space-x-1">
                 {issue.assignee.image ? (
                   <img
                     src={issue.assignee.image}
@@ -157,21 +164,25 @@ export const IssueCard = memo(function IssueCard({
                     className="w-5 h-5 rounded-full"
                   />
                 ) : (
-                  <div className="w-5 h-5 rounded-full bg-ui-bg-tertiary flex items-center justify-center text-xs text-ui-text-secondary">
+                  <Flex
+                    align="center"
+                    justify="center"
+                    className="w-5 h-5 rounded-full bg-ui-bg-tertiary text-xs text-ui-text-secondary"
+                  >
                     {issue.assignee.name.charAt(0).toUpperCase()}
-                  </div>
+                  </Flex>
                 )}
-              </div>
+              </Flex>
             </Tooltip>
           )}
-        </div>
+        </Flex>
         {issue.storyPoints !== undefined && (
-          <div className="flex items-center space-x-1 text-xs text-ui-text-secondary">
+          <Flex align="center" className="space-x-1 text-xs text-ui-text-secondary">
             <span className="font-medium">{issue.storyPoints}</span>
             <span>pts</span>
-          </div>
+          </Flex>
         )}
-      </div>
+      </Flex>
     </button>
   );
 });

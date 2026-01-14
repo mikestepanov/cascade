@@ -2,6 +2,7 @@ import { api } from "@convex/_generated/api";
 import type { Doc, Id } from "@convex/_generated/dataModel";
 import { useQuery } from "convex/react";
 import { useMemo, useState } from "react";
+import { Flex } from "@/components/ui/Flex";
 import { getPriorityColor, getTypeIcon } from "@/lib/issue-utils";
 import { cn } from "@/lib/utils";
 import { IssueDetailModal } from "./IssueDetailModal";
@@ -112,7 +113,7 @@ export function CalendarView({ projectId, sprintId, canEdit = true }: CalendarVi
             : "bg-ui-bg-primary dark:bg-ui-bg-primary-dark",
         )}
       >
-        <div className="flex items-center justify-between mb-1">
+        <Flex align="center" justify="between" className="mb-1">
           <span
             className={cn(
               "text-sm font-medium",
@@ -128,7 +129,7 @@ export function CalendarView({ projectId, sprintId, canEdit = true }: CalendarVi
               {dayIssues.length}
             </span>
           )}
-        </div>
+        </Flex>
 
         <div className="space-y-1">
           {(dayIssues ?? []).slice(0, 3).map((issue: Doc<"issues">) => (
@@ -139,12 +140,12 @@ export function CalendarView({ projectId, sprintId, canEdit = true }: CalendarVi
               className="w-full text-left p-1.5 rounded hover:bg-ui-bg-secondary transition-colors"
               title={issue.title}
             >
-              <div className="flex items-center gap-1">
+              <Flex align="center" gap="xs">
                 <div className={cn("w-2 h-2 rounded-full", getPriorityColor(issue.priority))} />
                 <span className="text-xs truncate flex-1">
                   {getTypeIcon(issue.type)} {issue.title}
                 </span>
-              </div>
+              </Flex>
             </button>
           ))}
           {dayIssues.length > 3 && (
@@ -160,13 +161,24 @@ export function CalendarView({ projectId, sprintId, canEdit = true }: CalendarVi
   return (
     <div className="flex-1 p-3 sm:p-6 overflow-auto">
       {/* Header */}
-      <div className="mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <Flex
+        direction="column"
+        align="start"
+        justify="between"
+        gap="lg"
+        className="mb-6 sm:flex-row sm:items-center"
+      >
         <Typography variant="h2" className="text-xl sm:text-2xl font-bold">
           Calendar View
         </Typography>
 
         {/* Month Navigation */}
-        <div className="flex items-center gap-2 sm:gap-4 w-full sm:w-auto justify-between sm:justify-start">
+        <Flex
+          align="center"
+          gap="sm"
+          justify="between"
+          className="sm:gap-4 w-full sm:w-auto sm:justify-start"
+        >
           <button
             type="button"
             onClick={previousMonth}
@@ -220,8 +232,8 @@ export function CalendarView({ projectId, sprintId, canEdit = true }: CalendarVi
           >
             Today
           </button>
-        </div>
-      </div>
+        </Flex>
+      </Flex>
 
       {/* Calendar Grid */}
       <div className="overflow-x-auto">
@@ -241,28 +253,28 @@ export function CalendarView({ projectId, sprintId, canEdit = true }: CalendarVi
       </div>
 
       {/* Legend */}
-      <div className="mt-4 flex items-center gap-6 text-sm">
-        <div className="flex items-center gap-2">
+      <Flex align="center" gap="xl" className="mt-4 text-sm">
+        <Flex align="center" gap="sm">
           <div className="w-3 h-3 rounded-full bg-status-error" />
           <span className="text-ui-text-secondary">Highest</span>
-        </div>
-        <div className="flex items-center gap-2">
+        </Flex>
+        <Flex align="center" gap="sm">
           <div className="w-3 h-3 rounded-full bg-status-warning" />
           <span className="text-ui-text-secondary">High</span>
-        </div>
-        <div className="flex items-center gap-2">
+        </Flex>
+        <Flex align="center" gap="sm">
           <div className="w-3 h-3 rounded-full bg-accent-500" />
           <span className="text-ui-text-secondary">Medium</span>
-        </div>
-        <div className="flex items-center gap-2">
+        </Flex>
+        <Flex align="center" gap="sm">
           <div className="w-3 h-3 rounded-full bg-brand-500" />
           <span className="text-ui-text-secondary">Low</span>
-        </div>
-        <div className="flex items-center gap-2">
+        </Flex>
+        <Flex align="center" gap="sm">
           <div className="w-3 h-3 rounded-full bg-ui-text-secondary" />
           <span className="text-ui-text-secondary">Lowest</span>
-        </div>
-      </div>
+        </Flex>
+      </Flex>
 
       {/* Issue Detail Modal */}
       {selectedIssue && (

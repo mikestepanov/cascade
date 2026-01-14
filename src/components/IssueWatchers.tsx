@@ -2,6 +2,7 @@ import { api } from "@convex/_generated/api";
 import type { Id } from "@convex/_generated/dataModel";
 import { useMutation, useQuery } from "convex/react";
 import { toast } from "sonner";
+import { Flex } from "@/components/ui/Flex";
 import { Avatar } from "./ui/Avatar";
 import { Button } from "./ui/Button";
 import { Typography } from "./ui/Typography";
@@ -88,9 +89,11 @@ export function IssueWatchers({ issueId }: IssueWatchersProps) {
           </Typography>
           <div className="space-y-2">
             {watchers.map((watcher: Watcher) => (
-              <div
+              <Flex
+                align="center"
+                gap="md"
+                className="p-2 bg-ui-bg-secondary rounded-lg"
                 key={watcher._id}
-                className="flex items-center gap-3 p-2 bg-ui-bg-secondary rounded-lg"
               >
                 {/* Avatar */}
                 <Avatar name={watcher.userName} size="md" />
@@ -106,7 +109,7 @@ export function IssueWatchers({ issueId }: IssueWatchersProps) {
                     </Typography>
                   )}
                 </div>
-              </div>
+              </Flex>
             ))}
           </div>
         </div>

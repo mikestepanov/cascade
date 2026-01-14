@@ -2,6 +2,7 @@ import { api } from "@convex/_generated/api";
 import { createFileRoute, Outlet, useNavigate } from "@tanstack/react-router";
 import { useConvexAuth, useMutation, useQuery } from "convex/react";
 import { useEffect, useRef, useState } from "react";
+import { Flex } from "@/components/ui/Flex";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { Typography } from "@/components/ui/Typography";
 import { ROUTE_PATTERNS } from "@/config/routes";
@@ -30,9 +31,9 @@ function AppLayout() {
   // Loading state
   if (isAuthLoading || userCompanies === undefined) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-ui-bg-secondary">
+      <Flex align="center" justify="center" className="min-h-screen bg-ui-bg-secondary">
         <LoadingSpinner size="lg" />
-      </div>
+      </Flex>
     );
   }
 
@@ -84,7 +85,7 @@ function InitializeCompany() {
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-ui-bg-secondary">
+      <Flex align="center" justify="center" className="min-h-screen bg-ui-bg-secondary">
         <div className="text-center">
           <Typography variant="h2" className="text-xl font-medium mb-2 text-red-600">
             Error
@@ -93,18 +94,18 @@ function InitializeCompany() {
             {error}
           </Typography>
         </div>
-      </div>
+      </Flex>
     );
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-ui-bg-secondary">
+    <Flex align="center" justify="center" className="min-h-screen bg-ui-bg-secondary">
       <div className="text-center">
         <LoadingSpinner size="lg" />
         <Typography variant="p" color="secondary" className="mt-4">
           Setting up your project...
         </Typography>
       </div>
-    </div>
+    </Flex>
   );
 }

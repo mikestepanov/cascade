@@ -1,4 +1,5 @@
 import { FileText, PanelsTopLeft, Users } from "lucide-react";
+import { Flex } from "@/components/ui/Flex";
 import { cn } from "@/lib/utils";
 import { Typography } from "../ui/Typography";
 import { ArrowIcon } from "./icons";
@@ -87,9 +88,9 @@ function FeatureCard({
     >
       {/* Icon */}
       <div className={cn("w-12 h-12 rounded-xl p-[2px] mb-5 bg-linear-to-br", gradients[gradient])}>
-        <div className="w-full h-full rounded-xl bg-gray-900/90 flex items-center justify-center">
+        <Flex align="center" justify="center" className="w-full h-full rounded-xl bg-gray-900/90">
           {icon}
-        </div>
+        </Flex>
       </div>
 
       {/* Content */}

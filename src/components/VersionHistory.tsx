@@ -2,6 +2,7 @@ import { api } from "@convex/_generated/api";
 import type { Id } from "@convex/_generated/dataModel";
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
+import { Flex } from "@/components/ui/Flex";
 import { Clock, History, RotateCcw } from "@/lib/icons";
 import { showError, showSuccess } from "@/lib/toast";
 import { cn } from "@/lib/utils";
@@ -91,18 +92,18 @@ export function VersionHistory({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-2xl max-h-[80vh] flex flex-col">
         <DialogHeader>
-          <div className="flex items-center gap-3">
+          <Flex align="center" gap="md">
             <History className="w-5 h-5 text-brand-600 dark:text-brand-400" />
             <DialogTitle>Version History</DialogTitle>
-          </div>
+          </Flex>
         </DialogHeader>
 
         {/* Content */}
         <div className="flex-1 overflow-auto">
           {versions === undefined ? (
-            <div className="flex items-center justify-center py-12">
+            <Flex align="center" justify="center" className="py-12">
               <LoadingSpinner size="lg" />
-            </div>
+            </Flex>
           ) : versions.length === 0 ? (
             <div className="text-center py-12">
               <Clock className="w-12 h-12 text-ui-text-tertiary mx-auto mb-4" />
@@ -130,9 +131,9 @@ export function VersionHistory({
                         : "border-ui-border-primary dark:border-ui-border-primary-dark hover:border-ui-border-secondary dark:hover:border-ui-border-secondary-dark",
                     )}
                   >
-                    <div className="flex items-start justify-between">
+                    <Flex align="start" justify="between">
                       <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-1">
+                        <Flex align="center" gap="sm" className="mb-1">
                           {isLatest && (
                             <span className="px-2 py-0.5 text-xs font-medium bg-status-success-bg text-status-success-text rounded">
                               Current
@@ -141,14 +142,14 @@ export function VersionHistory({
                           <span className="text-sm font-medium text-ui-text-primary">
                             {version.title}
                           </span>
-                        </div>
-                        <div className="flex items-center gap-3 text-sm text-ui-text-secondary">
+                        </Flex>
+                        <Flex align="center" gap="md" className="text-sm text-ui-text-secondary">
                           <span className="flex items-center gap-1">
                             <Clock className="w-3.5 h-3.5" />
                             {formatDate(version.createdAt)}
                           </span>
                           <span>by {version.createdByName}</span>
-                        </div>
+                        </Flex>
                         {version.changeDescription && (
                           <Typography className="mt-2 text-sm text-ui-text-secondary">
                             {version.changeDescription}
@@ -167,7 +168,7 @@ export function VersionHistory({
                           Restore
                         </Button>
                       )}
-                    </div>
+                    </Flex>
                   </div>
                 );
               })}

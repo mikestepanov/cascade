@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { Authenticated, Unauthenticated } from "convex/react";
+import { Flex } from "@/components/ui/Flex";
 import { ROUTE_PATTERNS } from "@/config/routes";
 import { NixeloLogo } from "./icons";
 
@@ -27,7 +28,7 @@ export function NavHeader() {
           ))}
         </div>
 
-        <div className="flex items-center gap-4">
+        <Flex align="center" gap="lg">
           <Unauthenticated>
             <Link
               to={ROUTE_PATTERNS.signin}
@@ -50,7 +51,7 @@ export function NavHeader() {
               Go to App
             </Link>
           </Authenticated>
-        </div>
+        </Flex>
       </nav>
     </header>
   );

@@ -65,7 +65,11 @@ export function AssigneeSearchDropdown({
     <div className={className}>
       {/* Show selected user */}
       {selectedUser && !query && (
-        <div className="flex items-center justify-between p-2 border border-ui-border-secondary rounded-lg mb-2">
+        <Flex
+          align="center"
+          justify="between"
+          className="p-2 border border-ui-border-secondary rounded-lg mb-2"
+        >
           <Flex gap="sm" align="center">
             <Avatar name={selectedUser.name} email={selectedUser.email} size="sm" />
             <span className="text-sm">{selectedUser.name || selectedUser.email}</span>
@@ -86,7 +90,7 @@ export function AssigneeSearchDropdown({
               />
             </svg>
           </button>
-        </div>
+        </Flex>
       )}
 
       {/* Fuzzy search input */}

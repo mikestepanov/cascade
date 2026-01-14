@@ -13,11 +13,11 @@ export function InvitedWelcome({ inviterName, onStartTour, onSkip }: InvitedWelc
   return (
     <div className="text-center space-y-8">
       {/* Icon */}
-      <div className="flex justify-center">
+      <Flex justify="center">
         <div className="p-6 rounded-full bg-primary-100 dark:bg-primary-900/30">
           <PartyPopper className="w-16 h-16 text-primary-600" />
         </div>
-      </div>
+      </Flex>
 
       {/* Welcome Message */}
       <div className="space-y-3">

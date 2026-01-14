@@ -2,6 +2,7 @@ import { api } from "@convex/_generated/api";
 import type { Id } from "@convex/_generated/dataModel";
 import { useMutation } from "convex/react";
 import { useRef, useState } from "react";
+import { Flex } from "@/components/ui/Flex";
 import { showError, showSuccess } from "@/lib/toast";
 import { Button } from "./ui/Button";
 
@@ -89,7 +90,7 @@ export function AttachmentUpload({ issueId, onAttached }: AttachmentUploadProps)
   };
 
   return (
-    <div className="inline-flex">
+    <Flex inline>
       <input
         ref={fileInputRef}
         type="file"
@@ -126,6 +127,6 @@ export function AttachmentUpload({ issueId, onAttached }: AttachmentUploadProps)
       >
         {isUploading ? "Uploading..." : "Attach File"}
       </Button>
-    </div>
+    </Flex>
   );
 }

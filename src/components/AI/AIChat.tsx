@@ -200,7 +200,7 @@ export const AIChat = React.memo(function AIChat({
                 />
               ))}
             {isSending && (
-              <div className="flex justify-start">
+              <Flex justify="start">
                 <div className="bg-ui-bg-secondary rounded-lg px-4 py-3">
                   <Flex align="center" gap="sm">
                     <Flex gap="xs">
@@ -220,7 +220,7 @@ export const AIChat = React.memo(function AIChat({
                     <span className="text-sm text-ui-text-secondary">AI is thinking...</span>
                   </Flex>
                 </div>
-              </div>
+              </Flex>
             )}
             <div ref={messagesEndRef} />
           </>

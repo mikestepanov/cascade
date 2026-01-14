@@ -267,7 +267,7 @@ export function AppSidebar() {
                 return (
                   <div key={workspace._id} className="ml-2 group">
                     {/* Workspace Item */}
-                    <div className="flex items-center gap-1">
+                    <Flex align="center" gap="xs">
                       <Button
                         variant="ghost"
                         size="icon"
@@ -299,7 +299,7 @@ export function AppSidebar() {
                       >
                         <Plus className="w-4 h-4 text-ui-text-tertiary" />
                       </Button>
-                    </div>
+                    </Flex>
 
                     {/* Teams under workspace */}
                     {isWorkspaceExpanded &&
@@ -469,9 +469,13 @@ function CollapsibleSection({
             <Icon className="w-5 h-5" />
           </Link>
         ) : (
-          <div className="flex items-center justify-center px-2 py-2 rounded-md text-ui-text-secondary">
+          <Flex
+            align="center"
+            justify="center"
+            className="px-2 py-2 rounded-md text-ui-text-secondary"
+          >
             <Icon className="w-5 h-5" />
-          </div>
+          </Flex>
         )}
       </Tooltip>
     );
@@ -519,10 +523,14 @@ function CollapsibleSection({
             <span>{label}</span>
           </Link>
         ) : (
-          <div className="flex-1 flex items-center gap-2 text-sm font-medium text-ui-text-secondary">
+          <Flex
+            align="center"
+            gap="sm"
+            className="flex-1 text-sm font-medium text-ui-text-secondary"
+          >
             <Icon className="w-5 h-5" />
             <span>{label}</span>
-          </div>
+          </Flex>
         )}
         <Button
           variant="ghost"

@@ -63,7 +63,7 @@ function ProjectLayout() {
   ];
 
   return (
-    <div className="h-full flex flex-col">
+    <Flex direction="column" className="h-full">
       {/* Breadcrumb */}
       <div className="px-4 py-2 border-b border-ui-border-primary bg-ui-bg-secondary text-sm">
         <Link
@@ -121,6 +121,6 @@ function ProjectLayout() {
       <div className="flex-1 overflow-hidden">
         <Outlet />
       </div>
-    </div>
+    </Flex>
   );
 }

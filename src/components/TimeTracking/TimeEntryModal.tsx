@@ -413,7 +413,7 @@ export function TimeEntryModal({
           className="space-y-4"
         >
           {/* Mode Toggle */}
-          <div className="flex gap-1 p-1 bg-ui-bg-secondary rounded-lg">
+          <Flex gap="xs" className="p-1 bg-ui-bg-secondary rounded-lg">
             <ModeToggleButton
               mode="timer"
               currentMode={state.entryMode}
@@ -435,7 +435,7 @@ export function TimeEntryModal({
               label="Time Range"
               onClick={() => actions.setEntryMode("timeRange")}
             />
-          </div>
+          </Flex>
 
           {/* Project Selection */}
           <div>

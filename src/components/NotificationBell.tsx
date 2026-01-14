@@ -2,6 +2,7 @@ import { api } from "@convex/_generated/api";
 import type { Doc, Id } from "@convex/_generated/dataModel";
 import { useMutation, useQuery } from "convex/react";
 import { useEffect, useRef, useState } from "react";
+import { Flex } from "@/components/ui/Flex";
 import { cn } from "@/lib/utils";
 import { Button } from "./ui/Button";
 import { LoadingSpinner } from "./ui/LoadingSpinner";
@@ -112,9 +113,16 @@ export function NotificationBell() {
 
       {/* Dropdown Panel */}
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-96 bg-ui-bg-primary rounded-lg shadow-xl border border-ui-border-primary z-50 max-h-[32rem] overflow-hidden flex flex-col">
+        <Flex
+          direction="column"
+          className="absolute right-0 mt-2 w-96 bg-ui-bg-primary rounded-lg shadow-xl border border-ui-border-primary z-50 max-h-[32rem] overflow-hidden"
+        >
           {/* Header */}
-          <div className="px-4 py-3 border-b border-ui-border-primary flex items-center justify-between">
+          <Flex
+            align="center"
+            justify="between"
+            className="px-4 py-3 border-b border-ui-border-primary"
+          >
             <Typography variant="h3" className="text-lg font-semibold text-ui-text-primary">
               Notifications
             </Typography>
@@ -128,16 +136,16 @@ export function NotificationBell() {
                 Mark all read
               </Button>
             )}
-          </div>
+          </Flex>
 
           {/* Notifications List */}
           <div className="overflow-y-auto flex-1">
             {!notifications ? (
-              <div className="flex items-center justify-center py-8">
+              <Flex align="center" justify="center" className="py-8">
                 <LoadingSpinner />
-              </div>
+              </Flex>
             ) : notifications.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-12 px-4">
+              <Flex direction="column" align="center" justify="center" className="py-12 px-4">
                 <div className="text-6xl mb-4">🔔</div>
                 <Typography className="text-ui-text-secondary text-center">
                   No notifications yet
@@ -145,7 +153,7 @@ export function NotificationBell() {
                 <Typography className="text-sm text-ui-text-tertiary text-center mt-1">
                   We'll notify you when something happens
                 </Typography>
-              </div>
+              </Flex>
             ) : (
               <div>
                 {notifications.map(
@@ -161,7 +169,7 @@ export function NotificationBell() {
                         handleNotificationClick(notification._id, notification.issueId)
                       }
                     >
-                      <div className="flex items-start gap-3">
+                      <Flex align="start" gap="md">
                         <div className="text-2xl shrink-0">
                           {getNotificationIcon(notification.type)}
                         </div>
@@ -172,7 +180,7 @@ export function NotificationBell() {
                           <Typography className="text-sm text-ui-text-secondary mt-1">
                             {notification.message}
                           </Typography>
-                          <div className="flex items-center gap-2 mt-2">
+                          <Flex align="center" gap="sm" className="mt-2">
                             <span className="text-xs text-ui-text-tertiary">
                               {formatTime(notification.createdAt)}
                             </span>
@@ -184,7 +192,7 @@ export function NotificationBell() {
                                 </span>
                               </>
                             )}
-                          </div>
+                          </Flex>
                         </div>
                         <button
                           type="button"
@@ -210,14 +218,14 @@ export function NotificationBell() {
                             />
                           </svg>
                         </button>
-                      </div>
+                      </Flex>
                     </button>
                   ),
                 )}
               </div>
             )}
           </div>
-        </div>
+        </Flex>
       )}
     </div>
   );

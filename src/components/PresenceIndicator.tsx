@@ -1,6 +1,7 @@
 import { api } from "@convex/_generated/api";
 import FacePile from "@convex-dev/presence/facepile";
 import usePresence from "@convex-dev/presence/react";
+import { Flex } from "@/components/ui/Flex";
 
 interface PresenceIndicatorProps {
   roomId: string;
@@ -15,11 +16,11 @@ export function PresenceIndicator({ roomId, userId }: PresenceIndicatorProps) {
   }
 
   return (
-    <div className="flex items-center space-x-2">
+    <Flex align="center" className="space-x-2">
       <span className="text-sm text-ui-text-secondary">
         {presenceState.length} {presenceState.length === 1 ? "person" : "people"} editing
       </span>
       <FacePile presenceState={presenceState} />
-    </div>
+    </Flex>
   );
 }

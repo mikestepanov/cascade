@@ -147,7 +147,7 @@ export function RoadmapView({ projectId }: RoadmapViewProps) {
           </Flex>
 
           {/* Time Scale Toggle */}
-          <div className="flex border border-ui-border-primary rounded-md shrink-0">
+          <Flex className="border border-ui-border-primary rounded-md shrink-0">
             <button
               type="button"
               onClick={() => setTimeScale("week")}
@@ -187,7 +187,7 @@ export function RoadmapView({ projectId }: RoadmapViewProps) {
               <span className="sm:hidden">Q</span>
               <span className="hidden sm:inline">Quarter</span>
             </button>
-          </div>
+          </Flex>
         </Flex>
       </div>
 
@@ -196,11 +196,11 @@ export function RoadmapView({ projectId }: RoadmapViewProps) {
         <div className="min-w-max">
           {/* Timeline Header */}
           <div className="sticky top-0 z-10 bg-ui-bg-secondary border-b border-ui-border-primary">
-            <div className="flex">
+            <Flex>
               <div className="w-40 sm:w-48 md:w-64 shrink-0 p-2 sm:p-3 border-r border-ui-border-primary font-medium text-xs sm:text-sm text-ui-text-primary">
                 Item
               </div>
-              <div className="flex-1 flex">
+              <Flex className="flex-1">
                 {columns.map((col) => (
                   <div
                     key={col.date.getTime()}
@@ -209,8 +209,8 @@ export function RoadmapView({ projectId }: RoadmapViewProps) {
                     {col.label}
                   </div>
                 ))}
-              </div>
-            </div>
+              </Flex>
+            </Flex>
           </div>
 
           {/* Roadmap Items */}
@@ -221,10 +221,7 @@ export function RoadmapView({ projectId }: RoadmapViewProps) {
           ) : (
             <div>
               {sortedItems.map((item) => (
-                <div
-                  key={`${item.type}-${item.id}`}
-                  className="flex border-b border-ui-border-primary"
-                >
+                <Flex className="border-b border-ui-border-primary" key={`${item.type}-${item.id}`}>
                   {/* Item Info */}
                   <div className="w-40 sm:w-48 md:w-64 shrink-0 p-2 sm:p-3 border-r border-ui-border-primary">
                     <Flex gap="sm" align="center" className="gap-1 sm:gap-2">
@@ -245,21 +242,21 @@ export function RoadmapView({ projectId }: RoadmapViewProps) {
 
                   {/* Timeline Bar */}
                   <div className="flex-1 relative">
-                    <div className="absolute inset-0 flex">
+                    <Flex className="absolute inset-0">
                       {columns.map((col) => (
                         <div
                           key={col.date.getTime()}
                           className="flex-1 border-r border-ui-border-primary"
                         />
                       ))}
-                    </div>
+                    </Flex>
 
                     {/* Date Bar */}
-                    <div className="absolute inset-y-0 flex items-center px-2">
+                    <Flex align="center" className="absolute inset-y-0 px-2">
                       {renderDateBar(item, startDate, endDate, columns.length)}
-                    </div>
+                    </Flex>
                   </div>
-                </div>
+                </Flex>
               ))}
             </div>
           )}

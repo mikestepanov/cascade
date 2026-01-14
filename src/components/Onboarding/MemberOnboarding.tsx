@@ -3,6 +3,7 @@ import { useMutation } from "convex/react";
 import { ArrowLeft, Bell, Building2, Clock, FileText, Kanban } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/Button";
+import { Flex } from "@/components/ui/Flex";
 import { Input } from "@/components/ui/Input";
 import { showError, showSuccess } from "@/lib/toast";
 import { Typography } from "../ui/Typography";
@@ -79,9 +80,14 @@ export function MemberOnboarding({
 
         {/* Header */}
         <div className="text-center">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary-100 dark:bg-primary-900/30 mb-4">
+          <Flex
+            inline
+            align="center"
+            justify="center"
+            className="w-16 h-16 rounded-full bg-primary-100 dark:bg-primary-900/30 mb-4"
+          >
             <Building2 className="w-8 h-8 text-primary-600" />
-          </div>
+          </Flex>
           <Typography variant="h1" className="text-3xl font-bold mb-3">
             Name Your Project
           </Typography>
@@ -157,7 +163,7 @@ export function MemberOnboarding({
         </Typography>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="flex items-start gap-3 p-4 rounded-lg bg-ui-bg-primary">
+          <Flex align="start" gap="md" className="p-4 rounded-lg bg-ui-bg-primary">
             <Kanban className="w-5 h-5 text-priority-low mt-0.5 shrink-0" />
             <div>
               <Typography variant="h4" className="font-medium text-ui-text-primary text-sm">
@@ -167,9 +173,9 @@ export function MemberOnboarding({
                 Drag issues across the board as you progress
               </Typography>
             </div>
-          </div>
+          </Flex>
 
-          <div className="flex items-start gap-3 p-4 rounded-lg bg-ui-bg-primary">
+          <Flex align="start" gap="md" className="p-4 rounded-lg bg-ui-bg-primary">
             <FileText className="w-5 h-5 text-status-success mt-0.5 shrink-0" />
             <div>
               <Typography variant="h4" className="font-medium text-ui-text-primary text-sm">
@@ -179,9 +185,9 @@ export function MemberOnboarding({
                 Edit documents together in real-time
               </Typography>
             </div>
-          </div>
+          </Flex>
 
-          <div className="flex items-start gap-3 p-4 rounded-lg bg-ui-bg-primary">
+          <Flex align="start" gap="md" className="p-4 rounded-lg bg-ui-bg-primary">
             <Clock className="w-5 h-5 text-status-warning mt-0.5 shrink-0" />
             <div>
               <Typography variant="h4" className="font-medium text-ui-text-primary text-sm">
@@ -191,9 +197,9 @@ export function MemberOnboarding({
                 Log time spent on tasks
               </Typography>
             </div>
-          </div>
+          </Flex>
 
-          <div className="flex items-start gap-3 p-4 rounded-lg bg-ui-bg-primary">
+          <Flex align="start" gap="md" className="p-4 rounded-lg bg-ui-bg-primary">
             <Bell className="w-5 h-5 text-issue-type-story mt-0.5 shrink-0" />
             <div>
               <Typography variant="h4" className="font-medium text-ui-text-primary text-sm">
@@ -203,7 +209,7 @@ export function MemberOnboarding({
                 Get notified when mentioned or assigned
               </Typography>
             </div>
-          </div>
+          </Flex>
         </div>
       </div>
 
@@ -218,11 +224,11 @@ export function MemberOnboarding({
       </div>
 
       {/* Continue */}
-      <div className="flex justify-center">
+      <Flex justify="center">
         <Button variant="primary" size="lg" onClick={handleFinish} className="min-w-[200px]">
           Go to Dashboard
         </Button>
-      </div>
+      </Flex>
     </div>
   );
 }

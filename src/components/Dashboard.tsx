@@ -3,6 +3,7 @@ import type { Doc } from "@convex/_generated/dataModel";
 import { useNavigate } from "@tanstack/react-router";
 import { usePaginatedQuery, useQuery } from "convex/react";
 import { useState } from "react";
+import { Flex } from "@/components/ui/Flex";
 import { ROUTE_PATTERNS } from "@/config/routes";
 import { useCompany } from "@/hooks/useCompanyContext";
 import { useListNavigation } from "../hooks/useListNavigation";
@@ -68,7 +69,11 @@ export function Dashboard() {
     <div className="min-h-screen bg-ui-bg-secondary">
       <div className="max-w-7xl mx-auto p-4 sm:p-6">
         {/* Header */}
-        <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <Flex
+          direction="column"
+          gap="lg"
+          className="mb-6 sm:flex-row sm:items-center sm:justify-between"
+        >
           <div>
             <Typography variant="h1" className="text-2xl sm:text-3xl font-bold">
               My Work
@@ -78,7 +83,7 @@ export function Dashboard() {
             </Typography>
           </div>
           <DashboardCustomizeModal />
-        </div>
+        </Flex>
 
         {/* Stats Cards */}
         {showStats && <QuickStats stats={stats} />}

@@ -3,6 +3,7 @@ import { useAuthActions } from "@convex-dev/auth/react";
 import { Link } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
 import { LogOut, Settings } from "lucide-react";
+import { Flex } from "@/components/ui/Flex";
 import { ROUTE_PATTERNS } from "@/config/routes";
 import { useCompany } from "@/hooks/useCompanyContext";
 import { Avatar } from "./ui/Avatar";
@@ -40,14 +41,14 @@ export function UserMenu() {
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56" align="end">
         <DropdownMenuLabel className="font-normal">
-          <div className="flex flex-col space-y-1">
+          <Flex direction="column" className="space-y-1">
             <Typography className="text-sm font-medium leading-none">
               {user.name || "User"}
             </Typography>
             <Typography className="text-xs leading-none text-ui-text-secondary truncate">
               {user.email}
             </Typography>
-          </div>
+          </Flex>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>

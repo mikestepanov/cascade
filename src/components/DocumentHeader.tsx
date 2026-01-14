@@ -1,5 +1,6 @@
 import type { Doc } from "@convex/_generated/dataModel";
 import { useState } from "react";
+import { Flex } from "@/components/ui/Flex";
 import { Typography } from "@/components/ui/Typography";
 import { History } from "@/lib/icons";
 import { cn } from "@/lib/utils";
@@ -58,7 +59,13 @@ export function DocumentHeader({
 
   return (
     <div className="border-b border-ui-border-primary p-3 sm:p-6">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 mb-3 sm:mb-4">
+      <Flex
+        direction="column"
+        align="start"
+        justify="between"
+        gap="md"
+        className="sm:flex-row sm:items-center sm:gap-4 mb-3 sm:mb-4"
+      >
         <div className="flex-1 w-full sm:w-auto">
           {isEditingTitle ? (
             <Input
@@ -93,7 +100,7 @@ export function DocumentHeader({
           )}
         </div>
 
-        <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 w-full sm:w-auto">
+        <Flex wrap align="center" className="gap-1.5 sm:gap-2 w-full sm:w-auto">
           <PresenceIndicator roomId={document._id} userId={userId} />
 
           {/* Version History */}
@@ -189,14 +196,18 @@ export function DocumentHeader({
               {document.isPublic ? "Public" : "Private"}
             </Button>
           )}
-        </div>
-      </div>
+        </Flex>
+      </Flex>
 
-      <div className="flex flex-wrap items-center gap-x-2 sm:gap-x-4 gap-y-1 text-xs sm:text-sm text-ui-text-secondary">
+      <Flex
+        wrap
+        align="center"
+        className="gap-x-2 sm:gap-x-4 gap-y-1 text-xs sm:text-sm text-ui-text-secondary"
+      >
         <span>Created by {document.creatorName}</span>
         <span className="hidden sm:inline">•</span>
         <span>Last updated {new Date(document.updatedAt).toLocaleDateString()}</span>
-      </div>
+      </Flex>
     </div>
   );
 }

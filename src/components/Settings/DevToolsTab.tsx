@@ -1,6 +1,7 @@
 import { api } from "@convex/_generated/api";
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
+import { Flex } from "@/components/ui/Flex";
 import { showError, showSuccess } from "@/lib/toast";
 import { Button } from "../ui/Button";
 import { Typography } from "../ui/Typography";
@@ -32,7 +33,7 @@ export function DevToolsTab() {
     <div className="space-y-6">
       {/* Info Banner */}
       <div className="bg-status-info-bg border border-status-info rounded-lg p-4">
-        <div className="flex items-start gap-3">
+        <Flex align="start" gap="md">
           <span className="text-status-info-text text-xl">&#128736;</span>
           <div>
             <Typography variant="h3" className="font-medium text-status-info-text">
@@ -42,7 +43,7 @@ export function DevToolsTab() {
               These tools are only visible for test accounts (@inbox.mailtrap.io).
             </Typography>
           </div>
-        </div>
+        </Flex>
       </div>
 
       {/* Onboarding Section */}
@@ -54,7 +55,7 @@ export function DevToolsTab() {
           Reset your onboarding state to test the onboarding flow again. After resetting, refresh
           the page to see the onboarding wizard.
         </Typography>
-        <div className="flex items-center gap-4">
+        <Flex align="center" gap="lg">
           <Button
             onClick={handleResetOnboarding}
             disabled={isResettingOnboarding || !currentUser}
@@ -65,7 +66,7 @@ export function DevToolsTab() {
           {currentUser?.email && (
             <span className="text-sm text-ui-text-tertiary">Current user: {currentUser.email}</span>
           )}
-        </div>
+        </Flex>
       </div>
 
       {/* User Info Section */}
@@ -75,22 +76,22 @@ export function DevToolsTab() {
         </Typography>
         {currentUser ? (
           <div className="text-sm space-y-2">
-            <div className="flex gap-2">
+            <Flex gap="sm">
               <Typography variant="small" color="secondary">
                 ID:
               </Typography>
               <code className="text-ui-text-primary font-mono">{currentUser._id}</code>
-            </div>
-            <div className="flex gap-2">
+            </Flex>
+            <Flex gap="sm">
               <span className="text-ui-text-secondary">Email:</span>
               <code className="text-ui-text-primary font-mono">{currentUser.email}</code>
-            </div>
-            <div className="flex gap-2">
+            </Flex>
+            <Flex gap="sm">
               <span className="text-ui-text-secondary">Test User:</span>
               <code className="text-ui-text-primary font-mono">
                 {currentUser.isTestUser ? "Yes" : "No"}
               </code>
-            </div>
+            </Flex>
           </div>
         ) : (
           <Typography className="text-sm text-ui-text-secondary">Loading user info...</Typography>

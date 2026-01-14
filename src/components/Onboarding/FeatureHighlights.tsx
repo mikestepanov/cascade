@@ -1,4 +1,5 @@
 import { FileText, Kanban, Zap } from "lucide-react";
+import { Flex } from "@/components/ui/Flex";
 import { Typography } from "../ui/Typography";
 
 interface FeatureCardProps {
@@ -10,7 +11,9 @@ interface FeatureCardProps {
 function FeatureCard({ icon, title, description }: FeatureCardProps) {
   return (
     <div className="text-center p-4">
-      <div className="inline-flex p-3 rounded-lg bg-ui-bg-primary mb-3">{icon}</div>
+      <Flex inline className="p-3 rounded-lg bg-ui-bg-primary mb-3">
+        {icon}
+      </Flex>
       <Typography variant="h3" className="font-semibold text-ui-text-primary mb-1">
         {title}
       </Typography>

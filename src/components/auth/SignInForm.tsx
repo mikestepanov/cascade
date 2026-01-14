@@ -2,6 +2,7 @@ import { useAuthActions } from "@convex-dev/auth/react";
 import { useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
+import { Flex } from "@/components/ui/Flex";
 import { ROUTE_PATTERNS } from "@/config/routes";
 import { cn } from "@/lib/utils";
 import { Button } from "../ui/Button";
@@ -46,11 +47,11 @@ export function SignInForm() {
   return (
     <div className="w-full">
       <GoogleAuthButton redirectTo={ROUTE_PATTERNS.app} text="Sign in with Google" />
-      <div className="flex items-center justify-center my-4">
+      <Flex align="center" justify="center" className="my-4">
         <hr className="grow border-ui-border-primary" />
         <span className="mx-4 text-ui-text-secondary text-sm">or</span>
         <hr className="grow border-ui-border-primary" />
-      </div>
+      </Flex>
       <form className="flex flex-col" onSubmit={handleSubmit} data-form-ready={formReady}>
         <div
           className={cn(
@@ -58,10 +59,10 @@ export function SignInForm() {
             showEmailForm ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0",
           )}
         >
-          <div className="overflow-hidden flex flex-col gap-form-field">
+          <Flex direction="column" className="overflow-hidden gap-form-field">
             <Input type="email" name="email" placeholder="Email" required={formReady} />
             <Input type="password" name="password" placeholder="Password" required={formReady} />
-          </div>
+          </Flex>
         </div>
         {showEmailForm && (
           <div className="text-right mb-3">
@@ -79,7 +80,7 @@ export function SignInForm() {
           disabled={submitting}
         >
           {!showEmailForm ? (
-            <div className="flex items-center gap-3">
+            <Flex align="center" gap="md">
               <svg
                 className="w-5 h-5"
                 viewBox="0 0 24 24"
@@ -94,7 +95,7 @@ export function SignInForm() {
                 <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
               </svg>
               <span>Continue with email</span>
-            </div>
+            </Flex>
           ) : submitting ? (
             "Signing in..."
           ) : (

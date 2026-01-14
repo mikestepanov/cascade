@@ -2,6 +2,7 @@ import { api } from "@convex/_generated/api";
 import type { Doc, Id } from "@convex/_generated/dataModel";
 import { useMutation, usePaginatedQuery, useQuery } from "convex/react";
 import { useCallback, useState } from "react";
+import { Flex } from "@/components/ui/Flex";
 import { showError } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/Popover";
@@ -128,7 +129,11 @@ export function NotificationCenter() {
         className="w-full sm:w-96 max-w-[calc(100vw-2rem)] p-0 bg-ui-bg-primary border-ui-border-primary max-h-[80vh] flex flex-col"
       >
         {/* Header */}
-        <div className="p-4 border-b border-ui-border-primary flex items-center justify-between sticky top-0 bg-ui-bg-primary rounded-t-lg">
+        <Flex
+          align="center"
+          justify="between"
+          className="p-4 border-b border-ui-border-primary sticky top-0 bg-ui-bg-primary rounded-t-lg"
+        >
           <Typography variant="h3" className="text-lg font-semibold">
             Notifications
           </Typography>
@@ -142,7 +147,7 @@ export function NotificationCenter() {
               {isLoading ? "Marking..." : "Mark all read"}
             </button>
           )}
-        </div>
+        </Flex>
 
         {/* Notifications List */}
         <div className="flex-1 overflow-y-auto">
@@ -161,7 +166,7 @@ export function NotificationCenter() {
                     !notification.isRead && "bg-status-info-bg dark:bg-brand-900/20",
                   )}
                 >
-                  <div className="flex items-start gap-3">
+                  <Flex align="start" gap="md">
                     {/* Icon */}
                     <div className="text-2xl shrink-0">
                       {getNotificationIcon(notification.type)}
@@ -169,7 +174,7 @@ export function NotificationCenter() {
 
                     {/* Content */}
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-start justify-between gap-2">
+                      <Flex align="start" justify="between" gap="sm">
                         <div className="flex-1">
                           <Typography className="text-sm font-medium text-ui-text-primary">
                             {notification.title}
@@ -177,7 +182,7 @@ export function NotificationCenter() {
                           <Typography className="text-sm text-ui-text-secondary mt-1">
                             {notification.message}
                           </Typography>
-                          <div className="flex items-center gap-2 mt-1">
+                          <Flex align="center" gap="sm" className="mt-1">
                             <Typography className="text-xs text-ui-text-tertiary">
                               {formatTime(notification.createdAt)}
                             </Typography>
@@ -189,10 +194,10 @@ export function NotificationCenter() {
                                 </Typography>
                               </>
                             )}
-                          </div>
+                          </Flex>
                         </div>
 
-                        <div className="flex gap-1">
+                        <Flex gap="xs">
                           {!notification.isRead && (
                             <button
                               type="button"
@@ -235,10 +240,10 @@ export function NotificationCenter() {
                               />
                             </svg>
                           </button>
-                        </div>
-                      </div>
+                        </Flex>
+                      </Flex>
                     </div>
-                  </div>
+                  </Flex>
                 </div>
               ))}
             </div>

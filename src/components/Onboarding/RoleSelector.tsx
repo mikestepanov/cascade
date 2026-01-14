@@ -1,5 +1,6 @@
 import { Check, User, Users } from "lucide-react";
 import { useState } from "react";
+import { Flex } from "@/components/ui/Flex";
 import { cn } from "@/lib/utils";
 import { Button } from "../ui/Button";
 import { Typography } from "../ui/Typography";
@@ -31,7 +32,7 @@ function RoleCard({ icon, title, description, selected, onClick }: RoleCardProps
           : "border-ui-border-primary dark:border-ui-border-primary-dark bg-ui-bg-primary dark:bg-ui-bg-secondary-dark",
       )}
     >
-      <div className="flex flex-col items-center text-center gap-4">
+      <Flex direction="column" align="center" gap="lg" className="text-center">
         <div
           className={cn(
             "p-4 rounded-full",
@@ -49,11 +50,11 @@ function RoleCard({ icon, title, description, selected, onClick }: RoleCardProps
           <Typography className="text-sm text-ui-text-secondary">{description}</Typography>
         </div>
         {selected && (
-          <div className="w-6 h-6 rounded-full bg-primary-600 flex items-center justify-center">
+          <Flex align="center" justify="center" className="w-6 h-6 rounded-full bg-primary-600">
             <Check className="w-4 h-4 text-white" aria-hidden="true" />
-          </div>
+          </Flex>
         )}
-      </div>
+      </Flex>
     </button>
   );
 }
@@ -86,7 +87,7 @@ export function RoleSelector({ onSelect }: RoleSelectorProps) {
         />
       </div>
 
-      <div className="flex justify-center">
+      <Flex justify="center">
         <Button
           variant="primary"
           size="lg"
@@ -96,7 +97,7 @@ export function RoleSelector({ onSelect }: RoleSelectorProps) {
         >
           Continue
         </Button>
-      </div>
+      </Flex>
     </div>
   );
 }

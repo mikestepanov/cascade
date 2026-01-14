@@ -7,6 +7,7 @@ import { AppHeader } from "@/components/AppHeader";
 import { AppSidebar } from "@/components/AppSidebar";
 import { CommandPalette, useCommands } from "@/components/CommandPalette";
 import { KeyboardShortcutsHelp } from "@/components/KeyboardShortcutsHelp";
+import { Flex } from "@/components/ui/Flex";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { Typography } from "@/components/ui/Typography";
 import { createKeyboardShortcuts, createKeySequences } from "@/config/keyboardShortcuts";
@@ -48,25 +49,25 @@ function CompanyLayout() {
   // Loading state - wait for auth AND queries
   if (isAuthLoading || company === undefined || userCompanies === undefined) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-ui-bg-secondary">
+      <Flex align="center" justify="center" className="min-h-screen bg-ui-bg-secondary">
         <LoadingSpinner size="lg" />
-      </div>
+      </Flex>
     );
   }
 
   // Not authenticated - parent _auth route should handle this, but just in case
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-ui-bg-secondary">
+      <Flex align="center" justify="center" className="min-h-screen bg-ui-bg-secondary">
         <LoadingSpinner size="lg" />
-      </div>
+      </Flex>
     );
   }
 
   // Company not found
   if (company === null) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-ui-bg-secondary p-4">
+      <Flex align="center" justify="center" className="min-h-screen bg-ui-bg-secondary p-4">
         <div className="text-center">
           <Typography variant="h2" className="text-xl font-medium mb-2">
             Company not found
@@ -75,7 +76,7 @@ function CompanyLayout() {
             The company "{companySlug}" does not exist.
           </Typography>
         </div>
-      </div>
+      </Flex>
     );
   }
 
@@ -84,7 +85,7 @@ function CompanyLayout() {
 
   if (!userCompany) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-ui-bg-secondary p-4">
+      <Flex align="center" justify="center" className="min-h-screen bg-ui-bg-secondary p-4">
         <div className="text-center">
           <Typography variant="h2" className="text-xl font-medium mb-2">
             Access denied
@@ -93,7 +94,7 @@ function CompanyLayout() {
             You don't have access to this company.
           </Typography>
         </div>
-      </div>
+      </Flex>
     );
   }
 
@@ -156,12 +157,12 @@ function CompanyLayoutInner() {
 
   return (
     <SidebarProvider>
-      <div className="min-h-screen flex bg-ui-bg-secondary">
+      <Flex className="min-h-screen bg-ui-bg-secondary">
         {/* Unified sidebar */}
         <AppSidebar />
 
         {/* Main content area */}
-        <div className="flex-1 flex flex-col min-w-0">
+        <Flex direction="column" className="flex-1 min-w-0">
           {/* Slim header */}
           <AppHeader
             onShowCommandPalette={() => setShowCommandPalette(true)}
@@ -172,7 +173,7 @@ function CompanyLayoutInner() {
           <main className="flex-1 overflow-auto">
             <Outlet />
           </main>
-        </div>
+        </Flex>
 
         {/* Command Palette Modal */}
         <CommandPalette
@@ -183,7 +184,7 @@ function CompanyLayoutInner() {
 
         {/* Keyboard Shortcuts Help Modal */}
         <KeyboardShortcutsHelp open={showShortcutsHelp} onOpenChange={setShowShortcutsHelp} />
-      </div>
+      </Flex>
     </SidebarProvider>
   );
 }

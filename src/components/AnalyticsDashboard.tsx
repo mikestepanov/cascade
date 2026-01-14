@@ -2,6 +2,7 @@ import { api } from "@convex/_generated/api";
 import type { Id } from "@convex/_generated/dataModel";
 import { useQuery } from "convex/react";
 import { useMemo } from "react";
+import { Flex } from "@/components/ui/Flex";
 import { BarChart } from "./Analytics/BarChart";
 import { ChartCard } from "./Analytics/ChartCard";
 import { MetricCard } from "./Analytics/MetricCard";
@@ -200,9 +201,9 @@ export function AnalyticsDashboard({ projectId }: Props) {
             {velocityChartData.length > 0 ? (
               <BarChart data={velocityChartData} color="bg-accent-600 dark:bg-accent-500" />
             ) : (
-              <div className="flex items-center justify-center h-full text-ui-text-secondary">
+              <Flex align="center" justify="center" className="h-full text-ui-text-secondary">
                 <Typography variant="p">No completed sprints yet</Typography>
-              </div>
+              </Flex>
             )}
           </ChartCard>
         </div>

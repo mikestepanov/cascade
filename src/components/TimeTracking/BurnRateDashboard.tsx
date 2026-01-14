@@ -192,9 +192,13 @@ export function BurnRateDashboard({ projectId }: BurnRateDashboardProps) {
                             className="w-8 h-8 rounded-full"
                           />
                         ) : (
-                          <div className="w-8 h-8 rounded-full bg-ui-bg-tertiary flex items-center justify-center text-sm font-medium text-ui-text-secondary">
+                          <Flex
+                            align="center"
+                            justify="center"
+                            className="w-8 h-8 rounded-full bg-ui-bg-tertiary text-sm font-medium text-ui-text-secondary"
+                          >
                             {member.user?.name?.[0] || "?"}
-                          </div>
+                          </Flex>
                         )}
                         <div>
                           <div className="text-sm font-medium text-ui-text-primary">
@@ -207,7 +211,7 @@ export function BurnRateDashboard({ projectId }: BurnRateDashboardProps) {
                         </div>
                       </Flex>
 
-                      <div className="flex flex-col items-end">
+                      <Flex direction="column" align="end">
                         <div className="py-2 text-right text-sm font-medium text-ui-text-primary">
                           {formatHours(member.hours)}
                         </div>
@@ -220,7 +224,7 @@ export function BurnRateDashboard({ projectId }: BurnRateDashboardProps) {
                         <div className="text-xs text-ui-text-tertiary">
                           {percentOfTotal.toFixed(0)}% of total
                         </div>
-                      </div>
+                      </Flex>
                     </Flex>
                   </div>
 

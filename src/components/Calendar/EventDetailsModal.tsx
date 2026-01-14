@@ -154,9 +154,13 @@ export function EventDetailsModal({ eventId, open, onOpenChange }: EventDetailsM
 
             {/* Organizer */}
             <Flex gap="md" align="start">
-              <div className="w-5 h-5 bg-brand-600 rounded-full flex items-center justify-center text-white text-xs font-bold mt-0.5">
+              <Flex
+                align="center"
+                justify="center"
+                className="w-5 h-5 bg-brand-600 rounded-full text-white text-xs font-bold mt-0.5"
+              >
                 {event.organizerName?.[0]?.toUpperCase()}
-              </div>
+              </Flex>
               <div>
                 <div className="text-sm text-ui-text-secondary">Organizer</div>
                 <div className="font-medium text-ui-text-primary">{event.organizerName}</div>

@@ -2,6 +2,7 @@ import { api } from "@convex/_generated/api";
 import type { Id } from "@convex/_generated/dataModel";
 import { useMutation, usePaginatedQuery } from "convex/react";
 import { useState } from "react";
+import { Flex } from "@/components/ui/Flex";
 import { formatRelativeTime } from "@/lib/formatting";
 import { showError, showSuccess } from "@/lib/toast";
 import { CommentRenderer } from "./CommentRenderer";
@@ -81,7 +82,7 @@ export function IssueComments({ issueId, projectId }: IssueCommentsProps) {
         ) : (
           <>
             {comments?.map((comment) => (
-              <div key={comment._id} className="flex gap-3 p-4 bg-ui-bg-secondary rounded-lg">
+              <Flex gap="md" className="p-4 bg-ui-bg-secondary rounded-lg" key={comment._id}>
                 {/* Avatar */}
                 <div className="shrink-0">
                   <Avatar name={comment.author?.name} src={comment.author?.image} size="lg" />
@@ -90,7 +91,7 @@ export function IssueComments({ issueId, projectId }: IssueCommentsProps) {
                 {/* Comment Content */}
                 <div className="flex-1 min-w-0">
                   {/* Author and Date */}
-                  <div className="flex items-center gap-2 mb-2">
+                  <Flex align="center" gap="sm" className="mb-2">
                     <span className="font-medium text-ui-text-primary">
                       {comment.author?.name || "Unknown User"}
                     </span>
@@ -100,12 +101,12 @@ export function IssueComments({ issueId, projectId }: IssueCommentsProps) {
                     {comment.updatedAt > comment.createdAt && (
                       <span className="text-xs text-ui-text-tertiary">(edited)</span>
                     )}
-                  </div>
+                  </Flex>
 
                   {/* Comment Text with Mentions */}
                   <CommentRenderer content={comment.content} mentions={comment.mentions} />
                 </div>
-              </div>
+              </Flex>
             ))}
 
             {status === "CanLoadMore" && (
@@ -134,11 +135,11 @@ export function IssueComments({ issueId, projectId }: IssueCommentsProps) {
           onMentionsChange={setMentions}
           placeholder="Add a comment... Type @ to mention someone"
         />
-        <div className="flex justify-end">
+        <Flex justify="end">
           <Button onClick={handleSubmit} isLoading={isSubmitting} disabled={!newComment.trim()}>
             Add Comment
           </Button>
-        </div>
+        </Flex>
       </div>
     </div>
   );

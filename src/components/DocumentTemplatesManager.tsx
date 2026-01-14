@@ -4,6 +4,7 @@ import { useForm } from "@tanstack/react-form";
 import { useMutation, useQuery } from "convex/react";
 import { useEffect, useState } from "react";
 import { z } from "zod";
+import { Flex } from "@/components/ui/Flex";
 import { FormInput, FormSelect, FormTextarea } from "@/lib/form";
 import { showError, showSuccess } from "@/lib/toast";
 import { cn } from "@/lib/utils";
@@ -205,7 +206,7 @@ export function DocumentTemplatesManager({
         <CardBody>
           {/* Category Filter */}
           <div className="mb-6">
-            <div className="flex gap-2 overflow-x-auto pb-2">
+            <Flex gap="sm" className="overflow-x-auto pb-2">
               {categoryFilters.map((cat) => (
                 <button
                   key={cat.value}
@@ -221,7 +222,7 @@ export function DocumentTemplatesManager({
                   {cat.label}
                 </button>
               ))}
-            </div>
+            </Flex>
           </div>
 
           {!templates || templates.length === 0 ? (
@@ -253,7 +254,7 @@ export function DocumentTemplatesManager({
                         onClick={() => onSelectTemplate?.(template._id)}
                         className="p-4 bg-linear-to-br from-brand-50 to-brand-100 dark:from-brand-900/20 dark:to-brand-900/40 rounded-lg hover:shadow-md transition-all text-left border-2 border-transparent hover:border-brand-300 dark:hover:border-brand-700"
                       >
-                        <div className="flex items-start gap-3">
+                        <Flex align="start" gap="md">
                           <span className="text-3xl">{template.icon}</span>
                           <div className="flex-1">
                             <Typography
@@ -275,7 +276,7 @@ export function DocumentTemplatesManager({
                               {template.category}
                             </Badge>
                           </div>
-                        </div>
+                        </Flex>
                       </button>
                     ))}
                   </div>
@@ -297,7 +298,7 @@ export function DocumentTemplatesManager({
                         key={template._id}
                         className="p-4 bg-ui-bg-secondary rounded-lg hover:bg-ui-bg-tertiary transition-colors border border-ui-border-primary"
                       >
-                        <div className="flex items-start gap-3">
+                        <Flex align="start" gap="md">
                           <button
                             type="button"
                             onClick={() => onSelectTemplate?.(template._id)}
@@ -316,7 +317,7 @@ export function DocumentTemplatesManager({
                                   {template.description}
                                 </Typography>
                               )}
-                              <div className="flex gap-2">
+                              <Flex gap="sm">
                                 <Badge variant="neutral" size="md" className="capitalize">
                                   {template.category}
                                 </Badge>
@@ -325,11 +326,11 @@ export function DocumentTemplatesManager({
                                     Public
                                   </Badge>
                                 )}
-                              </div>
+                              </Flex>
                             </div>
                           </button>
 
-                          <div className="flex gap-1">
+                          <Flex gap="xs">
                             <Button
                               variant="ghost"
                               size="sm"
@@ -372,8 +373,8 @@ export function DocumentTemplatesManager({
                                 </svg>
                               }
                             />
-                          </div>
-                        </div>
+                          </Flex>
+                        </Flex>
                       </div>
                     ))}
                   </div>
@@ -449,7 +450,7 @@ export function DocumentTemplatesManager({
 
               <form.Field name="isPublic">
                 {(field) => (
-                  <div className="flex items-center gap-2 pt-7">
+                  <Flex align="center" gap="sm" className="pt-7">
                     <input
                       type="checkbox"
                       id="isPublic"
@@ -461,7 +462,7 @@ export function DocumentTemplatesManager({
                     <label htmlFor="isPublic" className="text-sm font-medium text-ui-text-primary">
                       Make public (visible to all users)
                     </label>
-                  </div>
+                  </Flex>
                 )}
               </form.Field>
             </div>

@@ -2,6 +2,7 @@ import { api } from "@convex/_generated/api";
 import type { Doc, Id } from "@convex/_generated/dataModel";
 import { useQuery } from "convex/react";
 import { useState } from "react";
+import { Flex } from "@/components/ui/Flex";
 import { cn } from "@/lib/utils";
 import { ActivityFeed } from "./ActivityFeed";
 import { AnalyticsDashboard } from "./AnalyticsDashboard";
@@ -224,34 +225,40 @@ export function ProjectBoard({ projectId }: ProjectBoardProps) {
 
   if (!project) {
     return (
-      <div className="flex flex-col h-full bg-ui-bg-primary">
+      <Flex direction="column" className="h-full bg-ui-bg-primary">
         <div className="border-b border-ui-border-primary p-6">
           <div className="space-y-4">
             <SkeletonText lines={2} />
-            <div className="flex space-x-6">
+            <Flex className="space-x-6">
               <SkeletonText lines={1} className="w-32" />
               <SkeletonText lines={1} className="w-32" />
               <SkeletonText lines={1} className="w-32" />
-            </div>
+            </Flex>
           </div>
         </div>
         <div className="flex-1 p-6">
           <SkeletonText lines={4} />
         </div>
-      </div>
+      </Flex>
     );
   }
 
   const activeSprint = sprints?.find((sprint: Doc<"sprints">) => sprint.status === "active");
 
   return (
-    <div className="flex flex-col h-full bg-ui-bg-primary">
+    <Flex direction="column" className="h-full bg-ui-bg-primary">
       <div data-testid="debug-user-role" data-role={project.userRole} style={{ display: "none" }}>
         {project.userRole}
       </div>
       {/* Header */}
       <div className="border-b border-ui-border-primary p-3 sm:p-6">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-3 sm:mb-4">
+        <Flex
+          direction="column"
+          align="start"
+          justify="between"
+          gap="md"
+          className="sm:flex-row sm:items-center mb-3 sm:mb-4"
+        >
           <div className="flex-1">
             <Typography variant="h1" className="text-xl sm:text-2xl font-bold text-ui-text-primary">
               {project.name}
@@ -260,26 +267,29 @@ export function ProjectBoard({ projectId }: ProjectBoardProps) {
               {project.description}
             </Typography>
           </div>
-          <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
+          <Flex align="center" gap="sm" wrap className="sm:gap-3">
             <ExportButton
               projectId={projectId}
               sprintId={activeTab === "board" ? selectedSprintId || activeSprint?._id : undefined}
             />
-            <div className="flex items-center gap-1.5 sm:gap-2">
+            <Flex align="center" className="gap-1.5 sm:gap-2">
               <Badge variant="neutral" size="md">
                 {project.key}
               </Badge>
               <Badge variant="accent" size="md">
                 {project.boardType}
               </Badge>
-            </div>
-          </div>
-        </div>
+            </Flex>
+          </Flex>
+        </Flex>
 
         {/* Tabs - Visually grouped by function */}
-        <div className="flex items-center overflow-x-auto -webkit-overflow-scrolling-touch scrollbar-hide">
+        <Flex
+          align="center"
+          className="overflow-x-auto -webkit-overflow-scrolling-touch scrollbar-hide"
+        >
           {/* Primary Workflow Tabs */}
-          <div className="flex gap-2 sm:gap-3 md:gap-6">
+          <Flex gap="sm" className="sm:gap-3 md:gap-6">
             <TabButton
               activeTab={activeTab}
               tab="board"
@@ -303,13 +313,13 @@ export function ProjectBoard({ projectId }: ProjectBoardProps) {
                 onClick={() => setActiveTab("sprints")}
               />
             )}
-          </div>
+          </Flex>
 
           {/* Visual Separator */}
           <div className="hidden lg:block h-6 w-px bg-ui-border-primary mx-2 sm:mx-4 md:mx-6" />
 
           {/* Analysis & Views Tabs */}
-          <div className="flex gap-2 sm:gap-3 md:gap-6 shrink-0">
+          <Flex gap="sm" className="sm:gap-3 md:gap-6 shrink-0">
             <TabButton
               activeTab={activeTab}
               tab="roadmap"
@@ -345,7 +355,7 @@ export function ProjectBoard({ projectId }: ProjectBoardProps) {
               label="Billing"
               onClick={() => setActiveTab("billing")}
             />
-          </div>
+          </Flex>
 
           {/* Spacer to push Settings to the right */}
           <div className="flex-1" />
@@ -360,7 +370,7 @@ export function ProjectBoard({ projectId }: ProjectBoardProps) {
               onClick={() => setActiveTab("settings")}
             />
           )}
-        </div>
+        </Flex>
 
         {/* Sprint Selector for Board */}
         {activeTab === "board" && project.boardType === "scrum" && (
@@ -397,6 +407,6 @@ export function ProjectBoard({ projectId }: ProjectBoardProps) {
           canEdit={project.userRole !== "viewer"}
         />
       </div>
-    </div>
+    </Flex>
   );
 }

@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import React from "react";
+import { Flex } from "@/components/ui/Flex";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 
 // Lazy load the timesheet component for better performance
@@ -17,9 +18,9 @@ function TimesheetPage() {
   return (
     <React.Suspense
       fallback={
-        <div className="flex items-center justify-center h-full">
+        <Flex align="center" justify="center" className="h-full">
           <LoadingSpinner message="Loading timesheet..." />
-        </div>
+        </Flex>
       }
     >
       <ProjectTimesheet projectKey={key} />

@@ -3,6 +3,7 @@ import type { Doc, Id } from "@convex/_generated/dataModel";
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { Flex } from "@/components/ui/Flex";
 import { Button } from "./ui/Button";
 import { Checkbox } from "./ui/form/Checkbox";
 import { Input } from "./ui/form/Input";
@@ -179,7 +180,7 @@ export function CustomFieldValues({ issueId, projectId }: CustomFieldValuesProps
 
       case "multiselect":
         return (
-          <div className="flex flex-wrap gap-1">
+          <Flex wrap gap="xs">
             {value.split(",").map((option) => (
               <span
                 key={option.trim()}
@@ -188,7 +189,7 @@ export function CustomFieldValues({ issueId, projectId }: CustomFieldValuesProps
                 {option.trim()}
               </span>
             ))}
-          </div>
+          </Flex>
         );
 
       default:
@@ -211,12 +212,12 @@ export function CustomFieldValues({ issueId, projectId }: CustomFieldValuesProps
 
         return (
           <div key={field._id} className="border-b border-ui-border-secondary pb-3">
-            <div className="flex items-start justify-between mb-2">
+            <Flex align="start" justify="between" className="mb-2">
               <div className="flex-1">
-                <div className="flex items-center gap-2">
+                <Flex align="center" gap="sm">
                   <div className="text-sm font-medium text-ui-text-primary">{field.name}</div>
                   {field.isRequired && <span className="text-status-error text-xs">*</span>}
-                </div>
+                </Flex>
                 {field.description && (
                   <Typography variant="muted" className="text-xs text-ui-text-tertiary mt-0.5">
                     {field.description}
@@ -232,19 +233,19 @@ export function CustomFieldValues({ issueId, projectId }: CustomFieldValuesProps
                   {fieldValue ? "Edit" : "Set"}
                 </Button>
               )}
-            </div>
+            </Flex>
 
             {isEditing ? (
               <div className="space-y-2">
                 {renderFieldInput(field)}
-                <div className="flex gap-2">
+                <Flex gap="sm">
                   <Button onClick={() => handleSave(field._id)} size="sm">
                     Save
                   </Button>
                   <Button onClick={handleCancel} variant="secondary" size="sm">
                     Cancel
                   </Button>
-                </div>
+                </Flex>
               </div>
             ) : (
               <div className="mt-1">{renderFieldValue(field, fieldValue?.value)}</div>

@@ -32,9 +32,13 @@ export function RecentActivity({ activities }: { activities: Activity[] | undefi
             align="start"
             className="text-sm border-b border-ui-border-secondary pb-3 last:border-0"
           >
-            <div className="shrink-0 w-8 h-8 rounded-full bg-ui-bg-tertiary flex items-center justify-center text-xs font-medium">
+            <Flex
+              align="center"
+              justify="center"
+              className="shrink-0 w-8 h-8 rounded-full bg-ui-bg-tertiary text-xs font-medium"
+            >
               {activity.userName.charAt(0).toUpperCase()}
-            </div>
+            </Flex>
             <div className="flex-1 min-w-0">
               <Typography variant="p">
                 <span className="font-medium">{activity.userName}</span> {activity.action}{" "}

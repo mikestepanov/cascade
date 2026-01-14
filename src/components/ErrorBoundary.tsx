@@ -1,4 +1,5 @@
 import { Component, type ReactNode } from "react";
+import { Flex } from "@/components/ui/Flex";
 import { Button } from "./ui/Button";
 import { Typography } from "./ui/Typography";
 
@@ -36,7 +37,7 @@ export class ErrorBoundary extends Component<Props, State> {
       }
 
       return (
-        <div className="min-h-screen flex items-center justify-center bg-ui-bg-secondary">
+        <Flex align="center" justify="center" className="min-h-screen bg-ui-bg-secondary">
           <div className="max-w-md w-full bg-ui-bg-primary shadow-lg rounded-lg p-8">
             <div className="text-center">
               <div className="text-status-error text-6xl mb-4">⚠️</div>
@@ -61,7 +62,7 @@ export class ErrorBoundary extends Component<Props, State> {
               </Button>
             </div>
           </div>
-        </div>
+        </Flex>
       );
     }
 

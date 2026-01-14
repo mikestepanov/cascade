@@ -4,7 +4,7 @@ import { useQuery } from "convex/react";
 import type { FunctionReturnType } from "convex/server";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { List, type ListImperativeAPI } from "react-window";
-
+import { Flex } from "@/components/ui/Flex";
 import { useListNavigation } from "@/hooks/useListNavigation";
 import { formatDate } from "@/lib/dates";
 import { getPriorityColor, getTypeIcon } from "@/lib/issue-utils";
@@ -124,7 +124,7 @@ export function RoadmapView({ projectId, sprintId, canEdit = true }: RoadmapView
         >
           {/* Issue Info */}
           <div className="w-64 shrink-0 pr-4">
-            <div className="flex items-center gap-2 mb-1">
+            <Flex align="center" gap="sm" className="mb-1">
               <span className="text-sm">{getTypeIcon(issue.type)}</span>
               <button
                 type="button"
@@ -138,7 +138,7 @@ export function RoadmapView({ projectId, sprintId, canEdit = true }: RoadmapView
               >
                 {issue.key}
               </button>
-            </div>
+            </Flex>
             <Typography className="text-xs text-ui-text-secondary truncate">
               {issue.title}
             </Typography>
@@ -183,24 +183,27 @@ export function RoadmapView({ projectId, sprintId, canEdit = true }: RoadmapView
   // Loading State
   if (!(project && issues)) {
     return (
-      <div className="flex-1 overflow-hidden p-6 flex flex-col h-full">
+      <Flex direction="column" className="flex-1 overflow-hidden p-6 h-full">
         {/* Skeleton Header */}
-        <div className="mb-6 flex items-center justify-between shrink-0">
+        <Flex align="center" justify="between" className="mb-6 shrink-0">
           <div>
             <Skeleton className="h-8 w-48 mb-2" />
             <Skeleton className="h-4 w-64" />
           </div>
-          <div className="flex gap-3">
+          <Flex gap="md">
             <Skeleton className="h-10 w-32 rounded-lg" />
             <Skeleton className="h-8 w-32 rounded-lg" />
-          </div>
-        </div>
+          </Flex>
+        </Flex>
 
         {/* Skeleton Timeline */}
-        <div className="flex-1 bg-ui-bg-primary rounded-lg border border-ui-border-primary overflow-hidden flex flex-col">
+        <Flex
+          direction="column"
+          className="flex-1 bg-ui-bg-primary rounded-lg border border-ui-border-primary overflow-hidden"
+        >
           {/* Skeleton Dates Header */}
           <div className="border-b border-ui-border-primary bg-ui-bg-secondary p-4 shrink-0">
-            <div className="flex">
+            <Flex>
               <div className="w-64 shrink-0">
                 <Skeleton className="h-5 w-24" />
               </div>
@@ -209,18 +212,18 @@ export function RoadmapView({ projectId, sprintId, canEdit = true }: RoadmapView
                   <Skeleton key={id} className="h-5 w-full" />
                 ))}
               </div>
-            </div>
+            </Flex>
           </div>
 
           {/* Skeleton Rows */}
           <div className="flex-1 overflow-auto">
             {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
-              <div key={i} className="flex items-center p-3 border-b border-ui-border-primary">
+              <Flex align="center" className="p-3 border-b border-ui-border-primary" key={i}>
                 <div className="w-64 shrink-0 pr-4 space-y-2">
-                  <div className="flex items-center gap-2">
+                  <Flex align="center" gap="sm">
                     <Skeleton className="h-4 w-4 rounded-full" />
                     <Skeleton className="h-4 w-16" />
-                  </div>
+                  </Flex>
                   <Skeleton className="h-3 w-32" />
                 </div>
                 <div className="flex-1 relative h-8">
@@ -234,18 +237,18 @@ export function RoadmapView({ projectId, sprintId, canEdit = true }: RoadmapView
                     <Skeleton className="h-full w-full rounded-full opacity-50" />
                   </div>
                 </div>
-              </div>
+              </Flex>
             ))}
           </div>
-        </div>
-      </div>
+        </Flex>
+      </Flex>
     );
   }
 
   return (
-    <div className="flex-1 overflow-hidden p-6 flex flex-col h-full">
+    <Flex direction="column" className="flex-1 overflow-hidden p-6 h-full">
       {/* Header */}
-      <div className="mb-6 flex items-center justify-between shrink-0">
+      <Flex align="center" justify="between" className="mb-6 shrink-0">
         <div>
           <Typography variant="h2" className="text-2xl font-bold">
             Roadmap
@@ -255,7 +258,7 @@ export function RoadmapView({ projectId, sprintId, canEdit = true }: RoadmapView
           </Typography>
         </div>
 
-        <div className="flex gap-3">
+        <Flex gap="md">
           {/* Epic Filter */}
           <Select
             value={filterEpic === "all" ? "all" : filterEpic}
@@ -286,14 +289,17 @@ export function RoadmapView({ projectId, sprintId, canEdit = true }: RoadmapView
             <ToggleGroupItem value="months">Months</ToggleGroupItem>
             <ToggleGroupItem value="weeks">Weeks</ToggleGroupItem>
           </ToggleGroup>
-        </div>
-      </div>
+        </Flex>
+      </Flex>
 
       {/* Timeline Container */}
-      <div className="flex-1 bg-ui-bg-primary rounded-lg border border-ui-border-primary overflow-hidden flex flex-col">
+      <Flex
+        direction="column"
+        className="flex-1 bg-ui-bg-primary rounded-lg border border-ui-border-primary overflow-hidden"
+      >
         {/* Timeline Header (Fixed) */}
         <div className="border-b border-ui-border-primary bg-ui-bg-secondary p-4 shrink-0">
-          <div className="flex">
+          <Flex>
             <div className="w-64 shrink-0 font-medium text-ui-text-primary">Issue</div>
             <div className="flex-1 grid grid-cols-6">
               {timelineMonths.map((month) => (
@@ -305,7 +311,7 @@ export function RoadmapView({ projectId, sprintId, canEdit = true }: RoadmapView
                 </div>
               ))}
             </div>
-          </div>
+          </Flex>
         </div>
 
         {/* Timeline Body (Virtualized) */}
@@ -328,7 +334,7 @@ export function RoadmapView({ projectId, sprintId, canEdit = true }: RoadmapView
             />
           )}
         </div>
-      </div>
+      </Flex>
 
       {/* Issue Detail Modal */}
       {selectedIssue && (
@@ -343,6 +349,6 @@ export function RoadmapView({ projectId, sprintId, canEdit = true }: RoadmapView
           canEdit={canEdit}
         />
       )}
-    </div>
+    </Flex>
   );
 }

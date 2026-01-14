@@ -1,3 +1,4 @@
+import { Flex } from "@/components/ui/Flex";
 import { Typography } from "./ui/Typography";
 
 interface Props {
@@ -8,7 +9,7 @@ interface Props {
 
 export function SectionErrorFallback({ title, message, onRetry }: Props) {
   return (
-    <div className="flex items-center justify-center h-full p-8">
+    <Flex align="center" justify="center" className="h-full p-8">
       <div className="max-w-md w-full text-center">
         <div className="text-status-error text-4xl mb-3">⚠️</div>
         <Typography variant="h2" className="text-xl font-semibold text-ui-text-primary mb-2">
@@ -28,6 +29,6 @@ export function SectionErrorFallback({ title, message, onRetry }: Props) {
           </button>
         )}
       </div>
-    </div>
+    </Flex>
   );
 }

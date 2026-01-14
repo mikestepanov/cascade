@@ -15,6 +15,7 @@ import { Typography } from "./ui/Typography";
 import { VersionHistory } from "./VersionHistory";
 import "@blocknote/core/fonts/inter.css";
 import "@blocknote/mantine/style.css";
+import { Flex } from "@/components/ui/Flex";
 
 interface DocumentEditorProps {
   documentId: Id<"documents">;
@@ -36,20 +37,20 @@ export function DocumentEditor({ documentId }: DocumentEditorProps) {
 
   if (!(document && userId)) {
     return (
-      <div className="flex flex-col h-full bg-ui-bg-primary">
+      <Flex direction="column" className="h-full bg-ui-bg-primary">
         {/* Document Header Skeleton */}
         <div className="border-b border-ui-border-primary p-6">
-          <div className="flex items-center justify-between mb-4">
+          <Flex align="center" justify="between" className="mb-4">
             <Skeleton className="h-8 w-1/2" />
-            <div className="flex items-center space-x-4">
+            <Flex align="center" className="space-x-4">
               <Skeleton className="h-8 w-24" />
               <Skeleton className="h-8 w-20" />
-            </div>
-          </div>
-          <div className="flex items-center space-x-4">
+            </Flex>
+          </Flex>
+          <Flex align="center" className="space-x-4">
             <Skeleton className="h-4 w-32" />
             <Skeleton className="h-4 w-40" />
-          </div>
+          </Flex>
         </div>
 
         {/* Editor Skeleton */}
@@ -58,7 +59,7 @@ export function DocumentEditor({ documentId }: DocumentEditorProps) {
             <SkeletonText lines={8} />
           </div>
         </div>
-      </div>
+      </Flex>
     );
   }
 
@@ -142,7 +143,7 @@ export function DocumentEditor({ documentId }: DocumentEditorProps) {
   };
 
   return (
-    <div className="flex flex-col h-full bg-ui-bg-primary">
+    <Flex direction="column" className="h-full bg-ui-bg-primary">
       {/* Document Header */}
       <DocumentHeader
         document={document}
@@ -214,6 +215,6 @@ export function DocumentEditor({ documentId }: DocumentEditorProps) {
         onOpenChange={setShowVersionHistory}
         onRestoreVersion={handleRestoreVersion}
       />
-    </div>
+    </Flex>
   );
 }

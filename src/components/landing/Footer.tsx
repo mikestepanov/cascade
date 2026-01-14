@@ -75,7 +75,13 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="pt-8 border-t border-gray-800/50 flex flex-col sm:flex-row justify-between items-center gap-4">
+        <Flex
+          direction="column"
+          justify="between"
+          align="center"
+          gap="lg"
+          className="pt-8 border-t border-gray-800/50 sm:flex-row"
+        >
           <Typography variant="muted" className="text-ui-text-secondary">
             © 2026 Nixelo. All rights reserved.
           </Typography>
@@ -134,7 +140,7 @@ export function Footer() {
               Cookies
             </a>
           </Flex>
-        </div>
+        </Flex>
       </div>
     </footer>
   );

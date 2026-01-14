@@ -2,6 +2,7 @@ import { api } from "@convex/_generated/api";
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { Flex } from "@/components/ui/Flex";
 import { Card } from "../ui/Card";
 import { Switch } from "../ui/Switch";
 import { Typography } from "../ui/Typography";
@@ -58,7 +59,7 @@ export function NotificationsTab() {
       {/* Master Toggle */}
       <Card>
         <div className="p-6">
-          <div className="flex items-start justify-between">
+          <Flex align="start" justify="between">
             <div className="flex-1">
               <Typography variant="h3">Email Notifications</Typography>
               <Typography variant="p" color="secondary" className="mt-1 text-sm">
@@ -72,7 +73,7 @@ export function NotificationsTab() {
               disabled={isSaving}
               className="ml-4"
             />
-          </div>
+          </Flex>
         </div>
       </Card>
 
@@ -85,14 +86,18 @@ export function NotificationsTab() {
 
           <div className="space-y-4">
             {/* Mentions */}
-            <div className="flex items-start justify-between py-3 border-b border-ui-border-secondary last:border-0">
+            <Flex
+              align="start"
+              justify="between"
+              className="py-3 border-b border-ui-border-secondary last:border-0"
+            >
               <div className="flex-1">
-                <div className="flex items-center gap-2">
+                <Flex align="center" gap="sm">
                   <span className="text-xl">@</span>
                   <Typography variant="h4" className="font-medium text-base">
                     Mentions
                   </Typography>
-                </div>
+                </Flex>
                 <Typography variant="p" color="secondary" className="mt-1 text-sm">
                   When someone @mentions you in a comment or description
                 </Typography>
@@ -103,17 +108,21 @@ export function NotificationsTab() {
                 disabled={isSaving || !preferences.emailEnabled}
                 className="ml-4"
               />
-            </div>
+            </Flex>
 
             {/* Assignments */}
-            <div className="flex items-start justify-between py-3 border-b border-ui-border-secondary last:border-0">
+            <Flex
+              align="start"
+              justify="between"
+              className="py-3 border-b border-ui-border-secondary last:border-0"
+            >
               <div className="flex-1">
-                <div className="flex items-center gap-2">
+                <Flex align="center" gap="sm">
                   <span className="text-xl">👤</span>
                   <Typography variant="h4" className="font-medium text-base">
                     Assignments
                   </Typography>
-                </div>
+                </Flex>
                 <Typography variant="p" color="secondary" className="mt-1 text-sm">
                   When you are assigned to an issue
                 </Typography>
@@ -124,17 +133,21 @@ export function NotificationsTab() {
                 disabled={isSaving || !preferences.emailEnabled}
                 className="ml-4"
               />
-            </div>
+            </Flex>
 
             {/* Comments */}
-            <div className="flex items-start justify-between py-3 border-b border-ui-border-secondary last:border-0">
+            <Flex
+              align="start"
+              justify="between"
+              className="py-3 border-b border-ui-border-secondary last:border-0"
+            >
               <div className="flex-1">
-                <div className="flex items-center gap-2">
+                <Flex align="center" gap="sm">
                   <span className="text-xl">💬</span>
                   <Typography variant="h4" className="font-medium text-base">
                     Comments
                   </Typography>
-                </div>
+                </Flex>
                 <Typography variant="p" color="secondary" className="mt-1 text-sm">
                   When someone comments on your issues
                 </Typography>
@@ -145,17 +158,17 @@ export function NotificationsTab() {
                 disabled={isSaving || !preferences.emailEnabled}
                 className="ml-4"
               />
-            </div>
+            </Flex>
 
             {/* Status Changes */}
-            <div className="flex items-start justify-between py-3">
+            <Flex align="start" justify="between" className="py-3">
               <div className="flex-1">
-                <div className="flex items-center gap-2">
+                <Flex align="center" gap="sm">
                   <span className="text-xl">🔄</span>
                   <Typography variant="h4" className="font-medium text-base">
                     Status Changes
                   </Typography>
-                </div>
+                </Flex>
                 <Typography variant="p" color="secondary" className="mt-1 text-sm">
                   When issue status changes on issues you're watching
                 </Typography>
@@ -166,7 +179,7 @@ export function NotificationsTab() {
                 disabled={isSaving || !preferences.emailEnabled}
                 className="ml-4"
               />
-            </div>
+            </Flex>
           </div>
         </div>
       </Card>
@@ -241,7 +254,7 @@ export function NotificationsTab() {
 
       {/* Help Text */}
       <div className="mt-6 p-4 bg-brand-50 dark:bg-brand-950 rounded-lg border border-brand-200 dark:border-brand-800">
-        <div className="flex gap-3">
+        <Flex gap="md">
           <span className="text-brand-600 dark:text-brand-400 text-xl">ℹ️</span>
           <div className="flex-1">
             <Typography
@@ -255,7 +268,7 @@ export function NotificationsTab() {
               contact your administrator to set up email notifications.
             </Typography>
           </div>
-        </div>
+        </Flex>
       </div>
     </div>
   );

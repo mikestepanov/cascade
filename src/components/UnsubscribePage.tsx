@@ -7,6 +7,7 @@
 import { api } from "@convex/_generated/api";
 import { useMutation, useQuery } from "convex/react";
 import { useEffect, useState } from "react";
+import { Flex } from "@/components/ui/Flex";
 import { LoadingSpinner } from "./ui/LoadingSpinner";
 import { Typography } from "./ui/Typography";
 
@@ -49,7 +50,7 @@ export function UnsubscribePage({ token }: UnsubscribePageProps) {
   }, [getUserFromToken, token, unsubscribe]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-ui-bg-secondary">
+    <Flex align="center" justify="center" className="min-h-screen bg-ui-bg-secondary">
       <div className="max-w-md w-full bg-ui-bg-primary rounded-lg shadow-lg p-8">
         {status === "loading" && (
           <div className="text-center">
@@ -63,7 +64,11 @@ export function UnsubscribePage({ token }: UnsubscribePageProps) {
 
         {status === "success" && (
           <div className="text-center">
-            <div className="w-12 h-12 rounded-full bg-status-success-bg flex items-center justify-center mx-auto mb-4">
+            <Flex
+              align="center"
+              justify="center"
+              className="w-12 h-12 rounded-full bg-status-success-bg mx-auto mb-4"
+            >
               <svg
                 className="w-6 h-6 text-status-success"
                 fill="none"
@@ -79,7 +84,7 @@ export function UnsubscribePage({ token }: UnsubscribePageProps) {
                   d="M5 13l4 4L19 7"
                 />
               </svg>
-            </div>
+            </Flex>
             <Typography variant="h4" as="h2" className="mb-2">
               Successfully Unsubscribed
             </Typography>
@@ -94,7 +99,11 @@ export function UnsubscribePage({ token }: UnsubscribePageProps) {
 
         {status === "invalid" && (
           <div className="text-center">
-            <div className="w-12 h-12 rounded-full bg-status-warning-bg flex items-center justify-center mx-auto mb-4">
+            <Flex
+              align="center"
+              justify="center"
+              className="w-12 h-12 rounded-full bg-status-warning-bg mx-auto mb-4"
+            >
               <svg
                 className="w-6 h-6 text-status-warning"
                 fill="none"
@@ -110,7 +119,7 @@ export function UnsubscribePage({ token }: UnsubscribePageProps) {
                   d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
                 />
               </svg>
-            </div>
+            </Flex>
             <Typography variant="h4" as="h2" className="mb-2">
               Invalid or Expired Link
             </Typography>
@@ -122,7 +131,11 @@ export function UnsubscribePage({ token }: UnsubscribePageProps) {
 
         {status === "error" && (
           <div className="text-center">
-            <div className="w-12 h-12 rounded-full bg-status-error-bg flex items-center justify-center mx-auto mb-4">
+            <Flex
+              align="center"
+              justify="center"
+              className="w-12 h-12 rounded-full bg-status-error-bg mx-auto mb-4"
+            >
               <svg
                 className="w-6 h-6 text-status-error"
                 fill="none"
@@ -138,7 +151,7 @@ export function UnsubscribePage({ token }: UnsubscribePageProps) {
                   d="M6 18L18 6M6 6l12 12"
                 />
               </svg>
-            </div>
+            </Flex>
             <Typography variant="h4" as="h2" className="mb-2">
               Something Went Wrong
             </Typography>
@@ -157,6 +170,6 @@ export function UnsubscribePage({ token }: UnsubscribePageProps) {
           </div>
         )}
       </div>
-    </div>
+    </Flex>
   );
 }
