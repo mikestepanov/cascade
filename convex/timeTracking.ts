@@ -491,9 +491,18 @@ export const getCurrentWeekTimesheet = query({
       .collect();
 
     // Group by day
-    const byDay: Record<string, Array<Doc<"timeEntries"> & { hours: number }>> = {};
+    const byDay: Record<string, Array<Doc<"timeEntries"> & { hours: number; projectKey?: string; issueKey?: string }>> = {};
     let totalHours = 0;
     let billableHours = 0;
+
+    // Batch fetch project and issue data
+    const projectIds = [...new Set(entries.map((e) => e.projectId).filter((id): id is Id<"projects"> => !!id))];
+    const issueIds = [...new Set(entries.map((e) => e.issueId).filter((id): id is Id<"issues"> => !!id))];
+
+    const [projectMap, issueMap] = await Promise.all([
+      batchFetchProjects(ctx, projectIds),
+      batchFetchIssues(ctx, issueIds),
+    ]);
 
     for (const entry of entries) {
       const dayKey = new Date(entry.date).toISOString().split("T")[0];
@@ -503,7 +512,15 @@ export const getCurrentWeekTimesheet = query({
         byDay[dayKey] = [];
       }
 
-      byDay[dayKey].push({ ...entry, hours });
+      const project = entry.projectId ? projectMap.get(entry.projectId) : undefined;
+      const issue = entry.issueId ? issueMap.get(entry.issueId) : undefined;
+
+      byDay[dayKey].push({
+        ...entry,
+        hours,
+        projectKey: project?.key,
+        issueKey: issue?.key,
+      });
       totalHours += hours;
 
       if (entry.billable) {

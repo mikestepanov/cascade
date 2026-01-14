@@ -166,10 +166,10 @@ export function Timesheet() {
                     <Flex justify="between" align="start" className="mb-1">
                       <div className="flex-1 min-w-0">
                         <div className="text-xs font-mono font-medium text-ui-text-primary dark:text-ui-text-primary-dark truncate">
-                          {/* Project/Issue info not available in this view */}
+                          {entry.projectKey}
                         </div>
                         <div className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark truncate">
-                          {/* {entry.issueKey} */}
+                          {entry.issueKey}
                         </div>
                       </div>
                       {entry.billable && (
