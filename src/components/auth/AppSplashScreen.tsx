@@ -3,7 +3,7 @@ import { Typography } from "../ui/Typography";
 
 export function AppSplashScreen({ message }: { message?: string }) {
   return (
-    <div className="fixed inset-0 flex flex-col items-center justify-center bg-[#0a0e17] z-[9999]">
+    <div className="fixed inset-0 flex flex-col items-center justify-center bg-ui-bg-hero z-[9999]">
       {/* Background Glow */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-cyan-500/10 rounded-full blur-[120px]" />

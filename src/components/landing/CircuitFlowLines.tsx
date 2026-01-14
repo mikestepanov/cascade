@@ -7,41 +7,26 @@ export function CircuitFlowLines() {
     >
       <defs>
         <linearGradient id="flowGrad1" x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop
-            offset="0%"
-            style={{ color: "var(--color-status-info)" }}
-            stopColor="currentColor"
-            stopOpacity="0"
-          />
+          <stop offset="0%" className="text-status-info" stopColor="currentColor" stopOpacity="0" />
           <stop
             offset="50%"
-            style={{ color: "var(--color-status-info)" }}
+            className="text-status-info"
             stopColor="currentColor"
             stopOpacity="0.6"
           />
-          <stop
-            offset="100%"
-            style={{ color: "var(--color-brand-400)" }}
-            stopColor="currentColor"
-            stopOpacity="0"
-          />
+          <stop offset="100%" className="text-brand-400" stopColor="currentColor" stopOpacity="0" />
         </linearGradient>
         <linearGradient id="flowGrad2" x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop
-            offset="0%"
-            style={{ color: "var(--color-brand-400)" }}
-            stopColor="currentColor"
-            stopOpacity="0"
-          />
+          <stop offset="0%" className="text-brand-400" stopColor="currentColor" stopOpacity="0" />
           <stop
             offset="50%"
-            style={{ color: "var(--color-accent-500)" }}
+            className="text-accent-500"
             stopColor="currentColor"
             stopOpacity="0.5"
           />
           <stop
             offset="100%"
-            style={{ color: "var(--color-status-success)" }}
+            className="text-status-success"
             stopColor="currentColor"
             stopOpacity="0"
           />
@@ -49,19 +34,19 @@ export function CircuitFlowLines() {
         <linearGradient id="flowGrad3" x1="0%" y1="0%" x2="100%" y2="0%">
           <stop
             offset="0%"
-            style={{ color: "var(--color-status-success)" }}
+            className="text-status-success"
             stopColor="currentColor"
             stopOpacity="0"
           />
           <stop
             offset="50%"
-            style={{ color: "var(--color-status-success)" }}
+            className="text-status-success"
             stopColor="currentColor"
             stopOpacity="0.5"
           />
           <stop
             offset="100%"
-            style={{ color: "var(--color-status-info)" }}
+            className="text-status-info"
             stopColor="currentColor"
             stopOpacity="0"
           />
@@ -99,7 +84,7 @@ export function CircuitFlowLines() {
         {/* Vertical connectors */}
         <path
           d="M400,170 L400,280"
-          style={{ color: "var(--color-status-info)" }}
+          className="text-status-info"
           stroke="currentColor"
           strokeWidth="1"
           strokeDasharray="4 4"
@@ -107,7 +92,7 @@ export function CircuitFlowLines() {
         />
         <path
           d="M800,140 L800,290"
-          style={{ color: "var(--color-brand-400)" }}
+          className="text-brand-400"
           stroke="currentColor"
           strokeWidth="1"
           strokeDasharray="4 4"
@@ -115,7 +100,7 @@ export function CircuitFlowLines() {
         />
         <path
           d="M1000,290 L1000,430"
-          style={{ color: "var(--color-accent-500)" }}
+          className="text-accent-500"
           stroke="currentColor"
           strokeWidth="1"
           strokeDasharray="4 4"
@@ -123,7 +108,22 @@ export function CircuitFlowLines() {
         />
       </g>
 
-      {/* Animated dots */}
+      {/* Animated dots - Blue Line (Top) - 3 Dots */}
+      <circle r="3" className="text-status-info" fill="currentColor" filter="url(#flowGlow)">
+        <animateMotion
+          dur="8s"
+          repeatCount="indefinite"
+          path="M0,150 Q200,130 400,170 T800,140 T1200,180 T1600,150 T2000,170"
+        />
+      </circle>
+      <circle r="3" className="text-status-info" fill="currentColor" filter="url(#flowGlow)">
+        <animateMotion
+          dur="8s"
+          begin="-3s"
+          repeatCount="indefinite"
+          path="M0,150 Q200,130 400,170 T800,140 T1200,180 T1600,150 T2000,170"
+        />
+      </circle>
       <circle
         r="3"
         style={{ color: "var(--color-status-info)" }}
@@ -132,8 +132,26 @@ export function CircuitFlowLines() {
       >
         <animateMotion
           dur="8s"
+          begin="-6s"
           repeatCount="indefinite"
           path="M0,150 Q200,130 400,170 T800,140 T1200,180 T1600,150 T2000,170"
+        />
+      </circle>
+
+      {/* Animated dots - Middle Line - 3 Dots (Purple/Green) */}
+      <circle r="2.5" className="text-accent-500" fill="currentColor" filter="url(#flowGlow)">
+        <animateMotion
+          dur="10s"
+          repeatCount="indefinite"
+          path="M0,300 Q250,280 500,320 T1000,290 T1500,330 T2000,300"
+        />
+      </circle>
+      <circle r="2.5" className="text-accent-500" fill="currentColor" filter="url(#flowGlow)">
+        <animateMotion
+          dur="10s"
+          begin="-4s"
+          repeatCount="indefinite"
+          path="M0,300 Q250,280 500,320 T1000,290 T1500,330 T2000,300"
         />
       </circle>
       <circle
@@ -144,8 +162,18 @@ export function CircuitFlowLines() {
       >
         <animateMotion
           dur="10s"
+          begin="-7s"
           repeatCount="indefinite"
           path="M0,300 Q250,280 500,320 T1000,290 T1500,330 T2000,300"
+        />
+      </circle>
+
+      {/* Animated dots - Green Line (Bottom) - 2 Dots */}
+      <circle r="2.5" className="text-status-success" fill="currentColor" filter="url(#flowGlow)">
+        <animateMotion
+          dur="9s"
+          repeatCount="indefinite"
+          path="M0,450 Q300,420 600,460 T1200,430 T1800,470 T2400,440"
         />
       </circle>
       <circle
@@ -156,49 +184,11 @@ export function CircuitFlowLines() {
       >
         <animateMotion
           dur="9s"
+          begin="-4.5s"
           repeatCount="indefinite"
           path="M0,450 Q300,420 600,460 T1200,430 T1800,470 T2400,440"
         />
       </circle>
-
-      {/* Node points */}
-      <g filter="url(#flowGlow)">
-        <circle
-          cx="400"
-          cy="170"
-          r="4"
-          style={{ color: "var(--color-status-info)" }}
-          fill="currentColor"
-        />
-        <circle
-          cx="800"
-          cy="140"
-          r="4"
-          style={{ color: "var(--color-brand-400)" }}
-          fill="currentColor"
-        />
-        <circle
-          cx="500"
-          cy="320"
-          r="4"
-          style={{ color: "var(--color-accent-500)" }}
-          fill="currentColor"
-        />
-        <circle
-          cx="1000"
-          cy="290"
-          r="4"
-          style={{ color: "var(--color-status-success)" }}
-          fill="currentColor"
-        />
-        <circle
-          cx="600"
-          cy="460"
-          r="4"
-          style={{ color: "var(--color-status-success)" }}
-          fill="currentColor"
-        />
-      </g>
     </svg>
   );
 }

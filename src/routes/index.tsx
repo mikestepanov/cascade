@@ -14,7 +14,7 @@ export const Route = createFileRoute("/")({
 
 function LandingPage() {
   return (
-    <div className="min-h-screen w-full bg-[#0a0e17] text-white overflow-x-hidden">
+    <div className="min-h-screen w-full bg-ui-bg-hero text-white overflow-x-hidden">
       {/* Ambient background glows */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
         <div

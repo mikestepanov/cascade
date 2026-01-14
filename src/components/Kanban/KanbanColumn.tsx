@@ -2,6 +2,8 @@ import type { Id } from "@convex/_generated/dataModel";
 import type { WorkflowState } from "@convex/shared/types";
 import { memo, useCallback, useMemo } from "react";
 import { ANIMATION } from "@/lib/constants";
+import { getWorkflowCategoryColor } from "@/lib/issue-utils";
+import { cn } from "@/lib/utils";
 import type { LabelInfo } from "../../../convex/lib/issueHelpers";
 import { IssueCard } from "../IssueCard";
 import { Badge } from "../ui/Badge";
@@ -86,8 +88,13 @@ export const KanbanColumn = memo(function KanbanColumn({
     <section
       aria-label={`${state.name} column`}
       data-board-column
-      className="flex-shrink-0 w-full lg:w-80 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg animate-slide-up"
-      style={{ animationDelay: `${columnIndex * (ANIMATION.STAGGER_DELAY * 2)}ms` }}
+      className={cn(
+        "flex-shrink-0 w-full lg:w-80 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg animate-slide-up border-t-4",
+        getWorkflowCategoryColor(state.category),
+      )}
+      style={{
+        animationDelay: `${columnIndex * (ANIMATION.STAGGER_DELAY * 2)}ms`,
+      }}
       onDragOver={onDragOver}
       onDrop={handleDrop}
     >

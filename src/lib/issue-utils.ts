@@ -142,3 +142,33 @@ export function getStatusColor(status: string): string {
       return "bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark text-ui-text-secondary dark:text-ui-text-secondary-dark";
   }
 }
+
+/**
+ * Get the color classes for a workflow category
+ * Uses semantic theme tokens with full dark mode support
+ */
+export function getWorkflowCategoryColor(
+  category: string,
+  variant: "border" | "text" | "bg" = "border",
+): string {
+  const normalizedCategory = category.toLowerCase();
+  const colors = {
+    todo: {
+      border: "border-t-ui-border-primary dark:border-t-ui-border-primary-dark",
+      text: "text-ui-text-tertiary dark:text-ui-text-tertiary-dark",
+      bg: "bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark",
+    },
+    inprogress: {
+      border: "border-t-status-info",
+      text: "text-status-info dark:text-status-info-text-dark",
+      bg: "bg-status-info-bg dark:bg-status-info-bg-dark",
+    },
+    done: {
+      border: "border-t-status-success",
+      text: "text-status-success dark:text-status-success-text-dark",
+      bg: "bg-status-success-bg dark:bg-status-success-bg-dark",
+    },
+  };
+
+  return colors[normalizedCategory as keyof typeof colors]?.[variant] || colors.todo[variant];
+}

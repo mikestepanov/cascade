@@ -55,6 +55,11 @@
   --color-ui-bg-elevated-dark: #1F2937;
   --color-ui-bg-overlay-dark: rgba(0, 0, 0, 0.75);
 
+  /* Landing/Hero Specific (Persistent Dark) */
+  --color-ui-bg-hero: #0a0e17;
+  --color-landing-accent: #22d3ee;
+  --color-landing-accent-alt: #a855f7;
+
   /* UI Text Colors */
   --color-ui-text-primary: #111827;
   --color-ui-text-secondary: #6B7280;

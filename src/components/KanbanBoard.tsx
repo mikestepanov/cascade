@@ -135,8 +135,6 @@ export function KanbanBoard({ projectId, teamId, sprintId }: KanbanBoardProps) {
   } else if (isTeamMode && smartWorkflowStates) {
     workflowStates = smartWorkflowStates.map((s) => ({
       ...s,
-      color:
-        s.category === "todo" ? "#94a3b8" : s.category === "inprogress" ? "#3b82f6" : "#22c55e",
       description: "",
       order: s.order,
     }));
