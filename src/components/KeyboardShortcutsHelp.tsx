@@ -68,9 +68,9 @@ export function KeyboardShortcutsHelp({ open, onOpenChange }: KeyboardShortcutsH
         <div className="space-y-6">
           {shortcuts.map((section) => (
             <div key={section.category}>
-              <h3 className="text-lg font-semibold text-ui-text-primary mb-3">
+              <Typography variant="h3" className="text-lg font-semibold text-ui-text-primary mb-3">
                 {section.category}
-              </h3>
+              </Typography>
               <div className="space-y-2">
                 {section.items.map((shortcut) => (
                   <div

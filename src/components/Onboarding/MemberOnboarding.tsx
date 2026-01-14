@@ -152,13 +152,17 @@ export function MemberOnboarding({
 
       {/* What you can do */}
       <div className="space-y-4">
-        <h3 className="font-medium text-ui-text-primary">Here's what you can do in Nixelo:</h3>
+        <Typography variant="h3" className="font-medium text-ui-text-primary">
+          Here's what you can do in Nixelo:
+        </Typography>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="flex items-start gap-3 p-4 rounded-lg bg-ui-bg-primary">
             <Kanban className="w-5 h-5 text-priority-low mt-0.5 shrink-0" />
             <div>
-              <h4 className="font-medium text-ui-text-primary text-sm">Work on Issues</h4>
+              <Typography variant="h4" className="font-medium text-ui-text-primary text-sm">
+                Work on Issues
+              </Typography>
               <Typography className="text-xs text-ui-text-secondary">
                 Drag issues across the board as you progress
               </Typography>
@@ -168,7 +172,9 @@ export function MemberOnboarding({
           <div className="flex items-start gap-3 p-4 rounded-lg bg-ui-bg-primary">
             <FileText className="w-5 h-5 text-status-success mt-0.5 shrink-0" />
             <div>
-              <h4 className="font-medium text-ui-text-primary text-sm">Collaborate on Docs</h4>
+              <Typography variant="h4" className="font-medium text-ui-text-primary text-sm">
+                Collaborate on Docs
+              </Typography>
               <Typography className="text-xs text-ui-text-secondary">
                 Edit documents together in real-time
               </Typography>
@@ -178,7 +184,9 @@ export function MemberOnboarding({
           <div className="flex items-start gap-3 p-4 rounded-lg bg-ui-bg-primary">
             <Clock className="w-5 h-5 text-status-warning mt-0.5 shrink-0" />
             <div>
-              <h4 className="font-medium text-ui-text-primary text-sm">Track Time</h4>
+              <Typography variant="h4" className="font-medium text-ui-text-primary text-sm">
+                Track Time
+              </Typography>
               <Typography className="text-xs text-ui-text-secondary">
                 Log time spent on tasks
               </Typography>
@@ -188,7 +196,9 @@ export function MemberOnboarding({
           <div className="flex items-start gap-3 p-4 rounded-lg bg-ui-bg-primary">
             <Bell className="w-5 h-5 text-issue-type-story mt-0.5 shrink-0" />
             <div>
-              <h4 className="font-medium text-ui-text-primary text-sm">Stay Updated</h4>
+              <Typography variant="h4" className="font-medium text-ui-text-primary text-sm">
+                Stay Updated
+              </Typography>
               <Typography className="text-xs text-ui-text-secondary">
                 Get notified when mentioned or assigned
               </Typography>

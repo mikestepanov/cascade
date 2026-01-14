@@ -124,7 +124,9 @@ export function IssueComments({ issueId, projectId }: IssueCommentsProps) {
 
       {/* Add Comment */}
       <div className="space-y-3">
-        <h4 className="text-sm font-medium text-ui-text-primary">Add Comment</h4>
+        <Typography variant="h4" className="text-sm font-medium text-ui-text-primary">
+          Add Comment
+        </Typography>
         <MentionInput
           projectId={projectId}
           value={newComment}

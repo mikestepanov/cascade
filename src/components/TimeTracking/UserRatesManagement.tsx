@@ -77,7 +77,9 @@ export function UserRatesManagement() {
       {/* Header */}
       <Flex justify="between" align="center">
         <div>
-          <h2 className="text-lg font-semibold text-ui-text-primary">Hourly Rates</h2>
+          <Typography variant="h2" className="text-lg font-semibold text-ui-text-primary">
+            Hourly Rates
+          </Typography>
           <Typography className="text-sm text-ui-text-secondary mt-1">
             Manage hourly rates for cost tracking and burn rate calculations
           </Typography>
@@ -98,9 +100,9 @@ export function UserRatesManagement() {
               <Flex justify="between" align="start">
                 <div className="flex-1">
                   <Flex align="center" gap="md">
-                    <h3 className="text-sm font-medium text-ui-text-primary">
+                    <Typography variant="h3" className="text-sm font-medium text-ui-text-primary">
                       {rate.user?.name || "Unknown User"}
-                    </h3>
+                    </Typography>
                     <span
                       className={cn(
                         "px-2 py-0.5 text-xs rounded",
@@ -152,7 +154,9 @@ export function UserRatesManagement() {
               d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
             />
           </svg>
-          <h3 className="mt-2 text-sm font-medium text-ui-text-primary">No hourly rates set</h3>
+          <Typography variant="h3" className="mt-2 text-sm font-medium text-ui-text-primary">
+            No hourly rates set
+          </Typography>
           <Typography className="mt-1 text-sm text-ui-text-tertiary">
             Set your hourly rate to enable cost tracking and burn rate calculations
           </Typography>

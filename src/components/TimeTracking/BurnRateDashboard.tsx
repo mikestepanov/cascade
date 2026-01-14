@@ -81,7 +81,9 @@ export function BurnRateDashboard({ projectId }: BurnRateDashboardProps) {
     <Flex direction="column" gap="xl">
       {/* Header with date range selector */}
       <Flex justify="between" align="center">
-        <h2 className="text-lg font-semibold text-ui-text-primary">Burn Rate & Team Costs</h2>
+        <Typography variant="h2" className="text-lg font-semibold text-ui-text-primary">
+          Burn Rate & Team Costs
+        </Typography>
 
         <Flex gap="sm">
           {(["week", "month", "quarter"] as const).map((range) => (
@@ -133,7 +135,9 @@ export function BurnRateDashboard({ projectId }: BurnRateDashboardProps) {
       {/* Hours Breakdown */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="p-4 bg-ui-bg-primary border border-ui-border-primary rounded-lg">
-          <h3 className="text-sm font-medium text-ui-text-primary mb-2">Total Hours</h3>
+          <Typography variant="h3" className="text-sm font-medium text-ui-text-primary mb-2">
+            Total Hours
+          </Typography>
           <div className="text-3xl font-bold text-ui-text-primary">
             {formatHours(burnRate.totalHours)}h
           </div>
@@ -143,7 +147,9 @@ export function BurnRateDashboard({ projectId }: BurnRateDashboardProps) {
         </div>
 
         <div className="p-4 bg-ui-bg-primary border border-ui-border-primary rounded-lg">
-          <h3 className="text-sm font-medium text-ui-text-primary mb-2">Billable Hours</h3>
+          <Typography variant="h3" className="text-sm font-medium text-ui-text-primary mb-2">
+            Billable Hours
+          </Typography>
           <div className="text-3xl font-bold text-status-success dark:text-status-success">
             {formatHours(burnRate.billableHours)}h
           </div>
@@ -155,7 +161,9 @@ export function BurnRateDashboard({ projectId }: BurnRateDashboardProps) {
 
       {/* Team Costs Breakdown */}
       <div>
-        <h3 className="text-sm font-semibold text-ui-text-primary mb-3">Team Costs Breakdown</h3>
+        <Typography variant="h3" className="text-sm font-semibold text-ui-text-primary mb-3">
+          Team Costs Breakdown
+        </Typography>
 
         {teamCosts.length === 0 ? (
           <div className="text-center p-8 bg-ui-bg-secondary rounded-lg">

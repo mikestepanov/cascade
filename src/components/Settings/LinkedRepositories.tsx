@@ -37,7 +37,9 @@ export function LinkedRepositories() {
 
   return (
     <div>
-      <h4 className="text-sm font-semibold text-ui-text-primary mb-4">Linked Repositories</h4>
+      <Typography variant="h4" className="text-sm font-semibold text-ui-text-primary mb-4">
+        Linked Repositories
+      </Typography>
 
       {/* Project selector */}
       <div className="mb-4">

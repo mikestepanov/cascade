@@ -103,7 +103,9 @@ export function LeadOnboarding({
 
         {/* Header */}
         <div className="text-center">
-          <h1 className="text-3xl font-bold text-ui-text-primary mb-3">Perfect for Team Leads</h1>
+          <Typography variant="h1" className="text-3xl font-bold text-ui-text-primary mb-3">
+            Perfect for Team Leads
+          </Typography>
           <Typography className="text-ui-text-secondary text-lg">
             Here's what you can do with Nixelo
           </Typography>
@@ -114,7 +116,9 @@ export function LeadOnboarding({
 
         {/* Additional lead features */}
         <div className="bg-ui-bg-primary rounded-xl p-6">
-          <h3 className="font-medium text-ui-text-primary mb-4">As a team lead, you can also:</h3>
+          <Typography variant="h3" className="font-medium text-ui-text-primary mb-4">
+            As a team lead, you can also:
+          </Typography>
           <ul className="space-y-3 text-ui-text-secondary">
             <li className="flex items-start gap-3">
               <UserPlus className="w-5 h-5 text-primary-500 mt-0.5 shrink-0" />

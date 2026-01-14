@@ -59,7 +59,9 @@ export function TimeTrackingPage({ projectId, userRole, isGlobalAdmin }: TimeTra
     <Flex direction="column" gap="xl" className="max-w-7xl mx-auto p-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-ui-text-primary">Time Tracking</h1>
+        <Typography variant="h1" className="text-2xl font-bold text-ui-text-primary">
+          Time Tracking
+        </Typography>
         <Typography className="text-sm text-ui-text-secondary mt-1">
           Track time, analyze costs, and monitor burn rate
         </Typography>
@@ -202,7 +204,9 @@ export function TimeTrackingPage({ projectId, userRole, isGlobalAdmin }: TimeTra
                 d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
               />
             </svg>
-            <h3 className="mt-2 text-sm font-medium text-ui-text-primary">Select a project</h3>
+            <Typography variant="h3" className="mt-2 text-sm font-medium text-ui-text-primary">
+              Select a project
+            </Typography>
             <Typography className="mt-1 text-sm text-ui-text-tertiary">
               Choose a project to view burn rate and cost analysis
             </Typography>

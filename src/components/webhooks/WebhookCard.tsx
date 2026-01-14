@@ -27,7 +27,9 @@ export function WebhookCard({ webhook, onEdit, onDelete }: WebhookCardProps) {
       <Flex justify="between" align="start">
         <div className="flex-1">
           <Flex gap="sm" align="center" className="mb-2">
-            <h4 className="font-medium text-ui-text-primary">{webhook.name}</h4>
+            <Typography variant="h4" className="font-medium text-ui-text-primary">
+              {webhook.name}
+            </Typography>
             <span
               className={cn(
                 "text-xs px-2 py-0.5 rounded",

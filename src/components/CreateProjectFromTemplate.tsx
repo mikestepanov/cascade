@@ -144,9 +144,12 @@ export function CreateProjectFromTemplate({
                     <div className="flex items-start gap-4">
                       <div className="text-4xl shrink-0">{template.icon}</div>
                       <div className="flex-1 min-w-0">
-                        <h3 className="text-lg font-semibold text-ui-text-primary mb-1">
+                        <Typography
+                          variant="h3"
+                          className="text-lg font-semibold text-ui-text-primary mb-1"
+                        >
                           {template.name}
-                        </h3>
+                        </Typography>
                         <Typography variant="p" color="secondary" className="text-sm mb-3">
                           {template.description}
                         </Typography>
@@ -179,7 +182,9 @@ export function CreateProjectFromTemplate({
                 <div className="flex items-center gap-3">
                   <span className="text-3xl">{selectedTemplate.icon}</span>
                   <div>
-                    <h3 className="font-semibold text-ui-text-primary">{selectedTemplate.name}</h3>
+                    <Typography variant="h3" className="font-semibold text-ui-text-primary">
+                      {selectedTemplate.name}
+                    </Typography>
                     <Typography variant="p" color="secondary" className="text-sm">
                       {selectedTemplate.workflowStates.length} workflow states,{" "}
                       {selectedTemplate.defaultLabels.length} default labels
@@ -233,7 +238,9 @@ export function CreateProjectFromTemplate({
             {/* Preview */}
             {selectedTemplate && (
               <div>
-                <h4 className="text-sm font-medium text-ui-text-primary mb-3">What's Included:</h4>
+                <Typography variant="h4" className="text-sm font-medium text-ui-text-primary mb-3">
+                  What's Included:
+                </Typography>
                 <div className="space-y-2 text-sm">
                   <div className="flex items-center gap-2">
                     <svg

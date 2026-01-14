@@ -35,7 +35,9 @@ export function DevToolsTab() {
         <div className="flex items-start gap-3">
           <span className="text-status-info-text text-xl">&#128736;</span>
           <div>
-            <h3 className="font-medium text-status-info-text">Test Account Tools</h3>
+            <Typography variant="h3" className="font-medium text-status-info-text">
+              Test Account Tools
+            </Typography>
             <Typography className="text-sm text-status-info-text mt-1">
               These tools are only visible for test accounts (@inbox.mailtrap.io).
             </Typography>

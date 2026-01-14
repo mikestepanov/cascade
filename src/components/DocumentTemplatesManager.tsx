@@ -239,9 +239,12 @@ export function DocumentTemplatesManager({
               {/* Built-in Templates */}
               {builtInTemplates.length > 0 && (
                 <div>
-                  <h3 className="text-sm font-semibold text-ui-text-primary mb-3">
+                  <Typography
+                    variant="h3"
+                    className="text-sm font-semibold text-ui-text-primary mb-3"
+                  >
                     Built-in Templates
-                  </h3>
+                  </Typography>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {builtInTemplates.map((template: Doc<"documentTemplates">) => (
                       <button
@@ -253,9 +256,12 @@ export function DocumentTemplatesManager({
                         <div className="flex items-start gap-3">
                           <span className="text-3xl">{template.icon}</span>
                           <div className="flex-1">
-                            <h4 className="font-semibold text-ui-text-primary mb-1">
+                            <Typography
+                              variant="h4"
+                              className="font-semibold text-ui-text-primary mb-1"
+                            >
                               {template.name}
-                            </h4>
+                            </Typography>
                             {template.description && (
                               <Typography variant="muted" className="line-clamp-2">
                                 {template.description}
@@ -279,9 +285,12 @@ export function DocumentTemplatesManager({
               {/* Custom Templates */}
               {customTemplates.length > 0 && (
                 <div>
-                  <h3 className="text-sm font-semibold text-ui-text-primary mb-3">
+                  <Typography
+                    variant="h3"
+                    className="text-sm font-semibold text-ui-text-primary mb-3"
+                  >
                     Custom Templates
-                  </h3>
+                  </Typography>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {customTemplates.map((template: Doc<"documentTemplates">) => (
                       <div
@@ -296,9 +305,12 @@ export function DocumentTemplatesManager({
                           >
                             <span className="text-2xl">{template.icon}</span>
                             <div className="flex-1">
-                              <h4 className="font-medium text-ui-text-primary mb-1">
+                              <Typography
+                                variant="h4"
+                                className="font-medium text-ui-text-primary mb-1"
+                              >
                                 {template.name}
-                              </h4>
+                              </Typography>
                               {template.description && (
                                 <Typography variant="muted" className="line-clamp-2 mb-2">
                                   {template.description}

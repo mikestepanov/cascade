@@ -82,7 +82,9 @@ export function ImportPanel({ projectId, onImportComplete }: ImportPanelProps) {
   return (
     <Flex direction="column" gap="lg">
       <div>
-        <h3 className="text-sm font-semibold text-ui-text-primary mb-3">Select Import Format</h3>
+        <Typography variant="h3" className="text-sm font-semibold text-ui-text-primary mb-3">
+          Select Import Format
+        </Typography>
         <div className="grid grid-cols-2 gap-3">
           <Card
             onClick={() => setImportFormat("csv")}

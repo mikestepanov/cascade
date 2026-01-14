@@ -172,7 +172,9 @@ export const AIChat = React.memo(function AIChat({
           <Flex align="center" justify="center" className="h-full text-center">
             <div>
               <div className="text-4xl mb-4">🤖</div>
-              <h3 className="text-lg font-semibold text-ui-text-primary mb-2">AI Assistant</h3>
+              <Typography variant="h3" className="text-lg font-semibold text-ui-text-primary mb-2">
+                AI Assistant
+              </Typography>
               <Typography variant="p" className="text-ui-text-secondary mb-4">
                 Ask me anything about your project, or use natural language commands.
               </Typography>

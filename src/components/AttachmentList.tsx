@@ -1,6 +1,7 @@
 import { api } from "@convex/_generated/api";
 import type { Id } from "@convex/_generated/dataModel";
 import { useMutation, useQuery } from "convex/react";
+import { Typography } from "@/components/ui/Typography";
 import { showError, showSuccess } from "@/lib/toast";
 import { Button } from "./ui/Button";
 import { Flex } from "./ui/Flex";
@@ -31,9 +32,9 @@ export function AttachmentList({ attachmentIds, issueId, canEdit = false }: Atta
 
   return (
     <div className="space-y-2">
-      <h4 className="text-sm font-medium text-ui-text-primary">
+      <Typography variant="h4" className="text-sm font-medium text-ui-text-primary">
         Attachments ({attachmentIds.length})
-      </h4>
+      </Typography>
       <div className="grid grid-cols-1 gap-2">
         {attachmentIds.map((storageId) => (
           <AttachmentItem

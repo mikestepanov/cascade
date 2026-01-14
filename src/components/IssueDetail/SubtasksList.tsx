@@ -61,14 +61,14 @@ export function SubtasksList({ issueId, projectId, subtasks }: SubtasksListProps
   return (
     <div>
       <Flex justify="between" align="center" className="mb-3">
-        <h3 className="text-sm font-medium text-ui-text-primary">
+        <Typography variant="h3" className="text-sm font-medium text-ui-text-primary">
           Sub-tasks
           {totalSubtasks > 0 && (
             <span className="ml-2 text-xs text-ui-text-tertiary">
               ({completedSubtasks}/{totalSubtasks} completed)
             </span>
           )}
-        </h3>
+        </Typography>
         <button
           type="button"
           onClick={() => setIsCreatingSubtask(true)}

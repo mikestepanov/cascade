@@ -16,7 +16,9 @@ export function WhyChooseSection() {
       <div className="max-w-6xl mx-auto">
         <div className="bg-ui-bg-secondary border border-ui-border-primary rounded-3xl p-12 backdrop-blur-sm">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Teams actually like using it</h2>
+            <Typography variant="h2" className="text-3xl md:text-4xl font-bold mb-4">
+              Teams actually like using it
+            </Typography>
             <Typography className="text-ui-text-secondary max-w-2xl mx-auto">
               No training required. No "change management" needed. It just works.
             </Typography>

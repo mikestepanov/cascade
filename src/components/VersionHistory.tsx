@@ -106,9 +106,9 @@ export function VersionHistory({
           ) : versions.length === 0 ? (
             <div className="text-center py-12">
               <Clock className="w-12 h-12 text-ui-text-tertiary mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-ui-text-primary mb-2">
+              <Typography variant="h3" className="text-lg font-medium text-ui-text-primary mb-2">
                 No version history yet
-              </h3>
+              </Typography>
               <Typography className="text-sm text-ui-text-secondary">
                 Versions are automatically saved as you edit. Make some changes to create the first
                 version.

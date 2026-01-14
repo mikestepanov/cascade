@@ -11,7 +11,9 @@ export function SectionErrorFallback({ title, message, onRetry }: Props) {
     <div className="flex items-center justify-center h-full p-8">
       <div className="max-w-md w-full text-center">
         <div className="text-status-error text-4xl mb-3">⚠️</div>
-        <h2 className="text-xl font-semibold text-ui-text-primary mb-2">{title}</h2>
+        <Typography variant="h2" className="text-xl font-semibold text-ui-text-primary mb-2">
+          {title}
+        </Typography>
         <Typography className="text-ui-text-secondary mb-4">
           {message ||
             "This section encountered an error. Try reloading or contact support if the problem persists."}

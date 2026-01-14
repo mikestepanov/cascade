@@ -338,7 +338,9 @@ function RecordingResults({ recordingId }: { recordingId: Id<"meetingRecordings"
       {/* Executive Summary */}
       {summary && (
         <div className="bg-ui-bg-secondary rounded-lg p-4">
-          <h4 className="text-sm font-semibold text-ui-text-primary mb-2">Summary</h4>
+          <Typography variant="h4" className="text-sm font-semibold text-ui-text-primary mb-2">
+            Summary
+          </Typography>
           <Typography variant="muted">{summary.executiveSummary}</Typography>
         </div>
       )}
@@ -346,7 +348,9 @@ function RecordingResults({ recordingId }: { recordingId: Id<"meetingRecordings"
       {/* Key Points */}
       {summary && summary.keyPoints.length > 0 && (
         <div>
-          <h4 className="text-sm font-semibold text-ui-text-primary mb-2">Key Points</h4>
+          <Typography variant="h4" className="text-sm font-semibold text-ui-text-primary mb-2">
+            Key Points
+          </Typography>
           <ul className="space-y-1">
             {summary.keyPoints.map((point: string) => (
               <li key={point} className="text-sm text-ui-text-secondary flex items-start gap-2">
@@ -361,7 +365,9 @@ function RecordingResults({ recordingId }: { recordingId: Id<"meetingRecordings"
       {/* Action Items */}
       {summary && summary.actionItems.length > 0 && (
         <div>
-          <h4 className="text-sm font-semibold text-ui-text-primary mb-2">Action Items</h4>
+          <Typography variant="h4" className="text-sm font-semibold text-ui-text-primary mb-2">
+            Action Items
+          </Typography>
           <ul className="space-y-2">
             {summary.actionItems.map(
               (
@@ -395,7 +401,9 @@ function RecordingResults({ recordingId }: { recordingId: Id<"meetingRecordings"
       {/* Decisions */}
       {summary && summary.decisions.length > 0 && (
         <div>
-          <h4 className="text-sm font-semibold text-ui-text-primary mb-2">Decisions Made</h4>
+          <Typography variant="h4" className="text-sm font-semibold text-ui-text-primary mb-2">
+            Decisions Made
+          </Typography>
           <ul className="space-y-1">
             {summary.decisions.map((decision: string) => (
               <li key={decision} className="text-sm text-ui-text-secondary flex items-start gap-2">

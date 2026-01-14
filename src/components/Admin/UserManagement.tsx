@@ -156,7 +156,9 @@ export function UserManagement() {
       {/* Header */}
       <Flex justify="between" align="center">
         <div>
-          <h2 className="text-2xl font-bold text-ui-text-primary">User Management</h2>
+          <Typography variant="h2" className="text-2xl font-bold text-ui-text-primary">
+            User Management
+          </Typography>
           <Typography variant="p" className="text-ui-text-secondary mt-1">
             Manage user invitations and platform access
           </Typography>

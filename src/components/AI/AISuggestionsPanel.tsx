@@ -105,9 +105,12 @@ export const AISuggestionsPanel = React.memo(function AISuggestionsPanel({
           <Flex align="center" justify="center" className="h-full text-center px-4">
             <div>
               <div className="text-4xl mb-4">🎯</div>
-              <h3 className="text-base sm:text-lg font-semibold text-ui-text-primary mb-2">
+              <Typography
+                variant="h3"
+                className="text-base sm:text-lg font-semibold text-ui-text-primary mb-2"
+              >
                 No Suggestions Yet
-              </h3>
+              </Typography>
               <Typography variant="p" className="text-sm sm:text-base text-ui-text-secondary mb-4">
                 Click "Generate AI Insights" to analyze your project and get AI-powered
                 recommendations.

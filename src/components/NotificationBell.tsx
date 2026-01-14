@@ -115,7 +115,9 @@ export function NotificationBell() {
         <div className="absolute right-0 mt-2 w-96 bg-ui-bg-primary rounded-lg shadow-xl border border-ui-border-primary z-50 max-h-[32rem] overflow-hidden flex flex-col">
           {/* Header */}
           <div className="px-4 py-3 border-b border-ui-border-primary flex items-center justify-between">
-            <h3 className="text-lg font-semibold text-ui-text-primary">Notifications</h3>
+            <Typography variant="h3" className="text-lg font-semibold text-ui-text-primary">
+              Notifications
+            </Typography>
             {notifications && notifications.length > 0 && (
               <Button
                 variant="ghost"

@@ -1,6 +1,7 @@
 import type { Id } from "@convex/_generated/dataModel";
 import type { WorkflowState } from "@convex/shared/types";
 import { memo, useCallback, useMemo } from "react";
+import { Typography } from "@/components/ui/Typography";
 import { ANIMATION } from "@/lib/constants";
 import { getWorkflowCategoryColor } from "@/lib/issue-utils";
 import { cn } from "@/lib/utils";
@@ -102,7 +103,9 @@ export const KanbanColumn = memo(function KanbanColumn({
       <div className="p-3 sm:p-4 border-b border-ui-border-primary bg-ui-bg-primary rounded-t-lg">
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center space-x-2 min-w-0">
-            <h3 className="font-medium text-ui-text-primary truncate">{state.name}</h3>
+            <Typography variant="h3" className="font-medium text-ui-text-primary truncate">
+              {state.name}
+            </Typography>
             <Badge variant="neutral" shape="pill" className="shrink-0">
               {hiddenCount > 0 ? `${stateIssues.length}/${totalCount}` : stateIssues.length}
             </Badge>

@@ -173,9 +173,9 @@ export function FileAttachments({ issueId }: FileAttachmentsProps) {
       {/* Attachments List */}
       {attachments && attachments.length > 0 && (
         <div className="space-y-2">
-          <h4 className="text-sm font-medium text-ui-text-primary">
+          <Typography variant="h4" className="text-sm font-medium text-ui-text-primary">
             Attachments ({attachments.length})
-          </h4>
+          </Typography>
           {attachments.map((attachment: Attachment) => (
             <Flex
               key={attachment.storageId}

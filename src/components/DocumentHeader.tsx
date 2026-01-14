@@ -1,5 +1,6 @@
 import type { Doc } from "@convex/_generated/dataModel";
 import { useState } from "react";
+import { Typography } from "@/components/ui/Typography";
 import { History } from "@/lib/icons";
 import { cn } from "@/lib/utils";
 import { PresenceIndicator } from "./PresenceIndicator";
@@ -69,7 +70,8 @@ export function DocumentHeader({
               className="text-xl sm:text-2xl font-bold bg-transparent border-none outline-none focus:ring-2 focus:ring-brand-500 rounded px-2 py-1 dark:text-white"
             />
           ) : (
-            <h1
+            <Typography
+              variant="h1"
               role={document.isOwner ? "button" : undefined}
               tabIndex={document.isOwner ? 0 : undefined}
               className="text-xl sm:text-2xl font-bold text-ui-text-primary cursor-pointer hover:bg-ui-bg-secondary rounded px-2 py-1 transition-colors"
@@ -87,7 +89,7 @@ export function DocumentHeader({
               title={document.isOwner ? "Click to edit title" : ""}
             >
               {document.title}
-            </h1>
+            </Typography>
           )}
         </div>
 

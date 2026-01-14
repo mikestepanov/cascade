@@ -44,7 +44,9 @@ export function TemplateCard({ template, onEdit, onDelete }: TemplateCardProps) 
         <div className="flex-1">
           <Flex gap="sm" align="center" className="mb-2">
             <span className="text-lg">{getTypeIcon(template.type)}</span>
-            <h4 className="font-medium text-ui-text-primary">{template.name}</h4>
+            <Typography variant="h4" className="font-medium text-ui-text-primary">
+              {template.name}
+            </Typography>
             <span className="text-xs px-2 py-0.5 bg-ui-bg-tertiary text-ui-text-primary rounded capitalize">
               {template.type}
             </span>

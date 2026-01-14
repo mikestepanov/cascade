@@ -16,13 +16,16 @@ export function HeroSection() {
         </Flex>
 
         {/* Headline */}
-        <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-6">
+        <Typography
+          variant="h1"
+          className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-6"
+        >
           Revolutionize Your Workflow.
           <br />
           <span className="bg-linear-to-r from-cyan-400 via-teal-400 to-emerald-400 bg-clip-text text-transparent">
             Harmonize Your Team.
           </span>
-        </h1>
+        </Typography>
 
         {/* Subheadline */}
         <Typography variant="lead" className="text-ui-text-tertiary max-w-2xl mx-auto mb-10">

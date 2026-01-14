@@ -83,7 +83,9 @@ export function SearchResultsList({
                     {issue.priority}
                   </span>
                 </Flex>
-                <h4 className="text-sm font-medium text-ui-text-primary">{issue.title}</h4>
+                <Typography variant="h4" className="text-sm font-medium text-ui-text-primary">
+                  {issue.title}
+                </Typography>
               </div>
             </Flex>
           </button>

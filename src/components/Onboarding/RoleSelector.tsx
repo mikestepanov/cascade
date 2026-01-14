@@ -43,7 +43,9 @@ function RoleCard({ icon, title, description, selected, onClick }: RoleCardProps
           {icon}
         </div>
         <div>
-          <h3 className="text-lg font-semibold text-ui-text-primary mb-1">{title}</h3>
+          <Typography variant="h3" className="text-lg font-semibold text-ui-text-primary mb-1">
+            {title}
+          </Typography>
           <Typography className="text-sm text-ui-text-secondary">{description}</Typography>
         </div>
         {selected && (

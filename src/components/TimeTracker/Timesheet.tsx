@@ -78,7 +78,9 @@ export function Timesheet() {
       <div className="mb-6">
         <Flex justify="between" align="center" className="mb-4">
           <div>
-            <h2 className="text-2xl font-bold text-ui-text-primary">My Timesheet</h2>
+            <Typography variant="h2" className="text-2xl font-bold text-ui-text-primary">
+              My Timesheet
+            </Typography>
             <Typography className="text-sm text-ui-text-tertiary">
               Week of {formatDate(timesheet.startDate)}
             </Typography>

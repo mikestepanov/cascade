@@ -23,7 +23,9 @@ export function AIErrorFallback({
     <Flex align="center" justify="center" className="h-full p-6 bg-ui-bg-primary">
       <div className="text-center max-w-md">
         <div className="text-6xl mb-4">⚠️</div>
-        <h3 className="text-lg font-semibold text-ui-text-primary mb-2">{title}</h3>
+        <Typography variant="h3" className="text-lg font-semibold text-ui-text-primary mb-2">
+          {title}
+        </Typography>
         <Typography variant="p" className="text-ui-text-secondary mb-4">
           {message}
         </Typography>

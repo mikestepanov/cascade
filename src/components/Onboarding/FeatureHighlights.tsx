@@ -11,7 +11,9 @@ function FeatureCard({ icon, title, description }: FeatureCardProps) {
   return (
     <div className="text-center p-4">
       <div className="inline-flex p-3 rounded-lg bg-ui-bg-primary mb-3">{icon}</div>
-      <h3 className="font-semibold text-ui-text-primary mb-1">{title}</h3>
+      <Typography variant="h3" className="font-semibold text-ui-text-primary mb-1">
+        {title}
+      </Typography>
       <Typography className="text-sm text-ui-text-secondary">{description}</Typography>
     </div>
   );

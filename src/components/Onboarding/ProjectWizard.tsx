@@ -109,7 +109,9 @@ export function ProjectWizard({ open, onOpenChange, onComplete }: ProjectWizardP
           {/* Step 1: Project Name & Key */}
           {step === 1 && (
             <div className="space-y-4">
-              <h2 className="text-2xl font-bold text-ui-text-primary">Create Your First Project</h2>
+              <Typography variant="h2" className="text-2xl font-bold text-ui-text-primary">
+                Create Your First Project
+              </Typography>
               <Typography className="text-ui-text-secondary">
                 Let's start by giving your project a name and a unique key.
               </Typography>
@@ -171,7 +173,9 @@ export function ProjectWizard({ open, onOpenChange, onComplete }: ProjectWizardP
           {/* Step 2: Board Type */}
           {step === 2 && (
             <div className="space-y-4">
-              <h2 className="text-2xl font-bold text-ui-text-primary">Choose Your Board Type</h2>
+              <Typography variant="h2" className="text-2xl font-bold text-ui-text-primary">
+                Choose Your Board Type
+              </Typography>
               <Typography className="text-ui-text-secondary">
                 How do you want to organize your work? You can change this later.
               </Typography>
@@ -187,7 +191,9 @@ export function ProjectWizard({ open, onOpenChange, onComplete }: ProjectWizardP
                       : "border-ui-border-primary dark:border-ui-border-primary-dark hover:border-brand-400",
                   )}
                 >
-                  <h3 className="font-bold text-lg mb-2 text-ui-text-primary">📊 Kanban</h3>
+                  <Typography variant="h3" className="font-bold text-lg mb-2 text-ui-text-primary">
+                    📊 Kanban
+                  </Typography>
                   <Typography className="text-sm text-ui-text-secondary">
                     Continuous flow of work through columns. Great for ongoing projects and support
                     teams.
@@ -209,7 +215,9 @@ export function ProjectWizard({ open, onOpenChange, onComplete }: ProjectWizardP
                       : "border-ui-border-primary dark:border-ui-border-primary-dark hover:border-brand-400",
                   )}
                 >
-                  <h3 className="font-bold text-lg mb-2 text-ui-text-primary">🏃 Scrum</h3>
+                  <Typography variant="h3" className="font-bold text-lg mb-2 text-ui-text-primary">
+                    🏃 Scrum
+                  </Typography>
                   <Typography className="text-sm text-ui-text-secondary">
                     Work in sprints with defined goals. Great for product development and fixed
                     deadlines.
@@ -227,7 +235,9 @@ export function ProjectWizard({ open, onOpenChange, onComplete }: ProjectWizardP
           {/* Step 3: Workflow States */}
           {step === 3 && (
             <div className="space-y-4">
-              <h2 className="text-2xl font-bold text-ui-text-primary">Customize Your Workflow</h2>
+              <Typography variant="h2" className="text-2xl font-bold text-ui-text-primary">
+                Customize Your Workflow
+              </Typography>
               <Typography className="text-ui-text-secondary">
                 These are the stages your issues will move through. You can customize them now or
                 use the defaults.
@@ -294,7 +304,9 @@ export function ProjectWizard({ open, onOpenChange, onComplete }: ProjectWizardP
           {/* Step 4: Summary & Create */}
           {step === 4 && (
             <div className="space-y-4">
-              <h2 className="text-2xl font-bold text-ui-text-primary">Ready to Create! 🎉</h2>
+              <Typography variant="h2" className="text-2xl font-bold text-ui-text-primary">
+                Ready to Create! 🎉
+              </Typography>
               <Typography className="text-ui-text-secondary">
                 Here's a summary of your new project:
               </Typography>

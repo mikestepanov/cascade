@@ -353,7 +353,9 @@ export function UserTypeManager() {
                     <Flex align="center" gap="sm">
                       <span className="text-2xl">{getTypeIcon(config.type)}</span>
                       <div>
-                        <h3 className="font-semibold text-ui-text-primary">{config.name}</h3>
+                        <Typography variant="h3" className="font-semibold text-ui-text-primary">
+                          {config.name}
+                        </Typography>
                         <span
                           className={cn(
                             "text-xs px-2 py-0.5 rounded capitalize",
@@ -424,9 +426,9 @@ export function UserTypeManager() {
           {/* Users without profiles */}
           {usersWithoutProfiles && usersWithoutProfiles.length > 0 && (
             <div className="mb-6 p-4 bg-status-warning-bg border border-status-warning dark:border-status-warning rounded-lg">
-              <h4 className="font-semibold text-status-warning-text mb-2">
+              <Typography variant="h4" className="font-semibold text-status-warning-text mb-2">
                 Unassigned Users ({usersWithoutProfiles.length})
-              </h4>
+              </Typography>
               <Flex direction="column" gap="sm">
                 {usersWithoutProfiles.slice(0, 5).map((user: UserWithoutProfile) => (
                   <Flex
@@ -473,9 +475,9 @@ export function UserTypeManager() {
                       <Flex gap="md" align="center" className="mb-2">
                         <span className="text-xl">{getTypeIcon(profile.employmentType)}</span>
                         <div>
-                          <h4 className="font-medium text-ui-text-primary">
+                          <Typography variant="h4" className="font-medium text-ui-text-primary">
                             {profile.user?.name || profile.user?.email || "Unknown User"}
-                          </h4>
+                          </Typography>
                           <Flex gap="sm" className="mt-1">
                             <span
                               className={cn(
@@ -713,9 +715,9 @@ export function UserTypeManager() {
               </div>
 
               <div className="p-4 bg-ui-bg-secondary rounded-lg">
-                <h4 className="font-medium text-sm mb-3 text-ui-text-primary">
+                <Typography variant="h4" className="font-medium text-sm mb-3 text-ui-text-primary">
                   Hour Overrides (leave empty to use type defaults)
-                </h4>
+                </Typography>
                 <div className="grid grid-cols-2 gap-4">
                   <Input
                     label="Max Hours per Week"
@@ -759,9 +761,12 @@ export function UserTypeManager() {
               {profileType === "employee" && (
                 <div className="p-4 bg-brand-50 dark:bg-brand-900/20 border border-brand-200 dark:border-brand-800 rounded-lg">
                   <Flex justify="between" align="center" className="mb-3">
-                    <h4 className="font-medium text-sm text-brand-900 dark:text-brand-100">
+                    <Typography
+                      variant="h4"
+                      className="font-medium text-sm text-brand-900 dark:text-brand-100"
+                    >
                       💎 Equity Compensation
-                    </h4>
+                    </Typography>
                     <label>
                       <Flex align="center" gap="sm">
                         <input

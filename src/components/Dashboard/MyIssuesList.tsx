@@ -1,5 +1,6 @@
 import type { Id } from "@convex/_generated/dataModel";
 import { useNavigate } from "@tanstack/react-router";
+import { Typography } from "@/components/ui/Typography";
 import { ROUTE_PATTERNS } from "@/config/routes";
 import { useCompany } from "@/hooks/useCompanyContext";
 import type { useListNavigation } from "@/hooks/useListNavigation";
@@ -152,7 +153,9 @@ export function MyIssuesList({
                         {issue.priority}
                       </Badge>
                     </Flex>
-                    <h4 className="font-medium text-ui-text-primary mb-1">{issue.title}</h4>
+                    <Typography variant="h4" className="font-medium text-ui-text-primary mb-1">
+                      {issue.title}
+                    </Typography>
                     <Flex gap="sm" align="center" className="text-xs text-ui-text-secondary">
                       <span>{issue.projectName}</span>
                       <span>•</span>

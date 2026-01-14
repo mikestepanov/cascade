@@ -76,7 +76,9 @@ export function SprintManager({ projectId, canEdit = true }: SprintManagerProps)
     return (
       <div className="p-3 sm:p-6">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-semibold text-ui-text-primary">Sprint Management</h2>
+          <Typography variant="h2" className="text-xl font-semibold text-ui-text-primary">
+            Sprint Management
+          </Typography>
         </div>
         <div className="space-y-4">
           <SkeletonProjectCard />
@@ -90,7 +92,9 @@ export function SprintManager({ projectId, canEdit = true }: SprintManagerProps)
   return (
     <div className="p-3 sm:p-6">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-6">
-        <h2 className="text-xl font-semibold text-ui-text-primary">Sprint Management</h2>
+        <Typography variant="h2" className="text-xl font-semibold text-ui-text-primary">
+          Sprint Management
+        </Typography>
         {canEdit && (
           <Button onClick={() => setShowCreateForm(true)} variant="primary">
             <span className="hidden sm:inline">Create Sprint</span>
@@ -152,9 +156,12 @@ export function SprintManager({ projectId, canEdit = true }: SprintManagerProps)
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div className="flex-1 w-full sm:w-auto">
                   <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-2">
-                    <h3 className="text-base sm:text-lg font-medium text-ui-text-primary">
+                    <Typography
+                      variant="h3"
+                      className="text-base sm:text-lg font-medium text-ui-text-primary"
+                    >
                       {sprint.name}
-                    </h3>
+                    </Typography>
                     <Badge size="md" className={getStatusColor(sprint.status)}>
                       {sprint.status}
                     </Badge>

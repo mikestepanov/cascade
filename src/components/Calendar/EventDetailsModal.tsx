@@ -237,9 +237,9 @@ export function EventDetailsModal({ eventId, open, onOpenChange }: EventDetailsM
             {event.isRequired && attendance && (
               <div className="border-t border-ui-border-primary pt-4">
                 <Flex justify="between" align="center" className="mb-3">
-                  <h4 className="text-sm font-semibold text-ui-text-primary">
+                  <Typography variant="h4" className="text-sm font-semibold text-ui-text-primary">
                     Attendance ({attendance.markedCount}/{attendance.totalAttendees} marked)
-                  </h4>
+                  </Typography>
                 </Flex>
 
                 <Flex direction="column" gap="sm">

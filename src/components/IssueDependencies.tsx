@@ -120,7 +120,9 @@ export function IssueDependencies({ issueId, projectId: _workspaceId }: IssueDep
       {/* Outgoing Links */}
       {links && links.outgoing.length > 0 && (
         <div>
-          <h4 className="text-sm font-medium text-ui-text-primary mb-2">Dependencies</h4>
+          <Typography variant="h4" className="text-sm font-medium text-ui-text-primary mb-2">
+            Dependencies
+          </Typography>
           <div className="space-y-2">
             {links.outgoing.map((link: IssueLinkWithDetails) => (
               <div
@@ -162,7 +164,9 @@ export function IssueDependencies({ issueId, projectId: _workspaceId }: IssueDep
       {/* Incoming Links */}
       {links && links.incoming.length > 0 && (
         <div>
-          <h4 className="text-sm font-medium text-ui-text-primary mb-2">Referenced By</h4>
+          <Typography variant="h4" className="text-sm font-medium text-ui-text-primary mb-2">
+            Referenced By
+          </Typography>
           <div className="space-y-2">
             {links.incoming.map((link: IssueLinkWithDetails) => (
               <div

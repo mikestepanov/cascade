@@ -62,7 +62,9 @@ export function IssueMetadataSection({
       {/* Labels */}
       {labels.length > 0 && (
         <div>
-          <h3 className="text-sm font-medium text-ui-text-primary mb-2">Labels</h3>
+          <Typography variant="h3" className="text-sm font-medium text-ui-text-primary mb-2">
+            Labels
+          </Typography>
           <Flex wrap gap="sm">
             {labels.map((label) => (
               <span

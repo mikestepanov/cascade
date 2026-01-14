@@ -126,7 +126,9 @@ export function GoogleCalendarIntegration() {
               <Calendar className="h-6 w-6 text-white" />
             </div>
             <div>
-              <h3 className="text-lg font-semibold text-ui-text-primary">Google Calendar</h3>
+              <Typography variant="h3" className="text-lg font-semibold text-ui-text-primary">
+                Google Calendar
+              </Typography>
               <Typography className="text-sm text-ui-text-secondary mt-1">
                 Sync calendar events between Nixelo and Google Calendar
               </Typography>
@@ -167,7 +169,9 @@ export function GoogleCalendarIntegration() {
             {/* Sync Toggle */}
             <Flex justify="between" align="center">
               <div>
-                <h4 className="text-sm font-semibold text-ui-text-primary">Enable Sync</h4>
+                <Typography variant="h4" className="text-sm font-semibold text-ui-text-primary">
+                  Enable Sync
+                </Typography>
                 <Typography className="text-sm text-ui-text-secondary mt-1">
                   Automatically sync events between Nixelo and Google Calendar
                 </Typography>
@@ -182,7 +186,12 @@ export function GoogleCalendarIntegration() {
             {/* Sync Direction */}
             {calendarConnection.syncEnabled && (
               <div>
-                <h4 className="text-sm font-semibold text-ui-text-primary mb-3">Sync Direction</h4>
+                <Typography
+                  variant="h4"
+                  className="text-sm font-semibold text-ui-text-primary mb-3"
+                >
+                  Sync Direction
+                </Typography>
                 <Flex direction="column" gap="sm">
                   <label className="cursor-pointer hover:bg-ui-bg-tertiary">
                     <Flex gap="md" align="center" className="p-3 bg-ui-bg-secondary rounded-lg">

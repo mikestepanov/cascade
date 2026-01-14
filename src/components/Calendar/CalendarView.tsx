@@ -2,6 +2,7 @@ import { api } from "@convex/_generated/api";
 import type { Doc, Id } from "@convex/_generated/dataModel";
 import { useQuery } from "convex/react";
 import { useState } from "react";
+import { Typography } from "@/components/ui/Typography";
 import { ChevronLeft, ChevronRight, Plus } from "@/lib/icons";
 import { cn } from "@/lib/utils";
 import { Button } from "../ui/Button";
@@ -122,9 +123,12 @@ export function CalendarView() {
                 <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
               </button>
             </Flex>
-            <h2 className="text-base sm:text-lg font-semibold text-ui-text-primary truncate">
+            <Typography
+              variant="h2"
+              className="text-base sm:text-lg font-semibold text-ui-text-primary truncate"
+            >
               {getHeaderText()}
-            </h2>
+            </Typography>
           </Flex>
 
           <Flex gap="md" align="center" className="gap-2 sm:gap-3">

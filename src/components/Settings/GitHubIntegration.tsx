@@ -103,7 +103,9 @@ export function GitHubIntegration() {
               <Github className="h-6 w-6 text-ui-text-primary" />
             </div>
             <div>
-              <h3 className="text-lg font-semibold text-ui-text-primary">GitHub</h3>
+              <Typography variant="h3" className="text-lg font-semibold text-ui-text-primary">
+                GitHub
+              </Typography>
               <Typography className="text-sm text-ui-text-secondary mt-1">
                 Link repositories and track PRs and commits
               </Typography>

@@ -74,7 +74,9 @@ export function AutomationRulesManager({ projectId }: AutomationRulesManagerProp
       {/* Header */}
       <Flex align="center" justify="between">
         <div>
-          <h3 className="text-lg font-semibold text-ui-text-primary">Automation Rules</h3>
+          <Typography variant="h3" className="text-lg font-semibold text-ui-text-primary">
+            Automation Rules
+          </Typography>
           <Typography variant="p" color="secondary" className="text-sm mt-1">
             Automate workflows with trigger-based actions
           </Typography>

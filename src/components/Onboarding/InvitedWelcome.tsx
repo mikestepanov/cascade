@@ -21,7 +21,9 @@ export function InvitedWelcome({ inviterName, onStartTour, onSkip }: InvitedWelc
 
       {/* Welcome Message */}
       <div className="space-y-3">
-        <h1 className="text-3xl font-bold text-ui-text-primary">Welcome to Nixelo!</h1>
+        <Typography variant="h1" className="text-3xl font-bold text-ui-text-primary">
+          Welcome to Nixelo!
+        </Typography>
         <Typography className="text-lg text-ui-text-secondary">
           <span className="font-medium text-ui-text-primary">{inviterName}</span> invited you to
           collaborate
@@ -30,7 +32,9 @@ export function InvitedWelcome({ inviterName, onStartTour, onSkip }: InvitedWelc
 
       {/* Brief Description */}
       <div className="bg-ui-bg-primary rounded-xl p-6 text-left">
-        <h3 className="font-medium text-ui-text-primary mb-3">What you can do in Nixelo:</h3>
+        <Typography variant="h3" className="font-medium text-ui-text-primary mb-3">
+          What you can do in Nixelo:
+        </Typography>
         <ul className="space-y-2 text-ui-text-secondary">
           <li className="flex items-center gap-2">
             <span className="w-1.5 h-1.5 rounded-full bg-primary-500" />

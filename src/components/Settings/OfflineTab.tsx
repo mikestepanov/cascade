@@ -31,7 +31,9 @@ export function OfflineTab() {
               )}
             </div>
             <div>
-              <h3 className="text-lg font-semibold text-ui-text-primary">Connection Status</h3>
+              <Typography variant="h3" className="text-lg font-semibold text-ui-text-primary">
+                Connection Status
+              </Typography>
               <Typography
                 className={cn(
                   "text-sm mt-1",
@@ -73,7 +75,9 @@ export function OfflineTab() {
       {/* Offline Features */}
       <Card>
         <div className="p-6">
-          <h3 className="text-lg font-semibold text-ui-text-primary mb-4">Offline Features</h3>
+          <Typography variant="h3" className="text-lg font-semibold text-ui-text-primary mb-4">
+            Offline Features
+          </Typography>
           <Flex direction="column" gap="lg">
             <Flex gap="md" align="start">
               <div className="mt-0.5">✓</div>
@@ -128,7 +132,9 @@ export function OfflineTab() {
         <Card>
           <div className="p-6">
             <Flex justify="between" align="center" className="mb-4">
-              <h3 className="text-lg font-semibold text-ui-text-primary">Pending Sync Queue</h3>
+              <Typography variant="h3" className="text-lg font-semibold text-ui-text-primary">
+                Pending Sync Queue
+              </Typography>
               <Button
                 variant="secondary"
                 size="sm"

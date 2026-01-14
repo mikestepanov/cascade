@@ -21,7 +21,9 @@ export function RecentActivity({ activities }: { activities: Activity[] | undefi
 
   return (
     <div className="bg-ui-bg-primary rounded-lg shadow p-6">
-      <h3 className="text-lg font-semibold text-ui-text-primary mb-4">Recent Activity</h3>
+      <Typography variant="h3" className="text-lg font-semibold text-ui-text-primary mb-4">
+        Recent Activity
+      </Typography>
       <Flex direction="column" gap="md">
         {activities.map((activity) => (
           <Flex

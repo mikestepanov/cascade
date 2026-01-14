@@ -32,9 +32,9 @@ export function FeaturesSection() {
     <section id="features" className="px-6 py-24">
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
+          <Typography variant="h2" className="text-3xl md:text-4xl font-bold mb-4">
             Stop juggling tools. Start shipping.
-          </h2>
+          </Typography>
           <Typography variant="lead" className="text-ui-text-tertiary max-w-2xl mx-auto">
             Project management shouldn't feel like a second job.
           </Typography>
@@ -93,7 +93,9 @@ function FeatureCard({
       </div>
 
       {/* Content */}
-      <h3 className="text-lg font-semibold mb-2 text-white">{title}</h3>
+      <Typography variant="h3" className="text-lg font-semibold mb-2 text-white">
+        {title}
+      </Typography>
       <Typography variant="p" className="text-ui-text-tertiary text-sm leading-relaxed mb-4">
         {description}
       </Typography>

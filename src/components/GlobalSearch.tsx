@@ -197,7 +197,7 @@ function SearchResultItem({ result, onClose }: { result: SearchResult; onClose: 
         window.location.href = href;
         onClose();
       }}
-      className="p-3 sm:p-4 cursor-pointer data-[selected=true]:bg-ui-bg-secondary dark:data-[selected=true]:bg-ui-bg-secondary-dark"
+      className="p-3 sm:p-4 cursor-pointer data-[selected=true]:bg-ui-bg-secondary"
     >
       <div className="flex items-start gap-3 w-full">
         {/* Icon */}

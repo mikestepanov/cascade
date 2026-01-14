@@ -105,7 +105,9 @@ export function ExportPanel({ projectId, sprintId, status }: ExportPanelProps) {
   return (
     <Flex direction="column" gap="lg">
       <div>
-        <h3 className="text-sm font-semibold text-ui-text-primary mb-3">Select Export Format</h3>
+        <Typography variant="h3" className="text-sm font-semibold text-ui-text-primary mb-3">
+          Select Export Format
+        </Typography>
         <div className="grid grid-cols-2 gap-3">
           <Card
             onClick={() => setExportFormat("csv")}

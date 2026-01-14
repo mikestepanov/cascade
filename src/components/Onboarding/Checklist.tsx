@@ -86,7 +86,9 @@ export function OnboardingChecklist() {
         <Flex gap="sm" align="center">
           <span className="text-lg">🚀</span>
           <div>
-            <h3 className="font-semibold text-ui-text-primary">Getting Started</h3>
+            <Typography variant="h3" className="font-semibold text-ui-text-primary">
+              Getting Started
+            </Typography>
             <Typography className="text-xs text-ui-text-tertiary">
               {completedCount} of {totalCount} complete
             </Typography>

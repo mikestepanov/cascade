@@ -2,6 +2,7 @@ import { api } from "@convex/_generated/api";
 import type { Id } from "@convex/_generated/dataModel";
 import { useQuery } from "convex/react";
 import { useCallback, useEffect, useState } from "react";
+import { Typography } from "@/components/ui/Typography";
 import { getTypeIcon } from "@/lib/issue-utils";
 import { FilterCheckboxGroup } from "./AdvancedSearchModal/FilterCheckboxGroup";
 import { SearchResultsList } from "./AdvancedSearchModal/SearchResultsList";
@@ -132,9 +133,9 @@ export function AdvancedSearchModal({
           {/* Results */}
           <div>
             <Flex align="center" justify="between" className="mb-3">
-              <h3 className="text-sm font-medium text-ui-text-primary">
+              <Typography variant="h3" className="text-sm font-medium text-ui-text-primary">
                 Results {searchQuery.length >= 2 && `(${total} total, showing ${results.length})`}
-              </h3>
+              </Typography>
               {(selectedType.length > 0 ||
                 selectedPriority.length > 0 ||
                 selectedStatus.length > 0) && (

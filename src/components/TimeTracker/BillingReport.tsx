@@ -92,7 +92,9 @@ export function BillingReport({ projectId }: BillingReportProps) {
       {/* Header */}
       <Flex justify="between" align="center" className="mb-6">
         <div>
-          <h2 className="text-2xl font-bold text-ui-text-primary">Billing Report</h2>
+          <Typography variant="h2" className="text-2xl font-bold text-ui-text-primary">
+            Billing Report
+          </Typography>
           <Typography className="text-sm text-ui-text-tertiary">
             {project.name} {project.clientName && `• ${project.clientName}`}
           </Typography>
@@ -185,7 +187,9 @@ export function BillingReport({ projectId }: BillingReportProps) {
       <div className="bg-ui-bg-primary border border-ui-border-primary rounded-lg p-6">
         <Flex align="center" gap="sm" className="mb-4">
           <Users className="w-5 h-5 text-ui-text-tertiary" />
-          <h3 className="text-lg font-semibold text-ui-text-primary">Team Breakdown</h3>
+          <Typography variant="h3" className="text-lg font-semibold text-ui-text-primary">
+            Team Breakdown
+          </Typography>
         </Flex>
 
         {sortedUsers.length === 0 ? (

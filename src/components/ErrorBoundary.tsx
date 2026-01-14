@@ -40,7 +40,9 @@ export class ErrorBoundary extends Component<Props, State> {
           <div className="max-w-md w-full bg-ui-bg-primary shadow-lg rounded-lg p-8">
             <div className="text-center">
               <div className="text-status-error text-6xl mb-4">⚠️</div>
-              <h1 className="text-2xl font-bold text-ui-text-primary mb-2">Something went wrong</h1>
+              <Typography variant="h1" className="text-2xl font-bold text-ui-text-primary mb-2">
+                Something went wrong
+              </Typography>
               <Typography variant="muted" className="mb-6">
                 We encountered an unexpected error. Please try refreshing the page.
               </Typography>

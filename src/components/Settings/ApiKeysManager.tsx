@@ -32,12 +32,12 @@ export function ApiKeysManager() {
         {/* Header */}
         <Flex justify="between" align="center" className="mb-6">
           <div>
-            <h3 className="text-lg font-semibold text-ui-text-primary">
+            <Typography variant="h3" className="text-lg font-semibold text-ui-text-primary">
               <Flex gap="sm" align="center">
                 <Key className="h-5 w-5" />
                 API Keys
               </Flex>
-            </h3>
+            </Typography>
             <Typography className="text-sm text-ui-text-secondary mt-1">
               Generate API keys for CLI tools, AI agents, and external integrations
             </Typography>
@@ -54,7 +54,9 @@ export function ApiKeysManager() {
         {!apiKeys || apiKeys.length === 0 ? (
           <div className="text-center py-12 bg-ui-bg-secondary rounded-lg border-2 border-dashed border-ui-border-primary">
             <Key className="h-12 w-12 text-ui-text-tertiary mx-auto mb-3" />
-            <h4 className="text-sm font-medium text-ui-text-primary mb-1">No API keys yet</h4>
+            <Typography variant="h4" className="text-sm font-medium text-ui-text-primary mb-1">
+              No API keys yet
+            </Typography>
             <Typography className="text-sm text-ui-text-secondary mb-4">
               Generate your first API key to access Nixelo programmatically
             </Typography>
@@ -164,7 +166,9 @@ function ApiKeyCard({ apiKey, onViewStats }: { apiKey: Doc<"apiKeys">; onViewSta
         <div className="flex-1">
           {/* Name & Status */}
           <Flex gap="sm" align="center" className="mb-2">
-            <h4 className="font-medium text-ui-text-primary">{apiKey.name}</h4>
+            <Typography variant="h4" className="font-medium text-ui-text-primary">
+              {apiKey.name}
+            </Typography>
             {apiKey.isActive ? (
               <Badge variant="success">Active</Badge>
             ) : (
@@ -417,9 +421,12 @@ function GenerateKeyModal({
                 >
                   <Key className="h-6 w-6 text-status-success dark:text-status-success" />
                 </Flex>
-                <h3 className="text-lg font-semibold text-ui-text-primary mb-2">
+                <Typography
+                  variant="h3"
+                  className="text-lg font-semibold text-ui-text-primary mb-2"
+                >
                   API Key Generated!
-                </h3>
+                </Typography>
                 <Typography className="text-sm text-ui-text-secondary mb-6">
                   ⚠️ <strong>Save this key now!</strong> You won't be able to see it again.
                 </Typography>
@@ -531,7 +538,9 @@ function UsageStatsModal({
 
             {/* Recent Requests */}
             <div>
-              <h4 className="text-sm font-semibold text-ui-text-primary mb-3">Recent Requests</h4>
+              <Typography variant="h4" className="text-sm font-semibold text-ui-text-primary mb-3">
+                Recent Requests
+              </Typography>
               {stats.recentLogs.length === 0 ? (
                 <Typography className="text-sm text-ui-text-tertiary py-4 text-center">
                   No recent requests

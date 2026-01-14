@@ -59,7 +59,9 @@ function RootComponent() {
         ) : (
           <div className="flex min-h-screen flex-col items-center justify-center bg-ui-bg-secondary p-4">
             <div className="text-center max-w-md">
-              <h1 className="text-2xl font-bold mb-4 text-ui-text-primary">Service Unavailable</h1>
+              <Typography variant="h1" className="text-2xl font-bold mb-4 text-ui-text-primary">
+                Service Unavailable
+              </Typography>
               <Typography className="text-ui-text-secondary mb-6">
                 The application could not connect to the backend services. Please try again later.
               </Typography>

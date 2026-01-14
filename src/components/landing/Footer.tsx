@@ -21,7 +21,9 @@ export function Footer() {
 
           {/* Links */}
           <div>
-            <h4 className="font-semibold mb-4 text-white">Product</h4>
+            <Typography variant="h4" className="font-semibold mb-4 text-white">
+              Product
+            </Typography>
             <ul className="space-y-2">
               {["Features", "Pricing", "Integrations", "Changelog"].map((item) => (
                 <li key={item}>
@@ -37,7 +39,9 @@ export function Footer() {
           </div>
 
           <div>
-            <h4 className="font-semibold mb-4 text-white">Company</h4>
+            <Typography variant="h4" className="font-semibold mb-4 text-white">
+              Company
+            </Typography>
             <ul className="space-y-2">
               {["About", "Blog", "Careers", "Contact"].map((item) => (
                 <li key={item}>
@@ -53,7 +57,9 @@ export function Footer() {
           </div>
 
           <div>
-            <h4 className="font-semibold mb-4 text-white">Resources</h4>
+            <Typography variant="h4" className="font-semibold mb-4 text-white">
+              Resources
+            </Typography>
             <ul className="space-y-2">
               {["Documentation", "Help Center", "API Reference", "Status"].map((item) => (
                 <li key={item}>

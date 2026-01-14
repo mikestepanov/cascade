@@ -63,7 +63,9 @@ export function UserStatsCards({ stats }: { stats: UserStats }) {
 export function AccountInfo({ user }: { user: Doc<"users"> }) {
   return (
     <div className="border-t border-ui-border-primary pt-6">
-      <h3 className="text-lg font-semibold mb-4 text-ui-text-primary">Account Information</h3>
+      <Typography variant="h3" className="text-lg font-semibold mb-4 text-ui-text-primary">
+        Account Information
+      </Typography>
       <div className="space-y-3 text-sm">
         <div className="flex justify-between">
           <span className="text-ui-text-secondary">User ID:</span>
@@ -145,9 +147,9 @@ export function ProfileHeader({
           </div>
         ) : (
           <>
-            <h2 className="text-2xl font-bold text-ui-text-primary">
+            <Typography variant="h2" className="text-2xl font-bold text-ui-text-primary">
               {user.name || "Anonymous User"}
-            </h2>
+            </Typography>
             <Typography className="text-ui-text-secondary">{user.email}</Typography>
             {isOwnProfile && (
               <Button onClick={onEditClick} variant="secondary" size="sm" className="mt-3">

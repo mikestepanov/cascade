@@ -45,11 +45,12 @@ function checkFile(filePath) {
   const content = fs.readFileSync(filePath, "utf-8");
   const sourceFile = ts.createSourceFile(filePath, content, ts.ScriptTarget.Latest, true);
 
-  function checkParagraphTag(node, filePath) {
+  function checkTypographyTags(node, filePath) {
     if (ts.isJsxOpeningElement(node) || ts.isJsxSelfClosingElement(node)) {
       const tagName = node.tagName.getText();
-      if (tagName === "p") {
-        reportError(filePath, node, "Use <Typography> component instead of raw <p> tags.");
+      const rawTags = ["p", "h1", "h2", "h3", "h4", "h5", "h6"];
+      if (rawTags.includes(tagName)) {
+        reportError(filePath, node, `Use <Typography> component instead of raw <${tagName}> tags.`);
       }
     }
   }
@@ -120,15 +121,51 @@ function checkFile(filePath) {
     }
   }
 
+  const tailwindShorthandMap = {
+    "flex-shrink-0": "shrink-0",
+    "flex-shrink": "shrink",
+    "flex-grow-0": "grow-0",
+    "flex-grow": "grow",
+  };
+
+  function checkTailwindShorthands(node, filePath) {
+    if (!ts.isJsxAttribute(node) || node.name.getText() !== "className") return;
+
+    let classText = "";
+    if (node.initializer && ts.isStringLiteral(node.initializer)) {
+      classText = node.initializer.text;
+    } else if (
+      node.initializer &&
+      ts.isJsxExpression(node.initializer) &&
+      node.initializer.expression &&
+      ts.isStringLiteral(node.initializer.expression)
+    ) {
+      classText = node.initializer.expression.text;
+    }
+
+    const classes = classText.split(/\s+/);
+    for (const cls of classes) {
+      if (tailwindShorthandMap[cls]) {
+        reportError(
+          filePath,
+          node,
+          `Non-canonical Tailwind class detected: '${cls}'. Use '${tailwindShorthandMap[cls]}' instead.`,
+          "warning",
+        );
+      }
+    }
+  }
+
   function checkClassName(node, filePath) {
     if (!ts.isJsxAttribute(node) || node.name.getText() !== "className") return;
     checkClassNameConcatenation(node, filePath);
     checkFlexHeuristic(node, filePath);
     checkDarkModeStandard(node, filePath);
+    checkTailwindShorthands(node, filePath);
   }
 
   function visit(node) {
-    checkParagraphTag(node, filePath);
+    checkTypographyTags(node, filePath);
     checkClassName(node, filePath);
     ts.forEachChild(node, visit);
   }

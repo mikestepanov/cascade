@@ -69,7 +69,9 @@ export function AutomationRuleCard({ rule, onEdit, onDelete }: AutomationRuleCar
       <Flex justify="between" align="start" gap="lg">
         <div className="flex-1 min-w-0">
           <Flex gap="md" align="center" className="mb-2">
-            <h4 className="font-medium text-ui-text-primary">{rule.name}</h4>
+            <Typography variant="h4" className="font-medium text-ui-text-primary">
+              {rule.name}
+            </Typography>
             <Badge variant={rule.isActive ? "success" : "neutral"} size="md">
               {rule.isActive ? "Active" : "Inactive"}
             </Badge>

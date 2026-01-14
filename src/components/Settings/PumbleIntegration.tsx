@@ -66,7 +66,9 @@ export function PumbleIntegration() {
               </div>
             </div>
             <div>
-              <h3 className="text-lg font-semibold text-ui-text-primary">Pumble Integration</h3>
+              <Typography variant="h3" className="text-lg font-semibold text-ui-text-primary">
+                Pumble Integration
+              </Typography>
               <Typography className="mt-1 text-sm text-ui-text-secondary">
                 Send notifications to Pumble channels when issues are created or updated
               </Typography>
@@ -157,9 +159,9 @@ function EmptyState({ onAddWebhook }: { onAddWebhook: () => void }) {
           />
         </svg>
       </div>
-      <h3 className="text-lg font-medium text-ui-text-primary mb-2">
+      <Typography variant="h3" className="text-lg font-medium text-ui-text-primary mb-2">
         No Pumble webhooks configured
-      </h3>
+      </Typography>
       <Typography className="text-sm text-ui-text-secondary mb-6 max-w-md mx-auto">
         Connect Nixelo to Pumble channels to receive notifications when issues are created, updated,
         or assigned.
@@ -229,7 +231,9 @@ function WebhookCard({ webhook, projects }: WebhookCardProps) {
       <Flex justify="between" align="start" className="mb-3">
         <div className="flex-1">
           <Flex gap="sm" align="center" className="mb-1">
-            <h4 className="font-medium text-ui-text-primary">{webhook.name}</h4>
+            <Typography variant="h4" className="font-medium text-ui-text-primary">
+              {webhook.name}
+            </Typography>
             {webhook.isActive ? (
               <span className="px-2 py-0.5 text-xs font-medium bg-status-success-bg text-status-success-text rounded">
                 Active

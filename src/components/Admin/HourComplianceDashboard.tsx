@@ -2,6 +2,7 @@ import { api } from "@convex/_generated/api";
 import type { Doc, Id } from "@convex/_generated/dataModel";
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
+import { Typography } from "@/components/ui/Typography";
 import { showError, showSuccess } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 import { Button } from "../ui/Button";
@@ -260,9 +261,9 @@ export function HourComplianceDashboard() {
                       <Flex gap="md" align="center" className="mb-2">
                         <span className="text-xl">{getStatusIcon(record.status)}</span>
                         <div>
-                          <h4 className="font-medium text-ui-text-primary">
+                          <Typography variant="h4" className="font-medium text-ui-text-primary">
                             {record.user?.name || record.user?.email || "Unknown User"}
-                          </h4>
+                          </Typography>
                           <Flex gap="sm" className="mt-1">
                             <span
                               className={cn(

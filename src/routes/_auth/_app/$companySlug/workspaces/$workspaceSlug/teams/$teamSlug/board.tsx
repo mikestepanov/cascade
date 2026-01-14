@@ -3,6 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
 import { KanbanBoard } from "@/components/KanbanBoard";
 import { Skeleton } from "@/components/ui/Skeleton";
+import { Typography } from "@/components/ui/Typography";
 import { useCompany } from "@/hooks/useCompanyContext";
 
 export const Route = createFileRoute(
@@ -36,7 +37,9 @@ function TeamBoardPage() {
   return (
     <div className="h-full flex flex-col">
       <div className="px-6 py-4 border-b border-ui-border-primary">
-        <h1 className="text-2xl font-semibold text-ui-text-primary">{team.name} Board</h1>
+        <Typography variant="h1" className="text-2xl font-semibold text-ui-text-primary">
+          {team.name} Board
+        </Typography>
       </div>
       <KanbanBoard teamId={team._id} />
     </div>
