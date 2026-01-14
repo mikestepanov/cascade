@@ -19,17 +19,20 @@ This file provides persistent context for Antigravity agents working on the Nixe
 ✅ **CORRECT - Use Tailwind utility classes with semantic tokens:**
 
 ```tsx
+// Most semantic tokens adapt automatically via the theme
+<div className="bg-ui-bg-primary text-ui-text-primary border-ui-border-primary">
+```
+
+❌ **WRONG - Do NOT use redundant dark mode variants for semantic tokens:**
+
+```tsx
+// DO NOT DO THIS anymore:
 <div className="bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark">
 ```
 
-❌ **WRONG - Do NOT use inline styles:**
+**Why?** The codebase has been refactored to use an automatic variable swap pattern in `index.css`. Semantic tokens like `bg-ui-bg-primary` automatically update their values when the `.dark` class is present.
 
-```tsx
-<div style={{ backgroundColor: 'var(--color-brand-600)' }}>
-<div style={{ backgroundColor: '#3b82f6' }}>
-```
-
-**Why?** The entire codebase uses Tailwind's `dark:` prefix pattern with `-dark` suffix tokens. Mixing patterns creates inconsistency.
+**Exceptions:** Non-semantic colors (like specific brand shades) still require explicit `dark:` variants if you need to switch shades (e.g., `bg-brand-600 dark:bg-brand-500`).
 
 ### 3. Semantic Token Usage
 

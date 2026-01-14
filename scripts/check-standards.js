@@ -91,10 +91,38 @@ function checkFile(filePath) {
     }
   }
 
+  function checkDarkModeStandard(node, filePath) {
+    if (!ts.isJsxAttribute(node) || node.name.getText() !== "className") return;
+
+    let classText = "";
+    if (node.initializer && ts.isStringLiteral(node.initializer)) {
+      classText = node.initializer.text;
+    } else if (
+      node.initializer &&
+      ts.isJsxExpression(node.initializer) &&
+      node.initializer.expression &&
+      ts.isStringLiteral(node.initializer.expression)
+    ) {
+      classText = node.initializer.expression.text;
+    }
+
+    // Flag redundant dark mode classes for semantic tokens
+    // Pattern: dark:.*-dark
+    if (classText.includes("dark:") && /dark:.*-dark/.test(classText)) {
+      reportError(
+        filePath,
+        node,
+        "Redundant dark mode class detected. Semantic tokens now handle dark mode automatically in index.css. Use single classes like 'bg-ui-bg-primary' instead of 'dark:bg-ui-bg-primary-dark'.",
+        "warning",
+      );
+    }
+  }
+
   function checkClassName(node, filePath) {
     if (!ts.isJsxAttribute(node) || node.name.getText() !== "className") return;
     checkClassNameConcatenation(node, filePath);
     checkFlexHeuristic(node, filePath);
+    checkDarkModeStandard(node, filePath);
   }
 
   function visit(node) {

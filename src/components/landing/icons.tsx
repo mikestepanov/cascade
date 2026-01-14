@@ -56,7 +56,14 @@ export function WorkflowIcon() {
       <path d="M16 12a9 9 0 0 0 0 8" />
       <path d="M12 16h8" />
       {/* Accent dot */}
-      <circle cx="19" cy="5" r="1.5" stroke="none" fill="currentColor" className="text-landing-accent" />
+      <circle
+        cx="19"
+        cy="5"
+        r="1.5"
+        stroke="none"
+        fill="currentColor"
+        className="text-landing-accent"
+      />
     </svg>
   );
 }

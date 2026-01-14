@@ -99,12 +99,10 @@ export const KanbanColumn = memo(function KanbanColumn({
       onDrop={handleDrop}
     >
       {/* Column Header */}
-      <div className="p-3 sm:p-4 border-b border-ui-border-primary dark:border-ui-border-primary-dark bg-ui-bg-primary dark:bg-ui-bg-primary-dark rounded-t-lg">
+      <div className="p-3 sm:p-4 border-b border-ui-border-primary bg-ui-bg-primary rounded-t-lg">
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center space-x-2 min-w-0">
-            <h3 className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark truncate">
-              {state.name}
-            </h3>
+            <h3 className="font-medium text-ui-text-primary truncate">{state.name}</h3>
             <Badge variant="neutral" shape="pill" className="flex-shrink-0">
               {hiddenCount > 0 ? `${stateIssues.length}/${totalCount}` : stateIssues.length}
             </Badge>
@@ -113,7 +111,7 @@ export const KanbanColumn = memo(function KanbanColumn({
             <button
               type="button"
               onClick={handleCreateIssue}
-              className="text-ui-text-tertiary dark:text-ui-text-tertiary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark p-2.5 sm:p-3 flex-shrink-0"
+              className="text-ui-text-tertiary hover:text-ui-text-primary p-2.5 sm:p-3 flex-shrink-0"
               aria-label={`Add issue to ${state.name}`}
               {...(columnIndex === 0 ? { "data-tour": "create-issue" } : {})}
             >

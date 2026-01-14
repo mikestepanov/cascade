@@ -3,20 +3,17 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 import { Flex } from "./Flex";
 
-const cardVariants = cva(
-  "bg-ui-bg-primary dark:bg-ui-bg-primary-dark rounded-lg border border-ui-border-primary dark:border-ui-border-primary-dark",
-  {
-    variants: {
-      hoverable: {
-        true: "hover:shadow-md transition-shadow cursor-pointer",
-        false: "",
-      },
-    },
-    defaultVariants: {
-      hoverable: false,
+const cardVariants = cva("bg-ui-bg-primary rounded-lg border border-ui-border-primary", {
+  variants: {
+    hoverable: {
+      true: "hover:shadow-md transition-shadow cursor-pointer",
+      false: "",
     },
   },
-);
+  defaultVariants: {
+    hoverable: false,
+  },
+});
 
 export interface CardProps
   extends React.HTMLAttributes<HTMLDivElement>,
@@ -86,23 +83,12 @@ const CardHeader = React.forwardRef<HTMLDivElement, CardHeaderProps>(
         ref={ref}
         align="center"
         justify="between"
-        className={cn(
-          "p-4 border-b border-ui-border-primary dark:border-ui-border-primary-dark",
-          className,
-        )}
+        className={cn("p-4 border-b border-ui-border-primary", className)}
         {...props}
       >
         <div>
-          {title && (
-            <h3 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
-              {title}
-            </h3>
-          )}
-          {description && (
-            <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mt-1">
-              {description}
-            </p>
-          )}
+          {title && <h3 className="text-lg font-semibold text-ui-text-primary">{title}</h3>}
+          {description && <p className="text-sm text-ui-text-secondary mt-1">{description}</p>}
         </div>
         {action && <div>{action}</div>}
       </Flex>
@@ -116,7 +102,7 @@ const CardTitle = React.forwardRef<HTMLParagraphElement, React.HTMLAttributes<HT
     <h3
       ref={ref}
       className={cn(
-        "text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark leading-none tracking-tight",
+        "text-lg font-semibold text-ui-text-primary leading-none tracking-tight",
         className,
       )}
       {...props}
@@ -129,11 +115,7 @@ const CardDescription = React.forwardRef<
   HTMLParagraphElement,
   React.HTMLAttributes<HTMLParagraphElement>
 >(({ className, ...props }, ref) => (
-  <p
-    ref={ref}
-    className={cn("text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark", className)}
-    {...props}
-  />
+  <p ref={ref} className={cn("text-sm text-ui-text-secondary", className)} {...props} />
 ));
 CardDescription.displayName = "CardDescription";
 

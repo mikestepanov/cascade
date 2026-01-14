@@ -57,12 +57,10 @@ function RootComponent() {
             <Outlet />
           </ConvexAuthProvider>
         ) : (
-          <div className="flex min-h-screen flex-col items-center justify-center bg-ui-bg-secondary dark:bg-ui-bg-primary-dark p-4">
+          <div className="flex min-h-screen flex-col items-center justify-center bg-ui-bg-secondary p-4">
             <div className="text-center max-w-md">
-              <h1 className="text-2xl font-bold mb-4 text-ui-text-primary dark:text-ui-text-primary-dark">
-                Service Unavailable
-              </h1>
-              <Typography className="text-ui-text-secondary dark:text-ui-text-secondary-dark mb-6">
+              <h1 className="text-2xl font-bold mb-4 text-ui-text-primary">Service Unavailable</h1>
+              <Typography className="text-ui-text-secondary mb-6">
                 The application could not connect to the backend services. Please try again later.
               </Typography>
             </div>

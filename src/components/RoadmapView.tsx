@@ -116,10 +116,10 @@ export function RoadmapView({ projectId, sprintId, canEdit = true }: RoadmapView
         <div
           style={style}
           className={cn(
-            "flex items-center p-3 transition-colors border-b border-ui-border-primary dark:border-ui-border-primary-dark",
+            "flex items-center p-3 transition-colors border-b border-ui-border-primary",
             isSelected
               ? "bg-brand-50/50 dark:bg-brand-900/20 ring-1 ring-inset ring-brand-500/50 z-10"
-              : "hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark",
+              : "hover:bg-ui-bg-secondary",
           )}
         >
           {/* Issue Info */}
@@ -133,13 +133,13 @@ export function RoadmapView({ projectId, sprintId, canEdit = true }: RoadmapView
                   "text-sm font-medium truncate text-left",
                   isSelected
                     ? "text-brand-700 dark:text-brand-300"
-                    : "text-ui-text-primary dark:text-ui-text-primary-dark hover:text-brand-600 dark:hover:text-brand-400",
+                    : "text-ui-text-primary hover:text-brand-600 dark:hover:text-brand-400",
                 )}
               >
                 {issue.key}
               </button>
             </div>
-            <Typography className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark truncate">
+            <Typography className="text-xs text-ui-text-secondary truncate">
               {issue.title}
             </Typography>
           </div>
@@ -197,9 +197,9 @@ export function RoadmapView({ projectId, sprintId, canEdit = true }: RoadmapView
         </div>
 
         {/* Skeleton Timeline */}
-        <div className="flex-1 bg-ui-bg-primary dark:bg-ui-bg-primary-dark rounded-lg border border-ui-border-primary dark:border-ui-border-primary-dark overflow-hidden flex flex-col">
+        <div className="flex-1 bg-ui-bg-primary rounded-lg border border-ui-border-primary overflow-hidden flex flex-col">
           {/* Skeleton Dates Header */}
-          <div className="border-b border-ui-border-primary dark:border-ui-border-primary-dark bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark p-4 flex-shrink-0">
+          <div className="border-b border-ui-border-primary bg-ui-bg-secondary p-4 flex-shrink-0">
             <div className="flex">
               <div className="w-64 flex-shrink-0">
                 <Skeleton className="h-5 w-24" />
@@ -266,7 +266,7 @@ export function RoadmapView({ projectId, sprintId, canEdit = true }: RoadmapView
               setFilterEpic(value === "all" ? "all" : (value as Id<"issues">))
             }
           >
-            <SelectTrigger className="px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark">
+            <SelectTrigger className="px-3 py-2 border border-ui-border-primary rounded-lg bg-ui-bg-primary text-ui-text-primary">
               <SelectValue placeholder="All Epics" />
             </SelectTrigger>
             <SelectContent>
@@ -293,18 +293,16 @@ export function RoadmapView({ projectId, sprintId, canEdit = true }: RoadmapView
       </div>
 
       {/* Timeline Container */}
-      <div className="flex-1 bg-ui-bg-primary dark:bg-ui-bg-primary-dark rounded-lg border border-ui-border-primary dark:border-ui-border-primary-dark overflow-hidden flex flex-col">
+      <div className="flex-1 bg-ui-bg-primary rounded-lg border border-ui-border-primary overflow-hidden flex flex-col">
         {/* Timeline Header (Fixed) */}
-        <div className="border-b border-ui-border-primary dark:border-ui-border-primary-dark bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark p-4 flex-shrink-0">
+        <div className="border-b border-ui-border-primary bg-ui-bg-secondary p-4 flex-shrink-0">
           <div className="flex">
-            <div className="w-64 flex-shrink-0 font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
-              Issue
-            </div>
+            <div className="w-64 flex-shrink-0 font-medium text-ui-text-primary">Issue</div>
             <div className="flex-1 grid grid-cols-6">
               {timelineMonths.map((month) => (
                 <div
                   key={month.getTime()}
-                  className="text-center text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark border-l border-ui-border-primary dark:border-ui-border-primary-dark px-2"
+                  className="text-center text-sm font-medium text-ui-text-primary border-l border-ui-border-primary px-2"
                 >
                   {month.toLocaleDateString("en-US", { month: "short", year: "numeric" })}
                 </div>
@@ -316,7 +314,7 @@ export function RoadmapView({ projectId, sprintId, canEdit = true }: RoadmapView
         {/* Timeline Body (Virtualized) */}
         <div className="flex-1">
           {filteredIssues.length === 0 ? (
-            <div className="p-12 text-center text-ui-text-secondary dark:text-ui-text-secondary-dark">
+            <div className="p-12 text-center text-ui-text-secondary">
               <Typography>No issues with due dates to display</Typography>
               <Typography className="text-sm mt-1">
                 Add due dates to issues to see them on the roadmap

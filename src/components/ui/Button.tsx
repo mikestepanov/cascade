@@ -11,16 +11,15 @@ const buttonVariants = cva(
         primary:
           "bg-brand-600 text-white hover:bg-brand-700 focus-visible:ring-brand-500 dark:bg-brand-500 dark:hover:bg-brand-600",
         secondary:
-          "bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark border border-ui-border-primary dark:border-ui-border-primary-dark hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark focus-visible:ring-brand-500",
+          "bg-ui-bg-primary text-ui-text-primary border border-ui-border-primary hover:bg-ui-bg-secondary focus-visible:ring-brand-500",
         success:
           "bg-status-success text-white hover:bg-status-success/90 focus-visible:ring-status-success",
         danger:
           "bg-status-error text-white hover:bg-status-error/90 focus-visible:ring-status-error",
-        ghost:
-          "text-ui-text-secondary dark:text-ui-text-secondary-dark hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark focus-visible:ring-brand-500",
+        ghost: "text-ui-text-secondary hover:bg-ui-bg-secondary focus-visible:ring-brand-500",
         link: "text-brand-600 dark:text-brand-400 underline-offset-4 hover:underline",
         outline:
-          "bg-transparent text-ui-text-primary dark:text-ui-text-primary-dark border border-ui-border-primary dark:border-ui-border-primary-dark hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark focus-visible:ring-brand-500",
+          "bg-transparent text-ui-text-primary border border-ui-border-primary hover:bg-ui-bg-secondary focus-visible:ring-brand-500",
       },
       size: {
         sm: "h-9 px-3 text-sm",

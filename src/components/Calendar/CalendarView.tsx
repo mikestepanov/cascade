@@ -462,4 +462,3 @@ function formatTime(timestamp: number): string {
   const displayHours = hours % 12 || 12;
   return `${displayHours}:${minutes.toString().padStart(2, "0")} ${ampm}`;
 }
-

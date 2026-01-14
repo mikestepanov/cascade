@@ -7,6 +7,7 @@ Complete guide to Nixelo's semantic color system for consistent theming and easy
 ## 🎨 Design Philosophy
 
 Our color system uses **semantic tokens** instead of hardcoded colors. This means:
+
 - **Easy rebranding**: Change the entire app's colors in one place
 - **Consistent dark mode**: Automatic dark mode variants
 - **Clear intent**: Color names describe their purpose, not their appearance
@@ -33,6 +34,7 @@ Use for primary buttons, links, and key interactive elements.
 ```
 
 **Available shades:**
+
 - `brand-50` to `brand-950` (11 shades total)
 - `brand-600` is the default brand color
 
@@ -49,6 +51,7 @@ Use for secondary buttons, highlights, and accent elements.
 ```
 
 **Available shades:**
+
 - `accent-50` to `accent-950` (11 shades total)
 - `accent-600` is the default accent color
 
@@ -59,26 +62,27 @@ Use for secondary buttons, highlights, and accent elements.
 Use for backgrounds, cards, and surfaces.
 
 ```tsx
-// Light mode automatically uses correct colors
-<div className="bg-ui-bg-primary dark:bg-ui-bg-primary-dark">
-  Primary background (white in light, dark gray in dark mode)
+// Semantic tokens automatically switch in dark mode
+<div className="bg-ui-bg-primary">
+  Primary background
 </div>
 
-<div className="bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark">
-  Secondary background (light gray in light, darker gray in dark mode)
+<div className="bg-ui-bg-secondary">
+  Secondary background
 </div>
 
-<div className="bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark">
-  Tertiary background (lightest gray)
+<div className="bg-ui-bg-tertiary">
+  Tertiary background
 </div>
 ```
 
 **Available tokens:**
-- `ui-bg-primary` / `ui-bg-primary-dark` - Main background
-- `ui-bg-secondary` / `ui-bg-secondary-dark` - Secondary surfaces
-- `ui-bg-tertiary` / `ui-bg-tertiary-dark` - Subtle backgrounds
-- `ui-bg-elevated` / `ui-bg-elevated-dark` - Modal/dropdown backgrounds
-- `ui-bg-overlay` / `ui-bg-overlay-dark` - Modal overlays
+
+- `ui-bg-primary` - Main background
+- `ui-bg-secondary` - Secondary surfaces
+- `ui-bg-tertiary` - Subtle backgrounds
+- `ui-bg-elevated` - Modal/dropdown backgrounds
+- `ui-bg-overlay` - Modal overlays
 
 ---
 
@@ -101,6 +105,7 @@ Use for all text content.
 ```
 
 **Available tokens:**
+
 - `ui-text-primary` / `ui-text-primary-dark` - Primary text
 - `ui-text-secondary` / `ui-text-secondary-dark` - Secondary text
 - `ui-text-tertiary` / `ui-text-tertiary-dark` - Tertiary text
@@ -117,6 +122,7 @@ Use for borders, dividers, and outlines.
 ```
 
 **Available tokens:**
+
 - `ui-border-primary` / `ui-border-primary-dark` - Default borders
 - `ui-border-secondary` / `ui-border-secondary-dark` - Subtle borders
 - `ui-border-focus` / `ui-border-focus-dark` - Focus states
@@ -151,12 +157,14 @@ Use for success, warning, error, and info messages.
 ```
 
 **Status types:**
+
 - `status-success-*` - Green for success states
 - `status-warning-*` - Orange/yellow for warnings
 - `status-error-*` - Red for errors
 - `status-info-*` - Blue for informational messages
 
 Each status has:
+
 - `DEFAULT` - Main color (for icons, badges)
 - `bg` - Background color for light mode
 - `text` - Text color for light mode
@@ -178,6 +186,7 @@ Use for issue priority badges and indicators.
 ```
 
 **Available tokens:**
+
 - `priority-highest` - Red
 - `priority-high` - Orange
 - `priority-medium` - Yellow
@@ -199,6 +208,7 @@ Use for issue type badges and indicators.
 ```
 
 **Available tokens:**
+
 - `issue-type-bug` - Red
 - `issue-type-task` - Blue
 - `issue-type-story` - Purple
@@ -212,21 +222,23 @@ Use for issue type badges and indicators.
 ### Converting Existing Components
 
 **Before:**
+
 ```tsx
 <div className="bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700">
   <h2 className="text-gray-900 dark:text-gray-100">Title</h2>
   <p className="text-gray-600 dark:text-gray-400">Description</p>
-  <button className="bg-blue-600 hover:bg-blue-700 text-white">
-    Click Me
-  </button>
+  <button className="bg-blue-600 hover:bg-blue-700 text-white">Click Me</button>
 </div>
 ```
 
 **After:**
+
 ```tsx
 <div className="bg-ui-bg-primary dark:bg-ui-bg-primary-dark border border-ui-border-primary dark:border-ui-border-primary-dark">
   <h2 className="text-ui-text-primary dark:text-ui-text-primary-dark">Title</h2>
-  <p className="text-ui-text-secondary dark:text-ui-text-secondary-dark">Description</p>
+  <p className="text-ui-text-secondary dark:text-ui-text-secondary-dark">
+    Description
+  </p>
   <button className="bg-brand-600 hover:bg-brand-700 text-white">
     Click Me
   </button>
@@ -235,19 +247,19 @@ Use for issue type badges and indicators.
 
 ### Color Mapping Reference
 
-| Old (Hardcoded) | New (Semantic) | Purpose |
-|-----------------|----------------|---------|
-| `bg-white` | `bg-ui-bg-primary` | Primary backgrounds |
-| `bg-gray-50/100` | `bg-ui-bg-secondary` | Secondary backgrounds |
-| `bg-gray-900` (dark) | `bg-ui-bg-primary-dark` | Dark mode backgrounds |
-| `text-gray-900` | `text-ui-text-primary` | Primary text |
-| `text-gray-600` | `text-ui-text-secondary` | Secondary text |
-| `text-gray-400` | `text-ui-text-tertiary` | Tertiary text |
-| `border-gray-300` | `border-ui-border-primary` | Borders |
-| `bg-blue-600` | `bg-brand-600` | Primary buttons |
-| `bg-purple-600` | `bg-accent-600` | Secondary buttons |
-| `bg-green-100` | `bg-status-success-bg` | Success backgrounds |
-| `bg-red-100` | `bg-status-error-bg` | Error backgrounds |
+| Old (Hardcoded)      | New (Semantic)             | Purpose               |
+| -------------------- | -------------------------- | --------------------- |
+| `bg-white`           | `bg-ui-bg-primary`         | Primary backgrounds   |
+| `bg-gray-50/100`     | `bg-ui-bg-secondary`       | Secondary backgrounds |
+| `bg-gray-900` (dark) | `bg-ui-bg-primary-dark`    | Dark mode backgrounds |
+| `text-gray-900`      | `text-ui-text-primary`     | Primary text          |
+| `text-gray-600`      | `text-ui-text-secondary`   | Secondary text        |
+| `text-gray-400`      | `text-ui-text-tertiary`    | Tertiary text         |
+| `border-gray-300`    | `border-ui-border-primary` | Borders               |
+| `bg-blue-600`        | `bg-brand-600`             | Primary buttons       |
+| `bg-purple-600`      | `bg-accent-600`            | Secondary buttons     |
+| `bg-green-100`       | `bg-status-success-bg`     | Success backgrounds   |
+| `bg-red-100`         | `bg-status-error-bg`       | Error backgrounds     |
 
 ---
 
@@ -340,6 +352,7 @@ That's it! All 211+ blue references will now use your new brand color.
 ## 📊 Color Usage Statistics
 
 As of 2025-11-20:
+
 - **Hardcoded blue**: 211 references (to be migrated)
 - **Hardcoded gray**: 1,338 references (to be migrated)
 - **Semantic tokens**: All new components should use these
@@ -349,6 +362,7 @@ As of 2025-11-20:
 ## 🚀 Migration Priority
 
 ### Phase 1: Core Components (High Priority)
+
 - ✅ Button component
 - ✅ Form components (Input, Select, Textarea, Checkbox)
 - ✅ Card component (widely reused)
@@ -358,6 +372,7 @@ As of 2025-11-20:
 - ✅ IssueCard component
 
 ### Phase 2: Feature Components (Medium Priority) - 100% Complete ✅
+
 - ✅ Project boards (ProjectBoard, KanbanBoard)
 - ✅ Modals and dialogs (Modal, CreateIssueModal, IssueDetailModal)
 - ✅ Navigation components (Sidebar, ProjectSidebar, Dashboard)
@@ -365,6 +380,7 @@ As of 2025-11-20:
 - ✅ Additional feature components (SprintManager, CalendarView, AnalyticsDashboard)
 
 ### Phase 3: Remaining Components (Low Priority)
+
 - ⏳ All other components
 - ⏳ Legacy styles in index.css
 
@@ -373,16 +389,19 @@ As of 2025-11-20:
 ## 🎨 Color Palette Preview
 
 ### Brand (Indigo)
+
 - 50: #EEF2FF (lightest)
 - 600: #4F46E5 (default)
 - 950: #1E1B4B (darkest)
 
 ### Accent (Purple)
+
 - 50: #FAF5FF (lightest)
 - 600: #9333EA (default)
 - 950: #3B0764 (darkest)
 
 ### Status
+
 - Success: #10B981 (green)
 - Warning: #F59E0B (orange)
 - Error: #EF4444 (red)
@@ -401,6 +420,7 @@ As of 2025-11-20:
 ## 🤝 Contributing
 
 When adding new components:
+
 1. **Always use semantic color tokens**
 2. **Test in both light and dark mode**
 3. **Check color contrast** (WCAG AA minimum)
@@ -412,4 +432,4 @@ When adding new components:
 
 ---
 
-*Last Updated: 2025-11-27*
+_Last Updated: 2025-11-27_

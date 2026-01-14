@@ -73,12 +73,12 @@ export const IssueCard = memo(function IssueCard({
       onDragStart={canEdit && !selectionMode ? (e) => onDragStart(e, issue._id) : undefined}
       onClick={handleClick}
       className={cn(
-        "w-full text-left bg-ui-bg-primary dark:bg-ui-bg-primary-dark p-2 sm:p-3 rounded-lg border-2 shadow-sm hover:shadow-md hover:scale-[1.02] transition-all duration-200 cursor-pointer",
+        "w-full text-left bg-ui-bg-primary p-2 sm:p-3 rounded-lg border-2 shadow-sm hover:shadow-md hover:scale-[1.02] transition-all duration-200 cursor-pointer",
         isSelected
           ? "border-brand-600 dark:border-brand-600 bg-brand-50 dark:bg-brand-900/20"
           : isFocused
             ? "border-brand-400 dark:border-brand-500 ring-2 ring-brand-500/50"
-            : "border-ui-border-primary dark:border-ui-border-primary-dark",
+            : "border-ui-border-primary",
       )}
     >
       {/* Header */}
@@ -100,9 +100,7 @@ export const IssueCard = memo(function IssueCard({
               {getTypeIcon(issue.type)}
             </span>
           </Tooltip>
-          <span className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark font-mono">
-            {issue.key}
-          </span>
+          <span className="text-xs text-ui-text-secondary font-mono">{issue.key}</span>
         </div>
         <Tooltip
           content={`Priority: ${issue.priority.charAt(0).toUpperCase() + issue.priority.slice(1)}`}
@@ -159,7 +157,7 @@ export const IssueCard = memo(function IssueCard({
                     className="w-5 h-5 rounded-full"
                   />
                 ) : (
-                  <div className="w-5 h-5 rounded-full bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark flex items-center justify-center text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark">
+                  <div className="w-5 h-5 rounded-full bg-ui-bg-tertiary flex items-center justify-center text-xs text-ui-text-secondary">
                     {issue.assignee.name.charAt(0).toUpperCase()}
                   </div>
                 )}
@@ -168,7 +166,7 @@ export const IssueCard = memo(function IssueCard({
           )}
         </div>
         {issue.storyPoints !== undefined && (
-          <div className="flex items-center space-x-1 text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark">
+          <div className="flex items-center space-x-1 text-xs text-ui-text-secondary">
             <span className="font-medium">{issue.storyPoints}</span>
             <span>pts</span>
           </div>

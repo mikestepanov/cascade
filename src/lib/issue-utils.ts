@@ -129,15 +129,15 @@ export function getStatusColor(status: string): string {
   switch (status.toLowerCase()) {
     case "active":
     case "in progress":
-      return "bg-status-success-bg dark:bg-status-success-bg-dark text-status-success-text dark:text-status-success-text-dark";
+      return "bg-status-success-bg text-status-success-text";
     case "completed":
     case "done":
       return "bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark text-ui-text-secondary dark:text-ui-text-secondary-dark";
     case "future":
     case "todo":
-      return "bg-status-info-bg dark:bg-status-info-bg-dark text-status-info-text dark:text-status-info-text-dark";
+      return "bg-status-info-bg text-status-info-text";
     case "blocked":
-      return "bg-status-error-bg dark:bg-status-error-bg-dark text-status-error-text dark:text-status-error-text-dark";
+      return "bg-status-error-bg text-status-error-text";
     default:
       return "bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark text-ui-text-secondary dark:text-ui-text-secondary-dark";
   }
@@ -160,13 +160,13 @@ export function getWorkflowCategoryColor(
     },
     inprogress: {
       border: "border-t-status-info",
-      text: "text-status-info-text dark:text-status-info-text-dark",
-      bg: "bg-status-info-bg dark:bg-status-info-bg-dark",
+      text: "text-status-info-text",
+      bg: "bg-status-info-bg",
     },
     done: {
       border: "border-t-status-success",
-      text: "text-status-success-text dark:text-status-success-text-dark",
-      bg: "bg-status-success-bg dark:bg-status-success-bg-dark",
+      text: "text-status-success-text",
+      bg: "bg-status-success-bg",
     },
   };
 

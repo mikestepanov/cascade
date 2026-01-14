@@ -61,7 +61,7 @@ function TabButton({
         "pb-2 px-2 sm:px-0 border-b-2 transition-colors whitespace-nowrap flex-shrink-0 text-sm sm:text-base flex items-center gap-1.5",
         isActive
           ? "border-brand-600 text-brand-600 dark:text-brand-500"
-          : "border-transparent text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark",
+          : "border-transparent text-ui-text-secondary hover:text-ui-text-primary",
       )}
       aria-label={`${label} view`}
     >
@@ -106,9 +106,7 @@ function TabContent({
     return (
       <div className="p-6 overflow-y-auto">
         <div className="max-w-4xl mx-auto">
-          <h2 className="text-2xl font-bold mb-6 text-ui-text-primary dark:text-ui-text-primary-dark">
-            Project Activity
-          </h2>
+          <h2 className="text-2xl font-bold mb-6 text-ui-text-primary">Project Activity</h2>
           <ActivityFeed projectId={projectId} />
         </div>
       </div>
@@ -131,17 +129,14 @@ function TabContent({
   }
   if (activeTab === "settings") {
     return (
-      <div className="p-3 sm:p-6 overflow-y-auto bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark">
+      <div className="p-3 sm:p-6 overflow-y-auto bg-ui-bg-secondary">
         <div className="max-w-5xl mx-auto space-y-8">
           {/* Project Basics Section */}
           <div>
-            <Typography
-              variant="h3"
-              className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
-            >
+            <Typography variant="h3" className="text-lg font-semibold text-ui-text-primary mb-1">
               Project Basics
             </Typography>
-            <Typography className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mb-4">
+            <Typography className="text-sm text-ui-text-secondary mb-4">
               Configure fundamental project settings and templates
             </Typography>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -167,13 +162,10 @@ function TabContent({
 
           {/* Integrations & Automation Section */}
           <div>
-            <Typography
-              variant="h3"
-              className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
-            >
+            <Typography variant="h3" className="text-lg font-semibold text-ui-text-primary mb-1">
               Integrations & Automation
             </Typography>
-            <Typography className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mb-4">
+            <Typography className="text-sm text-ui-text-secondary mb-4">
               Connect external services and automate workflows
             </Typography>
             <div className="space-y-6">
@@ -199,13 +191,10 @@ function TabContent({
 
           {/* Advanced Section */}
           <div>
-            <Typography
-              variant="h3"
-              className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
-            >
+            <Typography variant="h3" className="text-lg font-semibold text-ui-text-primary mb-1">
               Advanced
             </Typography>
-            <Typography className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mb-4">
+            <Typography className="text-sm text-ui-text-secondary mb-4">
               Customize your project with additional metadata fields
             </Typography>
             <ErrorBoundary
@@ -254,21 +243,18 @@ export function ProjectBoard({ projectId }: ProjectBoardProps) {
   const activeSprint = sprints?.find((sprint: Doc<"sprints">) => sprint.status === "active");
 
   return (
-    <div className="flex flex-col h-full bg-ui-bg-primary dark:bg-ui-bg-primary-dark">
+    <div className="flex flex-col h-full bg-ui-bg-primary">
       <div data-testid="debug-user-role" data-role={project.userRole} style={{ display: "none" }}>
         {project.userRole}
       </div>
       {/* Header */}
-      <div className="border-b border-ui-border-primary dark:border-ui-border-primary-dark p-3 sm:p-6">
+      <div className="border-b border-ui-border-primary p-3 sm:p-6">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-3 sm:mb-4">
           <div className="flex-1">
-            <Typography
-              variant="h1"
-              className="text-xl sm:text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark"
-            >
+            <Typography variant="h1" className="text-xl sm:text-2xl font-bold text-ui-text-primary">
               {project.name}
             </Typography>
-            <Typography className="text-sm sm:text-base text-ui-text-secondary dark:text-ui-text-secondary-dark truncate">
+            <Typography className="text-sm sm:text-base text-ui-text-secondary truncate">
               {project.description}
             </Typography>
           </div>
@@ -318,7 +304,7 @@ export function ProjectBoard({ projectId }: ProjectBoardProps) {
           </div>
 
           {/* Visual Separator */}
-          <div className="hidden lg:block h-6 w-px bg-ui-border-primary dark:bg-ui-border-primary-dark mx-2 sm:mx-4 md:mx-6" />
+          <div className="hidden lg:block h-6 w-px bg-ui-border-primary mx-2 sm:mx-4 md:mx-6" />
 
           {/* Analysis & Views Tabs */}
           <div className="flex gap-2 sm:gap-3 md:gap-6 flex-shrink-0">

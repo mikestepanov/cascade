@@ -40,12 +40,17 @@ vi.mock("@/lib/issue-utils", () => ({
   getPriorityColor: vi.fn((priority: string, type: string) => {
     if (type === "badge") {
       const colors = {
-        urgent: "bg-status-error-bg dark:bg-status-error-bg-dark text-status-error-text dark:text-status-error-text-dark",
+        urgent:
+          "bg-status-error-bg dark:bg-status-error-bg-dark text-status-error-text dark:text-status-error-text-dark",
         high: "bg-status-warning-bg dark:bg-status-warning-bg-dark text-status-warning-text dark:text-status-warning-text-dark",
-        medium: "bg-status-warning-bg dark:bg-status-warning-bg-dark text-status-warning-text dark:text-status-warning-text-dark",
+        medium:
+          "bg-status-warning-bg dark:bg-status-warning-bg-dark text-status-warning-text dark:text-status-warning-text-dark",
         low: "bg-status-info-bg dark:bg-status-info-bg-dark text-status-info-text dark:text-status-info-text-dark",
       };
-      return colors[priority as keyof typeof colors] || "bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark text-ui-text-secondary dark:text-ui-text-secondary-dark";
+      return (
+        colors[priority as keyof typeof colors] ||
+        "bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark text-ui-text-secondary dark:text-ui-text-secondary-dark"
+      );
     }
     return "";
   }),
