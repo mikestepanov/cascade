@@ -1,6 +1,7 @@
 import { api } from "@convex/_generated/api";
-import type { Doc, Id } from "@convex/_generated/dataModel";
+import type { Id } from "@convex/_generated/dataModel";
 import { useMutation, useQuery } from "convex/react";
+import type { FunctionReturnType } from "convex/server";
 import { useState } from "react";
 import { showError, showSuccess } from "@/lib/toast";
 import { cn } from "@/lib/utils";
@@ -11,9 +12,8 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "
 import { Input, Select } from "./ui/form";
 import { Typography } from "./ui/Typography";
 
-type IssueLinkWithDetails = Doc<"issueLinks"> & {
-  issue: Pick<Doc<"issues">, "type" | "key" | "title"> | null;
-};
+type IssueLinkWithDetails = FunctionReturnType<typeof api.issueLinks.getForIssue>[number];
+type Issue = FunctionReturnType<typeof api.issues.search>[number];
 
 interface IssueDependenciesProps {
   issueId: Id<"issues">;
@@ -254,8 +254,8 @@ export function IssueDependencies({ issueId, projectId: _workspaceId }: IssueDep
             {searchResults?.page && searchResults.page.length > 0 && (
               <div className="max-h-48 overflow-y-auto border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg">
                 {searchResults.page
-                  .filter((issue: Doc<"issues">) => issue._id !== issueId)
-                  .map((issue: Doc<"issues">) => (
+                  .filter((issue: Issue) => issue._id !== issueId)
+                  .map((issue: Issue) => (
                     <button
                       type="button"
                       key={issue._id}

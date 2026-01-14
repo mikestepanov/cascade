@@ -1,6 +1,7 @@
 import { api } from "@convex/_generated/api";
-import type { Doc, Id } from "@convex/_generated/dataModel";
+import type { Id } from "@convex/_generated/dataModel";
 import { useMutation, useQuery } from "convex/react";
+import type { FunctionReturnType } from "convex/server";
 import { useState } from "react";
 import { showError, showSuccess } from "@/lib/toast";
 import { cn } from "@/lib/utils";
@@ -15,10 +16,13 @@ import { Typography } from "../ui/Typography";
 type EmploymentType = "employee" | "contractor" | "intern";
 
 // Type for profile with user and manager data (returned from listUserProfiles query)
-type UserProfileWithUser = Doc<"userProfiles"> & {
-  user: Doc<"users"> | null;
-  manager: Doc<"users"> | null;
-};
+type UserProfileWithUser = FunctionReturnType<typeof api.userProfiles.listUserProfiles>[number];
+type EmploymentTypeConfig = FunctionReturnType<
+  typeof api.userProfiles.getEmploymentTypeConfigs
+>[number];
+type UserWithoutProfile = FunctionReturnType<
+  typeof api.userProfiles.getUsersWithoutProfiles
+>[number];
 
 // Helper: Convert string to number or undefined
 function parseOptionalNumber(value: string): number | undefined {
@@ -156,7 +160,7 @@ export function UserTypeManager() {
   };
 
   const handleEditConfig = (type: EmploymentType) => {
-    const config = configs?.find((c: Doc<"employmentTypeConfigs">) => c.type === type);
+    const config = configs?.find((c: EmploymentTypeConfig) => c.type === type);
     if (!config) return;
 
     setSelectedType(type);
@@ -342,7 +346,7 @@ export function UserTypeManager() {
             />
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {configs.map((config: Doc<"employmentTypeConfigs">) => (
+              {configs.map((config: EmploymentTypeConfig) => (
                 <div
                   key={config.type}
                   className="p-4 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg hover:shadow-md transition-shadow"
@@ -436,7 +440,7 @@ export function UserTypeManager() {
                 Unassigned Users ({usersWithoutProfiles.length})
               </h4>
               <Flex direction="column" gap="sm">
-                {usersWithoutProfiles.slice(0, 5).map((user: Doc<"users">) => (
+                {usersWithoutProfiles.slice(0, 5).map((user: UserWithoutProfile) => (
                   <Flex
                     key={user._id}
                     justify="between"
@@ -473,7 +477,7 @@ export function UserTypeManager() {
             />
           ) : (
             <div className="space-y-3">
-              {profiles.map((profile: Doc<"userProfiles"> & { user?: Doc<"users"> }) => (
+              {profiles.map((profile: UserProfileWithUser) => (
                 <div
                   key={profile._id}
                   className="p-4 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark transition-colors"

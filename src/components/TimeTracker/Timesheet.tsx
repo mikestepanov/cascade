@@ -1,6 +1,7 @@
 import { api } from "@convex/_generated/api";
-import type { Doc, Id } from "@convex/_generated/dataModel";
+import type { Id } from "@convex/_generated/dataModel";
 import { useMutation, useQuery } from "convex/react";
+import type { FunctionReturnType } from "convex/server";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Calendar, DollarSign, Trash2 } from "@/lib/icons";
@@ -11,11 +12,9 @@ import { Progress } from "../ui/progress";
 import { Typography } from "../ui/Typography";
 
 // Type for time entry with computed hours field
-type TimeEntryWithHours = Doc<"timeEntries"> & {
-  hours: number;
-  projectKey?: string;
-  issueKey?: string;
-};
+type TimesheetData = FunctionReturnType<typeof api.timeTracking.getCurrentWeekTimesheet>;
+// Extract the entry type from the byDay record
+type TimeEntryWithHours = NonNullable<TimesheetData>["byDay"][string][number];
 
 export function Timesheet() {
   const timesheet = useQuery(api.timeTracking.getCurrentWeekTimesheet);
@@ -167,10 +166,10 @@ export function Timesheet() {
                     <Flex justify="between" align="start" className="mb-1">
                       <div className="flex-1 min-w-0">
                         <div className="text-xs font-mono font-medium text-ui-text-primary dark:text-ui-text-primary-dark truncate">
-                          {entry.projectKey}
+                          {/* Project/Issue info not available in this view */}
                         </div>
                         <div className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark truncate">
-                          {entry.issueKey}
+                          {/* {entry.issueKey} */}
                         </div>
                       </div>
                       {entry.billable && (

@@ -1,7 +1,7 @@
 import { api } from "@convex/_generated/api";
-import type { Doc } from "@convex/_generated/dataModel";
 import { createFileRoute, Outlet, useNavigate } from "@tanstack/react-router";
 import { useConvexAuth, useQuery } from "convex/react";
+import type { FunctionReturnType } from "convex/server";
 import { useCallback, useState } from "react";
 import { AppHeader } from "@/components/AppHeader";
 import { AppSidebar } from "@/components/AppSidebar";
@@ -22,11 +22,7 @@ import { SidebarProvider } from "@/hooks/useSidebarState";
 // Re-export hooks for backwards compatibility with existing imports
 export { useCompany, useCompanyOptional };
 
-type UserCompany = Doc<"companies"> & {
-  userRole: "owner" | "admin" | "member";
-  memberCount: number;
-  projectCount: number;
-};
+type UserCompany = FunctionReturnType<typeof api.companies.getUserCompanies>[number];
 
 export const Route = createFileRoute("/_auth/_app/$companySlug")({
   component: CompanyLayout,

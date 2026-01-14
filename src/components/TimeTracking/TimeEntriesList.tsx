@@ -1,6 +1,7 @@
 import { api } from "@convex/_generated/api";
-import type { Doc, Id } from "@convex/_generated/dataModel";
+import type { Id } from "@convex/_generated/dataModel";
 import { useMutation, useQuery } from "convex/react";
+import type { FunctionReturnType } from "convex/server";
 import { useMemo, useState } from "react";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
@@ -66,23 +67,14 @@ export function TimeEntriesList({
   };
 
   // Define the structure of the time entry returned by the API
-
-  // Define the structure of the time entry returned by the API
-  type TimeEntryWithDetails = Omit<Doc<"timeEntries">, "_id"> & {
-    _id: Id<"timeEntries">;
-    project?: { name: string };
-    issue?: { key: string };
-    totalCost?: number;
-    currency?: string;
-  };
+  type TimeEntryWithDetails = FunctionReturnType<typeof api.timeTracking.listTimeEntries>[number];
 
   // Group entries by date
   const groupedEntries = useMemo(() => {
     if (!entries) return [];
 
     const grouped: Record<string, TimeEntryWithDetails[]> = {};
-    // Use type assertion here since we know the API returns these fields but they might not be in the strict Doc type yet if not updated
-    const typedEntries = entries as unknown as TimeEntryWithDetails[];
+    const typedEntries: TimeEntryWithDetails[] = entries;
 
     typedEntries.forEach((entry) => {
       const dateKey = formatDate(entry.date); // Assuming entry.date is number (timestamp)
