@@ -98,36 +98,7 @@
   --color-status-info-bg: #DBEAFE;
   --color-status-info-text: #1E40AF;
 
-  @variant dark {
-    /* UI Backgrounds */
-    --color-ui-bg-primary: var(--color-ui-bg-primary-dark);
-    --color-ui-bg-secondary: var(--color-ui-bg-secondary-dark);
-    --color-ui-bg-tertiary: var(--color-ui-bg-tertiary-dark);
-    --color-ui-bg-elevated: var(--color-ui-bg-elevated-dark);
-    --color-ui-bg-overlay: var(--color-ui-bg-overlay-dark);
 
-    /* UI Text */
-    --color-ui-text-primary: var(--color-ui-text-primary-dark);
-    --color-ui-text-secondary: var(--color-ui-text-secondary-dark);
-    --color-ui-text-tertiary: var(--color-ui-text-tertiary-dark);
-    --color-ui-text-inverse: var(--color-ui-text-inverse-dark);
-
-    /* UI Borders */
-    --color-ui-border-primary: var(--color-ui-border-primary-dark);
-    --color-ui-border-secondary: var(--color-ui-border-secondary-dark);
-    --color-ui-border-focus: var(--color-ui-border-focus-dark);
-    --color-ui-border-error: var(--color-ui-border-error-dark);
-
-    /* Status */
-    --color-status-success-bg: #064E3B;
-    --color-status-success-text: #6EE7B7;
-    --color-status-warning-bg: #78350F;
-    --color-status-warning-text: #FCD34D;
-    --color-status-error-bg: #7F1D1D;
-    --color-status-error-text: #FCA5A5;
-    --color-status-info-bg: #1E3A8A;
-    --color-status-info-text: #93C5FD;
-  }
 
   /* Priority Colors */
   --color-priority-lowest: #6B7280;
@@ -159,6 +130,37 @@
   /* Custom Spacing */
   --spacing-form-field: 16px;
   --spacing-section: 32px;
+}
+
+.dark {
+  /* UI Backgrounds */
+  --color-ui-bg-primary: var(--color-ui-bg-primary-dark);
+  --color-ui-bg-secondary: var(--color-ui-bg-secondary-dark);
+  --color-ui-bg-tertiary: var(--color-ui-bg-tertiary-dark);
+  --color-ui-bg-elevated: var(--color-ui-bg-elevated-dark);
+  --color-ui-bg-overlay: var(--color-ui-bg-overlay-dark);
+
+  /* UI Text */
+  --color-ui-text-primary: var(--color-ui-text-primary-dark);
+  --color-ui-text-secondary: var(--color-ui-text-secondary-dark);
+  --color-ui-text-tertiary: var(--color-ui-text-tertiary-dark);
+  --color-ui-text-inverse: var(--color-ui-text-inverse-dark);
+
+  /* UI Borders */
+  --color-ui-border-primary: var(--color-ui-border-primary-dark);
+  --color-ui-border-secondary: var(--color-ui-border-secondary-dark);
+  --color-ui-border-focus: var(--color-ui-border-focus-dark);
+  --color-ui-border-error: var(--color-ui-border-error-dark);
+
+  /* Status */
+  --color-status-success-bg: #064E3B;
+  --color-status-success-text: #6EE7B7;
+  --color-status-warning-bg: #78350F;
+  --color-status-warning-text: #FCD34D;
+  --color-status-error-bg: #7F1D1D;
+  --color-status-error-text: #FCA5A5;
+  --color-status-info-bg: #1E3A8A;
+  --color-status-info-text: #93C5FD;
 }
 
 :root {
