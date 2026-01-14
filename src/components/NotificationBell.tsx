@@ -1,5 +1,5 @@
 import { api } from "@convex/_generated/api";
-import type { Id } from "@convex/_generated/dataModel";
+import type { Doc, Id } from "@convex/_generated/dataModel";
 import { useMutation, useQuery } from "convex/react";
 import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
@@ -148,68 +148,72 @@ export function NotificationBell() {
               </div>
             ) : (
               <div>
-                {notifications.map((notification) => (
-                  <button
-                    key={notification._id}
-                    type="button"
-                    className={cn(
-                      "w-full text-left px-4 py-3 hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark cursor-pointer border-b border-ui-border-primary dark:border-ui-border-primary-dark transition-colors",
-                      !notification.isRead && "bg-brand-50 dark:bg-brand-900/20",
-                    )}
-                    onClick={() => handleNotificationClick(notification._id, notification.issueId)}
-                  >
-                    <div className="flex items-start gap-3">
-                      <div className="text-2xl flex-shrink-0">
-                        {getNotificationIcon(notification.type)}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <Typography className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
-                          {notification.title}
-                        </Typography>
-                        <Typography className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mt-1">
-                          {notification.message}
-                        </Typography>
-                        <div className="flex items-center gap-2 mt-2">
-                          <span className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
-                            {formatTime(notification.createdAt)}
-                          </span>
-                          {notification.actorName && (
-                            <>
-                              <span className="text-xs text-ui-text-tertiary">•</span>
-                              <span className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
-                                by {notification.actorName}
-                              </span>
-                            </>
-                          )}
+                {notifications.map(
+                  (notification: Doc<"notifications"> & { actorName?: string }) => (
+                    <button
+                      key={notification._id}
+                      type="button"
+                      className={cn(
+                        "w-full text-left px-4 py-3 hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark cursor-pointer border-b border-ui-border-primary dark:border-ui-border-primary-dark transition-colors",
+                        !notification.isRead && "bg-brand-50 dark:bg-brand-900/20",
+                      )}
+                      onClick={() =>
+                        handleNotificationClick(notification._id, notification.issueId)
+                      }
+                    >
+                      <div className="flex items-start gap-3">
+                        <div className="text-2xl flex-shrink-0">
+                          {getNotificationIcon(notification.type)}
                         </div>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          removeNotification({ id: notification._id });
-                        }}
-                        aria-label="Remove notification"
-                        className="flex-shrink-0 text-ui-text-tertiary hover:text-ui-text-secondary dark:hover:text-ui-text-secondary-dark"
-                      >
-                        <svg
-                          aria-hidden="true"
-                          className="w-4 h-4"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
+                        <div className="flex-1 min-w-0">
+                          <Typography className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+                            {notification.title}
+                          </Typography>
+                          <Typography className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mt-1">
+                            {notification.message}
+                          </Typography>
+                          <div className="flex items-center gap-2 mt-2">
+                            <span className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+                              {formatTime(notification.createdAt)}
+                            </span>
+                            {notification.actorName && (
+                              <>
+                                <span className="text-xs text-ui-text-tertiary">•</span>
+                                <span className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+                                  by {notification.actorName}
+                                </span>
+                              </>
+                            )}
+                          </div>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            removeNotification({ id: notification._id });
+                          }}
+                          aria-label="Remove notification"
+                          className="flex-shrink-0 text-ui-text-tertiary hover:text-ui-text-secondary dark:hover:text-ui-text-secondary-dark"
                         >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M6 18L18 6M6 6l12 12"
-                          />
-                        </svg>
-                      </button>
-                    </div>
-                  </button>
-                ))}
+                          <svg
+                            aria-hidden="true"
+                            className="w-4 h-4"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M6 18L18 6M6 6l12 12"
+                            />
+                          </svg>
+                        </button>
+                      </div>
+                    </button>
+                  ),
+                )}
               </div>
             )}
           </div>

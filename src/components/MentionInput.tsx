@@ -33,8 +33,8 @@ export function MentionInput({
 
   // Filter members based on mention search
   const filteredMembers =
-    members?.filter((member: Doc<"users"> & { userName: string }) =>
-      member.userName.toLowerCase().includes(mentionSearch.toLowerCase()),
+    members?.filter((member: Doc<"users">) =>
+      (member.name || "").toLowerCase().includes(mentionSearch.toLowerCase()),
     ) || [];
 
   useEffect(() => {
@@ -125,7 +125,7 @@ export function MentionInput({
         e.preventDefault();
         const selectedMember = filteredMembers[selectedIndex];
         if (selectedMember) {
-          insertMention(selectedMember.userName, selectedMember.userId);
+          insertMention(selectedMember.name || "Unknown", selectedMember._id);
         }
         break;
       }
@@ -186,23 +186,23 @@ export function MentionInput({
           {filteredMembers.map((member: Doc<"users"> & { userName: string }, index: number) => (
             <button
               type="button"
-              key={member.userId}
-              onClick={() => insertMention(member.userName, member.userId)}
+              key={member._id}
+              onClick={() => insertMention(member.name || "Unknown", member._id)}
               className={cn(
                 "w-full px-4 py-2 text-left hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark flex items-center gap-3",
                 index === selectedIndex && "bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark",
               )}
             >
               {/* Avatar */}
-              <Avatar name={member.userName} size="md" />
+              <Avatar name={member.name} size="md" />
 
               {/* User Info */}
               <div className="flex-1 min-w-0">
                 <Typography variant="p" className="font-medium truncate">
-                  {member.userName}
+                  {member.name}
                 </Typography>
                 <Typography variant="muted" size="xs" className="capitalize">
-                  {member.role}
+                  User
                 </Typography>
               </div>
             </button>

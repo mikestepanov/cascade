@@ -1,10 +1,11 @@
 import { api } from "@convex/_generated/api";
 import type { Doc, Id } from "@convex/_generated/dataModel";
+import { useForm } from "@tanstack/react-form";
 import { useAction, useMutation, useQuery } from "convex/react";
 import { useEffect, useState } from "react";
 import { z } from "zod";
 import { toggleInArray } from "@/lib/array-utils";
-import { FormInput, FormSelect, FormTextarea, useAppForm } from "@/lib/form";
+import { FormInput, FormSelect, FormTextarea } from "@/lib/form";
 import { showError, showSuccess } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 import { Button } from "./ui/Button";
@@ -28,11 +29,11 @@ const priorities = ["lowest", "low", "medium", "high", "highest"] as const;
 
 const createIssueSchema = z.object({
   title: z.string().min(1, "Title is required"),
-  description: z.string().optional(),
+  description: z.string(),
   type: z.enum(issueTypes),
   priority: z.enum(priorities),
-  assigneeId: z.string().optional(),
-  storyPoints: z.string().optional(),
+  assigneeId: z.string(),
+  storyPoints: z.string(),
 });
 
 // =============================================================================
@@ -69,29 +70,20 @@ export function CreateIssueModal({
   const createIssue = useMutation(api.issues.create);
   const generateSuggestions = useAction(api.ai.actions.generateIssueSuggestions);
 
+  type CreateIssueForm = z.infer<typeof createIssueSchema>;
+
   // Form
-  const form = useAppForm({
+  const form = useForm({
     defaultValues: {
       title: "",
       description: "",
-      type: "task" as const,
-      priority: "medium" as const,
+      type: "task" as CreateIssueForm["type"],
+      priority: "medium" as CreateIssueForm["priority"],
       assigneeId: "",
       storyPoints: "",
     },
     validators: { onChange: createIssueSchema },
-    onSubmit: async ({
-      value,
-    }: {
-      value: {
-        title: string;
-        description: string;
-        type: "task" | "bug" | "story" | "epic";
-        priority: "lowest" | "low" | "medium" | "high" | "highest";
-        assigneeId: string;
-        storyPoints: string;
-      };
-    }) => {
+    onSubmit: async ({ value }: { value: CreateIssueForm }) => {
       try {
         await createIssue({
           projectId,
@@ -162,10 +154,7 @@ export function CreateIssueModal({
       }
 
       if (suggestions.priority) {
-        form.setFieldValue(
-          "priority",
-          suggestions.priority as "lowest" | "low" | "medium" | "high" | "highest",
-        );
+        form.setFieldValue("priority", suggestions.priority as (typeof priorities)[number]);
       }
 
       if (suggestions.labels && suggestions.labels.length > 0 && labels) {

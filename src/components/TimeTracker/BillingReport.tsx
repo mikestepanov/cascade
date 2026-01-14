@@ -72,9 +72,8 @@ export function BillingReport({ projectId }: BillingReportProps) {
     const utilRate =
       billing.totalHours > 0 ? (billing.billableHours / billing.totalHours) * 100 : 0;
     const avgRate = billing.billableHours > 0 ? billing.totalRevenue / billing.billableHours : 0;
-    const sorted = Object.entries(billing.byUser).sort(
-      (a: [string, BillingStats], b: [string, BillingStats]) =>
-        (b[1].totalCost || 0) - (a[1].totalCost || 0),
+    const sorted = (Object.entries(billing.byUser) as [string, BillingStats][]).sort(
+      (a, b) => (b[1].totalCost || 0) - (a[1].totalCost || 0),
     );
 
     return { utilizationRate: utilRate, averageRate: avgRate, sortedUsers: sorted };

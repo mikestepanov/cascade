@@ -1,33 +1,23 @@
-import type { FormApi, FormOptions } from "@tanstack/react-form";
-import type { ZodType } from "zod";
+import type { AnyFieldApi, AnyFormApi } from "@tanstack/react-form";
+
+/**
+ * Type alias for any form field API
+ * Use this when you need to accept any field without specific generics
+ */
+export type AppFieldApi = AnyFieldApi;
+
+/**
+ * Type alias for any form API
+ * Use this when you need to accept any form without specific generics
+ */
+export type AppFormApi = AnyFormApi;
 
 /**
  * Generic field props for form field wrappers
+ * Using AnyFieldApi which is the official TanStack convenience type
  */
-export interface FormFieldProps<TData, _TName extends keyof TData & string> {
-  // biome-ignore lint/suspicious/noExplicitAny: generic hell
-  field: any;
+export interface FormFieldProps {
+  field: AnyFieldApi;
   label?: string;
   helperText?: string;
 }
-
-/**
- * App-specific form options with Zod validation support
- */
-export interface AppFormOptions<TData extends Record<string, unknown>>
-  extends Omit<any, "validatorAdapter"> {
-  /**
-   * Zod schema for form validation
-   * Applied on change and submit
-   */
-  validators?: {
-    onChange?: ZodType<TData>;
-    onBlur?: ZodType<TData>;
-    onSubmit?: ZodType<TData>;
-  };
-}
-
-/**
- * Type for the form instance returned by useAppForm
- */
-export type AppForm<TData extends Record<string, unknown>> = any;

@@ -52,7 +52,7 @@ export function AssigneeSearchDropdown({
   const members = useQuery(api.projectMembers.list, { projectId });
 
   // Step 2: Apply fuzzy search on loaded data
-  const { results, search, query, clear, isDebouncing } = useUserFuzzySearch(members);
+  const { results, search, query, clear, isDebouncing } = useUserFuzzySearch<Doc<"users">>(members);
 
   if (!members) {
     return (

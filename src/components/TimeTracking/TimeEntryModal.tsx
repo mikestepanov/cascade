@@ -487,7 +487,7 @@ export function TimeEntryModal({
                 <SelectContent>
                   <SelectItem value="none">No issue</SelectItem>
                   {projectIssues
-                    .sort((a, b) => (a.title > b.title ? 1 : -1))
+                    .sort((a: IssueItem, b: IssueItem) => (a.title > b.title ? 1 : -1))
                     .map((issue: IssueItem) => (
                       <SelectItem key={issue._id} value={issue._id}>
                         {issue.key} - {issue.title}

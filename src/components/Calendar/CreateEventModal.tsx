@@ -1,9 +1,10 @@
 import { api } from "@convex/_generated/api";
 import type { Doc, Id } from "@convex/_generated/dataModel";
+import { useForm } from "@tanstack/react-form";
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
 import { z } from "zod";
-import { FormInput, FormTextarea, useAppForm } from "@/lib/form";
+import { FormInput, FormTextarea } from "@/lib/form";
 import { Calendar, Clock, LinkIcon, MapPin } from "@/lib/icons";
 import { showError, showSuccess } from "@/lib/toast";
 import { cn } from "@/lib/utils";
@@ -21,14 +22,14 @@ const eventTypes = ["meeting", "deadline", "timeblock", "personal"] as const;
 
 const createEventSchema = z.object({
   title: z.string().min(1, "Title is required"),
-  description: z.string().optional(),
+  description: z.string(),
   startDate: z.string().min(1, "Date is required"),
   startTime: z.string(),
   endTime: z.string(),
   allDay: z.boolean(),
   eventType: z.enum(eventTypes),
-  location: z.string().optional(),
-  meetingUrl: z.union([z.string().url(), z.literal("")]).optional(),
+  location: z.string(),
+  meetingUrl: z.union([z.string().url(), z.literal("")]),
   isRequired: z.boolean(),
 });
 
@@ -59,7 +60,9 @@ export function CreateEventModal({
     projectId,
   );
 
-  const form = useAppForm({
+  type CreateEventForm = z.infer<typeof createEventSchema>;
+
+  const form = useForm({
     defaultValues: {
       title: "",
       description: "",
@@ -67,13 +70,13 @@ export function CreateEventModal({
       startTime: "09:00",
       endTime: "10:00",
       allDay: false,
-      eventType: "meeting" as const,
+      eventType: "meeting" as CreateEventForm["eventType"],
       location: "",
       meetingUrl: "",
       isRequired: false,
     },
     validators: { onChange: createEventSchema },
-    onSubmit: async ({ value }: { value: z.infer<typeof createEventSchema> }) => {
+    onSubmit: async ({ value }: { value: CreateEventForm }) => {
       try {
         // Parse start and end times
         const [startHour, startMinute] = value.startTime.split(":").map(Number);
@@ -120,14 +123,8 @@ export function CreateEventModal({
             form.handleSubmit();
           }}
         >
-          <form.Subscribe
-            selector={(state) => [
-              state.values.eventType,
-              state.values.allDay,
-              state.values.isRequired,
-            ]}
-          >
-            {([eventType, allDay, isRequired]) => (
+          <form.Subscribe selector={(state) => state.values}>
+            {({ eventType, allDay, isRequired }) => (
               <Flex direction="column" gap="lg" className="p-6">
                 {/* Title */}
                 <form.Field name="title">
@@ -151,7 +148,9 @@ export function CreateEventModal({
                       <button
                         key={type}
                         type="button"
-                        onClick={() => form.setFieldValue("eventType", type)}
+                        onClick={() =>
+                          form.setFieldValue("eventType", type as (typeof eventTypes)[number])
+                        }
                         className={cn(
                           "px-3 py-2 rounded-md text-sm font-medium capitalize",
                           eventType === type

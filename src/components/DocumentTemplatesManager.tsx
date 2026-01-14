@@ -1,9 +1,10 @@
 import { api } from "@convex/_generated/api";
 import type { Doc, Id } from "@convex/_generated/dataModel";
+import { useForm } from "@tanstack/react-form";
 import { useMutation, useQuery } from "convex/react";
 import { useEffect, useState } from "react";
 import { z } from "zod";
-import { FormInput, FormSelect, FormTextarea, useAppForm } from "@/lib/form";
+import { FormInput, FormSelect, FormTextarea } from "@/lib/form";
 import { showError, showSuccess } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 import { Badge } from "./ui/Badge";
@@ -22,7 +23,7 @@ const categories = ["meeting", "planning", "engineering", "design", "other"] as 
 
 const templateSchema = z.object({
   name: z.string().min(1, "Name is required"),
-  description: z.string().optional(),
+  description: z.string(),
   category: z.enum(categories),
   icon: z.string().min(1, "Icon is required").max(2),
   isPublic: z.boolean(),
@@ -51,11 +52,11 @@ export function DocumentTemplatesManager({
   const updateTemplate = useMutation(api.documentTemplates.update);
   const deleteTemplate = useMutation(api.documentTemplates.remove);
 
-  const form = useAppForm({
+  const form = useForm({
     defaultValues: {
       name: "",
       description: "",
-      category: "planning" as const,
+      category: "planning" as (typeof categories)[number],
       icon: "📄",
       isPublic: false,
     },

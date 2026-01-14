@@ -1,10 +1,11 @@
 import { api } from "@convex/_generated/api";
 import type { Doc, Id } from "@convex/_generated/dataModel";
+import { useForm } from "@tanstack/react-form";
 import { useMutation, useQuery } from "convex/react";
 import { useEffect, useState } from "react";
 import { z } from "zod";
 import { toggleInArray } from "@/lib/array-utils";
-import { FormInput, useAppForm } from "@/lib/form";
+import { FormInput } from "@/lib/form";
 import { showError, showSuccess } from "@/lib/toast";
 import { Button } from "../ui/Button";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "../ui/Dialog";
@@ -24,9 +25,6 @@ const webhookSchema = z.object({
     .refine((url) => url.includes("pumble.com"), {
       message: "Must be a valid Pumble webhook URL",
     }),
-  sendMentions: z.boolean(),
-  sendAssignments: z.boolean(),
-  sendStatusChanges: z.boolean(),
 });
 
 const AVAILABLE_EVENTS = [
@@ -331,7 +329,7 @@ function AddWebhookModal({ open, onOpenChange, projects }: AddWebhookModalProps)
 
   const addWebhook = useMutation(api.pumble.addWebhook);
 
-  const form = useAppForm({
+  const form = useForm({
     defaultValues: {
       name: "",
       webhookUrl: "",
@@ -505,7 +503,7 @@ function EditWebhookModal({ open, onOpenChange, webhook }: EditWebhookModalProps
 
   const updateWebhook = useMutation(api.pumble.updateWebhook);
 
-  const form = useAppForm({
+  const form = useForm({
     defaultValues: {
       name: webhook.name,
       webhookUrl: webhook.url,

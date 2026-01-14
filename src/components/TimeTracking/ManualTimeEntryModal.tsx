@@ -1,12 +1,13 @@
 import { api } from "@convex/_generated/api";
 import type { Id } from "@convex/_generated/dataModel";
+import { useForm, useStore } from "@tanstack/react-form";
 import { useMutation, useQuery } from "convex/react";
 import type { FunctionReturnType } from "convex/server";
 import { Clock, Hourglass } from "lucide-react";
 import { useEffect, useState } from "react";
 import { z } from "zod";
 import { ACTIVITY_TYPES } from "@/lib/constants";
-import { type AppForm, FormTextarea, useAppForm } from "@/lib/form";
+import { FormTextarea } from "@/lib/form";
 import { formatDateForInput, formatDurationHuman, parseDuration } from "@/lib/formatting";
 import { showError, showSuccess } from "@/lib/toast";
 import { cn } from "@/lib/utils";
@@ -31,8 +32,8 @@ const timeEntrySchema = z.object({
   startTime: z.string(),
   endTime: z.string(),
   durationInput: z.string(),
-  description: z.string().optional(),
-  activity: z.string().optional(),
+  description: z.string(),
+  activity: z.string(),
   billable: z.boolean(),
 });
 
@@ -141,7 +142,7 @@ export function ManualTimeEntryModal({
 
   type TimeEntryForm = z.infer<typeof timeEntrySchema>;
 
-  const form: AppForm<TimeEntryForm> = useAppForm<TimeEntryForm>({
+  const form = useForm({
     defaultValues: {
       date: formatDateForInput(Date.now()),
       startTime: "09:00",
@@ -195,12 +196,10 @@ export function ManualTimeEntryModal({
   });
 
   // Subscribe to form values for derived calculations
-  const date = form.useStore((state: { values: TimeEntryForm }) => state.values.date);
-  const startTime = form.useStore((state: { values: TimeEntryForm }) => state.values.startTime);
-  const endTime = form.useStore((state: { values: TimeEntryForm }) => state.values.endTime);
-  const durationInput = form.useStore(
-    (state: { values: TimeEntryForm }) => state.values.durationInput,
-  );
+  const date = useStore(form.store, (state) => state.values.date);
+  const startTime = useStore(form.store, (state) => state.values.startTime);
+  const endTime = useStore(form.store, (state) => state.values.endTime);
+  const durationInput = useStore(form.store, (state) => state.values.durationInput);
 
   // Parse duration input when it changes
   useEffect(() => {
@@ -612,7 +611,7 @@ export function ManualTimeEntryModal({
 
           <DialogFooter>
             <form.Subscribe selector={(state) => state.isSubmitting}>
-              {(isSubmitting: boolean) => (
+              {(isSubmitting) => (
                 <>
                   <Button onClick={() => onOpenChange(false)} variant="secondary" type="button">
                     Cancel
