@@ -1,6 +1,7 @@
 import { FileText, PanelsTopLeft, Users } from "lucide-react";
 
 import { cn } from "@/lib/utils";
+import { Flex } from "../ui/Flex";
 import { Typography } from "../ui/Typography";
 import { ArrowIcon } from "./icons";
 
@@ -96,9 +97,13 @@ function FeatureCard({
           gradients[gradient],
         )}
       >
-        <div className="w-12 h-12 rounded-[10px] bg-ui-bg-elevated flex items-center justify-center">
+        <Flex
+          align="center"
+          justify="center"
+          className="w-12 h-12 rounded-[10px] bg-ui-bg-elevated"
+        >
           {icon}
-        </div>
+        </Flex>
       </div>
 
       {/* Content */}
