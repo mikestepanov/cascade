@@ -38,13 +38,11 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
           id={selectId}
           className={cn(
             "w-full px-3 py-2 border rounded-md text-sm",
-            "bg-ui-bg-primary dark:bg-ui-bg-primary-dark",
-            "text-ui-text-primary dark:text-ui-text-primary-dark",
-            "focus:outline-none focus:ring-2 focus:ring-ui-border-focus dark:focus:ring-ui-border-focus-dark focus:border-transparent",
+            "bg-ui-bg-primary",
+            "text-ui-text-primary",
+            "focus:outline-none focus:ring-2 focus:ring-ui-border-focus focus:border-transparent",
             "disabled:opacity-50 disabled:cursor-not-allowed",
-            error
-              ? "border-ui-border-error dark:border-ui-border-error-dark"
-              : "border-ui-border-primary dark:border-ui-border-primary-dark",
+            error ? "border-ui-border-error" : "border-ui-border-primary",
             className,
           )}
           aria-invalid={error ? "true" : "false"}
@@ -62,10 +60,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
             : children}
         </select>
         {error && (
-          <p
-            id={`${selectId}-error`}
-            className="mt-1 text-sm text-status-error dark:text-status-error"
-          >
+          <p id={`${selectId}-error`} className="mt-1 text-sm text-status-error">
             {error}
           </p>
         )}

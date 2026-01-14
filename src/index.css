@@ -130,9 +130,50 @@
   /* Custom Spacing */
   --spacing-form-field: 16px;
   --spacing-section: 32px;
+  /* Semantic Brand Palette (Auto-switching) */
+  --color-brand-cyan-text: #0891b2; /* cyan-600 */
+  --color-brand-cyan-bg: #06b6d4; /* cyan-500 */
+  --color-brand-cyan-border: #0891b2; /* cyan-600 */
+  --color-brand-cyan-track: #cffafe; /* cyan-100 */
+
+  --color-brand-indigo-text: #4f46e5; /* indigo-600 */
+  --color-brand-indigo-bg: #6366f1; /* indigo-500 */
+  --color-brand-indigo-border: #4f46e5; /* indigo-600 */
+  --color-brand-indigo-track: #e0e7ff; /* indigo-100 */
+
+  --color-brand-teal-text: #0d9488; /* teal-600 */
+  --color-brand-teal-bg: #14b8a6; /* teal-500 */
+  --color-brand-teal-border: #0d9488; /* teal-600 */
+  --color-brand-teal-track: #ccfbf1; /* teal-100 */
+
+  --color-brand-emerald-text: #059669; /* emerald-600 */
+  --color-brand-emerald-bg: #10b981; /* emerald-500 */
+  --color-brand-emerald-border: #059669; /* emerald-600 */
+  --color-brand-emerald-track: #d1fae5; /* emerald-100 */
 }
 
 .dark {
+  /* Semantic Brand Palette (Dark Mode Overrides) */
+  --color-brand-cyan-text: #22d3ee; /* cyan-400 */
+  --color-brand-cyan-bg: #22d3ee; /* cyan-400 */
+  --color-brand-cyan-border: #22d3ee; /* cyan-400 */
+  --color-brand-cyan-track: rgba(8, 145, 178, 0.4); /* cyan-950/40 approx */
+
+  --color-brand-indigo-text: #818cf8; /* indigo-400 */
+  --color-brand-indigo-bg: #818cf8; /* indigo-400 */
+  --color-brand-indigo-border: #818cf8; /* indigo-400 */
+  --color-brand-indigo-track: rgba(49, 46, 129, 0.4); /* indigo-950/40 approx */
+
+  --color-brand-teal-text: #2dd4bf; /* teal-400 */
+  --color-brand-teal-bg: #2dd4bf; /* teal-400 */
+  --color-brand-teal-border: #2dd4bf; /* teal-400 */
+  --color-brand-teal-track: rgba(19, 78, 74, 0.4); /* teal-950/40 approx */
+
+  --color-brand-emerald-text: #34d399; /* emerald-400 */
+  --color-brand-emerald-bg: #34d399; /* emerald-400 */
+  --color-brand-emerald-border: #34d399; /* emerald-400 */
+  --color-brand-emerald-track: rgba(6, 78, 59, 0.4); /* emerald-950/40 approx */
+
   /* UI Backgrounds */
   --color-ui-bg-primary: var(--color-ui-bg-primary-dark);
   --color-ui-bg-secondary: var(--color-ui-bg-secondary-dark);

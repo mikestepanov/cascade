@@ -312,7 +312,7 @@ export function UserTypeManager() {
       case "contractor":
         return "bg-accent-100 text-accent-700 dark:bg-accent-900/30 dark:text-accent-300";
       case "intern":
-        return "bg-status-success-bg text-status-success-text dark:bg-status-success-bg-dark dark:text-status-success-text-dark";
+        return "bg-status-success-bg text-status-success-text";
     }
   };
 

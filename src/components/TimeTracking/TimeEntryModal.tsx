@@ -54,8 +54,8 @@ function ModeToggleButton({
       className={cn(
         "flex-1 flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium rounded-md transition-colors",
         isActive
-          ? "bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark shadow-sm"
-          : "text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark",
+          ? "bg-ui-bg-primary text-ui-text-primary shadow-sm"
+          : "text-ui-text-secondary hover:text-ui-text-primary",
       )}
     >
       <Icon className="w-4 h-4" />
@@ -111,13 +111,13 @@ function TagsInput({
             {tags.map((tag) => (
               <span
                 key={tag}
-                className="inline-flex items-center gap-1 px-2 py-1 bg-brand-100 dark:bg-brand-900/30 text-brand-700 dark:text-brand-300 text-xs rounded"
+                className="inline-flex items-center gap-1 px-2 py-1 bg-brand-indigo-track text-brand-indigo-text text-xs rounded"
               >
                 {tag}
                 <button
                   type="button"
                   onClick={() => onRemoveTag(tag)}
-                  className="hover:text-brand-900 dark:hover:text-brand-100"
+                  className="hover:text-brand-900"
                   aria-label={`Remove tag ${tag}`}
                 >
                   ×
@@ -184,10 +184,8 @@ function DurationModeFields({
           onChange={(e) => onDurationChange(e.target.value)}
           placeholder="e.g., 1:30, 1.5, 1h 30m, 90m"
           className={cn(
-            "w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-primary-dark dark:text-ui-text-primary-dark",
-            isDurationInputValid
-              ? "border-ui-border-primary dark:border-ui-border-primary-dark"
-              : "border-status-error dark:border-status-error",
+            "w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-brand-500 bg-ui-bg-primary text-ui-text-primary",
+            isDurationInputValid ? "border-ui-border-primary" : "border-status-error",
           )}
         />
         <Typography className="text-xs text-ui-text-tertiary mt-1">
@@ -210,8 +208,8 @@ function DurationModeFields({
           )}
         </Flex>
         {durationSeconds > 0 && (
-          <div className="mt-3 p-3 bg-brand-50 dark:bg-brand-900/20 border border-brand-200 dark:border-brand-800 rounded-lg">
-            <span className="text-sm font-medium text-brand-900 dark:text-brand-100">
+          <div className="mt-3 p-3 bg-brand-indigo-track border border-brand-indigo-border rounded-lg">
+            <span className="text-sm font-medium text-brand-indigo-text">
               Duration: {formatDurationHuman(durationSeconds)}
             </span>
           </div>
@@ -293,8 +291,8 @@ function TimeRangeModeFields({
         </div>
       </div>
       {timeRangeDuration > 0 && (
-        <div className="p-3 bg-brand-50 dark:bg-brand-900/20 border border-brand-200 dark:border-brand-800 rounded-lg">
-          <span className="text-sm font-medium text-brand-900 dark:text-brand-100">
+        <div className="p-3 bg-brand-indigo-track border border-brand-indigo-border rounded-lg">
+          <span className="text-sm font-medium text-brand-indigo-text">
             Duration: {formatDurationHuman(timeRangeDuration)}
           </span>
         </div>

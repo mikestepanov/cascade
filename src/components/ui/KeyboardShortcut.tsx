@@ -52,10 +52,8 @@ export function KeyboardShortcut({
   };
 
   const variantClasses = {
-    default:
-      "bg-ui-bg-primary dark:bg-ui-bg-primary-dark border border-ui-border-primary dark:border-ui-border-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark shadow-sm",
-    subtle:
-      "bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark text-ui-text-secondary dark:text-ui-text-secondary-dark",
+    default: "bg-ui-bg-primary border border-ui-border-primary text-ui-text-primary shadow-sm",
+    subtle: "bg-ui-bg-secondary text-ui-text-secondary",
   };
 
   // Create keys with unique identifiers for stable rendering

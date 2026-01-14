@@ -35,7 +35,7 @@ export function WebhookCard({ webhook, onEdit, onDelete }: WebhookCardProps) {
                 "text-xs px-2 py-0.5 rounded",
                 webhook.isActive
                   ? "bg-status-success/10 text-status-success"
-                  : "bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark text-ui-text-primary dark:text-ui-text-primary-dark",
+                  : "bg-ui-bg-tertiary text-ui-text-primary",
               )}
             >
               {webhook.isActive ? "Active" : "Inactive"}
@@ -46,10 +46,7 @@ export function WebhookCard({ webhook, onEdit, onDelete }: WebhookCardProps) {
           </Typography>
           <Flex wrap gap="xs">
             {webhook.events.map((event) => (
-              <span
-                key={event}
-                className="text-xs px-2 py-0.5 bg-brand-100 dark:bg-brand-900/30 text-brand-700 dark:text-brand-300 rounded"
-              >
+              <span key={event} className="text-xs px-2 py-0.5 bg-brand-100 text-brand-700 rounded">
                 {event}
               </span>
             ))}

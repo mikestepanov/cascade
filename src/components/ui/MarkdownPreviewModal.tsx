@@ -61,20 +61,15 @@ export function MarkdownPreviewModal({
         </div>
 
         {/* Warning */}
-        <div className="mb-4 p-3 bg-status-warning/10 dark:bg-status-warning/20 border border-status-warning/30 dark:border-status-warning/50 rounded-lg">
+        {/* Warning */}
+        <div className="mb-4 p-3 bg-status-warning-bg border border-status-warning/30 rounded-lg">
           <Flex align="start" gap="sm">
-            <span className="text-status-warning dark:text-status-warning text-lg">⚠️</span>
+            <span className="text-status-warning text-lg">⚠️</span>
             <div className="flex-1">
-              <Typography
-                variant="small"
-                className="font-medium text-status-warning dark:text-status-warning"
-              >
+              <Typography variant="small" className="font-medium text-status-warning">
                 This will replace all current document content
               </Typography>
-              <Typography
-                variant="muted"
-                className="text-xs text-status-warning/90 dark:text-status-warning/80 mt-1"
-              >
+              <Typography variant="muted" className="text-xs text-status-warning/90 mt-1">
                 Make sure you have a backup or export the current version first.
               </Typography>
             </div>

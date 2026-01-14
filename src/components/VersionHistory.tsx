@@ -93,7 +93,7 @@ export function VersionHistory({
       <DialogContent className="sm:max-w-2xl max-h-[80vh] flex flex-col">
         <DialogHeader>
           <Flex align="center" gap="md">
-            <History className="w-5 h-5 text-brand-600 dark:text-brand-400" />
+            <History className="w-5 h-5 text-brand-600" />
             <DialogTitle>Version History</DialogTitle>
           </Flex>
         </DialogHeader>
@@ -127,8 +127,8 @@ export function VersionHistory({
                     className={cn(
                       "p-4 rounded-lg border transition-colors",
                       isSelected
-                        ? "border-brand-500 bg-brand-50 dark:bg-brand-900/20"
-                        : "border-ui-border-primary dark:border-ui-border-primary-dark hover:border-ui-border-secondary dark:hover:border-ui-border-secondary-dark",
+                        ? "border-brand-500 bg-brand-indigo-track"
+                        : "border-ui-border-primary hover:border-ui-border-secondary",
                     )}
                   >
                     <Flex align="start" justify="between">

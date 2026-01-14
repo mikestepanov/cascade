@@ -37,19 +37,19 @@ export function WebhookLogs({ webhookId, open, onOpenChange }: WebhookLogsProps)
     switch (status) {
       case "success":
         return (
-          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-status-success/10 dark:bg-status-success/20 text-status-success">
+          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-status-success/10 text-status-success">
             ✓ Success
           </span>
         );
       case "failed":
         return (
-          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-status-error/10 dark:bg-status-error/20 text-status-error">
+          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-status-error/10 text-status-error">
             ✗ Failed
           </span>
         );
       case "retrying":
         return (
-          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-status-warning/10 dark:bg-status-warning/20 text-status-warning">
+          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-status-warning/10 text-status-warning">
             ⟳ Retrying
           </span>
         );
@@ -153,11 +153,9 @@ export function WebhookLogs({ webhookId, open, onOpenChange }: WebhookLogsProps)
 
                   {/* Error message */}
                   {execution.error && (
-                    <div className="bg-status-error/10 dark:bg-status-error/20 border border-status-error/30 dark:border-status-error/50 rounded p-3 mt-3">
-                      <div className="text-xs font-medium text-status-error dark:text-status-error mb-1">
-                        Error:
-                      </div>
-                      <div className="text-xs text-status-error/90 dark:text-status-error/80 font-mono">
+                    <div className="bg-status-error-bg border border-status-error/30 rounded p-3 mt-3">
+                      <div className="text-xs font-medium text-status-error-text mb-1">Error:</div>
+                      <div className="text-xs text-status-error-text/90 font-mono">
                         {execution.error}
                       </div>
                     </div>

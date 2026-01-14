@@ -76,8 +76,8 @@ export function TimeTrackingPage({ projectId, userRole, isGlobalAdmin }: TimeTra
             className={cn(
               "pb-3 px-1 text-sm font-medium border-b-2 transition-colors",
               activeTab === "entries"
-                ? "border-brand-600 text-brand-600 dark:text-brand-400"
-                : "border-transparent text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark",
+                ? "border-brand-indigo-border text-brand-indigo-text"
+                : "border-transparent text-ui-text-secondary hover:text-ui-text-primary",
             )}
           >
             Time Entries
@@ -90,8 +90,8 @@ export function TimeTrackingPage({ projectId, userRole, isGlobalAdmin }: TimeTra
                 className={cn(
                   "pb-3 px-1 text-sm font-medium border-b-2 transition-colors",
                   activeTab === "burn-rate"
-                    ? "border-brand-600 text-brand-600 dark:text-brand-400"
-                    : "border-transparent text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark",
+                    ? "border-brand-indigo-border text-brand-indigo-text"
+                    : "border-transparent text-ui-text-secondary hover:text-ui-text-primary",
                 )}
               >
                 Burn Rate & Costs
@@ -102,8 +102,8 @@ export function TimeTrackingPage({ projectId, userRole, isGlobalAdmin }: TimeTra
                 className={cn(
                   "pb-3 px-1 text-sm font-medium border-b-2 transition-colors",
                   activeTab === "rates"
-                    ? "border-brand-600 text-brand-600 dark:text-brand-400"
-                    : "border-transparent text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark",
+                    ? "border-brand-indigo-border text-brand-indigo-text"
+                    : "border-transparent text-ui-text-secondary hover:text-ui-text-primary",
                 )}
               >
                 Hourly Rates

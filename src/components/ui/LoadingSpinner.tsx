@@ -21,7 +21,7 @@ export function LoadingSpinner({ size = "md", className = "", message }: Loading
     <Flex direction="column" align="center" justify="center" gap="md">
       <output
         className={cn(
-          "animate-spin rounded-full border-ui-text-primary dark:border-ui-text-primary-dark border-t-transparent",
+          "animate-spin rounded-full border-ui-text-primary border-t-transparent",
           sizeClasses[size],
           className,
         )}

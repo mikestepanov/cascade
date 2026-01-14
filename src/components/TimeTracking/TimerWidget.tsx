@@ -55,7 +55,7 @@ export function TimerWidget() {
       <Flex
         align="center"
         gap="sm"
-        className="px-3 py-2 bg-brand-50 dark:bg-brand-900/20 border border-brand-200 dark:border-brand-800 rounded-lg"
+        className="px-3 py-2 bg-brand-indigo-track border border-brand-indigo-border rounded-lg"
       >
         <Flex align="center" gap="sm">
           {/* Pulsing dot */}
@@ -65,13 +65,13 @@ export function TimerWidget() {
           </div>
 
           {/* Timer display */}
-          <span className="text-sm font-mono font-semibold text-brand-900 dark:text-brand-100">
+          <span className="text-sm font-mono font-semibold text-brand-indigo-text">
             {formatDuration(currentDuration)}
           </span>
 
           {/* Description or Issue */}
           {(runningTimer.description || runningTimer.issue) && (
-            <span className="text-xs text-brand-700 dark:text-brand-300 max-w-[150px] truncate">
+            <span className="text-xs text-brand-indigo-text max-w-[150px] truncate">
               {runningTimer.issue ? runningTimer.issue.key : runningTimer.description}
             </span>
           )}
@@ -82,7 +82,7 @@ export function TimerWidget() {
           onClick={handleStop}
           variant="ghost"
           size="sm"
-          className="text-xs text-brand-700 dark:text-brand-300 hover:bg-brand-100 dark:hover:bg-brand-800"
+          className="text-xs text-brand-indigo-text hover:bg-brand-indigo-bg/10"
           aria-label="Stop timer"
         >
           Stop

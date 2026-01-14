@@ -33,12 +33,12 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
             type="checkbox"
             id={checkboxId}
             className={cn(
-              "rounded border-ui-border-primary dark:border-ui-border-primary-dark",
-              "text-brand-600 dark:text-brand-500",
-              "focus:ring-2 focus:ring-ui-border-focus dark:focus:ring-ui-border-focus-dark",
+              "rounded border-ui-border-primary",
+              "text-brand-600",
+              "focus:ring-2 focus:ring-ui-border-focus",
               "disabled:opacity-50 disabled:cursor-not-allowed",
-              "bg-ui-bg-primary dark:bg-ui-bg-primary-dark",
-              error && "border-ui-border-error dark:border-ui-border-error-dark",
+              "bg-ui-bg-primary",
+              error && "border-ui-border-error",
               className,
             )}
             aria-invalid={error ? "true" : "false"}
@@ -57,11 +57,7 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
           )}
         </Flex>
         {error && (
-          <Typography
-            variant="small"
-            id={`${checkboxId}-error`}
-            className="mt-1 text-status-error dark:text-status-error"
-          >
+          <Typography variant="small" id={`${checkboxId}-error`} className="mt-1 text-status-error">
             {error}
           </Typography>
         )}

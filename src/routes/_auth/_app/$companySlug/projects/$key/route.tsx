@@ -86,12 +86,11 @@ function ProjectLayout() {
               params={tab.params}
               className="border-b-2 py-3 px-1 text-sm font-medium transition-colors"
               activeProps={{
-                className:
-                  "border-brand-600 text-brand-600 dark:border-brand-400 dark:text-brand-400",
+                className: "border-brand-indigo-border text-brand-indigo-text",
               }}
               inactiveProps={{
                 className:
-                  "border-transparent text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark hover:border-ui-border-secondary dark:hover:border-ui-border-secondary-dark",
+                  "border-transparent text-ui-text-secondary hover:text-ui-text-primary hover:border-ui-border-secondary",
               }}
             >
               {tab.name}

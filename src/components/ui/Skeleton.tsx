@@ -26,7 +26,7 @@ export function SkeletonCard({ className }: SkeletonProps) {
   return (
     <div
       className={cn(
-        "animate-pulse bg-ui-bg-primary dark:bg-ui-bg-primary-dark border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg p-4",
+        "animate-pulse bg-ui-bg-primary border border-ui-border-primary rounded-lg p-4",
         className,
       )}
     >

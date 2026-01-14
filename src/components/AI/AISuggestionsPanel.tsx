@@ -81,7 +81,7 @@ export const AISuggestionsPanel = React.memo(function AISuggestionsPanel({
           <ToggleGroupItem value="all" variant="brand">
             All
           </ToggleGroupItem>
-          <ToggleGroupItem value="risk_detection" variant="danger">
+          <ToggleGroupItem value="risk_detection" variant="error">
             ⚠️ Risks
           </ToggleGroupItem>
           <ToggleGroupItem value="insight" variant="accent">

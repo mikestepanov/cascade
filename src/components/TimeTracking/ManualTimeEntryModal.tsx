@@ -91,8 +91,8 @@ function ModeToggleButton({
       className={cn(
         "flex-1 flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium rounded-md transition-colors",
         isActive
-          ? "bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark shadow-sm"
-          : "text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark",
+          ? "bg-ui-bg-primary text-ui-text-primary shadow-sm"
+          : "text-ui-text-secondary hover:text-ui-text-primary",
       )}
     >
       <Icon className="w-4 h-4" />

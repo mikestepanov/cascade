@@ -3,12 +3,14 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 
 const inputVariants = cva(
-  "flex w-full rounded-lg border bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-ui-text-tertiary dark:placeholder:text-ui-text-tertiary-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
+  "flex w-full rounded-lg border transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-ui-text-tertiary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
   {
     variants: {
       variant: {
-        default: "border-ui-border-primary dark:border-ui-border-primary-dark",
-        error: "border-status-error dark:border-status-error focus-visible:ring-status-error",
+        default: "bg-ui-bg-primary text-ui-text-primary border-ui-border-base",
+        search: "bg-ui-bg-secondary text-ui-text-primary pl-9 border-ui-border-base",
+        ghost: "border-transparent bg-transparent text-ui-text-primary hover:bg-ui-bg-secondary",
+        error: "border-status-error focus-visible:ring-status-error",
       },
       inputSize: {
         sm: "h-9 px-3 text-sm",
@@ -59,7 +61,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           aria-invalid={!!error}
           {...props}
         />
-        {error && <p className="mt-1 text-sm text-status-error dark:text-status-error">{error}</p>}
+        {error && <p className="mt-1 text-sm text-status-error">{error}</p>}
       </div>
     );
   },

@@ -107,8 +107,8 @@ export function UserRatesManagement() {
                       className={cn(
                         "px-2 py-0.5 text-xs rounded",
                         rate.rateType === "billable"
-                          ? "bg-status-success/10 dark:bg-status-success/20 text-status-success dark:text-status-success"
-                          : "bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark text-ui-text-primary dark:text-ui-text-primary-dark",
+                          ? "bg-status-success/10 text-status-success"
+                          : "bg-ui-bg-secondary text-ui-text-primary",
                       )}
                     >
                       {rate.rateType}
@@ -212,8 +212,8 @@ export function UserRatesManagement() {
                   className={cn(
                     "cursor-pointer flex-1 p-3 border-2 rounded-lg transition-colors",
                     rateType === "internal"
-                      ? "border-brand-500 bg-brand-50 dark:bg-brand-900/20"
-                      : "border-ui-border-primary dark:border-ui-border-primary-dark",
+                      ? "border-brand-indigo-border bg-brand-indigo-track"
+                      : "border-ui-border-primary",
                   )}
                 >
                   <Flex align="center" gap="sm">
@@ -234,8 +234,8 @@ export function UserRatesManagement() {
                   className={cn(
                     "cursor-pointer flex-1 p-3 border-2 rounded-lg transition-colors",
                     rateType === "billable"
-                      ? "border-brand-500 bg-brand-50 dark:bg-brand-900/20"
-                      : "border-ui-border-primary dark:border-ui-border-primary-dark",
+                      ? "border-brand-indigo-border bg-brand-indigo-track"
+                      : "border-ui-border-primary",
                   )}
                 >
                   <Flex align="center" gap="sm">

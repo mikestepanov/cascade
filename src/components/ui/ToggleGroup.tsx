@@ -25,17 +25,17 @@ const toggleGroupItemVariants = cva(
     variants: {
       variant: {
         default:
-          "bg-transparent text-ui-text-secondary dark:text-ui-text-secondary-dark hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark data-[state=on]:bg-ui-bg-primary dark:data-[state=on]:bg-ui-bg-primary-dark data-[state=on]:text-ui-text-primary dark:data-[state=on]:text-ui-text-primary-dark data-[state=on]:shadow-sm",
+          "bg-transparent text-ui-text-secondary hover:bg-ui-bg-tertiary hover:text-ui-text-primary data-[state=on]:bg-ui-bg-primary data-[state=on]:text-ui-text-primary data-[state=on]:shadow-sm",
         brand:
-          "bg-transparent text-ui-text-secondary dark:text-ui-text-secondary-dark hover:bg-brand-100 dark:hover:bg-brand-900/30 hover:text-brand-700 dark:hover:text-brand-300 data-[state=on]:bg-brand-600 data-[state=on]:text-white",
-        danger:
-          "bg-transparent text-ui-text-secondary dark:text-ui-text-secondary-dark hover:bg-status-error-bg dark:hover:bg-status-error-bg-dark hover:text-status-error-text dark:hover:text-status-error-text-dark data-[state=on]:bg-status-error data-[state=on]:text-white",
+          "bg-transparent text-ui-text-secondary hover:bg-brand-100 hover:text-brand-700 data-[state=on]:bg-brand-600 data-[state=on]:text-white",
+        error:
+          "bg-transparent text-ui-text-secondary hover:bg-status-error-bg hover:text-status-error-text data-[state=on]:bg-status-error data-[state=on]:text-white",
         success:
-          "bg-transparent text-ui-text-secondary dark:text-ui-text-secondary-dark hover:bg-status-success-bg dark:hover:bg-status-success-bg-dark hover:text-status-success-text dark:hover:text-status-success-text-dark data-[state=on]:bg-status-success data-[state=on]:text-white",
+          "bg-transparent text-ui-text-secondary hover:bg-status-success-bg hover:text-status-success-text data-[state=on]:bg-status-success data-[state=on]:text-white",
         accent:
-          "bg-transparent text-ui-text-secondary dark:text-ui-text-secondary-dark hover:bg-accent-100 dark:hover:bg-accent-900/30 hover:text-accent-700 dark:hover:text-accent-300 data-[state=on]:bg-accent-600 data-[state=on]:text-white",
+          "bg-transparent text-ui-text-secondary hover:bg-accent-100 hover:text-accent-700 data-[state=on]:bg-accent-600 data-[state=on]:text-white",
         outline:
-          "border border-ui-border-primary dark:border-ui-border-primary-dark bg-transparent hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark data-[state=on]:bg-ui-bg-secondary dark:data-[state=on]:bg-ui-bg-secondary-dark data-[state=on]:border-brand-500",
+          "border border-ui-border-primary bg-transparent hover:bg-ui-bg-secondary data-[state=on]:bg-ui-bg-secondary data-[state=on]:border-brand-500",
       },
       size: {
         sm: "h-8 px-2.5 text-xs",
