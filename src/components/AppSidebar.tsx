@@ -364,8 +364,8 @@ export function AppSidebar() {
 }
 
 // Nav Item Component
-type NavItemProps = Omit<LinkProps<string>, "to"> & {
-  to: string; // Explicitly passed
+type NavItemProps = Omit<LinkProps, "to"> & {
+  to: LinkProps["to"];
   icon: React.ComponentType<{ className?: string }>;
   label: string;
   isActive: boolean;
@@ -388,8 +388,7 @@ function NavItem({
 }: NavItemProps) {
   const content = (
     <Link
-      // biome-ignore lint/suspicious/noExplicitAny: library type mismatch
-      to={to as any}
+      to={to}
       params={params}
       search={search}
       onClick={onClick}
@@ -435,8 +434,8 @@ type CollapsibleSectionProps = {
   children: React.ReactNode;
   "data-tour"?: string;
 } & (
-  | (Omit<LinkProps<string>, "to"> & { to: string }) // If 'to' is present, it must be a valid LinkProps
-  | { to?: never; params?: never; search?: never } // If 'to' is absent, params/search/activeProps must be absent
+  | (Omit<LinkProps, "to"> & { to: LinkProps["to"] })
+  | { to?: never; params?: never; search?: never }
 );
 
 function CollapsibleSection({
@@ -460,8 +459,7 @@ function CollapsibleSection({
         {isLink ? (
           <Link
             {...props}
-            // biome-ignore lint/suspicious/noExplicitAny: library type mismatch
-            to={props.to as any}
+            to={props.to}
             params={props.params}
             search={props.search}
             data-tour={dataTour}
@@ -513,8 +511,7 @@ function CollapsibleSection({
         {isLink ? (
           <Link
             {...props}
-            // biome-ignore lint/suspicious/noExplicitAny: library type mismatch
-            to={props.to as any}
+            to={props.to}
             className={cn(
               "flex-1 flex items-center gap-2 text-sm font-medium",
               isActive
@@ -556,8 +553,8 @@ function CollapsibleSection({
 }
 
 // Sub-item Component
-type NavSubItemProps = Omit<LinkProps<string>, "to"> & {
-  to: string;
+type NavSubItemProps = Omit<LinkProps, "to"> & {
+  to: LinkProps["to"];
   label: string;
   isActive: boolean;
   icon?: React.ComponentType<{ className?: string }>;
@@ -575,8 +572,7 @@ function NavSubItem({
 }: NavSubItemProps) {
   return (
     <Link
-      // biome-ignore lint/suspicious/noExplicitAny: library type mismatch
-      to={to as any}
+      to={to}
       params={params}
       {...props}
       className={cn(

@@ -1,9 +1,9 @@
 import { api } from "@convex/_generated/api";
-import type { Doc, Id } from "@convex/_generated/dataModel";
+import type { Id } from "@convex/_generated/dataModel";
 import { useQuery } from "convex/react";
+import type { FunctionReturnType } from "convex/server";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-// @ts-expect-error
-import { FixedSizeList } from "react-window";
+import { List, type ListImperativeAPI } from "react-window";
 
 import { useListNavigation } from "@/hooks/useListNavigation";
 import { formatDate } from "@/lib/dates";
@@ -41,19 +41,21 @@ export function RoadmapView({ projectId, sprintId, canEdit = true }: RoadmapView
   const issues = useQuery(api.issues.listRoadmapIssues, { projectId, sprintId });
   const project = useQuery(api.projects.getProject, { id: projectId });
 
+  type RoadmapIssue = FunctionReturnType<typeof api.issues.listRoadmapIssues>[number];
+
   // Filter epics and regular issues
-  const epics = issues?.filter((issue: Doc<"issues">) => issue.type === "epic") || [];
+  const epics = issues?.filter((issue: RoadmapIssue) => issue.type === "epic") || [];
   const filteredIssues = useMemo(() => {
     if (!issues) return [];
 
-    let filtered = issues.filter((issue: Doc<"issues">) => issue.type !== "epic");
+    let filtered = issues.filter((issue: RoadmapIssue) => issue.type !== "epic");
 
     if (filterEpic !== "all") {
-      filtered = filtered.filter((issue: Doc<"issues">) => issue.epicId === filterEpic);
+      filtered = filtered.filter((issue: RoadmapIssue) => issue.epicId === filterEpic);
     }
 
     // Only show issues with due dates
-    filtered = filtered.filter((issue: Doc<"issues">) => issue.dueDate);
+    filtered = filtered.filter((issue: RoadmapIssue) => issue.dueDate);
 
     return filtered;
   }, [issues, filterEpic]);
@@ -88,32 +90,37 @@ export function RoadmapView({ projectId, sprintId, canEdit = true }: RoadmapView
   );
 
   // Keyboard navigation
-  const listRef = useRef<FixedSizeList>(null);
+  const listRef = useRef<ListImperativeAPI>(null);
   const { selectedIndex } = useListNavigation({
     items: filteredIssues,
-    onSelect: (issue: Doc<"issues">) => setSelectedIssue(issue._id),
+    onSelect: (issue: RoadmapIssue) => setSelectedIssue(issue._id),
   });
 
   // Sync keyboard selection with scroll
   useEffect(() => {
     if (selectedIndex >= 0 && listRef.current) {
-      listRef.current.scrollToItem(selectedIndex);
+      listRef.current.scrollToRow({ index: selectedIndex });
     }
   }, [selectedIndex]);
 
   // Row renderer for virtualization
+  type RowData = {
+    issues: typeof filteredIssues;
+    selectedIndex: number;
+  };
+
   const Row = useCallback(
     ({
-      data,
+      issues,
+      selectedIndex,
       index,
       style,
-    }: {
-      data: { issues: typeof filteredIssues; selectedIndex: number };
+    }: RowData & {
       index: number;
       style: React.CSSProperties;
     }) => {
-      const issue = data.issues[index];
-      const isSelected = index === data.selectedIndex;
+      const issue = issues[index];
+      const isSelected = index === selectedIndex;
 
       return (
         <div
@@ -274,7 +281,7 @@ export function RoadmapView({ projectId, sprintId, canEdit = true }: RoadmapView
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Epics</SelectItem>
-              {epics.map((epic: Doc<"issues">) => (
+              {epics.map((epic: RoadmapIssue) => (
                 <SelectItem key={epic._id} value={epic._id}>
                   {epic.title}
                 </SelectItem>
@@ -326,16 +333,14 @@ export function RoadmapView({ projectId, sprintId, canEdit = true }: RoadmapView
               </Typography>
             </div>
           ) : (
-            <FixedSizeList
-              ref={listRef}
-              height={600} // This should ideally be dynamic, but 600 is a safe default for now
-              itemCount={filteredIssues.length}
-              itemSize={56} // Approximate height of each row
-              width="100%"
-              itemData={{ issues: filteredIssues, selectedIndex }}
-            >
-              {Row}
-            </FixedSizeList>
+            <List<RowData>
+              listRef={listRef}
+              style={{ height: 600, width: "100%" }}
+              rowCount={filteredIssues.length}
+              rowHeight={56}
+              rowProps={{ issues: filteredIssues, selectedIndex }}
+              rowComponent={Row}
+            />
           )}
         </div>
       </div>

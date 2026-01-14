@@ -1,13 +1,19 @@
+import type { ValidationError } from "@tanstack/react-form";
 import { Checkbox, Input, Select, Textarea } from "@/components/ui/form";
 import type { CheckboxProps } from "@/components/ui/form/Checkbox";
 import type { InputProps } from "@/components/ui/form/Input";
 import type { SelectProps } from "@/components/ui/form/Select";
 import type { TextareaProps } from "@/components/ui/form/Textarea";
 
+// Define Updater locally as it's a simple type used by TanStack Form
+type Updater<T> = T | ((old: T) => T);
+
 /**
  * Get the first error message from field state
  */
-function getFieldError(field: { state: { meta: { errors: string[] } } }): string | undefined {
+function getFieldError(field: {
+  state: { meta: { errors: ValidationError[] } };
+}): string | undefined {
   const errors = field.state.meta.errors;
   if (!errors || errors.length === 0) return undefined;
 
@@ -23,9 +29,18 @@ function getFieldError(field: { state: { meta: { errors: string[] } } }): string
 /**
  * Props for form field wrappers
  */
-interface BaseFieldProps<_TData, _TName extends string> {
-  // biome-ignore lint/suspicious/noExplicitAny: generic hell
-  field: any; // Complex TanStack Form type
+interface BaseFieldProps<TName extends string, TValue> {
+  field: {
+    name: TName;
+    state: {
+      value: TValue;
+      meta: {
+        errors: ValidationError[];
+      };
+    };
+    handleChange: (updater: Updater<TValue>) => void;
+    handleBlur: () => void;
+  };
   label?: string;
   helperText?: string;
 }
@@ -34,38 +49,24 @@ interface BaseFieldProps<_TData, _TName extends string> {
 // FormInput
 // ============================================================================
 
-interface FormInputProps<TData, TName extends string>
-  extends BaseFieldProps<TData, TName>,
+interface FormInputProps<TName extends string>
+  extends BaseFieldProps<TName, string | undefined | null>,
     Omit<InputProps, "name" | "value" | "onChange" | "onBlur" | "error"> {}
 
 /**
  * Input field connected to TanStack Form
- *
- * @example
- * ```tsx
- * <form.Field name="email">
- *   {(field) => (
- *     <FormInput
- *       field={field}
- *       label="Email"
- *       type="email"
- *       placeholder="Enter email"
- *     />
- *   )}
- * </form.Field>
- * ```
  */
-export function FormInput<TData, TName extends string>({
+export function FormInput<TName extends string>({
   field,
   label,
   helperText,
   ...props
-}: FormInputProps<TData, TName>) {
+}: FormInputProps<TName>) {
   return (
     <Input
       name={field.name}
-      value={(field.state.value as string) ?? ""}
-      onChange={(e) => field.handleChange(e.target.value as TData[TName & keyof TData])}
+      value={field.state.value ?? ""}
+      onChange={(e) => field.handleChange(e.target.value)}
       onBlur={field.handleBlur}
       error={getFieldError(field)}
       label={label}
@@ -79,37 +80,24 @@ export function FormInput<TData, TName extends string>({
 // FormTextarea
 // ============================================================================
 
-interface FormTextareaProps<TData, TName extends string>
-  extends BaseFieldProps<TData, TName>,
+interface FormTextareaProps<TName extends string>
+  extends BaseFieldProps<TName, string | undefined | null>,
     Omit<TextareaProps, "name" | "value" | "onChange" | "onBlur" | "error"> {}
 
 /**
  * Textarea field connected to TanStack Form
- *
- * @example
- * ```tsx
- * <form.Field name="description">
- *   {(field) => (
- *     <FormTextarea
- *       field={field}
- *       label="Description"
- *       rows={4}
- *     />
- *   )}
- * </form.Field>
- * ```
  */
-export function FormTextarea<TData, TName extends string>({
+export function FormTextarea<TName extends string>({
   field,
   label,
   helperText,
   ...props
-}: FormTextareaProps<TData, TName>) {
+}: FormTextareaProps<TName>) {
   return (
     <Textarea
       name={field.name}
-      value={(field.state.value as string) ?? ""}
-      onChange={(e) => field.handleChange(e.target.value as TData[TName & keyof TData])}
+      value={field.state.value ?? ""}
+      onChange={(e) => field.handleChange(e.target.value)}
       onBlur={field.handleBlur}
       error={getFieldError(field)}
       label={label}
@@ -123,42 +111,25 @@ export function FormTextarea<TData, TName extends string>({
 // FormSelect
 // ============================================================================
 
-interface FormSelectProps<TData, TName extends string>
-  extends BaseFieldProps<TData, TName>,
+interface FormSelectProps<TName extends string>
+  extends BaseFieldProps<TName, string | undefined | null>,
     Omit<SelectProps, "name" | "value" | "onChange" | "onBlur" | "error"> {}
 
 /**
  * Select field connected to TanStack Form
- *
- * @example
- * ```tsx
- * <form.Field name="priority">
- *   {(field) => (
- *     <FormSelect
- *       field={field}
- *       label="Priority"
- *       options={[
- *         { value: "low", label: "Low" },
- *         { value: "medium", label: "Medium" },
- *         { value: "high", label: "High" },
- *       ]}
- *     />
- *   )}
- * </form.Field>
- * ```
  */
-export function FormSelect<TData, TName extends string>({
+export function FormSelect<TName extends string>({
   field,
   label,
   helperText,
   children,
   ...props
-}: FormSelectProps<TData, TName>) {
+}: FormSelectProps<TName>) {
   return (
     <Select
       name={field.name}
-      value={(field.state.value as string) ?? ""}
-      onChange={(e) => field.handleChange(e.target.value as TData[TName & keyof TData])}
+      value={field.state.value ?? ""}
+      onChange={(e) => field.handleChange(e.target.value)}
       onBlur={field.handleBlur}
       error={getFieldError(field)}
       label={label}
@@ -174,36 +145,24 @@ export function FormSelect<TData, TName extends string>({
 // FormCheckbox
 // ============================================================================
 
-interface FormCheckboxProps<TData, TName extends string>
-  extends BaseFieldProps<TData, TName>,
+interface FormCheckboxProps<TName extends string>
+  extends BaseFieldProps<TName, boolean | undefined | null>,
     Omit<CheckboxProps, "name" | "checked" | "onChange" | "onBlur" | "error"> {}
 
 /**
  * Checkbox field connected to TanStack Form
- *
- * @example
- * ```tsx
- * <form.Field name="acceptTerms">
- *   {(field) => (
- *     <FormCheckbox
- *       field={field}
- *       label="I accept the terms"
- *     />
- *   )}
- * </form.Field>
- * ```
  */
-export function FormCheckbox<TData, TName extends string>({
+export function FormCheckbox<TName extends string>({
   field,
   label,
   helperText,
   ...props
-}: FormCheckboxProps<TData, TName>) {
+}: FormCheckboxProps<TName>) {
   return (
     <Checkbox
       name={field.name}
-      checked={(field.state.value as boolean) ?? false}
-      onChange={(e) => field.handleChange(e.target.checked as TData[TName & keyof TData])}
+      checked={field.state.value ?? false}
+      onChange={(e) => field.handleChange(e.target.checked)}
       onBlur={field.handleBlur}
       error={getFieldError(field)}
       label={label}
