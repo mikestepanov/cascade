@@ -11,7 +11,6 @@ import {
 import { Flex } from "@/components/ui/Flex";
 import { ROUTE_PATTERNS } from "@/config/routes";
 import { useTheme } from "@/contexts/ThemeContext";
-import { cn } from "@/lib/utils";
 import { NixeloLogo } from "./icons";
 
 export function NavHeader() {

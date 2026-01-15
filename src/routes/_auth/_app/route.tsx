@@ -5,14 +5,12 @@ import { useEffect, useRef, useState } from "react";
 import { Flex } from "@/components/ui/Flex";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { Typography } from "@/components/ui/Typography";
-import { ROUTE_PATTERNS } from "@/config/routes";
 
 export const Route = createFileRoute("/_auth/_app")({
   component: AppLayout,
 });
 
 function AppLayout() {
-  const navigate = useNavigate();
   const { isLoading: isAuthLoading, isAuthenticated } = useConvexAuth();
 
   // Get user's companies to check if we need initialization
@@ -21,13 +19,6 @@ function AppLayout() {
     isAuthenticated ? undefined : "skip",
   );
 
-  // Handle home redirect only (SmartAuthGuard handles onboarding/dashboard transitions)
-  useEffect(() => {
-    if (!(isAuthLoading || isAuthenticated)) {
-      navigate({ to: ROUTE_PATTERNS.home });
-    }
-  }, [isAuthLoading, isAuthenticated, navigate]);
-
   // Loading state
   if (isAuthLoading || userCompanies === undefined) {
     return (
@@ -35,11 +26,6 @@ function AppLayout() {
         <LoadingSpinner size="lg" />
       </Flex>
     );
-  }
-
-  // Redirect to sign in if not authenticated
-  if (!isAuthenticated) {
-    return null;
   }
 
   // User has no companies - initialize default company
@@ -67,8 +53,7 @@ function InitializeCompany() {
         // Navigate to the new company's dashboard
         if (result.slug) {
           navigate({
-            to: ROUTE_PATTERNS.dashboard,
-            params: { companySlug: result.slug },
+            to: `/${result.slug}/dashboard`,
             replace: true,
           });
         } else {

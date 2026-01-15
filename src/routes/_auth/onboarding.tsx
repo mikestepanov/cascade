@@ -60,14 +60,19 @@ function OnboardingPage() {
   // Navigate to the user's company dashboard
   const navigateToCompany = () => {
     if (userCompanies && userCompanies.length > 0) {
-      navigate({
-        to: ROUTE_PATTERNS.dashboard,
-        params: { companySlug: userCompanies[0].slug },
-      });
-    } else {
-      // Fallback - this shouldn't happen if onboarding is done correctly
-      navigate({ to: ROUTE_PATTERNS.home });
+      // Use the first company available
+      const slug = userCompanies[0].slug;
+      if (slug) {
+        navigate({
+          to: `/${slug}/dashboard`,
+        });
+        return;
+      }
     }
+
+    // Fallback - redirect to /app gateway to trigger company initialization
+    // (This is essential for the "team_member" flow or if the query is momentarily stale)
+    navigate({ to: ROUTE_PATTERNS.app });
   };
 
   const handleComplete = async () => {

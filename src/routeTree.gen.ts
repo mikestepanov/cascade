@@ -16,8 +16,8 @@ import { Route as AuthRouteRouteImport } from './routes/_auth/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as InviteTokenRouteImport } from './routes/invite.$token'
 import { Route as AuthOnboardingRouteImport } from './routes/_auth/onboarding'
-import { Route as AuthAppRouteImport } from './routes/_auth/app'
 import { Route as AuthAppRouteRouteImport } from './routes/_auth/_app/route'
+import { Route as AuthAppAppRouteImport } from './routes/_auth/_app/app'
 import { Route as AuthAppCompanySlugRouteRouteImport } from './routes/_auth/_app/$companySlug/route'
 import { Route as AuthAppCompanySlugIndexRouteImport } from './routes/_auth/_app/$companySlug/index'
 import { Route as AuthAppCompanySlugTimeTrackingRouteImport } from './routes/_auth/_app/$companySlug/time-tracking'
@@ -87,14 +87,14 @@ const AuthOnboardingRoute = AuthOnboardingRouteImport.update({
   path: '/onboarding',
   getParentRoute: () => AuthRouteRoute,
 } as any)
-const AuthAppRoute = AuthAppRouteImport.update({
-  id: '/app',
-  path: '/app',
-  getParentRoute: () => AuthRouteRoute,
-} as any)
 const AuthAppRouteRoute = AuthAppRouteRouteImport.update({
   id: '/_app',
   getParentRoute: () => AuthRouteRoute,
+} as any)
+const AuthAppAppRoute = AuthAppAppRouteImport.update({
+  id: '/app',
+  path: '/app',
+  getParentRoute: () => AuthAppRouteRoute,
 } as any)
 const AuthAppCompanySlugRouteRoute = AuthAppCompanySlugRouteRouteImport.update({
   id: '/$companySlug',
@@ -339,10 +339,10 @@ export interface FileRoutesByFullPath {
   '/forgot-password': typeof ForgotPasswordRoute
   '/signin': typeof SigninRoute
   '/signup': typeof SignupRoute
-  '/app': typeof AuthAppRoute
   '/onboarding': typeof AuthOnboardingRoute
   '/invite/$token': typeof InviteTokenRoute
   '/$companySlug': typeof AuthAppCompanySlugRouteRouteWithChildren
+  '/app': typeof AuthAppAppRoute
   '/$companySlug/dashboard': typeof AuthAppCompanySlugDashboardRoute
   '/$companySlug/time-tracking': typeof AuthAppCompanySlugTimeTrackingRoute
   '/$companySlug/': typeof AuthAppCompanySlugIndexRoute
@@ -382,9 +382,9 @@ export interface FileRoutesByTo {
   '/forgot-password': typeof ForgotPasswordRoute
   '/signin': typeof SigninRoute
   '/signup': typeof SignupRoute
-  '/app': typeof AuthAppRoute
   '/onboarding': typeof AuthOnboardingRoute
   '/invite/$token': typeof InviteTokenRoute
+  '/app': typeof AuthAppAppRoute
   '/$companySlug/dashboard': typeof AuthAppCompanySlugDashboardRoute
   '/$companySlug/time-tracking': typeof AuthAppCompanySlugTimeTrackingRoute
   '/$companySlug': typeof AuthAppCompanySlugIndexRoute
@@ -423,10 +423,10 @@ export interface FileRoutesById {
   '/signin': typeof SigninRoute
   '/signup': typeof SignupRoute
   '/_auth/_app': typeof AuthAppRouteRouteWithChildren
-  '/_auth/app': typeof AuthAppRoute
   '/_auth/onboarding': typeof AuthOnboardingRoute
   '/invite/$token': typeof InviteTokenRoute
   '/_auth/_app/$companySlug': typeof AuthAppCompanySlugRouteRouteWithChildren
+  '/_auth/_app/app': typeof AuthAppAppRoute
   '/_auth/_app/$companySlug/dashboard': typeof AuthAppCompanySlugDashboardRoute
   '/_auth/_app/$companySlug/time-tracking': typeof AuthAppCompanySlugTimeTrackingRoute
   '/_auth/_app/$companySlug/': typeof AuthAppCompanySlugIndexRoute
@@ -468,10 +468,10 @@ export interface FileRouteTypes {
     | '/forgot-password'
     | '/signin'
     | '/signup'
-    | '/app'
     | '/onboarding'
     | '/invite/$token'
     | '/$companySlug'
+    | '/app'
     | '/$companySlug/dashboard'
     | '/$companySlug/time-tracking'
     | '/$companySlug/'
@@ -511,9 +511,9 @@ export interface FileRouteTypes {
     | '/forgot-password'
     | '/signin'
     | '/signup'
-    | '/app'
     | '/onboarding'
     | '/invite/$token'
+    | '/app'
     | '/$companySlug/dashboard'
     | '/$companySlug/time-tracking'
     | '/$companySlug'
@@ -551,10 +551,10 @@ export interface FileRouteTypes {
     | '/signin'
     | '/signup'
     | '/_auth/_app'
-    | '/_auth/app'
     | '/_auth/onboarding'
     | '/invite/$token'
     | '/_auth/_app/$companySlug'
+    | '/_auth/_app/app'
     | '/_auth/_app/$companySlug/dashboard'
     | '/_auth/_app/$companySlug/time-tracking'
     | '/_auth/_app/$companySlug/'
@@ -650,19 +650,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthOnboardingRouteImport
       parentRoute: typeof AuthRouteRoute
     }
-    '/_auth/app': {
-      id: '/_auth/app'
-      path: '/app'
-      fullPath: '/app'
-      preLoaderRoute: typeof AuthAppRouteImport
-      parentRoute: typeof AuthRouteRoute
-    }
     '/_auth/_app': {
       id: '/_auth/_app'
       path: ''
       fullPath: ''
       preLoaderRoute: typeof AuthAppRouteRouteImport
       parentRoute: typeof AuthRouteRoute
+    }
+    '/_auth/_app/app': {
+      id: '/_auth/_app/app'
+      path: '/app'
+      fullPath: '/app'
+      preLoaderRoute: typeof AuthAppAppRouteImport
+      parentRoute: typeof AuthAppRouteRoute
     }
     '/_auth/_app/$companySlug': {
       id: '/_auth/_app/$companySlug'
@@ -1059,10 +1059,12 @@ const AuthAppCompanySlugRouteRouteWithChildren =
 
 interface AuthAppRouteRouteChildren {
   AuthAppCompanySlugRouteRoute: typeof AuthAppCompanySlugRouteRouteWithChildren
+  AuthAppAppRoute: typeof AuthAppAppRoute
 }
 
 const AuthAppRouteRouteChildren: AuthAppRouteRouteChildren = {
   AuthAppCompanySlugRouteRoute: AuthAppCompanySlugRouteRouteWithChildren,
+  AuthAppAppRoute: AuthAppAppRoute,
 }
 
 const AuthAppRouteRouteWithChildren = AuthAppRouteRoute._addFileChildren(
@@ -1071,13 +1073,11 @@ const AuthAppRouteRouteWithChildren = AuthAppRouteRoute._addFileChildren(
 
 interface AuthRouteRouteChildren {
   AuthAppRouteRoute: typeof AuthAppRouteRouteWithChildren
-  AuthAppRoute: typeof AuthAppRoute
   AuthOnboardingRoute: typeof AuthOnboardingRoute
 }
 
 const AuthRouteRouteChildren: AuthRouteRouteChildren = {
   AuthAppRouteRoute: AuthAppRouteRouteWithChildren,
-  AuthAppRoute: AuthAppRoute,
   AuthOnboardingRoute: AuthOnboardingRoute,
 }
 
