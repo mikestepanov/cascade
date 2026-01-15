@@ -72,7 +72,7 @@ function InitializeCompany() {
     return (
       <Flex align="center" justify="center" className="min-h-screen bg-ui-bg-secondary">
         <div className="text-center">
-          <Typography variant="h2" className="text-xl font-medium mb-2 text-red-600">
+          <Typography variant="h2" className="text-xl font-medium mb-2 text-status-error">
             Error
           </Typography>
           <Typography variant="p" color="secondary">

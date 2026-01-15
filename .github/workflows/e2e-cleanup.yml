@@ -19,5 +19,6 @@ jobs:
             -H "Content-Type: application/json" \
             -H "x-e2e-api-key: ${{ secrets.E2E_API_KEY }}" \
             -d '{"olderThanDays": 7}' \
+            --max-time 60 \
             --fail-with-body
           echo "✅ Cleanup complete"

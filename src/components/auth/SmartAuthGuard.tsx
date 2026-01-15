@@ -10,6 +10,7 @@ const PUBLIC_PATHS = [
   ROUTE_PATTERNS.signin as string,
   ROUTE_PATTERNS.signup as string,
   ROUTE_PATTERNS.forgotPassword as string,
+  ROUTE_PATTERNS.invite as string,
 ];
 
 /**

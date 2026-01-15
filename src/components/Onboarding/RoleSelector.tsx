@@ -1,5 +1,5 @@
 import { Check, User, Users } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Flex } from "@/components/ui/Flex";
 import { cn } from "@/lib/utils";
 import { Typography } from "../ui/Typography";
@@ -93,13 +93,20 @@ function RoleCard({
 export function RoleSelector({ onSelect }: RoleSelectorProps) {
   const [isPending, setIsPending] = useState(false);
   const [localSelected, setLocalSelected] = useState<"team_lead" | "team_member" | null>(null);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    };
+  }, []);
 
   const handleSelect = (role: "team_lead" | "team_member") => {
     setLocalSelected(role);
     setIsPending(true);
 
     // Small delay for visual feedback before transitioning
-    setTimeout(() => {
+    timeoutRef.current = setTimeout(() => {
       onSelect(role);
     }, 400);
   };

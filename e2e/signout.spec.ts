@@ -45,16 +45,17 @@ test.describe("Sign Out", () => {
 
     // Click 'Log in' from the landing page nav
     await landingPage.clickNavLogin();
+    await page.waitForURL("**/signin*", { timeout: 10000 });
 
     // Sign in back using the same user credentials
     const workerSuffix = `w${testInfo.parallelIndex}`;
     const user = {
       ...TEST_USERS.teamLead,
-      email: `e2e-teamlead-${workerSuffix}@inbox.mailtrap.io`,
+      email: TEST_USERS.teamLead.email.replace("@", `-${workerSuffix}@`),
     };
 
     // Use the robust sign-in helper
-    const baseURL = page.url().split("/signin")[0];
+    const baseURL = new URL(page.url()).origin;
     const success = await trySignInUser(page, baseURL, user);
 
     expect(success).toBe(true);
