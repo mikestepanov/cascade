@@ -10,8 +10,8 @@ export function NixeloLogo({ size = 28, className }: { size?: number; className?
     >
       <defs>
         <linearGradient id="nixeloGrad" x1="0%" y1="100%" x2="100%" y2="0%">
-          <stop offset="0%" stopColor="#22d3ee" />
-          <stop offset="100%" stopColor="#a855f7" />
+          <stop offset="0%" className="text-landing-accent" stopColor="currentColor" />
+          <stop offset="100%" className="text-landing-accent-alt" stopColor="currentColor" />
         </linearGradient>
       </defs>
       <path
@@ -21,9 +21,9 @@ export function NixeloLogo({ size = 28, className }: { size?: number; className?
         strokeWidth={8}
         strokeLinecap="round"
         strokeLinejoin="round"
+        className="transition-all duration-300 ease-in-out"
         style={{
           filter: "drop-shadow(0 0 8px rgba(34, 211, 238, 0.5))",
-          transition: "transform 0.3s ease, filter 0.3s ease",
         }}
       />
     </svg>
@@ -37,7 +37,8 @@ export function WorkflowIcon() {
       height="24"
       viewBox="0 0 24 24"
       fill="none"
-      stroke="#06b6d4"
+      stroke="currentColor"
+      className="text-landing-accent"
       strokeWidth="1.5"
       strokeLinecap="round"
       strokeLinejoin="round"
@@ -55,14 +56,29 @@ export function WorkflowIcon() {
       <path d="M16 12a9 9 0 0 0 0 8" />
       <path d="M12 16h8" />
       {/* Accent dot */}
-      <circle cx="19" cy="5" r="1.5" stroke="none" fill="#00E5FF" />
+      <circle
+        cx="19"
+        cy="5"
+        r="1.5"
+        stroke="none"
+        fill="currentColor"
+        className="text-landing-accent"
+      />
     </svg>
   );
 }
 
 export function TimeIcon() {
   return (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#14b8a6" strokeWidth="1.5">
+    <svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      className="text-landing-accent-teal"
+      strokeWidth="1.5"
+    >
       <rect x="3" y="4" width="18" height="16" rx="2" />
       <path d="M3 8h18M8 2v4M16 2v4" />
       <circle cx="12" cy="14" r="2" />
@@ -77,7 +93,8 @@ export function CollabIcon() {
       height="24"
       viewBox="0 0 24 24"
       fill="none"
-      stroke="#14b8a6"
+      stroke="currentColor"
+      className="text-landing-accent-teal"
       strokeWidth="1.5"
       strokeLinecap="round"
       strokeLinejoin="round"
@@ -88,14 +105,22 @@ export function CollabIcon() {
       {/* Connection line */}
       <path d="M10 10l4 4" strokeDasharray="2 2" strokeOpacity="0.4" />
       {/* Accent dot */}
-      <circle cx="19" cy="5" r="1.5" stroke="none" fill="#14b8a6" />
+      <circle cx="19" cy="5" r="1.5" stroke="none" fill="currentColor" />
     </svg>
   );
 }
 
 export function ClarityIcon() {
   return (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#a855f7" strokeWidth="1.5">
+    <svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      className="text-landing-accent-alt"
+      strokeWidth="1.5"
+    >
       <rect x="3" y="3" width="7" height="7" rx="1" />
       <rect x="14" y="3" width="7" height="7" rx="1" />
       <rect x="3" y="14" width="7" height="7" rx="1" />

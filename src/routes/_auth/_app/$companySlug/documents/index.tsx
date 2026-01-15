@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { Flex } from "@/components/ui/Flex";
 import { Typography } from "@/components/ui/Typography";
 
 export const Route = createFileRoute("/_auth/_app/$companySlug/documents/")({
@@ -7,7 +8,7 @@ export const Route = createFileRoute("/_auth/_app/$companySlug/documents/")({
 
 function DocumentsListPage() {
   return (
-    <div className="flex-1 flex items-center justify-center text-ui-text-tertiary dark:text-ui-text-tertiary-dark p-4 h-full">
+    <Flex align="center" justify="center" className="flex-1 text-ui-text-tertiary p-4 h-full">
       <div className="text-center">
         <Typography variant="h2" className="text-xl font-medium mb-2">
           Welcome to your project
@@ -16,6 +17,6 @@ function DocumentsListPage() {
           Select a document from the sidebar or create a new one to get started.
         </Typography>
       </div>
-    </div>
+    </Flex>
   );
 }

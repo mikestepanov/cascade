@@ -74,44 +74,12 @@ function showUpdateNotification() {
   // Create a simple banner to notify users of an update
   const banner = document.createElement("div");
   banner.id = "sw-update-banner";
-  banner.style.cssText = `
-    position: fixed;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: #3b82f6;
-    color: white;
-    padding: 16px 24px;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    z-index: 9999;
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    max-width: 90%;
-  `;
-
+  banner.className =
+    "fixed bottom-5 left-1/2 -translate-x-1/2 bg-brand-600 text-ui-text-inverse px-6 py-4 rounded-lg shadow-xl z-[9999] flex items-center gap-4 font-sans max-w-[90%]";
   banner.innerHTML = `
     <span>A new version is available!</span>
-    <button id="sw-update-button" style="
-      background: white;
-      color: #3b82f6;
-      border: none;
-      padding: 8px 16px;
-      border-radius: 4px;
-      font-weight: 600;
-      cursor: pointer;
-    ">Update</button>
-    <button id="sw-dismiss-button" style="
-      background: transparent;
-      color: white;
-      border: 1px solid white;
-      padding: 8px 16px;
-      border-radius: 4px;
-      font-weight: 600;
-      cursor: pointer;
-    ">Dismiss</button>
+    <button id="sw-update-button" class="bg-ui-bg-primary text-brand-600 border-none px-4 py-2 rounded font-semibold cursor-pointer">Update</button>
+    <button id="sw-dismiss-button" class="bg-transparent text-ui-text-inverse border border-ui-text-inverse px-4 py-2 rounded font-semibold cursor-pointer">Dismiss</button>
   `;
 
   document.body.appendChild(banner);
@@ -175,45 +143,13 @@ function showInstallPrompt(onInstall: () => void) {
 
   const banner = document.createElement("div");
   banner.id = "pwa-install-banner";
-  banner.style.cssText = `
-    position: fixed;
-    top: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: white;
-    color: #1f2937;
-    padding: 16px 24px;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    z-index: 9999;
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    max-width: 90%;
-    border: 2px solid #3b82f6;
-  `;
+  banner.className =
+    "fixed top-5 left-1/2 -translate-x-1/2 bg-ui-bg-elevated text-ui-text-primary px-6 py-4 rounded-container shadow-xl z-[9999] flex items-center gap-4 font-sans max-w-[90%] border-2 border-brand-600";
 
   banner.innerHTML = `
     <span>📱 Install Nixelo for quick access!</span>
-    <button id="pwa-install-button" style="
-      background: #3b82f6;
-      color: white;
-      border: none;
-      padding: 8px 16px;
-      border-radius: 4px;
-      font-weight: 600;
-      cursor: pointer;
-    ">Install</button>
-    <button id="pwa-dismiss-button" style="
-      background: transparent;
-      color: #3b82f6;
-      border: 1px solid #3b82f6;
-      padding: 8px 16px;
-      border-radius: 4px;
-      font-weight: 600;
-      cursor: pointer;
-    ">Not now</button>
+    <button id="pwa-install-button" class="bg-brand-600 text-ui-text-inverse border-none px-4 py-2 rounded font-semibold cursor-pointer">Install</button>
+    <button id="pwa-dismiss-button" class="bg-transparent text-brand-600 border border-brand-600 px-4 py-2 rounded font-semibold cursor-pointer">Not now</button>
   `;
 
   document.body.appendChild(banner);

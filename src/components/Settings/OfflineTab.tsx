@@ -31,9 +31,9 @@ export function OfflineTab() {
               )}
             </div>
             <div>
-              <h3 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
+              <Typography variant="h3" className="text-lg font-semibold text-ui-text-primary">
                 Connection Status
-              </h3>
+              </Typography>
               <Typography
                 className={cn(
                   "text-sm mt-1",
@@ -47,29 +47,23 @@ export function OfflineTab() {
             </div>
           </Flex>
 
-          <div className="mt-6 pt-6 border-t border-ui-border-primary dark:border-ui-border-primary-dark">
+          <div className="mt-6 pt-6 border-t border-ui-border-primary">
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <div className="p-4 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg">
-                <Typography className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
-                  Pending Changes
-                </Typography>
-                <Typography className="text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark mt-1">
+              <div className="p-4 bg-ui-bg-secondary rounded-lg">
+                <Typography className="text-sm text-ui-text-secondary">Pending Changes</Typography>
+                <Typography className="text-2xl font-bold text-ui-text-primary mt-1">
                   {isLoading ? "..." : count}
                 </Typography>
               </div>
-              <div className="p-4 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg">
-                <Typography className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
-                  Sync Status
-                </Typography>
-                <Typography className="text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark mt-1">
+              <div className="p-4 bg-ui-bg-secondary rounded-lg">
+                <Typography className="text-sm text-ui-text-secondary">Sync Status</Typography>
+                <Typography className="text-2xl font-bold text-ui-text-primary mt-1">
                   {isOnline ? "Ready" : "Paused"}
                 </Typography>
               </div>
-              <div className="p-4 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg">
-                <Typography className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
-                  Storage
-                </Typography>
-                <Typography className="text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark mt-1">
+              <div className="p-4 bg-ui-bg-secondary rounded-lg">
+                <Typography className="text-sm text-ui-text-secondary">Storage</Typography>
+                <Typography className="text-2xl font-bold text-ui-text-primary mt-1">
                   IndexedDB
                 </Typography>
               </div>
@@ -81,17 +75,17 @@ export function OfflineTab() {
       {/* Offline Features */}
       <Card>
         <div className="p-6">
-          <h3 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-4">
+          <Typography variant="h3" className="text-lg font-semibold text-ui-text-primary mb-4">
             Offline Features
-          </h3>
+          </Typography>
           <Flex direction="column" gap="lg">
             <Flex gap="md" align="start">
               <div className="mt-0.5">✓</div>
               <div>
-                <Typography className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+                <Typography className="text-sm font-medium text-ui-text-primary">
                   View Cached Content
                 </Typography>
-                <Typography className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
+                <Typography className="text-sm text-ui-text-secondary">
                   Access recently viewed projects and issues while offline
                 </Typography>
               </div>
@@ -99,10 +93,10 @@ export function OfflineTab() {
             <Flex gap="md" align="start">
               <div className="mt-0.5">✓</div>
               <div>
-                <Typography className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+                <Typography className="text-sm font-medium text-ui-text-primary">
                   Offline Edits
                 </Typography>
-                <Typography className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
+                <Typography className="text-sm text-ui-text-secondary">
                   Make changes offline - they'll sync automatically when you're back online
                 </Typography>
               </div>
@@ -110,10 +104,10 @@ export function OfflineTab() {
             <Flex gap="md" align="start">
               <div className="mt-0.5">✓</div>
               <div>
-                <Typography className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+                <Typography className="text-sm font-medium text-ui-text-primary">
                   Background Sync
                 </Typography>
-                <Typography className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
+                <Typography className="text-sm text-ui-text-secondary">
                   Changes sync automatically in the background when connection is restored
                 </Typography>
               </div>
@@ -121,10 +115,10 @@ export function OfflineTab() {
             <Flex gap="md" align="start">
               <div className="mt-0.5">✓</div>
               <div>
-                <Typography className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+                <Typography className="text-sm font-medium text-ui-text-primary">
                   Install as App
                 </Typography>
-                <Typography className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
+                <Typography className="text-sm text-ui-text-secondary">
                   Install Nixelo as a standalone app on your device
                 </Typography>
               </div>
@@ -138,9 +132,9 @@ export function OfflineTab() {
         <Card>
           <div className="p-6">
             <Flex justify="between" align="center" className="mb-4">
-              <h3 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
+              <Typography variant="h3" className="text-lg font-semibold text-ui-text-primary">
                 Pending Sync Queue
-              </h3>
+              </Typography>
               <Button
                 variant="secondary"
                 size="sm"
@@ -156,23 +150,23 @@ export function OfflineTab() {
                   key={item.id}
                   justify="between"
                   align="center"
-                  className="p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg"
+                  className="p-3 bg-ui-bg-secondary rounded-lg"
                 >
                   <div>
-                    <Typography className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+                    <Typography className="text-sm font-medium text-ui-text-primary">
                       {item.mutationType}
                     </Typography>
-                    <Typography className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+                    <Typography className="text-xs text-ui-text-tertiary">
                       {new Date(item.timestamp).toLocaleString()}
                     </Typography>
                   </div>
-                  <span className="text-xs px-2 py-1 bg-status-warning-bg dark:bg-status-warning-bg-dark text-status-warning-text dark:text-status-warning-text-dark rounded">
+                  <span className="text-xs px-2 py-1 bg-status-warning-bg text-status-warning-text rounded">
                     Pending
                   </span>
                 </Flex>
               ))}
               {pending.length > 5 && (
-                <Typography className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark text-center pt-2">
+                <Typography className="text-sm text-ui-text-tertiary text-center pt-2">
                   +{pending.length - 5} more items
                 </Typography>
               )}

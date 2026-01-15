@@ -80,20 +80,16 @@ export function OnboardingChecklist() {
   };
 
   return (
-    <div className="fixed bottom-6 right-6 w-80 bg-ui-bg-primary dark:bg-ui-bg-primary-dark rounded-lg shadow-xl border border-ui-border-primary dark:border-ui-border-primary-dark z-40">
+    <div className="fixed bottom-6 right-6 w-80 bg-ui-bg-primary rounded-lg shadow-xl border border-ui-border-primary z-40">
       {/* Header */}
-      <Flex
-        justify="between"
-        align="center"
-        className="p-4 border-b border-ui-border-primary dark:border-ui-border-primary-dark"
-      >
+      <Flex justify="between" align="center" className="p-4 border-b border-ui-border-primary">
         <Flex gap="sm" align="center">
           <span className="text-lg">🚀</span>
           <div>
-            <h3 className="font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
+            <Typography variant="h3" className="font-semibold text-ui-text-primary">
               Getting Started
-            </h3>
-            <Typography className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+            </Typography>
+            <Typography className="text-xs text-ui-text-tertiary">
               {completedCount} of {totalCount} complete
             </Typography>
           </div>
@@ -102,20 +98,20 @@ export function OnboardingChecklist() {
           <button
             type="button"
             onClick={() => setIsExpanded(!isExpanded)}
-            className="p-1 hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark rounded"
+            className="p-1 hover:bg-ui-bg-secondary rounded"
           >
             {isExpanded ? (
-              <ChevronDown className="w-4 h-4 text-ui-text-tertiary dark:text-ui-text-tertiary-dark" />
+              <ChevronDown className="w-4 h-4 text-ui-text-tertiary" />
             ) : (
-              <ChevronUp className="w-4 h-4 text-ui-text-tertiary dark:text-ui-text-tertiary-dark" />
+              <ChevronUp className="w-4 h-4 text-ui-text-tertiary" />
             )}
           </button>
           <button
             type="button"
             onClick={handleDismiss}
-            className="p-1 hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark rounded"
+            className="p-1 hover:bg-ui-bg-secondary rounded"
           >
-            <X className="w-4 h-4 text-ui-text-tertiary dark:text-ui-text-tertiary-dark" />
+            <X className="w-4 h-4 text-ui-text-tertiary" />
           </button>
         </Flex>
       </Flex>
@@ -151,7 +147,7 @@ export function OnboardingChecklist() {
                 >
                   {item.title}
                 </Typography>
-                <Typography className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+                <Typography className="text-xs text-ui-text-tertiary">
                   {item.description}
                 </Typography>
               </div>

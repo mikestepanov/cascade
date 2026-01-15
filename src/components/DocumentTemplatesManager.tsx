@@ -4,6 +4,7 @@ import { useForm } from "@tanstack/react-form";
 import { useMutation, useQuery } from "convex/react";
 import { useEffect, useState } from "react";
 import { z } from "zod";
+import { Flex } from "@/components/ui/Flex";
 import { FormInput, FormSelect, FormTextarea } from "@/lib/form";
 import { showError, showSuccess } from "@/lib/toast";
 import { cn } from "@/lib/utils";
@@ -205,7 +206,7 @@ export function DocumentTemplatesManager({
         <CardBody>
           {/* Category Filter */}
           <div className="mb-6">
-            <div className="flex gap-2 overflow-x-auto pb-2">
+            <Flex gap="sm" className="overflow-x-auto pb-2">
               {categoryFilters.map((cat) => (
                 <button
                   key={cat.value}
@@ -221,7 +222,7 @@ export function DocumentTemplatesManager({
                   {cat.label}
                 </button>
               ))}
-            </div>
+            </Flex>
           </div>
 
           {!templates || templates.length === 0 ? (
@@ -239,9 +240,12 @@ export function DocumentTemplatesManager({
               {/* Built-in Templates */}
               {builtInTemplates.length > 0 && (
                 <div>
-                  <h3 className="text-sm font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-3">
+                  <Typography
+                    variant="h3"
+                    className="text-sm font-semibold text-ui-text-primary mb-3"
+                  >
                     Built-in Templates
-                  </h3>
+                  </Typography>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {builtInTemplates.map((template: Doc<"documentTemplates">) => (
                       <button
@@ -250,12 +254,15 @@ export function DocumentTemplatesManager({
                         onClick={() => onSelectTemplate?.(template._id)}
                         className="p-4 bg-linear-to-br from-brand-50 to-brand-100 dark:from-brand-900/20 dark:to-brand-900/40 rounded-lg hover:shadow-md transition-all text-left border-2 border-transparent hover:border-brand-300 dark:hover:border-brand-700"
                       >
-                        <div className="flex items-start gap-3">
+                        <Flex align="start" gap="md">
                           <span className="text-3xl">{template.icon}</span>
                           <div className="flex-1">
-                            <h4 className="font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
+                            <Typography
+                              variant="h4"
+                              className="font-semibold text-ui-text-primary mb-1"
+                            >
                               {template.name}
-                            </h4>
+                            </Typography>
                             {template.description && (
                               <Typography variant="muted" className="line-clamp-2">
                                 {template.description}
@@ -269,7 +276,7 @@ export function DocumentTemplatesManager({
                               {template.category}
                             </Badge>
                           </div>
-                        </div>
+                        </Flex>
                       </button>
                     ))}
                   </div>
@@ -279,16 +286,19 @@ export function DocumentTemplatesManager({
               {/* Custom Templates */}
               {customTemplates.length > 0 && (
                 <div>
-                  <h3 className="text-sm font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-3">
+                  <Typography
+                    variant="h3"
+                    className="text-sm font-semibold text-ui-text-primary mb-3"
+                  >
                     Custom Templates
-                  </h3>
+                  </Typography>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {customTemplates.map((template: Doc<"documentTemplates">) => (
                       <div
                         key={template._id}
-                        className="p-4 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark transition-colors border border-ui-border-primary dark:border-ui-border-primary-dark"
+                        className="p-4 bg-ui-bg-secondary rounded-lg hover:bg-ui-bg-tertiary transition-colors border border-ui-border-primary"
                       >
-                        <div className="flex items-start gap-3">
+                        <Flex align="start" gap="md">
                           <button
                             type="button"
                             onClick={() => onSelectTemplate?.(template._id)}
@@ -296,15 +306,18 @@ export function DocumentTemplatesManager({
                           >
                             <span className="text-2xl">{template.icon}</span>
                             <div className="flex-1">
-                              <h4 className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
+                              <Typography
+                                variant="h4"
+                                className="font-medium text-ui-text-primary mb-1"
+                              >
                                 {template.name}
-                              </h4>
+                              </Typography>
                               {template.description && (
                                 <Typography variant="muted" className="line-clamp-2 mb-2">
                                   {template.description}
                                 </Typography>
                               )}
-                              <div className="flex gap-2">
+                              <Flex gap="sm">
                                 <Badge variant="neutral" size="md" className="capitalize">
                                   {template.category}
                                 </Badge>
@@ -313,11 +326,11 @@ export function DocumentTemplatesManager({
                                     Public
                                   </Badge>
                                 )}
-                              </div>
+                              </Flex>
                             </div>
                           </button>
 
-                          <div className="flex gap-1">
+                          <Flex gap="xs">
                             <Button
                               variant="ghost"
                               size="sm"
@@ -360,8 +373,8 @@ export function DocumentTemplatesManager({
                                 </svg>
                               }
                             />
-                          </div>
-                        </div>
+                          </Flex>
+                        </Flex>
                       </div>
                     ))}
                   </div>
@@ -437,22 +450,19 @@ export function DocumentTemplatesManager({
 
               <form.Field name="isPublic">
                 {(field) => (
-                  <div className="flex items-center gap-2 pt-7">
+                  <Flex align="center" gap="sm" className="pt-7">
                     <input
                       type="checkbox"
                       id="isPublic"
                       checked={field.state.value as boolean}
                       onChange={(e) => field.handleChange(e.target.checked)}
                       onBlur={field.handleBlur}
-                      className="w-4 h-4 text-brand-600 bg-ui-bg-primary border-ui-border-primary rounded focus:ring-brand-500 dark:focus:ring-brand-600 dark:ring-offset-ui-bg-primary-dark focus:ring-2 dark:bg-ui-bg-primary-dark dark:border-ui-border-primary-dark"
+                      className="w-4 h-4 text-brand-600 bg-ui-bg-primary border-ui-border-primary rounded focus:ring-brand-500 dark:focus:ring-brand-600 dark:ring-offset-ui-bg-primary-dark focus:ring-2"
                     />
-                    <label
-                      htmlFor="isPublic"
-                      className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark"
-                    >
+                    <label htmlFor="isPublic" className="text-sm font-medium text-ui-text-primary">
                       Make public (visible to all users)
                     </label>
-                  </div>
+                  </Flex>
                 )}
               </form.Field>
             </div>

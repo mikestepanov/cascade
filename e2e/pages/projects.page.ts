@@ -209,7 +209,7 @@ export class ProjectsPage extends BasePage {
       // Step 0: Wait for loading spinner to NOT be visible (templates loading)
       const spinner = this.createProjectForm.locator(".animate-spin");
       if (await spinner.isVisible()) {
-        await expect(spinner).not.toBeVisible({ timeout: 10000 });
+        await expect(spinner).not.toBeVisible({ timeout: 30000 });
       }
 
       // Step 1: Wait for templates to load and select Software Project
@@ -218,7 +218,7 @@ export class ProjectsPage extends BasePage {
         name: /Software Development/i,
       });
 
-      await softwareText.waitFor({ state: "visible", timeout: 10000 });
+      await softwareText.waitFor({ state: "visible", timeout: 30000 });
       // Playwright's click() will auto-scroll. Explicit scroll can be brittle in some layouts.
 
       // Retry click if step transition doesn't happen

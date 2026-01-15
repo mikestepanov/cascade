@@ -3,6 +3,7 @@ import { useMutation } from "convex/react";
 import { ArrowLeft, Bell, Building2, Clock, FileText, Kanban } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/Button";
+import { Flex } from "@/components/ui/Flex";
 import { Input } from "@/components/ui/Input";
 import { showError, showSuccess } from "@/lib/toast";
 import { Typography } from "../ui/Typography";
@@ -71,7 +72,7 @@ export function MemberOnboarding({
         <button
           type="button"
           onClick={onBack}
-          className="flex items-center gap-2 text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark transition-colors"
+          className="flex items-center gap-2 text-ui-text-secondary hover:text-ui-text-primary transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Back</span>
@@ -79,9 +80,14 @@ export function MemberOnboarding({
 
         {/* Header */}
         <div className="text-center">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary-100 dark:bg-primary-900/30 mb-4">
+          <Flex
+            inline
+            align="center"
+            justify="center"
+            className="w-16 h-16 rounded-full bg-primary-100 dark:bg-primary-900/30 mb-4"
+          >
             <Building2 className="w-8 h-8 text-primary-600" />
-          </div>
+          </Flex>
           <Typography variant="h1" className="text-3xl font-bold mb-3">
             Name Your Project
           </Typography>
@@ -136,7 +142,7 @@ export function MemberOnboarding({
       <button
         type="button"
         onClick={() => setStep("project")}
-        className="flex items-center gap-2 text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark transition-colors"
+        className="flex items-center gap-2 text-ui-text-secondary hover:text-ui-text-primary transition-colors"
       >
         <ArrowLeft className="w-4 h-4" />
         <span>Back</span>
@@ -152,82 +158,77 @@ export function MemberOnboarding({
 
       {/* What you can do */}
       <div className="space-y-4">
-        <h3 className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+        <Typography variant="h3" className="font-medium text-ui-text-primary">
           Here's what you can do in Nixelo:
-        </h3>
+        </Typography>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="flex items-start gap-3 p-4 rounded-lg bg-ui-bg-primary dark:bg-ui-bg-secondary-dark">
-            <Kanban className="w-5 h-5 text-priority-low mt-0.5 flex-shrink-0" />
+          <Flex align="start" gap="md" className="p-4 rounded-lg bg-ui-bg-primary">
+            <Kanban className="w-5 h-5 text-priority-low mt-0.5 shrink-0" />
             <div>
-              <h4 className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark text-sm">
+              <Typography variant="h4" className="font-medium text-ui-text-primary text-sm">
                 Work on Issues
-              </h4>
-              <Typography className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark">
+              </Typography>
+              <Typography className="text-xs text-ui-text-secondary">
                 Drag issues across the board as you progress
               </Typography>
             </div>
-          </div>
+          </Flex>
 
-          <div className="flex items-start gap-3 p-4 rounded-lg bg-ui-bg-primary dark:bg-ui-bg-secondary-dark">
-            <FileText className="w-5 h-5 text-status-success mt-0.5 flex-shrink-0" />
+          <Flex align="start" gap="md" className="p-4 rounded-lg bg-ui-bg-primary">
+            <FileText className="w-5 h-5 text-status-success mt-0.5 shrink-0" />
             <div>
-              <h4 className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark text-sm">
+              <Typography variant="h4" className="font-medium text-ui-text-primary text-sm">
                 Collaborate on Docs
-              </h4>
-              <Typography className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark">
+              </Typography>
+              <Typography className="text-xs text-ui-text-secondary">
                 Edit documents together in real-time
               </Typography>
             </div>
-          </div>
+          </Flex>
 
-          <div className="flex items-start gap-3 p-4 rounded-lg bg-ui-bg-primary dark:bg-ui-bg-secondary-dark">
-            <Clock className="w-5 h-5 text-status-warning mt-0.5 flex-shrink-0" />
+          <Flex align="start" gap="md" className="p-4 rounded-lg bg-ui-bg-primary">
+            <Clock className="w-5 h-5 text-status-warning mt-0.5 shrink-0" />
             <div>
-              <h4 className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark text-sm">
+              <Typography variant="h4" className="font-medium text-ui-text-primary text-sm">
                 Track Time
-              </h4>
-              <Typography className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark">
+              </Typography>
+              <Typography className="text-xs text-ui-text-secondary">
                 Log time spent on tasks
               </Typography>
             </div>
-          </div>
+          </Flex>
 
-          <div className="flex items-start gap-3 p-4 rounded-lg bg-ui-bg-primary dark:bg-ui-bg-secondary-dark">
-            <Bell className="w-5 h-5 text-issue-type-story mt-0.5 flex-shrink-0" />
+          <Flex align="start" gap="md" className="p-4 rounded-lg bg-ui-bg-primary">
+            <Bell className="w-5 h-5 text-issue-type-story mt-0.5 shrink-0" />
             <div>
-              <h4 className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark text-sm">
+              <Typography variant="h4" className="font-medium text-ui-text-primary text-sm">
                 Stay Updated
-              </h4>
-              <Typography className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark">
+              </Typography>
+              <Typography className="text-xs text-ui-text-secondary">
                 Get notified when mentioned or assigned
               </Typography>
             </div>
-          </div>
+          </Flex>
         </div>
       </div>
 
       {/* Keyboard shortcuts tip */}
-      <div className="bg-ui-bg-primary dark:bg-ui-bg-secondary-dark rounded-xl p-4 text-center">
-        <Typography className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
+      <div className="bg-ui-bg-primary rounded-xl p-4 text-center">
+        <Typography className="text-sm text-ui-text-secondary">
           <span className="font-medium">Pro tip:</span> Press{" "}
-          <kbd className="px-2 py-0.5 rounded bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark text-xs font-mono">
-            Ctrl+K
-          </kbd>{" "}
-          or{" "}
-          <kbd className="px-2 py-0.5 rounded bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark text-xs font-mono">
-            Cmd+K
-          </kbd>{" "}
-          to open the command palette
+          <kbd className="px-2 py-0.5 rounded bg-ui-bg-tertiary text-xs font-mono">Ctrl+K</kbd> or{" "}
+          <kbd className="px-2 py-0.5 rounded bg-ui-bg-tertiary text-xs font-mono">Cmd+K</kbd> to
+          open the command palette
         </Typography>
       </div>
 
       {/* Continue */}
-      <div className="flex justify-center">
+      <Flex justify="center">
         <Button variant="primary" size="lg" onClick={handleFinish} className="min-w-[200px]">
           Go to Dashboard
         </Button>
-      </div>
+      </Flex>
     </div>
   );
 }

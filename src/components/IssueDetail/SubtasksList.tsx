@@ -61,14 +61,14 @@ export function SubtasksList({ issueId, projectId, subtasks }: SubtasksListProps
   return (
     <div>
       <Flex justify="between" align="center" className="mb-3">
-        <h3 className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+        <Typography variant="h3" className="text-sm font-medium text-ui-text-primary">
           Sub-tasks
           {totalSubtasks > 0 && (
-            <span className="ml-2 text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+            <span className="ml-2 text-xs text-ui-text-tertiary">
               ({completedSubtasks}/{totalSubtasks} completed)
             </span>
           )}
-        </h3>
+        </Typography>
         <button
           type="button"
           onClick={() => setIsCreatingSubtask(true)}
@@ -85,7 +85,7 @@ export function SubtasksList({ issueId, projectId, subtasks }: SubtasksListProps
 
       {/* Create sub-task form */}
       {isCreatingSubtask && (
-        <div className="mb-3 p-3 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark">
+        <div className="mb-3 p-3 border border-ui-border-primary rounded-lg bg-ui-bg-secondary">
           <Input
             type="text"
             value={subtaskTitle}
@@ -116,7 +116,7 @@ export function SubtasksList({ issueId, projectId, subtasks }: SubtasksListProps
                 setIsCreatingSubtask(false);
                 setSubtaskTitle("");
               }}
-              className="px-3 py-1 bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark text-ui-text-primary dark:text-ui-text-primary-dark rounded hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark text-sm"
+              className="px-3 py-1 bg-ui-bg-tertiary text-ui-text-primary rounded hover:bg-ui-bg-tertiary text-sm"
             >
               Cancel
             </button>
@@ -132,7 +132,7 @@ export function SubtasksList({ issueId, projectId, subtasks }: SubtasksListProps
               key={subtask._id}
               gap="sm"
               align="start"
-              className="p-2 rounded hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark group"
+              className="p-2 rounded hover:bg-ui-bg-secondary group"
             >
               <Checkbox
                 checked={subtask.status === "done" || subtask.status === "completed"}
@@ -144,15 +144,11 @@ export function SubtasksList({ issueId, projectId, subtasks }: SubtasksListProps
               />
               <div className="flex-1">
                 <Flex gap="sm" align="center">
-                  <span className="text-xs font-mono text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
-                    {subtask.key}
-                  </span>
-                  <span className="text-sm text-ui-text-primary dark:text-ui-text-primary-dark">
-                    {subtask.title}
-                  </span>
+                  <span className="text-xs font-mono text-ui-text-tertiary">{subtask.key}</span>
+                  <span className="text-sm text-ui-text-primary">{subtask.title}</span>
                 </Flex>
                 {subtask.assignee && (
-                  <span className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+                  <span className="text-xs text-ui-text-tertiary">
                     Assigned to {subtask.assignee.name}
                   </span>
                 )}

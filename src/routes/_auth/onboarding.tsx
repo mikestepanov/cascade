@@ -9,6 +9,7 @@ import { LeadOnboarding } from "@/components/Onboarding/LeadOnboarding";
 import { MemberOnboarding } from "@/components/Onboarding/MemberOnboarding";
 import { RoleSelector } from "@/components/Onboarding/RoleSelector";
 import { Button } from "@/components/ui/Button";
+import { Flex } from "@/components/ui/Flex";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { Typography } from "@/components/ui/Typography";
 import { ROUTE_PATTERNS } from "@/config/routes";
@@ -95,24 +96,22 @@ function OnboardingPage() {
   // Loading state
   if (step === "loading") {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-ui-bg-secondary dark:bg-ui-bg-primary-dark">
+      <Flex align="center" justify="center" className="min-h-screen bg-ui-bg-secondary">
         <LoadingSpinner size="lg" />
-      </div>
+      </Flex>
     );
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-ui-bg-secondary dark:bg-ui-bg-primary-dark">
+    <Flex direction="column" className="min-h-screen bg-ui-bg-secondary">
       {/* Header */}
       <header className="p-6 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <div className="h-8 w-8 rounded-lg bg-primary-600 flex items-center justify-center">
+        <Flex align="center" gap="sm">
+          <Flex align="center" justify="center" className="h-8 w-8 rounded-lg bg-primary-600">
             <span className="text-white font-bold text-sm">N</span>
-          </div>
-          <span className="font-semibold text-lg text-ui-text-primary dark:text-ui-text-primary-dark">
-            Nixelo
-          </span>
-        </div>
+          </Flex>
+          <span className="font-semibold text-lg text-ui-text-primary">Nixelo</span>
+        </Flex>
         {step !== "invited" && (
           <Button variant="ghost" size="sm" onClick={handleSkip}>
             Skip for now
@@ -175,13 +174,13 @@ function OnboardingPage() {
 
       {/* Footer */}
       <footer className="p-6 text-center">
-        <Typography className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+        <Typography className="text-sm text-ui-text-tertiary">
           Need help?{" "}
           <a href="mailto:support@nixelo.com" className="text-primary-600 hover:underline">
             Contact support
           </a>
         </Typography>
       </footer>
-    </div>
+    </Flex>
   );
 }

@@ -1,5 +1,7 @@
 import type { Doc } from "@convex/_generated/dataModel";
 import { useState } from "react";
+import { Flex } from "@/components/ui/Flex";
+import { Typography } from "@/components/ui/Typography";
 import { History } from "@/lib/icons";
 import { cn } from "@/lib/utils";
 import { PresenceIndicator } from "./PresenceIndicator";
@@ -56,8 +58,14 @@ export function DocumentHeader({
   };
 
   return (
-    <div className="border-b border-ui-border-primary dark:border-ui-border-primary-dark p-3 sm:p-6">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 mb-3 sm:mb-4">
+    <div className="border-b border-ui-border-primary p-3 sm:p-6">
+      <Flex
+        direction="column"
+        align="start"
+        justify="between"
+        gap="md"
+        className="sm:flex-row sm:items-center sm:gap-4 mb-3 sm:mb-4"
+      >
         <div className="flex-1 w-full sm:w-auto">
           {isEditingTitle ? (
             <Input
@@ -66,13 +74,14 @@ export function DocumentHeader({
               onChange={(e) => setTitleValue(e.target.value)}
               onBlur={() => void handleTitleSave()}
               onKeyDown={handleTitleKeyDown}
-              className="text-xl sm:text-2xl font-bold bg-transparent border-none outline-none focus:ring-2 focus:ring-brand-500 rounded px-2 py-1 dark:text-white"
+              className="text-xl sm:text-2xl font-bold bg-transparent border-none outline-none focus:ring-2 focus:ring-brand-500 rounded px-2 py-1 text-ui-text-primary"
             />
           ) : (
-            <h1
+            <Typography
+              variant="h1"
               role={document.isOwner ? "button" : undefined}
               tabIndex={document.isOwner ? 0 : undefined}
-              className="text-xl sm:text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark cursor-pointer hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark rounded px-2 py-1 transition-colors"
+              className="text-xl sm:text-2xl font-bold text-ui-text-primary cursor-pointer hover:bg-ui-bg-secondary rounded px-2 py-1 transition-colors"
               onClick={document.isOwner ? handleTitleEdit : undefined}
               onKeyDown={
                 document.isOwner
@@ -87,11 +96,11 @@ export function DocumentHeader({
               title={document.isOwner ? "Click to edit title" : ""}
             >
               {document.title}
-            </h1>
+            </Typography>
           )}
         </div>
 
-        <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 w-full sm:w-auto">
+        <Flex wrap align="center" className="gap-1.5 sm:gap-2 w-full sm:w-auto">
           <PresenceIndicator roomId={document._id} userId={userId} />
 
           {/* Version History */}
@@ -99,7 +108,7 @@ export function DocumentHeader({
             variant="ghost"
             size="sm"
             onClick={onShowVersionHistory}
-            className="px-2 sm:px-3 py-1 bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark text-ui-text-primary dark:text-ui-text-primary-dark hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark min-h-0"
+            className="px-2 sm:px-3 py-1 bg-ui-bg-tertiary text-ui-text-primary hover:bg-ui-bg-secondary min-h-0"
             title="View version history"
             aria-label="Version history"
           >
@@ -107,7 +116,7 @@ export function DocumentHeader({
               <History className="w-3 h-3 sm:w-4 sm:h-4" aria-hidden="true" />
               <span className="hidden sm:inline">History</span>
               {versionCount !== undefined && versionCount > 0 && (
-                <span className="ml-0.5 sm:ml-1 px-1 sm:px-1.5 py-0.5 text-xs bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded">
+                <span className="ml-0.5 sm:ml-1 px-1 sm:px-1.5 py-0.5 text-xs bg-ui-bg-tertiary rounded">
                   {versionCount}
                 </span>
               )}
@@ -187,14 +196,18 @@ export function DocumentHeader({
               {document.isPublic ? "Public" : "Private"}
             </Button>
           )}
-        </div>
-      </div>
+        </Flex>
+      </Flex>
 
-      <div className="flex flex-wrap items-center gap-x-2 sm:gap-x-4 gap-y-1 text-xs sm:text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
+      <Flex
+        wrap
+        align="center"
+        className="gap-x-2 sm:gap-x-4 gap-y-1 text-xs sm:text-sm text-ui-text-secondary"
+      >
         <span>Created by {document.creatorName}</span>
         <span className="hidden sm:inline">•</span>
         <span>Last updated {new Date(document.updatedAt).toLocaleDateString()}</span>
-      </div>
+      </Flex>
     </div>
   );
 }

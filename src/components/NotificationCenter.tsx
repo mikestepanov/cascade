@@ -2,6 +2,7 @@ import { api } from "@convex/_generated/api";
 import type { Doc, Id } from "@convex/_generated/dataModel";
 import { useMutation, usePaginatedQuery, useQuery } from "convex/react";
 import { useCallback, useState } from "react";
+import { Flex } from "@/components/ui/Flex";
 import { showError } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/Popover";
@@ -98,7 +99,7 @@ export function NotificationCenter() {
         {/* Notification Bell Button */}
         <button
           type="button"
-          className="relative p-2 text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark rounded-lg transition-colors"
+          className="relative p-2 text-ui-text-secondary hover:text-ui-text-primary hover:bg-ui-bg-secondary rounded-lg transition-colors"
         >
           <svg
             aria-hidden="true"
@@ -125,10 +126,14 @@ export function NotificationCenter() {
 
       <PopoverContent
         align="end"
-        className="w-full sm:w-96 max-w-[calc(100vw-2rem)] p-0 bg-ui-bg-primary dark:bg-ui-bg-primary-dark border-ui-border-primary dark:border-ui-border-primary-dark max-h-[80vh] flex flex-col"
+        className="w-full sm:w-96 max-w-[calc(100vw-2rem)] p-0 bg-ui-bg-primary border-ui-border-primary max-h-[80vh] flex flex-col"
       >
         {/* Header */}
-        <div className="p-4 border-b border-ui-border-primary dark:border-ui-border-primary-dark flex items-center justify-between sticky top-0 bg-ui-bg-primary dark:bg-ui-bg-primary-dark rounded-t-lg">
+        <Flex
+          align="center"
+          justify="between"
+          className="p-4 border-b border-ui-border-primary sticky top-0 bg-ui-bg-primary rounded-t-lg"
+        >
           <Typography variant="h3" className="text-lg font-semibold">
             Notifications
           </Typography>
@@ -142,12 +147,12 @@ export function NotificationCenter() {
               {isLoading ? "Marking..." : "Mark all read"}
             </button>
           )}
-        </div>
+        </Flex>
 
         {/* Notifications List */}
         <div className="flex-1 overflow-y-auto">
           {!notifications || notifications.length === 0 ? (
-            <div className="p-8 text-center text-ui-text-secondary dark:text-ui-text-secondary-dark">
+            <div className="p-8 text-center text-ui-text-secondary">
               <div className="text-4xl mb-2">📭</div>
               <Typography>No notifications</Typography>
             </div>
@@ -161,40 +166,38 @@ export function NotificationCenter() {
                     !notification.isRead && "bg-status-info-bg dark:bg-brand-900/20",
                   )}
                 >
-                  <div className="flex items-start gap-3">
+                  <Flex align="start" gap="md">
                     {/* Icon */}
-                    <div className="text-2xl flex-shrink-0">
+                    <div className="text-2xl shrink-0">
                       {getNotificationIcon(notification.type)}
                     </div>
 
                     {/* Content */}
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-start justify-between gap-2">
+                      <Flex align="start" justify="between" gap="sm">
                         <div className="flex-1">
-                          <Typography className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+                          <Typography className="text-sm font-medium text-ui-text-primary">
                             {notification.title}
                           </Typography>
-                          <Typography className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mt-1">
+                          <Typography className="text-sm text-ui-text-secondary mt-1">
                             {notification.message}
                           </Typography>
-                          <div className="flex items-center gap-2 mt-1">
-                            <Typography className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+                          <Flex align="center" gap="sm" className="mt-1">
+                            <Typography className="text-xs text-ui-text-tertiary">
                               {formatTime(notification.createdAt)}
                             </Typography>
                             {notification.actorName && (
                               <>
-                                <span className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
-                                  •
-                                </span>
-                                <Typography className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+                                <span className="text-xs text-ui-text-tertiary">•</span>
+                                <Typography className="text-xs text-ui-text-tertiary">
                                   by {notification.actorName}
                                 </Typography>
                               </>
                             )}
-                          </div>
+                          </Flex>
                         </div>
 
-                        <div className="flex gap-1">
+                        <Flex gap="xs">
                           {!notification.isRead && (
                             <button
                               type="button"
@@ -220,7 +223,7 @@ export function NotificationCenter() {
                           <button
                             type="button"
                             onClick={() => handleDelete(notification._id)}
-                            className="p-1 text-ui-text-tertiary dark:text-ui-text-tertiary-dark hover:text-status-error dark:hover:text-status-error hover:bg-status-error-bg dark:hover:bg-status-error-bg-dark rounded"
+                            className="p-1 text-ui-text-tertiary hover:text-status-error dark:hover:text-status-error hover:bg-status-error-bg rounded"
                             title="Delete"
                             aria-label="Delete notification"
                           >
@@ -237,10 +240,10 @@ export function NotificationCenter() {
                               />
                             </svg>
                           </button>
-                        </div>
-                      </div>
+                        </Flex>
+                      </Flex>
                     </div>
-                  </div>
+                  </Flex>
                 </div>
               ))}
             </div>

@@ -106,7 +106,7 @@ export function CreateTeamModal({
                 onChange={(e) => setDescription(e.target.value)}
               />
             </div>
-            <div className="flex items-center space-x-2 pt-2">
+            <Flex align="center" className="space-x-2 pt-2">
               <Checkbox
                 id="team-private"
                 checked={isPrivate}
@@ -114,7 +114,7 @@ export function CreateTeamModal({
                 label="Make this team private"
                 description="Only invited members can view this team"
               />
-            </div>
+            </Flex>
           </Flex>
           <DialogFooter>
             <Button type="button" variant="outline" onClick={onClose} disabled={isSubmitting}>

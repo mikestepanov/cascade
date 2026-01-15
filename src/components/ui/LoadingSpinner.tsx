@@ -21,7 +21,7 @@ export function LoadingSpinner({ size = "md", className = "", message }: Loading
     <Flex direction="column" align="center" justify="center" gap="md">
       <output
         className={cn(
-          "animate-spin rounded-full border-ui-text-primary dark:border-ui-text-primary-dark border-t-transparent",
+          "animate-spin rounded-full border-ui-text-primary border-t-transparent",
           sizeClasses[size],
           className,
         )}
@@ -30,10 +30,7 @@ export function LoadingSpinner({ size = "md", className = "", message }: Loading
         <span className="sr-only">Loading...</span>
       </output>
       {message && (
-        <Typography
-          variant="small"
-          className="text-ui-text-secondary dark:text-ui-text-secondary-dark"
-        >
+        <Typography variant="small" className="text-ui-text-secondary">
           {message}
         </Typography>
       )}
@@ -43,7 +40,7 @@ export function LoadingSpinner({ size = "md", className = "", message }: Loading
 
 export function LoadingOverlay({ message }: { message?: string }) {
   return (
-    <div className="absolute inset-0 bg-ui-bg-primary dark:bg-ui-bg-primary-dark bg-opacity-90 z-10 rounded-lg flex items-center justify-center">
+    <div className="absolute inset-0 bg-ui-bg-primary bg-opacity-90 z-10 rounded-lg flex items-center justify-center">
       <LoadingSpinner size="lg" message={message} />
     </div>
   );

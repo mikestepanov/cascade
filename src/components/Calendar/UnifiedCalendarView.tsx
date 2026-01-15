@@ -18,7 +18,7 @@ export function UnifiedCalendarView({ projectId }: UnifiedCalendarViewProps) {
   return (
     <Flex direction="column" className="h-full">
       {/* View Switcher */}
-      <div className="border-b border-ui-border-primary dark:border-ui-border-primary-dark px-3 sm:px-6 py-3 bg-ui-bg-primary dark:bg-ui-bg-primary-dark">
+      <div className="border-b border-ui-border-primary px-3 sm:px-6 py-3 bg-ui-bg-primary">
         <ToggleGroup
           type="single"
           value={viewType}
@@ -52,11 +52,7 @@ export function UnifiedCalendarView({ projectId }: UnifiedCalendarViewProps) {
         ) : projectId ? (
           <RoadmapView projectId={projectId} />
         ) : (
-          <Flex
-            justify="center"
-            align="center"
-            className="h-full text-ui-text-secondary dark:text-ui-text-secondary-dark"
-          >
+          <Flex justify="center" align="center" className="h-full text-ui-text-secondary">
             <div className="text-center">
               <Typography variant="p" className="text-lg font-medium mb-2">
                 No Project Selected

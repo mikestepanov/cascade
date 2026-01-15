@@ -47,24 +47,24 @@ export function ConfirmDialog({
 
   return (
     <AlertDialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <AlertDialogContent className="bg-ui-bg-primary dark:bg-ui-bg-primary-dark border-ui-border-primary dark:border-ui-border-primary-dark">
+      <AlertDialogContent className="bg-ui-bg-primary border-ui-border-primary">
         <AlertDialogHeader>
           <Flex align="start" gap="lg">
-            <div className="text-4xl flex-shrink-0">{variantIcons[variant]}</div>
+            <div className="text-4xl shrink-0">{variantIcons[variant]}</div>
             <div className="flex-1">
-              <AlertDialogTitle className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
+              <AlertDialogTitle className="text-lg font-semibold text-ui-text-primary">
                 {title}
               </AlertDialogTitle>
-              <AlertDialogDescription className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mt-2">
+              <AlertDialogDescription className="text-sm text-ui-text-secondary mt-2">
                 {message}
               </AlertDialogDescription>
             </div>
           </Flex>
         </AlertDialogHeader>
-        <AlertDialogFooter className="bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark -mx-6 -mb-6 px-6 py-4 rounded-b-lg mt-4">
+        <AlertDialogFooter className="bg-ui-bg-secondary -mx-6 -mb-6 px-6 py-4 rounded-b-lg mt-4">
           <AlertDialogCancel
             disabled={isLoading}
-            className="bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark border border-ui-border-primary dark:border-ui-border-primary-dark hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark"
+            className="bg-ui-bg-primary text-ui-text-primary border border-ui-border-primary hover:bg-ui-bg-secondary"
           >
             {cancelLabel}
           </AlertDialogCancel>

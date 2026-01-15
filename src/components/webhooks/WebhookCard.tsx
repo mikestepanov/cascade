@@ -23,39 +23,36 @@ interface WebhookCardProps {
  */
 export function WebhookCard({ webhook, onEdit, onDelete }: WebhookCardProps) {
   return (
-    <div className="p-4 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark transition-colors">
+    <div className="p-4 bg-ui-bg-secondary rounded-lg hover:bg-ui-bg-tertiary transition-colors">
       <Flex justify="between" align="start">
         <div className="flex-1">
           <Flex gap="sm" align="center" className="mb-2">
-            <h4 className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+            <Typography variant="h4" className="font-medium text-ui-text-primary">
               {webhook.name}
-            </h4>
+            </Typography>
             <span
               className={cn(
                 "text-xs px-2 py-0.5 rounded",
                 webhook.isActive
                   ? "bg-status-success/10 text-status-success"
-                  : "bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark text-ui-text-primary dark:text-ui-text-primary-dark",
+                  : "bg-ui-bg-tertiary text-ui-text-primary",
               )}
             >
               {webhook.isActive ? "Active" : "Inactive"}
             </span>
           </Flex>
-          <Typography className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mb-2 font-mono break-all">
+          <Typography className="text-sm text-ui-text-secondary mb-2 font-mono break-all">
             {webhook.url}
           </Typography>
           <Flex wrap gap="xs">
             {webhook.events.map((event) => (
-              <span
-                key={event}
-                className="text-xs px-2 py-0.5 bg-brand-100 dark:bg-brand-900/30 text-brand-700 dark:text-brand-300 rounded"
-              >
+              <span key={event} className="text-xs px-2 py-0.5 bg-brand-100 text-brand-700 rounded">
                 {event}
               </span>
             ))}
           </Flex>
           {webhook.lastTriggered && (
-            <Typography className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark mt-2">
+            <Typography className="text-xs text-ui-text-tertiary mt-2">
               Last triggered: {new Date(webhook.lastTriggered).toLocaleString()}
             </Typography>
           )}

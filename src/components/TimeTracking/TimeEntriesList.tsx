@@ -141,25 +141,23 @@ export function TimeEntriesList({
             <span>{formatDurationDisplay(duration)}</span>
           </Flex>
 
-          <div className="bg-ui-bg-primary dark:bg-ui-bg-primary-dark border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg divide-y divide-ui-border-primary dark:divide-ui-border-primary-dark">
+          <div className="bg-ui-bg-primary border border-ui-border-primary rounded-lg divide-y divide-ui-border-primary">
             {dateEntries.map((entry) => (
-              <div
+              <Flex
+                align="start"
+                gap="md"
+                className="p-3 hover:bg-ui-bg-tertiary transition-colors group"
                 key={entry._id}
-                className="p-3 hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark transition-colors group flex items-start gap-3"
               >
                 {/* Details */}
                 <div className="flex-1 min-w-0">
                   {entry.description && (
-                    <Typography className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+                    <Typography className="text-sm font-medium text-ui-text-primary">
                       {entry.description}
                     </Typography>
                   )}
 
-                  <Flex
-                    align="center"
-                    gap="md"
-                    className="mt-1 text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark"
-                  >
+                  <Flex align="center" gap="md" className="mt-1 text-xs text-ui-text-secondary">
                     {entry.activity && <Badge variant="neutral">{entry.activity}</Badge>}
 
                     {entry.project && (
@@ -197,11 +195,7 @@ export function TimeEntriesList({
                     {entry.billable && <Badge variant="success">Billable</Badge>}
 
                     {entry.isLocked && (
-                      <Flex
-                        align="center"
-                        gap="xs"
-                        className="inline-flex text-status-warning dark:text-status-warning"
-                      >
+                      <Flex align="center" gap="xs" className="inline-flex text-status-warning">
                         <svg
                           className="w-3 h-3"
                           fill="currentColor"
@@ -221,12 +215,12 @@ export function TimeEntriesList({
                 </div>
 
                 {/* Duration and cost */}
-                <div className="flex-shrink-0 text-right">
-                  <div className="text-sm font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
+                <div className="shrink-0 text-right">
+                  <div className="text-sm font-semibold text-ui-text-primary">
                     {formatDurationDisplay(entry.duration)}
                   </div>
                   {entry.totalCost !== undefined && entry.totalCost > 0 && (
-                    <div className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark">
+                    <div className="text-xs text-ui-text-secondary">
                       {formatCurrency(entry.totalCost, entry.currency)}
                     </div>
                   )}
@@ -234,12 +228,12 @@ export function TimeEntriesList({
 
                 {/* Actions */}
                 {!(entry.isLocked || entry.billed) && (
-                  <div className="flex-shrink-0">
+                  <div className="shrink-0">
                     <Button
                       onClick={() => handleDelete(entry._id)}
                       variant="ghost"
                       size="sm"
-                      className="p-1 min-w-0 text-ui-text-tertiary dark:text-ui-text-tertiary-dark hover:text-status-error dark:hover:text-status-error"
+                      className="p-1 min-w-0 text-ui-text-tertiary hover:text-status-error"
                       aria-label="Delete entry"
                     >
                       <svg
@@ -257,7 +251,7 @@ export function TimeEntriesList({
                     </Button>
                   </div>
                 )}
-              </div>
+              </Flex>
             ))}
           </div>
         </div>

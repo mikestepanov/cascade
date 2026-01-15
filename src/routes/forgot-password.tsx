@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Authenticated, Unauthenticated } from "convex/react";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -54,14 +54,16 @@ function ForgotPasswordPage() {
     setSubmitting(false);
   };
 
+  const navigate = useNavigate();
+
   if (showReset) {
     return (
       <AuthPageLayout title="Reset password" subtitle="Enter the code from your email">
         <ResetPasswordForm
           email={email}
           onSuccess={() => {
-            toast.success("Password reset successfully!");
-            // Will redirect via auth state
+            // Redirect to /app gateway to trigger SmartAuthGuard logic
+            navigate({ to: ROUTE_PATTERNS.app });
           }}
           onRetry={() => {
             setShowReset(false);

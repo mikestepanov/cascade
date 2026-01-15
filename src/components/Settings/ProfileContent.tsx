@@ -2,6 +2,7 @@ import { api } from "@convex/_generated/api";
 import type { Doc, Id } from "@convex/_generated/dataModel";
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
+import { Flex } from "@/components/ui/Flex";
 import { showError, showSuccess } from "@/lib/toast";
 import { Button } from "../ui/Button";
 import { Card } from "../ui/Card";
@@ -23,45 +24,35 @@ interface UserStats {
 export function UserStatsCards({ stats }: { stats: UserStats }) {
   return (
     <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-      <div className="bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg p-4 text-center">
+      <div className="bg-ui-bg-secondary rounded-lg p-4 text-center">
         <div className="text-2xl font-bold text-brand-600 dark:text-brand-400">
           {stats.projects}
         </div>
-        <div className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
-          Workspaces
-        </div>
+        <div className="text-sm text-ui-text-secondary">Workspaces</div>
       </div>
-      <div className="bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg p-4 text-center">
+      <div className="bg-ui-bg-secondary rounded-lg p-4 text-center">
         <div className="text-2xl font-bold text-brand-600 dark:text-brand-400">
           {stats.issuesCreated}
         </div>
-        <div className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
-          Created
-        </div>
+        <div className="text-sm text-ui-text-secondary">Created</div>
       </div>
-      <div className="bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg p-4 text-center">
+      <div className="bg-ui-bg-secondary rounded-lg p-4 text-center">
         <div className="text-2xl font-bold text-brand-600 dark:text-brand-400">
           {stats.issuesAssigned}
         </div>
-        <div className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
-          Assigned
-        </div>
+        <div className="text-sm text-ui-text-secondary">Assigned</div>
       </div>
-      <div className="bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg p-4 text-center">
+      <div className="bg-ui-bg-secondary rounded-lg p-4 text-center">
         <div className="text-2xl font-bold text-brand-600 dark:text-brand-400">
           {stats.issuesCompleted}
         </div>
-        <div className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
-          Completed
-        </div>
+        <div className="text-sm text-ui-text-secondary">Completed</div>
       </div>
-      <div className="bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg p-4 text-center">
+      <div className="bg-ui-bg-secondary rounded-lg p-4 text-center">
         <div className="text-2xl font-bold text-brand-600 dark:text-brand-400">
           {stats.comments}
         </div>
-        <div className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
-          Comments
-        </div>
+        <div className="text-sm text-ui-text-secondary">Comments</div>
       </div>
     </div>
   );
@@ -72,25 +63,19 @@ export function UserStatsCards({ stats }: { stats: UserStats }) {
  */
 export function AccountInfo({ user }: { user: Doc<"users"> }) {
   return (
-    <div className="border-t border-ui-border-primary dark:border-ui-border-primary-dark pt-6">
-      <h3 className="text-lg font-semibold mb-4 text-ui-text-primary dark:text-ui-text-primary-dark">
+    <div className="border-t border-ui-border-primary pt-6">
+      <Typography variant="h3" className="text-lg font-semibold mb-4 text-ui-text-primary">
         Account Information
-      </h3>
+      </Typography>
       <div className="space-y-3 text-sm">
-        <div className="flex justify-between">
-          <span className="text-ui-text-secondary dark:text-ui-text-secondary-dark">User ID:</span>
-          <span className="font-mono text-ui-text-primary dark:text-ui-text-primary-dark">
-            {user._id}
-          </span>
-        </div>
-        <div className="flex justify-between">
-          <span className="text-ui-text-secondary dark:text-ui-text-secondary-dark">
-            Email Verified:
-          </span>
-          <span className="text-ui-text-primary dark:text-ui-text-primary-dark">
-            {user.emailVerificationTime ? "Yes" : "No"}
-          </span>
-        </div>
+        <Flex justify="between">
+          <span className="text-ui-text-secondary">User ID:</span>
+          <span className="font-mono text-ui-text-primary">{user._id}</span>
+        </Flex>
+        <Flex justify="between">
+          <span className="text-ui-text-secondary">Email Verified:</span>
+          <span className="text-ui-text-primary">{user.emailVerificationTime ? "Yes" : "No"}</span>
+        </Flex>
       </div>
     </div>
   );
@@ -123,15 +108,19 @@ export function ProfileHeader({
   onCancel: () => void;
 }) {
   return (
-    <div className="flex items-center gap-6">
+    <Flex align="center" gap="xl">
       {/* Avatar */}
       <div className="relative">
         {user.image ? (
           <img src={user.image} alt={user.name || "User"} className="w-24 h-24 rounded-full" />
         ) : (
-          <div className="w-24 h-24 rounded-full bg-brand-600 text-white flex items-center justify-center text-3xl font-bold">
+          <Flex
+            align="center"
+            justify="center"
+            className="w-24 h-24 rounded-full bg-brand-600 text-white text-3xl font-bold"
+          >
             {(user.name || user.email || "?").charAt(0).toUpperCase()}
-          </div>
+          </Flex>
         )}
       </div>
 
@@ -152,23 +141,21 @@ export function ProfileHeader({
               placeholder="your.email@example.com"
               type="email"
             />
-            <div className="flex gap-2 mt-2">
+            <Flex gap="sm" className="mt-2">
               <Button onClick={onSave} size="sm">
                 Save
               </Button>
               <Button onClick={onCancel} variant="secondary" size="sm">
                 Cancel
               </Button>
-            </div>
+            </Flex>
           </div>
         ) : (
           <>
-            <h2 className="text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark">
+            <Typography variant="h2" className="text-2xl font-bold text-ui-text-primary">
               {user.name || "Anonymous User"}
-            </h2>
-            <Typography className="text-ui-text-secondary dark:text-ui-text-secondary-dark">
-              {user.email}
             </Typography>
+            <Typography className="text-ui-text-secondary">{user.email}</Typography>
             {isOwnProfile && (
               <Button onClick={onEditClick} variant="secondary" size="sm" className="mt-3">
                 Edit Profile
@@ -177,7 +164,7 @@ export function ProfileHeader({
           </>
         )}
       </div>
-    </div>
+    </Flex>
   );
 }
 
@@ -231,9 +218,9 @@ export function ProfileContent({ userId }: ProfileContentProps) {
 
   if (!viewUser) {
     return (
-      <div className="flex items-center justify-center py-8">
+      <Flex align="center" justify="center" className="py-8">
         <LoadingSpinner size="lg" />
-      </div>
+      </Flex>
     );
   }
 

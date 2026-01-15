@@ -81,9 +81,9 @@ export function BurnRateDashboard({ projectId }: BurnRateDashboardProps) {
     <Flex direction="column" gap="xl">
       {/* Header with date range selector */}
       <Flex justify="between" align="center">
-        <h2 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
+        <Typography variant="h2" className="text-lg font-semibold text-ui-text-primary">
           Burn Rate & Team Costs
-        </h2>
+        </Typography>
 
         <Flex gap="sm">
           {(["week", "month", "quarter"] as const).map((range) => (
@@ -95,7 +95,7 @@ export function BurnRateDashboard({ projectId }: BurnRateDashboardProps) {
                 "px-3 py-1 text-sm font-medium rounded-lg transition-colors",
                 dateRange === range
                   ? "bg-brand-600 text-white"
-                  : "bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark text-ui-text-primary dark:text-ui-text-primary-dark hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark",
+                  : "bg-ui-bg-tertiary text-ui-text-primary hover:bg-ui-bg-secondary",
               )}
             >
               {ranges[range].label}
@@ -110,50 +110,50 @@ export function BurnRateDashboard({ projectId }: BurnRateDashboardProps) {
           label="Total Cost"
           value={formatCurrency(burnRate.totalCost)}
           icon="💰"
-          color="blue"
+          color="info"
         />
         <MetricCard
           label="Per Day"
           value={formatCurrency(burnRate.burnRatePerDay)}
           icon="📅"
-          color="green"
+          color="success"
         />
         <MetricCard
           label="Per Week"
           value={formatCurrency(burnRate.burnRatePerWeek)}
           icon="📊"
-          color="purple"
+          color="accent"
         />
         <MetricCard
           label="Per Month"
           value={formatCurrency(burnRate.burnRatePerMonth)}
           icon="🗓️"
-          color="orange"
+          color="warning"
         />
       </div>
 
       {/* Hours Breakdown */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="p-4 bg-ui-bg-primary dark:bg-ui-bg-primary-dark border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg">
-          <h3 className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-2">
+        <div className="p-4 bg-ui-bg-primary border border-ui-border-primary rounded-lg">
+          <Typography variant="h3" className="text-sm font-medium text-ui-text-primary mb-2">
             Total Hours
-          </h3>
-          <div className="text-3xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark">
+          </Typography>
+          <div className="text-3xl font-bold text-ui-text-primary">
             {formatHours(burnRate.totalHours)}h
           </div>
-          <Typography className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark mt-1">
+          <Typography className="text-xs text-ui-text-tertiary mt-1">
             {burnRate.entriesCount} time entries
           </Typography>
         </div>
 
-        <div className="p-4 bg-ui-bg-primary dark:bg-ui-bg-primary-dark border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg">
-          <h3 className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-2">
+        <div className="p-4 bg-ui-bg-primary border border-ui-border-primary rounded-lg">
+          <Typography variant="h3" className="text-sm font-medium text-ui-text-primary mb-2">
             Billable Hours
-          </h3>
-          <div className="text-3xl font-bold text-status-success dark:text-status-success">
+          </Typography>
+          <div className="text-3xl font-bold text-status-success">
             {formatHours(burnRate.billableHours)}h
           </div>
-          <Typography className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark mt-1">
+          <Typography className="text-xs text-ui-text-tertiary mt-1">
             {formatCurrency(burnRate.billableCost)} billable
           </Typography>
         </div>
@@ -161,13 +161,13 @@ export function BurnRateDashboard({ projectId }: BurnRateDashboardProps) {
 
       {/* Team Costs Breakdown */}
       <div>
-        <h3 className="text-sm font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-3">
+        <Typography variant="h3" className="text-sm font-semibold text-ui-text-primary mb-3">
           Team Costs Breakdown
-        </h3>
+        </Typography>
 
         {teamCosts.length === 0 ? (
-          <div className="text-center p-8 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg">
-            <Typography className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+          <div className="text-center p-8 bg-ui-bg-secondary rounded-lg">
+            <Typography className="text-sm text-ui-text-tertiary">
               No time entries for this period
             </Typography>
           </div>
@@ -180,7 +180,7 @@ export function BurnRateDashboard({ projectId }: BurnRateDashboardProps) {
               return (
                 <div
                   key={member.user?._id || "unknown"}
-                  className="p-4 bg-ui-bg-primary dark:bg-ui-bg-primary-dark border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg"
+                  className="p-4 bg-ui-bg-primary border border-ui-border-primary rounded-lg"
                 >
                   <div className="mb-2">
                     <Flex justify="between" align="center">
@@ -192,35 +192,39 @@ export function BurnRateDashboard({ projectId }: BurnRateDashboardProps) {
                             className="w-8 h-8 rounded-full"
                           />
                         ) : (
-                          <div className="w-8 h-8 rounded-full bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark flex items-center justify-center text-sm font-medium text-ui-text-secondary dark:text-ui-text-secondary-dark">
+                          <Flex
+                            align="center"
+                            justify="center"
+                            className="w-8 h-8 rounded-full bg-ui-bg-tertiary text-sm font-medium text-ui-text-secondary"
+                          >
                             {member.user?.name?.[0] || "?"}
-                          </div>
+                          </Flex>
                         )}
                         <div>
-                          <div className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+                          <div className="text-sm font-medium text-ui-text-primary">
                             {member.user?.name || "Unknown"}
                           </div>
-                          <div className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+                          <div className="text-xs text-ui-text-tertiary">
                             {formatHours(member.hours)}h total ({formatHours(member.billableHours)}h
                             billable)
                           </div>
                         </div>
                       </Flex>
 
-                      <div className="flex flex-col items-end">
-                        <div className="py-2 text-right text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+                      <Flex direction="column" align="end">
+                        <div className="py-2 text-right text-sm font-medium text-ui-text-primary">
                           {formatHours(member.hours)}
                         </div>
-                        <div className="py-2 text-right text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+                        <div className="py-2 text-right text-sm font-medium text-ui-text-primary">
                           {formatHours(member.billableHours)}
                         </div>
-                        <div className="text-sm font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
+                        <div className="text-sm font-semibold text-ui-text-primary">
                           {formatCurrency(member.cost)}
                         </div>
-                        <div className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+                        <div className="text-xs text-ui-text-tertiary">
                           {percentOfTotal.toFixed(0)}% of total
                         </div>
-                      </div>
+                      </Flex>
                     </Flex>
                   </div>
 
@@ -240,30 +244,24 @@ interface MetricCardProps {
   label: string;
   value: string;
   icon: string;
-  color: "blue" | "green" | "purple" | "orange";
+  color: "info" | "success" | "accent" | "warning";
 }
 
 function MetricCard({ label, value, icon, color }: MetricCardProps) {
   const colorClasses = {
-    blue: "bg-brand-50 dark:bg-brand-900/20 border-brand-200 dark:border-brand-800",
-    green:
-      "bg-status-success/10 dark:bg-status-success/20 border-status-success/30 dark:border-status-success/40",
-    purple: "bg-accent-50 dark:bg-accent-900/20 border-accent-200 dark:border-accent-800",
-    orange:
-      "bg-status-warning/10 dark:bg-status-warning/20 border-status-warning/30 dark:border-status-warning/40",
+    info: "bg-status-info-bg border-status-info/30",
+    success: "bg-status-success-bg border-status-success/30",
+    accent: "bg-accent-50 border-accent-200",
+    warning: "bg-status-warning-bg border-status-warning/30",
   };
 
   return (
     <div className={cn("p-4 border rounded-lg", colorClasses[color])}>
       <Flex align="center" gap="sm" className="mb-2">
         <span className="text-2xl">{icon}</span>
-        <span className="text-xs font-medium text-ui-text-secondary dark:text-ui-text-secondary-dark">
-          {label}
-        </span>
+        <span className="text-xs font-medium text-ui-text-secondary">{label}</span>
       </Flex>
-      <div className="text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark">
-        {value}
-      </div>
+      <div className="text-2xl font-bold text-ui-text-primary">{value}</div>
     </div>
   );
 }

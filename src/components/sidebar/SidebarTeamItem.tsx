@@ -4,6 +4,7 @@ import { Link, useLocation } from "@tanstack/react-router";
 import { usePaginatedQuery } from "convex/react";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/Button";
+import { Flex } from "@/components/ui/Flex";
 import { ROUTE_PATTERNS } from "@/config/routes";
 import { cn } from "@/lib/utils";
 
@@ -34,7 +35,7 @@ export function SidebarTeamItem({
   return (
     <div className="ml-4">
       {/* Team Header */}
-      <div className="flex items-center gap-1">
+      <Flex align="center" gap="xs">
         <Button
           variant="ghost"
           size="icon"
@@ -56,7 +57,7 @@ export function SidebarTeamItem({
         >
           {team.name}
         </Link>
-      </div>
+      </Flex>
 
       {/* Lazy Loaded Projects */}
       {isExpanded && (
@@ -101,7 +102,7 @@ function SidebarTeamProjects({
   }
 
   return (
-    <div className="ml-6 border-l border-ui-border-primary dark:border-ui-border-primary-dark pl-1">
+    <div className="ml-6 border-l border-ui-border-primary pl-1">
       {projects.map((project) => (
         <div key={project._id}>
           <Link

@@ -1,7 +1,11 @@
 import type { Id } from "@convex/_generated/dataModel";
 import type { WorkflowState } from "@convex/shared/types";
 import { memo, useCallback, useMemo } from "react";
+import { Flex } from "@/components/ui/Flex";
+import { Typography } from "@/components/ui/Typography";
 import { ANIMATION } from "@/lib/constants";
+import { getWorkflowCategoryColor } from "@/lib/issue-utils";
+import { cn } from "@/lib/utils";
 import type { LabelInfo } from "../../../convex/lib/issueHelpers";
 import { IssueCard } from "../IssueCard";
 import { Badge } from "../ui/Badge";
@@ -86,27 +90,32 @@ export const KanbanColumn = memo(function KanbanColumn({
     <section
       aria-label={`${state.name} column`}
       data-board-column
-      className="flex-shrink-0 w-full lg:w-80 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg animate-slide-up"
-      style={{ animationDelay: `${columnIndex * (ANIMATION.STAGGER_DELAY * 2)}ms` }}
+      className={cn(
+        "flex-shrink-0 w-full lg:w-80 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg animate-slide-up border-t-4",
+        getWorkflowCategoryColor(state.category),
+      )}
+      style={{
+        animationDelay: `${columnIndex * (ANIMATION.STAGGER_DELAY * 2)}ms`,
+      }}
       onDragOver={onDragOver}
       onDrop={handleDrop}
     >
       {/* Column Header */}
-      <div className="p-3 sm:p-4 border-b border-ui-border-primary dark:border-ui-border-primary-dark bg-ui-bg-primary dark:bg-ui-bg-primary-dark rounded-t-lg">
-        <div className="flex items-center justify-between gap-2">
-          <div className="flex items-center space-x-2 min-w-0">
-            <h3 className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark truncate">
+      <div className="p-3 sm:p-4 border-b border-ui-border-primary bg-ui-bg-primary rounded-t-lg">
+        <Flex align="center" justify="between" gap="sm">
+          <Flex align="center" className="space-x-2 min-w-0">
+            <Typography variant="h3" className="font-medium text-ui-text-primary truncate">
               {state.name}
-            </h3>
-            <Badge variant="neutral" shape="pill" className="flex-shrink-0">
+            </Typography>
+            <Badge variant="neutral" shape="pill" className="shrink-0">
               {hiddenCount > 0 ? `${stateIssues.length}/${totalCount}` : stateIssues.length}
             </Badge>
-          </div>
+          </Flex>
           {canEdit && (
             <button
               type="button"
               onClick={handleCreateIssue}
-              className="text-ui-text-tertiary dark:text-ui-text-tertiary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark p-2.5 sm:p-3 flex-shrink-0"
+              className="text-ui-text-tertiary hover:text-ui-text-primary p-2.5 sm:p-3 shrink-0"
               aria-label={`Add issue to ${state.name}`}
               {...(columnIndex === 0 ? { "data-tour": "create-issue" } : {})}
             >
@@ -126,7 +135,7 @@ export const KanbanColumn = memo(function KanbanColumn({
               </svg>
             </button>
           )}
-        </div>
+        </Flex>
       </div>
 
       {/* Issues */}

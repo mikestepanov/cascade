@@ -16,7 +16,7 @@ export function ExportButton({ projectId, sprintId, status }: ExportButtonProps)
       <button
         type="button"
         onClick={() => setIsModalOpen(true)}
-        className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark bg-ui-bg-primary dark:bg-ui-bg-primary-dark border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark transition-colors"
+        className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-ui-text-primary bg-ui-bg-primary border border-ui-border-primary rounded-lg hover:bg-ui-bg-secondary transition-colors"
       >
         <svg
           aria-hidden="true"

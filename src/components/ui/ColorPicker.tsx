@@ -9,15 +9,16 @@ interface ColorPickerProps {
   presetColors?: string[];
 }
 
+// Preset colors that align with our theme tokens (status, brand, accent)
 const DEFAULT_PRESET_COLORS = [
-  "#EF4444", // red
-  "#F59E0B", // amber
-  "#10B981", // emerald
-  "#3B82F6", // blue
-  "#8B5CF6", // violet
-  "#EC4899", // pink
-  "#6B7280", // gray
-  "#14B8A6", // teal
+  "#EF4444", // matches --color-status-error
+  "#F59E0B", // matches --color-status-warning
+  "#10B981", // matches --color-status-success
+  "#3B82F6", // matches --color-status-info
+  "#8B5CF6", // matches --color-issue-type-story
+  "#EC4899", // matches --color-accent-400
+  "#6B7280", // matches --color-ui-text-secondary
+  "#14B8A6", // matches --color-landing-accent-teal
 ];
 
 export function ColorPicker({
@@ -28,11 +29,7 @@ export function ColorPicker({
 }: ColorPickerProps) {
   return (
     <div>
-      <Typography
-        as="div"
-        variant="small"
-        className="block font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-2"
-      >
+      <Typography as="div" variant="small" className="block font-medium text-ui-text-primary mb-2">
         {label}
       </Typography>
       <Flex gap="sm" wrap align="center">
@@ -42,9 +39,8 @@ export function ColorPicker({
             type="button"
             onClick={() => onChange(presetColor)}
             className={cn(
-              "w-8 h-8 rounded-full transition-transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ui-border-primary dark:focus:ring-ui-border-primary-dark",
-              value === presetColor &&
-                "ring-2 ring-offset-2 ring-ui-border-primary dark:ring-ui-border-primary-dark scale-110",
+              "w-8 h-8 rounded-full transition-transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ui-border-primary",
+              value === presetColor && "ring-2 ring-offset-2 ring-ui-border-primary scale-110",
             )}
             style={{ backgroundColor: presetColor }}
             title={presetColor}
@@ -56,11 +52,11 @@ export function ColorPicker({
             type="color"
             value={value}
             onChange={(e) => onChange(e.target.value)}
-            className="w-8 h-8 rounded cursor-pointer border border-ui-border-primary dark:border-ui-border-primary-dark"
+            className="w-8 h-8 rounded cursor-pointer border border-ui-border-primary"
             title="Custom color"
             aria-label="Custom color picker"
           />
-          <span className="absolute -bottom-5 left-0 text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark whitespace-nowrap">
+          <span className="absolute -bottom-5 left-0 text-xs text-ui-text-tertiary whitespace-nowrap">
             Custom
           </span>
         </div>

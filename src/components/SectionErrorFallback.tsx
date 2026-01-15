@@ -1,3 +1,4 @@
+import { Flex } from "@/components/ui/Flex";
 import { Typography } from "./ui/Typography";
 
 interface Props {
@@ -8,13 +9,13 @@ interface Props {
 
 export function SectionErrorFallback({ title, message, onRetry }: Props) {
   return (
-    <div className="flex items-center justify-center h-full p-8">
+    <Flex align="center" justify="center" className="h-full p-8">
       <div className="max-w-md w-full text-center">
-        <div className="text-status-error dark:text-status-error-dark text-4xl mb-3">⚠️</div>
-        <h2 className="text-xl font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-2">
+        <div className="text-status-error text-4xl mb-3">⚠️</div>
+        <Typography variant="h2" className="text-xl font-semibold text-ui-text-primary mb-2">
           {title}
-        </h2>
-        <Typography className="text-ui-text-secondary dark:text-ui-text-secondary-dark mb-4">
+        </Typography>
+        <Typography className="text-ui-text-secondary mb-4">
           {message ||
             "This section encountered an error. Try reloading or contact support if the problem persists."}
         </Typography>
@@ -28,6 +29,6 @@ export function SectionErrorFallback({ title, message, onRetry }: Props) {
           </button>
         )}
       </div>
-    </div>
+    </Flex>
   );
 }

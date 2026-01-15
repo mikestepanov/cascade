@@ -1,5 +1,6 @@
 import { api } from "@convex/_generated/api";
 import { useQuery } from "convex/react";
+import { Flex } from "@/components/ui/Flex";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { Typography } from "@/components/ui/Typography";
 import { TimeTrackingPage } from "./TimeTrackingPage";
@@ -16,17 +17,17 @@ export default function ProjectTimesheet({ projectKey }: ProjectTimesheetProps) 
 
   if (project === undefined) {
     return (
-      <div className="flex justify-center items-center py-12">
+      <Flex justify="center" align="center" className="py-12">
         <LoadingSpinner />
-      </div>
+      </Flex>
     );
   }
 
   if (project === null) {
     return (
-      <div className="flex justify-center items-center py-12">
+      <Flex justify="center" align="center" className="py-12">
         <Typography className="text-ui-text-secondary">Project not found</Typography>
-      </div>
+      </Flex>
     );
   }
 

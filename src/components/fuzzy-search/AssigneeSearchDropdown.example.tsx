@@ -55,11 +55,7 @@ export function AssigneeSearchDropdown({
   const { results, search, query, clear, isDebouncing } = useUserFuzzySearch<Doc<"users">>(members);
 
   if (!members) {
-    return (
-      <div className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
-        Loading members...
-      </div>
-    );
+    return <div className="text-sm text-ui-text-tertiary">Loading members...</div>;
   }
 
   // Get selected user details
@@ -69,7 +65,11 @@ export function AssigneeSearchDropdown({
     <div className={className}>
       {/* Show selected user */}
       {selectedUser && !query && (
-        <div className="flex items-center justify-between p-2 border border-ui-border-secondary dark:border-ui-border-secondary-dark rounded-lg mb-2">
+        <Flex
+          align="center"
+          justify="between"
+          className="p-2 border border-ui-border-secondary rounded-lg mb-2"
+        >
           <Flex gap="sm" align="center">
             <Avatar name={selectedUser.name} email={selectedUser.email} size="sm" />
             <span className="text-sm">{selectedUser.name || selectedUser.email}</span>
@@ -90,7 +90,7 @@ export function AssigneeSearchDropdown({
               />
             </svg>
           </button>
-        </div>
+        </Flex>
       )}
 
       {/* Fuzzy search input */}
@@ -123,11 +123,7 @@ export function AssigneeSearchDropdown({
                     user.name || "Unknown"
                   )}
                 </div>
-                {user.email && (
-                  <div className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
-                    {user.email}
-                  </div>
-                )}
+                {user.email && <div className="text-xs text-ui-text-tertiary">{user.email}</div>}
               </div>
             </Flex>
           );

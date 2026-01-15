@@ -82,9 +82,9 @@ export function ImportPanel({ projectId, onImportComplete }: ImportPanelProps) {
   return (
     <Flex direction="column" gap="lg">
       <div>
-        <h3 className="text-sm font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-3">
+        <Typography variant="h3" className="text-sm font-semibold text-ui-text-primary mb-3">
           Select Import Format
-        </h3>
+        </Typography>
         <div className="grid grid-cols-2 gap-3">
           <Card
             onClick={() => setImportFormat("csv")}
@@ -98,12 +98,8 @@ export function ImportPanel({ projectId, onImportComplete }: ImportPanelProps) {
             <Flex gap="md" align="center">
               <div className="text-3xl">📊</div>
               <div>
-                <div className="font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
-                  CSV
-                </div>
-                <div className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark">
-                  Spreadsheet format
-                </div>
+                <div className="font-semibold text-ui-text-primary">CSV</div>
+                <div className="text-xs text-ui-text-secondary">Spreadsheet format</div>
               </div>
             </Flex>
           </Card>
@@ -120,12 +116,8 @@ export function ImportPanel({ projectId, onImportComplete }: ImportPanelProps) {
             <Flex gap="md" align="center">
               <div className="text-3xl">📄</div>
               <div>
-                <div className="font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
-                  JSON
-                </div>
-                <div className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark">
-                  Data interchange format
-                </div>
+                <div className="font-semibold text-ui-text-primary">JSON</div>
+                <div className="text-xs text-ui-text-secondary">Data interchange format</div>
               </div>
             </Flex>
           </Card>
@@ -133,14 +125,12 @@ export function ImportPanel({ projectId, onImportComplete }: ImportPanelProps) {
       </div>
 
       <div>
-        <div className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-2">
-          Select File
-        </div>
+        <div className="block text-sm font-medium text-ui-text-primary mb-2">Select File</div>
         <input
           type="file"
           accept={importFormat === "csv" ? ".csv" : ".json"}
           onChange={handleFileChange}
-          className="block w-full text-sm text-ui-text-primary dark:text-ui-text-primary-dark border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg cursor-pointer bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark focus:outline-none"
+          className="block w-full text-sm text-ui-text-primary border border-ui-border-primary rounded-lg cursor-pointer bg-ui-bg-secondary focus:outline-none"
         />
         {importFile && (
           <Typography variant="muted" className="mt-2">

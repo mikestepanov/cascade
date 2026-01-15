@@ -34,6 +34,9 @@ jobs:
       - name: TypeScript
         run: pnpm run typecheck
 
+      - name: Architectural Checks
+        run: pnpm run check:standards
+
   unit-tests:
     name: Unit Tests
     runs-on: ubuntu-latest

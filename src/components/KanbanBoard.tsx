@@ -3,6 +3,7 @@ import type { Id } from "@convex/_generated/dataModel";
 import type { WorkflowState } from "@convex/shared/types";
 import { useQuery } from "convex/react";
 import { useCallback, useMemo, useState } from "react";
+import { Flex } from "@/components/ui/Flex";
 import { useBoardDragAndDrop } from "@/hooks/useBoardDragAndDrop";
 import { useBoardHistory } from "@/hooks/useBoardHistory";
 import { useListNavigation } from "@/hooks/useListNavigation";
@@ -100,17 +101,14 @@ export function KanbanBoard({ projectId, teamId, sprintId }: KanbanBoardProps) {
   if (isLoading) {
     return (
       <div className="flex-1 overflow-x-auto">
-        <div className="px-4 sm:px-6 pt-4 sm:pt-6 pb-2 flex items-center justify-between">
+        <Flex align="center" justify="between" className="px-4 sm:px-6 pt-4 sm:pt-6 pb-2">
           <SkeletonText lines={1} className="w-32" />
           <SkeletonText lines={1} className="w-32" />
-        </div>
-        <div className="flex space-x-3 sm:space-x-6 px-4 sm:px-6 pb-6 overflow-x-auto">
+        </Flex>
+        <Flex className="space-x-3 sm:space-x-6 px-4 sm:px-6 pb-6 overflow-x-auto">
           {[1, 2, 3, 4].map((i) => (
-            <div
-              key={i}
-              className="flex-shrink-0 w-72 sm:w-80 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg"
-            >
-              <div className="p-3 sm:p-4 border-b border-ui-border-primary dark:border-ui-border-primary-dark bg-ui-bg-primary dark:bg-ui-bg-primary-dark rounded-t-lg">
+            <div key={i} className="shrink-0 w-72 sm:w-80 bg-ui-bg-secondary rounded-lg">
+              <div className="p-3 sm:p-4 border-b border-ui-border-primary bg-ui-bg-primary rounded-t-lg">
                 <SkeletonText lines={1} className="w-24" />
               </div>
               <div className="p-2 space-y-2 min-h-96">
@@ -120,7 +118,7 @@ export function KanbanBoard({ projectId, teamId, sprintId }: KanbanBoardProps) {
               </div>
             </div>
           ))}
-        </div>
+        </Flex>
       </div>
     );
   }
@@ -135,8 +133,6 @@ export function KanbanBoard({ projectId, teamId, sprintId }: KanbanBoardProps) {
   } else if (isTeamMode && smartWorkflowStates) {
     workflowStates = smartWorkflowStates.map((s) => ({
       ...s,
-      color:
-        s.category === "todo" ? "#94a3b8" : s.category === "inprogress" ? "#3b82f6" : "#22c55e",
       description: "",
       order: s.order,
     }));
@@ -157,7 +153,10 @@ export function KanbanBoard({ projectId, teamId, sprintId }: KanbanBoardProps) {
         showControls={!isTeamMode}
       />
 
-      <div className="flex flex-col lg:flex-row space-y-6 lg:space-y-0 lg:space-x-6 px-4 lg:px-6 pb-6 lg:overflow-x-auto -webkit-overflow-scrolling-touch">
+      <Flex
+        direction="column"
+        className="lg:flex-row space-y-6 lg:space-y-0 lg:space-x-6 px-4 lg:px-6 pb-6 lg:overflow-x-auto -webkit-overflow-scrolling-touch"
+      >
         {workflowStates.map((state, columnIndex: number) => {
           const counts = statusCounts[state.id] || {
             total: 0,
@@ -187,7 +186,7 @@ export function KanbanBoard({ projectId, teamId, sprintId }: KanbanBoardProps) {
             />
           );
         })}
-      </div>
+      </Flex>
 
       {isProjectMode && (
         <CreateIssueModal

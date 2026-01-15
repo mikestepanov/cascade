@@ -31,10 +31,10 @@ export function SearchResultsList({
 }: SearchResultsListProps) {
   if (searchQuery.length < 2) {
     return (
-      <div className="p-8 text-center text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+      <div className="p-8 text-center text-ui-text-tertiary">
         <svg
           aria-hidden="true"
-          className="w-16 h-16 mx-auto mb-4 text-ui-text-tertiary dark:text-ui-text-tertiary-dark"
+          className="w-16 h-16 mx-auto mb-4 text-ui-text-tertiary"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -53,7 +53,7 @@ export function SearchResultsList({
 
   if (results.length === 0) {
     return (
-      <div className="p-8 text-center text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+      <div className="p-8 text-center text-ui-text-tertiary">
         <Typography variant="muted">No issues found matching your criteria</Typography>
       </div>
     );
@@ -67,15 +67,13 @@ export function SearchResultsList({
             type="button"
             key={issue._id}
             onClick={() => onSelectIssue(issue._id)}
-            className="w-full p-4 hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark transition-colors text-left"
+            className="w-full p-4 hover:bg-ui-bg-secondary transition-colors text-left"
           >
             <Flex gap="md" align="start">
-              <span className="text-xl flex-shrink-0">{getTypeIcon(issue.type)}</span>
+              <span className="text-xl shrink-0">{getTypeIcon(issue.type)}</span>
               <div className="flex-1 min-w-0">
                 <Flex gap="sm" align="center" className="mb-1">
-                  <span className="text-sm font-mono text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
-                    {issue.key}
-                  </span>
+                  <span className="text-sm font-mono text-ui-text-tertiary">{issue.key}</span>
                   <span
                     className={cn(
                       "text-xs px-2 py-0.5 rounded",
@@ -85,9 +83,9 @@ export function SearchResultsList({
                     {issue.priority}
                   </span>
                 </Flex>
-                <h4 className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+                <Typography variant="h4" className="text-sm font-medium text-ui-text-primary">
                   {issue.title}
-                </h4>
+                </Typography>
               </div>
             </Flex>
           </button>
@@ -95,7 +93,7 @@ export function SearchResultsList({
       </div>
 
       {hasMore && (
-        <div className="p-4 border-t border-ui-border-primary dark:border-ui-border-primary-dark bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark">
+        <div className="p-4 border-t border-ui-border-primary bg-ui-bg-secondary">
           <button
             type="button"
             onClick={onLoadMore}

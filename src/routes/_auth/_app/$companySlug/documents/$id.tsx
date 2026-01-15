@@ -3,6 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Suspense } from "react";
 import { DocumentEditor } from "@/components/DocumentEditor";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { Flex } from "@/components/ui/Flex";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 
 export const Route = createFileRoute("/_auth/_app/$companySlug/documents/$id")({
@@ -18,9 +19,9 @@ function DocumentPage() {
         <Suspense
           key={id} // Force remount on document change to avoid stale error states
           fallback={
-            <div className="flex h-full items-center justify-center">
+            <Flex align="center" justify="center" className="h-full">
               <LoadingSpinner size="lg" />
-            </div>
+            </Flex>
           }
         >
           <DocumentEditor documentId={id as Id<"documents">} />

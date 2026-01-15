@@ -1,4 +1,5 @@
 import { Component, type ReactNode } from "react";
+import { Flex } from "@/components/ui/Flex";
 import { Button } from "./ui/Button";
 import { Typography } from "./ui/Typography";
 
@@ -36,22 +37,22 @@ export class ErrorBoundary extends Component<Props, State> {
       }
 
       return (
-        <div className="min-h-screen flex items-center justify-center bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark">
-          <div className="max-w-md w-full bg-ui-bg-primary dark:bg-ui-bg-primary-dark shadow-lg rounded-lg p-8">
+        <Flex align="center" justify="center" className="min-h-screen bg-ui-bg-secondary">
+          <div className="max-w-md w-full bg-ui-bg-primary shadow-lg rounded-lg p-8">
             <div className="text-center">
-              <div className="text-status-error dark:text-status-error-dark text-6xl mb-4">⚠️</div>
-              <h1 className="text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark mb-2">
+              <div className="text-status-error text-6xl mb-4">⚠️</div>
+              <Typography variant="h1" className="text-2xl font-bold text-ui-text-primary mb-2">
                 Something went wrong
-              </h1>
+              </Typography>
               <Typography variant="muted" className="mb-6">
                 We encountered an unexpected error. Please try refreshing the page.
               </Typography>
               {this.state.error && (
                 <details className="text-left mb-6">
-                  <summary className="cursor-pointer text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark">
+                  <summary className="cursor-pointer text-sm text-ui-text-secondary hover:text-ui-text-primary">
                     Error details
                   </summary>
-                  <pre className="mt-2 text-xs bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark p-3 rounded overflow-auto max-h-40">
+                  <pre className="mt-2 text-xs bg-ui-bg-tertiary p-3 rounded overflow-auto max-h-40">
                     {this.state.error.message}
                   </pre>
                 </details>
@@ -61,7 +62,7 @@ export class ErrorBoundary extends Component<Props, State> {
               </Button>
             </div>
           </div>
-        </div>
+        </Flex>
       );
     }
 

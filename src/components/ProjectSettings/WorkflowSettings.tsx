@@ -159,9 +159,11 @@ export function WorkflowSettings({ projectId, workflowStates }: WorkflowSettings
           <div className="space-y-4">
             <div className="space-y-2">
               {states.map((state, index) => (
-                <div
+                <Flex
+                  align="center"
+                  gap="md"
+                  className="p-3 bg-ui-bg-secondary rounded-lg"
                   key={state.id}
-                  className="flex items-center gap-3 p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg"
                 >
                   <Flex gap="xs" direction="column">
                     <Button
@@ -203,7 +205,7 @@ export function WorkflowSettings({ projectId, workflowStates }: WorkflowSettings
                   >
                     Remove
                   </Button>
-                </div>
+                </Flex>
               ))}
             </div>
 
@@ -211,10 +213,7 @@ export function WorkflowSettings({ projectId, workflowStates }: WorkflowSettings
               + Add State
             </Button>
 
-            <Flex
-              gap="sm"
-              className="pt-4 border-t border-ui-border-primary dark:border-ui-border-primary-dark"
-            >
+            <Flex gap="sm" className="pt-4 border-t border-ui-border-primary">
               <Button onClick={handleSave} disabled={isSaving}>
                 {isSaving ? "Saving..." : "Save Changes"}
               </Button>

@@ -45,11 +45,12 @@ function checkFile(filePath) {
   const content = fs.readFileSync(filePath, "utf-8");
   const sourceFile = ts.createSourceFile(filePath, content, ts.ScriptTarget.Latest, true);
 
-  function checkParagraphTag(node, filePath) {
+  function checkTypographyTags(node, filePath) {
     if (ts.isJsxOpeningElement(node) || ts.isJsxSelfClosingElement(node)) {
       const tagName = node.tagName.getText();
-      if (tagName === "p") {
-        reportError(filePath, node, "Use <Typography> component instead of raw <p> tags.");
+      const rawTags = ["p", "h1", "h2", "h3", "h4", "h5", "h6"];
+      if (rawTags.includes(tagName)) {
+        reportError(filePath, node, `Use <Typography> component instead of raw <${tagName}> tags.`);
       }
     }
   }
@@ -69,8 +70,40 @@ function checkFile(filePath) {
     }
   }
 
-  function checkFlexHeuristic(node, _filePath) {
-    // Check for "flex" usage heuristic
+  function getClassNameText(node) {
+    const attr = node.attributes.properties.find(
+      (p) => ts.isJsxAttribute(p) && p.name.getText() === "className",
+    );
+    const init = attr?.initializer;
+    if (!init) return "";
+    if (ts.isStringLiteral(init)) return init.text;
+    if (ts.isJsxExpression(init) && init.expression && ts.isStringLiteral(init.expression)) {
+      return init.expression.text;
+    }
+    return "";
+  }
+
+  function checkFlexStandard(node, filePath) {
+    if (!(ts.isJsxOpeningElement(node) || ts.isJsxSelfClosingElement(node))) return;
+
+    if (node.tagName.getText() !== "div") return;
+
+    const classText = getClassNameText(node);
+    const classes = classText.split(/\s+/);
+
+    if (classes.includes("flex") || classes.includes("inline-flex")) {
+      reportError(
+        filePath,
+        node,
+        'Use <Flex> component instead of <div className="flex"> for one-dimensional layouts.',
+        "warning",
+      );
+    }
+  }
+
+  function checkDarkModeStandard(node, filePath) {
+    if (!ts.isJsxAttribute(node) || node.name.getText() !== "className") return;
+
     let classText = "";
     if (node.initializer && ts.isStringLiteral(node.initializer)) {
       classText = node.initializer.text;
@@ -83,22 +116,65 @@ function checkFile(filePath) {
       classText = node.initializer.expression.text;
     }
 
-    const hasFlex = classText.includes("flex");
-    const hasAlignment = classText.includes("items-") || classText.includes("justify-");
+    // Flag redundant dark mode classes for semantic tokens
+    const classes = classText.split(/\s+/);
+    const REDUNDANT_PATTERN = /(bg|text|border)-(ui-bg|ui-text|ui-border|status)-[a-z-]+-dark/;
 
-    if (hasFlex && hasAlignment && !classText.includes("hidden")) {
-      // Logic for suggesting <Flex> component could go here if enabled
+    if (classes.some((cls) => cls.includes("dark:") && REDUNDANT_PATTERN.test(cls))) {
+      reportError(
+        filePath,
+        node,
+        "Redundant dark mode class detected. Semantic tokens now handle dark mode automatically in index.css. Use single classes like 'bg-ui-bg-primary' instead of 'dark:bg-ui-bg-primary-dark'.",
+        "warning",
+      );
+    }
+  }
+
+  const tailwindShorthandMap = {
+    "flex-shrink-0": "shrink-0",
+    "flex-shrink": "shrink",
+    "flex-grow-0": "grow-0",
+    "flex-grow": "grow",
+  };
+
+  function checkTailwindShorthands(node, filePath) {
+    if (!ts.isJsxAttribute(node) || node.name.getText() !== "className") return;
+
+    let classText = "";
+    if (node.initializer && ts.isStringLiteral(node.initializer)) {
+      classText = node.initializer.text;
+    } else if (
+      node.initializer &&
+      ts.isJsxExpression(node.initializer) &&
+      node.initializer.expression &&
+      ts.isStringLiteral(node.initializer.expression)
+    ) {
+      classText = node.initializer.expression.text;
+    }
+
+    const classes = classText.split(/\s+/);
+    for (const cls of classes) {
+      if (tailwindShorthandMap[cls]) {
+        reportError(
+          filePath,
+          node,
+          `Non-canonical Tailwind class detected: '${cls}'. Use '${tailwindShorthandMap[cls]}' instead.`,
+          "warning",
+        );
+      }
     }
   }
 
   function checkClassName(node, filePath) {
     if (!ts.isJsxAttribute(node) || node.name.getText() !== "className") return;
     checkClassNameConcatenation(node, filePath);
-    checkFlexHeuristic(node, filePath);
+    checkDarkModeStandard(node, filePath);
+    checkTailwindShorthands(node, filePath);
   }
 
   function visit(node) {
-    checkParagraphTag(node, filePath);
+    checkTypographyTags(node, filePath);
+    checkFlexStandard(node, filePath);
     checkClassName(node, filePath);
     ts.forEachChild(node, visit);
   }

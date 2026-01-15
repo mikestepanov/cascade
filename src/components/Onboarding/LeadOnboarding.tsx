@@ -3,6 +3,7 @@ import type { Id } from "@convex/_generated/dataModel";
 import { useMutation } from "convex/react";
 import { ArrowLeft, Building2, FolderPlus, Sparkles, UserPlus } from "lucide-react";
 import { useState } from "react";
+import { Flex } from "@/components/ui/Flex";
 import { showError, showSuccess } from "@/lib/toast";
 import { Button } from "../ui/Button";
 import { Input } from "../ui/Input";
@@ -95,7 +96,7 @@ export function LeadOnboarding({
         <button
           type="button"
           onClick={onBack}
-          className="flex items-center gap-2 text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark transition-colors"
+          className="flex items-center gap-2 text-ui-text-secondary hover:text-ui-text-primary transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Back</span>
@@ -103,10 +104,10 @@ export function LeadOnboarding({
 
         {/* Header */}
         <div className="text-center">
-          <h1 className="text-3xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark mb-3">
+          <Typography variant="h1" className="text-3xl font-bold text-ui-text-primary mb-3">
             Perfect for Team Leads
-          </h1>
-          <Typography className="text-ui-text-secondary dark:text-ui-text-secondary-dark text-lg">
+          </Typography>
+          <Typography className="text-ui-text-secondary text-lg">
             Here's what you can do with Nixelo
           </Typography>
         </div>
@@ -115,32 +116,32 @@ export function LeadOnboarding({
         <FeatureHighlights />
 
         {/* Additional lead features */}
-        <div className="bg-ui-bg-primary dark:bg-ui-bg-secondary-dark rounded-xl p-6">
-          <h3 className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-4">
+        <div className="bg-ui-bg-primary rounded-xl p-6">
+          <Typography variant="h3" className="font-medium text-ui-text-primary mb-4">
             As a team lead, you can also:
-          </h3>
-          <ul className="space-y-3 text-ui-text-secondary dark:text-ui-text-secondary-dark">
+          </Typography>
+          <ul className="space-y-3 text-ui-text-secondary">
             <li className="flex items-start gap-3">
-              <UserPlus className="w-5 h-5 text-primary-500 mt-0.5 flex-shrink-0" />
+              <UserPlus className="w-5 h-5 text-primary-500 mt-0.5 shrink-0" />
               <span>Invite team members and manage roles</span>
             </li>
             <li className="flex items-start gap-3">
-              <FolderPlus className="w-5 h-5 text-primary-500 mt-0.5 flex-shrink-0" />
+              <FolderPlus className="w-5 h-5 text-primary-500 mt-0.5 shrink-0" />
               <span>Create and customize project workflows</span>
             </li>
             <li className="flex items-start gap-3">
-              <Sparkles className="w-5 h-5 text-primary-500 mt-0.5 flex-shrink-0" />
+              <Sparkles className="w-5 h-5 text-primary-500 mt-0.5 shrink-0" />
               <span>Use AI to generate issue suggestions and summaries</span>
             </li>
           </ul>
         </div>
 
         {/* Continue */}
-        <div className="flex justify-center">
+        <Flex justify="center">
           <Button variant="primary" size="lg" onClick={() => setStep("project")}>
             Let's set up your project
           </Button>
-        </div>
+        </Flex>
       </div>
     );
   }
@@ -152,7 +153,7 @@ export function LeadOnboarding({
         <button
           type="button"
           onClick={() => setStep("features")}
-          className="flex items-center gap-2 text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark transition-colors"
+          className="flex items-center gap-2 text-ui-text-secondary hover:text-ui-text-primary transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Back</span>
@@ -160,9 +161,14 @@ export function LeadOnboarding({
 
         {/* Header */}
         <div className="text-center">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary-100 dark:bg-primary-900/30 mb-4">
+          <Flex
+            inline
+            align="center"
+            justify="center"
+            className="w-16 h-16 rounded-full bg-primary-100 dark:bg-primary-900/30 mb-4"
+          >
             <Building2 className="w-8 h-8 text-primary-600" />
-          </div>
+          </Flex>
           <Typography variant="h1" className="text-3xl font-bold mb-3">
             Name Your Project
           </Typography>
@@ -218,7 +224,7 @@ export function LeadOnboarding({
         <button
           type="button"
           onClick={() => setStep("project")}
-          className="flex items-center gap-2 text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark transition-colors"
+          className="flex items-center gap-2 text-ui-text-secondary hover:text-ui-text-primary transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Back</span>
@@ -241,9 +247,9 @@ export function LeadOnboarding({
             type="button"
             onClick={handleCreateSample}
             disabled={isCreating}
-            className="p-6 rounded-xl border-2 border-ui-border-primary dark:border-ui-border-primary-dark bg-ui-bg-primary dark:bg-ui-bg-secondary-dark text-left transition-all hover:border-primary-500 hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
+            className="p-6 rounded-xl border-2 border-ui-border-primary bg-ui-bg-primary text-left transition-all hover:border-primary-500 hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <div className="flex flex-col gap-4">
+            <Flex direction="column" gap="lg">
               <div className="p-3 rounded-lg bg-primary-100 dark:bg-primary-900/30 w-fit">
                 <Sparkles className="w-6 h-6 text-primary-600" />
               </div>
@@ -256,7 +262,7 @@ export function LeadOnboarding({
                 </Typography>
               </div>
               <span className="text-xs text-primary-600 font-medium">Recommended</span>
-            </div>
+            </Flex>
           </button>
 
           {/* Start Fresh */}
@@ -264,11 +270,11 @@ export function LeadOnboarding({
             type="button"
             onClick={handleFinishWithoutProject}
             disabled={isCreating}
-            className="p-6 rounded-xl border-2 border-ui-border-primary dark:border-ui-border-primary-dark bg-ui-bg-primary dark:bg-ui-bg-secondary-dark text-left transition-all hover:border-primary-500 hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
+            className="p-6 rounded-xl border-2 border-ui-border-primary bg-ui-bg-primary text-left transition-all hover:border-primary-500 hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <div className="flex flex-col gap-4">
-              <div className="p-3 rounded-lg bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark w-fit">
-                <FolderPlus className="w-6 h-6 text-ui-text-secondary dark:text-ui-text-secondary-dark" />
+            <Flex direction="column" gap="lg">
+              <div className="p-3 rounded-lg bg-ui-bg-tertiary w-fit">
+                <FolderPlus className="w-6 h-6 text-ui-text-secondary" />
               </div>
               <div>
                 <Typography variant="h3" className="font-semibold mb-1">
@@ -278,10 +284,8 @@ export function LeadOnboarding({
                   Create your own project with a blank canvas
                 </Typography>
               </div>
-              <span className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
-                For experienced users
-              </span>
-            </div>
+              <span className="text-xs text-ui-text-tertiary">For experienced users</span>
+            </Flex>
           </button>
         </div>
 

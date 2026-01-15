@@ -20,21 +20,25 @@ export function RecentActivity({ activities }: { activities: Activity[] | undefi
   }
 
   return (
-    <div className="bg-ui-bg-primary dark:bg-ui-bg-primary-dark rounded-lg shadow p-6">
-      <h3 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-4">
+    <div className="bg-ui-bg-primary rounded-lg shadow p-6">
+      <Typography variant="h3" className="text-lg font-semibold text-ui-text-primary mb-4">
         Recent Activity
-      </h3>
+      </Typography>
       <Flex direction="column" gap="md">
         {activities.map((activity) => (
           <Flex
             key={activity._id}
             gap="md"
             align="start"
-            className="text-sm border-b border-ui-border-secondary dark:border-ui-border-secondary-dark pb-3 last:border-0"
+            className="text-sm border-b border-ui-border-secondary pb-3 last:border-0"
           >
-            <div className="flex-shrink-0 w-8 h-8 rounded-full bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark flex items-center justify-center text-xs font-medium">
+            <Flex
+              align="center"
+              justify="center"
+              className="shrink-0 w-8 h-8 rounded-full bg-ui-bg-tertiary text-xs font-medium"
+            >
               {activity.userName.charAt(0).toUpperCase()}
-            </div>
+            </Flex>
             <div className="flex-1 min-w-0">
               <Typography variant="p">
                 <span className="font-medium">{activity.userName}</span> {activity.action}{" "}
@@ -43,7 +47,7 @@ export function RecentActivity({ activities }: { activities: Activity[] | undefi
                     <span className="font-medium">{activity.field}</span> on
                   </>
                 )}{" "}
-                <span className="font-mono text-xs bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark px-1 rounded">
+                <span className="font-mono text-xs bg-ui-bg-tertiary px-1 rounded">
                   {activity.issueKey}
                 </span>
               </Typography>

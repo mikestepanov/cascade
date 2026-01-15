@@ -99,14 +99,14 @@ export function GitHubIntegration() {
       <div className="p-6">
         <Flex justify="between" align="start">
           <Flex gap="lg" align="center">
-            <div className="p-3 bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded-lg">
-              <Github className="h-6 w-6 text-ui-text-primary dark:text-ui-text-primary-dark" />
+            <div className="p-3 bg-ui-bg-tertiary rounded-lg">
+              <Github className="h-6 w-6 text-ui-text-primary" />
             </div>
             <div>
-              <h3 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
+              <Typography variant="h3" className="text-lg font-semibold text-ui-text-primary">
                 GitHub
-              </h3>
-              <Typography className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mt-1">
+              </Typography>
+              <Typography className="text-sm text-ui-text-secondary mt-1">
                 Link repositories and track PRs and commits
               </Typography>
               {githubConnection && (
@@ -135,7 +135,7 @@ export function GitHubIntegration() {
         </Flex>
 
         {githubConnection && (
-          <div className="mt-6 pt-6 border-t border-ui-border-primary dark:border-ui-border-primary-dark">
+          <div className="mt-6 pt-6 border-t border-ui-border-primary">
             <LinkedRepositories />
           </div>
         )}

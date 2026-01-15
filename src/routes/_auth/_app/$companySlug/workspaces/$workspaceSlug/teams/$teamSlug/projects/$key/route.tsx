@@ -28,8 +28,10 @@ function ProjectLayout() {
     return (
       <Flex align="center" justify="center" className="h-full">
         <div className="text-center">
-          <h2 className="text-xl font-semibold mb-2">Project Not Found</h2>
-          <Typography className="text-ui-text-secondary dark:text-ui-text-secondary-dark">
+          <Typography variant="h2" className="text-xl font-semibold mb-2">
+            Project Not Found
+          </Typography>
+          <Typography className="text-ui-text-secondary">
             The project "{key}" doesn't exist or you don't have access to it.
           </Typography>
         </div>
@@ -61,9 +63,9 @@ function ProjectLayout() {
   ];
 
   return (
-    <div className="h-full flex flex-col">
+    <Flex direction="column" className="h-full">
       {/* Breadcrumb */}
-      <div className="px-4 py-2 border-b border-ui-border-primary dark:border-ui-border-primary-dark bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark text-sm">
+      <div className="px-4 py-2 border-b border-ui-border-primary bg-ui-bg-secondary text-sm">
         <Link
           to={ROUTE_PATTERNS.workspaces.list}
           params={{ companySlug }}
@@ -92,7 +94,7 @@ function ProjectLayout() {
       </div>
 
       {/* Tab Navigation */}
-      <div className="border-b border-ui-border-primary dark:border-ui-border-primary-dark bg-ui-bg-primary dark:bg-ui-bg-primary-dark">
+      <div className="border-b border-ui-border-primary bg-ui-bg-primary">
         <nav className="flex space-x-4 px-4" aria-label="Tabs">
           {tabs.map((tab) => (
             <Link
@@ -101,12 +103,11 @@ function ProjectLayout() {
               params={tab.params}
               className="border-b-2 py-3 px-1 text-sm font-medium transition-colors"
               activeProps={{
-                className:
-                  "border-brand-600 text-brand-600 dark:border-brand-400 dark:text-brand-400",
+                className: "border-brand-indigo-border text-brand-indigo-text",
               }}
               inactiveProps={{
                 className:
-                  "border-transparent text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark hover:border-ui-border-secondary dark:hover:border-ui-border-secondary-dark",
+                  "border-transparent text-ui-text-secondary hover:text-ui-text-primary hover:border-ui-border-secondary",
               }}
             >
               {tab.name}
@@ -119,6 +120,6 @@ function ProjectLayout() {
       <div className="flex-1 overflow-hidden">
         <Outlet />
       </div>
-    </div>
+    </Flex>
   );
 }

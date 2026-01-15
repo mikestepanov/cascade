@@ -3,6 +3,7 @@ import { useAuthActions } from "@convex-dev/auth/react";
 import { Link } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
 import { LogOut, Settings } from "lucide-react";
+import { Flex } from "@/components/ui/Flex";
 import { ROUTE_PATTERNS } from "@/config/routes";
 import { useCompany } from "@/hooks/useCompanyContext";
 import { Avatar } from "./ui/Avatar";
@@ -40,14 +41,14 @@ export function UserMenu() {
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56" align="end">
         <DropdownMenuLabel className="font-normal">
-          <div className="flex flex-col space-y-1">
+          <Flex direction="column" className="space-y-1">
             <Typography className="text-sm font-medium leading-none">
               {user.name || "User"}
             </Typography>
-            <Typography className="text-xs leading-none text-ui-text-secondary dark:text-ui-text-secondary-dark truncate">
+            <Typography className="text-xs leading-none text-ui-text-secondary truncate">
               {user.email}
             </Typography>
-          </div>
+          </Flex>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
@@ -65,7 +66,7 @@ export function UserMenu() {
         <DropdownMenuSeparator />
         <DropdownMenuItem
           onClick={() => void signOut()}
-          className="cursor-pointer text-status-error dark:text-status-error-dark focus:text-status-error dark:focus:text-status-error-dark"
+          className="cursor-pointer text-status-error focus:text-status-error"
         >
           <LogOut className="mr-2 h-4 w-4" />
           <span>Sign out</span>

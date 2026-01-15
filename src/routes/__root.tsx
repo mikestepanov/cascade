@@ -3,6 +3,7 @@ import { createRootRoute, Outlet } from "@tanstack/react-router";
 import { ConvexReactClient } from "convex/react";
 import { useEffect } from "react";
 import { Toaster } from "sonner";
+import { Flex } from "@/components/ui/Flex";
 import { LazyPostHog } from "../components/LazyPostHog";
 import { NotFoundPage } from "../components/NotFoundPage";
 import { Typography } from "../components/ui/Typography";
@@ -57,16 +58,21 @@ function RootComponent() {
             <Outlet />
           </ConvexAuthProvider>
         ) : (
-          <div className="flex min-h-screen flex-col items-center justify-center bg-ui-bg-secondary dark:bg-ui-bg-primary-dark p-4">
+          <Flex
+            direction="column"
+            align="center"
+            justify="center"
+            className="min-h-screen bg-ui-bg-secondary p-4"
+          >
             <div className="text-center max-w-md">
-              <h1 className="text-2xl font-bold mb-4 text-ui-text-primary dark:text-ui-text-primary-dark">
+              <Typography variant="h1" className="text-2xl font-bold mb-4 text-ui-text-primary">
                 Service Unavailable
-              </h1>
-              <Typography className="text-ui-text-secondary dark:text-ui-text-secondary-dark mb-6">
+              </Typography>
+              <Typography className="text-ui-text-secondary mb-6">
                 The application could not connect to the backend services. Please try again later.
               </Typography>
             </div>
-          </div>
+          </Flex>
         )}
         <Toaster />
       </LazyPostHog>

@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 import { NixeloLogo } from "@/components/landing";
+import { Flex } from "@/components/ui/Flex";
 import { ROUTE_PATTERNS } from "@/config/routes";
 import { Typography } from "../ui/Typography";
 
@@ -12,12 +13,12 @@ interface AuthPageLayoutProps {
 
 export function AuthPageLayout({ title, subtitle, children }: AuthPageLayoutProps) {
   return (
-    <div className="min-h-screen w-full bg-ui-bg-secondary dark:bg-ui-bg-primary-dark flex items-center justify-center p-4">
+    <Flex align="center" justify="center" className="min-h-screen w-full bg-ui-bg-secondary p-4">
       <div className="w-full max-w-md">
         <div className="mb-4">
           <Link
             to={ROUTE_PATTERNS.home}
-            className="inline-flex items-center gap-2 text-ui-text-tertiary hover:text-white transition-colors text-sm"
+            className="inline-flex items-center gap-2 text-ui-text-tertiary hover:text-ui-text-primary transition-colors text-sm"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -36,8 +37,8 @@ export function AuthPageLayout({ title, subtitle, children }: AuthPageLayoutProp
             Back to Home
           </Link>
         </div>
-        <div className="bg-ui-bg-primary dark:bg-ui-bg-secondary-dark border border-ui-border-primary dark:border-ui-border-primary-dark rounded-2xl p-8 backdrop-blur-sm">
-          <div className="flex flex-col items-center mb-6">
+        <div className="bg-ui-bg-primary border border-ui-border-primary rounded-2xl p-8 backdrop-blur-sm">
+          <Flex direction="column" align="center" className="mb-6">
             <Link to={ROUTE_PATTERNS.home} className="hover:opacity-80 transition-opacity">
               <NixeloLogo size={48} />
             </Link>
@@ -47,7 +48,7 @@ export function AuthPageLayout({ title, subtitle, children }: AuthPageLayoutProp
             <Typography variant="muted" className="text-ui-text-tertiary">
               {subtitle}
             </Typography>
-          </div>
+          </Flex>
           {children}
           <div className="mt-6 text-center text-xs text-ui-text-tertiary">
             By continuing, you acknowledge that you understand and agree to the{" "}
@@ -61,6 +62,6 @@ export function AuthPageLayout({ title, subtitle, children }: AuthPageLayoutProp
           </div>
         </div>
       </div>
-    </div>
+    </Flex>
   );
 }

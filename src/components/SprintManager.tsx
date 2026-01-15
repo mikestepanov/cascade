@@ -2,6 +2,7 @@ import { api } from "@convex/_generated/api";
 import type { Doc, Id } from "@convex/_generated/dataModel";
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
+import { Flex } from "@/components/ui/Flex";
 import { formatDate } from "@/lib/dates";
 import { getStatusColor } from "@/lib/issue-utils";
 import { showError, showSuccess } from "@/lib/toast";
@@ -75,11 +76,11 @@ export function SprintManager({ projectId, canEdit = true }: SprintManagerProps)
   if (!sprints) {
     return (
       <div className="p-3 sm:p-6">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
+        <Flex align="center" justify="between" className="mb-6">
+          <Typography variant="h2" className="text-xl font-semibold text-ui-text-primary">
             Sprint Management
-          </h2>
-        </div>
+          </Typography>
+        </Flex>
         <div className="space-y-4">
           <SkeletonProjectCard />
           <SkeletonProjectCard />
@@ -91,21 +92,27 @@ export function SprintManager({ projectId, canEdit = true }: SprintManagerProps)
 
   return (
     <div className="p-3 sm:p-6">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-6">
-        <h2 className="text-xl font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
+      <Flex
+        direction="column"
+        align="start"
+        justify="between"
+        gap="md"
+        className="sm:flex-row sm:items-center mb-6"
+      >
+        <Typography variant="h2" className="text-xl font-semibold text-ui-text-primary">
           Sprint Management
-        </h2>
+        </Typography>
         {canEdit && (
           <Button onClick={() => setShowCreateForm(true)} variant="primary">
             <span className="hidden sm:inline">Create Sprint</span>
             <span className="sm:hidden">+ Sprint</span>
           </Button>
         )}
-      </div>
+      </Flex>
 
       {/* Create Sprint Form */}
       {showCreateForm && (
-        <div className="bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark p-4 rounded-lg mb-6 border border-ui-border-primary dark:border-ui-border-primary-dark">
+        <div className="bg-ui-bg-secondary p-4 rounded-lg mb-6 border border-ui-border-primary">
           <form onSubmit={(e) => void handleCreateSprint(e)} className="space-y-4">
             <Input
               label="Sprint Name"
@@ -121,7 +128,7 @@ export function SprintManager({ projectId, canEdit = true }: SprintManagerProps)
               placeholder="What do you want to achieve in this sprint?"
               rows={2}
             />
-            <div className="flex flex-col sm:flex-row gap-2">
+            <Flex direction="column" gap="sm" className="sm:flex-row">
               <Button type="submit" variant="primary">
                 Create Sprint
               </Button>
@@ -136,7 +143,7 @@ export function SprintManager({ projectId, canEdit = true }: SprintManagerProps)
               >
                 Cancel
               </Button>
-            </div>
+            </Flex>
           </form>
         </div>
       )}
@@ -144,41 +151,48 @@ export function SprintManager({ projectId, canEdit = true }: SprintManagerProps)
       {/* Sprints List */}
       <div className="space-y-4">
         {sprints.length === 0 ? (
-          <div className="text-center py-12 text-ui-text-secondary dark:text-ui-text-secondary-dark">
+          <div className="text-center py-12 text-ui-text-secondary">
             No sprints created yet. Create your first sprint to get started.
           </div>
         ) : (
           sprints.map((sprint: Doc<"sprints"> & { issueCount: number }) => (
             <div
               key={sprint._id}
-              className="bg-ui-bg-primary dark:bg-ui-bg-primary-dark border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg p-4"
+              className="bg-ui-bg-primary border border-ui-border-primary rounded-lg p-4"
             >
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <Flex
+                direction="column"
+                align="start"
+                justify="between"
+                gap="lg"
+                className="sm:flex-row sm:items-center"
+              >
                 <div className="flex-1 w-full sm:w-auto">
-                  <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-2">
-                    <h3 className="text-base sm:text-lg font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+                  <Flex wrap align="center" gap="sm" className="sm:gap-3 mb-2">
+                    <Typography
+                      variant="h3"
+                      className="text-base sm:text-lg font-medium text-ui-text-primary"
+                    >
                       {sprint.name}
-                    </h3>
+                    </Typography>
                     <Badge size="md" className={getStatusColor(sprint.status)}>
                       {sprint.status}
                     </Badge>
-                    <span className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
+                    <span className="text-sm text-ui-text-secondary">
                       {sprint.issueCount} issues
                     </span>
-                  </div>
+                  </Flex>
                   {sprint.goal && (
-                    <Typography className="text-ui-text-secondary dark:text-ui-text-secondary-dark mb-2">
-                      {sprint.goal}
-                    </Typography>
+                    <Typography className="text-ui-text-secondary mb-2">{sprint.goal}</Typography>
                   )}
                   {sprint.startDate && sprint.endDate && (
-                    <Typography className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
+                    <Typography className="text-sm text-ui-text-secondary">
                       {formatDate(sprint.startDate)} - {formatDate(sprint.endDate)}
                     </Typography>
                   )}
                 </div>
                 {canEdit && (
-                  <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+                  <Flex direction="column" gap="sm" className="sm:flex-row w-full sm:w-auto">
                     {sprint.status === "future" && (
                       <Button
                         onClick={() => void handleStartSprint(sprint._id)}
@@ -197,9 +211,9 @@ export function SprintManager({ projectId, canEdit = true }: SprintManagerProps)
                         Complete Sprint
                       </Button>
                     )}
-                  </div>
+                  </Flex>
                 )}
-              </div>
+              </Flex>
             </div>
           ))
         )}

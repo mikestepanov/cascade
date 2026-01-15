@@ -138,7 +138,7 @@ export function AppSidebar() {
       {isMobileOpen && (
         <button
           type="button"
-          className="fixed inset-0 bg-ui-bg-overlay dark:bg-ui-bg-overlay-dark z-40 lg:hidden"
+          className="fixed inset-0 bg-ui-bg-overlay z-40 lg:hidden"
           onClick={closeMobile}
           onKeyDown={(e) => e.key === "Escape" && closeMobile()}
           aria-label="Close sidebar"
@@ -157,11 +157,7 @@ export function AppSidebar() {
       >
         <Flex direction="column" className="h-full">
           {/* Header with company name and collapse toggle */}
-          <Flex
-            align="center"
-            justify="between"
-            className="p-4 border-b border-ui-border-primary dark:border-ui-border-primary-dark"
-          >
+          <Flex align="center" justify="between" className="p-4 border-b border-ui-border-primary">
             {!isCollapsed && (
               <Link to={ROUTE_PATTERNS.dashboard} params={{ companySlug }} onClick={handleNavClick}>
                 <Typography variant="h3" className="text-lg font-bold truncate max-w-[160px]">
@@ -232,7 +228,7 @@ export function AppSidebar() {
                 onClick={handleNavClick}
                 icon={Copy}
               />
-              <div className="h-px bg-ui-border-primary dark:bg-ui-border-primary-dark my-1 mx-2" />
+              <div className="h-px bg-ui-border-primary my-1 mx-2" />
               {(documents?.documents ?? []).slice(0, 10).map((doc: Doc<"documents">) => (
                 <NavSubItem
                   key={doc._id}
@@ -271,7 +267,7 @@ export function AppSidebar() {
                 return (
                   <div key={workspace._id} className="ml-2 group">
                     {/* Workspace Item */}
-                    <div className="flex items-center gap-1">
+                    <Flex align="center" gap="xs">
                       <Button
                         variant="ghost"
                         size="icon"
@@ -303,7 +299,7 @@ export function AppSidebar() {
                       >
                         <Plus className="w-4 h-4 text-ui-text-tertiary" />
                       </Button>
-                    </div>
+                    </Flex>
 
                     {/* Teams under workspace */}
                     {isWorkspaceExpanded &&
@@ -338,7 +334,7 @@ export function AppSidebar() {
           </Flex>
 
           {/* Bottom section - Settings */}
-          <div className="p-2 border-t border-ui-border-primary dark:border-ui-border-primary-dark">
+          <div className="p-2 border-t border-ui-border-primary">
             <NavItem
               to={ROUTE_PATTERNS.settings.profile}
               params={{ companySlug }}
@@ -403,7 +399,7 @@ function NavItem({
         isCollapsed && "justify-center px-2",
       )}
     >
-      <Icon className="w-5 h-5 flex-shrink-0" />
+      <Icon className="w-5 h-5 shrink-0" />
       {!isCollapsed && <span>{label}</span>}
     </Link>
   );
@@ -473,9 +469,13 @@ function CollapsibleSection({
             <Icon className="w-5 h-5" />
           </Link>
         ) : (
-          <div className="flex items-center justify-center px-2 py-2 rounded-md text-ui-text-secondary">
+          <Flex
+            align="center"
+            justify="center"
+            className="px-2 py-2 rounded-md text-ui-text-secondary"
+          >
             <Icon className="w-5 h-5" />
-          </div>
+          </Flex>
         )}
       </Tooltip>
     );
@@ -523,10 +523,14 @@ function CollapsibleSection({
             <span>{label}</span>
           </Link>
         ) : (
-          <div className="flex-1 flex items-center gap-2 text-sm font-medium text-ui-text-secondary">
+          <Flex
+            align="center"
+            gap="sm"
+            className="flex-1 text-sm font-medium text-ui-text-secondary"
+          >
             <Icon className="w-5 h-5" />
             <span>{label}</span>
-          </div>
+          </Flex>
         )}
         <Button
           variant="ghost"
@@ -582,7 +586,7 @@ function NavSubItem({
           : "text-ui-text-secondary dark:text-ui-text-secondary-dark hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark",
       )}
     >
-      {Icon && <Icon className="w-4 h-4 flex-shrink-0" />}
+      {Icon && <Icon className="w-4 h-4 shrink-0" />}
       <span className="truncate">{label}</span>
     </Link>
   );

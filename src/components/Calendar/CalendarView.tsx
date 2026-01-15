@@ -2,6 +2,7 @@ import { api } from "@convex/_generated/api";
 import type { Doc, Id } from "@convex/_generated/dataModel";
 import { useQuery } from "convex/react";
 import { useState } from "react";
+import { Typography } from "@/components/ui/Typography";
 import { ChevronLeft, ChevronRight, Plus } from "@/lib/icons";
 import { cn } from "@/lib/utils";
 import { Button } from "../ui/Button";
@@ -87,9 +88,9 @@ export function CalendarView() {
   };
 
   return (
-    <Flex direction="column" className="h-full bg-ui-bg-primary dark:bg-ui-bg-primary-dark">
+    <Flex direction="column" className="h-full bg-ui-bg-primary">
       {/* Header */}
-      <div className="border-b border-ui-border-primary dark:border-ui-border-primary-dark p-3 sm:p-4">
+      <div className="border-b border-ui-border-primary p-3 sm:p-4">
         <Flex
           direction="column"
           gap="md"
@@ -109,22 +110,25 @@ export function CalendarView() {
                 type="button"
                 onClick={handlePrevious}
                 aria-label="Previous month"
-                className="p-1 hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark rounded"
+                className="p-1 hover:bg-ui-bg-tertiary rounded"
               >
-                <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5 dark:text-ui-text-primary-dark" />
+                <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
               </button>
               <button
                 type="button"
                 onClick={handleNext}
                 aria-label="Next month"
-                className="p-1 hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark rounded"
+                className="p-1 hover:bg-ui-bg-tertiary rounded"
               >
-                <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 dark:text-ui-text-primary-dark" />
+                <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
               </button>
             </Flex>
-            <h2 className="text-base sm:text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark truncate">
+            <Typography
+              variant="h2"
+              className="text-base sm:text-lg font-semibold text-ui-text-primary truncate"
+            >
               {getHeaderText()}
-            </h2>
+            </Typography>
           </Flex>
 
           <Flex gap="md" align="center" className="gap-2 sm:gap-3">
@@ -150,7 +154,7 @@ export function CalendarView() {
               variant="primary"
               size="sm"
               leftIcon={<Plus className="w-3 h-3 sm:w-4 sm:h-4" />}
-              className="flex-shrink-0"
+              className="shrink-0"
             >
               <span className="hidden sm:inline">New Event</span>
               <span className="sm:hidden">New</span>
@@ -211,14 +215,14 @@ function WeekView({
   return (
     <Flex direction="column" className="h-full">
       {/* Day Headers */}
-      <div className="grid grid-cols-8 border-b border-ui-border-primary dark:border-ui-border-primary-dark bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark">
-        <div className="p-1 sm:p-2 text-xs font-medium text-ui-text-tertiary dark:text-ui-text-tertiary-dark" />
+      <div className="grid grid-cols-8 border-b border-ui-border-primary bg-ui-bg-secondary">
+        <div className="p-1 sm:p-2 text-xs font-medium text-ui-text-tertiary" />
         {days.map((day) => {
           const isToday = isSameDay(day, new Date());
           return (
             <div
               key={day.getTime()}
-              className="p-1 sm:p-2 text-center border-l border-ui-border-primary dark:border-ui-border-primary-dark"
+              className="p-1 sm:p-2 text-center border-l border-ui-border-primary"
             >
               <div
                 className={cn(
@@ -254,11 +258,11 @@ function WeekView({
       <div className="flex-1 overflow-y-auto">
         <div className="grid grid-cols-8">
           {/* Time Column */}
-          <div className="border-r border-ui-border-primary dark:border-ui-border-primary-dark">
+          <div className="border-r border-ui-border-primary">
             {hours.map((hour) => (
               <div
                 key={hour}
-                className="h-12 sm:h-16 border-b border-ui-border-primary dark:border-ui-border-primary-dark px-1 sm:px-2 py-1 text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark"
+                className="h-12 sm:h-16 border-b border-ui-border-primary px-1 sm:px-2 py-1 text-xs text-ui-text-tertiary"
               >
                 <span className="hidden sm:inline">{formatHour(hour, false)}</span>
                 <span className="sm:hidden">{formatHour(hour, true)}</span>
@@ -268,15 +272,9 @@ function WeekView({
 
           {/* Day Columns */}
           {days.map((day) => (
-            <div
-              key={day.getTime()}
-              className="border-r border-ui-border-primary dark:border-ui-border-primary-dark relative"
-            >
+            <div key={day.getTime()} className="border-r border-ui-border-primary relative">
               {hours.map((hour) => (
-                <div
-                  key={hour}
-                  className="h-12 sm:h-16 border-b border-ui-border-primary dark:border-ui-border-primary-dark"
-                />
+                <div key={hour} className="h-12 sm:h-16 border-b border-ui-border-primary" />
               ))}
 
               {/* Events for this day */}
@@ -295,11 +293,13 @@ function WeekView({
                       type="button"
                       key={event._id}
                       onClick={() => onEventClick(event._id)}
-                      className="absolute left-0 right-0 mx-0.5 sm:mx-1 px-1 sm:px-2 py-0.5 sm:py-1 text-xs rounded text-left overflow-hidden hover:opacity-80 transition-opacity"
+                      className={cn(
+                        "absolute left-0 right-0 mx-0.5 sm:mx-1 px-1 sm:px-2 py-0.5 sm:py-1 text-xs rounded text-left overflow-hidden hover:opacity-80 transition-opacity",
+                        `bg-event-${event.eventType || "default"}`,
+                      )}
                       style={{
                         top: `${top}px`,
                         height: `${height}px`,
-                        backgroundColor: getEventColor(event.eventType),
                       }}
                     >
                       <div className="font-medium text-white truncate text-xs">{event.title}</div>
@@ -347,11 +347,11 @@ function MonthView({
   return (
     <Flex direction="column" className="h-full">
       {/* Day Headers */}
-      <div className="grid grid-cols-7 border-b border-ui-border-primary dark:border-ui-border-primary-dark bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark">
+      <div className="grid grid-cols-7 border-b border-ui-border-primary bg-ui-bg-secondary">
         {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day, _idx) => (
           <div
             key={day}
-            className="p-1 sm:p-2 text-center text-xs font-medium text-ui-text-tertiary dark:text-ui-text-tertiary-dark border-l border-ui-border-primary dark:border-ui-border-primary-dark first:border-l-0"
+            className="p-1 sm:p-2 text-center text-xs font-medium text-ui-text-tertiary border-l border-ui-border-primary first:border-l-0"
           >
             <span className="hidden sm:inline">{day}</span>
             <span className="sm:hidden">{day[0]}</span>
@@ -397,11 +397,10 @@ function MonthView({
                     type="button"
                     key={event._id}
                     onClick={() => onEventClick(event._id)}
-                    className="block w-full text-left px-0.5 sm:px-1 py-0.5 text-xs rounded truncate hover:opacity-80"
-                    style={{
-                      backgroundColor: getEventColor(event.eventType),
-                      color: "white",
-                    }}
+                    className={cn(
+                      "block w-full text-left px-0.5 sm:px-1 py-0.5 text-xs rounded truncate hover:opacity-80 text-white",
+                      `bg-event-${event.eventType || "default"}`,
+                    )}
                     title={`${formatTime(event.startTime)} ${event.title}`}
                   >
                     <span className="hidden sm:inline">{formatTime(event.startTime)} </span>
@@ -409,7 +408,7 @@ function MonthView({
                   </button>
                 ))}
                 {dayEvents.length > 2 && (
-                  <div className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark px-0.5 sm:px-1">
+                  <div className="text-xs text-ui-text-tertiary px-0.5 sm:px-1">
                     +{dayEvents.length - 2}
                   </div>
                 )}
@@ -460,14 +459,4 @@ function formatTime(timestamp: number): string {
   const ampm = hours >= 12 ? "PM" : "AM";
   const displayHours = hours % 12 || 12;
   return `${displayHours}:${minutes.toString().padStart(2, "0")} ${ampm}`;
-}
-
-function getEventColor(eventType: string): string {
-  const colors: Record<string, string> = {
-    meeting: "var(--color-event-meeting)",
-    deadline: "var(--color-event-deadline)",
-    timeblock: "var(--color-event-timeblock)",
-    personal: "var(--color-event-personal)",
-  };
-  return colors[eventType] || "var(--color-event-default)";
 }

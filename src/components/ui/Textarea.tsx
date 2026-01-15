@@ -3,12 +3,12 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 
 const textareaVariants = cva(
-  "flex min-h-[80px] w-full rounded-lg border bg-ui-bg-primary dark:bg-ui-bg-primary-dark px-3 py-2 text-sm text-ui-text-primary dark:text-ui-text-primary-dark transition-colors placeholder:text-ui-text-tertiary dark:placeholder:text-ui-text-tertiary-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
+  "flex min-h-[80px] w-full rounded-lg border bg-ui-bg-primary px-3 py-2 text-sm text-ui-text-primary transition-colors placeholder:text-ui-text-tertiary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
   {
     variants: {
       variant: {
-        default: "border-ui-border-primary dark:border-ui-border-primary-dark",
-        error: "border-status-error dark:border-status-error focus-visible:ring-status-error",
+        default: "border-ui-border-primary",
+        error: "border-status-error focus-visible:ring-status-error",
       },
     },
     defaultVariants: {
@@ -20,7 +20,6 @@ const textareaVariants = cva(
 export interface TextareaProps
   extends React.TextareaHTMLAttributes<HTMLTextAreaElement>,
     VariantProps<typeof textareaVariants> {
-  /** Error message to display */
   error?: string;
 }
 
@@ -36,15 +35,16 @@ export interface TextareaProps
  */
 const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
   ({ className, variant, error, ...props }, ref) => {
+    const computedVariant = error ? "error" : variant;
+
     return (
       <div className="w-full">
         <textarea
-          className={cn(textareaVariants({ variant: error ? "error" : variant }), className)}
+          className={cn(textareaVariants({ variant: computedVariant, className }))}
           ref={ref}
-          aria-invalid={!!error}
           {...props}
         />
-        {error && <p className="mt-1 text-sm text-status-error dark:text-status-error">{error}</p>}
+        {error && <p className="mt-1 text-sm text-status-error">{error}</p>}
       </div>
     );
   },

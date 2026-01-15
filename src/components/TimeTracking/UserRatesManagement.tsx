@@ -77,10 +77,10 @@ export function UserRatesManagement() {
       {/* Header */}
       <Flex justify="between" align="center">
         <div>
-          <h2 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
+          <Typography variant="h2" className="text-lg font-semibold text-ui-text-primary">
             Hourly Rates
-          </h2>
-          <Typography className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mt-1">
+          </Typography>
+          <Typography className="text-sm text-ui-text-secondary mt-1">
             Manage hourly rates for cost tracking and burn rate calculations
           </Typography>
         </div>
@@ -95,26 +95,26 @@ export function UserRatesManagement() {
           {userRates.map((rate: Doc<"userRates"> & { user?: Doc<"users"> }) => (
             <div
               key={rate._id}
-              className="p-4 bg-ui-bg-primary dark:bg-ui-bg-primary-dark border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg"
+              className="p-4 bg-ui-bg-primary border border-ui-border-primary rounded-lg"
             >
               <Flex justify="between" align="start">
                 <div className="flex-1">
                   <Flex align="center" gap="md">
-                    <h3 className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+                    <Typography variant="h3" className="text-sm font-medium text-ui-text-primary">
                       {rate.user?.name || "Unknown User"}
-                    </h3>
+                    </Typography>
                     <span
                       className={cn(
                         "px-2 py-0.5 text-xs rounded",
                         rate.rateType === "billable"
-                          ? "bg-status-success/10 dark:bg-status-success/20 text-status-success dark:text-status-success"
-                          : "bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark text-ui-text-primary dark:text-ui-text-primary-dark",
+                          ? "bg-status-success/10 text-status-success"
+                          : "bg-ui-bg-secondary text-ui-text-primary",
                       )}
                     >
                       {rate.rateType}
                     </span>
                   </Flex>
-                  <div className="mt-2 text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark">
+                  <div className="mt-2 text-xs text-ui-text-secondary">
                     {rate.projectId ? (
                       <span>Project-specific rate</span>
                     ) : (
@@ -122,27 +122,25 @@ export function UserRatesManagement() {
                     )}
                   </div>
                   {rate.notes && (
-                    <Typography className="mt-2 text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+                    <Typography className="mt-2 text-xs text-ui-text-tertiary">
                       {rate.notes}
                     </Typography>
                   )}
                 </div>
                 <div className="text-right">
-                  <div className="text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark">
+                  <div className="text-2xl font-bold text-ui-text-primary">
                     {formatCurrency(rate.hourlyRate, rate.currency)}
                   </div>
-                  <div className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
-                    per hour
-                  </div>
+                  <div className="text-xs text-ui-text-tertiary">per hour</div>
                 </div>
               </Flex>
             </div>
           ))}
         </Flex>
       ) : (
-        <div className="text-center p-12 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg border-2 border-dashed border-ui-border-primary dark:border-ui-border-primary-dark">
+        <div className="text-center p-12 bg-ui-bg-secondary rounded-lg border-2 border-dashed border-ui-border-primary">
           <svg
-            className="mx-auto h-12 w-12 text-ui-text-tertiary dark:text-ui-text-tertiary-dark"
+            className="mx-auto h-12 w-12 text-ui-text-tertiary"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -156,10 +154,10 @@ export function UserRatesManagement() {
               d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
             />
           </svg>
-          <h3 className="mt-2 text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+          <Typography variant="h3" className="mt-2 text-sm font-medium text-ui-text-primary">
             No hourly rates set
-          </h3>
-          <Typography className="mt-1 text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+          </Typography>
+          <Typography className="mt-1 text-sm text-ui-text-tertiary">
             Set your hourly rate to enable cost tracking and burn rate calculations
           </Typography>
           <Button onClick={() => setShowAddRate(true)} variant="primary" className="mt-4">
@@ -179,7 +177,7 @@ export function UserRatesManagement() {
             <div>
               <label
                 htmlFor="rate-apply-to"
-                className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
+                className="block text-sm font-medium text-ui-text-primary mb-1"
               >
                 Apply To
               </label>
@@ -201,23 +199,21 @@ export function UserRatesManagement() {
                   ))}
                 </SelectContent>
               </Select>
-              <Typography className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark mt-1">
+              <Typography className="text-xs text-ui-text-tertiary mt-1">
                 Project-specific rates override the default rate
               </Typography>
             </div>
 
             {/* Rate Type */}
             <div>
-              <div className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
-                Rate Type
-              </div>
+              <div className="block text-sm font-medium text-ui-text-primary mb-1">Rate Type</div>
               <Flex gap="md">
                 <label
                   className={cn(
                     "cursor-pointer flex-1 p-3 border-2 rounded-lg transition-colors",
                     rateType === "internal"
-                      ? "border-brand-500 bg-brand-50 dark:bg-brand-900/20"
-                      : "border-ui-border-primary dark:border-ui-border-primary-dark",
+                      ? "border-brand-indigo-border bg-brand-indigo-track"
+                      : "border-ui-border-primary",
                   )}
                 >
                   <Flex align="center" gap="sm">
@@ -229,12 +225,8 @@ export function UserRatesManagement() {
                       className="w-4 h-4 text-brand-600"
                     />
                     <div className="flex-1">
-                      <div className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
-                        Internal Cost
-                      </div>
-                      <div className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
-                        What you pay
-                      </div>
+                      <div className="text-sm font-medium text-ui-text-primary">Internal Cost</div>
+                      <div className="text-xs text-ui-text-tertiary">What you pay</div>
                     </div>
                   </Flex>
                 </label>
@@ -242,8 +234,8 @@ export function UserRatesManagement() {
                   className={cn(
                     "cursor-pointer flex-1 p-3 border-2 rounded-lg transition-colors",
                     rateType === "billable"
-                      ? "border-brand-500 bg-brand-50 dark:bg-brand-900/20"
-                      : "border-ui-border-primary dark:border-ui-border-primary-dark",
+                      ? "border-brand-indigo-border bg-brand-indigo-track"
+                      : "border-ui-border-primary",
                   )}
                 >
                   <Flex align="center" gap="sm">
@@ -255,12 +247,8 @@ export function UserRatesManagement() {
                       className="w-4 h-4 text-brand-600"
                     />
                     <div className="flex-1">
-                      <div className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
-                        Billable Rate
-                      </div>
-                      <div className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
-                        Charge clients
-                      </div>
+                      <div className="text-sm font-medium text-ui-text-primary">Billable Rate</div>
+                      <div className="text-xs text-ui-text-tertiary">Charge clients</div>
                     </div>
                   </Flex>
                 </label>
@@ -271,13 +259,13 @@ export function UserRatesManagement() {
             <div>
               <label
                 htmlFor="rate-hourly-rate"
-                className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
+                className="block text-sm font-medium text-ui-text-primary mb-1"
               >
                 Hourly Rate
               </label>
               <Flex gap="sm">
                 <div className="relative flex-1">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-ui-text-tertiary">
                     $
                   </span>
                   <input
@@ -288,7 +276,7 @@ export function UserRatesManagement() {
                     placeholder="0.00"
                     step="0.01"
                     min="0"
-                    className="w-full pl-8 pr-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-primary-dark dark:text-ui-text-primary-dark"
+                    className="w-full pl-8 pr-3 py-2 border border-ui-border-primary rounded-lg focus:ring-2 focus:ring-brand-500"
                   />
                 </div>
                 <Select value={currency} onValueChange={(value) => setCurrency(value)}>

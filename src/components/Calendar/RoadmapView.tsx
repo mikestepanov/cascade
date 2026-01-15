@@ -2,6 +2,7 @@ import { api } from "@convex/_generated/api";
 import type { Doc, Id } from "@convex/_generated/dataModel";
 import { useQuery } from "convex/react";
 import { useState } from "react";
+import { Typography } from "@/components/ui/Typography";
 import { ChevronLeft, ChevronRight } from "@/lib/icons";
 import { cn } from "@/lib/utils";
 import { Badge } from "../ui/Badge";
@@ -103,9 +104,9 @@ export function RoadmapView({ projectId }: RoadmapViewProps) {
   };
 
   return (
-    <Flex direction="column" className="h-full bg-ui-bg-primary dark:bg-ui-bg-primary-dark">
+    <Flex direction="column" className="h-full bg-ui-bg-primary">
       {/* Header */}
-      <div className="border-b border-ui-border-primary dark:border-ui-border-primary-dark p-3 sm:p-4">
+      <div className="border-b border-ui-border-primary p-3 sm:p-4">
         <Flex
           direction="column"
           gap="md"
@@ -115,7 +116,7 @@ export function RoadmapView({ projectId }: RoadmapViewProps) {
             <button
               type="button"
               onClick={handleToday}
-              className="px-2 sm:px-3 py-1.5 text-xs sm:text-sm border border-ui-border-primary dark:border-ui-border-primary-dark rounded-md hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark dark:text-ui-text-primary-dark"
+              className="px-2 sm:px-3 py-1.5 text-xs sm:text-sm border border-ui-border-primary rounded-md hover:bg-ui-bg-tertiary"
             >
               Today
             </button>
@@ -123,27 +124,30 @@ export function RoadmapView({ projectId }: RoadmapViewProps) {
               <button
                 type="button"
                 onClick={handlePrevious}
-                className="p-1 hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark rounded"
+                className="p-1 hover:bg-ui-bg-tertiary rounded"
                 aria-label="Previous"
               >
-                <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5 dark:text-ui-text-primary-dark" />
+                <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
               </button>
               <button
                 type="button"
                 onClick={handleNext}
-                className="p-1 hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark rounded"
+                className="p-1 hover:bg-ui-bg-tertiary rounded"
                 aria-label="Next"
               >
-                <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 dark:text-ui-text-primary-dark" />
+                <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
               </button>
             </Flex>
-            <h2 className="text-base sm:text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark truncate">
+            <Typography
+              variant="h2"
+              className="text-base sm:text-lg font-semibold text-ui-text-primary truncate"
+            >
               {getHeaderText()}
-            </h2>
+            </Typography>
           </Flex>
 
           {/* Time Scale Toggle */}
-          <div className="flex border border-ui-border-primary dark:border-ui-border-primary-dark rounded-md flex-shrink-0">
+          <Flex className="border border-ui-border-primary rounded-md shrink-0">
             <button
               type="button"
               onClick={() => setTimeScale("week")}
@@ -183,7 +187,7 @@ export function RoadmapView({ projectId }: RoadmapViewProps) {
               <span className="sm:hidden">Q</span>
               <span className="hidden sm:inline">Quarter</span>
             </button>
-          </div>
+          </Flex>
         </Flex>
       </div>
 
@@ -191,38 +195,35 @@ export function RoadmapView({ projectId }: RoadmapViewProps) {
       <div className="flex-1 overflow-auto">
         <div className="min-w-max">
           {/* Timeline Header */}
-          <div className="sticky top-0 z-10 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark border-b border-ui-border-primary dark:border-ui-border-primary-dark">
-            <div className="flex">
-              <div className="w-40 sm:w-48 md:w-64 flex-shrink-0 p-2 sm:p-3 border-r border-ui-border-primary dark:border-ui-border-primary-dark font-medium text-xs sm:text-sm text-ui-text-primary dark:text-ui-text-primary-dark">
+          <div className="sticky top-0 z-10 bg-ui-bg-secondary border-b border-ui-border-primary">
+            <Flex>
+              <div className="w-40 sm:w-48 md:w-64 shrink-0 p-2 sm:p-3 border-r border-ui-border-primary font-medium text-xs sm:text-sm text-ui-text-primary">
                 Item
               </div>
-              <div className="flex-1 flex">
+              <Flex className="flex-1">
                 {columns.map((col) => (
                   <div
                     key={col.date.getTime()}
-                    className="flex-1 p-2 sm:p-3 border-r border-ui-border-primary dark:border-ui-border-primary-dark text-center text-xs sm:text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark"
+                    className="flex-1 p-2 sm:p-3 border-r border-ui-border-primary text-center text-xs sm:text-sm font-medium text-ui-text-primary"
                   >
                     {col.label}
                   </div>
                 ))}
-              </div>
-            </div>
+              </Flex>
+            </Flex>
           </div>
 
           {/* Roadmap Items */}
           {sortedItems.length === 0 ? (
-            <div className="p-4 sm:p-8 text-center text-sm sm:text-base text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+            <div className="p-4 sm:p-8 text-center text-sm sm:text-base text-ui-text-tertiary">
               No items with dates found. Add due dates to issues or create sprints to see them here.
             </div>
           ) : (
             <div>
               {sortedItems.map((item) => (
-                <div
-                  key={`${item.type}-${item.id}`}
-                  className="flex border-b border-ui-border-primary dark:border-ui-border-primary-dark"
-                >
+                <Flex className="border-b border-ui-border-primary" key={`${item.type}-${item.id}`}>
                   {/* Item Info */}
-                  <div className="w-40 sm:w-48 md:w-64 flex-shrink-0 p-2 sm:p-3 border-r border-ui-border-primary dark:border-ui-border-primary-dark">
+                  <div className="w-40 sm:w-48 md:w-64 shrink-0 p-2 sm:p-3 border-r border-ui-border-primary">
                     <Flex gap="sm" align="center" className="gap-1 sm:gap-2">
                       {item.type === "sprint" ? (
                         <Badge variant="accent" size="md">
@@ -234,28 +235,28 @@ export function RoadmapView({ projectId }: RoadmapViewProps) {
                         </Badge>
                       )}
                     </Flex>
-                    <div className="text-xs sm:text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mt-1 truncate">
+                    <div className="text-xs sm:text-sm font-medium text-ui-text-primary mt-1 truncate">
                       {item.title}
                     </div>
                   </div>
 
                   {/* Timeline Bar */}
                   <div className="flex-1 relative">
-                    <div className="absolute inset-0 flex">
+                    <Flex className="absolute inset-0">
                       {columns.map((col) => (
                         <div
                           key={col.date.getTime()}
-                          className="flex-1 border-r border-ui-border-primary dark:border-ui-border-primary-dark"
+                          className="flex-1 border-r border-ui-border-primary"
                         />
                       ))}
-                    </div>
+                    </Flex>
 
                     {/* Date Bar */}
-                    <div className="absolute inset-y-0 flex items-center px-2">
+                    <Flex align="center" className="absolute inset-y-0 px-2">
                       {renderDateBar(item, startDate, endDate, columns.length)}
-                    </div>
+                    </Flex>
                   </div>
-                </div>
+                </Flex>
               ))}
             </div>
           )}

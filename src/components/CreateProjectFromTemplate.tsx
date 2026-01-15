@@ -3,6 +3,7 @@ import type { Doc, Id } from "@convex/_generated/dataModel";
 import { useMutation, useQuery } from "convex/react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { Flex } from "@/components/ui/Flex";
 import { cn } from "@/lib/utils";
 import { useCompany } from "../hooks/useCompanyContext";
 import { Button } from "./ui/Button";
@@ -129,9 +130,9 @@ export function CreateProjectFromTemplate({
             </Typography>
 
             {!templates ? (
-              <div className="flex items-center justify-center py-8">
+              <Flex align="center" justify="center" className="py-8">
                 <LoadingSpinner />
-              </div>
+              </Flex>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {templates.map((template: Doc<"projectTemplates">) => (
@@ -139,18 +140,21 @@ export function CreateProjectFromTemplate({
                     type="button"
                     key={template._id}
                     onClick={() => handleSelectTemplate(template._id)}
-                    className="text-left p-6 border-2 border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg hover:border-brand-500 hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark transition-colors"
+                    className="text-left p-6 border-2 border-ui-border-primary rounded-lg hover:border-brand-500 hover:bg-ui-bg-secondary transition-colors"
                   >
-                    <div className="flex items-start gap-4">
-                      <div className="text-4xl flex-shrink-0">{template.icon}</div>
+                    <Flex align="start" gap="lg">
+                      <div className="text-4xl shrink-0">{template.icon}</div>
                       <div className="flex-1 min-w-0">
-                        <h3 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
+                        <Typography
+                          variant="h3"
+                          className="text-lg font-semibold text-ui-text-primary mb-1"
+                        >
                           {template.name}
-                        </h3>
+                        </Typography>
                         <Typography variant="p" color="secondary" className="text-sm mb-3">
                           {template.description}
                         </Typography>
-                        <div className="flex items-center gap-2">
+                        <Flex align="center" gap="sm">
                           <span
                             className={cn(
                               "text-xs px-2 py-1 rounded",
@@ -159,12 +163,12 @@ export function CreateProjectFromTemplate({
                           >
                             {template.category}
                           </span>
-                          <span className="text-xs px-2 py-1 rounded bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark text-ui-text-secondary dark:text-ui-text-secondary-dark capitalize">
+                          <span className="text-xs px-2 py-1 rounded bg-ui-bg-tertiary text-ui-text-secondary capitalize">
                             {template.boardType}
                           </span>
-                        </div>
+                        </Flex>
                       </div>
-                    </div>
+                    </Flex>
                   </button>
                 ))}
               </div>
@@ -175,19 +179,19 @@ export function CreateProjectFromTemplate({
           <div className="space-y-6">
             {/* Template Info */}
             {selectedTemplate && (
-              <div className="p-4 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg">
-                <div className="flex items-center gap-3">
+              <div className="p-4 bg-ui-bg-secondary rounded-lg">
+                <Flex align="center" gap="md">
                   <span className="text-3xl">{selectedTemplate.icon}</span>
                   <div>
-                    <h3 className="font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
+                    <Typography variant="h3" className="font-semibold text-ui-text-primary">
                       {selectedTemplate.name}
-                    </h3>
+                    </Typography>
                     <Typography variant="p" color="secondary" className="text-sm">
                       {selectedTemplate.workflowStates.length} workflow states,{" "}
                       {selectedTemplate.defaultLabels.length} default labels
                     </Typography>
                   </div>
-                </div>
+                </Flex>
               </div>
             )}
 
@@ -235,11 +239,11 @@ export function CreateProjectFromTemplate({
             {/* Preview */}
             {selectedTemplate && (
               <div>
-                <h4 className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-3">
+                <Typography variant="h4" className="text-sm font-medium text-ui-text-primary mb-3">
                   What's Included:
-                </h4>
+                </Typography>
                 <div className="space-y-2 text-sm">
-                  <div className="flex items-center gap-2">
+                  <Flex align="center" gap="sm">
                     <svg
                       aria-hidden="true"
                       className="w-5 h-5 text-status-success"
@@ -252,11 +256,11 @@ export function CreateProjectFromTemplate({
                         clipRule="evenodd"
                       />
                     </svg>
-                    <span className="text-ui-text-primary dark:text-ui-text-primary-dark">
+                    <span className="text-ui-text-primary">
                       {selectedTemplate.workflowStates.length} workflow states
                     </span>
-                  </div>
-                  <div className="flex items-center gap-2">
+                  </Flex>
+                  <Flex align="center" gap="sm">
                     <svg
                       aria-hidden="true"
                       className="w-5 h-5 text-status-success"
@@ -269,11 +273,11 @@ export function CreateProjectFromTemplate({
                         clipRule="evenodd"
                       />
                     </svg>
-                    <span className="text-ui-text-primary dark:text-ui-text-primary-dark">
+                    <span className="text-ui-text-primary">
                       {selectedTemplate.defaultLabels.length} pre-configured labels
                     </span>
-                  </div>
-                  <div className="flex items-center gap-2">
+                  </Flex>
+                  <Flex align="center" gap="sm">
                     <svg
                       aria-hidden="true"
                       className="w-5 h-5 text-status-success"
@@ -286,10 +290,10 @@ export function CreateProjectFromTemplate({
                         clipRule="evenodd"
                       />
                     </svg>
-                    <span className="text-ui-text-primary dark:text-ui-text-primary-dark capitalize">
+                    <span className="text-ui-text-primary capitalize">
                       {selectedTemplate.boardType} board type
                     </span>
-                  </div>
+                  </Flex>
                 </div>
               </div>
             )}
@@ -303,7 +307,7 @@ export function CreateProjectFromTemplate({
               >
                 ← Back to Templates
               </Button>
-              <div className="flex gap-3 w-full sm:w-auto">
+              <Flex gap="md" className="w-full sm:w-auto">
                 <Button
                   onClick={handleClose}
                   variant="secondary"
@@ -321,15 +325,15 @@ export function CreateProjectFromTemplate({
                   className="flex-1 sm:flex-none"
                 >
                   {isSubmitting ? (
-                    <div className="flex items-center gap-2">
+                    <Flex align="center" gap="sm">
                       <LoadingSpinner size="sm" />
                       <span>Creating...</span>
-                    </div>
+                    </Flex>
                   ) : (
                     "Create Project"
                   )}
                 </Button>
-              </div>
+              </Flex>
             </DialogFooter>
           </div>
         )}

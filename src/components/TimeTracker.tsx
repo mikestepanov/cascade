@@ -2,6 +2,7 @@ import { api } from "@convex/_generated/api";
 import type { Doc, Id } from "@convex/_generated/dataModel";
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
+import { Flex } from "@/components/ui/Flex";
 import { formatCurrency, formatDate, formatHours } from "@/lib/formatting";
 import { showError, showSuccess } from "@/lib/toast";
 import { cn } from "@/lib/utils";
@@ -34,24 +35,22 @@ function TimeProgress({
   if (estimatedHours > 0) {
     return (
       <div className="space-y-2">
-        <div className="flex items-center justify-between text-xs">
-          <span className="text-ui-text-secondary dark:text-ui-text-secondary-dark">
+        <Flex align="center" justify="between" className="text-xs">
+          <span className="text-ui-text-secondary">
             {totalLoggedHours.toFixed(1)}h / {estimatedHours}h estimated
           </span>
           {remainingHours !== null && (
             <span
               className={
-                isOverEstimate
-                  ? "text-status-error dark:text-status-error-dark font-medium"
-                  : "text-ui-text-secondary dark:text-ui-text-secondary-dark"
+                isOverEstimate ? "text-status-error font-medium" : "text-ui-text-secondary"
               }
             >
               {isOverEstimate ? "+" : ""}
               {Math.abs(remainingHours).toFixed(1)}h {isOverEstimate ? "over" : "remaining"}
             </span>
           )}
-        </div>
-        <div className="w-full bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded-full h-2">
+        </Flex>
+        <div className="w-full bg-ui-bg-tertiary rounded-full h-2">
           <div
             className={cn(
               "h-2 rounded-full transition-all duration-300",
@@ -68,18 +67,14 @@ function TimeProgress({
 
   if (totalLoggedHours > 0) {
     return (
-      <div className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
+      <div className="text-sm text-ui-text-secondary">
         <span className="font-semibold">{totalLoggedHours.toFixed(1)}h</span> logged (no estimate
         set)
       </div>
     );
   }
 
-  return (
-    <Typography className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
-      No time logged yet
-    </Typography>
-  );
+  return <Typography className="text-sm text-ui-text-secondary">No time logged yet</Typography>;
 }
 
 /**
@@ -91,7 +86,7 @@ function TimeEntriesList({
   entries: (Doc<"timeEntries"> & { totalCost?: number })[];
 }) {
   return (
-    <div className="p-4 border-t border-ui-border-primary dark:border-ui-border-primary-dark bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark space-y-2">
+    <div className="p-4 border-t border-ui-border-primary bg-ui-bg-secondary space-y-2">
       {entries.map((entry) => {
         const hours = formatHours(entry.duration);
         const entryDate = formatDate(entry.date);
@@ -99,32 +94,28 @@ function TimeEntriesList({
         return (
           <div
             key={entry._id}
-            className="bg-ui-bg-primary dark:bg-ui-bg-primary-dark border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg p-3"
+            className="bg-ui-bg-primary border border-ui-border-primary rounded-lg p-3"
           >
-            <div className="flex items-start justify-between">
+            <Flex align="start" justify="between">
               <div>
-                <div className="font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
-                  {hours}h
-                </div>
+                <div className="font-semibold text-ui-text-primary">{hours}h</div>
                 {entry.description && (
-                  <Typography className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mt-1">
+                  <Typography className="text-sm text-ui-text-secondary mt-1">
                     {entry.description}
                   </Typography>
                 )}
-                <div className="flex items-center gap-2 mt-1">
-                  <span className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
-                    {entryDate}
-                  </span>
+                <Flex align="center" gap="sm" className="mt-1">
+                  <span className="text-xs text-ui-text-tertiary">{entryDate}</span>
                   {entry.activity && <Badge variant="neutral">{entry.activity}</Badge>}
                   {entry.billable && <Badge variant="success">Billable</Badge>}
-                </div>
+                </Flex>
               </div>
               {entry.totalCost && (
-                <div className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+                <div className="text-sm font-medium text-ui-text-primary">
                   {formatCurrency(entry.totalCost)}
                 </div>
               )}
-            </div>
+            </Flex>
           </div>
         );
       })}
@@ -184,14 +175,14 @@ export function TimeTracker({
   };
 
   return (
-    <div className="border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg">
+    <div className="border border-ui-border-primary rounded-lg">
       {/* Header */}
-      <div className="p-4 border-b border-ui-border-primary dark:border-ui-border-primary-dark">
-        <div className="flex items-center justify-between mb-3">
+      <div className="p-4 border-b border-ui-border-primary">
+        <Flex align="center" justify="between" className="mb-3">
           <Typography variant="h3" className="text-sm font-semibold">
             Time Tracking
           </Typography>
-          <div className="flex items-center gap-2">
+          <Flex align="center" gap="sm">
             {/* Timer Button */}
             {isTimerRunningForThisIssue ? (
               <Button
@@ -265,8 +256,8 @@ export function TimeTracker({
             >
               Log Time
             </Button>
-          </div>
-        </div>
+          </Flex>
+        </Flex>
 
         {/* Progress Bar */}
         <TimeProgress estimatedHours={estimatedHours} totalLoggedHours={totalLoggedHours} />

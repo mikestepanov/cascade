@@ -139,7 +139,7 @@ export function MemberManagement({
           </Flex>
 
           {showAddForm && (
-            <div className="mb-6 p-4 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg">
+            <div className="mb-6 p-4 bg-ui-bg-secondary rounded-lg">
               <Typography variant="small" className="mb-3">
                 Add New Member
               </Typography>
@@ -180,9 +180,11 @@ export function MemberManagement({
 
           <div className="space-y-3">
             {members.map((member) => (
-              <div
+              <Flex
+                align="center"
+                justify="between"
+                className="p-3 bg-ui-bg-secondary rounded-lg"
                 key={member._id}
-                className="flex items-center justify-between p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg"
               >
                 <Flex gap="md" align="center">
                   <Avatar src={member.image} alt={member.name} size="sm" />
@@ -231,7 +233,7 @@ export function MemberManagement({
                     </>
                   )}
                 </Flex>
-              </div>
+              </Flex>
             ))}
           </div>
         </div>

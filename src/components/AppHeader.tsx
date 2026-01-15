@@ -1,3 +1,4 @@
+import { Flex } from "@/components/ui/Flex";
 import { useSidebarState } from "@/hooks/useSidebarState";
 import { Menu } from "@/lib/icons";
 import { GlobalSearch } from "./GlobalSearch";
@@ -14,26 +15,26 @@ export function AppHeader({ onShowCommandPalette, onShowShortcutsHelp }: AppHead
   const { isMobileOpen, toggleMobile } = useSidebarState();
 
   return (
-    <header className="bg-ui-bg-primary dark:bg-ui-bg-secondary-dark border-b border-ui-border-primary dark:border-ui-border-primary-dark px-4 sm:px-6 py-3 flex justify-between items-center gap-2">
-      <div className="flex items-center gap-2 sm:gap-4">
+    <header className="bg-ui-bg-primary border-b border-ui-border-primary px-4 sm:px-6 py-3 flex justify-between items-center gap-2">
+      <Flex align="center" gap="sm" className="sm:gap-4">
         {/* Mobile Hamburger Menu */}
         <button
           type="button"
           onClick={toggleMobile}
-          className="lg:hidden p-2 text-ui-text-secondary dark:text-ui-text-tertiary-dark hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark rounded-lg transition-colors"
+          className="lg:hidden p-2 text-ui-text-secondary hover:bg-ui-bg-tertiary rounded-lg transition-colors"
           aria-label="Toggle sidebar menu"
           aria-expanded={isMobileOpen}
         >
           <Menu className="w-5 h-5" />
         </button>
-      </div>
+      </Flex>
 
-      <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+      <Flex align="center" gap="sm" className="sm:gap-3 shrink-0">
         {onShowCommandPalette && (
           <button
             type="button"
             onClick={onShowCommandPalette}
-            className="flex items-center gap-2 px-2 sm:px-3 py-1.5 text-xs sm:text-sm text-ui-text-secondary dark:text-ui-text-tertiary-dark bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded-lg hover:bg-ui-border-primary dark:hover:bg-ui-border-secondary-dark transition-colors"
+            className="flex items-center gap-2 px-2 sm:px-3 py-1.5 text-xs sm:text-sm text-ui-text-secondary bg-ui-bg-tertiary rounded-lg hover:bg-ui-border-primary transition-colors"
             aria-label="Open command palette"
             data-tour="command-palette"
           >
@@ -52,7 +53,7 @@ export function AppHeader({ onShowCommandPalette, onShowShortcutsHelp }: AppHead
               />
             </svg>
             <span className="hidden sm:inline">Commands</span>
-            <kbd className="hidden lg:inline px-1.5 py-0.5 text-xs bg-ui-bg-primary dark:bg-ui-bg-secondary-dark border border-ui-border-secondary dark:border-ui-border-secondary-dark rounded">
+            <kbd className="hidden lg:inline px-1.5 py-0.5 text-xs bg-ui-bg-primary border border-ui-border-secondary rounded">
               ⌘K
             </kbd>
           </button>
@@ -62,7 +63,7 @@ export function AppHeader({ onShowCommandPalette, onShowShortcutsHelp }: AppHead
           <button
             type="button"
             onClick={onShowShortcutsHelp}
-            className="hidden sm:block p-2 text-ui-text-secondary dark:text-ui-text-tertiary-dark hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark rounded-lg transition-colors"
+            className="hidden sm:block p-2 text-ui-text-secondary hover:bg-ui-bg-tertiary rounded-lg transition-colors"
             aria-label="Keyboard shortcuts"
           >
             <svg
@@ -86,7 +87,7 @@ export function AppHeader({ onShowCommandPalette, onShowShortcutsHelp }: AppHead
         <GlobalSearch />
         <NotificationCenter />
         <UserMenu />
-      </div>
+      </Flex>
     </header>
   );
 }

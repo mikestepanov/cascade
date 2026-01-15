@@ -9,14 +9,7 @@ interface SkeletonProps {
  * Base Skeleton component with shimmer animation
  */
 export function Skeleton({ className }: SkeletonProps) {
-  return (
-    <div
-      className={cn(
-        "animate-pulse bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded",
-        className,
-      )}
-    />
-  );
+  return <div className={cn("animate-pulse bg-ui-bg-tertiary rounded", className)} />;
 }
 
 /**
@@ -26,7 +19,7 @@ export function SkeletonCard({ className }: SkeletonProps) {
   return (
     <div
       className={cn(
-        "animate-pulse bg-ui-bg-primary dark:bg-ui-bg-primary-dark border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg p-4",
+        "animate-pulse bg-ui-bg-primary border border-ui-border-primary rounded-lg p-4",
         className,
       )}
     >
@@ -85,12 +78,7 @@ export function SkeletonTable({ rows = 5 }: { rows?: number }) {
   return (
     <Flex direction="column" gap="sm">
       {rowItems.map((rowId) => (
-        <Flex
-          key={rowId}
-          align="center"
-          gap="lg"
-          className="p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded"
-        >
+        <Flex key={rowId} align="center" gap="lg" className="p-3 bg-ui-bg-secondary rounded">
           <Skeleton className="h-4 w-20" />
           <Skeleton className="h-4 flex-1" />
           <Skeleton className="h-4 w-24" />
@@ -110,10 +98,7 @@ export function SkeletonList({ items = 5 }: { items?: number }) {
   return (
     <Flex direction="column" gap="sm">
       {listItems.map((itemId) => (
-        <div
-          key={itemId}
-          className="p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg"
-        >
+        <div key={itemId} className="p-3 bg-ui-bg-secondary rounded-lg">
           <Flex align="start" gap="md">
             <SkeletonAvatar size="sm" />
             <Flex direction="column" gap="sm" className="flex-1">
@@ -132,7 +117,7 @@ export function SkeletonList({ items = 5 }: { items?: number }) {
  */
 export function SkeletonStatCard() {
   return (
-    <div className="bg-ui-bg-primary dark:bg-ui-bg-primary-dark border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg p-4">
+    <div className="bg-ui-bg-primary border border-ui-border-primary rounded-lg p-4">
       <Flex direction="column" gap="md" className="text-center">
         <Skeleton className="h-3 w-24 mx-auto" />
         <Skeleton className="h-10 w-16 mx-auto" />
@@ -150,7 +135,7 @@ export function SkeletonKanbanCard() {
     <Flex
       direction="column"
       gap="sm"
-      className="bg-ui-bg-primary dark:bg-ui-bg-primary-dark border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg p-3"
+      className="bg-ui-bg-primary border border-ui-border-primary rounded-lg p-3"
     >
       <Flex align="center" gap="sm">
         <Skeleton className="h-3 w-16" />
@@ -171,11 +156,7 @@ export function SkeletonKanbanCard() {
  */
 export function SkeletonProjectCard() {
   return (
-    <Flex
-      direction="column"
-      gap="sm"
-      className="p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg"
-    >
+    <Flex direction="column" gap="sm" className="p-3 bg-ui-bg-secondary rounded-lg">
       <Flex align="center" justify="between">
         <Skeleton className="h-5 w-32" />
         <Skeleton className="h-5 w-16" />

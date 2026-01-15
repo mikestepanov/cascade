@@ -35,28 +35,28 @@ export function getPriorityColor(
   const colors = {
     highest: {
       text: "text-priority-highest",
-      bg: "bg-status-error-bg dark:bg-status-error-bg-dark text-status-error-text dark:text-status-error-text-dark",
-      badge: "text-priority-highest bg-status-error-bg dark:bg-status-error-bg-dark",
+      bg: "bg-status-error-bg text-status-error-text",
+      badge: "text-priority-highest bg-status-error-bg",
     },
     high: {
       text: "text-priority-high",
-      bg: "bg-status-warning-bg dark:bg-status-warning-bg-dark text-status-warning-text dark:text-status-warning-text-dark",
-      badge: "text-priority-high bg-status-warning-bg dark:bg-status-warning-bg-dark",
+      bg: "bg-status-warning-bg text-status-warning-text",
+      badge: "text-priority-high bg-status-warning-bg",
     },
     medium: {
       text: "text-priority-medium",
-      bg: "bg-status-warning-bg dark:bg-status-warning-bg-dark text-status-warning-text dark:text-status-warning-text-dark",
-      badge: "text-priority-medium bg-status-warning-bg dark:bg-status-warning-bg-dark",
+      bg: "bg-status-warning-bg text-status-warning-text",
+      badge: "text-priority-medium bg-status-warning-bg",
     },
     low: {
       text: "text-priority-low",
-      bg: "bg-status-info-bg dark:bg-status-info-bg-dark text-status-info-text dark:text-status-info-text-dark",
-      badge: "text-priority-low bg-status-info-bg dark:bg-status-info-bg-dark",
+      bg: "bg-status-info-bg text-status-info-text",
+      badge: "text-priority-low bg-status-info-bg",
     },
     lowest: {
       text: "text-priority-lowest",
-      bg: "bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark text-ui-text-secondary dark:text-ui-text-secondary-dark",
-      badge: "text-priority-lowest bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark",
+      bg: "bg-ui-bg-tertiary text-ui-text-secondary",
+      badge: "text-priority-lowest bg-ui-bg-tertiary",
     },
   };
 
@@ -129,16 +129,46 @@ export function getStatusColor(status: string): string {
   switch (status.toLowerCase()) {
     case "active":
     case "in progress":
-      return "bg-status-success-bg dark:bg-status-success-bg-dark text-status-success-text dark:text-status-success-text-dark";
+      return "bg-status-success-bg text-status-success-text";
     case "completed":
     case "done":
-      return "bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark text-ui-text-secondary dark:text-ui-text-secondary-dark";
+      return "bg-ui-bg-tertiary text-ui-text-secondary";
     case "future":
     case "todo":
-      return "bg-status-info-bg dark:bg-status-info-bg-dark text-status-info-text dark:text-status-info-text-dark";
+      return "bg-status-info-bg text-status-info-text";
     case "blocked":
-      return "bg-status-error-bg dark:bg-status-error-bg-dark text-status-error-text dark:text-status-error-text-dark";
+      return "bg-status-error-bg text-status-error-text";
     default:
-      return "bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark text-ui-text-secondary dark:text-ui-text-secondary-dark";
+      return "bg-ui-bg-tertiary text-ui-text-secondary";
   }
+}
+
+/**
+ * Get the color classes for a workflow category
+ * Uses semantic theme tokens with full dark mode support
+ */
+export function getWorkflowCategoryColor(
+  category: string,
+  variant: "border" | "text" | "bg" = "border",
+): string {
+  const normalizedCategory = category.toLowerCase();
+  const colors = {
+    todo: {
+      border: "border-t-ui-border-primary",
+      text: "text-ui-text-tertiary",
+      bg: "bg-ui-bg-tertiary",
+    },
+    inprogress: {
+      border: "border-t-status-info",
+      text: "text-status-info-text",
+      bg: "bg-status-info-bg",
+    },
+    done: {
+      border: "border-t-status-success",
+      text: "text-status-success-text",
+      bg: "bg-status-success-bg",
+    },
+  };
+
+  return colors[normalizedCategory as keyof typeof colors]?.[variant] || colors.todo[variant];
 }

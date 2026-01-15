@@ -39,26 +39,26 @@ export function TemplateCard({ template, onEdit, onDelete }: TemplateCardProps) 
   };
 
   return (
-    <div className="p-4 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark transition-colors">
+    <div className="p-4 bg-ui-bg-secondary rounded-lg hover:bg-ui-bg-tertiary transition-colors">
       <Flex justify="between" align="start">
         <div className="flex-1">
           <Flex gap="sm" align="center" className="mb-2">
             <span className="text-lg">{getTypeIcon(template.type)}</span>
-            <h4 className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+            <Typography variant="h4" className="font-medium text-ui-text-primary">
               {template.name}
-            </h4>
-            <span className="text-xs px-2 py-0.5 bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark text-ui-text-primary dark:text-ui-text-primary-dark rounded capitalize">
+            </Typography>
+            <span className="text-xs px-2 py-0.5 bg-ui-bg-tertiary text-ui-text-primary rounded capitalize">
               {template.type}
             </span>
             <span className="text-xs px-2 py-0.5 bg-brand-100 dark:bg-brand-900/30 text-brand-700 dark:text-brand-300 rounded capitalize">
               {template.defaultPriority}
             </span>
           </Flex>
-          <Typography className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mb-1">
+          <Typography className="text-sm text-ui-text-secondary mb-1">
             <span className="font-medium">Title:</span> {template.titleTemplate}
           </Typography>
           {template.descriptionTemplate && (
-            <Typography className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark line-clamp-2">
+            <Typography className="text-xs text-ui-text-tertiary line-clamp-2">
               {template.descriptionTemplate}
             </Typography>
           )}
@@ -67,7 +67,7 @@ export function TemplateCard({ template, onEdit, onDelete }: TemplateCardProps) 
               {template.defaultLabels.map((label) => (
                 <span
                   key={label}
-                  className="text-xs px-2 py-0.5 bg-ui-bg-primary dark:bg-ui-bg-primary-dark border border-ui-border-primary dark:border-ui-border-primary-dark rounded"
+                  className="text-xs px-2 py-0.5 bg-ui-bg-primary border border-ui-border-primary rounded"
                 >
                   {label}
                 </span>

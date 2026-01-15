@@ -1,3 +1,4 @@
+import { Flex } from "@/components/ui/Flex";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/Dialog";
 import { KeyboardShortcut } from "./ui/KeyboardShortcut";
 import { Typography } from "./ui/Typography";
@@ -68,30 +69,30 @@ export function KeyboardShortcutsHelp({ open, onOpenChange }: KeyboardShortcutsH
         <div className="space-y-6">
           {shortcuts.map((section) => (
             <div key={section.category}>
-              <h3 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark mb-3">
+              <Typography variant="h3" className="text-lg font-semibold text-ui-text-primary mb-3">
                 {section.category}
-              </h3>
+              </Typography>
               <div className="space-y-2">
                 {section.items.map((shortcut) => (
-                  <div
+                  <Flex
+                    align="center"
+                    justify="between"
+                    className="py-2"
                     key={shortcut.description}
-                    className="flex items-center justify-between py-2"
                   >
-                    <span className="text-sm text-ui-text-primary dark:text-ui-text-primary-dark">
-                      {shortcut.description}
-                    </span>
-                    <div className="flex gap-2">
+                    <span className="text-sm text-ui-text-primary">{shortcut.description}</span>
+                    <Flex gap="sm">
                       {shortcut.keys.map((key) => (
                         <KeyboardShortcut key={key} shortcut={key} />
                       ))}
-                    </div>
-                  </div>
+                    </Flex>
+                  </Flex>
                 ))}
               </div>
             </div>
           ))}
 
-          <div className="pt-4 border-t border-ui-border-primary dark:border-ui-border-primary-dark">
+          <div className="pt-4 border-t border-ui-border-primary">
             <Typography variant="muted" className="text-sm">
               <strong>Tip:</strong> Press <KeyboardShortcut shortcut="⌘+K" /> to quickly access all
               commands and features.

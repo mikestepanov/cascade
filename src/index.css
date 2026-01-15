@@ -55,6 +55,12 @@
   --color-ui-bg-elevated-dark: #1F2937;
   --color-ui-bg-overlay-dark: rgba(0, 0, 0, 0.75);
 
+  /* Landing/Hero Specific (Persistent Dark) */
+  --color-ui-bg-hero: #0a0e17;
+  --color-landing-accent: #22d3ee;
+  --color-landing-accent-alt: #a855f7;
+  --color-landing-accent-teal: #14b8a6;
+
   /* UI Text Colors */
   --color-ui-text-primary: #111827;
   --color-ui-text-secondary: #6B7280;
@@ -79,26 +85,20 @@
   --color-status-success: #10B981;
   --color-status-success-bg: #D1FAE5;
   --color-status-success-text: #065F46;
-  --color-status-success-bg-dark: #064E3B;
-  --color-status-success-text-dark: #6EE7B7;
 
   --color-status-warning: #F59E0B;
   --color-status-warning-bg: #FEF3C7;
   --color-status-warning-text: #92400E;
-  --color-status-warning-bg-dark: #78350F;
-  --color-status-warning-text-dark: #FCD34D;
 
   --color-status-error: #EF4444;
   --color-status-error-bg: #FEE2E2;
   --color-status-error-text: #991B1B;
-  --color-status-error-bg-dark: #7F1D1D;
-  --color-status-error-text-dark: #FCA5A5;
 
   --color-status-info: #3B82F6;
   --color-status-info-bg: #DBEAFE;
   --color-status-info-text: #1E40AF;
-  --color-status-info-bg-dark: #1E3A8A;
-  --color-status-info-text-dark: #93C5FD;
+
+
 
   /* Priority Colors */
   --color-priority-lowest: #6B7280;
@@ -130,6 +130,78 @@
   /* Custom Spacing */
   --spacing-form-field: 16px;
   --spacing-section: 32px;
+  /* Semantic Brand Palette (Auto-switching) */
+  --color-brand-cyan-text: #0891b2; /* cyan-600 */
+  --color-brand-cyan-bg: #06b6d4; /* cyan-500 */
+  --color-brand-cyan-border: #0891b2; /* cyan-600 */
+  --color-brand-cyan-track: #cffafe; /* cyan-100 */
+
+  --color-brand-indigo-text: #4f46e5; /* indigo-600 */
+  --color-brand-indigo-bg: #6366f1; /* indigo-500 */
+  --color-brand-indigo-border: #4f46e5; /* indigo-600 */
+  --color-brand-indigo-track: #e0e7ff; /* indigo-100 */
+
+  --color-brand-teal-text: #0d9488; /* teal-600 */
+  --color-brand-teal-bg: #14b8a6; /* teal-500 */
+  --color-brand-teal-border: #0d9488; /* teal-600 */
+  --color-brand-teal-track: #ccfbf1; /* teal-100 */
+
+  --color-brand-emerald-text: #059669; /* emerald-600 */
+  --color-brand-emerald-bg: #10b981; /* emerald-500 */
+  --color-brand-emerald-border: #059669; /* emerald-600 */
+  --color-brand-emerald-track: #d1fae5; /* emerald-100 */
+}
+
+.dark {
+  /* Semantic Brand Palette (Dark Mode Overrides) */
+  --color-brand-cyan-text: #22d3ee; /* cyan-400 */
+  --color-brand-cyan-bg: #22d3ee; /* cyan-400 */
+  --color-brand-cyan-border: #22d3ee; /* cyan-400 */
+  --color-brand-cyan-track: rgba(8, 145, 178, 0.4); /* cyan-950/40 approx */
+
+  --color-brand-indigo-text: #818cf8; /* indigo-400 */
+  --color-brand-indigo-bg: #818cf8; /* indigo-400 */
+  --color-brand-indigo-border: #818cf8; /* indigo-400 */
+  --color-brand-indigo-track: rgba(49, 46, 129, 0.4); /* indigo-950/40 approx */
+
+  --color-brand-teal-text: #2dd4bf; /* teal-400 */
+  --color-brand-teal-bg: #2dd4bf; /* teal-400 */
+  --color-brand-teal-border: #2dd4bf; /* teal-400 */
+  --color-brand-teal-track: rgba(19, 78, 74, 0.4); /* teal-950/40 approx */
+
+  --color-brand-emerald-text: #34d399; /* emerald-400 */
+  --color-brand-emerald-bg: #34d399; /* emerald-400 */
+  --color-brand-emerald-border: #34d399; /* emerald-400 */
+  --color-brand-emerald-track: rgba(6, 78, 59, 0.4); /* emerald-950/40 approx */
+
+  /* UI Backgrounds */
+  --color-ui-bg-primary: var(--color-ui-bg-primary-dark);
+  --color-ui-bg-secondary: var(--color-ui-bg-secondary-dark);
+  --color-ui-bg-tertiary: var(--color-ui-bg-tertiary-dark);
+  --color-ui-bg-elevated: var(--color-ui-bg-elevated-dark);
+  --color-ui-bg-overlay: var(--color-ui-bg-overlay-dark);
+
+  /* UI Text */
+  --color-ui-text-primary: var(--color-ui-text-primary-dark);
+  --color-ui-text-secondary: var(--color-ui-text-secondary-dark);
+  --color-ui-text-tertiary: var(--color-ui-text-tertiary-dark);
+  --color-ui-text-inverse: var(--color-ui-text-inverse-dark);
+
+  /* UI Borders */
+  --color-ui-border-primary: var(--color-ui-border-primary-dark);
+  --color-ui-border-secondary: var(--color-ui-border-secondary-dark);
+  --color-ui-border-focus: var(--color-ui-border-focus-dark);
+  --color-ui-border-error: var(--color-ui-border-error-dark);
+
+  /* Status */
+  --color-status-success-bg: #064E3B;
+  --color-status-success-text: #6EE7B7;
+  --color-status-warning-bg: #78350F;
+  --color-status-warning-text: #FCD34D;
+  --color-status-error-bg: #7F1D1D;
+  --color-status-error-text: #FCA5A5;
+  --color-status-info-bg: #1E3A8A;
+  --color-status-info-text: #93C5FD;
 }
 
 :root {
@@ -195,6 +267,13 @@ body {
   background: #111827;
 }
 
+/* Base button styles - Tailwind v4 removed cursor:pointer from buttons by default */
+@layer base {
+  button:not([disabled]),
+  [role="button"]:not([disabled]) {
+    cursor: pointer;
+  }
+}
 
 /* BlockNote editor customizations for minimal design */
 .bn-container {

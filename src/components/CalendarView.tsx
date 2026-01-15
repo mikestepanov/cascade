@@ -2,6 +2,7 @@ import { api } from "@convex/_generated/api";
 import type { Doc, Id } from "@convex/_generated/dataModel";
 import { useQuery } from "convex/react";
 import { useMemo, useState } from "react";
+import { Flex } from "@/components/ui/Flex";
 import { getPriorityColor, getTypeIcon } from "@/lib/issue-utils";
 import { cn } from "@/lib/utils";
 import { IssueDetailModal } from "./IssueDetailModal";
@@ -94,10 +95,7 @@ export function CalendarView({ projectId, sprintId, canEdit = true }: CalendarVi
   // Add empty cells for days before first day of month
   for (let i = 0; i < firstDayOfMonth; i++) {
     calendarDays.push(
-      <div
-        key={`empty-${i}`}
-        className="min-h-32 md:min-h-24 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark"
-      />,
+      <div key={`empty-${i}`} className="min-h-32 md:min-h-24 bg-ui-bg-secondary" />,
     );
   }
   // Add cells for each day of the month
@@ -115,7 +113,7 @@ export function CalendarView({ projectId, sprintId, canEdit = true }: CalendarVi
             : "bg-ui-bg-primary dark:bg-ui-bg-primary-dark",
         )}
       >
-        <div className="flex items-center justify-between mb-1">
+        <Flex align="center" justify="between" className="mb-1">
           <span
             className={cn(
               "text-sm font-medium",
@@ -127,11 +125,11 @@ export function CalendarView({ projectId, sprintId, canEdit = true }: CalendarVi
             {day}
           </span>
           {dayIssues.length > 0 && (
-            <span className="text-xs bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark text-ui-text-primary dark:text-ui-text-primary-dark px-1.5 py-0.5 rounded">
+            <span className="text-xs bg-ui-bg-tertiary text-ui-text-primary px-1.5 py-0.5 rounded">
               {dayIssues.length}
             </span>
           )}
-        </div>
+        </Flex>
 
         <div className="space-y-1">
           {(dayIssues ?? []).slice(0, 3).map((issue: Doc<"issues">) => (
@@ -139,15 +137,15 @@ export function CalendarView({ projectId, sprintId, canEdit = true }: CalendarVi
               type="button"
               key={issue._id}
               onClick={() => setSelectedIssue(issue._id)}
-              className="w-full text-left p-1.5 rounded hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark transition-colors"
+              className="w-full text-left p-1.5 rounded hover:bg-ui-bg-secondary transition-colors"
               title={issue.title}
             >
-              <div className="flex items-center gap-1">
+              <Flex align="center" gap="xs">
                 <div className={cn("w-2 h-2 rounded-full", getPriorityColor(issue.priority))} />
                 <span className="text-xs truncate flex-1">
                   {getTypeIcon(issue.type)} {issue.title}
                 </span>
-              </div>
+              </Flex>
             </button>
           ))}
           {dayIssues.length > 3 && (
@@ -163,17 +161,28 @@ export function CalendarView({ projectId, sprintId, canEdit = true }: CalendarVi
   return (
     <div className="flex-1 p-3 sm:p-6 overflow-auto">
       {/* Header */}
-      <div className="mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <Flex
+        direction="column"
+        align="start"
+        justify="between"
+        gap="lg"
+        className="mb-6 sm:flex-row sm:items-center"
+      >
         <Typography variant="h2" className="text-xl sm:text-2xl font-bold">
           Calendar View
         </Typography>
 
         {/* Month Navigation */}
-        <div className="flex items-center gap-2 sm:gap-4 w-full sm:w-auto justify-between sm:justify-start">
+        <Flex
+          align="center"
+          gap="sm"
+          justify="between"
+          className="sm:gap-4 w-full sm:w-auto sm:justify-start"
+        >
           <button
             type="button"
             onClick={previousMonth}
-            className="p-2 hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark rounded-lg transition-colors min-w-[44px] min-h-[44px] sm:min-w-0 sm:min-h-0 flex items-center justify-center"
+            className="p-2 hover:bg-ui-bg-secondary rounded-lg transition-colors min-w-[44px] min-h-[44px] sm:min-w-0 sm:min-h-0 flex items-center justify-center"
             aria-label="Previous month"
           >
             <svg
@@ -202,7 +211,7 @@ export function CalendarView({ projectId, sprintId, canEdit = true }: CalendarVi
           <button
             type="button"
             onClick={nextMonth}
-            className="p-2 hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark rounded-lg transition-colors min-w-[44px] min-h-[44px] sm:min-w-0 sm:min-h-0 flex items-center justify-center"
+            className="p-2 hover:bg-ui-bg-secondary rounded-lg transition-colors min-w-[44px] min-h-[44px] sm:min-w-0 sm:min-h-0 flex items-center justify-center"
             aria-label="Next month"
           >
             <svg
@@ -219,23 +228,20 @@ export function CalendarView({ projectId, sprintId, canEdit = true }: CalendarVi
           <button
             type="button"
             onClick={() => setCurrentDate(new Date())}
-            className="px-3 sm:px-4 py-2 bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark rounded-lg text-sm font-medium transition-colors min-w-[44px] min-h-[44px] sm:min-w-0 sm:min-h-0"
+            className="px-3 sm:px-4 py-2 bg-ui-bg-tertiary hover:bg-ui-bg-secondary rounded-lg text-sm font-medium transition-colors min-w-[44px] min-h-[44px] sm:min-w-0 sm:min-h-0"
           >
             Today
           </button>
-        </div>
-      </div>
+        </Flex>
+      </Flex>
 
       {/* Calendar Grid */}
       <div className="overflow-x-auto">
-        <div className="bg-ui-bg-primary dark:bg-ui-bg-primary-dark rounded-lg border border-ui-border-primary dark:border-ui-border-primary-dark overflow-hidden min-w-[640px]">
+        <div className="bg-ui-bg-primary rounded-lg border border-ui-border-primary overflow-hidden min-w-[640px]">
           {/* Weekday Headers */}
-          <div className="grid grid-cols-7 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark border-b border-ui-border-primary dark:border-ui-border-primary-dark">
+          <div className="grid grid-cols-7 bg-ui-bg-secondary border-b border-ui-border-primary">
             {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
-              <div
-                key={day}
-                className="p-2 text-center text-sm font-semibold text-ui-text-primary dark:text-ui-text-primary-dark"
-              >
+              <div key={day} className="p-2 text-center text-sm font-semibold text-ui-text-primary">
                 {day}
               </div>
             ))}
@@ -247,28 +253,28 @@ export function CalendarView({ projectId, sprintId, canEdit = true }: CalendarVi
       </div>
 
       {/* Legend */}
-      <div className="mt-4 flex items-center gap-6 text-sm">
-        <div className="flex items-center gap-2">
+      <Flex align="center" gap="xl" className="mt-4 text-sm">
+        <Flex align="center" gap="sm">
           <div className="w-3 h-3 rounded-full bg-status-error" />
-          <span className="text-ui-text-secondary dark:text-ui-text-secondary-dark">Highest</span>
-        </div>
-        <div className="flex items-center gap-2">
+          <span className="text-ui-text-secondary">Highest</span>
+        </Flex>
+        <Flex align="center" gap="sm">
           <div className="w-3 h-3 rounded-full bg-status-warning" />
-          <span className="text-ui-text-secondary dark:text-ui-text-secondary-dark">High</span>
-        </div>
-        <div className="flex items-center gap-2">
+          <span className="text-ui-text-secondary">High</span>
+        </Flex>
+        <Flex align="center" gap="sm">
           <div className="w-3 h-3 rounded-full bg-accent-500" />
-          <span className="text-ui-text-secondary dark:text-ui-text-secondary-dark">Medium</span>
-        </div>
-        <div className="flex items-center gap-2">
+          <span className="text-ui-text-secondary">Medium</span>
+        </Flex>
+        <Flex align="center" gap="sm">
           <div className="w-3 h-3 rounded-full bg-brand-500" />
-          <span className="text-ui-text-secondary dark:text-ui-text-secondary-dark">Low</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded-full bg-ui-text-secondary dark:bg-ui-text-secondary-dark" />
-          <span className="text-ui-text-secondary dark:text-ui-text-secondary-dark">Lowest</span>
-        </div>
-      </div>
+          <span className="text-ui-text-secondary">Low</span>
+        </Flex>
+        <Flex align="center" gap="sm">
+          <div className="w-3 h-3 rounded-full bg-ui-text-secondary" />
+          <span className="text-ui-text-secondary">Lowest</span>
+        </Flex>
+      </Flex>
 
       {/* Issue Detail Modal */}
       {selectedIssue && (

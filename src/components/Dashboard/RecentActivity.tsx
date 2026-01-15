@@ -61,7 +61,7 @@ export function RecentActivity({ activities }: RecentActivityProps) {
               >
                 {/* Timeline connector */}
                 {activityIndex < activities.length - 1 && (
-                  <div className="absolute left-4 top-8 bottom-0 w-px bg-ui-border-primary dark:bg-ui-border-primary-dark" />
+                  <div className="absolute left-4 top-8 bottom-0 w-px bg-ui-border-primary" />
                 )}
 
                 <Flex gap="md" align="start">
@@ -69,7 +69,7 @@ export function RecentActivity({ activities }: RecentActivityProps) {
                   <Flex
                     align="center"
                     justify="center"
-                    className="flex-shrink-0 w-8 h-8 rounded-full bg-brand-100 dark:bg-brand-900/40 relative z-10"
+                    className="shrink-0 w-8 h-8 rounded-full bg-brand-100 dark:bg-brand-900/40 relative z-10"
                   >
                     <span className="text-sm" aria-hidden="true">
                       {getActionIcon(activity.action)}
@@ -78,23 +78,15 @@ export function RecentActivity({ activities }: RecentActivityProps) {
 
                   <div className="flex-1 min-w-0 pb-4">
                     <div className="text-sm">
-                      <span className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
-                        {activity.userName}
-                      </span>{" "}
-                      <span className="text-ui-text-secondary dark:text-ui-text-secondary-dark">
-                        {activity.action}
-                      </span>
+                      <span className="font-medium text-ui-text-primary">{activity.userName}</span>{" "}
+                      <span className="text-ui-text-secondary">{activity.action}</span>
                     </div>
                     <div className="mt-1">
                       <Badge variant="neutral" className="font-mono">
                         {activity.issueKey}
                       </Badge>
                     </div>
-                    <Flex
-                      gap="sm"
-                      align="center"
-                      className="mt-1 text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark"
-                    >
+                    <Flex gap="sm" align="center" className="mt-1 text-xs text-ui-text-secondary">
                       <span>{activity.projectName}</span>
                       <span>•</span>
                       <span>{new Date(activity.createdAt).toLocaleDateString()}</span>

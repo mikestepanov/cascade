@@ -87,37 +87,37 @@ export const SUGGESTION_METADATA: Record<
   issue_description: {
     icon: "📝",
     label: "Issue Description",
-    color: "blue",
+    color: "info",
   },
   issue_priority: {
     icon: "⚡",
     label: "Priority Suggestion",
-    color: "yellow",
+    color: "warning",
   },
   issue_labels: {
     icon: "🏷️",
     label: "Label Suggestion",
-    color: "purple",
+    color: "accent",
   },
   issue_assignee: {
     icon: "👤",
     label: "Assignee Suggestion",
-    color: "green",
+    color: "success",
   },
   sprint_planning: {
     icon: "📅",
     label: "Sprint Planning",
-    color: "indigo",
+    color: "brand",
   },
   risk_detection: {
     icon: "⚠️",
     label: "Risk Detected",
-    color: "red",
+    color: "error",
   },
   insight: {
     icon: "💡",
     label: "Project Insight",
-    color: "amber",
+    color: "warning",
   },
 } as const;
 

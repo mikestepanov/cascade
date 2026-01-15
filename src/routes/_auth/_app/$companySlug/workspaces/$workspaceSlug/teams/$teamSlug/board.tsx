@@ -2,7 +2,9 @@ import { api } from "@convex/_generated/api";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
 import { KanbanBoard } from "@/components/KanbanBoard";
+import { Flex } from "@/components/ui/Flex";
 import { Skeleton } from "@/components/ui/Skeleton";
+import { Typography } from "@/components/ui/Typography";
 import { useCompany } from "@/hooks/useCompanyContext";
 
 export const Route = createFileRoute(
@@ -24,23 +26,23 @@ function TeamBoardPage() {
     return (
       <div className="p-6">
         <Skeleton className="h-8 w-48 mb-6" />
-        <div className="flex gap-4">
+        <Flex gap="lg">
           <Skeleton className="h-96 w-72" />
           <Skeleton className="h-96 w-72" />
           <Skeleton className="h-96 w-72" />
-        </div>
+        </Flex>
       </div>
     );
   }
 
   return (
-    <div className="h-full flex flex-col">
-      <div className="px-6 py-4 border-b border-ui-border-primary dark:border-ui-border-primary-dark">
-        <h1 className="text-2xl font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
+    <Flex direction="column" className="h-full">
+      <div className="px-6 py-4 border-b border-ui-border-primary">
+        <Typography variant="h1" className="text-2xl font-semibold text-ui-text-primary">
           {team.name} Board
-        </h1>
+        </Typography>
       </div>
       <KanbanBoard teamId={team._id} />
-    </div>
+    </Flex>
   );
 }

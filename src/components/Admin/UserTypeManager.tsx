@@ -312,7 +312,7 @@ export function UserTypeManager() {
       case "contractor":
         return "bg-accent-100 text-accent-700 dark:bg-accent-900/30 dark:text-accent-300";
       case "intern":
-        return "bg-status-success-bg text-status-success-text dark:bg-status-success-bg-dark dark:text-status-success-text-dark";
+        return "bg-status-success-bg text-status-success-text";
     }
   };
 
@@ -331,9 +331,7 @@ export function UserTypeManager() {
         />
         <CardBody>
           {!configs ? (
-            <div className="text-center py-8 text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
-              Loading...
-            </div>
+            <div className="text-center py-8 text-ui-text-tertiary">Loading...</div>
           ) : configs.length === 0 ? (
             <EmptyState
               icon="⚙️"
@@ -349,15 +347,15 @@ export function UserTypeManager() {
               {configs.map((config: EmploymentTypeConfig) => (
                 <div
                   key={config.type}
-                  className="p-4 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg hover:shadow-md transition-shadow"
+                  className="p-4 border border-ui-border-primary rounded-lg hover:shadow-md transition-shadow"
                 >
                   <Flex justify="between" align="start" className="mb-3">
                     <Flex align="center" gap="sm">
                       <span className="text-2xl">{getTypeIcon(config.type)}</span>
                       <div>
-                        <h3 className="font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
+                        <Typography variant="h3" className="font-semibold text-ui-text-primary">
                           {config.name}
-                        </h3>
+                        </Typography>
                         <span
                           className={cn(
                             "text-xs px-2 py-0.5 rounded capitalize",
@@ -378,34 +376,26 @@ export function UserTypeManager() {
 
                   <Flex direction="column" gap="sm" className="text-sm">
                     <Flex justify="between">
-                      <span className="text-ui-text-secondary dark:text-ui-text-secondary-dark">
-                        Max hours/week:
-                      </span>
-                      <span className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+                      <span className="text-ui-text-secondary">Max hours/week:</span>
+                      <span className="font-medium text-ui-text-primary">
                         {config.defaultMaxHoursPerWeek}h
                       </span>
                     </Flex>
                     <Flex justify="between">
-                      <span className="text-ui-text-secondary dark:text-ui-text-secondary-dark">
-                        Max hours/day:
-                      </span>
-                      <span className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+                      <span className="text-ui-text-secondary">Max hours/day:</span>
+                      <span className="font-medium text-ui-text-primary">
                         {config.defaultMaxHoursPerDay}h
                       </span>
                     </Flex>
                     <Flex justify="between">
-                      <span className="text-ui-text-secondary dark:text-ui-text-secondary-dark">
-                        Requires approval:
-                      </span>
-                      <span className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+                      <span className="text-ui-text-secondary">Requires approval:</span>
+                      <span className="font-medium text-ui-text-primary">
                         {config.defaultRequiresApproval ? "Yes" : "No"}
                       </span>
                     </Flex>
                     <Flex justify="between">
-                      <span className="text-ui-text-secondary dark:text-ui-text-secondary-dark">
-                        Can work overtime:
-                      </span>
-                      <span className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+                      <span className="text-ui-text-secondary">Can work overtime:</span>
+                      <span className="font-medium text-ui-text-primary">
                         {config.defaultCanWorkOvertime ? "Yes" : "No"}
                       </span>
                     </Flex>
@@ -435,19 +425,19 @@ export function UserTypeManager() {
         <CardBody>
           {/* Users without profiles */}
           {usersWithoutProfiles && usersWithoutProfiles.length > 0 && (
-            <div className="mb-6 p-4 bg-status-warning-bg dark:bg-status-warning-bg-dark border border-status-warning dark:border-status-warning rounded-lg">
-              <h4 className="font-semibold text-status-warning-text dark:text-status-warning-text-dark mb-2">
+            <div className="mb-6 p-4 bg-status-warning-bg border border-status-warning dark:border-status-warning rounded-lg">
+              <Typography variant="h4" className="font-semibold text-status-warning-text mb-2">
                 Unassigned Users ({usersWithoutProfiles.length})
-              </h4>
+              </Typography>
               <Flex direction="column" gap="sm">
                 {usersWithoutProfiles.slice(0, 5).map((user: UserWithoutProfile) => (
                   <Flex
                     key={user._id}
                     justify="between"
                     align="center"
-                    className="bg-ui-bg-primary dark:bg-ui-bg-primary-dark p-2 rounded"
+                    className="bg-ui-bg-primary p-2 rounded"
                   >
-                    <span className="text-sm text-ui-text-primary dark:text-ui-text-primary-dark">
+                    <span className="text-sm text-ui-text-primary">
                       {user.name || user.email || "Unknown User"}
                     </span>
                     <Button size="sm" onClick={() => handleAssignUser(user._id)}>
@@ -466,9 +456,7 @@ export function UserTypeManager() {
 
           {/* Assigned users */}
           {!profiles ? (
-            <div className="text-center py-8 text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
-              Loading...
-            </div>
+            <div className="text-center py-8 text-ui-text-tertiary">Loading...</div>
           ) : profiles.length === 0 ? (
             <EmptyState
               icon="👥"
@@ -480,16 +468,16 @@ export function UserTypeManager() {
               {profiles.map((profile: UserProfileWithUser) => (
                 <div
                   key={profile._id}
-                  className="p-4 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark transition-colors"
+                  className="p-4 border border-ui-border-primary rounded-lg hover:bg-ui-bg-secondary transition-colors"
                 >
                   <Flex justify="between" align="start">
                     <div className="flex-1">
                       <Flex gap="md" align="center" className="mb-2">
                         <span className="text-xl">{getTypeIcon(profile.employmentType)}</span>
                         <div>
-                          <h4 className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+                          <Typography variant="h4" className="font-medium text-ui-text-primary">
                             {profile.user?.name || profile.user?.email || "Unknown User"}
-                          </h4>
+                          </Typography>
                           <Flex gap="sm" className="mt-1">
                             <span
                               className={cn(
@@ -500,7 +488,7 @@ export function UserTypeManager() {
                               {profile.employmentType}
                             </span>
                             {!profile.isActive && (
-                              <span className="text-xs px-2 py-0.5 bg-status-error-bg dark:bg-status-error-bg-dark text-status-error-text dark:text-status-error-text-dark rounded">
+                              <span className="text-xs px-2 py-0.5 bg-status-error-bg text-status-error-text rounded">
                                 Inactive
                               </span>
                             )}
@@ -511,37 +499,29 @@ export function UserTypeManager() {
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm mt-3">
                         {profile.jobTitle && (
                           <div>
-                            <span className="text-ui-text-tertiary dark:text-ui-text-tertiary-dark text-xs">
-                              Job Title:
-                            </span>
-                            <div className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+                            <span className="text-ui-text-tertiary text-xs">Job Title:</span>
+                            <div className="font-medium text-ui-text-primary">
                               {profile.jobTitle}
                             </div>
                           </div>
                         )}
                         {profile.department && (
                           <div>
-                            <span className="text-ui-text-tertiary dark:text-ui-text-tertiary-dark text-xs">
-                              Department:
-                            </span>
-                            <div className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+                            <span className="text-ui-text-tertiary text-xs">Department:</span>
+                            <div className="font-medium text-ui-text-primary">
                               {profile.department}
                             </div>
                           </div>
                         )}
                         <div>
-                          <span className="text-ui-text-tertiary dark:text-ui-text-tertiary-dark text-xs">
-                            Max hours/week:
-                          </span>
-                          <div className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+                          <span className="text-ui-text-tertiary text-xs">Max hours/week:</span>
+                          <div className="font-medium text-ui-text-primary">
                             {profile.maxHoursPerWeek || "Default"}
                           </div>
                         </div>
                         <div>
-                          <span className="text-ui-text-tertiary dark:text-ui-text-tertiary-dark text-xs">
-                            Max hours/day:
-                          </span>
-                          <div className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+                          <span className="text-ui-text-tertiary text-xs">Max hours/day:</span>
+                          <div className="font-medium text-ui-text-primary">
                             {profile.maxHoursPerDay || "Default"}
                           </div>
                         </div>
@@ -734,10 +714,10 @@ export function UserTypeManager() {
                 />
               </div>
 
-              <div className="p-4 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg">
-                <h4 className="font-medium text-sm mb-3 text-ui-text-primary dark:text-ui-text-primary-dark">
+              <div className="p-4 bg-ui-bg-secondary rounded-lg">
+                <Typography variant="h4" className="font-medium text-sm mb-3 text-ui-text-primary">
                   Hour Overrides (leave empty to use type defaults)
-                </h4>
+                </Typography>
                 <div className="grid grid-cols-2 gap-4">
                   <Input
                     label="Max Hours per Week"
@@ -781,9 +761,12 @@ export function UserTypeManager() {
               {profileType === "employee" && (
                 <div className="p-4 bg-brand-50 dark:bg-brand-900/20 border border-brand-200 dark:border-brand-800 rounded-lg">
                   <Flex justify="between" align="center" className="mb-3">
-                    <h4 className="font-medium text-sm text-brand-900 dark:text-brand-100">
+                    <Typography
+                      variant="h4"
+                      className="font-medium text-sm text-brand-900 dark:text-brand-100"
+                    >
                       💎 Equity Compensation
-                    </h4>
+                    </Typography>
                     <label>
                       <Flex align="center" gap="sm">
                         <input

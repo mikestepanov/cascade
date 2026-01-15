@@ -31,13 +31,13 @@ vi.mock("@/lib/issue-utils", () => ({
   }),
   getPriorityColor: vi.fn((priority: string) => {
     const colors = {
-      lowest: "text-gray-400",
-      low: "text-blue-500",
-      medium: "text-yellow-500",
-      high: "text-orange-500",
-      highest: "text-red-500",
+      lowest: "text-priority-lowest",
+      low: "text-priority-low",
+      medium: "text-priority-medium",
+      high: "text-priority-high",
+      highest: "text-priority-highest",
     };
-    return colors[priority as keyof typeof colors] || "text-gray-500";
+    return colors[priority as keyof typeof colors] || "text-ui-text-tertiary";
   }),
 }));
 
@@ -56,8 +56,8 @@ describe("IssueCard", () => {
       image: "https://example.com/avatar.jpg",
     },
     labels: [
-      { name: "backend", color: "#3b82f6" },
-      { name: "urgent", color: "#ef4444" },
+      { name: "backend", color: "#3B82F6" },
+      { name: "urgent", color: "#EF4444" },
     ],
     storyPoints: 5,
   };

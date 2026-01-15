@@ -51,32 +51,25 @@ export function MarkdownPreviewModal({
           </DialogDescription>
         </DialogHeader>
         {/* File Info */}
-        <div className="mb-4 p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg">
+        <div className="mb-4 p-3 bg-ui-bg-secondary rounded-lg">
           <Flex align="center" justify="between" className="text-sm">
-            <span className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
-              📄 {filename}
-            </span>
-            <span className="text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+            <span className="font-medium text-ui-text-primary">📄 {filename}</span>
+            <span className="text-ui-text-tertiary">
               {lines.length} lines • {headings} headings • {lists} lists • {codeBlocks} code blocks
             </span>
           </Flex>
         </div>
 
         {/* Warning */}
-        <div className="mb-4 p-3 bg-status-warning/10 dark:bg-status-warning/20 border border-status-warning/30 dark:border-status-warning/50 rounded-lg">
+        {/* Warning */}
+        <div className="mb-4 p-3 bg-status-warning-bg border border-status-warning/30 rounded-lg">
           <Flex align="start" gap="sm">
-            <span className="text-status-warning dark:text-status-warning text-lg">⚠️</span>
+            <span className="text-status-warning text-lg">⚠️</span>
             <div className="flex-1">
-              <Typography
-                variant="small"
-                className="font-medium text-status-warning dark:text-status-warning"
-              >
+              <Typography variant="small" className="font-medium text-status-warning">
                 This will replace all current document content
               </Typography>
-              <Typography
-                variant="muted"
-                className="text-xs text-status-warning/90 dark:text-status-warning/80 mt-1"
-              >
+              <Typography variant="muted" className="text-xs text-status-warning/90 mt-1">
                 Make sure you have a backup or export the current version first.
               </Typography>
             </div>
@@ -84,7 +77,7 @@ export function MarkdownPreviewModal({
         </div>
 
         {/* Tab Selector */}
-        <Flex className="border-b border-ui-border-primary dark:border-ui-border-primary-dark mb-4">
+        <Flex className="border-b border-ui-border-primary mb-4">
           <button
             type="button"
             onClick={() => setActiveTab("preview")}
@@ -92,7 +85,7 @@ export function MarkdownPreviewModal({
               "px-4 py-2 text-sm font-medium border-b-2 transition-colors",
               activeTab === "preview"
                 ? "border-brand-500 text-brand-600 dark:text-brand-400"
-                : "border-transparent text-ui-text-tertiary dark:text-ui-text-tertiary-dark hover:text-ui-text-secondary dark:hover:text-ui-text-secondary-dark",
+                : "border-transparent text-ui-text-tertiary hover:text-ui-text-secondary",
             )}
           >
             Preview
@@ -104,7 +97,7 @@ export function MarkdownPreviewModal({
               "px-4 py-2 text-sm font-medium border-b-2 transition-colors",
               activeTab === "raw"
                 ? "border-brand-500 text-brand-600 dark:text-brand-400"
-                : "border-transparent text-ui-text-tertiary dark:text-ui-text-tertiary-dark hover:text-ui-text-secondary dark:hover:text-ui-text-secondary-dark",
+                : "border-transparent text-ui-text-tertiary hover:text-ui-text-secondary",
             )}
           >
             Raw Markdown
@@ -112,13 +105,13 @@ export function MarkdownPreviewModal({
         </Flex>
 
         {/* Content */}
-        <div className="max-h-96 overflow-y-auto border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg">
+        <div className="max-h-96 overflow-y-auto border border-ui-border-primary rounded-lg">
           {activeTab === "preview" ? (
             <div className="p-4 prose dark:prose-invert max-w-none">
               <ReactMarkdown remarkPlugins={[remarkGfm]}>{markdown}</ReactMarkdown>
             </div>
           ) : (
-            <pre className="p-4 text-sm text-ui-text-primary dark:text-ui-text-primary-dark whitespace-pre-wrap font-mono">
+            <pre className="p-4 text-sm text-ui-text-primary whitespace-pre-wrap font-mono">
               {markdown}
             </pre>
           )}

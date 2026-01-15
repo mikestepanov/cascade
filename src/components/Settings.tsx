@@ -47,7 +47,7 @@ export function Settings() {
   const [activeTab, setActiveTab] = useState<TabValue>(initialTab);
 
   return (
-    <div className="min-h-screen bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark">
+    <div className="min-h-screen bg-ui-bg-secondary">
       <div className="max-w-6xl mx-auto px-3 sm:px-4 lg:px-8 py-4 sm:py-8">
         {/* Header */}
         <div className="mb-6 sm:mb-8">

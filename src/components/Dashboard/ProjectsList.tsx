@@ -1,5 +1,6 @@
 import type { Id } from "@convex/_generated/dataModel";
 import { useNavigate } from "@tanstack/react-router";
+import { Typography } from "@/components/ui/Typography";
 import { ROUTE_PATTERNS } from "@/config/routes";
 import { useCompany } from "@/hooks/useCompanyContext";
 import { cn } from "@/lib/utils";
@@ -86,14 +87,14 @@ export function WorkspacesList({ projects, projectNavigation }: WorkspacesListPr
                 style={{ animationDelay: `${index * 50}ms` }}
               >
                 <Flex justify="between" align="center" gap="sm" className="mb-1">
-                  <h4 className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark truncate">
+                  <Typography variant="h4" className="font-medium text-ui-text-primary truncate">
                     {project.name}
-                  </h4>
-                  <Badge variant="primary" className="capitalize flex-shrink-0">
+                  </Typography>
+                  <Badge variant="primary" className="capitalize shrink-0">
                     {project.role}
                   </Badge>
                 </Flex>
-                <div className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark">
+                <div className="text-xs text-ui-text-secondary">
                   {project.myIssues} my issues
                   {project.totalIssues > 0 && ` • ${project.totalIssues} total`}
                 </div>

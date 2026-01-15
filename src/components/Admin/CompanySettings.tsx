@@ -102,7 +102,7 @@ export function CompanySettings() {
             <div>
               <label
                 htmlFor="maxHoursPerWeek"
-                className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-2"
+                className="block text-sm font-medium text-ui-text-primary mb-2"
               >
                 Default Max Hours Per Week
               </label>
@@ -126,7 +126,7 @@ export function CompanySettings() {
             <div>
               <label
                 htmlFor="maxHoursPerDay"
-                className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-2"
+                className="block text-sm font-medium text-ui-text-primary mb-2"
               >
                 Default Max Hours Per Day
               </label>

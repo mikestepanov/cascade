@@ -3,6 +3,7 @@ import { useAuthActions } from "@convex-dev/auth/react";
 import { useQuery } from "convex/react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { Flex } from "@/components/ui/Flex";
 import { Button } from "../ui/Button";
 import { Input } from "../ui/form/Input";
 import { Typography } from "../ui/Typography";
@@ -57,10 +58,14 @@ export function EmailVerificationRequired() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-ui-bg-secondary dark:bg-ui-bg-primary-dark p-4">
-      <div className="w-full max-w-md bg-ui-bg-primary dark:bg-ui-bg-secondary-dark rounded-xl shadow-lg p-8">
+    <Flex align="center" justify="center" className="min-h-screen bg-ui-bg-secondary p-4">
+      <div className="w-full max-w-md bg-ui-bg-primary rounded-xl shadow-lg p-8">
         <div className="text-center mb-6">
-          <div className="w-16 h-16 bg-brand-100 dark:bg-brand-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
+          <Flex
+            align="center"
+            justify="center"
+            className="w-16 h-16 bg-brand-100 dark:bg-brand-900/30 rounded-full mx-auto mb-4"
+          >
             <svg
               className="w-8 h-8 text-brand-600 dark:text-brand-400"
               fill="none"
@@ -76,13 +81,12 @@ export function EmailVerificationRequired() {
                 d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
               />
             </svg>
-          </div>
+          </Flex>
           <Typography variant="h1" className="text-2xl font-bold mb-2">
             Verify your email
           </Typography>
           <Typography variant="p" color="secondary">
-            We sent a verification code to{" "}
-            <strong className="text-ui-text-primary dark:text-ui-text-primary-dark">{email}</strong>
+            We sent a verification code to <strong className="text-ui-text-primary">{email}</strong>
           </Typography>
         </div>
 
@@ -113,6 +117,6 @@ export function EmailVerificationRequired() {
           </div>
         </div>
       </div>
-    </div>
+    </Flex>
   );
 }

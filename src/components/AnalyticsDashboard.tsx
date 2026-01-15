@@ -2,6 +2,7 @@ import { api } from "@convex/_generated/api";
 import type { Id } from "@convex/_generated/dataModel";
 import { useQuery } from "convex/react";
 import { useMemo } from "react";
+import { Flex } from "@/components/ui/Flex";
 import { BarChart } from "./Analytics/BarChart";
 import { ChartCard } from "./Analytics/ChartCard";
 import { MetricCard } from "./Analytics/MetricCard";
@@ -107,7 +108,7 @@ export function AnalyticsDashboard({ projectId }: Props) {
 
   if (!(analytics && velocity)) {
     return (
-      <div className="p-3 sm:p-6 overflow-y-auto h-full bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark">
+      <div className="p-3 sm:p-6 overflow-y-auto h-full bg-ui-bg-secondary">
         <div className="max-w-7xl mx-auto space-y-4 sm:space-y-6">
           {/* Header Skeleton */}
           <div>
@@ -125,19 +126,19 @@ export function AnalyticsDashboard({ projectId }: Props) {
 
           {/* Charts Skeleton */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
-            <div className="bg-ui-bg-primary dark:bg-ui-bg-primary-dark rounded-lg shadow p-4 sm:p-6">
+            <div className="bg-ui-bg-primary rounded-lg shadow p-4 sm:p-6">
               <Skeleton className="h-5 sm:h-6 w-36 sm:w-48 mb-4" />
               <Skeleton className="h-48 sm:h-64 w-full" />
             </div>
-            <div className="bg-ui-bg-primary dark:bg-ui-bg-primary-dark rounded-lg shadow p-4 sm:p-6">
+            <div className="bg-ui-bg-primary rounded-lg shadow p-4 sm:p-6">
               <Skeleton className="h-5 sm:h-6 w-36 sm:w-48 mb-4" />
               <Skeleton className="h-48 sm:h-64 w-full" />
             </div>
-            <div className="bg-ui-bg-primary dark:bg-ui-bg-primary-dark rounded-lg shadow p-4 sm:p-6">
+            <div className="bg-ui-bg-primary rounded-lg shadow p-4 sm:p-6">
               <Skeleton className="h-5 sm:h-6 w-36 sm:w-48 mb-4" />
               <Skeleton className="h-48 sm:h-64 w-full" />
             </div>
-            <div className="bg-ui-bg-primary dark:bg-ui-bg-primary-dark rounded-lg shadow p-4 sm:p-6">
+            <div className="bg-ui-bg-primary rounded-lg shadow p-4 sm:p-6">
               <Skeleton className="h-5 sm:h-6 w-36 sm:w-48 mb-4" />
               <Skeleton className="h-48 sm:h-64 w-full" />
             </div>
@@ -148,7 +149,7 @@ export function AnalyticsDashboard({ projectId }: Props) {
   }
 
   return (
-    <div className="p-3 sm:p-6 overflow-y-auto h-full bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark">
+    <div className="p-3 sm:p-6 overflow-y-auto h-full bg-ui-bg-secondary">
       <div className="max-w-7xl mx-auto space-y-4 sm:space-y-6">
         {/* Header */}
         <div>
@@ -200,9 +201,9 @@ export function AnalyticsDashboard({ projectId }: Props) {
             {velocityChartData.length > 0 ? (
               <BarChart data={velocityChartData} color="bg-accent-600 dark:bg-accent-500" />
             ) : (
-              <div className="flex items-center justify-center h-full text-ui-text-secondary dark:text-ui-text-secondary-dark">
+              <Flex align="center" justify="center" className="h-full text-ui-text-secondary">
                 <Typography variant="p">No completed sprints yet</Typography>
-              </div>
+              </Flex>
             )}
           </ChartCard>
         </div>

@@ -52,10 +52,8 @@ export function KeyboardShortcut({
   };
 
   const variantClasses = {
-    default:
-      "bg-ui-bg-primary dark:bg-ui-bg-primary-dark border border-ui-border-primary dark:border-ui-border-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark shadow-sm",
-    subtle:
-      "bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark text-ui-text-secondary dark:text-ui-text-secondary-dark",
+    default: "bg-ui-bg-primary border border-ui-border-primary text-ui-text-primary shadow-sm",
+    subtle: "bg-ui-bg-secondary text-ui-text-secondary",
   };
 
   // Create keys with unique identifiers for stable rendering
@@ -78,7 +76,7 @@ export function KeyboardShortcut({
             {formatKey(key)}
           </kbd>
           {index < keysWithIds.length - 1 && (
-            <span className="text-ui-text-tertiary dark:text-ui-text-tertiary-dark mx-0.5">+</span>
+            <span className="text-ui-text-tertiary mx-0.5">+</span>
           )}
         </span>
       ))}
@@ -132,9 +130,7 @@ export function ShortcutList({ shortcuts, className = "" }: ShortcutListProps) {
     <Flex direction="column" gap="sm" className={className}>
       {shortcuts.map((shortcut) => (
         <Flex key={shortcut.keys} align="center" justify="between" gap="lg" className="text-sm">
-          <span className="text-ui-text-secondary dark:text-ui-text-secondary-dark">
-            {shortcut.description}
-          </span>
+          <span className="text-ui-text-secondary">{shortcut.description}</span>
           <KeyboardShortcut shortcut={shortcut.keys} />
         </Flex>
       ))}

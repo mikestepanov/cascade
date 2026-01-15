@@ -1,5 +1,6 @@
 import type { Id } from "@convex/_generated/dataModel";
 import { useState } from "react";
+import { Flex } from "@/components/ui/Flex";
 import { cn } from "@/lib/utils";
 import { ExportPanel } from "./import-export/ExportPanel";
 import { ImportPanel } from "./import-export/ImportPanel";
@@ -47,7 +48,7 @@ export function ImportExportModal({
         </DialogHeader>
         <div className="space-y-6">
           {/* Mode Selection */}
-          <div className="flex gap-2 p-1 bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded-lg">
+          <Flex gap="sm" className="p-1 bg-ui-bg-tertiary rounded-lg">
             <button
               type="button"
               onClick={() => setMode("export")}
@@ -72,7 +73,7 @@ export function ImportExportModal({
             >
               📥 Import
             </button>
-          </div>
+          </Flex>
 
           {/* Panel Content */}
           {mode === "export" ? (

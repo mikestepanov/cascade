@@ -315,7 +315,7 @@ export function CreateIssueModal({
           {labels && labels.length > 0 && (
             <div>
               <div className="block text-sm font-medium text-ui-text-primary mb-2">Labels</div>
-              <div className="flex flex-wrap gap-2">
+              <Flex wrap gap="sm">
                 {labels.map((label: Doc<"labels">) => (
                   <button
                     key={label._id}
@@ -333,7 +333,7 @@ export function CreateIssueModal({
                     {label.name}
                   </button>
                 ))}
-              </div>
+              </Flex>
             </div>
           )}
 

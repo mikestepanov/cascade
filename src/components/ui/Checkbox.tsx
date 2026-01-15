@@ -43,7 +43,7 @@ const Checkbox = React.forwardRef<React.ElementRef<typeof CheckboxPrimitive.Root
         ref={ref}
         id={checkboxId}
         className={cn(
-          "peer h-4 w-4 shrink-0 rounded border border-ui-border-primary dark:border-ui-border-primary-dark bg-ui-bg-primary dark:bg-ui-bg-primary-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-brand-600 data-[state=checked]:border-brand-600 dark:data-[state=checked]:bg-brand-500 dark:data-[state=checked]:border-brand-500 data-[state=checked]:text-white",
+          "peer h-4 w-4 shrink-0 rounded border border-ui-border-primary bg-ui-bg-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-brand-600 data-[state=checked]:border-brand-600 dark:data-[state=checked]:bg-brand-500 dark:data-[state=checked]:border-brand-500 data-[state=checked]:text-white",
           className,
         )}
         {...props}
@@ -67,16 +67,12 @@ const Checkbox = React.forwardRef<React.ElementRef<typeof CheckboxPrimitive.Root
           {label && (
             <label
               htmlFor={checkboxId}
-              className="text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark cursor-pointer peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              className="text-sm font-medium text-ui-text-primary cursor-pointer peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
             >
               {label}
             </label>
           )}
-          {description && (
-            <p className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
-              {description}
-            </p>
-          )}
+          {description && <p className="text-sm text-ui-text-secondary">{description}</p>}
         </div>
       </Flex>
     );

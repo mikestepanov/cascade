@@ -1,6 +1,8 @@
 import { useAuthActions } from "@convex-dev/auth/react";
+import { useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
+import { Flex } from "@/components/ui/Flex";
 import { ROUTE_PATTERNS } from "@/config/routes";
 import { cn } from "@/lib/utils";
 import { Button } from "../ui/Button";
@@ -10,6 +12,7 @@ import { GoogleAuthButton } from "./GoogleAuthButton";
 
 export function SignUpForm() {
   const { signIn } = useAuthActions();
+  const navigate = useNavigate();
   const [submitting, setSubmitting] = useState(false);
   const [email, setEmail] = useState("");
   const [showVerification, setShowVerification] = useState(false);
@@ -47,7 +50,8 @@ export function SignUpForm() {
       <EmailVerificationForm
         email={email}
         onVerified={() => {
-          // Auth state will update automatically
+          // Redirect to /app gateway to trigger SmartAuthGuard logic
+          navigate({ to: ROUTE_PATTERNS.app });
         }}
         onResend={() => {
           // Stay on verification view
@@ -59,11 +63,11 @@ export function SignUpForm() {
   return (
     <div className="w-full">
       <GoogleAuthButton redirectTo={ROUTE_PATTERNS.app} text="Sign up with Google" />
-      <div className="flex items-center justify-center my-4">
-        <hr className="grow border-ui-border-primary dark:border-ui-border-primary-dark" />
+      <Flex align="center" justify="center" className="my-4">
+        <hr className="grow border-ui-border-primary" />
         <span className="mx-4 text-ui-text-secondary text-sm">or</span>
-        <hr className="grow border-ui-border-primary dark:border-ui-border-primary-dark" />
-      </div>
+        <hr className="grow border-ui-border-primary" />
+      </Flex>
       <form className="flex flex-col" onSubmit={handleSubmit} data-form-ready={formReady}>
         <div
           className={cn(
@@ -71,7 +75,7 @@ export function SignUpForm() {
             showEmailForm ? "grid-rows-[1fr] opacity-100 mb-3" : "grid-rows-[0fr] opacity-0",
           )}
         >
-          <div className="overflow-hidden flex flex-col gap-form-field">
+          <Flex direction="column" className="overflow-hidden gap-form-field">
             <Input type="email" name="email" placeholder="Email" required={formReady} />
             <Input
               type="password"
@@ -80,7 +84,7 @@ export function SignUpForm() {
               minLength={8}
               required={formReady}
             />
-          </div>
+          </Flex>
         </div>
         <Button
           type={showEmailForm ? "submit" : "button"}
@@ -91,7 +95,7 @@ export function SignUpForm() {
           disabled={submitting}
         >
           {!showEmailForm ? (
-            <div className="flex items-center gap-3">
+            <Flex align="center" gap="md">
               <svg
                 className="w-5 h-5"
                 viewBox="0 0 24 24"
@@ -106,7 +110,7 @@ export function SignUpForm() {
                 <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
               </svg>
               <span>Continue with email</span>
-            </div>
+            </Flex>
           ) : submitting ? (
             "Creating account..."
           ) : (

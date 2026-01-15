@@ -92,10 +92,10 @@ export function BillingReport({ projectId }: BillingReportProps) {
       {/* Header */}
       <Flex justify="between" align="center" className="mb-6">
         <div>
-          <h2 className="text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark">
+          <Typography variant="h2" className="text-2xl font-bold text-ui-text-primary">
             Billing Report
-          </h2>
-          <Typography className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+          </Typography>
+          <Typography className="text-sm text-ui-text-tertiary">
             {project.name} {project.clientName && `• ${project.clientName}`}
           </Typography>
         </div>
@@ -108,7 +108,7 @@ export function BillingReport({ projectId }: BillingReportProps) {
               }
             }}
           >
-            <SelectTrigger className="px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-md bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark">
+            <SelectTrigger className="px-3 py-2 border border-ui-border-primary rounded-md bg-ui-bg-primary text-ui-text-primary">
               <SelectValue placeholder="Select date range" />
             </SelectTrigger>
             <SelectContent>
@@ -131,12 +131,8 @@ export function BillingReport({ projectId }: BillingReportProps) {
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <div className="bg-ui-bg-primary dark:bg-ui-bg-primary-dark border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg p-4">
-          <Flex
-            align="center"
-            gap="sm"
-            className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark mb-2"
-          >
+        <div className="bg-ui-bg-primary border border-ui-border-primary rounded-lg p-4">
+          <Flex align="center" gap="sm" className="text-sm text-ui-text-tertiary mb-2">
             <DollarSign className="w-4 h-4" />
             Total Revenue
           </Flex>
@@ -144,76 +140,60 @@ export function BillingReport({ projectId }: BillingReportProps) {
             {formatCurrency(billing.totalRevenue)}
           </div>
           {project.budget && (
-            <div className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark mt-1">
+            <div className="text-xs text-ui-text-tertiary mt-1">
               of {formatCurrency(project.budget)} budget (
               {((billing.totalRevenue / project.budget) * 100).toFixed(0)}%)
             </div>
           )}
         </div>
 
-        <div className="bg-ui-bg-primary dark:bg-ui-bg-primary-dark border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg p-4">
-          <Flex
-            align="center"
-            gap="sm"
-            className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark mb-2"
-          >
+        <div className="bg-ui-bg-primary border border-ui-border-primary rounded-lg p-4">
+          <Flex align="center" gap="sm" className="text-sm text-ui-text-tertiary mb-2">
             <Clock className="w-4 h-4" />
             Billable Hours
           </Flex>
           <div className="text-3xl font-bold text-brand-600">
             {formatHours(billing.billableHours)}
           </div>
-          <div className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark mt-1">
+          <div className="text-xs text-ui-text-tertiary mt-1">
             of {formatHours(billing.totalHours)} total hours
           </div>
         </div>
 
-        <div className="bg-ui-bg-primary dark:bg-ui-bg-primary-dark border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg p-4">
-          <Flex
-            align="center"
-            gap="sm"
-            className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark mb-2"
-          >
+        <div className="bg-ui-bg-primary border border-ui-border-primary rounded-lg p-4">
+          <Flex align="center" gap="sm" className="text-sm text-ui-text-tertiary mb-2">
             <TrendingUp className="w-4 h-4" />
             Utilization Rate
           </Flex>
           <div className="text-3xl font-bold text-accent-600">{utilizationRate.toFixed(0)}%</div>
-          <div className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark mt-1">
+          <div className="text-xs text-ui-text-tertiary mt-1">
             {billing.nonBillableHours.toFixed(2)}h non-billable
           </div>
         </div>
 
-        <div className="bg-ui-bg-primary dark:bg-ui-bg-primary-dark border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg p-4">
-          <Flex
-            align="center"
-            gap="sm"
-            className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark mb-2"
-          >
+        <div className="bg-ui-bg-primary border border-ui-border-primary rounded-lg p-4">
+          <Flex align="center" gap="sm" className="text-sm text-ui-text-tertiary mb-2">
             <DollarSign className="w-4 h-4" />
             Avg Hourly Rate
           </Flex>
           <div className="text-3xl font-bold text-status-warning">
             {formatCurrency(averageRate)}
           </div>
-          <div className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark mt-1">
-            per billable hour
-          </div>
+          <div className="text-xs text-ui-text-tertiary mt-1">per billable hour</div>
         </div>
       </div>
 
       {/* Team Breakdown */}
-      <div className="bg-ui-bg-primary dark:bg-ui-bg-primary-dark border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg p-6">
+      <div className="bg-ui-bg-primary border border-ui-border-primary rounded-lg p-6">
         <Flex align="center" gap="sm" className="mb-4">
-          <Users className="w-5 h-5 text-ui-text-tertiary dark:text-ui-text-tertiary-dark" />
-          <h3 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
+          <Users className="w-5 h-5 text-ui-text-tertiary" />
+          <Typography variant="h3" className="text-lg font-semibold text-ui-text-primary">
             Team Breakdown
-          </h3>
+          </Typography>
         </Flex>
 
         {sortedUsers.length === 0 ? (
-          <div className="text-center py-8 text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
-            No time entries recorded yet
-          </div>
+          <div className="text-center py-8 text-ui-text-tertiary">No time entries recorded yet</div>
         ) : (
           <Flex direction="column" gap="md">
             {sortedUsers.map(([userId, stats]) => {
@@ -224,16 +204,11 @@ export function BillingReport({ projectId }: BillingReportProps) {
                   : 0;
 
               return (
-                <div
-                  key={userId}
-                  className="p-4 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg"
-                >
+                <div key={userId} className="p-4 bg-ui-bg-secondary rounded-lg">
                   <Flex justify="between" align="center" className="mb-2">
                     <div>
-                      <div className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
-                        {billingStats.name}
-                      </div>
-                      <div className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
+                      <div className="font-medium text-ui-text-primary">{billingStats.name}</div>
+                      <div className="text-xs text-ui-text-tertiary">
                         {formatHours(billingStats.billableHours)} /{" "}
                         {formatHours(billingStats.hours)} hours ({userUtilization.toFixed(0)}%
                         billable)
@@ -243,9 +218,7 @@ export function BillingReport({ projectId }: BillingReportProps) {
                       <div className="text-lg font-bold text-status-success">
                         {formatCurrency(billingStats.revenue)}
                       </div>
-                      <div className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
-                        revenue
-                      </div>
+                      <div className="text-xs text-ui-text-tertiary">revenue</div>
                     </div>
                   </Flex>
 
@@ -260,29 +233,21 @@ export function BillingReport({ projectId }: BillingReportProps) {
 
       {/* Quick Stats */}
       <div className="mt-6 grid grid-cols-3 gap-4 text-center">
-        <div className="p-4 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg">
-          <div className="text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark">
-            {billing.entries}
-          </div>
-          <div className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
-            Time Entries
-          </div>
+        <div className="p-4 bg-ui-bg-secondary rounded-lg">
+          <div className="text-2xl font-bold text-ui-text-primary">{billing.entries}</div>
+          <div className="text-sm text-ui-text-tertiary">Time Entries</div>
         </div>
-        <div className="p-4 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg">
-          <div className="text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark">
+        <div className="p-4 bg-ui-bg-secondary rounded-lg">
+          <div className="text-2xl font-bold text-ui-text-primary">
             {Object.keys(billing.byUser).length}
           </div>
-          <div className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
-            Team Members
-          </div>
+          <div className="text-sm text-ui-text-tertiary">Team Members</div>
         </div>
-        <div className="p-4 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg">
-          <div className="text-2xl font-bold text-ui-text-primary dark:text-ui-text-primary-dark">
+        <div className="p-4 bg-ui-bg-secondary rounded-lg">
+          <div className="text-2xl font-bold text-ui-text-primary">
             {averageRate > 0 ? formatCurrency(averageRate) : "N/A"}
           </div>
-          <div className="text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
-            Blended Rate
-          </div>
+          <div className="text-sm text-ui-text-tertiary">Blended Rate</div>
         </div>
       </div>
     </div>

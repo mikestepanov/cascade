@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { lazy, Suspense } from "react";
+import { Flex } from "@/components/ui/Flex";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 
 // Lazy load Settings component
@@ -13,9 +14,9 @@ function SettingsProfilePage() {
   return (
     <Suspense
       fallback={
-        <div className="flex h-full items-center justify-center">
+        <Flex align="center" justify="center" className="h-full">
           <LoadingSpinner size="lg" />
-        </div>
+        </Flex>
       }
     >
       <Settings />

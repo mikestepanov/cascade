@@ -27,10 +27,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     return (
       <div className="w-full">
         {label && (
-          <label
-            htmlFor={inputId}
-            className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
-          >
+          <label htmlFor={inputId} className="block text-sm font-medium text-ui-text-primary mb-1">
             {label}
           </label>
         )}
@@ -39,14 +36,12 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           id={inputId}
           className={cn(
             "w-full px-3 py-2 border rounded-md text-sm",
-            "bg-ui-bg-primary dark:bg-ui-bg-primary-dark",
-            "text-ui-text-primary dark:text-ui-text-primary-dark",
-            "placeholder-ui-text-tertiary dark:placeholder-ui-text-tertiary-dark",
-            "focus:outline-none focus:ring-2 focus:ring-ui-border-focus dark:focus:ring-ui-border-focus-dark focus:border-transparent",
+            "bg-ui-bg-primary",
+            "text-ui-text-primary",
+            "placeholder-ui-text-tertiary",
+            "focus:outline-none focus:ring-2 focus:ring-ui-border-focus focus:border-transparent",
             "disabled:opacity-50 disabled:cursor-not-allowed",
-            error
-              ? "border-ui-border-error dark:border-ui-border-error-dark"
-              : "border-ui-border-primary dark:border-ui-border-primary-dark",
+            error ? "border-ui-border-error" : "border-ui-border-primary",
             className,
           )}
           aria-invalid={error ? "true" : "false"}
@@ -56,18 +51,12 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           {...props}
         />
         {error && (
-          <p
-            id={`${inputId}-error`}
-            className="mt-1 text-sm text-status-error dark:text-status-error"
-          >
+          <p id={`${inputId}-error`} className="mt-1 text-sm text-status-error">
             {error}
           </p>
         )}
         {helperText && !error && (
-          <p
-            id={`${inputId}-helper`}
-            className="mt-1 text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark"
-          >
+          <p id={`${inputId}-helper`} className="mt-1 text-xs text-ui-text-tertiary">
             {helperText}
           </p>
         )}

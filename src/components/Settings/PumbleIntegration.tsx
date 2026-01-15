@@ -39,16 +39,21 @@ const AVAILABLE_EVENTS = [
 export function PumbleIntegration() {
   const [showAddModal, setShowAddModal] = useState(false);
   const webhooks = useQuery(api.pumble.listWebhooks);
-  const projects = useQuery(api.projects.getCurrentUserProjects);
+  const projectsResult = useQuery(api.projects.getCurrentUserProjects);
+  const projects = projectsResult?.page ?? [];
 
   return (
-    <div className="bg-ui-bg-primary dark:bg-ui-bg-primary-dark rounded-lg shadow-sm border border-ui-border-primary dark:border-ui-border-primary-dark">
+    <div className="bg-ui-bg-primary rounded-lg shadow-sm border border-ui-border-primary">
       {/* Header */}
-      <div className="p-6 border-b border-ui-border-primary dark:border-ui-border-primary-dark">
+      <div className="p-6 border-b border-ui-border-primary">
         <Flex justify="between" align="start">
           <Flex gap="md" align="center">
-            <div className="flex-shrink-0">
-              <div className="w-12 h-12 bg-linear-to-br from-accent-500 to-pink-500 rounded-lg flex items-center justify-center">
+            <div className="shrink-0">
+              <Flex
+                align="center"
+                justify="center"
+                className="w-12 h-12 bg-linear-to-br from-accent-500 to-pink-500 rounded-lg"
+              >
                 <svg
                   className="w-6 h-6 text-white"
                   fill="none"
@@ -63,13 +68,13 @@ export function PumbleIntegration() {
                     d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
                   />
                 </svg>
-              </div>
+              </Flex>
             </div>
             <div>
-              <h3 className="text-lg font-semibold text-ui-text-primary dark:text-ui-text-primary-dark">
+              <Typography variant="h3" className="text-lg font-semibold text-ui-text-primary">
                 Pumble Integration
-              </h3>
-              <Typography className="mt-1 text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark">
+              </Typography>
+              <Typography className="mt-1 text-sm text-ui-text-secondary">
                 Send notifications to Pumble channels when issues are created or updated
               </Typography>
             </div>
@@ -87,11 +92,9 @@ export function PumbleIntegration() {
       {/* Content */}
       <div className="p-6">
         {webhooks === undefined ? (
-          <div className="flex items-center justify-center py-12">
-            <div className="text-ui-text-tertiary dark:text-ui-text-tertiary-dark">
-              Loading webhooks...
-            </div>
-          </div>
+          <Flex align="center" justify="center" className="py-12">
+            <div className="text-ui-text-tertiary">Loading webhooks...</div>
+          </Flex>
         ) : webhooks.length === 0 ? (
           <EmptyState onAddWebhook={() => setShowAddModal(true)} />
         ) : (
@@ -103,7 +106,7 @@ export function PumbleIntegration() {
         )}
 
         {/* Documentation Link */}
-        <div className="mt-6 pt-6 border-t border-ui-border-primary dark:border-ui-border-primary-dark">
+        <div className="mt-6 pt-6 border-t border-ui-border-primary">
           <a
             href="https://help.pumble.com/hc/en-us/articles/360041954051-Incoming-webhooks"
             target="_blank"
@@ -144,7 +147,11 @@ export function PumbleIntegration() {
 function EmptyState({ onAddWebhook }: { onAddWebhook: () => void }) {
   return (
     <div className="text-center py-12">
-      <div className="mx-auto w-16 h-16 bg-accent-100 dark:bg-accent-900/20 rounded-full flex items-center justify-center mb-4">
+      <Flex
+        align="center"
+        justify="center"
+        className="mx-auto w-16 h-16 bg-accent-100 dark:bg-accent-900/20 rounded-full mb-4"
+      >
         <svg
           className="w-8 h-8 text-accent-600 dark:text-accent-400"
           fill="none"
@@ -160,11 +167,11 @@ function EmptyState({ onAddWebhook }: { onAddWebhook: () => void }) {
             d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
           />
         </svg>
-      </div>
-      <h3 className="text-lg font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-2">
+      </Flex>
+      <Typography variant="h3" className="text-lg font-medium text-ui-text-primary mb-2">
         No Pumble webhooks configured
-      </h3>
-      <Typography className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark mb-6 max-w-md mx-auto">
+      </Typography>
+      <Typography className="text-sm text-ui-text-secondary mb-6 max-w-md mx-auto">
         Connect Nixelo to Pumble channels to receive notifications when issues are created, updated,
         or assigned.
       </Typography>
@@ -229,28 +236,26 @@ function WebhookCard({ webhook, projects }: WebhookCardProps) {
   const maskedUrl = webhook.url.replace(/([^/]{8})[^/]+/, "$1***");
 
   return (
-    <div className="border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg p-4 hover:border-accent-300 dark:hover:border-accent-700 transition-colors">
+    <div className="border border-ui-border-primary rounded-lg p-4 hover:border-accent-300 dark:hover:border-accent-700 transition-colors">
       <Flex justify="between" align="start" className="mb-3">
         <div className="flex-1">
           <Flex gap="sm" align="center" className="mb-1">
-            <h4 className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark">
+            <Typography variant="h4" className="font-medium text-ui-text-primary">
               {webhook.name}
-            </h4>
+            </Typography>
             {webhook.isActive ? (
-              <span className="px-2 py-0.5 text-xs font-medium bg-status-success-bg dark:bg-status-success-bg-dark text-status-success-text dark:text-status-success-text-dark rounded">
+              <span className="px-2 py-0.5 text-xs font-medium bg-status-success-bg text-status-success-text rounded">
                 Active
               </span>
             ) : (
-              <span className="px-2 py-0.5 text-xs font-medium bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark text-ui-text-primary dark:text-ui-text-primary-dark rounded">
+              <span className="px-2 py-0.5 text-xs font-medium bg-ui-bg-tertiary text-ui-text-primary rounded">
                 Inactive
               </span>
             )}
           </Flex>
-          <Typography className="text-sm text-ui-text-secondary dark:text-ui-text-secondary-dark font-mono">
-            {maskedUrl}
-          </Typography>
+          <Typography className="text-sm text-ui-text-secondary font-mono">{maskedUrl}</Typography>
           {project && (
-            <Typography className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark mt-1">
+            <Typography className="text-xs text-ui-text-tertiary mt-1">
               Project: {project.name}
             </Typography>
           )}
@@ -271,17 +276,13 @@ function WebhookCard({ webhook, projects }: WebhookCardProps) {
 
       {/* Stats */}
       {webhook.lastTriggered && (
-        <div className="text-xs text-ui-text-tertiary dark:text-ui-text-tertiary-dark mb-3">
+        <div className="text-xs text-ui-text-tertiary mb-3">
           Last triggered: {new Date(webhook.lastTriggered).toLocaleDateString()}
         </div>
       )}
 
       {/* Actions */}
-      <Flex
-        gap="sm"
-        align="center"
-        className="pt-3 border-t border-ui-border-primary dark:border-ui-border-primary-dark"
-      >
+      <Flex gap="sm" align="center" className="pt-3 border-t border-ui-border-primary">
         <Button
           onClick={handleTest}
           variant="ghost"
@@ -413,7 +414,7 @@ function AddWebhookModal({ open, onOpenChange, projects }: AddWebhookModalProps)
           <div>
             <label
               htmlFor="project-select"
-              className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1"
+              className="block text-sm font-medium text-ui-text-primary mb-1"
             >
               Project (Optional)
             </label>
@@ -423,7 +424,7 @@ function AddWebhookModal({ open, onOpenChange, projects }: AddWebhookModalProps)
               onChange={(e) =>
                 setProjectId(e.target.value ? (e.target.value as Id<"projects">) : undefined)
               }
-              className="w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark"
+              className="w-full px-3 py-2 border border-ui-border-primary rounded-lg bg-ui-bg-primary text-ui-text-primary"
             >
               <option value="">All Projects</option>
               {projects?.map((project: Doc<"projects">) => (
@@ -439,7 +440,7 @@ function AddWebhookModal({ open, onOpenChange, projects }: AddWebhookModalProps)
 
           {/* Events */}
           <div>
-            <div className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-3">
+            <div className="block text-sm font-medium text-ui-text-primary mb-3">
               Events to Send <span className="text-status-error">*</span>
             </div>
             <div className="grid grid-cols-2 gap-3">
@@ -581,7 +582,7 @@ function EditWebhookModal({ open, onOpenChange, webhook }: EditWebhookModalProps
 
           {/* Events */}
           <div>
-            <div className="block text-sm font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-3">
+            <div className="block text-sm font-medium text-ui-text-primary mb-3">
               Events to Send <span className="text-status-error">*</span>
             </div>
             <div className="grid grid-cols-2 gap-3">

@@ -1,15 +1,21 @@
+import { Flex } from "@/components/ui/Flex";
 import { NixeloLogo } from "../landing/icons";
 import { Typography } from "../ui/Typography";
 
 export function AppSplashScreen({ message }: { message?: string }) {
   return (
-    <div className="fixed inset-0 flex flex-col items-center justify-center bg-[#0a0e17] z-[9999]">
+    <Flex
+      direction="column"
+      align="center"
+      justify="center"
+      className="fixed inset-0 bg-ui-bg-hero z-[9999]"
+    >
       {/* Background Glow */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-cyan-500/10 rounded-full blur-[120px]" />
       </div>
 
-      <div className="relative flex flex-col items-center gap-8">
+      <Flex direction="column" align="center" className="relative gap-8">
         {/* Animated Logo Container */}
         <div className="relative">
           <div className="absolute inset-0 bg-cyan-500/20 rounded-full blur-2xl animate-pulse" />
@@ -19,7 +25,12 @@ export function AppSplashScreen({ message }: { message?: string }) {
         </div>
 
         {/* Loader and Optional Text */}
-        <div className="flex flex-col items-center gap-6 animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-300 fill-mode-both">
+        <Flex
+          direction="column"
+          align="center"
+          gap="xl"
+          className="animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-300 fill-mode-both"
+        >
           {/* Minimal high-end loader - Always show to indicate activity */}
           <div className="w-32 h-[2px] bg-white/5 rounded-full overflow-hidden">
             <div
@@ -34,8 +45,8 @@ export function AppSplashScreen({ message }: { message?: string }) {
               {message}
             </Typography>
           )}
-        </div>
-      </div>
+        </Flex>
+      </Flex>
 
       <style>
         {`
@@ -45,6 +56,6 @@ export function AppSplashScreen({ message }: { message?: string }) {
         }
         `}
       </style>
-    </div>
+    </Flex>
   );
 }

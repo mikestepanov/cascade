@@ -1,5 +1,6 @@
 import type { Id } from "@convex/_generated/dataModel";
 import { useNavigate } from "@tanstack/react-router";
+import { Typography } from "@/components/ui/Typography";
 import { ROUTE_PATTERNS } from "@/config/routes";
 import { useCompany } from "@/hooks/useCompanyContext";
 import type { useListNavigation } from "@/hooks/useListNavigation";
@@ -74,7 +75,7 @@ export function MyIssuesList({
   return (
     <Card>
       <CardHeader title="My Issues" description="Track your assigned and created issues" />
-      <div className="border-b border-ui-border-primary dark:border-ui-border-primary-dark px-4">
+      <div className="border-b border-ui-border-primary px-4">
         <Flex gap="lg">
           <button
             type="button"
@@ -144,9 +145,7 @@ export function MyIssuesList({
                 <Flex justify="between" align="start">
                   <div className="flex-1">
                     <Flex gap="sm" align="center" className="mb-1">
-                      <span className="text-sm font-mono text-ui-text-secondary dark:text-ui-text-secondary-dark">
-                        {issue.key}
-                      </span>
+                      <span className="text-sm font-mono text-ui-text-secondary">{issue.key}</span>
                       <span className="text-lg" aria-hidden="true">
                         {getTypeIcon(issue.type)}
                       </span>
@@ -154,14 +153,10 @@ export function MyIssuesList({
                         {issue.priority}
                       </Badge>
                     </Flex>
-                    <h4 className="font-medium text-ui-text-primary dark:text-ui-text-primary-dark mb-1">
+                    <Typography variant="h4" className="font-medium text-ui-text-primary mb-1">
                       {issue.title}
-                    </h4>
-                    <Flex
-                      gap="sm"
-                      align="center"
-                      className="text-xs text-ui-text-secondary dark:text-ui-text-secondary-dark"
-                    >
+                    </Typography>
+                    <Flex gap="sm" align="center" className="text-xs text-ui-text-secondary">
                       <span>{issue.projectName}</span>
                       <span>•</span>
                       <span>{issue.status}</span>

@@ -2,6 +2,7 @@ import { api } from "@convex/_generated/api";
 import type { Id } from "@convex/_generated/dataModel";
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
+import { Flex } from "@/components/ui/Flex";
 import { useCompany } from "@/hooks/useCompanyContext";
 import { Check, Copy } from "@/lib/icons";
 import { getPriorityColor, getTypeIcon } from "@/lib/issue-utils";
@@ -53,28 +54,28 @@ export function IssueDetailModal({
         <DialogContent className="sm:max-w-4xl">
           <DialogHeader>
             <DialogTitle className="sr-only">Loading issue details</DialogTitle>
-            <div className="flex items-center space-x-3">
-              <div className="animate-pulse bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark h-8 w-8 rounded" />
+            <Flex align="center" className="space-x-3">
+              <div className="animate-pulse bg-ui-bg-tertiary h-8 w-8 rounded" />
               <div className="space-y-2">
-                <div className="animate-pulse bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded h-4 w-24" />
-                <div className="animate-pulse bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded h-4 w-16" />
+                <div className="animate-pulse bg-ui-bg-tertiary rounded h-4 w-24" />
+                <div className="animate-pulse bg-ui-bg-tertiary rounded h-4 w-16" />
               </div>
-            </div>
+            </Flex>
           </DialogHeader>
           <DialogDescription className="sr-only">Loading content...</DialogDescription>
           <output aria-live="polite" aria-busy="true" className="space-y-6 block">
             <span className="sr-only">Loading...</span>
-            <div className="animate-pulse bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded h-8 w-3/4" />
+            <div className="animate-pulse bg-ui-bg-tertiary rounded h-8 w-3/4" />
             <div className="space-y-2">
-              <div className="animate-pulse bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded h-4 w-full" />
-              <div className="animate-pulse bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded h-4 w-full" />
-              <div className="animate-pulse bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded h-4 w-2/3" />
+              <div className="animate-pulse bg-ui-bg-tertiary rounded h-4 w-full" />
+              <div className="animate-pulse bg-ui-bg-tertiary rounded h-4 w-full" />
+              <div className="animate-pulse bg-ui-bg-tertiary rounded h-4 w-2/3" />
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg">
-              <div className="animate-pulse bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded h-12 w-full" />
-              <div className="animate-pulse bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded h-12 w-full" />
-              <div className="animate-pulse bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded h-12 w-full" />
-              <div className="animate-pulse bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark rounded h-12 w-full" />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 bg-ui-bg-secondary rounded-lg">
+              <div className="animate-pulse bg-ui-bg-tertiary rounded h-12 w-full" />
+              <div className="animate-pulse bg-ui-bg-tertiary rounded h-12 w-full" />
+              <div className="animate-pulse bg-ui-bg-tertiary rounded h-12 w-full" />
+              <div className="animate-pulse bg-ui-bg-tertiary rounded h-12 w-full" />
             </div>
           </output>
         </DialogContent>
@@ -118,12 +119,12 @@ export function IssueDetailModal({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-4xl" data-testid="issue-detail-modal">
         <DialogHeader>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
+          <Flex align="center" justify="between">
+            <Flex align="center" className="space-x-3">
               <span className="text-2xl">{getTypeIcon(issue.type)}</span>
               <div>
                 <DialogTitle className="flex items-center space-x-2">
-                  <div className="flex items-center gap-1.5">
+                  <Flex align="center" className="gap-1.5">
                     <span className="text-sm text-ui-text-secondary font-mono">{issue.key}</span>
                     <Tooltip content={hasCopied ? "Copied!" : "Copy issue key"}>
                       <Button
@@ -139,14 +140,14 @@ export function IssueDetailModal({
                         )}
                       </Button>
                     </Tooltip>
-                  </div>
+                  </Flex>
                   <Badge size="md" className={getPriorityColor(issue.priority, "badge")}>
                     {issue.priority}
                   </Badge>
                 </DialogTitle>
               </div>
-            </div>
-          </div>
+            </Flex>
+          </Flex>
         </DialogHeader>
         <DialogDescription className="sr-only">View and edit issue details</DialogDescription>
         {/* Content */}
@@ -162,7 +163,7 @@ export function IssueDetailModal({
                 placeholder="Issue title"
               />
             ) : (
-              <div className="flex items-start justify-between">
+              <Flex align="start" justify="between">
                 <Typography variant="h2" className="border-none">
                   {issue.title}
                 </Typography>
@@ -171,7 +172,7 @@ export function IssueDetailModal({
                     Edit
                   </Button>
                 )}
-              </div>
+              </Flex>
             )}
           </div>
 
@@ -199,14 +200,14 @@ export function IssueDetailModal({
 
           {/* Edit Actions */}
           {isEditing && (
-            <div className="flex space-x-2">
+            <Flex className="space-x-2">
               <Button onClick={handleSave} variant="primary">
                 Save
               </Button>
               <Button onClick={() => setIsEditing(false)} variant="secondary">
                 Cancel
               </Button>
-            </div>
+            </Flex>
           )}
 
           {/* Metadata */}
