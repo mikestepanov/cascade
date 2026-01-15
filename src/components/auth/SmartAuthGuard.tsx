@@ -58,14 +58,16 @@ export function SmartAuthGuard({ children }: { children?: React.ReactNode }) {
     navigate,
   ]);
 
-  // Loading state handling:
-  // If redirectPath is undefined, we are still loading the query.
-  // If redirectPath is null, it means the query finished but couldn't find a user/destination
-  // (which is an inconsistent state if we are inside the <Authenticated> block).
-  // In both cases, stay on the splash screen if we are on a protected route like /app.
-  if (redirectPath === undefined || redirectPath === null) {
+  if (redirectPath === undefined) {
     if (isAppGate || isOnboarding) return <AppSplashScreen />;
-    return null; // Public pages stay blank or show their children until auth resolves
+    return null; // Public pages stay blank during initial load to avoid flicker
+  }
+
+  // If redirectPath is null, user is unauthenticated
+  if (redirectPath === null) {
+    if (isPublicPath) return <>{children}</>;
+    if (isAppGate || isOnboarding) return <AppSplashScreen />;
+    return null;
   }
 
   // If a path needs redirecting but hasn't yet, show splash screen to avoid flicker

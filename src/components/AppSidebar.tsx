@@ -147,7 +147,7 @@ export function AppSidebar() {
 
       <aside
         className={cn(
-          "fixed lg:relative z-50 lg:z-auto h-screen",
+          "fixed lg:relative z-50 lg:z-auto h-screen overflow-hidden",
           "bg-ui-bg-primary",
           "border-r border-ui-border-primary",
           "transition-all duration-200 ease-in-out",

@@ -29,6 +29,7 @@ export const loggedInUser = query({
       emailVerificationTime: v.optional(v.number()),
       image: v.optional(v.string()),
       isAnonymous: v.optional(v.boolean()),
+      defaultCompanyId: v.optional(v.id("companies")),
     }),
     v.null(),
   ),

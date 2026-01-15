@@ -110,15 +110,29 @@ function OnboardingPage() {
   return (
     <Flex direction="column" className="min-h-screen bg-ui-bg-secondary">
       {/* Header */}
-      <header className="p-6 flex items-center justify-between">
-        <Flex align="center" gap="sm">
-          <Flex align="center" justify="center" className="h-8 w-8 rounded-lg bg-primary-600">
-            <span className="text-white font-bold text-sm">N</span>
+      <header className="px-8 py-6 flex items-center justify-between bg-ui-bg-secondary/80 backdrop-blur-sm sticky top-0 z-50">
+        <Flex align="center" gap="md" className="group cursor-pointer">
+          <Flex
+            align="center"
+            justify="center"
+            className="h-10 w-10 rounded-xl bg-brand-indigo-bg shadow-lg shadow-brand-indigo-bg/20 transition-transform group-hover:scale-110 active:scale-95"
+          >
+            <span className="text-white font-bold text-lg">N</span>
           </Flex>
-          <span className="font-semibold text-lg text-ui-text-primary">Nixelo</span>
+          <Typography
+            variant="h3"
+            className="text-xl font-bold tracking-tight bg-clip-text text-ui-text-primary"
+          >
+            Nixelo
+          </Typography>
         </Flex>
         {step !== "invited" && (
-          <Button variant="ghost" size="sm" onClick={handleSkip}>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleSkip}
+            className="text-ui-text-secondary hover:text-ui-text-primary hover:bg-ui-bg-tertiary transition-all"
+          >
             Skip for now
           </Button>
         )}
@@ -150,7 +164,7 @@ function OnboardingPage() {
 
               <RoleSelector onSelect={handleRoleSelect} />
 
-              <div className="pt-8 border-t border-ui-border-primary/50">
+              <div className="pt-12">
                 <FeatureHighlights />
               </div>
             </div>

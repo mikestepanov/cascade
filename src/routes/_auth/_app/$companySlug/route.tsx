@@ -157,7 +157,7 @@ function CompanyLayoutInner() {
 
   return (
     <SidebarProvider>
-      <Flex className="min-h-screen bg-ui-bg-secondary">
+      <Flex className="h-screen overflow-hidden bg-ui-bg-secondary">
         {/* Unified sidebar */}
         <AppSidebar />
 
