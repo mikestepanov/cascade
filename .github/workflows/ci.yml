@@ -171,6 +171,7 @@ jobs:
         # Use 2 workers per shard on standard GitHub runners to avoid choking
         run: pnpm exec playwright test --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }} --workers=2
         env:
+          SHARD_INDEX: ${{ matrix.shardIndex }}
           CI: true
           VITE_CONVEX_URL: ${{ secrets.VITE_CONVEX_URL }}
           E2E_API_KEY: ${{ secrets.E2E_API_KEY }}

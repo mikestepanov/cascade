@@ -174,20 +174,24 @@ async function globalSetup(config: FullConfig): Promise<void> {
   for (let i = 0; i < workerCount; i++) {
     console.log(`\n--- 👷 Worker ${i} Setup ---`);
 
-    // 1. Generate unique emails for this worker
+    // 1. Generate unique emails for this worker using shard-isolated base
     const workerSuffix = `w${i}`;
+    const shard = process.env.SHARD_INDEX || "0";
+
+    // Note: TEST_USERS already includes -s${SHARD} in the base email from config.ts
+    // We just need to inject the worker suffix before the @ domain
     const users = {
       teamLead: {
         ...TEST_USERS.teamLead,
-        email: `e2e-teamlead-${workerSuffix}@inbox.mailtrap.io`,
+        email: TEST_USERS.teamLead.email.replace("@", `-${workerSuffix}@`),
       },
       teamMember: {
         ...TEST_USERS.teamMember,
-        email: `e2e-member-${workerSuffix}@inbox.mailtrap.io`,
+        email: TEST_USERS.teamMember.email.replace("@", `-${workerSuffix}@`),
       },
       viewer: {
         ...TEST_USERS.viewer,
-        email: `e2e-viewer-${workerSuffix}@inbox.mailtrap.io`,
+        email: TEST_USERS.viewer.email.replace("@", `-${workerSuffix}@`),
       },
     };
 

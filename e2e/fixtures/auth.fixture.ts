@@ -100,7 +100,7 @@ export const authenticatedTest = base.extend<AuthFixtures>({
         const workerSuffix = `w${testInfo.parallelIndex}`;
         const workerUser = {
           ...TEST_USERS.teamLead,
-          email: `e2e-teamlead-${workerSuffix}@inbox.mailtrap.io`,
+          email: TEST_USERS.teamLead.email.replace("@", `-${workerSuffix}@`),
         };
 
         console.log(`  🔐 ensureAuthenticated: Re-authenticating as ${workerUser.email}...`);
