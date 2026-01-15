@@ -11,7 +11,8 @@ concurrency:
 jobs:
   lint-and-typecheck:
     name: Lint & Type Check
-    runs-on: blacksmith-4vcpu-ubuntu-2404
+    # runs-on: blacksmith-4vcpu-ubuntu-2404
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -116,9 +117,14 @@ jobs:
           retention-days: 1
 
   e2e-tests:
-    if: false
     name: E2E Tests
-    runs-on: blacksmith-4vcpu-ubuntu-2204
+    # runs-on: blacksmith-4vcpu-ubuntu-2204
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        shardIndex: [1, 2, 3, 4]
+        shardTotal: [4]
     needs: [build]
     steps:
       - name: Checkout
@@ -162,7 +168,8 @@ jobs:
         run: pnpm exec playwright install-deps chromium
 
       - name: Run E2E tests
-        run: pnpm run e2e
+        # Use 2 workers per shard on standard GitHub runners to avoid choking
+        run: pnpm exec playwright test --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }} --workers=2
         env:
           CI: true
           VITE_CONVEX_URL: ${{ secrets.VITE_CONVEX_URL }}
