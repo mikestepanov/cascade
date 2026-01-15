@@ -5,6 +5,13 @@ import { useEffect } from "react";
 import { ROUTE_PATTERNS } from "@/config/routes";
 import { AppSplashScreen } from "./AppSplashScreen";
 
+const PUBLIC_PATHS = [
+  ROUTE_PATTERNS.home as string,
+  ROUTE_PATTERNS.signin as string,
+  ROUTE_PATTERNS.signup as string,
+  ROUTE_PATTERNS.forgotPassword as string,
+];
+
 /**
  * SmartAuthGuard - Centralized "bouncer" for authenticated routes.
  * It ensures the user is on the correct page based on their onboarding and company status.
@@ -14,13 +21,7 @@ export function SmartAuthGuard({ children }: { children?: React.ReactNode }) {
   const location = useLocation();
   const redirectPath = useQuery(api.auth.getRedirectDestination);
 
-  const publicPaths = [
-    ROUTE_PATTERNS.home as string,
-    ROUTE_PATTERNS.signin as string,
-    ROUTE_PATTERNS.signup as string,
-    ROUTE_PATTERNS.forgotPassword as string,
-  ];
-  const isPublicPath = publicPaths.includes(location.pathname);
+  const isPublicPath = PUBLIC_PATHS.includes(location.pathname);
   const isAppGate = location.pathname === ROUTE_PATTERNS.app;
   const isOnboarding = location.pathname === ROUTE_PATTERNS.onboarding;
   const shouldBeOnboarding = redirectPath === ROUTE_PATTERNS.onboarding;
