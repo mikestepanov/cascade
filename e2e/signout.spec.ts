@@ -1,4 +1,6 @@
+import { TEST_USERS } from "./config";
 import { expect, authenticatedTest as test } from "./fixtures";
+import { trySignInUser } from "./utils";
 
 /**
  * Sign Out E2E Tests
@@ -24,9 +26,11 @@ test.describe("Sign Out", () => {
     await ensureAuthenticated();
   });
 
-  // SKIPPED: Flaky - heroGetStartedButton not reliably visible after signout
-  // TODO: Investigate timing of redirect after signout
-  test.skip("sign out returns to landing page", async ({ dashboardPage, landingPage }) => {
+  test("sign out returns to landing page and allows signing back in", async ({
+    dashboardPage,
+    landingPage,
+    page,
+  }, testInfo) => {
     // Navigate to dashboard via proper entry point
     await dashboardPage.goto();
     await dashboardPage.expectLoaded();
@@ -38,5 +42,22 @@ test.describe("Sign Out", () => {
 
     // Should return to landing page - verify Get Started button is visible
     await expect(landingPage.heroGetStartedButton).toBeVisible({ timeout: 20000 });
+
+    // Click 'Log in' from the landing page nav
+    await landingPage.clickNavLogin();
+
+    // Sign in back using the same user credentials
+    const workerSuffix = `w${testInfo.parallelIndex}`;
+    const user = {
+      ...TEST_USERS.teamLead,
+      email: `e2e-teamlead-${workerSuffix}@inbox.mailtrap.io`,
+    };
+
+    // Use the robust sign-in helper
+    const baseURL = page.url().split("/signin")[0];
+    const success = await trySignInUser(page, baseURL, user);
+
+    expect(success).toBe(true);
+    await dashboardPage.expectLoaded();
   });
 });

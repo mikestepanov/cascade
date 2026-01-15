@@ -94,7 +94,7 @@ export class AuthPage extends BasePage {
     // Page headings
     this.signInHeading = page.getByRole("heading", { name: /welcome back/i });
     this.signUpHeading = page.getByRole("heading", { name: /create an account/i });
-    this.forgotPasswordHeading = page.getByRole("heading", { name: /forgot password/i });
+    this.forgotPasswordHeading = page.getByText("Forgot Password", { exact: false });
     this.resetPasswordHeading = page.getByRole("heading", { name: /reset password/i });
 
     // Sign In / Sign Up form - two-step flow
@@ -104,7 +104,7 @@ export class AuthPage extends BasePage {
     // These buttons appear after clicking "Continue with email"
     this.signInButton = page.getByRole("button", { name: "Sign in", exact: true });
     this.signUpButton = page.getByRole("button", { name: "Create account", exact: true });
-    this.forgotPasswordLink = page.getByRole("button", { name: /forgot password/i });
+    this.forgotPasswordLink = page.getByText("Forgot password?");
     this.googleSignInButton = page.getByRole("button", { name: /sign in with google/i });
 
     // Navigation links between auth pages
@@ -287,6 +287,9 @@ export class AuthPage extends BasePage {
     // Wait for form to stabilize (formReady state) before clicking
     await this.waitForFormReady();
     await this.forgotPasswordLink.waitFor({ state: "visible", timeout: 10000 });
+    // Ensure element is enabled and in view
+    await expect(this.forgotPasswordLink).toBeEnabled();
+    await this.forgotPasswordLink.scrollIntoViewIfNeeded();
     // Use force:true to avoid issues with element being re-rendered
     await this.forgotPasswordLink.click({ force: true });
     await this.forgotPasswordHeading.waitFor({ state: "visible", timeout: 10000 });

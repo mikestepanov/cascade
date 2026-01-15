@@ -25,29 +25,29 @@ export function SmartAuthGuard({ children }: { children?: React.ReactNode }) {
   const shouldBeOnboarding = redirectPath === ROUTE_PATTERNS.onboarding;
   const isCorrectPath = location.pathname === (redirectPath as string);
 
+  // Check for any sign of a Convex auth token in local storage
+  // This is critical for E2E tests where the token is injected directly
+  const hasToken =
+    typeof window !== "undefined" &&
+    Object.keys(window.localStorage).some((k) => k.includes("convexAuth"));
+
   useEffect(() => {
-    // Wait for the query to load
+    // Wait for the query to load its initial state
     if (redirectPath === undefined) return;
 
-    // Small delay to allow auth state to stabilize after redirect back from OAuth provider
-    const timer = setTimeout(() => {
-      // If we are already at the recommended path, no redirection is needed
-      if (isCorrectPath) return;
-
-      // needsRedirect is true if:
-      // - We have a recommended path AND
-      // - (We are currently on a public page (signin/signup) OR
-      // - We are on the /app gateway OR
-      // - Our onboarding state (actual path vs recommended path) is mismatched)
-      const needsRedirect =
-        !!redirectPath && (isPublicPath || isAppGate || isOnboarding !== shouldBeOnboarding);
-
-      if (needsRedirect) {
+    // Case 1: User is logged in but on the wrong path (e.g., at /signin or wrong onboarding step)
+    if (redirectPath !== null && !isCorrectPath) {
+      const needsAppRedirect = isPublicPath || isAppGate || isOnboarding !== shouldBeOnboarding;
+      if (needsAppRedirect) {
         navigate({ to: redirectPath, replace: true });
       }
-    }, 100);
+      return;
+    }
 
-    return () => clearTimeout(timer);
+    // Case 2: User is NOT logged in but trying to access a protected route
+    if (redirectPath === null && !isPublicPath && !hasToken) {
+      navigate({ to: ROUTE_PATTERNS.home, replace: true });
+    }
   }, [
     redirectPath,
     isPublicPath,
@@ -55,28 +55,31 @@ export function SmartAuthGuard({ children }: { children?: React.ReactNode }) {
     isOnboarding,
     shouldBeOnboarding,
     isCorrectPath,
+    hasToken,
     navigate,
   ]);
 
-  if (redirectPath === undefined) {
-    if (isAppGate || isOnboarding) return <AppSplashScreen />;
-    return null; // Public pages stay blank during initial load to avoid flicker
+  // Loading state handling:
+  // Show splash screen while we are waiting for the bouncer to decide
+  if (redirectPath === undefined || (redirectPath === null && hasToken)) {
+    if (isAppGate || isOnboarding || !isPublicPath) return <AppSplashScreen />;
+    return null; // Don't show anything on landing page during load
   }
 
-  // If redirectPath is null, user is unauthenticated
+  // If user is unauthenticated
   if (redirectPath === null) {
     if (isPublicPath) return <>{children}</>;
-    if (isAppGate || isOnboarding) return <AppSplashScreen />;
-    return null;
-  }
-
-  // If a path needs redirecting but hasn't yet, show splash screen to avoid flicker
-  const needsRedirect =
-    !isCorrectPath && (isPublicPath || isAppGate || isOnboarding !== shouldBeOnboarding);
-
-  if (needsRedirect) {
+    // While the effect is navigating them home, show splash
     return <AppSplashScreen />;
   }
 
+  // If user is authenticated but needs redirecting (e.g. from /signin to /dashboard)
+  const isWrongPath =
+    !isCorrectPath && (isPublicPath || isAppGate || isOnboarding !== shouldBeOnboarding);
+  if (isWrongPath) {
+    return <AppSplashScreen />;
+  }
+
+  // All cleared - render the requested page
   return <>{children}</>;
 }
