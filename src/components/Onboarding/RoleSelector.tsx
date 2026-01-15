@@ -2,7 +2,6 @@ import { Check, User, Users } from "lucide-react";
 import { useState } from "react";
 import { Flex } from "@/components/ui/Flex";
 import { cn } from "@/lib/utils";
-import { Button } from "../ui/Button";
 import { Typography } from "../ui/Typography";
 
 interface RoleSelectorProps {

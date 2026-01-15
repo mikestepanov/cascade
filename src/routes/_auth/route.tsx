@@ -1,7 +1,6 @@
 import { createFileRoute, Outlet } from "@tanstack/react-router";
 import { AuthLoading } from "convex/react";
 import { AppSplashScreen, SmartAuthGuard } from "@/components/auth";
-import { ROUTE_PATTERNS } from "@/config/routes";
 
 export const Route = createFileRoute("/_auth")({
   component: AuthLayout,
