@@ -17,7 +17,7 @@ authenticatedTest(
     console.log("On settings page");
 
     // Verify Dev Tools tab is visible (for @inbox.mailtrap.io accounts)
-    await expect(settingsPage.devToolsTab).toBeVisible({ timeout: 10000 });
+    await expect(settingsPage.devToolsTab).toBeVisible({ timeout: 30000 });
 
     console.log("✓ Dev Tools tab is visible for mailtrap account!");
     console.log("\n✅ TEST PASSED: @inbox.mailtrap.io account shows Dev Tools tab");

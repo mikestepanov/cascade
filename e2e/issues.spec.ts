@@ -1,4 +1,5 @@
 import { expect, authenticatedTest as test } from "./fixtures";
+import { testUserService } from "./utils/test-user-service";
 
 /**
  * Issues E2E Tests
@@ -20,6 +21,9 @@ test.describe("Issues", () => {
   // Re-authenticate if tokens were invalidated
   test.beforeEach(async ({ ensureAuthenticated }) => {
     await ensureAuthenticated();
+    // Ensure templates are seeded for project creation tests
+    const seedResult = await testUserService.seedTemplates();
+    if (!seedResult) console.warn("WARNING: Failed to seed templates in test setup");
   });
 
   test.describe("Issue Creation", () => {

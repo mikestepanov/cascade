@@ -369,7 +369,7 @@ export function CreateEventModal({
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="none">No project</SelectItem>
-                      {projects?.map((project: Doc<"projects">) => (
+                      {projects?.page?.map((project: Doc<"projects">) => (
                         <SelectItem key={project._id} value={project._id}>
                           {project.name} ({project.key})
                         </SelectItem>

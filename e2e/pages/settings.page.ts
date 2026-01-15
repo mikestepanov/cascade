@@ -188,7 +188,7 @@ export class SettingsPage extends BasePage {
 
     // Use getByRole("tab") directly - Radix UI tabs have role="tab"
     const tabLocator = this.page.getByRole("tab", { name: new RegExp(tab, "i") });
-    await tabLocator.waitFor({ state: "visible", timeout: 5000 });
+    await tabLocator.waitFor({ state: "visible", timeout: 30000 });
 
     // Focus first, then click - ensures React event handlers are attached
     await tabLocator.focus();

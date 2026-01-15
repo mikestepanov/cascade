@@ -1,4 +1,4 @@
-import type { Doc } from "@convex/_generated/dataModel";
+import type { Doc } from "../_generated/dataModel";
 
 /**
  * WorkflowState type - the shape of workflow states in projects
