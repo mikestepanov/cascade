@@ -18,6 +18,7 @@ export function SmartAuthGuard({ children }: { children?: React.ReactNode }) {
     ROUTE_PATTERNS.home as string,
     ROUTE_PATTERNS.signin as string,
     ROUTE_PATTERNS.signup as string,
+    ROUTE_PATTERNS.forgotPassword as string,
   ];
   const isPublicPath = publicPaths.includes(location.pathname);
   const isAppGate = location.pathname === ROUTE_PATTERNS.app;
