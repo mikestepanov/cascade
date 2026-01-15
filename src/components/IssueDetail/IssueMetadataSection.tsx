@@ -35,7 +35,7 @@ export function IssueMetadataSection({
         </div>
         <div>
           <span className="text-sm text-ui-text-tertiary">Type:</span>
-          <Typography variant="p" className="font-medium capitalize dark:text-white">
+          <Typography variant="p" className="font-medium capitalize text-ui-text-primary">
             {type}
           </Typography>
         </div>

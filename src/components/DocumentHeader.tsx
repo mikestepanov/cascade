@@ -74,7 +74,7 @@ export function DocumentHeader({
               onChange={(e) => setTitleValue(e.target.value)}
               onBlur={() => void handleTitleSave()}
               onKeyDown={handleTitleKeyDown}
-              className="text-xl sm:text-2xl font-bold bg-transparent border-none outline-none focus:ring-2 focus:ring-brand-500 rounded px-2 py-1 dark:text-white"
+              className="text-xl sm:text-2xl font-bold bg-transparent border-none outline-none focus:ring-2 focus:ring-brand-500 rounded px-2 py-1 text-ui-text-primary"
             />
           ) : (
             <Typography

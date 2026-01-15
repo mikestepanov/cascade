@@ -72,22 +72,28 @@ function FeatureCard({
     purple: "from-purple-500 to-pink-500",
   };
 
-  const borderGlows = {
-    cyan: "group-hover:border-cyan-500/30",
-    teal: "group-hover:border-teal-500/30",
-    purple: "group-hover:border-purple-500/30",
+  const glows = {
+    cyan: "hover:shadow-cyan-500/20 hover:border-cyan-500/40",
+    teal: "hover:shadow-teal-500/20 hover:border-teal-500/40",
+    purple: "hover:shadow-purple-500/20 hover:border-purple-500/40",
+  };
+
+  const linkColors = {
+    cyan: "text-cyan-500 hover:text-cyan-600",
+    teal: "text-teal-500 hover:text-teal-600",
+    purple: "text-purple-500 hover:text-purple-600",
   };
 
   return (
     <div
       className={cn(
         "group relative p-6 rounded-2xl",
-        "bg-ui-bg-elevated",
-        "border border-ui-border-primary",
+        "bg-linear-to-b from-gray-100/80 to-gray-200/50 dark:from-gray-800/50 dark:to-gray-900/50",
+        "border border-gray-300/40 dark:border-gray-700/40",
         "backdrop-blur-md",
         "transition-all duration-300",
-        "hover:shadow-xl hover:-translate-y-1 shadow-sm",
-        borderGlows[gradient],
+        "hover:shadow-xl hover:-translate-y-1",
+        glows[gradient],
       )}
     >
       {/* Icon */}
@@ -117,7 +123,10 @@ function FeatureCard({
       {/* Link */}
       <a
         href="#"
-        className="inline-flex items-center gap-2 text-sm font-medium text-cyan-600 dark:text-cyan-400 hover:text-cyan-700 dark:hover:text-cyan-300 transition-colors"
+        className={cn(
+          "inline-flex items-center gap-2 text-sm font-medium transition-colors",
+          linkColors[gradient],
+        )}
       >
         Learn more
         <ArrowIcon className="w-4 h-4" />

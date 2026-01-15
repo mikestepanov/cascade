@@ -11,7 +11,7 @@ const buttonVariants = cva(
         primary:
           "bg-brand-600 text-white hover:bg-brand-700 focus-visible:ring-brand-500 dark:bg-brand-500 dark:hover:bg-brand-600",
         secondary:
-          "bg-ui-bg-primary text-ui-text-primary border border-ui-border-primary hover:bg-ui-bg-secondary focus-visible:ring-brand-500",
+          "bg-ui-bg-primary text-ui-text-primary border border-ui-border-primary hover:bg-ui-bg-secondary hover:border-brand-500 focus-visible:ring-brand-500",
         success:
           "bg-status-success text-white hover:bg-status-success/90 focus-visible:ring-status-success",
         danger:

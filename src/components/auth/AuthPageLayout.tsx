@@ -18,7 +18,7 @@ export function AuthPageLayout({ title, subtitle, children }: AuthPageLayoutProp
         <div className="mb-4">
           <Link
             to={ROUTE_PATTERNS.home}
-            className="inline-flex items-center gap-2 text-ui-text-tertiary hover:text-white transition-colors text-sm"
+            className="inline-flex items-center gap-2 text-ui-text-tertiary hover:text-ui-text-primary transition-colors text-sm"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"

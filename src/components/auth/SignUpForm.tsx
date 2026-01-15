@@ -1,4 +1,5 @@
 import { useAuthActions } from "@convex-dev/auth/react";
+import { useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Flex } from "@/components/ui/Flex";
@@ -11,6 +12,7 @@ import { GoogleAuthButton } from "./GoogleAuthButton";
 
 export function SignUpForm() {
   const { signIn } = useAuthActions();
+  const navigate = useNavigate();
   const [submitting, setSubmitting] = useState(false);
   const [email, setEmail] = useState("");
   const [showVerification, setShowVerification] = useState(false);
@@ -48,7 +50,8 @@ export function SignUpForm() {
       <EmailVerificationForm
         email={email}
         onVerified={() => {
-          // Auth state will update automatically
+          // Redirect to /app gateway to trigger SmartAuthGuard logic
+          navigate({ to: ROUTE_PATTERNS.app });
         }}
         onResend={() => {
           // Stay on verification view
