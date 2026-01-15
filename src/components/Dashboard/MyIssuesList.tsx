@@ -83,8 +83,8 @@ export function MyIssuesList({
             className={cn(
               "pb-2 px-2 border-b-2 transition-colors",
               issueFilter === "assigned"
-                ? "border-brand-600 dark:border-brand-500 text-brand-600 dark:text-brand-500"
-                : "border-transparent text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark",
+                ? "border-brand-indigo-border text-brand-indigo-text"
+                : "border-transparent text-ui-text-secondary hover:text-ui-text-primary",
             )}
             aria-label="Show assigned issues"
           >
@@ -96,8 +96,8 @@ export function MyIssuesList({
             className={cn(
               "pb-2 px-2 border-b-2 transition-colors",
               issueFilter === "created"
-                ? "border-brand-600 dark:border-brand-500 text-brand-600 dark:text-brand-500"
-                : "border-transparent text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark",
+                ? "border-brand-indigo-border text-brand-indigo-text"
+                : "border-transparent text-ui-text-secondary hover:text-ui-text-primary",
             )}
             aria-label="Show created issues"
           >
@@ -137,7 +137,7 @@ export function MyIssuesList({
                 onClick={() => navigateToWorkspace(issue.projectKey)}
                 {...issueNavigation.getItemProps(index)}
                 className={cn(
-                  "w-full text-left p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark cursor-pointer transition-all hover:shadow-md animate-slide-up",
+                  "w-full text-left p-3 bg-ui-bg-secondary rounded-lg hover:bg-ui-bg-tertiary cursor-pointer transition-all hover:shadow-md animate-slide-up",
                   issueNavigation.getItemProps(index).className,
                 )}
                 style={{ animationDelay: `${index * 50}ms` }}

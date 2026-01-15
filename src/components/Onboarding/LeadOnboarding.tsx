@@ -165,7 +165,7 @@ export function LeadOnboarding({
             inline
             align="center"
             justify="center"
-            className="w-16 h-16 rounded-full bg-primary-100 dark:bg-primary-900/30 mb-4"
+            className="w-16 h-16 rounded-full bg-brand-indigo-track mb-4"
           >
             <Building2 className="w-8 h-8 text-primary-600" />
           </Flex>
@@ -208,7 +208,7 @@ export function LeadOnboarding({
             size="lg"
             onClick={handleCreateWorkspace}
             disabled={isCreating || !projectName.trim()}
-            className="w-full"
+            className="w-full h-12 text-lg font-semibold transition-all duration-300 hover:shadow-xl active:scale-[0.98]"
           >
             {isCreating ? "Creating..." : "Create Project"}
           </Button>
@@ -250,7 +250,7 @@ export function LeadOnboarding({
             className="p-6 rounded-xl border-2 border-ui-border-primary bg-ui-bg-primary text-left transition-all hover:border-primary-500 hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Flex direction="column" gap="lg">
-              <div className="p-3 rounded-lg bg-primary-100 dark:bg-primary-900/30 w-fit">
+              <div className="p-3 rounded-lg bg-brand-indigo-track w-fit">
                 <Sparkles className="w-6 h-6 text-primary-600" />
               </div>
               <div>

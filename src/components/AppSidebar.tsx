@@ -148,8 +148,8 @@ export function AppSidebar() {
       <aside
         className={cn(
           "fixed lg:relative z-50 lg:z-auto h-screen",
-          "bg-ui-bg-primary dark:bg-ui-bg-primary-dark",
-          "border-r border-ui-border-primary dark:border-ui-border-primary-dark",
+          "bg-ui-bg-primary",
+          "border-r border-ui-border-primary",
           "transition-all duration-200 ease-in-out",
           isCollapsed ? "w-16" : "w-64",
           isMobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0",
@@ -394,8 +394,8 @@ function NavItem({
         "flex items-center gap-3 px-3 py-2 rounded-md transition-colors",
         "text-sm font-medium",
         isActive
-          ? "bg-brand-50 dark:bg-brand-900/30 text-brand-700 dark:text-brand-300"
-          : "text-ui-text-secondary dark:text-ui-text-secondary-dark hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark",
+          ? "bg-brand-indigo-track text-brand-indigo-text"
+          : "text-ui-text-secondary hover:bg-ui-bg-secondary hover:text-ui-text-primary",
         isCollapsed && "justify-center px-2",
       )}
     >
@@ -462,8 +462,8 @@ function CollapsibleSection({
             className={cn(
               "flex items-center justify-center px-2 py-2 rounded-md transition-colors",
               isActive
-                ? "bg-brand-50 dark:bg-brand-900/30 text-brand-700 dark:text-brand-300"
-                : "text-ui-text-secondary dark:text-ui-text-secondary-dark hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark",
+                ? "bg-brand-indigo-track text-brand-indigo-text"
+                : "text-ui-text-secondary hover:bg-ui-bg-secondary",
             )}
           >
             <Icon className="w-5 h-5" />
@@ -489,9 +489,7 @@ function CollapsibleSection({
         gap="sm"
         className={cn(
           "px-3 py-2 rounded-md transition-colors group",
-          isActive
-            ? "bg-brand-50 dark:bg-brand-900/30"
-            : "hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark",
+          isActive ? "bg-brand-indigo-track" : "hover:bg-ui-bg-secondary",
         )}
       >
         <Button
@@ -514,9 +512,7 @@ function CollapsibleSection({
             to={props.to}
             className={cn(
               "flex-1 flex items-center gap-2 text-sm font-medium",
-              isActive
-                ? "text-brand-700 dark:text-brand-300"
-                : "text-ui-text-secondary dark:text-ui-text-secondary-dark",
+              isActive ? "text-brand-indigo-text" : "text-ui-text-secondary",
             )}
           >
             <Icon className="w-5 h-5" />
@@ -582,8 +578,8 @@ function NavSubItem({
       className={cn(
         "flex items-center gap-2 px-3 py-1.5 rounded-md text-sm truncate transition-colors",
         isActive
-          ? "bg-brand-50 dark:bg-brand-900/20 text-brand-600 dark:text-brand-400"
-          : "text-ui-text-secondary dark:text-ui-text-secondary-dark hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark",
+          ? "bg-brand-indigo-track text-brand-indigo-text"
+          : "text-ui-text-secondary hover:bg-ui-bg-secondary hover:text-ui-text-primary",
       )}
     >
       {Icon && <Icon className="w-4 h-4 shrink-0" />}

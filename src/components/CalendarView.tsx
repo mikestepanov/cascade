@@ -107,10 +107,8 @@ export function CalendarView({ projectId, sprintId, canEdit = true }: CalendarVi
       <div
         key={day}
         className={cn(
-          "min-h-32 md:min-h-24 border border-ui-border-primary dark:border-ui-border-primary-dark p-2",
-          isTodayDate
-            ? "bg-brand-50 dark:bg-brand-900/20"
-            : "bg-ui-bg-primary dark:bg-ui-bg-primary-dark",
+          "min-h-32 md:min-h-24 border border-ui-border-primary p-2",
+          isTodayDate ? "bg-brand-indigo-track" : "bg-ui-bg-primary",
         )}
       >
         <Flex align="center" justify="between" className="mb-1">
@@ -119,7 +117,7 @@ export function CalendarView({ projectId, sprintId, canEdit = true }: CalendarVi
               "text-sm font-medium",
               isTodayDate
                 ? "bg-brand-600 text-white w-6 h-6 rounded-full flex items-center justify-center"
-                : "text-ui-text-primary dark:text-ui-text-primary-dark",
+                : "text-ui-text-primary",
             )}
           >
             {day}

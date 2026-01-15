@@ -90,7 +90,7 @@ export function BoardToolbar({
               "px-2 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm rounded-lg transition-colors",
               selectionMode
                 ? "bg-primary text-white"
-                : "bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark text-ui-text-primary dark:text-ui-text-primary-dark hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark",
+                : "bg-ui-bg-secondary text-ui-text-primary hover:bg-ui-bg-tertiary",
             )}
             aria-label={selectionMode ? "Exit selection mode" : "Enable selection mode"}
           >

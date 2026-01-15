@@ -55,8 +55,8 @@ export function ImportExportModal({
               className={cn(
                 "flex-1 px-4 py-2 rounded-md font-medium transition-colors",
                 mode === "export"
-                  ? "bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-brand-600 dark:text-brand-400 shadow-sm"
-                  : "text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark",
+                  ? "bg-ui-bg-primary text-brand-indigo-text shadow-sm"
+                  : "text-ui-text-secondary hover:text-ui-text-primary",
               )}
             >
               📤 Export
@@ -67,8 +67,8 @@ export function ImportExportModal({
               className={cn(
                 "flex-1 px-4 py-2 rounded-md font-medium transition-colors",
                 mode === "import"
-                  ? "bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-brand-600 dark:text-brand-400 shadow-sm"
-                  : "text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark",
+                  ? "bg-ui-bg-primary text-brand-indigo-text shadow-sm"
+                  : "text-ui-text-secondary hover:text-ui-text-primary",
               )}
             >
               📥 Import

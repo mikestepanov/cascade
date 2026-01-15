@@ -174,7 +174,7 @@ export function MentionInput({
         onKeyDown={handleKeyDown}
         placeholder={placeholder}
         className={cn(
-          "w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-primary-dark dark:text-ui-text-primary-dark resize-none overflow-hidden",
+          "w-full px-3 py-2 border border-ui-border-primary rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 bg-ui-bg-primary text-ui-text-primary resize-none overflow-hidden",
           className,
         )}
         rows={3}
@@ -189,8 +189,8 @@ export function MentionInput({
               key={member._id}
               onClick={() => insertMention(member.name || "Unknown", member._id)}
               className={cn(
-                "w-full px-4 py-2 text-left hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark flex items-center gap-3",
-                index === selectedIndex && "bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark",
+                "w-full px-4 py-2 text-left hover:bg-ui-bg-tertiary flex items-center gap-3",
+                index === selectedIndex && "bg-ui-bg-tertiary",
               )}
             >
               {/* Avatar */}

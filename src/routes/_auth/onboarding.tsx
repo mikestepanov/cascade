@@ -138,19 +138,19 @@ function OnboardingPage() {
 
           {/* Role Selection */}
           {step === "role-select" && (
-            <div className="space-y-8">
+            <div className="space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-700">
               <div className="text-center">
-                <Typography variant="h1" className="text-3xl font-bold mb-3">
+                <Typography variant="h1" className="text-3xl font-bold mb-3 tracking-tight">
                   Welcome to Nixelo
                 </Typography>
-                <Typography variant="lead">
-                  Tell us a bit about how you'll be using Nixelo
+                <Typography variant="lead" className="text-ui-text-secondary">
+                  How would you like to use your new workspace?
                 </Typography>
               </div>
 
               <RoleSelector onSelect={handleRoleSelect} />
 
-              <div className="pt-4">
+              <div className="pt-8 border-t border-ui-border-primary/50">
                 <FeatureHighlights />
               </div>
             </div>
@@ -158,21 +158,25 @@ function OnboardingPage() {
 
           {/* Team Lead Flow */}
           {step === "lead-flow" && (
-            <LeadOnboarding
-              onComplete={handleComplete}
-              onCreateProject={handleProjectCreated}
-              onBack={() => setStep("role-select")}
-              onWorkspaceCreated={handleWorkspaceCreated}
-            />
+            <div className="animate-in fade-in slide-in-from-right-8 duration-700">
+              <LeadOnboarding
+                onComplete={handleComplete}
+                onCreateProject={handleProjectCreated}
+                onBack={() => setStep("role-select")}
+                onWorkspaceCreated={handleWorkspaceCreated}
+              />
+            </div>
           )}
 
           {/* Team Member Flow */}
           {step === "member-flow" && (
-            <MemberOnboarding
-              onComplete={handleComplete}
-              onBack={() => setStep("role-select")}
-              onWorkspaceCreated={handleWorkspaceCreated}
-            />
+            <div className="animate-in fade-in slide-in-from-right-8 duration-700">
+              <MemberOnboarding
+                onComplete={handleComplete}
+                onBack={() => setStep("role-select")}
+                onWorkspaceCreated={handleWorkspaceCreated}
+              />
+            </div>
           )}
         </div>
       </main>
