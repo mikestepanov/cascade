@@ -73,8 +73,16 @@ test.describe("Dashboard Tests", () => {
     test("can open via keyboard shortcut", async ({ dashboardPage, page }) => {
       await dashboardPage.goto();
       // Ensure specific focus to capture keyboard events consistently in headless
-      await page.locator("body").click();
+      // Ensure application is focused
+      await page.bringToFront();
+      await page.locator("body").waitFor({ state: "visible" });
+      await page.locator("body").click({ force: true });
+
+      // Add small delay to ensure focus applies
+      await page.waitForTimeout(200);
+
       await dashboardPage.pressCommandPaletteShortcut();
+
       // Use data-testid for robust selection (added in CommandPalette.tsx)
       await expect(page.getByPlaceholder("Type a command or search...")).toBeVisible({
         timeout: 30000,

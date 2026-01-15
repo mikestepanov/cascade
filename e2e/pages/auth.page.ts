@@ -287,11 +287,16 @@ export class AuthPage extends BasePage {
     // Wait for form to stabilize (formReady state) before clicking
     await this.waitForFormReady();
     await this.forgotPasswordLink.waitFor({ state: "visible", timeout: 10000 });
-    // Ensure element is enabled and in view
     await expect(this.forgotPasswordLink).toBeEnabled();
-    await this.forgotPasswordLink.scrollIntoViewIfNeeded();
-    // Use force:true to avoid issues with element being re-rendered
-    await this.forgotPasswordLink.click({ force: true });
+
+    // Retry logic for robust clicking
+    try {
+      await this.forgotPasswordLink.click({ timeout: 2000 });
+    } catch {
+      // Fallback to JS click if standard click is intercepted/fails
+      await this.forgotPasswordLink.evaluate((el: HTMLElement) => el.click());
+    }
+
     await this.forgotPasswordHeading.waitFor({ state: "visible", timeout: 10000 });
   }
 
