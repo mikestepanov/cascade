@@ -289,13 +289,23 @@ export class AuthPage extends BasePage {
     await this.forgotPasswordLink.waitFor({ state: "visible", timeout: 10000 });
     await expect(this.forgotPasswordLink).toBeEnabled();
 
-    // Retry logic for robust clicking
-    try {
-      await this.forgotPasswordLink.click({ timeout: 2000 });
-    } catch {
-      // Fallback to JS click if standard click is intercepted/fails
-      await this.forgotPasswordLink.evaluate((el: HTMLElement) => el.click());
-    }
+    // Retry logic for robust clicking with navigation verification
+    await expect(async () => {
+      // Try clicking
+      try {
+        await this.forgotPasswordLink.click({ timeout: 1000 });
+      } catch {
+        // Fallback to JS click
+        await this.forgotPasswordLink.evaluate((el: HTMLElement) => el.click());
+      }
+
+      // Verify navigation started (URL changed or Heading visible)
+      // This allows the expect loop to retry clicking if nothing happened
+      await Promise.race([
+        this.page.waitForURL("**/forgot-password*", { timeout: 2000 }),
+        this.forgotPasswordHeading.waitFor({ state: "visible", timeout: 2000 }),
+      ]);
+    }).toPass({ timeout: 15000 });
 
     await this.forgotPasswordHeading.waitFor({ state: "visible", timeout: 10000 });
   }
