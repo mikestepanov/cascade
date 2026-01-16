@@ -122,6 +122,15 @@ export const TEST_USERS = {
     onboardingPersona: "team_member" as OnboardingPersona,
     description: "Viewer with read-only project access",
   },
+
+  // Onboarding user - specifically for testing onboarding flow
+  onboarding: {
+    email: `e2e-onboarding-s${SHARD}@inbox.mailtrap.io`,
+    password: "E2ETestPassword123!",
+    platformRole: "user" as PlatformRole,
+    onboardingPersona: "team_lead" as OnboardingPersona,
+    description: "Dedicated user for onboarding tests",
+  },
 } as const;
 
 // Default user for most tests - use teamLead

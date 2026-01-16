@@ -52,6 +52,7 @@ async function setupTestUser(
   userKey: string,
   user: TestUser,
   authPath: string,
+  completeOnboarding = true,
 ): Promise<SetupResult> {
   const authStatePath = path.join(AUTH_DIR, path.basename(authPath));
 
@@ -74,7 +75,11 @@ async function setupTestUser(
   console.log(`  🗑️ ${userKey}: Deleting existing user to ensure fresh state...`);
   await testUserService.deleteTestUser(user.email);
 
-  const createResult = await testUserService.createTestUser(user.email, user.password, true);
+  const createResult = await testUserService.createTestUser(
+    user.email,
+    user.password,
+    completeOnboarding,
+  );
   let success = false;
 
   if (createResult.success) {
@@ -88,7 +93,7 @@ async function setupTestUser(
       console.log(`  ✓ ${userKey}: Password verified successfully`);
     }
 
-    success = await trySignInUser(page, baseURL, user);
+    success = await trySignInUser(page, baseURL, user, completeOnboarding);
     if (!success) {
       console.warn(`  ⚠️ ${userKey}: Sign-in failed after API user creation`);
     }
@@ -193,6 +198,10 @@ async function globalSetup(config: FullConfig): Promise<void> {
         ...TEST_USERS.viewer,
         email: TEST_USERS.viewer.email.replace("@", `-${workerSuffix}@`),
       },
+      onboarding: {
+        ...TEST_USERS.onboarding,
+        email: TEST_USERS.onboarding.email.replace("@", `-${workerSuffix}@`),
+      },
     };
 
     // 2. Setup Auth for each user
@@ -200,6 +209,7 @@ async function globalSetup(config: FullConfig): Promise<void> {
       { key: "teamLead", user: users.teamLead, authPath: AUTH_PATHS.teamLead(i) },
       { key: "teamMember", user: users.teamMember, authPath: AUTH_PATHS.teamMember(i) },
       { key: "viewer", user: users.viewer, authPath: AUTH_PATHS.viewer(i) },
+      { key: "onboarding", user: users.onboarding, authPath: AUTH_PATHS.onboarding(i) },
     ];
 
     const userConfigs: Record<string, { companySlug?: string }> = {};
@@ -214,7 +224,17 @@ async function globalSetup(config: FullConfig): Promise<void> {
       const page = await context.newPage();
 
       try {
-        const result = await setupTestUser(context, page, baseURL, `${key}-${i}`, user, authPath);
+        // onboarding user should NOT have onboarding completed automatically
+        const completeOnboarding = key !== "onboarding";
+        const result = await setupTestUser(
+          context,
+          page,
+          baseURL,
+          `${key}-${i}`,
+          user,
+          authPath,
+          completeOnboarding,
+        );
         if (result.success) {
           userConfigs[key] = { companySlug: result.companySlug };
         }
