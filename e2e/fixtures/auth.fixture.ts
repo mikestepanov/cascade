@@ -238,6 +238,10 @@ export const onboardingTest = base.extend<AuthFixtures>({
       if (needsReauth) {
         console.log("  🔄 onboardingTest: re-authenticating...");
         await page.context().clearCookies();
+        await page.evaluate(() => {
+          localStorage.clear();
+          sessionStorage.clear();
+        });
         const baseURL = page.url().split("/").slice(0, 3).join("/");
         await page.goto(`${baseURL}/signin`);
         await page.waitForLoadState("domcontentloaded");

@@ -370,7 +370,7 @@ function MonthView({
             <div
               key={day.getTime()}
               className={cn(
-                "border-l border-b border-ui-border-primary first:border-l-0 p-1 sm:p-2 min-h-[80px] sm:min-h-[100px]",
+                "border-l border-b border-ui-border-primary first:border-l-0 p-1 sm:p-2 min-h-20 sm:min-h-24",
                 !isCurrentMonth ? "bg-ui-bg-secondary" : "bg-ui-bg-primary",
               )}
             >

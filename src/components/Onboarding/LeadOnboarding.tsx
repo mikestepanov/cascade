@@ -208,7 +208,7 @@ export function LeadOnboarding({
             size="lg"
             onClick={handleCreateWorkspace}
             disabled={isCreating || !projectName.trim()}
-            className="w-full h-12 text-lg font-semibold transition-all duration-300 hover:shadow-xl active:scale-[0.98]"
+            className="w-full h-12 text-lg font-semibold transition-all duration-300 hover:shadow-xl active:scale-95"
           >
             {isCreating ? "Creating..." : "Create Project"}
           </Button>

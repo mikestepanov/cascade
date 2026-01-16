@@ -36,6 +36,8 @@ async function resetOnboarding(parallelIndex: number): Promise<void> {
 test.describe("Onboarding Wizard", () => {
   // Use a dedicated user to avoid auth token rotation issues with other tests
   test.use({ skipAuthSave: true });
+  // Run tests serially to prevent auth token rotation issues
+  test.describe.configure({ mode: "serial" });
 
   test.beforeEach(async ({ ensureAuthenticated }, testInfo) => {
     // Ensure we are signed in as the onboarding user
@@ -49,6 +51,7 @@ test.describe("Onboarding Wizard", () => {
     await onboarding.goto();
     // Use a longer timeout and explicit URL wait to handle slow hydration/Convex updates
     await page.waitForURL("**/onboarding", { timeout: 15000 });
+    await onboarding.waitForSplashScreen();
     await page.waitForLoadState("networkidle");
 
     // Should show role selection
@@ -86,7 +89,7 @@ test.describe("Onboarding Wizard", () => {
   });
 
   // TODO: Dashboard stuck in loading state after skip - needs investigation
-  test.skip("can skip onboarding", async ({ page }) => {
+  test("can skip onboarding", async ({ page }) => {
     const onboarding = new OnboardingPage(page);
     await onboarding.goto();
     await page.waitForLoadState("networkidle");
@@ -132,9 +135,7 @@ test.describe("Onboarding - Team Lead Flow", () => {
   test.use({ skipAuthSave: true });
 
   // TODO: Storage state becomes invalid after earlier tests - needs investigation
-  test.skip("shows team lead features and can go back to role selection", async ({
-    page,
-  }, testInfo) => {
+  test("shows team lead features and can go back to role selection", async ({ page }, testInfo) => {
     const onboarding = new OnboardingPage(page);
 
     // Reset onboarding state via HTTP endpoint
@@ -150,16 +151,10 @@ test.describe("Onboarding - Team Lead Flow", () => {
     // Wait for Convex real-time updates to settle after the DB mutation
     await page.waitForTimeout(2000);
 
-    // Select Team Lead role
+    // Select Team Lead role (this transitions to the features screen)
     await onboarding.selectTeamLead();
 
-    // Wait for Continue button to be enabled and click
-    await onboarding.clickContinue();
-
-    // Verify we are on the Team Lead specific step
-    // (Implicitly verified by selectTeamLead action now)
-
-    // Test back navigation
+    // Test back navigation directly from features screen
     await expect(onboarding.backButton).toBeVisible({ timeout: 5000 });
     await onboarding.clickBack();
 
@@ -176,9 +171,7 @@ test.describe("Onboarding - Team Member Flow", () => {
   test.use({ skipAuthSave: true });
 
   // TODO: Storage state becomes invalid after earlier tests - needs investigation
-  test.skip("shows member-specific content and can complete onboarding", async ({
-    page,
-  }, testInfo) => {
+  test("shows member-specific content and can complete onboarding", async ({ page }, testInfo) => {
     const onboarding = new OnboardingPage(page);
 
     // Reset onboarding state via HTTP endpoint
@@ -194,11 +187,15 @@ test.describe("Onboarding - Team Member Flow", () => {
     // Wait for Convex real-time updates to settle after the DB mutation
     await page.waitForTimeout(2000);
 
-    // Select Team Member role
+    // Select Team Member role (transitions to project naming)
     await onboarding.selectTeamMember();
 
-    // Wait for Continue button to be enabled and click
-    await onboarding.clickContinue();
+    // Enter project name and create it
+    await page.getByPlaceholder(/e.g., Acme Corp/i).fill("E2E Test Project");
+    await onboarding.createProject();
+
+    // Wait for features screen and go to dashboard
+    await onboarding.goToDashboard();
 
     // Verify we are on the Team Member specific step
     // (Implicitly verified by selectTeamMember action now)

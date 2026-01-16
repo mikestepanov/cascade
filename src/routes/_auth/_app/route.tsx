@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { Flex } from "@/components/ui/Flex";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { Typography } from "@/components/ui/Typography";
+import { ROUTE_PATTERNS } from "@/config/routes";
 
 export const Route = createFileRoute("/_auth/_app")({
   component: AppLayout,
@@ -53,7 +54,8 @@ function InitializeCompany() {
         // Navigate to the new company's dashboard
         if (result.slug) {
           navigate({
-            to: `/${result.slug}/dashboard`,
+            to: ROUTE_PATTERNS.dashboard,
+            params: { companySlug: result.slug },
             replace: true,
           });
         } else {

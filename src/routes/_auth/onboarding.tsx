@@ -64,7 +64,8 @@ function OnboardingPage() {
       const slug = userCompanies[0].slug;
       if (slug) {
         navigate({
-          to: `/${slug}/dashboard`,
+          to: ROUTE_PATTERNS.dashboard,
+          params: { companySlug: slug },
         });
         return;
       }

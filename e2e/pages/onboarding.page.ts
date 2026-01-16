@@ -29,6 +29,7 @@ export class OnboardingPage extends BasePage {
   // Team Member flow
   readonly allSetHeading: Locator;
   readonly goToDashboardButton: Locator;
+  readonly createProjectButton: Locator;
 
   // Feature highlights
   readonly kanbanBoardsText: Locator;
@@ -69,6 +70,7 @@ export class OnboardingPage extends BasePage {
     // Team Member flow
     this.allSetHeading = page.getByRole("heading", { name: /you're all set/i });
     this.goToDashboardButton = page.getByRole("button", { name: /go to dashboard/i });
+    this.createProjectButton = page.getByRole("button", { name: /create project/i });
 
     // Feature highlights
     this.kanbanBoardsText = page.getByText(/kanban boards/i);
@@ -76,7 +78,7 @@ export class OnboardingPage extends BasePage {
     this.sprintPlanningText = page.getByText(/sprint planning/i);
 
     // Dashboard
-    this.myWorkHeading = page.getByRole("heading", { name: /my work/i });
+    this.myWorkHeading = page.getByRole("heading", { name: "My Work", exact: true });
 
     // Driver.js uses these CSS classes
     this.tourOverlay = page.locator(".driver-overlay");
@@ -201,6 +203,16 @@ export class OnboardingPage extends BasePage {
   // ===================
 
   /**
+   * Wait for the app splash screen to disappear
+   */
+  async waitForSplashScreen() {
+    // The splash screen has a high z-index and is fixed inset-0
+    // We use .first() to avoid strict mode violations if multiple exist during transitions
+    const splash = this.page.locator(".bg-ui-bg-hero.z-\\[9999\\]").first();
+    await expect(splash).not.toBeVisible({ timeout: 15000 });
+  }
+
+  /**
    * Onboarding Wizard Actions
    */
 
@@ -208,45 +220,54 @@ export class OnboardingPage extends BasePage {
    * Wait for onboarding wizard to load
    */
   async waitForWizard(timeout = TRANSITION_TIMEOUT) {
+    await this.waitForSplashScreen();
     await expect(this.welcomeHeading).toBeVisible({ timeout });
   }
 
   /**
    * Select team lead role and verify transition
-   * Retries click until the next screen appears (Outcome-based testing)
    */
   async selectTeamLead() {
+    console.log("Selecting Team Lead role...");
     await expect(async () => {
-      // If we already see the next screen, we are done
+      // If we are already on the next screen, we are good
       if (await this.teamLeadHeading.isVisible()) {
         return;
       }
 
-      // Only click if the button is still enabled (meaning we haven't successfully clicked yet)
-      if (await this.teamLeadCard.isEnabled()) {
-        await this.teamLeadCard.click({ timeout: 2000, force: true });
-      }
+      // Ensure splash screen is gone before clicking
+      await this.waitForSplashScreen();
 
-      // Check for the outcome
-      await expect(this.teamLeadHeading).toBeVisible({ timeout: 3000 });
-    }).toPass({ timeout: 20000 });
+      // The role cards have a small pending state/delay, so we might need to retry click
+      await this.teamLeadCard.click({ force: true, timeout: 2000 });
+
+      // Check for the outcome (first screen of lead flow)
+      await expect(this.teamLeadHeading).toBeVisible({ timeout: 5000 });
+    }).toPass({ timeout: 30000 });
+    console.log("Successfully transitioned to Team Lead setup.");
   }
 
   /**
-   * Select team member role
+   * Select team member role and verify transition
    */
   async selectTeamMember() {
+    console.log("Selecting Team Member role...");
     await expect(async () => {
-      if (await this.allSetHeading.isVisible()) {
+      // For team members, the immediate next step is "Name Your Project"
+      if (await this.page.getByRole("heading", { name: /name your project/i }).isVisible()) {
         return;
       }
 
-      if (await this.teamMemberCard.isEnabled()) {
-        await this.teamMemberCard.click({ timeout: 2000, force: true });
-      }
+      await this.waitForSplashScreen();
 
-      await expect(this.allSetHeading).toBeVisible({ timeout: 3000 });
-    }).toPass({ timeout: 20000 });
+      await this.teamMemberCard.click({ force: true, timeout: 2000 });
+
+      // Check for the outcome (first screen of member flow)
+      await expect(this.page.getByRole("heading", { name: /name your project/i })).toBeVisible({
+        timeout: 5000,
+      });
+    }).toPass({ timeout: 30000 });
+    console.log("Successfully transitioned to Team Member project naming.");
   }
 
   /**
@@ -282,6 +303,13 @@ export class OnboardingPage extends BasePage {
    */
   async goToWorkspaceSetup() {
     await this.setupWorkspaceButton.click();
+  }
+
+  /**
+   * Click create project button
+   */
+  async createProject() {
+    await this.createProjectButton.click();
   }
 
   /**

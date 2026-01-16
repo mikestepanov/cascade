@@ -14,6 +14,23 @@ const PUBLIC_PATHS = [
 ];
 
 /**
+ * Checks if a pathname matches any of the public path patterns.
+ * Handles both literal paths and parameterized paths (e.g., /invite/$token).
+ */
+function isPathPublic(pathname: string): boolean {
+  return PUBLIC_PATHS.some((pattern) => {
+    if (pattern === pathname) return true;
+    if (pattern.includes("$")) {
+      // Simple regex conversion: replace $param with [^/]+
+      const regexPattern = pattern.replace(/\$[a-zA-Z0-9]+/g, "[^/]+");
+      const regex = new RegExp(`^${regexPattern}$`);
+      return regex.test(pathname);
+    }
+    return false;
+  });
+}
+
+/**
  * SmartAuthGuard - Centralized "bouncer" for authenticated routes.
  * It ensures the user is on the correct page based on their onboarding and company status.
  */
@@ -22,7 +39,7 @@ export function SmartAuthGuard({ children }: { children?: React.ReactNode }) {
   const location = useLocation();
   const redirectPath = useQuery(api.auth.getRedirectDestination);
 
-  const isPublicPath = PUBLIC_PATHS.includes(location.pathname);
+  const isPublicPath = isPathPublic(location.pathname);
   const isAppGate = location.pathname === ROUTE_PATTERNS.app;
   const isOnboarding = location.pathname === ROUTE_PATTERNS.onboarding;
   const shouldBeOnboarding = redirectPath === ROUTE_PATTERNS.onboarding;

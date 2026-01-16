@@ -13,22 +13,17 @@ interface RoleCardProps {
   title: string;
   description: string;
   selected: boolean;
+  disabled?: boolean;
   onClick: () => void;
 }
 
-function RoleCard({
-  icon,
-  title,
-  description,
-  selected,
-  disabled,
-  onClick,
-}: RoleCardProps & { disabled?: boolean }) {
+function RoleCard({ icon, title, description, selected, disabled, onClick }: RoleCardProps) {
   return (
     <button
       type="button"
       onClick={onClick}
       disabled={disabled}
+      aria-pressed={selected}
       className={cn(
         "relative p-8 rounded-3xl border-2 text-left transition-all duration-300 cursor-pointer overflow-hidden group w-full",
         "hover:shadow-2xl hover:-translate-y-1 active:scale-[0.95]",
@@ -81,7 +76,7 @@ function RoleCard({
           >
             {title}
           </Typography>
-          <Typography className="text-sm text-ui-text-secondary leading-relaxed max-w-[220px]">
+          <Typography className="text-sm text-ui-text-secondary leading-relaxed max-w-56">
             {description}
           </Typography>
         </div>

@@ -181,7 +181,6 @@ async function globalSetup(config: FullConfig): Promise<void> {
 
     // 1. Generate unique emails for this worker using shard-isolated base
     const workerSuffix = `w${i}`;
-    const shard = process.env.SHARD_INDEX || "0";
 
     // Note: TEST_USERS already includes -s${SHARD} in the base email from config.ts
     // We just need to inject the worker suffix before the @ domain
