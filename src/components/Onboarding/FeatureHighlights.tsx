@@ -26,7 +26,7 @@ export function FeatureHighlights() {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
       <FeatureCard
-        icon={<Kanban className="w-6 h-6 text-brand-500 dark:text-brand-400" />}
+        icon={<Kanban className="w-6 h-6 text-brand-indigo-text" />}
         title="Kanban Boards"
         description="Visualize work with drag-and-drop boards"
       />

@@ -76,9 +76,9 @@ export const IssueCard = memo(function IssueCard({
       className={cn(
         "w-full text-left bg-ui-bg-primary p-2 sm:p-3 rounded-lg border-2 shadow-sm hover:shadow-md hover:scale-[1.02] transition-all duration-200 cursor-pointer",
         isSelected
-          ? "border-brand-600 dark:border-brand-600 bg-brand-50 dark:bg-brand-900/20"
+          ? "border-brand-indigo-border bg-brand-indigo-track"
           : isFocused
-            ? "border-brand-400 dark:border-brand-500 ring-2 ring-brand-500/50"
+            ? "border-ui-border-focus ring-2 ring-ui-border-focus/50"
             : "border-ui-border-primary",
       )}
     >

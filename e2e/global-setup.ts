@@ -52,6 +52,7 @@ async function setupTestUser(
   userKey: string,
   user: TestUser,
   authPath: string,
+  completeOnboarding = true,
 ): Promise<SetupResult> {
   const authStatePath = path.join(AUTH_DIR, path.basename(authPath));
 
@@ -74,7 +75,11 @@ async function setupTestUser(
   console.log(`  🗑️ ${userKey}: Deleting existing user to ensure fresh state...`);
   await testUserService.deleteTestUser(user.email);
 
-  const createResult = await testUserService.createTestUser(user.email, user.password, true);
+  const createResult = await testUserService.createTestUser(
+    user.email,
+    user.password,
+    completeOnboarding,
+  );
   let success = false;
 
   if (createResult.success) {
@@ -88,7 +93,7 @@ async function setupTestUser(
       console.log(`  ✓ ${userKey}: Password verified successfully`);
     }
 
-    success = await trySignInUser(page, baseURL, user);
+    success = await trySignInUser(page, baseURL, user, completeOnboarding);
     if (!success) {
       console.warn(`  ⚠️ ${userKey}: Sign-in failed after API user creation`);
     }
@@ -174,20 +179,27 @@ async function globalSetup(config: FullConfig): Promise<void> {
   for (let i = 0; i < workerCount; i++) {
     console.log(`\n--- 👷 Worker ${i} Setup ---`);
 
-    // 1. Generate unique emails for this worker
+    // 1. Generate unique emails for this worker using shard-isolated base
     const workerSuffix = `w${i}`;
+
+    // Note: TEST_USERS already includes -s${SHARD} in the base email from config.ts
+    // We just need to inject the worker suffix before the @ domain
     const users = {
       teamLead: {
         ...TEST_USERS.teamLead,
-        email: `e2e-teamlead-${workerSuffix}@inbox.mailtrap.io`,
+        email: TEST_USERS.teamLead.email.replace("@", `-${workerSuffix}@`),
       },
       teamMember: {
         ...TEST_USERS.teamMember,
-        email: `e2e-member-${workerSuffix}@inbox.mailtrap.io`,
+        email: TEST_USERS.teamMember.email.replace("@", `-${workerSuffix}@`),
       },
       viewer: {
         ...TEST_USERS.viewer,
-        email: `e2e-viewer-${workerSuffix}@inbox.mailtrap.io`,
+        email: TEST_USERS.viewer.email.replace("@", `-${workerSuffix}@`),
+      },
+      onboarding: {
+        ...TEST_USERS.onboarding,
+        email: TEST_USERS.onboarding.email.replace("@", `-${workerSuffix}@`),
       },
     };
 
@@ -196,6 +208,7 @@ async function globalSetup(config: FullConfig): Promise<void> {
       { key: "teamLead", user: users.teamLead, authPath: AUTH_PATHS.teamLead(i) },
       { key: "teamMember", user: users.teamMember, authPath: AUTH_PATHS.teamMember(i) },
       { key: "viewer", user: users.viewer, authPath: AUTH_PATHS.viewer(i) },
+      { key: "onboarding", user: users.onboarding, authPath: AUTH_PATHS.onboarding(i) },
     ];
 
     const userConfigs: Record<string, { companySlug?: string }> = {};
@@ -210,7 +223,17 @@ async function globalSetup(config: FullConfig): Promise<void> {
       const page = await context.newPage();
 
       try {
-        const result = await setupTestUser(context, page, baseURL, `${key}-${i}`, user, authPath);
+        // onboarding user should NOT have onboarding completed automatically
+        const completeOnboarding = key !== "onboarding";
+        const result = await setupTestUser(
+          context,
+          page,
+          baseURL,
+          `${key}-${i}`,
+          user,
+          authPath,
+          completeOnboarding,
+        );
         if (result.success) {
           userConfigs[key] = { companySlug: result.companySlug };
         }

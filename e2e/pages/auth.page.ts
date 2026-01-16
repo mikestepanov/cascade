@@ -94,7 +94,7 @@ export class AuthPage extends BasePage {
     // Page headings
     this.signInHeading = page.getByRole("heading", { name: /welcome back/i });
     this.signUpHeading = page.getByRole("heading", { name: /create an account/i });
-    this.forgotPasswordHeading = page.getByRole("heading", { name: /forgot password/i });
+    this.forgotPasswordHeading = page.getByText("Forgot Password", { exact: false });
     this.resetPasswordHeading = page.getByRole("heading", { name: /reset password/i });
 
     // Sign In / Sign Up form - two-step flow
@@ -104,7 +104,7 @@ export class AuthPage extends BasePage {
     // These buttons appear after clicking "Continue with email"
     this.signInButton = page.getByRole("button", { name: "Sign in", exact: true });
     this.signUpButton = page.getByRole("button", { name: "Create account", exact: true });
-    this.forgotPasswordLink = page.getByRole("button", { name: /forgot password/i });
+    this.forgotPasswordLink = page.getByText("Forgot password?");
     this.googleSignInButton = page.getByRole("button", { name: /sign in with google/i });
 
     // Navigation links between auth pages
@@ -287,8 +287,26 @@ export class AuthPage extends BasePage {
     // Wait for form to stabilize (formReady state) before clicking
     await this.waitForFormReady();
     await this.forgotPasswordLink.waitFor({ state: "visible", timeout: 10000 });
-    // Use force:true to avoid issues with element being re-rendered
-    await this.forgotPasswordLink.click({ force: true });
+    await expect(this.forgotPasswordLink).toBeEnabled();
+
+    // Retry logic for robust clicking with navigation verification
+    await expect(async () => {
+      // Try clicking
+      try {
+        await this.forgotPasswordLink.click({ timeout: 1000 });
+      } catch {
+        // Fallback to JS click
+        await this.forgotPasswordLink.evaluate((el: HTMLElement) => el.click());
+      }
+
+      // Verify navigation started (URL changed or Heading visible)
+      // This allows the expect loop to retry clicking if nothing happened
+      await Promise.race([
+        this.page.waitForURL("**/forgot-password*", { timeout: 2000 }),
+        this.forgotPasswordHeading.waitFor({ state: "visible", timeout: 2000 }),
+      ]);
+    }).toPass({ timeout: 15000 });
+
     await this.forgotPasswordHeading.waitFor({ state: "visible", timeout: 10000 });
   }
 

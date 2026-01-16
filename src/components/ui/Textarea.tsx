@@ -3,7 +3,7 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 
 const textareaVariants = cva(
-  "flex min-h-[80px] w-full rounded-lg border bg-ui-bg-primary px-3 py-2 text-sm text-ui-text-primary transition-colors placeholder:text-ui-text-tertiary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
+  "flex min-h-20 w-full rounded-lg border bg-ui-bg-primary px-3 py-2 text-sm text-ui-text-primary transition-colors placeholder:text-ui-text-tertiary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
   {
     variants: {
       variant: {

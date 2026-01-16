@@ -187,8 +187,8 @@ export function ProjectWizard({ open, onOpenChange, onComplete }: ProjectWizardP
                   className={cn(
                     "p-6 border-2 rounded-lg text-left transition-all",
                     boardType === "kanban"
-                      ? "border-brand-600 bg-brand-50 dark:bg-brand-900/20"
-                      : "border-ui-border-primary dark:border-ui-border-primary-dark hover:border-brand-400",
+                      ? "border-brand-600 bg-brand-indigo-track"
+                      : "border-ui-border-primary hover:border-brand-400",
                   )}
                 >
                   <Typography variant="h3" className="font-bold text-lg mb-2 text-ui-text-primary">
@@ -211,8 +211,8 @@ export function ProjectWizard({ open, onOpenChange, onComplete }: ProjectWizardP
                   className={cn(
                     "p-6 border-2 rounded-lg text-left transition-all",
                     boardType === "scrum"
-                      ? "border-brand-600 bg-brand-50 dark:bg-brand-900/20"
-                      : "border-ui-border-primary dark:border-ui-border-primary-dark hover:border-brand-400",
+                      ? "border-brand-600 bg-brand-indigo-track"
+                      : "border-ui-border-primary hover:border-brand-400",
                   )}
                 >
                   <Typography variant="h3" className="font-bold text-lg mb-2 text-ui-text-primary">
@@ -263,10 +263,10 @@ export function ProjectWizard({ open, onOpenChange, onComplete }: ProjectWizardP
                       className={cn(
                         "px-3 py-1 rounded-full text-sm font-medium",
                         state.category === "todo"
-                          ? "bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark text-ui-text-primary dark:text-ui-text-primary-dark"
+                          ? "bg-ui-bg-tertiary text-ui-text-primary"
                           : state.category === "inprogress"
-                            ? "bg-brand-100 dark:bg-brand-900/30 text-brand-700 dark:text-brand-300"
-                            : "bg-status-success/10 dark:bg-status-success/30 text-status-success dark:text-status-success",
+                            ? "bg-brand-indigo-track text-brand-indigo-text"
+                            : "bg-status-success/10 text-status-success",
                       )}
                     >
                       {state.category === "todo"
@@ -294,7 +294,7 @@ export function ProjectWizard({ open, onOpenChange, onComplete }: ProjectWizardP
                 }}
                 variant="ghost"
                 size="sm"
-                className="text-brand-600 dark:text-brand-400"
+                className="text-brand-indigo-text"
               >
                 + Add another status
               </Button>

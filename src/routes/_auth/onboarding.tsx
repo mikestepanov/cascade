@@ -60,14 +60,20 @@ function OnboardingPage() {
   // Navigate to the user's company dashboard
   const navigateToCompany = () => {
     if (userCompanies && userCompanies.length > 0) {
-      navigate({
-        to: ROUTE_PATTERNS.dashboard,
-        params: { companySlug: userCompanies[0].slug },
-      });
-    } else {
-      // Fallback - this shouldn't happen if onboarding is done correctly
-      navigate({ to: ROUTE_PATTERNS.home });
+      // Use the first company available
+      const slug = userCompanies[0].slug;
+      if (slug) {
+        navigate({
+          to: ROUTE_PATTERNS.dashboard,
+          params: { companySlug: slug },
+        });
+        return;
+      }
     }
+
+    // Fallback - redirect to /app gateway to trigger company initialization
+    // (This is essential for the "team_member" flow or if the query is momentarily stale)
+    navigate({ to: ROUTE_PATTERNS.app });
   };
 
   const handleComplete = async () => {
@@ -105,15 +111,29 @@ function OnboardingPage() {
   return (
     <Flex direction="column" className="min-h-screen bg-ui-bg-secondary">
       {/* Header */}
-      <header className="p-6 flex items-center justify-between">
-        <Flex align="center" gap="sm">
-          <Flex align="center" justify="center" className="h-8 w-8 rounded-lg bg-primary-600">
-            <span className="text-white font-bold text-sm">N</span>
+      <header className="px-8 py-6 flex items-center justify-between bg-ui-bg-secondary/80 backdrop-blur-sm sticky top-0 z-50">
+        <Flex align="center" gap="md" className="group cursor-pointer">
+          <Flex
+            align="center"
+            justify="center"
+            className="h-10 w-10 rounded-xl bg-brand-indigo-bg shadow-lg shadow-brand-indigo-bg/20 transition-transform group-hover:scale-110 active:scale-95"
+          >
+            <span className="text-white font-bold text-lg">N</span>
           </Flex>
-          <span className="font-semibold text-lg text-ui-text-primary">Nixelo</span>
+          <Typography
+            variant="h3"
+            className="text-xl font-bold tracking-tight bg-clip-text text-ui-text-primary"
+          >
+            Nixelo
+          </Typography>
         </Flex>
         {step !== "invited" && (
-          <Button variant="ghost" size="sm" onClick={handleSkip}>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleSkip}
+            className="text-ui-text-secondary hover:text-ui-text-primary hover:bg-ui-bg-tertiary transition-all"
+          >
             Skip for now
           </Button>
         )}
@@ -133,19 +153,19 @@ function OnboardingPage() {
 
           {/* Role Selection */}
           {step === "role-select" && (
-            <div className="space-y-8">
+            <div className="space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-700">
               <div className="text-center">
-                <Typography variant="h1" className="text-3xl font-bold mb-3">
+                <Typography variant="h1" className="text-3xl font-bold mb-3 tracking-tight">
                   Welcome to Nixelo
                 </Typography>
-                <Typography variant="lead">
-                  Tell us a bit about how you'll be using Nixelo
+                <Typography variant="lead" className="text-ui-text-secondary">
+                  How would you like to use your new workspace?
                 </Typography>
               </div>
 
               <RoleSelector onSelect={handleRoleSelect} />
 
-              <div className="pt-4">
+              <div className="pt-12">
                 <FeatureHighlights />
               </div>
             </div>
@@ -153,21 +173,25 @@ function OnboardingPage() {
 
           {/* Team Lead Flow */}
           {step === "lead-flow" && (
-            <LeadOnboarding
-              onComplete={handleComplete}
-              onCreateProject={handleProjectCreated}
-              onBack={() => setStep("role-select")}
-              onWorkspaceCreated={handleWorkspaceCreated}
-            />
+            <div className="animate-in fade-in slide-in-from-right-8 duration-700">
+              <LeadOnboarding
+                onComplete={handleComplete}
+                onCreateProject={handleProjectCreated}
+                onBack={() => setStep("role-select")}
+                onWorkspaceCreated={handleWorkspaceCreated}
+              />
+            </div>
           )}
 
           {/* Team Member Flow */}
           {step === "member-flow" && (
-            <MemberOnboarding
-              onComplete={handleComplete}
-              onBack={() => setStep("role-select")}
-              onWorkspaceCreated={handleWorkspaceCreated}
-            />
+            <div className="animate-in fade-in slide-in-from-right-8 duration-700">
+              <MemberOnboarding
+                onComplete={handleComplete}
+                onBack={() => setStep("role-select")}
+                onWorkspaceCreated={handleWorkspaceCreated}
+              />
+            </div>
           )}
         </div>
       </main>

@@ -1,8 +1,7 @@
 import { Check, User, Users } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Flex } from "@/components/ui/Flex";
 import { cn } from "@/lib/utils";
-import { Button } from "../ui/Button";
 import { Typography } from "../ui/Typography";
 
 interface RoleSelectorProps {
@@ -14,90 +13,117 @@ interface RoleCardProps {
   title: string;
   description: string;
   selected: boolean;
+  disabled?: boolean;
   onClick: () => void;
 }
 
-function RoleCard({ icon, title, description, selected, onClick }: RoleCardProps) {
+function RoleCard({ icon, title, description, selected, disabled, onClick }: RoleCardProps) {
   return (
     <button
       type="button"
       onClick={onClick}
+      disabled={disabled}
+      aria-pressed={selected}
       className={cn(
-        "p-6 rounded-xl border-2 text-left transition-all duration-200",
-        "hover:border-primary-500 hover:shadow-md",
-        "focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2",
-        "dark:focus:ring-offset-ui-bg-primary-dark",
+        "relative p-8 rounded-3xl border-2 text-left transition-all duration-300 cursor-pointer overflow-hidden group w-full",
+        "hover:shadow-2xl hover:-translate-y-1 active:scale-95",
         selected
-          ? "border-primary-500 bg-primary-50 dark:bg-primary-900/20"
-          : "border-ui-border-primary dark:border-ui-border-primary-dark bg-ui-bg-primary dark:bg-ui-bg-secondary-dark",
+          ? "border-brand-500 bg-brand-50/50 dark:bg-brand-500/10 ring-4 ring-brand-500/10"
+          : "border-ui-border-primary bg-ui-bg-primary hover:border-brand-400/50",
+        disabled && "opacity-50 cursor-wait",
       )}
     >
-      <Flex direction="column" align="center" gap="lg" className="text-center">
+      {/* Background Glow */}
+      <div
+        className={cn(
+          "absolute inset-0 opacity-0 group-hover:opacity-10 dark:group-hover:opacity-5 transition-opacity duration-500 bg-gradient-to-br from-brand-500 to-accent-500",
+          selected && "opacity-10 dark:opacity-5",
+        )}
+      />
+
+      <div
+        className={cn(
+          "absolute top-4 right-4 w-6 h-6 rounded-full border-2 transition-all duration-300 flex items-center justify-center z-10",
+          selected
+            ? "bg-brand-600 border-brand-600 scale-110 shadow-lg shadow-brand-500/40"
+            : "border-ui-border-secondary group-hover:border-brand-400",
+        )}
+      >
+        <Check
+          className={cn(
+            "w-3.5 h-3.5 text-white transition-all duration-300",
+            selected ? "opacity-100 scale-100" : "opacity-0 scale-50",
+          )}
+        />
+      </div>
+
+      <Flex direction="column" align="center" gap="xl" className="text-center relative z-10">
         <div
           className={cn(
-            "p-4 rounded-full",
+            "p-5 rounded-2xl transition-all duration-500",
             selected
-              ? "bg-primary-100 dark:bg-primary-900/40 text-primary-600"
-              : "bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark text-ui-text-secondary dark:text-ui-text-secondary-dark",
+              ? "bg-brand-600 text-white scale-110 shadow-xl shadow-brand-500/25 rotate-3"
+              : "bg-ui-bg-tertiary text-ui-text-tertiary group-hover:scale-110 group-hover:bg-brand-500/10 group-hover:text-brand-600 group-hover:-rotate-3",
           )}
         >
           {icon}
         </div>
-        <div>
-          <Typography variant="h3" className="text-lg font-semibold text-ui-text-primary mb-1">
+
+        <div className="space-y-3">
+          <Typography
+            variant="h3"
+            className="text-xl font-bold text-ui-text-primary tracking-tight"
+          >
             {title}
           </Typography>
-          <Typography className="text-sm text-ui-text-secondary">{description}</Typography>
+          <Typography className="text-sm text-ui-text-secondary leading-relaxed max-w-56">
+            {description}
+          </Typography>
         </div>
-        {selected && (
-          <Flex align="center" justify="center" className="w-6 h-6 rounded-full bg-primary-600">
-            <Check className="w-4 h-4 text-white" aria-hidden="true" />
-          </Flex>
-        )}
       </Flex>
     </button>
   );
 }
 
 export function RoleSelector({ onSelect }: RoleSelectorProps) {
-  const [selected, setSelected] = useState<"team_lead" | "team_member" | null>(null);
+  const [isPending, setIsPending] = useState(false);
+  const [localSelected, setLocalSelected] = useState<"team_lead" | "team_member" | null>(null);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const handleContinue = () => {
-    if (selected) {
-      onSelect(selected);
-    }
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    };
+  }, []);
+
+  const handleSelect = (role: "team_lead" | "team_member") => {
+    setLocalSelected(role);
+    setIsPending(true);
+
+    // Small delay for visual feedback before transitioning
+    timeoutRef.current = setTimeout(() => {
+      onSelect(role);
+    }, 400);
   };
 
   return (
-    <div className="space-y-6">
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <RoleCard
-          icon={<Users className="w-8 h-8" />}
-          title="Team Lead"
-          description="I'll be managing projects and inviting team members"
-          selected={selected === "team_lead"}
-          onClick={() => setSelected("team_lead")}
-        />
-        <RoleCard
-          icon={<User className="w-8 h-8" />}
-          title="Team Member"
-          description="I'll be joining a team and working on tasks"
-          selected={selected === "team_member"}
-          onClick={() => setSelected("team_member")}
-        />
-      </div>
-
-      <Flex justify="center">
-        <Button
-          variant="primary"
-          size="lg"
-          onClick={handleContinue}
-          disabled={!selected}
-          className="min-w-[200px]"
-        >
-          Continue
-        </Button>
-      </Flex>
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 animate-in fade-in slide-in-from-bottom-8 duration-1000">
+      <RoleCard
+        icon={<Users className="w-10 h-10" />}
+        title="Team Lead"
+        description="I'll be building new projects and inviting my team to join"
+        selected={localSelected === "team_lead"}
+        disabled={isPending}
+        onClick={() => handleSelect("team_lead")}
+      />
+      <RoleCard
+        icon={<User className="w-10 h-10" />}
+        title="Team Member"
+        description="I'm joining an existing workspace to collaborate on tasks"
+        selected={localSelected === "team_member"}
+        disabled={isPending}
+        onClick={() => handleSelect("team_member")}
+      />
     </div>
   );
 }

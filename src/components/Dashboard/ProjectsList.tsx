@@ -81,7 +81,7 @@ export function WorkspacesList({ projects, projectNavigation }: WorkspacesListPr
                 onClick={() => navigateToWorkspace(project.key)}
                 {...projectNavigation.getItemProps(index)}
                 className={cn(
-                  "w-full text-left p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark cursor-pointer transition-all hover:shadow-md animate-slide-up",
+                  "w-full text-left p-3 bg-ui-bg-secondary rounded-lg hover:bg-ui-bg-tertiary cursor-pointer transition-all hover:shadow-md animate-slide-up",
                   projectNavigation.getItemProps(index).className,
                 )}
                 style={{ animationDelay: `${index * 50}ms` }}

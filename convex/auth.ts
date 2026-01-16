@@ -29,6 +29,7 @@ export const loggedInUser = query({
       emailVerificationTime: v.optional(v.number()),
       image: v.optional(v.string()),
       isAnonymous: v.optional(v.boolean()),
+      defaultCompanyId: v.optional(v.id("companies")),
     }),
     v.null(),
   ),
@@ -82,7 +83,8 @@ export const getRedirectDestination = query({
       }
     }
 
-    // Fallback: This shouldn't happen if onboarding is completed correctly
-    return ROUTE_PATTERNS.onboarding;
+    // If they finished onboarding but have no company,
+    // we should send them to /app gateway where InitializeCompany will handle them.
+    return ROUTE_PATTERNS.app;
   },
 });

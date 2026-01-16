@@ -84,7 +84,7 @@ export function MemberOnboarding({
             inline
             align="center"
             justify="center"
-            className="w-16 h-16 rounded-full bg-primary-100 dark:bg-primary-900/30 mb-4"
+            className="w-16 h-16 rounded-full bg-brand-indigo-track mb-4"
           >
             <Building2 className="w-8 h-8 text-primary-600" />
           </Flex>
@@ -127,7 +127,7 @@ export function MemberOnboarding({
             size="lg"
             onClick={handleCreateWorkspace}
             disabled={isCreating || !projectName.trim()}
-            className="w-full"
+            className="w-full h-12 text-lg font-semibold transition-all duration-300 hover:shadow-xl active:scale-95"
           >
             {isCreating ? "Creating..." : "Create Project"}
           </Button>
@@ -225,7 +225,7 @@ export function MemberOnboarding({
 
       {/* Continue */}
       <Flex justify="center">
-        <Button variant="primary" size="lg" onClick={handleFinish} className="min-w-[200px]">
+        <Button variant="primary" size="lg" onClick={handleFinish} className="min-w-48">
           Go to Dashboard
         </Button>
       </Flex>

@@ -1,0 +1,24 @@
+name: E2E Cleanup
+
+on:
+  # Run weekly on Sundays at 3 AM UTC
+  schedule:
+    - cron: "0 3 * * 0"
+  # Allow manual trigger
+  workflow_dispatch:
+
+jobs:
+  cleanup:
+    name: Cleanup Old E2E Test Users
+    runs-on: ubuntu-latest
+    steps:
+      - name: Purge old test users
+        run: |
+          echo "🧹 Purging old E2E test users..."
+          curl -X POST "${{ secrets.VITE_CONVEX_URL }}/e2e/nuke-test-users" \
+            -H "Content-Type: application/json" \
+            -H "x-e2e-api-key: ${{ secrets.E2E_API_KEY }}" \
+            -d '{"olderThanDays": 7}' \
+            --max-time 60 \
+            --fail-with-body
+          echo "✅ Cleanup complete"

@@ -59,10 +59,24 @@ export interface TestUser {
 }
 
 /**
+ * Get the current shard index (for CI isolation)
+ * Defaults to "0" for local development
+ */
+function getShardIndex(): string {
+  return process.env.SHARD_INDEX || "0";
+}
+
+const SHARD = getShardIndex();
+
+/**
  * Test Users Configuration
  *
  * All test users use @inbox.mailtrap.io domain for email verification.
  * Users are created on first run and reused across test runs.
+ *
+ * EMAIL FORMAT: e2e-[role]-s[shard]-[worker?]@inbox.mailtrap.io
+ * - shard: From CI SHARD_INDEX (0 for local)
+ * - worker: Added dynamically in global-setup/fixtures (w0, w1...)
  *
  * Platform Roles:
  * - admin: Full platform access, can manage users and invites
@@ -75,7 +89,7 @@ export interface TestUser {
 export const TEST_USERS = {
   // Platform admin user - full admin access
   admin: {
-    email: "e2e-admin@inbox.mailtrap.io",
+    email: `e2e-admin-s${SHARD}@inbox.mailtrap.io`,
     password: "E2ETestPassword123!",
     platformRole: "superAdmin" as PlatformRole,
     onboardingPersona: "team_lead" as OnboardingPersona,
@@ -84,7 +98,7 @@ export const TEST_USERS = {
 
   // Team lead user - creates and manages projects
   teamLead: {
-    email: "e2e-teamlead@inbox.mailtrap.io",
+    email: `e2e-teamlead-s${SHARD}@inbox.mailtrap.io`,
     password: "E2ETestPassword123!",
     platformRole: "user" as PlatformRole,
     onboardingPersona: "team_lead" as OnboardingPersona,
@@ -93,7 +107,7 @@ export const TEST_USERS = {
 
   // Team member user - joins projects, standard access
   teamMember: {
-    email: "e2e-member@inbox.mailtrap.io",
+    email: `e2e-member-s${SHARD}@inbox.mailtrap.io`,
     password: "E2ETestPassword123!",
     platformRole: "user" as PlatformRole,
     onboardingPersona: "team_member" as OnboardingPersona,
@@ -102,11 +116,20 @@ export const TEST_USERS = {
 
   // Viewer user - read-only project access
   viewer: {
-    email: "e2e-viewer@inbox.mailtrap.io",
+    email: `e2e-viewer-s${SHARD}@inbox.mailtrap.io`,
     password: "E2ETestPassword123!",
     platformRole: "user" as PlatformRole,
     onboardingPersona: "team_member" as OnboardingPersona,
     description: "Viewer with read-only project access",
+  },
+
+  // Onboarding user - specifically for testing onboarding flow
+  onboarding: {
+    email: `e2e-onboarding-s${SHARD}@inbox.mailtrap.io`,
+    password: "E2ETestPassword123!",
+    platformRole: "user" as PlatformRole,
+    onboardingPersona: "team_lead" as OnboardingPersona,
+    description: "Dedicated user for onboarding tests",
   },
 } as const;
 

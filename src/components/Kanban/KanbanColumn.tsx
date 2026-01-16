@@ -91,7 +91,7 @@ export const KanbanColumn = memo(function KanbanColumn({
       aria-label={`${state.name} column`}
       data-board-column
       className={cn(
-        "flex-shrink-0 w-full lg:w-80 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg animate-slide-up border-t-4",
+        "flex-shrink-0 w-full lg:w-80 bg-ui-bg-secondary rounded-lg animate-slide-up border-t-4",
         getWorkflowCategoryColor(state.category),
       )}
       style={{

@@ -213,24 +213,21 @@ describe("issue-utils", () => {
     });
 
     it("should return tertiary colors for completed status", () => {
-      const expected =
-        "bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark text-ui-text-secondary dark:text-ui-text-secondary-dark";
+      const expected = "bg-ui-bg-tertiary text-ui-text-secondary";
       expect(getStatusColor("completed")).toBe(expected);
       expect(getStatusColor("Completed")).toBe(expected);
       expect(getStatusColor("COMPLETED")).toBe(expected);
     });
 
     it("should return tertiary colors for done status", () => {
-      const expected =
-        "bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark text-ui-text-secondary dark:text-ui-text-secondary-dark";
+      const expected = "bg-ui-bg-tertiary text-ui-text-secondary";
       expect(getStatusColor("done")).toBe(expected);
       expect(getStatusColor("Done")).toBe(expected);
       expect(getStatusColor("DONE")).toBe(expected);
     });
 
     it("should return info colors for future status", () => {
-      const expected =
-        "bg-status-info-bg dark:bg-status-info-bg-dark text-status-info-text dark:text-status-info-text-dark";
+      const expected = "bg-status-info-bg text-status-info-text";
       expect(getStatusColor("future")).toBe(expected);
       expect(getStatusColor("Future")).toBe(expected);
       expect(getStatusColor("FUTURE")).toBe(expected);

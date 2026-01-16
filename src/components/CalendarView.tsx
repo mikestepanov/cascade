@@ -107,10 +107,8 @@ export function CalendarView({ projectId, sprintId, canEdit = true }: CalendarVi
       <div
         key={day}
         className={cn(
-          "min-h-32 md:min-h-24 border border-ui-border-primary dark:border-ui-border-primary-dark p-2",
-          isTodayDate
-            ? "bg-brand-50 dark:bg-brand-900/20"
-            : "bg-ui-bg-primary dark:bg-ui-bg-primary-dark",
+          "min-h-32 md:min-h-24 border border-ui-border-primary p-2",
+          isTodayDate ? "bg-brand-indigo-track" : "bg-ui-bg-primary",
         )}
       >
         <Flex align="center" justify="between" className="mb-1">
@@ -119,7 +117,7 @@ export function CalendarView({ projectId, sprintId, canEdit = true }: CalendarVi
               "text-sm font-medium",
               isTodayDate
                 ? "bg-brand-600 text-white w-6 h-6 rounded-full flex items-center justify-center"
-                : "text-ui-text-primary dark:text-ui-text-primary-dark",
+                : "text-ui-text-primary",
             )}
           >
             {day}
@@ -182,7 +180,7 @@ export function CalendarView({ projectId, sprintId, canEdit = true }: CalendarVi
           <button
             type="button"
             onClick={previousMonth}
-            className="p-2 hover:bg-ui-bg-secondary rounded-lg transition-colors min-w-[44px] min-h-[44px] sm:min-w-0 sm:min-h-0 flex items-center justify-center"
+            className="p-2 hover:bg-ui-bg-secondary rounded-lg transition-colors min-w-11 min-h-11 sm:min-w-0 sm:min-h-0 flex items-center justify-center"
             aria-label="Previous month"
           >
             <svg
@@ -211,7 +209,7 @@ export function CalendarView({ projectId, sprintId, canEdit = true }: CalendarVi
           <button
             type="button"
             onClick={nextMonth}
-            className="p-2 hover:bg-ui-bg-secondary rounded-lg transition-colors min-w-[44px] min-h-[44px] sm:min-w-0 sm:min-h-0 flex items-center justify-center"
+            className="p-2 hover:bg-ui-bg-secondary rounded-lg transition-colors min-w-11 min-h-11 sm:min-w-0 sm:min-h-0 flex items-center justify-center"
             aria-label="Next month"
           >
             <svg
@@ -228,7 +226,7 @@ export function CalendarView({ projectId, sprintId, canEdit = true }: CalendarVi
           <button
             type="button"
             onClick={() => setCurrentDate(new Date())}
-            className="px-3 sm:px-4 py-2 bg-ui-bg-tertiary hover:bg-ui-bg-secondary rounded-lg text-sm font-medium transition-colors min-w-[44px] min-h-[44px] sm:min-w-0 sm:min-h-0"
+            className="px-3 sm:px-4 py-2 bg-ui-bg-tertiary hover:bg-ui-bg-secondary rounded-lg text-sm font-medium transition-colors min-w-11 min-h-11 sm:min-w-0 sm:min-h-0"
           >
             Today
           </button>

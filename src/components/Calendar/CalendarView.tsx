@@ -227,9 +227,7 @@ function WeekView({
               <div
                 className={cn(
                   "text-xs font-medium",
-                  isToday
-                    ? "text-brand-600 dark:text-brand-400"
-                    : "text-ui-text-tertiary dark:text-ui-text-tertiary-dark",
+                  isToday ? "text-brand-600" : "text-ui-text-tertiary",
                 )}
               >
                 <span className="hidden sm:inline">
@@ -244,7 +242,7 @@ function WeekView({
                   "text-base sm:text-xl font-semibold",
                   isToday
                     ? "bg-brand-600 text-white w-6 h-6 sm:w-8 sm:h-8 rounded-full flex items-center justify-center mx-auto text-sm sm:text-xl"
-                    : "text-ui-text-primary dark:text-ui-text-primary-dark",
+                    : "text-ui-text-primary",
                 )}
               >
                 {day.getDate()}
@@ -372,10 +370,8 @@ function MonthView({
             <div
               key={day.getTime()}
               className={cn(
-                "border-l border-b border-ui-border-primary dark:border-ui-border-primary-dark first:border-l-0 p-1 sm:p-2 min-h-[80px] sm:min-h-[100px]",
-                !isCurrentMonth
-                  ? "bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark"
-                  : "bg-ui-bg-primary dark:bg-ui-bg-primary-dark",
+                "border-l border-b border-ui-border-primary first:border-l-0 p-1 sm:p-2 min-h-20 sm:min-h-24",
+                !isCurrentMonth ? "bg-ui-bg-secondary" : "bg-ui-bg-primary",
               )}
             >
               <div
@@ -384,8 +380,8 @@ function MonthView({
                   isToday
                     ? "bg-brand-600 text-white w-5 h-5 sm:w-6 sm:h-6 rounded-full flex items-center justify-center text-xs"
                     : isCurrentMonth
-                      ? "text-ui-text-primary dark:text-ui-text-primary-dark"
-                      : "text-ui-text-tertiary dark:text-ui-text-tertiary-dark",
+                      ? "text-ui-text-primary"
+                      : "text-ui-text-tertiary",
                 )}
               >
                 {day.getDate()}

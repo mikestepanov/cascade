@@ -129,7 +129,7 @@ export function DocumentHeader({
             size="sm"
             onClick={() => void onImportMarkdown()}
             disabled={!editorReady}
-            className="px-2 sm:px-3 py-1 bg-brand-100 dark:bg-brand-900/40 text-brand-800 dark:text-brand-300 hover:bg-brand-200 dark:hover:bg-brand-800/40 min-h-0"
+            className="px-2 sm:px-3 py-1 bg-brand-indigo-track text-brand-indigo-text hover:opacity-80 min-h-0"
             title="Import from Markdown file"
             aria-label="Import from Markdown"
           >
@@ -158,7 +158,7 @@ export function DocumentHeader({
             size="sm"
             onClick={() => void onExportMarkdown()}
             disabled={!editorReady}
-            className="px-2 sm:px-3 py-1 bg-accent-100 dark:bg-accent-900/40 text-accent-800 dark:text-accent-300 hover:bg-accent-200 dark:hover:bg-accent-800/40 min-h-0"
+            className="px-2 sm:px-3 py-1 bg-brand-cyan-track text-brand-cyan-text hover:opacity-80 min-h-0"
             title="Export as Markdown file"
             aria-label="Export as Markdown"
           >
@@ -189,8 +189,8 @@ export function DocumentHeader({
               className={cn(
                 "px-2 sm:px-3 py-1 min-h-0",
                 document.isPublic
-                  ? "bg-status-success-bg dark:bg-status-success-bg-dark text-status-success-text dark:text-status-success-text-dark hover:bg-status-success-bg dark:hover:bg-status-success-bg-dark hover:opacity-80"
-                  : "bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark text-ui-text-primary dark:text-ui-text-primary-dark hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark",
+                  ? "bg-status-success-bg text-status-success-text hover:opacity-80"
+                  : "bg-ui-bg-tertiary text-ui-text-primary hover:bg-ui-bg-secondary",
               )}
             >
               {document.isPublic ? "Public" : "Private"}

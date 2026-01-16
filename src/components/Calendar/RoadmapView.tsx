@@ -155,7 +155,7 @@ export function RoadmapView({ projectId }: RoadmapViewProps) {
                 "px-2 sm:px-3 py-1.5 text-xs sm:text-sm rounded-l-md",
                 timeScale === "week"
                   ? "bg-brand-600 text-white"
-                  : "bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark",
+                  : "bg-ui-bg-primary text-ui-text-primary hover:bg-ui-bg-tertiary",
               )}
             >
               <span className="sm:hidden">W</span>
@@ -165,10 +165,10 @@ export function RoadmapView({ projectId }: RoadmapViewProps) {
               type="button"
               onClick={() => setTimeScale("month")}
               className={cn(
-                "px-2 sm:px-3 py-1.5 text-xs sm:text-sm border-l border-ui-border-primary dark:border-ui-border-primary-dark",
+                "px-2 sm:px-3 py-1.5 text-xs sm:text-sm border-l border-ui-border-primary",
                 timeScale === "month"
                   ? "bg-brand-600 text-white"
-                  : "bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark",
+                  : "bg-ui-bg-primary text-ui-text-primary hover:bg-ui-bg-tertiary",
               )}
             >
               <span className="sm:hidden">M</span>
@@ -178,10 +178,10 @@ export function RoadmapView({ projectId }: RoadmapViewProps) {
               type="button"
               onClick={() => setTimeScale("quarter")}
               className={cn(
-                "px-2 sm:px-3 py-1.5 text-xs sm:text-sm rounded-r-md border-l border-ui-border-primary dark:border-ui-border-primary-dark",
+                "px-2 sm:px-3 py-1.5 text-xs sm:text-sm rounded-r-md border-l border-ui-border-primary",
                 timeScale === "quarter"
                   ? "bg-brand-600 text-white"
-                  : "bg-ui-bg-primary dark:bg-ui-bg-primary-dark text-ui-text-primary dark:text-ui-text-primary-dark hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark",
+                  : "bg-ui-bg-primary text-ui-text-primary hover:bg-ui-bg-tertiary",
               )}
             >
               <span className="sm:hidden">Q</span>

@@ -12,7 +12,6 @@ export const Route = createFileRoute("/_auth/_app")({
 });
 
 function AppLayout() {
-  const navigate = useNavigate();
   const { isLoading: isAuthLoading, isAuthenticated } = useConvexAuth();
 
   // Get user's companies to check if we need initialization
@@ -21,13 +20,6 @@ function AppLayout() {
     isAuthenticated ? undefined : "skip",
   );
 
-  // Handle home redirect only (SmartAuthGuard handles onboarding/dashboard transitions)
-  useEffect(() => {
-    if (!(isAuthLoading || isAuthenticated)) {
-      navigate({ to: ROUTE_PATTERNS.home });
-    }
-  }, [isAuthLoading, isAuthenticated, navigate]);
-
   // Loading state
   if (isAuthLoading || userCompanies === undefined) {
     return (
@@ -35,11 +27,6 @@ function AppLayout() {
         <LoadingSpinner size="lg" />
       </Flex>
     );
-  }
-
-  // Redirect to sign in if not authenticated
-  if (!isAuthenticated) {
-    return null;
   }
 
   // User has no companies - initialize default company
@@ -87,7 +74,7 @@ function InitializeCompany() {
     return (
       <Flex align="center" justify="center" className="min-h-screen bg-ui-bg-secondary">
         <div className="text-center">
-          <Typography variant="h2" className="text-xl font-medium mb-2 text-red-600">
+          <Typography variant="h2" className="text-xl font-medium mb-2 text-status-error">
             Error
           </Typography>
           <Typography variant="p" color="secondary">

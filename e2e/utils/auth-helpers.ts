@@ -112,7 +112,10 @@ export async function clickContinueWithEmail(page: Page): Promise<boolean> {
 /**
  * Handle being on onboarding or dashboard after authentication
  */
-export async function handleOnboardingOrDashboard(page: Page): Promise<boolean> {
+export async function handleOnboardingOrDashboard(
+  page: Page,
+  autoCompleteOnboarding = true,
+): Promise<boolean> {
   // Wait for DOM to be ready
   await page.waitForLoadState("domcontentloaded");
 
@@ -122,6 +125,10 @@ export async function handleOnboardingOrDashboard(page: Page): Promise<boolean> 
   }
 
   if (await isOnOnboarding(page)) {
+    if (!autoCompleteOnboarding) {
+      console.log("📋 On onboarding - staying here as requested");
+      return true;
+    }
     console.log("📋 On onboarding - completing...");
 
     const locators = onboardingLocators(page);
@@ -169,7 +176,12 @@ export async function handleOnboardingOrDashboard(page: Page): Promise<boolean> 
 /**
  * Try to sign in with specific user credentials
  */
-export async function trySignInUser(page: Page, baseURL: string, user: TestUser): Promise<boolean> {
+export async function trySignInUser(
+  page: Page,
+  baseURL: string,
+  user: TestUser,
+  autoCompleteOnboarding = true,
+): Promise<boolean> {
   try {
     console.log(`  🔐 Attempting sign-in for ${user.email}...`);
     await page.goto(`${baseURL}/signin`, { waitUntil: "domcontentloaded" });
@@ -406,7 +418,7 @@ export async function trySignInUser(page: Page, baseURL: string, user: TestUser)
       return false; // Let global-setup retry handle this
     }
 
-    return await handleOnboardingOrDashboard(page);
+    return await handleOnboardingOrDashboard(page, autoCompleteOnboarding);
   } catch (error) {
     console.log("  ❌ Sign-in error:", String(error).slice(0, 200));
     return false;
@@ -466,6 +478,7 @@ export async function signUpUserViaUI(
   page: Page,
   baseURL: string,
   user: TestUser,
+  autoCompleteOnboarding = true,
 ): Promise<boolean> {
   try {
     await page.goto(`${baseURL}/signup`);
@@ -474,7 +487,7 @@ export async function signUpUserViaUI(
 
     // Check for onboarding or dashboard patterns (both old and new URL structures)
     if (urlPatterns.dashboardOrOnboarding.test(page.url())) {
-      return await handleOnboardingOrDashboard(page);
+      return await handleOnboardingOrDashboard(page, autoCompleteOnboarding);
     }
 
     const locators = authFormLocators(page);
@@ -506,7 +519,7 @@ export async function signUpUserViaUI(
       return false;
     }
 
-    return await handleOnboardingOrDashboard(page);
+    return await handleOnboardingOrDashboard(page, autoCompleteOnboarding);
   } catch (error) {
     console.error(`  ❌ Sign-up error for ${user.email}:`, error);
     return false;

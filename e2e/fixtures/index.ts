@@ -1,4 +1,4 @@
-export { authenticatedTest } from "./auth.fixture";
+export { authenticatedTest, onboardingTest } from "./auth.fixture";
 // export { authenticatedTest } from "./auth.fixture";
 export {
   clientSideNavigate,
