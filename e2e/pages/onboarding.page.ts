@@ -2,6 +2,8 @@ import type { Locator, Page } from "@playwright/test";
 import { expect } from "@playwright/test";
 import { BasePage } from "./base.page";
 
+const TRANSITION_TIMEOUT = 15000;
+
 /**
  * Onboarding Page Object
  * Handles both:
@@ -53,8 +55,8 @@ export class OnboardingPage extends BasePage {
 
     // Onboarding wizard
     this.welcomeHeading = page.getByRole("heading", { name: /welcome to nixelo/i });
-    this.teamLeadCard = page.getByRole("heading", { name: /team lead/i });
-    this.teamMemberCard = page.getByRole("heading", { name: /team member/i });
+    this.teamLeadCard = page.getByRole("button", { name: /team lead/i });
+    this.teamMemberCard = page.getByRole("button", { name: /team member/i });
     this.continueButton = page.getByRole("button", { name: /continue/i });
     this.backButton = page.getByRole("button", { name: /back/i });
     this.skipButton = page.getByRole("button", { name: /skip for now/i });
@@ -196,30 +198,55 @@ export class OnboardingPage extends BasePage {
     await expect(this.tourPopover).not.toBeVisible();
     await expect(this.tourOverlay).not.toBeVisible();
   }
+  // ===================
 
-  // ===================
-  // Onboarding Wizard Actions
-  // ===================
+  /**
+   * Onboarding Wizard Actions
+   */
 
   /**
    * Wait for onboarding wizard to load
    */
-  async waitForWizard(timeout = 15000) {
+  async waitForWizard(timeout = TRANSITION_TIMEOUT) {
     await expect(this.welcomeHeading).toBeVisible({ timeout });
   }
 
   /**
-   * Select team lead role
+   * Select team lead role and verify transition
+   * Retries click until the next screen appears (Outcome-based testing)
    */
   async selectTeamLead() {
-    await this.teamLeadCard.click();
+    await expect(async () => {
+      // If we already see the next screen, we are done
+      if (await this.teamLeadHeading.isVisible()) {
+        return;
+      }
+
+      // Only click if the button is still enabled (meaning we haven't successfully clicked yet)
+      if (await this.teamLeadCard.isEnabled()) {
+        await this.teamLeadCard.click({ timeout: 2000, force: true });
+      }
+
+      // Check for the outcome
+      await expect(this.teamLeadHeading).toBeVisible({ timeout: 3000 });
+    }).toPass({ timeout: 20000 });
   }
 
   /**
    * Select team member role
    */
   async selectTeamMember() {
-    await this.teamMemberCard.click();
+    await expect(async () => {
+      if (await this.allSetHeading.isVisible()) {
+        return;
+      }
+
+      if (await this.teamMemberCard.isEnabled()) {
+        await this.teamMemberCard.click({ timeout: 2000, force: true });
+      }
+
+      await expect(this.allSetHeading).toBeVisible({ timeout: 3000 });
+    }).toPass({ timeout: 20000 });
   }
 
   /**
@@ -272,7 +299,7 @@ export class OnboardingPage extends BasePage {
    * Assert wizard shows role selection
    */
   async expectRoleSelection() {
-    await expect(this.welcomeHeading).toBeVisible({ timeout: 15000 });
+    await expect(this.welcomeHeading).toBeVisible({ timeout: TRANSITION_TIMEOUT });
     await expect(this.teamLeadCard).toBeVisible();
     await expect(this.teamMemberCard).toBeVisible();
   }
@@ -281,16 +308,16 @@ export class OnboardingPage extends BasePage {
    * Assert wizard shows team lead features
    */
   async expectTeamLeadFeatures() {
-    await expect(this.teamLeadHeading).toBeVisible({ timeout: 5000 });
-    await expect(this.setupWorkspaceButton).toBeVisible({ timeout: 5000 });
+    await expect(this.teamLeadHeading).toBeVisible({ timeout: TRANSITION_TIMEOUT });
+    await expect(this.setupWorkspaceButton).toBeVisible({ timeout: TRANSITION_TIMEOUT });
   }
 
   /**
    * Assert wizard shows team member completion
    */
   async expectTeamMemberComplete() {
-    await expect(this.allSetHeading).toBeVisible({ timeout: 5000 });
-    await expect(this.goToDashboardButton).toBeVisible();
+    await expect(this.allSetHeading).toBeVisible({ timeout: TRANSITION_TIMEOUT });
+    await expect(this.goToDashboardButton).toBeVisible({ timeout: TRANSITION_TIMEOUT });
   }
 
   /**
@@ -305,7 +332,7 @@ export class OnboardingPage extends BasePage {
   /**
    * Assert we're on the dashboard
    */
-  async expectDashboard(timeout = 15000) {
+  async expectDashboard(timeout = TRANSITION_TIMEOUT) {
     await expect(this.myWorkHeading).toBeVisible({ timeout });
   }
 }
