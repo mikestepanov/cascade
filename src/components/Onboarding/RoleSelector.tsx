@@ -26,7 +26,7 @@ function RoleCard({ icon, title, description, selected, disabled, onClick }: Rol
       aria-pressed={selected}
       className={cn(
         "relative p-8 rounded-3xl border-2 text-left transition-all duration-300 cursor-pointer overflow-hidden group w-full",
-        "hover:shadow-2xl hover:-translate-y-1 active:scale-[0.95]",
+        "hover:shadow-2xl hover:-translate-y-1 active:scale-95",
         selected
           ? "border-brand-500 bg-brand-50/50 dark:bg-brand-500/10 ring-4 ring-brand-500/10"
           : "border-ui-border-primary bg-ui-bg-primary hover:border-brand-400/50",

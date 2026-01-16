@@ -225,7 +225,7 @@ export function MemberOnboarding({
 
       {/* Continue */}
       <Flex justify="center">
-        <Button variant="primary" size="lg" onClick={handleFinish} className="min-w-[200px]">
+        <Button variant="primary" size="lg" onClick={handleFinish} className="min-w-48">
           Go to Dashboard
         </Button>
       </Flex>
