@@ -180,7 +180,7 @@ export function CalendarView({ projectId, sprintId, canEdit = true }: CalendarVi
           <button
             type="button"
             onClick={previousMonth}
-            className="p-2 hover:bg-ui-bg-secondary rounded-lg transition-colors min-w-[44px] min-h-[44px] sm:min-w-0 sm:min-h-0 flex items-center justify-center"
+            className="p-2 hover:bg-ui-bg-secondary rounded-lg transition-colors min-w-11 min-h-11 sm:min-w-0 sm:min-h-0 flex items-center justify-center"
             aria-label="Previous month"
           >
             <svg
@@ -209,7 +209,7 @@ export function CalendarView({ projectId, sprintId, canEdit = true }: CalendarVi
           <button
             type="button"
             onClick={nextMonth}
-            className="p-2 hover:bg-ui-bg-secondary rounded-lg transition-colors min-w-[44px] min-h-[44px] sm:min-w-0 sm:min-h-0 flex items-center justify-center"
+            className="p-2 hover:bg-ui-bg-secondary rounded-lg transition-colors min-w-11 min-h-11 sm:min-w-0 sm:min-h-0 flex items-center justify-center"
             aria-label="Next month"
           >
             <svg
@@ -226,7 +226,7 @@ export function CalendarView({ projectId, sprintId, canEdit = true }: CalendarVi
           <button
             type="button"
             onClick={() => setCurrentDate(new Date())}
-            className="px-3 sm:px-4 py-2 bg-ui-bg-tertiary hover:bg-ui-bg-secondary rounded-lg text-sm font-medium transition-colors min-w-[44px] min-h-[44px] sm:min-w-0 sm:min-h-0"
+            className="px-3 sm:px-4 py-2 bg-ui-bg-tertiary hover:bg-ui-bg-secondary rounded-lg text-sm font-medium transition-colors min-w-11 min-h-11 sm:min-w-0 sm:min-h-0"
           >
             Today
           </button>
