@@ -12,7 +12,7 @@ describe("Workspaces", () => {
       const userId = await createTestUser(t);
       const asUser = asAuthenticatedUser(t, userId);
 
-      const { organizationId } = await asUser.mutation(api.organizations.createCompany, {
+      const { organizationId } = await asUser.mutation(api.organizations.createOrganization, {
         name: "Test organization",
         timezone: "America/New_York",
       });
@@ -36,7 +36,7 @@ describe("Workspaces", () => {
       const userId = await createTestUser(t);
       const asUser = asAuthenticatedUser(t, userId);
 
-      const { organizationId } = await asUser.mutation(api.organizations.createCompany, {
+      const { organizationId } = await asUser.mutation(api.organizations.createOrganization, {
         name: "Test organization",
         timezone: "America/New_York",
       });
@@ -60,7 +60,7 @@ describe("Workspaces", () => {
       const memberId = await createTestUser(t);
 
       const asOwner = asAuthenticatedUser(t, ownerId);
-      const { organizationId } = await asOwner.mutation(api.organizations.createCompany, {
+      const { organizationId } = await asOwner.mutation(api.organizations.createOrganization, {
         name: "Test organization",
         timezone: "America/New_York",
       });
@@ -94,7 +94,7 @@ describe("Workspaces", () => {
       const userId = await createTestUser(t);
       const asUser = asAuthenticatedUser(t, userId);
 
-      const { organizationId } = await asUser.mutation(api.organizations.createCompany, {
+      const { organizationId } = await asUser.mutation(api.organizations.createOrganization, {
         name: "Test organization",
         timezone: "America/New_York",
       });
@@ -118,7 +118,7 @@ describe("Workspaces", () => {
       const ownerId = await createTestUser(t);
       const asOwner = asAuthenticatedUser(t, ownerId);
 
-      const { organizationId } = await asOwner.mutation(api.organizations.createCompany, {
+      const { organizationId } = await asOwner.mutation(api.organizations.createOrganization, {
         name: "Test organization",
         timezone: "America/New_York",
       });
@@ -168,7 +168,7 @@ describe("Workspaces", () => {
       const memberId = await createTestUser(t);
 
       const asOwner = asAuthenticatedUser(t, ownerId);
-      const { organizationId } = await asOwner.mutation(api.organizations.createCompany, {
+      const { organizationId } = await asOwner.mutation(api.organizations.createOrganization, {
         name: "Test organization",
         timezone: "America/New_York",
       });
@@ -199,7 +199,7 @@ describe("Workspaces", () => {
       const userId = await createTestUser(t);
       const asUser = asAuthenticatedUser(t, userId);
 
-      const { organizationId } = await asUser.mutation(api.organizations.createCompany, {
+      const { organizationId } = await asUser.mutation(api.organizations.createOrganization, {
         name: "Test organization",
         timezone: "America/New_York",
       });
@@ -236,7 +236,7 @@ describe("Workspaces", () => {
       const userId = await createTestUser(t);
       const asUser = asAuthenticatedUser(t, userId);
 
-      const { organizationId } = await asUser.mutation(api.organizations.createCompany, {
+      const { organizationId } = await asUser.mutation(api.organizations.createOrganization, {
         name: "Test organization",
         timezone: "America/New_York",
       });

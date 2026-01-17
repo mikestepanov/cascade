@@ -381,7 +381,7 @@ export const addTeamMember = mutation({
       .first();
 
     if (!organizationMembership) {
-      throw new Error("User must be a organization member to join this team");
+      throw new Error("User must be an organization member to join this team");
     }
 
     const now = Date.now();

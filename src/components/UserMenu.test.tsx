@@ -35,7 +35,7 @@ vi.mock("@convex/_generated/api", () => ({
 
 // Mock useCompany hook
 vi.mock("@/hooks/useOrgContext", () => ({
-  useorganization: () => ({
+  useOrganization: () => ({
     organizationId: "company123",
     orgSlug: "test-organization",
     organizationName: "Test organization",

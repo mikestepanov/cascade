@@ -5,14 +5,14 @@ import { describe, expect, it } from "vitest";
 import { api } from "./_generated/api";
 import schema from "./schema";
 import { modules } from "./testSetup.test-helper";
-import { asAuthenticatedUser, createCompanyAdmin, createTestUser } from "./testUtils";
+import { asAuthenticatedUser, createOrganizationAdmin, createTestUser } from "./testUtils";
 
 describe("Projects", () => {
   describe("create", () => {
     it("should create a project with default workflow states", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
-      const { organizationId, workspaceId, teamId } = await createCompanyAdmin(t, userId);
+      const { organizationId, workspaceId, teamId } = await createOrganizationAdmin(t, userId);
       const asUser = asAuthenticatedUser(t, userId);
 
       const projectId = await asUser.mutation(api.projects.createProject, {
@@ -44,7 +44,7 @@ describe("Projects", () => {
     it("should uppercase project keys", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
-      const { organizationId, workspaceId, teamId } = await createCompanyAdmin(t, userId);
+      const { organizationId, workspaceId, teamId } = await createOrganizationAdmin(t, userId);
       const asUser = asAuthenticatedUser(t, userId);
 
       const projectId = await asUser.mutation(api.projects.createProject, {
@@ -65,7 +65,7 @@ describe("Projects", () => {
     it("should add creator as admin member", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
-      const { organizationId, workspaceId, teamId } = await createCompanyAdmin(t, userId);
+      const { organizationId, workspaceId, teamId } = await createOrganizationAdmin(t, userId);
       const asUser = asAuthenticatedUser(t, userId);
 
       const projectId = await asUser.mutation(api.projects.createProject, {
@@ -87,7 +87,7 @@ describe("Projects", () => {
     it("should reject duplicate project keys", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
-      const { organizationId, workspaceId, teamId } = await createCompanyAdmin(t, userId);
+      const { organizationId, workspaceId, teamId } = await createOrganizationAdmin(t, userId);
       const asUser = asAuthenticatedUser(t, userId);
 
       await asUser.mutation(api.projects.createProject, {
@@ -119,7 +119,7 @@ describe("Projects", () => {
       const t = convexTest(schema, modules);
       // Create a user and organization for the organizationId, but don't authenticate
       const userId = await createTestUser(t);
-      const { organizationId, workspaceId, teamId } = await createCompanyAdmin(t, userId);
+      const { organizationId, workspaceId, teamId } = await createOrganizationAdmin(t, userId);
 
       await expect(async () => {
         await t.mutation(api.projects.createProject, {
@@ -140,7 +140,7 @@ describe("Projects", () => {
     it("should return project details for owner", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t, { name: "Owner" });
-      const { organizationId, workspaceId, teamId } = await createCompanyAdmin(t, userId);
+      const { organizationId, workspaceId, teamId } = await createOrganizationAdmin(t, userId);
       const asUser = asAuthenticatedUser(t, userId);
 
       const projectId = await asUser.mutation(api.projects.createProject, {
@@ -168,7 +168,7 @@ describe("Projects", () => {
       const companyMember = await createTestUser(t, { name: "organization Member" });
 
       // Setup organization and members
-      const { organizationId, workspaceId, teamId } = await createCompanyAdmin(t, owner);
+      const { organizationId, workspaceId, teamId } = await createOrganizationAdmin(t, owner);
       await t.run(async (ctx) => {
         await ctx.db.insert("organizationMembers", {
           organizationId,
@@ -203,7 +203,7 @@ describe("Projects", () => {
       const t = convexTest(schema, modules);
       const owner = await createTestUser(t, { name: "Owner" });
       const nonMember = await createTestUser(t, { name: "Non-Member" });
-      const { organizationId, workspaceId, teamId } = await createCompanyAdmin(t, owner);
+      const { organizationId, workspaceId, teamId } = await createOrganizationAdmin(t, owner);
 
       // Create private project
       const asOwner = asAuthenticatedUser(t, owner);
@@ -228,7 +228,7 @@ describe("Projects", () => {
     it("should return null for non-existent projects", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
-      const { organizationId, workspaceId, teamId } = await createCompanyAdmin(t, userId);
+      const { organizationId, workspaceId, teamId } = await createOrganizationAdmin(t, userId);
       const asUser = asAuthenticatedUser(t, userId);
 
       // Create and delete a project to test non-existent ID behavior
@@ -261,12 +261,12 @@ describe("Projects", () => {
         organizationId: organizationId1,
         workspaceId: workspaceId1,
         teamId: teamId1,
-      } = await createCompanyAdmin(t, user1);
+      } = await createOrganizationAdmin(t, user1);
       const {
         organizationId: organizationId2,
         workspaceId: workspaceId2,
         teamId: teamId2,
-      } = await createCompanyAdmin(t, user2);
+      } = await createOrganizationAdmin(t, user2);
 
       // User 1 creates two projects (one private, one with isPublic flag - legacy)
       const asUser1 = asAuthenticatedUser(t, user1);
@@ -325,7 +325,7 @@ describe("Projects", () => {
     it("should include project metadata (issue count, role)", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
-      const { organizationId, workspaceId, teamId } = await createCompanyAdmin(t, userId);
+      const { organizationId, workspaceId, teamId } = await createOrganizationAdmin(t, userId);
       const asUser = asAuthenticatedUser(t, userId);
 
       await asUser.mutation(api.projects.createProject, {
@@ -353,7 +353,7 @@ describe("Projects", () => {
     it("should allow admins to update workflow states", async () => {
       const t = convexTest(schema, modules);
       const adminId = await createTestUser(t, { name: "Admin" });
-      const { organizationId, workspaceId, teamId } = await createCompanyAdmin(t, adminId);
+      const { organizationId, workspaceId, teamId } = await createOrganizationAdmin(t, adminId);
       const asAdmin = asAuthenticatedUser(t, adminId);
 
       const projectId = await asAdmin.mutation(api.projects.createProject, {
@@ -389,7 +389,7 @@ describe("Projects", () => {
       const t = convexTest(schema, modules);
       const adminId = await createTestUser(t, { name: "Admin" });
       const editorId = await createTestUser(t, { name: "Editor", email: "editor@test.com" });
-      const { organizationId, workspaceId, teamId } = await createCompanyAdmin(t, adminId);
+      const { organizationId, workspaceId, teamId } = await createOrganizationAdmin(t, adminId);
 
       const asAdmin = asAuthenticatedUser(t, adminId);
       const projectId = await asAdmin.mutation(api.projects.createProject, {
@@ -423,7 +423,7 @@ describe("Projects", () => {
     it("should deny unauthenticated users", async () => {
       const t = convexTest(schema, modules);
       const adminId = await createTestUser(t);
-      const { organizationId, workspaceId, teamId } = await createCompanyAdmin(t, adminId);
+      const { organizationId, workspaceId, teamId } = await createOrganizationAdmin(t, adminId);
       const asAdmin = asAuthenticatedUser(t, adminId);
 
       const projectId = await asAdmin.mutation(api.projects.createProject, {
@@ -456,7 +456,7 @@ describe("Projects", () => {
           name: "New Member",
           email: "newmember@test.com",
         });
-        const { organizationId, workspaceId, teamId } = await createCompanyAdmin(t, adminId);
+        const { organizationId, workspaceId, teamId } = await createOrganizationAdmin(t, adminId);
 
         const asAdmin = asAuthenticatedUser(t, adminId);
         const projectId = await asAdmin.mutation(api.projects.createProject, {
@@ -491,7 +491,7 @@ describe("Projects", () => {
           email: "editor@test.com",
         });
         await createTestUser(t, { name: "New", email: "new@test.com" });
-        const { organizationId, workspaceId, teamId } = await createCompanyAdmin(t, adminId);
+        const { organizationId, workspaceId, teamId } = await createOrganizationAdmin(t, adminId);
 
         const asAdmin = asAuthenticatedUser(t, adminId);
         const projectId = await asAdmin.mutation(api.projects.createProject, {
@@ -530,7 +530,7 @@ describe("Projects", () => {
           name: "Member",
           email: "member@test.com",
         });
-        const { organizationId, workspaceId, teamId } = await createCompanyAdmin(t, adminId);
+        const { organizationId, workspaceId, teamId } = await createOrganizationAdmin(t, adminId);
 
         const asAdmin = asAuthenticatedUser(t, adminId);
         const projectId = await asAdmin.mutation(api.projects.createProject, {
@@ -571,7 +571,7 @@ describe("Projects", () => {
           name: "Member",
           email: "member@test.com",
         });
-        const { organizationId, workspaceId, teamId } = await createCompanyAdmin(t, adminId);
+        const { organizationId, workspaceId, teamId } = await createOrganizationAdmin(t, adminId);
 
         const asAdmin = asAuthenticatedUser(t, adminId);
         const projectId = await asAdmin.mutation(api.projects.createProject, {
@@ -606,7 +606,7 @@ describe("Projects", () => {
       it("should prevent removing project creator", async () => {
         const t = convexTest(schema, modules);
         const creatorId = await createTestUser(t, { name: "Creator" });
-        const { organizationId, workspaceId, teamId } = await createCompanyAdmin(t, creatorId);
+        const { organizationId, workspaceId, teamId } = await createOrganizationAdmin(t, creatorId);
 
         const asCreator = asAuthenticatedUser(t, creatorId);
         const projectId = await asCreator.mutation(api.projects.createProject, {

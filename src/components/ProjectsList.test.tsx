@@ -5,7 +5,7 @@ import { ProjectsList } from "./ProjectsList";
 
 // Mock hooks and components
 vi.mock("@/hooks/useOrgContext", () => ({
-  useorganization: () => ({
+  useOrganization: () => ({
     organizationId: "organization-123",
     orgSlug: "test-organization",
   }),

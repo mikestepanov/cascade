@@ -5,7 +5,7 @@ import schema from "./schema";
 import { modules } from "./testSetup.test-helper";
 import {
   asAuthenticatedUser,
-  createCompanyAdmin,
+  createOrganizationAdmin,
   createTestProject,
   createTestUser,
 } from "./testUtils";
@@ -39,7 +39,7 @@ describe("Invites", () => {
       const adminId = await createTestUser(t);
 
       // Create organization admin status (proper way, not relying on fallback)
-      const { organizationId, workspaceId, teamId } = await createCompanyAdmin(t, adminId);
+      const { organizationId, workspaceId, teamId } = await createOrganizationAdmin(t, adminId);
 
       const asAdmin = asAuthenticatedUser(t, adminId);
 
@@ -85,7 +85,7 @@ describe("Invites", () => {
       const adminId = await createTestUser(t);
       // Setup admin rights via organization
       // Setup admin rights
-      const { organizationId, workspaceId, teamId } = await createCompanyAdmin(t, adminId);
+      const { organizationId, workspaceId, teamId } = await createOrganizationAdmin(t, adminId);
 
       const asAdmin = asAuthenticatedUser(t, adminId);
 
@@ -111,7 +111,7 @@ describe("Invites", () => {
       const adminId = await createTestUser(t);
       // Setup admin
       // Setup admin
-      const { organizationId, workspaceId, teamId } = await createCompanyAdmin(t, adminId);
+      const { organizationId, workspaceId, teamId } = await createOrganizationAdmin(t, adminId);
       const asAdmin = asAuthenticatedUser(t, adminId);
 
       const { token } = await asAdmin.mutation(api.invites.sendInvite, {
@@ -184,7 +184,7 @@ describe("Invites", () => {
       const adminId = await createTestUser(t);
       // Setup admin
       // Setup admin
-      const { organizationId, workspaceId, teamId } = await createCompanyAdmin(t, adminId);
+      const { organizationId, workspaceId, teamId } = await createOrganizationAdmin(t, adminId);
       const asAdmin = asAuthenticatedUser(t, adminId);
 
       const { inviteId } = await asAdmin.mutation(api.invites.sendInvite, {

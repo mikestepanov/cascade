@@ -13,7 +13,7 @@ import { notDeleted } from "./lib/softDeleteHelpers";
  * Get user's role in a organization
  * Returns null if user is not a member
  */
-export async function getCompanyRole(
+export async function getOrganizationRole(
   ctx: QueryCtx | MutationCtx,
   organizationId: Id<"organizations">,
   userId: Id<"users">,
@@ -36,14 +36,14 @@ export async function isOrganizationAdmin(
   organizationId: Id<"organizations">,
   userId: Id<"users">,
 ): Promise<boolean> {
-  const role = await getCompanyRole(ctx, organizationId, userId);
+  const role = await getOrganizationRole(ctx, organizationId, userId);
   return role === "owner" || role === "admin";
 }
 
 /**
  * Assert user is organization admin - throws if not
  */
-async function assertCompanyAdmin(
+async function assertOrganizationAdmin(
   ctx: QueryCtx | MutationCtx,
   organizationId: Id<"organizations">,
   userId: Id<"users">,
@@ -57,12 +57,12 @@ async function assertCompanyAdmin(
 /**
  * Assert user is organization owner - throws if not
  */
-async function assertCompanyOwner(
+async function assertOrganizationOwner(
   ctx: QueryCtx | MutationCtx,
   organizationId: Id<"organizations">,
   userId: Id<"users">,
 ): Promise<void> {
-  const role = await getCompanyRole(ctx, organizationId, userId);
+  const role = await getOrganizationRole(ctx, organizationId, userId);
   if (role !== "owner") {
     throw new Error("Only organization owner can perform this action");
   }
@@ -251,7 +251,7 @@ export const updateOrganization = mutation({
     const userId = await getAuthUserId(ctx);
     if (!userId) throw new Error("Not authenticated");
 
-    await assertCompanyAdmin(ctx, args.organizationId, userId);
+    await assertOrganizationAdmin(ctx, args.organizationId, userId);
 
     const updates: Partial<Doc<"organizations">> = {
       updatedAt: Date.now(),
@@ -308,7 +308,7 @@ export const deleteOrganization = mutation({
     const userId = await getAuthUserId(ctx);
     if (!userId) throw new Error("Not authenticated");
 
-    await assertCompanyOwner(ctx, args.organizationId, userId);
+    await assertOrganizationOwner(ctx, args.organizationId, userId);
 
     // Delete all organization members
     const members = await ctx.db
@@ -348,7 +348,7 @@ export const addMember = mutation({
     const currentUserId = await getAuthUserId(ctx);
     if (!currentUserId) throw new Error("Not authenticated");
 
-    await assertCompanyAdmin(ctx, args.organizationId, currentUserId);
+    await assertOrganizationAdmin(ctx, args.organizationId, currentUserId);
 
     // Check if user is already a member
     const existing = await ctx.db
@@ -397,7 +397,7 @@ export const updateMemberRole = mutation({
     const currentUserId = await getAuthUserId(ctx);
     if (!currentUserId) throw new Error("Not authenticated");
 
-    await assertCompanyOwner(ctx, args.organizationId, currentUserId);
+    await assertOrganizationOwner(ctx, args.organizationId, currentUserId);
 
     const membership = await ctx.db
       .query("organizationMembers")
@@ -436,7 +436,7 @@ export const removeMember = mutation({
     const currentUserId = await getAuthUserId(ctx);
     if (!currentUserId) throw new Error("Not authenticated");
 
-    await assertCompanyAdmin(ctx, args.organizationId, currentUserId);
+    await assertOrganizationAdmin(ctx, args.organizationId, currentUserId);
 
     const membership = await ctx.db
       .query("organizationMembers")
@@ -504,7 +504,7 @@ export const getOrganization = query({
     if (!organization) return null;
 
     // Check if user is a member
-    const role = await getCompanyRole(ctx, args.organizationId, userId);
+    const role = await getOrganizationRole(ctx, args.organizationId, userId);
     if (!role) return null;
 
     return {
@@ -553,7 +553,7 @@ export const getOrganizationBySlug = query({
     if (!organization) return null;
 
     // Check if user is a member
-    const role = await getCompanyRole(ctx, organization._id, userId);
+    const role = await getOrganizationRole(ctx, organization._id, userId);
     if (!role) return null;
 
     return {
@@ -686,7 +686,7 @@ export const getOrganizationMembers = query({
     const userId = await getAuthUserId(ctx);
     if (!userId) throw new Error("Not authenticated");
 
-    await assertCompanyAdmin(ctx, args.organizationId, userId);
+    await assertOrganizationAdmin(ctx, args.organizationId, userId);
 
     const memberships = await ctx.db
       .query("organizationMembers")
@@ -733,7 +733,7 @@ export const getUserRole = query({
     const userId = await getAuthUserId(ctx);
     if (!userId) return null;
 
-    return await getCompanyRole(ctx, args.organizationId, userId);
+    return await getOrganizationRole(ctx, args.organizationId, userId);
   },
 });
 

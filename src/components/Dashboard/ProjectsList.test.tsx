@@ -14,7 +14,7 @@ vi.mock("@tanstack/react-router", () => ({
 // Mock organization context
 const TEST_COMPANY_SLUG = "test-organization";
 vi.mock("@/hooks/useOrgContext", () => ({
-  useorganization: () => ({ orgSlug: TEST_COMPANY_SLUG }),
+  useOrganization: () => ({ orgSlug: TEST_COMPANY_SLUG }),
 }));
 
 // Mock navigation hook
@@ -81,8 +81,8 @@ describe("WorkspacesList", () => {
   it("should render empty state when no projects", () => {
     render(<WorkspacesList {...defaultProps} projects={[]} />);
 
-    expect(screen.getByText("No active projects")).toBeInTheDocument();
-    expect(screen.getByText("Explore projects")).toBeInTheDocument();
+    expect(screen.getByText("No projects")).toBeInTheDocument();
+    expect(screen.getByText("You're not a member of any projects yet")).toBeInTheDocument();
   });
 
   it("should render Go to Workspaces button in empty state", () => {

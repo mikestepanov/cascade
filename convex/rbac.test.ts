@@ -9,7 +9,7 @@ import schema from "./schema";
 import { modules } from "./testSetup.test-helper";
 import {
   addProjectMember,
-  createCompanyAdmin,
+  createOrganizationAdmin,
   createTestProject,
   createTestUser,
 } from "./testUtils";
@@ -129,7 +129,7 @@ describe("RBAC Utilities", () => {
 
       const creatorId = await createTestUser(t, { name: "Creator" });
       const companyMemberId = await createTestUser(t, { name: "organization Member" });
-      const { organizationId, workspaceId, teamId } = await createCompanyAdmin(t, creatorId);
+      const { organizationId, workspaceId, teamId } = await createOrganizationAdmin(t, creatorId);
 
       // Add organization member (not project member)
       const now = Date.now();

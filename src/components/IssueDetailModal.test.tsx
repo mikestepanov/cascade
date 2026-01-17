@@ -19,7 +19,7 @@ vi.mock("@/lib/toast", () => ({
 
 // Mock organization context
 vi.mock("@/hooks/useOrgContext", () => ({
-  useorganization: vi.fn(() => ({
+  useOrganization: vi.fn(() => ({
     orgSlug: "test-organization",
     organizationName: "Test organization",
     billingEnabled: false,

@@ -13,7 +13,7 @@ vi.mock("@tanstack/react-router", () => ({
 
 // Mock organization context
 vi.mock("@/hooks/useOrgContext", () => ({
-  useorganization: () => ({ orgSlug: "test-organization" }),
+  useOrganization: () => ({ orgSlug: "test-organization" }),
 }));
 
 // Mock navigation hook
@@ -114,22 +114,22 @@ describe("MyIssuesList", () => {
   it("should render empty state when no created issues", () => {
     render(<MyIssuesList {...defaultProps} issueFilter="created" displayIssues={[]} />);
 
-    expect(screen.getByText("No issues found")).toBeInTheDocument();
-    expect(
-      screen.getByText("You haven't created any issues yet. Visit a project to create one."),
-    ).toBeInTheDocument();
+    expect(screen.getByText("Inbox Clear")).toBeInTheDocument();
+    expect(screen.getByText("No pending items in your feed.")).toBeInTheDocument();
   });
 
   it("should render assigned issues tab with correct count", () => {
     render(<MyIssuesList {...defaultProps} />);
 
-    expect(screen.getByText(`Assigned (${mockIssues.length})`)).toBeInTheDocument();
+    const button = screen.getByRole("button", { name: /Assigned/i });
+    expect(button).toHaveTextContent(`Assigned(${mockIssues.length})`);
   });
 
   it("should render created issues tab with correct count", () => {
     render(<MyIssuesList {...defaultProps} />);
 
-    expect(screen.getByText(`Created (${mockCreatedIssues.length})`)).toBeInTheDocument();
+    const button = screen.getByRole("button", { name: /Created/i });
+    expect(button).toHaveTextContent(`Created(${mockCreatedIssues.length})`);
   });
 
   it("should highlight active tab (assigned)", () => {
@@ -264,7 +264,9 @@ describe("MyIssuesList", () => {
       <MyIssuesList {...defaultProps} myIssues={[]} myCreatedIssues={[]} displayIssues={[]} />,
     );
 
-    expect(screen.getByText("Assigned (0)")).toBeInTheDocument();
-    expect(screen.getByText("Created (0)")).toBeInTheDocument();
+    const assignedBtn = screen.getByRole("button", { name: /Assigned/i });
+    expect(assignedBtn).toHaveTextContent("Assigned(0)");
+    const createdBtn = screen.getByRole("button", { name: /Created/i });
+    expect(createdBtn).toHaveTextContent("Created(0)");
   });
 });

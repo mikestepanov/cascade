@@ -7,7 +7,7 @@ import schema from "./schema";
 import { modules } from "./testSetup.test-helper";
 import {
   asAuthenticatedUser,
-  createCompanyAdmin,
+  createOrganizationAdmin,
   createTestProject,
   createTestUser,
 } from "./testUtils";
@@ -229,7 +229,7 @@ describe("Sprints", () => {
       const t = convexTest(schema, modules);
       const owner = await createTestUser(t, { name: "Owner" });
       const companyMember = await createTestUser(t, { name: "organization Member" });
-      const { organizationId, workspaceId, teamId } = await createCompanyAdmin(t, owner);
+      const { organizationId, workspaceId, teamId } = await createOrganizationAdmin(t, owner);
 
       // Add organization member (not project member)
       const now = Date.now();
