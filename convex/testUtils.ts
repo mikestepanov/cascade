@@ -88,7 +88,7 @@ export function asAuthenticatedUser(t: TestCtx, userId: Id<"users">) {
  * @param projectData - Optional project data
  * @returns Project ID
  */
-export async function createProjectInCompany(
+export async function createProjectInOrganization(
   t: TestCtx,
   creatorId: Id<"users">,
   organizationId: Id<"organizations">,
@@ -188,9 +188,9 @@ export async function createTestProject(
     boardType?: "kanban" | "scrum";
   },
 ): Promise<Id<"projects">> {
-  // Create a organization first for backward compatibility
-  const { organizationId } = await createCompanyAdmin(t, creatorId);
-  return createProjectInCompany(t, creatorId, organizationId, projectData);
+  // Create an organization first for backward compatibility
+  const { organizationId } = await createOrganizationAdmin(t, creatorId);
+  return createProjectInOrganization(t, creatorId, organizationId, projectData);
 }
 
 /**
@@ -321,10 +321,10 @@ export async function expectThrowsAsync(
  * @param companyData - Optional organization data
  * @returns organization ID
  */
-export async function createCompanyAdmin(
+export async function createOrganizationAdmin(
   t: TestCtx,
   userId: Id<"users">,
-  companyData?: {
+  organizationData?: {
     name?: string;
     slug?: string;
   },
@@ -335,8 +335,8 @@ export async function createCompanyAdmin(
 }> {
   return await t.run(async (ctx) => {
     const now = Date.now();
-    const name = companyData?.name || `Test organization ${now}`;
-    const slug = companyData?.slug || `test-organization-${now}`;
+    const name = organizationData?.name || `Test organization ${now}`;
+    const slug = organizationData?.slug || `test-organization-${now}`;
 
     const organizationId = await ctx.db.insert("organizations", {
       createdBy: userId,

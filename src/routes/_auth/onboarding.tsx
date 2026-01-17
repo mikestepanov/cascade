@@ -27,7 +27,7 @@ function OnboardingPage() {
 
   // Queries
   const inviteStatus = useQuery(api.onboarding.checkInviteStatus);
-  const userCompanies = useQuery(api.organizations.getUserCompanies);
+  const userOrganizations = useQuery(api.organizations.getUserOrganizations);
 
   // Mutations
   const setPersona = useMutation(api.onboarding.setOnboardingPersona);
@@ -58,10 +58,10 @@ function OnboardingPage() {
   };
 
   // Navigate to the user's organization dashboard
-  const navigateToCompany = () => {
-    if (userCompanies && userCompanies.length > 0) {
+  const navigateToOrganization = () => {
+    if (userOrganizations && userOrganizations.length > 0) {
       // Use the first organization available
-      const slug = userCompanies[0].slug;
+      const slug = userOrganizations[0].slug;
       if (slug) {
         navigate({
           to: ROUTE_PATTERNS.dashboard,
@@ -78,12 +78,12 @@ function OnboardingPage() {
 
   const handleComplete = async () => {
     await completeOnboarding();
-    navigateToCompany();
+    navigateToOrganization();
   };
 
   const handleSkip = async () => {
     await completeOnboarding();
-    navigateToCompany();
+    navigateToOrganization();
   };
 
   // Called when project is created during lead/member flow

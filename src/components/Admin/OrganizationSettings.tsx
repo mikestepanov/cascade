@@ -20,8 +20,8 @@ interface OrganizationSettingsFormData {
 
 export function OrganizationSettings() {
   const { organizationId, organizationName } = useOrganization();
-  const organization = useQuery(api.organizations.getCompany, { organizationId });
-  const updateCompany = useMutation(api.organizations.updateCompany);
+  const organization = useQuery(api.organizations.getOrganization, { organizationId });
+  const updateOrganization = useMutation(api.organizations.updateOrganization);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState<OrganizationSettingsFormData | null>(null);
@@ -40,11 +40,11 @@ export function OrganizationSettings() {
 
     setIsSubmitting(true);
     try {
-      await updateCompany({
+      await updateOrganization({
         organizationId,
         settings: formData,
       });
-      showSuccess("organization settings updated");
+      showSuccess("Organization settings updated");
     } catch (error) {
       showError(error, "Failed to update settings");
     } finally {
@@ -83,7 +83,7 @@ export function OrganizationSettings() {
       {/* Header */}
       <div>
         <Typography variant="h2" className="text-2xl font-bold">
-          organization Settings
+          Organization Settings
         </Typography>
         <Typography variant="muted" className="mt-1">
           Configure settings for {organizationName}

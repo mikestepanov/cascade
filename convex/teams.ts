@@ -116,7 +116,7 @@ export const createTeam = mutation({
       .first();
 
     if (!organizationMembership) {
-      throw new Error("You must be a organization member to create a team");
+      throw new Error("You must be an organization member to create a team");
     }
 
     // Generate unique slug
@@ -678,9 +678,9 @@ export const getTeams = query({
 });
 
 /**
- * Get all teams in a organization
+ * Get all teams in an organization
  */
-export const getCompanyTeams = query({
+export const getOrganizationTeams = query({
   args: {
     organizationId: v.id("organizations"),
   },

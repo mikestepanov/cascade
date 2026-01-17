@@ -11,7 +11,7 @@ import { getTeamRole } from "./teams";
 /**
  * Check organization-level access permissions
  */
-async function checkCompanyAccess(
+async function checkOrganizationAccess(
   ctx: QueryCtx | MutationCtx,
   project: Doc<"projects">,
   userId: Id<"users">,
@@ -115,7 +115,7 @@ export async function canAccessProject(
   const result = await (async () => {
     if (await checkDirectAccess(ctx, project, userId)) return true;
     if (await checkTeamAccess(ctx, project, userId)) return true;
-    if (await checkCompanyAccess(ctx, project, userId)) return true;
+    if (await checkOrganizationAccess(ctx, project, userId)) return true;
     return false;
   })();
 

@@ -18,6 +18,15 @@ function isValidEmail(email: string): boolean {
  */
 export const get = query({
   args: { id: v.id("users") },
+  returns: v.union(
+    v.null(),
+    v.object({
+      _id: v.id("users"),
+      name: v.optional(v.string()),
+      email: v.optional(v.string()),
+      image: v.optional(v.string()),
+    }),
+  ),
   handler: async (ctx, args) => {
     const user = await ctx.db.get(args.id);
     // Return sanitized user - strips sensitive fields beyond email
@@ -26,6 +35,30 @@ export const get = query({
 });
 
 export const getCurrent = query({
+  args: {},
+  returns: v.union(
+    v.null(),
+    v.object({
+      _id: v.id("users"),
+      _creationTime: v.number(),
+      name: v.optional(v.string()),
+      email: v.optional(v.string()),
+      image: v.optional(v.string()),
+      // Add other fields as optional
+      emailVerificationTime: v.optional(v.number()),
+      phone: v.optional(v.string()),
+      phoneVerificationTime: v.optional(v.number()),
+      isAnonymous: v.optional(v.boolean()),
+      defaultOrganizationId: v.optional(v.id("organizations")),
+      bio: v.optional(v.string()),
+      timezone: v.optional(v.string()),
+      emailNotifications: v.optional(v.boolean()),
+      desktopNotifications: v.optional(v.boolean()),
+      inviteId: v.optional(v.id("invites")),
+      isTestUser: v.optional(v.boolean()),
+      testUserCreatedAt: v.optional(v.number()),
+    }),
+  ),
   handler: async (ctx) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) return null;
@@ -44,6 +77,7 @@ export const updateProfile = mutation({
     emailNotifications: v.optional(v.boolean()),
     desktopNotifications: v.optional(v.boolean()),
   },
+  returns: v.null(),
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) {
@@ -118,6 +152,13 @@ export const isOrganizationAdmin = query({
 
 export const getUserStats = query({
   args: { userId: v.id("users") },
+  returns: v.object({
+    issuesCreated: v.number(),
+    issuesAssigned: v.number(),
+    issuesCompleted: v.number(),
+    comments: v.number(),
+    projects: v.number(),
+  }),
   handler: async (ctx, args) => {
     // Get issues created
     const issuesCreated = await ctx.db
@@ -168,6 +209,15 @@ export const listWithDigestPreference = internalQuery({
   args: {
     frequency: v.union(v.literal("daily"), v.literal("weekly")),
   },
+  returns: v.array(
+    v.object({
+      _id: v.id("users"),
+      name: v.optional(v.string()),
+      email: v.optional(v.string()),
+      image: v.optional(v.string()),
+      // sanitizeUserForAuth fields
+    }),
+  ),
   handler: async (ctx, args) => {
     // Bounded query for notification preferences
     const prefs = await ctx.db.query("notificationPreferences").take(1000);

@@ -55,7 +55,7 @@ export function AppSidebar() {
   const documentsResult = useQuery(api.documents.list, { limit: 11 });
   const documents = documentsResult?.documents;
   const workspaces = useQuery(api.workspaces.list, { organizationId });
-  const teams = useQuery(api.teams.getCompanyTeams, { organizationId });
+  const teams = useQuery(api.teams.getOrganizationTeams, { organizationId });
   const myProjects = useQuery(api.dashboard.getMyProjects);
   const defaultProject = myProjects?.[0];
 

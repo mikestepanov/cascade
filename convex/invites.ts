@@ -182,6 +182,17 @@ export const sendInvite = mutation({
     projectId: v.optional(v.id("projects")),
     projectRole: v.optional(v.union(v.literal("admin"), v.literal("editor"), v.literal("viewer"))),
   },
+  returns: v.union(
+    v.object({
+      inviteId: v.id("invites"),
+      token: v.string(),
+    }),
+    v.object({
+      success: v.boolean(),
+      addedDirectly: v.boolean(), // or v.literal(true)
+      userId: v.id("users"),
+    }),
+  ),
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) throw new Error("Not authenticated");
@@ -280,6 +291,7 @@ export const revokeInvite = mutation({
   args: {
     inviteId: v.id("invites"),
   },
+  returns: v.object({ success: v.boolean() }),
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) throw new Error("Not authenticated");
@@ -318,6 +330,7 @@ export const resendInvite = mutation({
   args: {
     inviteId: v.id("invites"),
   },
+  returns: v.object({ success: v.boolean() }),
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) throw new Error("Not authenticated");
@@ -380,6 +393,38 @@ export const getInviteByToken = query({
   args: {
     token: v.string(),
   },
+  returns: v.union(
+    v.null(),
+    v.object({
+      _id: v.id("invites"),
+      _creationTime: v.number(),
+      email: v.string(),
+      role: v.union(v.literal("user"), v.literal("superAdmin")),
+      organizationId: v.id("organizations"),
+      projectId: v.optional(v.id("projects")),
+      projectRole: v.optional(
+        v.union(v.literal("admin"), v.literal("editor"), v.literal("viewer")),
+      ),
+      invitedBy: v.id("users"),
+      token: v.string(),
+      expiresAt: v.number(),
+      status: v.union(
+        v.literal("pending"),
+        v.literal("accepted"),
+        v.literal("revoked"),
+        v.literal("expired"),
+      ),
+      createdAt: v.number(),
+      updatedAt: v.number(),
+      acceptedBy: v.optional(v.id("users")),
+      acceptedAt: v.optional(v.number()),
+      revokedBy: v.optional(v.id("users")),
+      revokedAt: v.optional(v.number()),
+      isExpired: v.boolean(),
+      inviterName: v.string(),
+      projectName: v.optional(v.string()),
+    }),
+  ),
   handler: async (ctx, args) => {
     const invite = await ctx.db
       .query("invites")
@@ -420,6 +465,12 @@ export const acceptInvite = mutation({
   args: {
     token: v.string(),
   },
+  returns: v.object({
+    success: v.boolean(),
+    role: v.union(v.literal("user"), v.literal("superAdmin")),
+    projectId: v.optional(v.id("projects")),
+    projectRole: v.optional(v.union(v.literal("admin"), v.literal("editor"), v.literal("viewer"))),
+  }),
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) throw new Error("Not authenticated");
@@ -508,6 +559,37 @@ export const listInvites = query({
       ),
     ),
   },
+  returns: v.array(
+    v.object({
+      _id: v.id("invites"),
+      _creationTime: v.number(),
+      email: v.string(),
+      role: v.union(v.literal("user"), v.literal("superAdmin")),
+      organizationId: v.id("organizations"),
+      projectId: v.optional(v.id("projects")),
+      projectRole: v.optional(
+        v.union(v.literal("admin"), v.literal("editor"), v.literal("viewer")),
+      ),
+      invitedBy: v.id("users"),
+      token: v.string(),
+      expiresAt: v.number(),
+      status: v.union(
+        v.literal("pending"),
+        v.literal("accepted"),
+        v.literal("revoked"),
+        v.literal("expired"),
+      ),
+      createdAt: v.number(),
+      updatedAt: v.number(),
+      acceptedBy: v.optional(v.id("users")),
+      acceptedAt: v.optional(v.number()),
+      revokedBy: v.optional(v.id("users")),
+      revokedAt: v.optional(v.number()),
+      inviterName: v.string(),
+      acceptedByName: v.optional(v.string()),
+      projectName: v.optional(v.string()),
+    }),
+  ),
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) throw new Error("Not authenticated");
@@ -570,6 +652,18 @@ export const listInvites = query({
  */
 export const listUsers = query({
   args: {},
+  returns: v.array(
+    v.object({
+      _id: v.id("users"),
+      name: v.string(),
+      email: v.optional(v.string()),
+      image: v.optional(v.string()),
+      emailVerificationTime: v.optional(v.number()),
+      isAnonymous: v.optional(v.boolean()),
+      projectsCreated: v.number(),
+      projectMemberships: v.number(),
+    }),
+  ),
   handler: async (ctx) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) throw new Error("Not authenticated");

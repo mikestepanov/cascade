@@ -2,7 +2,7 @@ import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import type { Doc, Id } from "./_generated/dataModel";
 import { type MutationCtx, mutation, type QueryCtx, query } from "./_generated/server";
-import { batchFetchCompanies, batchFetchUsers } from "./lib/batchHelpers";
+import { batchFetchOrganizations, batchFetchUsers } from "./lib/batchHelpers";
 import { notDeleted } from "./lib/softDeleteHelpers";
 
 // ============================================================================
@@ -149,7 +149,7 @@ const DEFAULT_COMPANY_SETTINGS = {
  * Create a new organization
  * Creator automatically becomes owner
  */
-export const createCompany = mutation({
+export const createOrganization = mutation({
   args: {
     name: v.string(),
     timezone: v.string(), // IANA timezone
@@ -162,6 +162,10 @@ export const createCompany = mutation({
       }),
     ),
   },
+  returns: v.object({
+    organizationId: v.id("organizations"),
+    slug: v.string(),
+  }),
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) throw new Error("Not authenticated");
@@ -228,7 +232,7 @@ export const createCompany = mutation({
  * Update organization details
  * Admin only
  */
-export const updateCompany = mutation({
+export const updateOrganization = mutation({
   args: {
     organizationId: v.id("organizations"),
     name: v.optional(v.string()),
@@ -242,6 +246,7 @@ export const updateCompany = mutation({
       }),
     ),
   },
+  returns: v.object({ success: v.boolean() }),
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) throw new Error("Not authenticated");
@@ -294,10 +299,11 @@ export const updateCompany = mutation({
  * Delete organization
  * Owner only - will also delete all organization members
  */
-export const deleteCompany = mutation({
+export const deleteOrganization = mutation({
   args: {
     organizationId: v.id("organizations"),
   },
+  returns: v.object({ success: v.boolean() }),
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) throw new Error("Not authenticated");
@@ -337,6 +343,7 @@ export const addMember = mutation({
     userId: v.id("users"),
     role: v.union(v.literal("admin"), v.literal("member")), // Can't directly add as owner
   },
+  returns: v.object({ success: v.boolean() }),
   handler: async (ctx, args) => {
     const currentUserId = await getAuthUserId(ctx);
     if (!currentUserId) throw new Error("Not authenticated");
@@ -385,6 +392,7 @@ export const updateMemberRole = mutation({
     userId: v.id("users"),
     role: v.union(v.literal("owner"), v.literal("admin"), v.literal("member")),
   },
+  returns: v.object({ success: v.boolean() }),
   handler: async (ctx, args) => {
     const currentUserId = await getAuthUserId(ctx);
     if (!currentUserId) throw new Error("Not authenticated");
@@ -423,6 +431,7 @@ export const removeMember = mutation({
     organizationId: v.id("organizations"),
     userId: v.id("users"),
   },
+  returns: v.object({ success: v.boolean() }),
   handler: async (ctx, args) => {
     const currentUserId = await getAuthUserId(ctx);
     if (!currentUserId) throw new Error("Not authenticated");
@@ -463,10 +472,30 @@ export const removeMember = mutation({
 /**
  * Get organization by ID
  */
-export const getCompany = query({
+export const getOrganization = query({
   args: {
     organizationId: v.id("organizations"),
   },
+  returns: v.union(
+    v.null(),
+    v.object({
+      _id: v.id("organizations"),
+      _creationTime: v.number(),
+      name: v.string(),
+      slug: v.string(),
+      timezone: v.string(),
+      settings: v.object({
+        defaultMaxHoursPerWeek: v.number(),
+        defaultMaxHoursPerDay: v.number(),
+        requiresTimeApproval: v.boolean(),
+        billingEnabled: v.boolean(),
+      }),
+      createdBy: v.id("users"),
+      createdAt: v.number(),
+      updatedAt: v.number(),
+      userRole: v.union(v.literal("owner"), v.literal("admin"), v.literal("member"), v.null()),
+    }),
+  ),
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) return null;
@@ -488,10 +517,30 @@ export const getCompany = query({
 /**
  * Get organization by slug
  */
-export const getCompanyBySlug = query({
+export const getOrganizationBySlug = query({
   args: {
     slug: v.string(),
   },
+  returns: v.union(
+    v.null(),
+    v.object({
+      _id: v.id("organizations"),
+      _creationTime: v.number(),
+      name: v.string(),
+      slug: v.string(),
+      timezone: v.string(),
+      settings: v.object({
+        defaultMaxHoursPerWeek: v.number(),
+        defaultMaxHoursPerDay: v.number(),
+        requiresTimeApproval: v.boolean(),
+        billingEnabled: v.boolean(),
+      }),
+      createdBy: v.id("users"),
+      createdAt: v.number(),
+      updatedAt: v.number(),
+      userRole: v.union(v.literal("owner"), v.literal("admin"), v.literal("member"), v.null()),
+    }),
+  ),
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) return null;
@@ -517,8 +566,29 @@ export const getCompanyBySlug = query({
 /**
  * Get all companies user is a member of
  */
-export const getUserCompanies = query({
+export const getUserOrganizations = query({
   args: {},
+  returns: v.array(
+    v.object({
+      _id: v.id("organizations"),
+      _creationTime: v.number(),
+      name: v.string(),
+      slug: v.string(),
+      timezone: v.string(),
+      settings: v.object({
+        defaultMaxHoursPerWeek: v.number(),
+        defaultMaxHoursPerDay: v.number(),
+        requiresTimeApproval: v.boolean(),
+        billingEnabled: v.boolean(),
+      }),
+      createdBy: v.id("users"),
+      createdAt: v.number(),
+      updatedAt: v.number(),
+      userRole: v.union(v.literal("owner"), v.literal("admin"), v.literal("member"), v.null()),
+      memberCount: v.number(),
+      projectCount: v.number(),
+    }),
+  ),
   handler: async (ctx) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) return [];
@@ -530,7 +600,7 @@ export const getUserCompanies = query({
 
     // Batch fetch all companies
     const organizationIds = memberships.map((m) => m.organizationId);
-    const companyMap = await batchFetchCompanies(ctx, organizationIds);
+    const companyMap = await batchFetchOrganizations(ctx, organizationIds);
 
     // Batch fetch member and project counts per organization (parallel queries)
     const [memberCountsArrays, projectCountsArrays] = await Promise.all([
@@ -572,7 +642,7 @@ export const getUserCompanies = query({
         const organizationIdStr = membership.organizationId.toString();
         return {
           ...organization,
-          userRole: roleMap.get(organizationIdStr),
+          userRole: roleMap.get(organizationIdStr) ?? null,
           memberCount: memberCountMap.get(organizationIdStr) ?? 0,
           projectCount: projectCountMap.get(organizationIdStr) ?? 0,
         };
@@ -587,10 +657,31 @@ export const getUserCompanies = query({
  * Get all members of a organization
  * Admin only
  */
-export const getorganizationMembers = query({
+export const getOrganizationMembers = query({
   args: {
     organizationId: v.id("organizations"),
   },
+  returns: v.array(
+    v.object({
+      _id: v.id("organizationMembers"),
+      _creationTime: v.number(),
+      organizationId: v.id("organizations"),
+      userId: v.id("users"),
+      role: v.union(v.literal("owner"), v.literal("admin"), v.literal("member")),
+      addedBy: v.id("users"),
+      addedAt: v.number(),
+      user: v.union(
+        v.null(),
+        v.object({
+          _id: v.id("users"),
+          name: v.string(),
+          email: v.optional(v.string()),
+          image: v.optional(v.string()),
+        }),
+      ),
+      addedByName: v.string(),
+    }),
+  ),
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) throw new Error("Not authenticated");
@@ -614,7 +705,14 @@ export const getorganizationMembers = query({
 
       return {
         ...membership,
-        user,
+        user: user
+          ? {
+              _id: user._id,
+              name: user.name ?? "Unknown",
+              email: user.email,
+              image: user.image,
+            }
+          : null,
         addedByName: addedBy?.name || addedBy?.email || "Unknown",
       };
     });
@@ -630,6 +728,7 @@ export const getUserRole = query({
   args: {
     organizationId: v.id("organizations"),
   },
+  returns: v.union(v.literal("owner"), v.literal("admin"), v.literal("member"), v.null()),
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) return null;
@@ -646,11 +745,17 @@ export const getUserRole = query({
  * Initialize default organization for a user
  * Creates a personal project named after the user
  */
-export const initializedefaultOrganization = mutation({
+export const initializeDefaultOrganization = mutation({
   args: {
     organizationName: v.optional(v.string()), // Optional custom name
     timezone: v.optional(v.string()), // Optional timezone, defaults to "America/New_York"
   },
+  returns: v.object({
+    organizationId: v.id("organizations"),
+    slug: v.optional(v.string()),
+    message: v.string(),
+    usersAssigned: v.number(),
+  }),
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) throw new Error("Not authenticated");

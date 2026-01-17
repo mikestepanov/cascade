@@ -54,6 +54,7 @@ import { ROUTE_PATTERNS } from "./shared/routes";
  */
 export const getRedirectDestination = query({
   args: {},
+  returns: v.union(v.string(), v.null()),
   handler: async (ctx) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) return null;

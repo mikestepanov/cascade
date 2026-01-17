@@ -12,7 +12,7 @@ describe("organizations", () => {
       const userId = await createTestUser(t);
       const asUser = asAuthenticatedUser(t, userId);
 
-      const { organizationId, slug } = await asUser.mutation(api.organizations.createCompany, {
+      const { organizationId, slug } = await asUser.mutation(api.organizations.createOrganization, {
         name: "Test organization",
         timezone: "America/New_York",
       });
@@ -46,12 +46,12 @@ describe("organizations", () => {
       const userId = await createTestUser(t);
       const asUser = asAuthenticatedUser(t, userId);
 
-      await asUser.mutation(api.organizations.createCompany, {
+      await asUser.mutation(api.organizations.createOrganization, {
         name: "Test organization",
         timezone: "America/New_York",
       });
 
-      const { slug } = await asUser.mutation(api.organizations.createCompany, {
+      const { slug } = await asUser.mutation(api.organizations.createOrganization, {
         name: "Test organization",
         timezone: "America/Los_Angeles",
       });
@@ -66,12 +66,12 @@ describe("organizations", () => {
       const userId = await createTestUser(t);
       const asUser = asAuthenticatedUser(t, userId);
 
-      const { organizationId } = await asUser.mutation(api.organizations.createCompany, {
+      const { organizationId } = await asUser.mutation(api.organizations.createOrganization, {
         name: "Original Name",
         timezone: "America/New_York",
       });
 
-      await asUser.mutation(api.organizations.updateCompany, {
+      await asUser.mutation(api.organizations.updateOrganization, {
         organizationId,
         name: "New Name",
         timezone: "UTC",
@@ -89,7 +89,7 @@ describe("organizations", () => {
       const otherId = await createTestUser(t);
 
       const asOwner = asAuthenticatedUser(t, ownerId);
-      const { organizationId } = await asOwner.mutation(api.organizations.createCompany, {
+      const { organizationId } = await asOwner.mutation(api.organizations.createOrganization, {
         name: "organization",
         timezone: "UTC",
       });
@@ -103,7 +103,7 @@ describe("organizations", () => {
 
       const asOther = asAuthenticatedUser(t, otherId);
       await expect(async () => {
-        await asOther.mutation(api.organizations.updateCompany, {
+        await asOther.mutation(api.organizations.updateOrganization, {
           organizationId,
           name: "Hacked",
         });
@@ -118,7 +118,7 @@ describe("organizations", () => {
       const memberId = await createTestUser(t);
 
       const asOwner = asAuthenticatedUser(t, ownerId);
-      const { organizationId } = await asOwner.mutation(api.organizations.createCompany, {
+      const { organizationId } = await asOwner.mutation(api.organizations.createOrganization, {
         name: "organization",
         timezone: "UTC",
       });
@@ -131,7 +131,7 @@ describe("organizations", () => {
       });
 
       // Verify member added
-      const members = await asOwner.query(api.organizations.getorganizationMembers, {
+      const members = await asOwner.query(api.organizations.getOrganizationMembers, {
         organizationId,
       });
       expect(members).toHaveLength(2);
@@ -143,7 +143,7 @@ describe("organizations", () => {
       });
 
       // Verify member removed
-      const membersAfter = await asOwner.query(api.organizations.getorganizationMembers, {
+      const membersAfter = await asOwner.query(api.organizations.getOrganizationMembers, {
         organizationId,
       });
       expect(membersAfter).toHaveLength(1);
@@ -156,7 +156,7 @@ describe("organizations", () => {
       const adminId = await createTestUser(t);
 
       const asOwner = asAuthenticatedUser(t, ownerId);
-      const { organizationId } = await asOwner.mutation(api.organizations.createCompany, {
+      const { organizationId } = await asOwner.mutation(api.organizations.createOrganization, {
         name: "organization",
         timezone: "UTC",
       });
@@ -185,15 +185,15 @@ describe("organizations", () => {
       const userId = await createTestUser(t);
       const asUser = asAuthenticatedUser(t, userId);
 
-      const { organizationId, slug } = await asUser.mutation(api.organizations.createCompany, {
+      const { organizationId, slug } = await asUser.mutation(api.organizations.createOrganization, {
         name: "My organization",
         timezone: "UTC",
       });
 
-      const byId = await asUser.query(api.organizations.getCompany, { organizationId });
+      const byId = await asUser.query(api.organizations.getOrganization, { organizationId });
       expect(byId?.name).toBe("My organization");
 
-      const bySlug = await asUser.query(api.organizations.getCompanyBySlug, { slug });
+      const bySlug = await asUser.query(api.organizations.getOrganizationBySlug, { slug });
       expect(bySlug?.name).toBe("My organization");
     });
 
@@ -203,16 +203,19 @@ describe("organizations", () => {
       const otherId = await createTestUser(t);
 
       const asOwner = asAuthenticatedUser(t, ownerId);
-      const { organizationId, slug } = await asOwner.mutation(api.organizations.createCompany, {
-        name: "Private organization",
-        timezone: "UTC",
-      });
+      const { organizationId, slug } = await asOwner.mutation(
+        api.organizations.createOrganization,
+        {
+          name: "Private organization",
+          timezone: "UTC",
+        },
+      );
 
       const asOther = asAuthenticatedUser(t, otherId);
-      const byId = await asOther.query(api.organizations.getCompany, { organizationId });
+      const byId = await asOther.query(api.organizations.getOrganization, { organizationId });
       expect(byId).toBeNull();
 
-      const bySlug = await asOther.query(api.organizations.getCompanyBySlug, { slug });
+      const bySlug = await asOther.query(api.organizations.getOrganizationBySlug, { slug });
       expect(bySlug).toBeNull();
     });
 
@@ -221,18 +224,18 @@ describe("organizations", () => {
       const userId = await createTestUser(t);
       const asUser = asAuthenticatedUser(t, userId);
 
-      await asUser.mutation(api.organizations.createCompany, {
+      await asUser.mutation(api.organizations.createOrganization, {
         name: "organization A",
         timezone: "UTC",
       });
 
-      await asUser.mutation(api.organizations.createCompany, {
+      await asUser.mutation(api.organizations.createOrganization, {
         name: "organization B",
         timezone: "UTC",
       });
 
-      const companies = await asUser.query(api.organizations.getUserCompanies, {});
-      expect(companies).toHaveLength(2);
+      const organizations = await asUser.query(api.organizations.getUserOrganizations, {});
+      expect(organizations).toHaveLength(2);
       // Note: order is not guaranteed by default unless specified in query, usually creation order
       expect(organizations.some((c) => c.name === "organization A")).toBe(true);
       expect(organizations.some((c) => c.name === "organization B")).toBe(true);

@@ -451,6 +451,11 @@ export const deleteTestUserInternal = internalMutation({
             .withIndex("by_organization", (q) => q.eq("organizationId", organization._id))
             .collect();
           for (const member of organizationMembers) {
+            // Check if this organization is the user's default
+            const memberUser = await ctx.db.get(member.userId);
+            if (memberUser?.defaultOrganizationId === organization._id) {
+              await ctx.db.patch(member.userId, { defaultOrganizationId: undefined });
+            }
             await ctx.db.delete(member._id);
           }
           // Delete the organization
@@ -2129,11 +2134,15 @@ export const resetTestWorkspaceInternal = internalMutation({
 
 export const listDuplicateTestUsersInternal = internalMutation({
   args: {},
+  returns: v.object({
+    testUsers: v.number(),
+    duplicates: v.array(v.object({ email: v.string(), ids: v.array(v.id("users")) })),
+  }),
   handler: async (ctx) => {
     const allUsers = await ctx.db.query("users").collect();
     const testUsers = allUsers.filter((u) => u.email?.includes("@inbox.mailtrap.io"));
 
-    const emailMap = new Map<string, string[]>();
+    const emailMap = new Map<string, Id<"users">[]>();
     for (const user of testUsers) {
       const email = user.email;
       if (!email) continue;
@@ -2158,6 +2167,7 @@ export const listDuplicateTestUsersInternal = internalMutation({
 
 export const nukeAllTestUsersInternal = internalMutation({
   args: {},
+  returns: v.object({ success: v.boolean(), deleted: v.number() }),
   handler: async (ctx) => {
     const allUsers = await ctx.db.query("users").collect();
     const testUsers = allUsers.filter((u) => u.email?.includes("@inbox.mailtrap.io"));

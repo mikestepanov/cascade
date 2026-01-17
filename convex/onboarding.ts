@@ -13,6 +13,26 @@ const isTestEmail = (email?: string) => email?.endsWith("@inbox.mailtrap.io") ??
  */
 export const getOnboardingStatus = query({
   args: {},
+  returns: v.union(
+    v.null(),
+    v.object({
+      _id: v.id("userOnboarding"),
+      _creationTime: v.number(),
+      userId: v.id("users"),
+      onboardingCompleted: v.boolean(),
+      onboardingStep: v.optional(v.number()),
+      sampleWorkspaceCreated: v.optional(v.boolean()),
+      sampleProjectCreated: v.optional(v.boolean()),
+      tourShown: v.boolean(),
+      wizardCompleted: v.boolean(),
+      checklistDismissed: v.boolean(),
+      onboardingPersona: v.optional(v.union(v.literal("team_lead"), v.literal("team_member"))),
+      wasInvited: v.optional(v.boolean()),
+      invitedByName: v.optional(v.string()),
+      createdAt: v.number(),
+      updatedAt: v.number(),
+    }),
+  ),
   handler: async (ctx) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) return null;
@@ -38,6 +58,7 @@ export const updateOnboardingStatus = mutation({
     wizardCompleted: v.optional(v.boolean()),
     checklistDismissed: v.optional(v.boolean()),
   },
+  returns: v.null(),
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) throw new Error("Not authenticated");
@@ -90,6 +111,7 @@ export const createSampleProject = mutation({
   args: {
     organizationId: v.optional(v.id("organizations")), // Optional: use existing organization
   },
+  returns: v.id("projects"),
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) throw new Error("Not authenticated");
@@ -493,6 +515,7 @@ async function deleteProjectMetadata(ctx: MutationCtx, projectId: Id<"projects">
  */
 export const resetOnboarding = mutation({
   args: {},
+  returns: v.object({ success: v.boolean() }),
   handler: async (ctx) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) throw new Error("Not authenticated");
@@ -537,6 +560,7 @@ export const resetOnboarding = mutation({
  */
 export const deleteSampleProject = mutation({
   args: {},
+  returns: v.null(),
   handler: async (ctx) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) throw new Error("Not authenticated");
@@ -638,6 +662,15 @@ export const deleteSampleProject = mutation({
  */
 export const checkInviteStatus = query({
   args: {},
+  returns: v.union(
+    v.null(),
+    v.object({
+      wasInvited: v.boolean(),
+      inviterName: v.union(v.string(), v.null()),
+      inviteRole: v.optional(v.union(v.literal("user"), v.literal("superAdmin"))),
+      organizationId: v.optional(v.id("organizations")),
+    }),
+  ),
   handler: async (ctx) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) return null;
@@ -674,6 +707,7 @@ export const setOnboardingPersona = mutation({
   args: {
     persona: v.union(v.literal("team_lead"), v.literal("team_member")),
   },
+  returns: v.object({ success: v.boolean() }),
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) throw new Error("Not authenticated");
@@ -748,6 +782,7 @@ export const setOnboardingPersona = mutation({
  */
 export const completeOnboardingFlow = mutation({
   args: {},
+  returns: v.object({ success: v.boolean() }),
   handler: async (ctx) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) throw new Error("Not authenticated");

@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import { api } from "./_generated/api";
 import schema from "./schema";
 import { modules } from "./testSetup.test-helper";
-import { asAuthenticatedUser, createCompanyAdmin, createTestUser } from "./testUtils";
+import { asAuthenticatedUser, createOrganizationAdmin, createTestUser } from "./testUtils";
 
 describe("Teams", () => {
   describe("createTeam", () => {
@@ -12,7 +12,7 @@ describe("Teams", () => {
       const ownerId = await createTestUser(t);
       const asOwner = asAuthenticatedUser(t, ownerId);
 
-      const { organizationId, workspaceId } = await createCompanyAdmin(t, ownerId);
+      const { organizationId, workspaceId } = await createOrganizationAdmin(t, ownerId);
 
       const { teamId, slug } = await asOwner.mutation(api.teams.createTeam, {
         organizationId,
@@ -37,7 +37,7 @@ describe("Teams", () => {
       const outsiderId = await createTestUser(t);
 
       const asOwner = asAuthenticatedUser(t, ownerId);
-      const { organizationId, workspaceId } = await createCompanyAdmin(t, ownerId);
+      const { organizationId, workspaceId } = await createOrganizationAdmin(t, ownerId);
 
       const asOutsider = asAuthenticatedUser(t, outsiderId);
       await expect(async () => {
@@ -47,7 +47,7 @@ describe("Teams", () => {
           name: "Hacker Team",
           isPrivate: false,
         });
-      }).rejects.toThrow("You must be a organization member to create a team");
+      }).rejects.toThrow("You must be an organization member to create a team");
 
       await t.finishInProgressScheduledFunctions();
     });
@@ -59,7 +59,7 @@ describe("Teams", () => {
       const ownerId = await createTestUser(t);
       const asOwner = asAuthenticatedUser(t, ownerId);
 
-      const { organizationId, workspaceId } = await createCompanyAdmin(t, ownerId);
+      const { organizationId, workspaceId } = await createOrganizationAdmin(t, ownerId);
 
       const { teamId } = await asOwner.mutation(api.teams.createTeam, {
         organizationId,
@@ -93,7 +93,7 @@ describe("Teams", () => {
       const memberId = await createTestUser(t);
 
       const asOwner = asAuthenticatedUser(t, ownerId);
-      const { organizationId, workspaceId } = await createCompanyAdmin(t, ownerId);
+      const { organizationId, workspaceId } = await createOrganizationAdmin(t, ownerId);
 
       // Add user to organization first
       await asOwner.mutation(api.organizations.addMember, {
@@ -137,7 +137,7 @@ describe("Teams", () => {
       const outsiderId = await createTestUser(t);
 
       const asOwner = asAuthenticatedUser(t, ownerId);
-      const { organizationId, workspaceId } = await createCompanyAdmin(t, ownerId);
+      const { organizationId, workspaceId } = await createOrganizationAdmin(t, ownerId);
 
       const { teamId } = await asOwner.mutation(api.teams.createTeam, {
         organizationId,
@@ -152,7 +152,7 @@ describe("Teams", () => {
           userId: outsiderId,
           role: "member",
         });
-      }).rejects.toThrow("User must be a organization member to join this team");
+      }).rejects.toThrow("User must be an organization member to join this team");
 
       await t.finishInProgressScheduledFunctions();
     });
@@ -164,7 +164,7 @@ describe("Teams", () => {
       const userId = await createTestUser(t);
       const asUser = asAuthenticatedUser(t, userId);
 
-      const { organizationId, workspaceId } = await createCompanyAdmin(t, userId);
+      const { organizationId, workspaceId } = await createOrganizationAdmin(t, userId);
 
       await asUser.mutation(api.teams.createTeam, {
         organizationId,
@@ -180,7 +180,7 @@ describe("Teams", () => {
         isPrivate: false,
       });
 
-      const teams = await asUser.query(api.teams.getCompanyTeams, { organizationId });
+      const teams = await asUser.query(api.teams.getOrganizationTeams, { organizationId });
       expect(teams).toHaveLength(3); // Engineering (default) + Team 1 + Team 2
 
       await t.finishInProgressScheduledFunctions();
@@ -191,7 +191,7 @@ describe("Teams", () => {
       const userId = await createTestUser(t);
       const asUser = asAuthenticatedUser(t, userId);
 
-      const { organizationId, workspaceId } = await createCompanyAdmin(t, userId);
+      const { organizationId, workspaceId } = await createOrganizationAdmin(t, userId);
 
       await asUser.mutation(api.teams.createTeam, {
         organizationId,

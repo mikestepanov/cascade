@@ -102,7 +102,7 @@ export async function batchFetchTeams(
 /**
  * Batch fetch companies by ID
  */
-export async function batchFetchCompanies(
+export async function batchFetchOrganizations(
   ctx: QueryCtx,
   organizationIds: (Id<"organizations"> | undefined)[],
 ): Promise<Map<Id<"organizations">, Doc<"organizations">>> {

@@ -23,31 +23,31 @@ import { SidebarProvider } from "@/hooks/useSidebarState";
 // Re-export hooks for backwards compatibility with existing imports
 export { useOrganization, useOrganizationOptional };
 
-type UserCompany = FunctionReturnType<typeof api.organizations.getUserCompanies>[number];
+type UserOrganization = FunctionReturnType<typeof api.organizations.getUserOrganizations>[number];
 
 export const Route = createFileRoute("/_auth/_app/$orgSlug")({
-  component: CompanyLayout,
+  component: OrganizationLayout,
   ssr: false, // Disable SSR to prevent hydration issues with OrgContext
 });
 
-function CompanyLayout() {
+function OrganizationLayout() {
   const { orgSlug } = Route.useParams();
   const { isLoading: isAuthLoading, isAuthenticated } = useConvexAuth();
 
   // Skip queries until auth is ready - this prevents queries from running during auth hydration
-  const userCompanies = useQuery(
-    api.organizations.getUserCompanies,
+  const userOrganizations = useQuery(
+    api.organizations.getUserOrganizations,
     isAuthenticated ? undefined : "skip",
-  ) as UserCompany[] | undefined;
+  ) as UserOrganization[] | undefined;
 
   // Fetch organization by slug - also skip until authenticated
   const organization = useQuery(
-    api.organizations.getCompanyBySlug,
+    api.organizations.getOrganizationBySlug,
     isAuthenticated ? { slug: orgSlug } : "skip",
   );
 
   // Loading state - wait for auth AND queries
-  if (isAuthLoading || organization === undefined || userCompanies === undefined) {
+  if (isAuthLoading || organization === undefined || userOrganizations === undefined) {
     return (
       <Flex align="center" justify="center" className="min-h-screen bg-ui-bg-secondary">
         <LoadingSpinner size="lg" />
@@ -81,9 +81,9 @@ function CompanyLayout() {
   }
 
   // Check if user has access to this organization
-  const userCompany = userCompanies?.find((c) => c._id === organization._id);
+  const userOrganization = userOrganizations?.find((c) => c._id === organization._id);
 
-  if (!userCompany) {
+  if (!userOrganization) {
     return (
       <Flex align="center" justify="center" className="min-h-screen bg-ui-bg-secondary p-4">
         <div className="text-center">
@@ -102,19 +102,19 @@ function CompanyLayout() {
     organizationId: organization._id,
     orgSlug: organization.slug,
     organizationName: organization.name,
-    userRole: userCompany.userRole,
+    userRole: userOrganization.userRole,
     billingEnabled: organization.settings.billingEnabled,
   };
 
   return (
     <OrgContext.Provider value={orgContextValue}>
-      <CompanyLayoutInner />
+      <OrganizationLayoutInner />
     </OrgContext.Provider>
   );
 }
 
-// Inner component that can safely use useCompany and other hooks
-function CompanyLayoutInner() {
+// Inner component that can safely use useOrganization and other hooks
+function OrganizationLayoutInner() {
   const navigate = useNavigate();
 
   // UI state for modals
