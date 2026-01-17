@@ -2,7 +2,7 @@ import { api } from "@convex/_generated/api";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
 import { useEffect } from "react";
-import { ROUTE_PATTERNS } from "@/config/routes";
+import { ROUTES } from "@/config/routes";
 import { useOrganization } from "@/hooks/useOrgContext";
 
 export const Route = createFileRoute(
@@ -25,7 +25,7 @@ function TeamHome() {
   useEffect(() => {
     if (team) {
       navigate({
-        to: ROUTE_PATTERNS.workspaces.teams.projects.list,
+        to: ROUTES.workspaces.teams.projects.list.path,
         params: { orgSlug, workspaceSlug, teamSlug },
         replace: true,
       });

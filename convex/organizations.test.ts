@@ -6,7 +6,7 @@ import { modules } from "./testSetup.test-helper";
 import { asAuthenticatedUser, createTestUser } from "./testUtils";
 
 describe("organizations", () => {
-  describe("createCompany", () => {
+  describe("createOrganization", () => {
     it("should create a organization and make creator owner", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
@@ -60,7 +60,7 @@ describe("organizations", () => {
     });
   });
 
-  describe("updateCompany", () => {
+  describe("updateOrganization", () => {
     it("should allow admins to update details", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);

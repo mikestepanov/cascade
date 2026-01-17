@@ -121,7 +121,7 @@ const applicationTables = {
     ownerId: v.id("users"), // User that owns this project
     // Sharing settings
     isPublic: v.optional(v.boolean()), // Visible to all organization members (organization-public)
-    // isCompanyPublic removed (legacy)
+    // isOrganizationPublic removed (legacy)
     sharedWithTeamIds: v.optional(v.array(v.id("teams"))), // Specific teams with access
     // Audit
     createdBy: v.id("users"), // Who created it (for audit trail)
@@ -1273,6 +1273,7 @@ const applicationTables = {
     .index("by_user", ["userId"])
     .index("by_organization_user", ["organizationId", "userId"])
     .index("by_role", ["role"])
+    .index("by_user_role", ["userId", "role"])
     .index("by_organization_role", ["organizationId", "role"]),
 
   // Teams (within a organization - for data isolation and grouping)

@@ -1,5 +1,5 @@
 import type { KeySequence } from "../hooks/useKeyboardShortcuts";
-// Routes removed
+import { ROUTES } from "./routes";
 
 export interface ShortcutHandlers {
   orgSlug: string;
@@ -56,19 +56,19 @@ export function createKeyboardShortcuts(handlers: ShortcutHandlers) {
     {
       key: "1",
       meta: true,
-      handler: () => handlers.navigate(`/${orgSlug}/dashboard`),
+      handler: () => handlers.navigate(ROUTES.dashboard.build(orgSlug)),
       description: "Go to dashboard",
     },
     {
       key: "2",
       meta: true,
-      handler: () => handlers.navigate(`/${orgSlug}/documents`),
+      handler: () => handlers.navigate(ROUTES.documents.list.build(orgSlug)),
       description: "Go to documents",
     },
     {
       key: "3",
       meta: true,
-      handler: () => handlers.navigate(`/${orgSlug}/workspaces`),
+      handler: () => handlers.navigate(ROUTES.workspaces.list.build(orgSlug)),
       description: "Go to workspaces",
     },
     // Single-key actions (only when not typing)
@@ -103,17 +103,17 @@ export function createKeySequences(handlers: ShortcutHandlers): KeySequence[] {
   return [
     {
       keys: ["g", "h"],
-      handler: () => handlers.navigate(`/${orgSlug}/dashboard`),
+      handler: () => handlers.navigate(ROUTES.dashboard.build(orgSlug)),
       description: "Go to home",
     },
     {
       keys: ["g", "w"],
-      handler: () => handlers.navigate(`/${orgSlug}/workspaces`),
+      handler: () => handlers.navigate(ROUTES.workspaces.list.build(orgSlug)),
       description: "Go to workspaces",
     },
     {
       keys: ["g", "d"],
-      handler: () => handlers.navigate(`/${orgSlug}/documents`),
+      handler: () => handlers.navigate(ROUTES.documents.list.build(orgSlug)),
       description: "Go to documents",
     },
   ];

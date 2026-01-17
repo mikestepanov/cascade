@@ -855,12 +855,12 @@ export const setupRbacProjectInternal = internalMutation({
     // =========================================================================
     // Step 2: Add editor and viewer as organization members (if not already)
     // =========================================================================
-    const usersToAddToCompany = [
+    const usersToAddToOrganization = [
       { userId: editorUser._id, role: "member" as const },
       { userId: viewerUser._id, role: "member" as const },
     ];
 
-    for (const config of usersToAddToCompany) {
+    for (const config of usersToAddToOrganization) {
       const existingMember = await ctx.db
         .query("organizationMembers")
         .withIndex("by_organization_user", (q) =>
@@ -942,10 +942,10 @@ export const setupRbacProjectInternal = internalMutation({
     // =========================================================================
 
     // 4a. organization-level project (legacy style - no workspace/team)
-    const companyProjectKey = `${args.projectKey}-COMP`;
+    const organizationProjectKey = `${args.projectKey}-ORG`;
     let project = await ctx.db
       .query("projects")
-      .withIndex("by_key", (q) => q.eq("key", companyProjectKey))
+      .withIndex("by_key", (q) => q.eq("key", organizationProjectKey))
       .filter(notDeleted)
       .first();
 
@@ -962,7 +962,7 @@ export const setupRbacProjectInternal = internalMutation({
 
       const projectId = await ctx.db.insert("projects", {
         name: args.projectName,
-        key: companyProjectKey,
+        key: organizationProjectKey,
         description: "E2E test project for RBAC permission testing - organization level",
         organizationId: organization._id,
         workspaceId,

@@ -4,7 +4,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { usePaginatedQuery, useQuery } from "convex/react";
 import { useState } from "react";
 import { Flex } from "@/components/ui/Flex";
-import { ROUTE_PATTERNS } from "@/config/routes";
+import { ROUTES } from "@/config/routes";
 import { useOrganization } from "@/hooks/useOrgContext";
 import { useListNavigation } from "../hooks/useListNavigation";
 import { DashboardCustomizeModal } from "./Dashboard/DashboardCustomizeModal";
@@ -50,7 +50,7 @@ export function Dashboard() {
   // Navigation helper for keyboard navigation callbacks
   const navigateToWorkspace = (projectKey: string) => {
     navigate({
-      to: ROUTE_PATTERNS.projects.board,
+      to: ROUTES.projects.board.path,
       params: { orgSlug, key: projectKey },
     });
   };

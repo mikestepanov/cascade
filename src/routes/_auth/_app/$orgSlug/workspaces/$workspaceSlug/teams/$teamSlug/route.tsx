@@ -4,7 +4,7 @@ import { useQuery } from "convex/react";
 import { Flex } from "@/components/ui/Flex";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { Typography } from "@/components/ui/Typography";
-import { ROUTE_PATTERNS } from "@/config/routes";
+import { ROUTES } from "@/config/routes";
 import { useOrganization } from "@/hooks/useOrgContext";
 
 export const Route = createFileRoute(
@@ -48,7 +48,7 @@ function TeamLayout() {
       {/* Breadcrumb */}
       <div className="mb-6 text-sm">
         <Link
-          to={ROUTE_PATTERNS.workspaces.list}
+          to={ROUTES.workspaces.list.path}
           params={{ orgSlug: orgSlug }}
           className="text-blue-600 hover:underline"
         >
@@ -56,7 +56,7 @@ function TeamLayout() {
         </Link>
         <span className="mx-2">/</span>
         <Link
-          to={ROUTE_PATTERNS.workspaces.detail}
+          to={ROUTES.workspaces.detail.path}
           params={{ orgSlug: orgSlug, workspaceSlug }}
           className="text-blue-600 hover:underline"
         >
@@ -83,21 +83,21 @@ function TeamLayout() {
       <div className="border-b border-gray-200 mb-6">
         <nav className="flex gap-6">
           <Link
-            to={ROUTE_PATTERNS.workspaces.teams.detail}
+            to={ROUTES.workspaces.teams.detail.path}
             params={{ orgSlug: orgSlug, workspaceSlug, teamSlug }}
             className="px-1 py-3 border-b-2 border-blue-600 font-medium text-blue-600"
           >
             Projects
           </Link>
           <Link
-            to={ROUTE_PATTERNS.workspaces.teams.calendar}
+            to={ROUTES.workspaces.teams.calendar.path}
             params={{ orgSlug: orgSlug, workspaceSlug, teamSlug }}
             className="px-1 py-3 border-b-2 border-transparent hover:border-gray-300 text-gray-600"
           >
             Calendar
           </Link>
           <Link
-            to={ROUTE_PATTERNS.workspaces.teams.settings}
+            to={ROUTES.workspaces.teams.settings.path}
             params={{ orgSlug: orgSlug, workspaceSlug, teamSlug }}
             className="px-1 py-3 border-b-2 border-transparent hover:border-gray-300 text-gray-600"
           >

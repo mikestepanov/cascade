@@ -4,7 +4,7 @@ import { Link } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
 import { LogOut, Settings } from "lucide-react";
 import { Flex } from "@/components/ui/Flex";
-import { ROUTE_PATTERNS } from "@/config/routes";
+import { ROUTES } from "@/config/routes";
 import { useOrganization } from "@/hooks/useOrgContext";
 import { Avatar } from "./ui/Avatar";
 import {
@@ -54,7 +54,7 @@ export function UserMenu() {
         <DropdownMenuGroup>
           <DropdownMenuItem asChild>
             <Link
-              to={ROUTE_PATTERNS.settings.profile}
+              to={ROUTES.settings.profile.path}
               params={{ orgSlug }}
               className="cursor-pointer w-full"
             >

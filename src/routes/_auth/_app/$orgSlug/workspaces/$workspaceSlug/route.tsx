@@ -4,7 +4,7 @@ import { useQuery } from "convex/react";
 import { Flex } from "@/components/ui/Flex";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { Typography } from "@/components/ui/Typography";
-import { ROUTE_PATTERNS } from "@/config/routes";
+import { ROUTES } from "@/config/routes";
 import { useOrganization } from "@/hooks/useOrgContext";
 
 export const Route = createFileRoute("/_auth/_app/$orgSlug/workspaces/$workspaceSlug")({
@@ -41,7 +41,7 @@ function WorkspaceLayout() {
       {/* Breadcrumb */}
       <div className="mb-6 text-sm">
         <Link
-          to={ROUTE_PATTERNS.workspaces.list}
+          to={ROUTES.workspaces.list.path}
           params={{ orgSlug }}
           className="text-blue-600 hover:underline"
         >
@@ -68,14 +68,14 @@ function WorkspaceLayout() {
       <div className="border-b border-gray-200 mb-6">
         <nav className="flex gap-6">
           <Link
-            to={ROUTE_PATTERNS.workspaces.detail}
+            to={ROUTES.workspaces.detail.path}
             params={{ orgSlug, workspaceSlug }}
             className="px-1 py-3 border-b-2 border-blue-600 font-medium text-blue-600"
           >
             Teams
           </Link>
           <Link
-            to={ROUTE_PATTERNS.workspaces.settings}
+            to={ROUTES.workspaces.settings.path}
             params={{ orgSlug, workspaceSlug }}
             className="px-1 py-3 border-b-2 border-transparent hover:border-gray-300 text-gray-600"
           >

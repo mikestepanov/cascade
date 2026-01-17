@@ -140,13 +140,19 @@ export const isOrganizationAdmin = query({
     if (!userId) return false;
 
     // Primary: Check if user is admin or owner in any organization
-    const organizationMembership = await ctx.db
+    const adminMembership = await ctx.db
       .query("organizationMembers")
-      .withIndex("by_user", (q) => q.eq("userId", userId))
-      .filter((q) => q.or(q.eq(q.field("role"), "admin"), q.eq(q.field("role"), "owner")))
+      .withIndex("by_user_role", (q) => q.eq("userId", userId).eq("role", "admin"))
       .first();
 
-    return !!organizationMembership;
+    if (adminMembership) return true;
+
+    const ownerMembership = await ctx.db
+      .query("organizationMembers")
+      .withIndex("by_user_role", (q) => q.eq("userId", userId).eq("role", "owner"))
+      .first();
+
+    return !!ownerMembership;
   },
 });
 

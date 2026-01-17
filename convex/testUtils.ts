@@ -318,7 +318,7 @@ export async function expectThrowsAsync(
  *
  * @param t - Convex test helper
  * @param userId - User ID to make admin
- * @param companyData - Optional organization data
+ * @param organizationData - Optional organization data
  * @returns organization ID
  */
 export async function createOrganizationAdmin(

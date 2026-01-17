@@ -141,7 +141,6 @@ export const update = mutation({
     if (!workspace) throw new Error("Workspace not found");
 
     // Check permissions: Only organization admins can update workspaces
-    // Check permissions: Only organization admins can delete workspaces
     const isAdmin = await isOrganizationAdmin(ctx, workspace.organizationId, userId);
     if (!isAdmin) {
       throw new Error("Only organization admins can perform this action");
@@ -173,9 +172,9 @@ export const remove = mutation({
 
     // Check permissions (workspace admin or organization admin)
     const isCreator = workspace.createdBy === userId;
-    const isCompAdmin = await isOrganizationAdmin(ctx, workspace.organizationId, userId);
+    const isOrgAdmin = await isOrganizationAdmin(ctx, workspace.organizationId, userId);
 
-    if (!(isCreator || isCompAdmin)) {
+    if (!(isCreator || isOrgAdmin)) {
       throw new Error("Only workspace admins or organization admins can delete workspaces");
     }
 

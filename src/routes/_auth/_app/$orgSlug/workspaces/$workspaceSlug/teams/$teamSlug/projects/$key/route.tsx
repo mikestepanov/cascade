@@ -4,7 +4,7 @@ import { useQuery } from "convex/react";
 import { Flex } from "@/components/ui/Flex";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { Typography } from "@/components/ui/Typography";
-import { ROUTE_PATTERNS } from "@/config/routes";
+import { ROUTES } from "@/config/routes";
 
 export const Route = createFileRoute(
   "/_auth/_app/$orgSlug/workspaces/$workspaceSlug/teams/$teamSlug/projects/$key",
@@ -42,22 +42,22 @@ function ProjectLayout() {
   const tabs = [
     {
       name: "Board",
-      to: ROUTE_PATTERNS.workspaces.teams.projects.board,
+      to: ROUTES.workspaces.teams.projects.board.path,
       params: { orgSlug, workspaceSlug, teamSlug, key },
     },
     {
       name: "Calendar",
-      to: ROUTE_PATTERNS.workspaces.teams.projects.calendar,
+      to: ROUTES.workspaces.teams.projects.calendar.path,
       params: { orgSlug, workspaceSlug, teamSlug, key },
     },
     {
       name: "Timesheet",
-      to: ROUTE_PATTERNS.workspaces.teams.projects.timesheet,
+      to: ROUTES.workspaces.teams.projects.timesheet.path,
       params: { orgSlug, workspaceSlug, teamSlug, key },
     },
     {
       name: "Settings",
-      to: ROUTE_PATTERNS.workspaces.teams.projects.settings,
+      to: ROUTES.workspaces.teams.projects.settings.path,
       params: { orgSlug, workspaceSlug, teamSlug, key },
     },
   ];
@@ -67,7 +67,7 @@ function ProjectLayout() {
       {/* Breadcrumb */}
       <div className="px-4 py-2 border-b border-ui-border-primary bg-ui-bg-secondary text-sm">
         <Link
-          to={ROUTE_PATTERNS.workspaces.list}
+          to={ROUTES.workspaces.list.path}
           params={{ orgSlug }}
           className="text-blue-600 hover:underline"
         >
@@ -75,7 +75,7 @@ function ProjectLayout() {
         </Link>
         <span className="mx-2 text-ui-text-tertiary">/</span>
         <Link
-          to={ROUTE_PATTERNS.workspaces.detail}
+          to={ROUTES.workspaces.detail.path}
           params={{ orgSlug, workspaceSlug }}
           className="text-blue-600 hover:underline"
         >
@@ -83,7 +83,7 @@ function ProjectLayout() {
         </Link>
         <span className="mx-2 text-ui-text-tertiary">/</span>
         <Link
-          to={ROUTE_PATTERNS.workspaces.teams.detail}
+          to={ROUTES.workspaces.teams.detail.path}
           params={{ orgSlug, workspaceSlug, teamSlug }}
           className="text-blue-600 hover:underline"
         >

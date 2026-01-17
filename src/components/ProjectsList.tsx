@@ -8,7 +8,7 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { Flex } from "@/components/ui/Flex";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { Typography } from "@/components/ui/Typography";
-import { ROUTE_PATTERNS } from "@/config/routes";
+import { ROUTES } from "@/config/routes";
 import { useOrganization } from "@/hooks/useOrgContext";
 import { CreateProjectFromTemplate } from "./CreateProjectFromTemplate";
 
@@ -31,7 +31,7 @@ export function ProjectsList() {
   const handleProjectCreated = async (_projectId: string, projectKey: string) => {
     setIsCreateOpen(false);
     await navigate({
-      to: ROUTE_PATTERNS.projects.board,
+      to: ROUTES.projects.board.path,
       params: { orgSlug, key: projectKey },
     });
   };
@@ -76,7 +76,7 @@ export function ProjectsList() {
           {projects.map((project) => (
             <Link
               key={project._id}
-              to={ROUTE_PATTERNS.projects.board}
+              to={ROUTES.projects.board.path}
               params={{ orgSlug, key: project.key }}
             >
               <Card className="p-6 hover:shadow-lg transition-shadow cursor-pointer">

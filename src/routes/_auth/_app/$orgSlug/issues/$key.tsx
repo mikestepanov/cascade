@@ -4,7 +4,7 @@ import { useQuery } from "convex/react";
 import { Flex } from "@/components/ui/Flex";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { Typography } from "@/components/ui/Typography";
-import { ROUTE_PATTERNS } from "@/config/routes";
+import { ROUTES } from "@/config/routes";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_auth/_app/$orgSlug/issues/$key")({
@@ -39,7 +39,7 @@ function IssuePage() {
             The issue "{key}" does not exist or you don't have access to it.
           </Typography>
           <Link
-            to={ROUTE_PATTERNS.dashboard}
+            to={ROUTES.dashboard.path}
             params={{ orgSlug }}
             className="mt-4 inline-block text-primary-600 hover:text-primary-700"
           >
@@ -54,7 +54,7 @@ function IssuePage() {
     <div className="p-6 max-w-4xl mx-auto">
       <div className="mb-4">
         <Link
-          to={ROUTE_PATTERNS.projects.board}
+          to={ROUTES.projects.board.path}
           params={{ orgSlug, key: projectKey }}
           className="text-sm text-primary-600 hover:text-primary-700"
         >

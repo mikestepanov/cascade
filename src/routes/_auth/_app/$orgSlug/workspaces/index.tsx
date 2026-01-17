@@ -10,7 +10,7 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { Flex } from "@/components/ui/Flex";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { Typography } from "@/components/ui/Typography";
-import { ROUTE_PATTERNS } from "@/config/routes";
+import { ROUTES } from "@/config/routes";
 import { useOrganization } from "@/hooks/useOrgContext";
 
 export const Route = createFileRoute("/_auth/_app/$orgSlug/workspaces/")({
@@ -27,7 +27,7 @@ function WorkspacesList() {
 
   const handleWorkspaceCreated = (_workspaceId: string, slug: string) => {
     navigate({
-      to: ROUTE_PATTERNS.workspaces.teams.list,
+      to: ROUTES.workspaces.teams.list.path,
       params: { orgSlug, workspaceSlug: slug },
     });
   };
@@ -79,7 +79,7 @@ function WorkspacesList() {
             {workspaces?.map((workspace: Doc<"workspaces">) => (
               <Link
                 key={workspace._id}
-                to={ROUTE_PATTERNS.workspaces.detail}
+                to={ROUTES.workspaces.detail.path}
                 params={{ orgSlug, workspaceSlug: workspace.slug }}
               >
                 <Card className="p-6 hover:shadow-lg transition-shadow cursor-pointer">

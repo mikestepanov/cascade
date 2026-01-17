@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { Flex } from "@/components/ui/Flex";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { Typography } from "@/components/ui/Typography";
-import { ROUTE_PATTERNS } from "@/config/routes";
+import { ROUTES } from "@/config/routes";
 
 export const Route = createFileRoute("/_auth/_app")({
   component: AppLayout,
@@ -57,7 +57,7 @@ function InitializeOrganization() {
         // Navigate to the new organization's dashboard
         if (result.slug) {
           navigate({
-            to: ROUTE_PATTERNS.dashboard,
+            to: ROUTES.dashboard.path,
             params: { orgSlug: result.slug },
             replace: true,
           });

@@ -1,7 +1,7 @@
 # Nixelo - Product Roadmap
 
 > **Last Updated:** 2026-01-01
-> **Current Architecture:** Company → Workspaces → Teams → Projects → Issues
+> **Current Architecture:** Organization → Workspaces → Teams → Projects → Issues
 
 ---
 
@@ -19,13 +19,13 @@
 
 ### Documents/Wikis (All Levels)
 
-- [ ] **Company Wiki** - Organization-wide knowledge
+- [ ] **Organization Wiki** - Organization-wide knowledge
 - [ ] **Workspace Wiki** - Department documentation
 - [ ] **Team Wiki** - Team knowledge base
 
 ### Calendar/Events (All Levels)
 
-- [ ] **Company Calendar** - All-hands, holidays
+- [ ] **Organization Calendar** - All-hands, holidays
 - [ ] **Workspace Calendar** - Department events
 - [ ] **Team Calendar** - Team meetings, standups
 

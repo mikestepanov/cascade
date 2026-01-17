@@ -20,14 +20,31 @@ interface StatCardProps {
   title: string;
   value: number;
   subtitle: string;
-  colorClass: string;
+  variant: "brand" | "success" | "accent";
   progressValue?: number;
 }
+
+const variantStyles = {
+  brand: {
+    text: "text-brand-600 dark:text-brand-400",
+    bg: "bg-brand-600 dark:bg-brand-400",
+  },
+  success: {
+    text: "text-status-success",
+    bg: "bg-status-success",
+  },
+  accent: {
+    text: "text-accent-600 dark:text-accent-400",
+    bg: "bg-accent-600 dark:bg-accent-400",
+  },
+} as const;
 
 /**
  * Individual stat card component with glassmorphism
  */
-function StatCard({ title, value, subtitle, colorClass, progressValue }: StatCardProps) {
+function StatCard({ title, value, subtitle, variant, progressValue }: StatCardProps) {
+  const styles = variantStyles[variant];
+
   return (
     <Card
       className={cn(
@@ -43,7 +60,7 @@ function StatCard({ title, value, subtitle, colorClass, progressValue }: StatCar
           {title}
         </Typography>
         <Flex align="baseline" gap="xs" className="mb-3">
-          <Typography variant="h2" className={cn("text-3xl font-extrabold", colorClass)}>
+          <Typography variant="h2" className={cn("text-3xl font-extrabold", styles.text)}>
             {value || 0}
           </Typography>
           <Typography variant="small" color="secondary" className="text-xs">
@@ -55,7 +72,8 @@ function StatCard({ title, value, subtitle, colorClass, progressValue }: StatCar
             <Progress
               value={progressValue}
               className="h-1.5"
-              indicatorClassName={colorClass.replace("text-", "bg-")}
+              id="stat-progress"
+              indicatorClassName={styles.bg}
             />
           </div>
         )}
@@ -74,7 +92,7 @@ function HighPriorityCard({ count }: { count: number }) {
       className={cn(
         "relative overflow-hidden transition-all duration-500 shadow-sm hover:shadow-xl animate-in fade-in zoom-in",
         hasHighPriority
-          ? "bg-linear-to-br from-status-warning-bg/40 to-status-warning-bg/10 backdrop-blur-md border-status-warning/30"
+          ? "bg-gradient-to-br from-status-warning-bg/40 to-status-warning-bg/10 backdrop-blur-md border-status-warning/30"
           : "bg-ui-bg-primary/40 backdrop-blur-md border-ui-border-primary/50",
       )}
     >
@@ -141,13 +159,13 @@ export function QuickStats({ stats }: QuickStatsProps) {
         title="Active Load"
         value={stats.assignedToMe}
         subtitle="Assigned tasks"
-        colorClass="text-brand-600 dark:text-brand-400"
+        variant="brand"
       />
       <StatCard
         title="Velocity"
         value={stats.completedThisWeek}
         subtitle="Done this week"
-        colorClass="text-status-success"
+        variant="success"
         progressValue={completionPercentage}
       />
       <HighPriorityCard count={stats.highPriority} />
@@ -155,7 +173,7 @@ export function QuickStats({ stats }: QuickStatsProps) {
         title="Contribution"
         value={stats.createdByMe}
         subtitle="Reported issues"
-        colorClass="text-accent-600 dark:text-accent-400"
+        variant="accent"
       />
     </div>
   );

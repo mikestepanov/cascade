@@ -138,7 +138,7 @@ function generateSlug(name: string): string {
 // Mutations
 // ============================================================================
 
-const DEFAULT_COMPANY_SETTINGS = {
+const DEFAULT_ORGANIZATION_SETTINGS = {
   defaultMaxHoursPerWeek: 40,
   defaultMaxHoursPerDay: 8,
   requiresTimeApproval: false,
@@ -203,7 +203,7 @@ export const createOrganization = mutation({
       name: args.name,
       slug,
       timezone: args.timezone,
-      settings: args.settings ?? DEFAULT_COMPANY_SETTINGS,
+      settings: args.settings ?? DEFAULT_ORGANIZATION_SETTINGS,
       createdBy: userId,
       createdAt: now,
       updatedAt: now,
@@ -598,9 +598,9 @@ export const getUserOrganizations = query({
       .withIndex("by_user", (q) => q.eq("userId", userId))
       .collect();
 
-    // Batch fetch all companies
+    // Batch fetch all organizations
     const organizationIds = memberships.map((m) => m.organizationId);
-    const companyMap = await batchFetchOrganizations(ctx, organizationIds);
+    const organizationMap = await batchFetchOrganizations(ctx, organizationIds);
 
     // Batch fetch member and project counts per organization (parallel queries)
     const [memberCountsArrays, projectCountsArrays] = await Promise.all([
@@ -634,9 +634,9 @@ export const getUserOrganizations = query({
     const roleMap = new Map(memberships.map((m) => [m.organizationId.toString(), m.role]));
 
     // Enrich with pre-fetched data (no N+1)
-    const companies = memberships
+    const organizations = memberships
       .map((membership) => {
-        const organization = companyMap.get(membership.organizationId);
+        const organization = organizationMap.get(membership.organizationId);
         if (!organization) return null;
 
         const organizationIdStr = membership.organizationId.toString();
@@ -649,7 +649,7 @@ export const getUserOrganizations = query({
       })
       .filter((c): c is NonNullable<typeof c> => c !== null);
 
-    return companies;
+    return organizations;
   },
 });
 
@@ -768,11 +768,11 @@ export const initializeDefaultOrganization = mutation({
       .first();
 
     if (existingMembership) {
-      const existingCompany = await ctx.db.get(existingMembership.organizationId);
+      const existingOrganization = await ctx.db.get(existingMembership.organizationId);
       return {
         organizationId: existingMembership.organizationId,
-        slug: existingCompany?.slug,
-        message: "User already has a organization",
+        slug: existingOrganization?.slug,
+        message: "User already has an organization",
         usersAssigned: 0,
       };
     }
@@ -813,7 +813,7 @@ export const initializeDefaultOrganization = mutation({
       name: organizationName,
       slug,
       timezone,
-      settings: DEFAULT_COMPANY_SETTINGS,
+      settings: DEFAULT_ORGANIZATION_SETTINGS,
       createdBy: userId,
       createdAt: now,
       updatedAt: now,

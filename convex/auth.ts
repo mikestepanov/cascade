@@ -46,7 +46,7 @@ export const loggedInUser = query({
   },
 });
 
-import { ROUTE_PATTERNS } from "./shared/routes";
+import { ROUTES } from "./shared/routes";
 
 /**
  * Get the recommended destination for a user after they authenticate.
@@ -68,10 +68,10 @@ export const getRedirectDestination = query({
     const onboardingIncomplete = !onboarding?.onboardingCompleted;
 
     if (onboardingIncomplete) {
-      return ROUTE_PATTERNS.onboarding;
+      return ROUTES.onboarding.path;
     }
 
-    // 2. Check for companies
+    // 2. Check for organizations
     const membership = await ctx.db
       .query("organizationMembers")
       .withIndex("by_user", (q) => q.eq("userId", userId))
@@ -80,12 +80,12 @@ export const getRedirectDestination = query({
     if (membership) {
       const organization = await ctx.db.get(membership.organizationId);
       if (organization?.slug) {
-        return `/${organization.slug}/dashboard`;
+        return ROUTES.dashboard.build(organization.slug);
       }
     }
 
     // If they finished onboarding but have no organization,
-    // we should send them to /app gateway where InitializeCompany will handle them.
-    return ROUTE_PATTERNS.app;
+    // we should send them to /app gateway where initializeDefaultOrganization will handle them.
+    return ROUTES.app.path;
   },
 });

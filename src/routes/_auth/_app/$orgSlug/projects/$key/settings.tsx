@@ -4,7 +4,7 @@ import { useQuery } from "convex/react";
 import { ProjectSettings } from "@/components/ProjectSettings";
 import { Flex } from "@/components/ui/Flex";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
-import { ROUTE_PATTERNS } from "@/config/routes";
+import { ROUTES } from "@/config/routes";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 
 export const Route = createFileRoute("/_auth/_app/$orgSlug/projects/$key/settings")({
@@ -31,7 +31,7 @@ function SettingsPage() {
 
   if (!project) {
     navigate({
-      to: ROUTE_PATTERNS.projects.board,
+      to: ROUTES.projects.board.path,
       params: { orgSlug, key },
     });
     return null;
@@ -43,7 +43,7 @@ function SettingsPage() {
   // Redirect non-admins to board
   if (!isAdmin) {
     navigate({
-      to: ROUTE_PATTERNS.projects.board,
+      to: ROUTES.projects.board.path,
       params: { orgSlug, key },
     });
     return null;

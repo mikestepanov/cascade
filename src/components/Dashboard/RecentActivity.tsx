@@ -53,11 +53,7 @@ export function RecentActivity({ activities }: RecentActivityProps) {
         ) : activities.length === 0 ? (
           <EmptyState icon="📊" title="No activity" description="No recent activity to show" />
         ) : (
-          <Flex
-            direction="column"
-            gap="md"
-            className="max-h-[400px] overflow-y-auto pr-2 custom-scrollbar"
-          >
+          <Flex direction="column" gap="md" className="h-96 overflow-y-auto pr-2 custom-scrollbar">
             {activities.map((activity: Activity, activityIndex: number) => (
               <div
                 key={activity._id}

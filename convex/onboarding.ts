@@ -4,6 +4,7 @@ import type { Id } from "./_generated/dataModel";
 import { type MutationCtx, mutation, query } from "./_generated/server";
 import { getSearchContent } from "./issues/helpers";
 import { notDeleted } from "./lib/softDeleteHelpers";
+import { getOrganizationRole } from "./organizations";
 
 /** Check if email is a test email (@inbox.mailtrap.io) */
 const isTestEmail = (email?: string) => email?.endsWith("@inbox.mailtrap.io") ?? false;
@@ -147,6 +148,12 @@ export const createSampleProject = mutation({
 
     if (!organizationId) {
       throw new Error("No organization found. Please complete onboarding first.");
+    }
+
+    // RBAC Check: Ensure user is a member of the organization
+    const role = await getOrganizationRole(ctx, organizationId, userId);
+    if (!role) {
+      throw new Error("You must be a member of the organization to create a sample project");
     }
 
     const now = Date.now();

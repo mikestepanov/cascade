@@ -7,7 +7,7 @@ import { SignInForm, SmartAuthGuard } from "@/components/auth";
 import { Button } from "@/components/ui/Button";
 import { Flex } from "@/components/ui/Flex";
 import { Typography } from "@/components/ui/Typography";
-import { ROUTE_PATTERNS } from "@/config/routes";
+import { ROUTES } from "@/config/routes";
 import { showError, showSuccess } from "@/lib/toast";
 
 export const Route = createFileRoute("/invite/$token")({
@@ -27,7 +27,7 @@ function InviteRoute() {
   const acceptInvite = useMutation(api.invites.acceptInvite);
 
   const goToHome = () => {
-    navigate({ to: ROUTE_PATTERNS.home });
+    navigate({ to: ROUTES.home.path });
   };
 
   const handleAcceptInvite = async () => {

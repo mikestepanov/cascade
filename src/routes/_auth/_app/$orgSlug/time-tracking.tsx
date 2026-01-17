@@ -4,7 +4,7 @@ import { useQuery } from "convex/react";
 import { useEffect } from "react";
 import { TimeTrackingPage } from "@/components/TimeTracking/TimeTrackingPage";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
-import { ROUTE_PATTERNS } from "@/config/routes";
+import { ROUTES } from "@/config/routes";
 
 export const Route = createFileRoute("/_auth/_app/$orgSlug/time-tracking")({
   component: TimeTrackingPageRoute,
@@ -19,7 +19,7 @@ function TimeTrackingPageRoute() {
   useEffect(() => {
     if (isAdmin === false) {
       navigate({
-        to: ROUTE_PATTERNS.dashboard,
+        to: ROUTES.dashboard.path,
         params: { orgSlug },
       });
     }

@@ -18,7 +18,7 @@ import { Flex } from "@/components/ui/Flex";
 import { Input } from "@/components/ui/Input";
 import { Label } from "@/components/ui/Label";
 import { Textarea } from "@/components/ui/Textarea";
-import { ROUTE_PATTERNS } from "@/config/routes";
+import { ROUTES } from "@/config/routes";
 import { useOrganization } from "@/hooks/useOrgContext";
 
 interface CreateTeamModalProps {
@@ -59,7 +59,7 @@ export function CreateTeamModal({
 
       toast.success("Team created successfully");
       navigate({
-        to: ROUTE_PATTERNS.workspaces.teams.detail,
+        to: ROUTES.workspaces.teams.detail.path,
         params: { orgSlug, workspaceSlug, teamSlug },
       });
       onClose();

@@ -5,7 +5,7 @@ import { usePaginatedQuery } from "convex/react";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Flex } from "@/components/ui/Flex";
-import { ROUTE_PATTERNS } from "@/config/routes";
+import { ROUTES } from "@/config/routes";
 import { cn } from "@/lib/utils";
 
 interface SidebarTeamItemProps {
@@ -45,7 +45,7 @@ export function SidebarTeamItem({
           {isExpanded ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
         </Button>
         <Link
-          to={ROUTE_PATTERNS.workspaces.teams.detail}
+          to={ROUTES.workspaces.teams.detail.path}
           params={{ orgSlug, workspaceSlug, teamSlug: team.slug }}
           onClick={onNavClick}
           className={cn(
@@ -106,7 +106,7 @@ function SidebarTeamProjects({
       {projects.map((project) => (
         <div key={project._id}>
           <Link
-            to={ROUTE_PATTERNS.workspaces.teams.projects.board}
+            to={ROUTES.workspaces.teams.projects.board.path}
             params={{
               orgSlug,
               workspaceSlug,

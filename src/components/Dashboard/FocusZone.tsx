@@ -1,5 +1,5 @@
 import { useNavigate } from "@tanstack/react-router";
-import { ROUTE_PATTERNS } from "@/config/routes";
+import { ROUTES } from "@/config/routes";
 import { useOrganization } from "@/hooks/useOrgContext";
 import { Badge } from "../ui/Badge";
 import { Card, CardBody } from "../ui/Card";
@@ -28,7 +28,7 @@ export function FocusZone({ task }: FocusZoneProps) {
 
   const handleClick = () => {
     navigate({
-      to: ROUTE_PATTERNS.projects.board,
+      to: ROUTES.projects.board.path,
       params: { orgSlug, key: task.projectKey },
     });
   };
@@ -45,7 +45,11 @@ export function FocusZone({ task }: FocusZoneProps) {
       <Card
         hoverable
         onClick={handleClick}
-        className="relative overflow-hidden group border-none shadow-xl bg-linear-to-br from-brand-600 to-accent-600 text-white p-1"
+        onKeyDown={(e) => e.key === "Enter" && handleClick()}
+        tabIndex={0}
+        role="button"
+        aria-label={`Focus task: ${task.title}`}
+        className="relative overflow-hidden group border-none shadow-xl bg-gradient-to-br from-brand-600 to-accent-600 text-white p-1"
       >
         <CardBody className="bg-ui-bg-primary/95 dark:bg-ui-bg-primary/90 backdrop-blur-sm rounded-md p-6">
           <Flex direction="column" gap="md">

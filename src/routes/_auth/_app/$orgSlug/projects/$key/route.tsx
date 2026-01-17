@@ -4,7 +4,7 @@ import { useQuery } from "convex/react";
 import { Flex } from "@/components/ui/Flex";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { Typography } from "@/components/ui/Typography";
-import { ROUTE_PATTERNS } from "@/config/routes";
+import { ROUTES } from "@/config/routes";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 
 export const Route = createFileRoute("/_auth/_app/$orgSlug/projects/$key")({
@@ -49,17 +49,17 @@ function ProjectLayout() {
   const tabs = [
     {
       name: "Board",
-      to: ROUTE_PATTERNS.projects.board,
+      to: ROUTES.projects.board.path,
       params: { orgSlug, key },
     },
     {
       name: "Calendar",
-      to: ROUTE_PATTERNS.projects.calendar,
+      to: ROUTES.projects.calendar.path,
       params: { orgSlug, key },
     },
     {
       name: "Timesheet",
-      to: ROUTE_PATTERNS.projects.timesheet,
+      to: ROUTES.projects.timesheet.path,
       params: { orgSlug, key },
     },
     // Only show Settings tab to admins
@@ -67,7 +67,7 @@ function ProjectLayout() {
       ? [
           {
             name: "Settings",
-            to: ROUTE_PATTERNS.projects.settings,
+            to: ROUTES.projects.settings.path,
             params: { orgSlug, key },
           },
         ]

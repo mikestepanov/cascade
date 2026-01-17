@@ -5,7 +5,7 @@ import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
 import { CreateTeamModal } from "@/components/CreateTeamModal";
 import { SidebarTeamItem } from "@/components/sidebar/SidebarTeamItem";
-import { ROUTE_PATTERNS } from "@/config/routes";
+import { ROUTES } from "@/config/routes";
 import { useOrganization } from "@/hooks/useOrgContext";
 import { useSidebarState } from "@/hooks/useSidebarState";
 import {
@@ -75,7 +75,7 @@ export function AppSidebar() {
         isPublic: false,
       });
       navigate({
-        to: ROUTE_PATTERNS.documents.detail,
+        to: ROUTES.documents.detail.path,
         params: { orgSlug, id: docId },
       });
       showSuccess("Document created");
@@ -94,7 +94,7 @@ export function AppSidebar() {
         organizationId,
       });
       navigate({
-        to: ROUTE_PATTERNS.workspaces.detail,
+        to: ROUTES.workspaces.detail.path,
         params: { orgSlug, workspaceSlug: slug },
       });
       showSuccess("Workspace created");
@@ -159,7 +159,7 @@ export function AppSidebar() {
           {/* Header with organization name and collapse toggle */}
           <Flex align="center" justify="between" className="p-4 border-b border-ui-border-primary">
             {!isCollapsed && (
-              <Link to={ROUTE_PATTERNS.dashboard} params={{ orgSlug }} onClick={handleNavClick}>
+              <Link to={ROUTES.dashboard.path} params={{ orgSlug }} onClick={handleNavClick}>
                 <Typography variant="h3" className="text-lg font-bold truncate max-w-[160px]">
                   {organizationName}
                 </Typography>
@@ -184,7 +184,7 @@ export function AppSidebar() {
           <Flex as="nav" direction="column" gap="xs" className="flex-1 overflow-y-auto p-2">
             {/* Dashboard */}
             <NavItem
-              to={ROUTE_PATTERNS.dashboard}
+              to={ROUTES.dashboard.path}
               params={{ orgSlug }}
               icon={Home}
               label="Dashboard"
@@ -196,7 +196,7 @@ export function AppSidebar() {
             {/* Calendar - Links to first project's calendar */}
             {defaultProject && (
               <NavItem
-                to={ROUTE_PATTERNS.projects.calendar}
+                to={ROUTES.projects.calendar.path}
                 params={{ orgSlug, key: defaultProject.key }}
                 icon={Calendar}
                 label="Calendar"
@@ -215,13 +215,13 @@ export function AppSidebar() {
               isActive={isActive("/documents")}
               isCollapsed={isCollapsed}
               onAdd={handleCreateDocument}
-              to={ROUTE_PATTERNS.documents.list}
+              to={ROUTES.documents.list.path}
               params={{ orgSlug }}
               onClick={handleNavClick}
               data-tour="nav-documents"
             >
               <NavSubItem
-                to={ROUTE_PATTERNS.documents.templates}
+                to={ROUTES.documents.templates.path}
                 params={{ orgSlug }}
                 label="Templates"
                 isActive={location.pathname.includes("/documents/templates")}
@@ -232,7 +232,7 @@ export function AppSidebar() {
               {(documents?.documents ?? []).slice(0, 10).map((doc: Doc<"documents">) => (
                 <NavSubItem
                   key={doc._id}
-                  to={ROUTE_PATTERNS.documents.detail}
+                  to={ROUTES.documents.detail.path}
                   params={{ orgSlug, id: doc._id }}
                   label={doc.title}
                   isActive={location.pathname.includes(`/documents/${doc._id}`)}
@@ -254,7 +254,7 @@ export function AppSidebar() {
               isActive={isActive("/workspaces")}
               isCollapsed={isCollapsed}
               onAdd={handleCreateWorkspace}
-              to={ROUTE_PATTERNS.workspaces.list}
+              to={ROUTES.workspaces.list.path}
               params={{ orgSlug }}
               onClick={handleNavClick}
               data-tour="nav-projects"
@@ -281,7 +281,7 @@ export function AppSidebar() {
                         )}
                       </Button>
                       <NavSubItem
-                        to={ROUTE_PATTERNS.workspaces.detail}
+                        to={ROUTES.workspaces.detail.path}
                         params={{ orgSlug, workspaceSlug: workspace.slug }}
                         label={workspace.name}
                         isActive={location.pathname.includes(`/workspaces/${workspace.slug}`)}
@@ -321,7 +321,7 @@ export function AppSidebar() {
             {/* Time Tracking (admin only) */}
             {showTimeTracking && (
               <NavItem
-                to={ROUTE_PATTERNS.timeTracking}
+                to={ROUTES.timeTracking.path}
                 params={{ orgSlug }}
                 icon={Clock}
                 label="Time Tracking"
@@ -336,7 +336,7 @@ export function AppSidebar() {
           {/* Bottom section - Settings */}
           <div className="p-2 border-t border-ui-border-primary">
             <NavItem
-              to={ROUTE_PATTERNS.settings.profile}
+              to={ROUTES.settings.profile.path}
               params={{ orgSlug }}
               icon={Settings}
               label="Settings"

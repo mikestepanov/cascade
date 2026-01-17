@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/Button";
 import { Flex } from "@/components/ui/Flex";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { Typography } from "@/components/ui/Typography";
-import { ROUTE_PATTERNS } from "@/config/routes";
+import { ROUTES } from "@/config/routes";
 
 export const Route = createFileRoute("/_auth/onboarding")({
   component: OnboardingPage,
@@ -64,7 +64,7 @@ function OnboardingPage() {
       const slug = userOrganizations[0].slug;
       if (slug) {
         navigate({
-          to: ROUTE_PATTERNS.dashboard,
+          to: ROUTES.dashboard.path,
           params: { orgSlug: slug },
         });
         return;
@@ -73,7 +73,7 @@ function OnboardingPage() {
 
     // Fallback - redirect to /app gateway to trigger organization initialization
     // (This is essential for the "team_member" flow or if the query is momentarily stale)
-    navigate({ to: ROUTE_PATTERNS.app });
+    navigate({ to: ROUTES.app.path });
   };
 
   const handleComplete = async () => {
@@ -89,7 +89,7 @@ function OnboardingPage() {
   // Called when project is created during lead/member flow
   const handleWorkspaceCreated = (slug: string) => {
     navigate({
-      to: ROUTE_PATTERNS.dashboard,
+      to: ROUTES.dashboard.path,
       params: { orgSlug: slug },
     });
   };
