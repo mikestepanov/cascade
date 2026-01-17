@@ -87,6 +87,28 @@ const applicationTables = {
       filterFields: ["companyId"],
     }),
 
+  // Workspace Members (User-Workspace relationships - department-level access)
+  workspaceMembers: defineTable({
+    workspaceId: v.id("workspaces"),
+    userId: v.id("users"),
+    role: v.union(
+      v.literal("admin"), // Can manage workspace settings, teams, and members
+      v.literal("member"), // Can access workspace resources
+    ),
+    addedBy: v.id("users"),
+    addedAt: v.number(),
+    // Soft Delete
+    isDeleted: v.optional(v.boolean()),
+    deletedAt: v.optional(v.number()),
+    deletedBy: v.optional(v.id("users")),
+  })
+    .index("by_workspace", ["workspaceId"])
+    .index("by_user", ["userId"])
+    .index("by_workspace_user", ["workspaceId", "userId"])
+    .index("by_role", ["role"])
+    .index("by_workspace_role", ["workspaceId", "role"])
+    .index("by_deleted", ["isDeleted"]),
+
   projects: defineTable({
     name: v.string(),
     key: v.string(), // Project key like "PROJ"
