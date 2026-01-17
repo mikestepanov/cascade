@@ -1,6 +1,5 @@
 import { cn } from "@/lib/utils";
-import { Badge } from "../ui/Badge";
-import { Card, CardBody, CardHeader } from "../ui/Card";
+import { Card, CardBody } from "../ui/Card";
 import { Flex } from "../ui/Flex";
 import { Progress } from "../ui/progress";
 import { SkeletonStatCard } from "../ui/Skeleton";

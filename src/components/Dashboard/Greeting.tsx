@@ -1,6 +1,3 @@
-import { api } from "@convex/_generated/api";
-import { useQuery } from "convex/react";
-import { cn } from "@/lib/utils";
 import { Flex } from "../ui/Flex";
 import { Typography } from "../ui/Typography";
 

@@ -5,7 +5,6 @@ import { ROUTE_PATTERNS } from "@/config/routes";
 import type { useListNavigation } from "@/hooks/useListNavigation";
 import { useOrganization } from "@/hooks/useOrgContext";
 import { cn } from "@/lib/utils";
-import { getPriorityColor, getTypeIcon } from "../../lib/issue-utils";
 import { Badge } from "../ui/Badge";
 import { EmptyState } from "../ui/EmptyState";
 import { Flex } from "../ui/Flex";

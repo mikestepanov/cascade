@@ -1,7 +1,6 @@
 import { useNavigate } from "@tanstack/react-router";
 import { ROUTE_PATTERNS } from "@/config/routes";
 import { useOrganization } from "@/hooks/useOrgContext";
-import { cn } from "@/lib/utils";
 import { Badge } from "../ui/Badge";
 import { Card, CardBody } from "../ui/Card";
 import { Flex } from "../ui/Flex";
