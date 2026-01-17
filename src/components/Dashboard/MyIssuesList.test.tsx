@@ -11,9 +11,9 @@ vi.mock("@tanstack/react-router", () => ({
   useNavigate: () => mockNavigate,
 }));
 
-// Mock company context
-vi.mock("@/hooks/useCompanyContext", () => ({
-  useCompany: () => ({ companySlug: "test-company" }),
+// Mock organization context
+vi.mock("@/hooks/useOrgContext", () => ({
+  useorganization: () => ({ orgSlug: "test-organization" }),
 }));
 
 // Mock navigation hook
@@ -211,7 +211,7 @@ describe("MyIssuesList", () => {
 
     expect(mockNavigate).toHaveBeenCalledWith({
       to: ROUTE_PATTERNS.projects.board,
-      params: { companySlug: "test-company", key: "PROJ" },
+      params: { orgSlug: "test-organization", key: "PROJ" },
     });
   });
 
@@ -231,7 +231,7 @@ describe("MyIssuesList", () => {
 
     expect(mockNavigate).toHaveBeenCalledWith({
       to: ROUTE_PATTERNS.workspaces.list,
-      params: { companySlug: "test-company" },
+      params: { orgSlug: "test-organization" },
     });
   });
 

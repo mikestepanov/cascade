@@ -2,7 +2,7 @@ import type { Id } from "@convex/_generated/dataModel";
 import { useNavigate } from "@tanstack/react-router";
 import { Typography } from "@/components/ui/Typography";
 import { ROUTE_PATTERNS } from "@/config/routes";
-import { useCompany } from "@/hooks/useCompanyContext";
+import { useOrganization } from "@/hooks/useOrgContext";
 import { cn } from "@/lib/utils";
 import { Badge } from "../ui/Badge";
 import { Card, CardBody, CardHeader } from "../ui/Card";
@@ -36,17 +36,17 @@ interface WorkspacesListProps {
  */
 export function WorkspacesList({ projects, projectNavigation }: WorkspacesListProps) {
   const navigate = useNavigate();
-  const { companySlug } = useCompany();
+  const { orgSlug } = useOrganization();
 
   const navigateToWorkspace = (projectKey: string) => {
     navigate({
       to: ROUTE_PATTERNS.projects.board,
-      params: { companySlug, key: projectKey },
+      params: { orgSlug, key: projectKey },
     });
   };
 
   const navigateToWorkspaces = () => {
-    navigate({ to: ROUTE_PATTERNS.workspaces.list, params: { companySlug } });
+    navigate({ to: ROUTE_PATTERNS.workspaces.list, params: { orgSlug } });
   };
   const count = projects?.length || 0;
   const workspacesLabel = count === 1 ? "project" : "projects";

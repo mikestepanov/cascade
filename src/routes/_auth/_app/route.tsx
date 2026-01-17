@@ -16,7 +16,7 @@ function AppLayout() {
 
   // Get user's companies to check if we need initialization
   const userCompanies = useQuery(
-    api.companies.getUserCompanies,
+    api.organizations.getUserCompanies,
     isAuthenticated ? undefined : "skip",
   );
 
@@ -29,7 +29,7 @@ function AppLayout() {
     );
   }
 
-  // User has no companies - initialize default company
+  // User has no companies - initialize default organization
   if (userCompanies.length === 0) {
     return <InitializeCompany />;
   }
@@ -37,10 +37,12 @@ function AppLayout() {
   return <Outlet />;
 }
 
-// Component to initialize default company for users without one
+// Component to initialize default organization for users without one
 function InitializeCompany() {
   const navigate = useNavigate();
-  const initializeDefaultCompany = useMutation(api.companies.initializeDefaultCompany);
+  const initializedefaultOrganization = useMutation(
+    api.organizations.initializedefaultOrganization,
+  );
   const initRef = useRef(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -50,25 +52,25 @@ function InitializeCompany() {
       if (initRef.current) return;
       initRef.current = true;
       try {
-        const result = await initializeDefaultCompany({});
-        // Navigate to the new company's dashboard
+        const result = await initializedefaultOrganization({});
+        // Navigate to the new organization's dashboard
         if (result.slug) {
           navigate({
             to: ROUTE_PATTERNS.dashboard,
-            params: { companySlug: result.slug },
+            params: { orgSlug: result.slug },
             replace: true,
           });
         } else {
-          // Fallback: reload to trigger company query refresh
+          // Fallback: reload to trigger organization query refresh
           window.location.reload();
         }
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to create company");
+        setError(err instanceof Error ? err.message : "Failed to create organization");
         initRef.current = false; // Allow retry on error
       }
     };
     init();
-  }, [initializeDefaultCompany, navigate]);
+  }, [initializedefaultOrganization, navigate]);
 
   if (error) {
     return (

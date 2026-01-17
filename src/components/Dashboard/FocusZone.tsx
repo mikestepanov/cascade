@@ -1,6 +1,6 @@
 import { useNavigate } from "@tanstack/react-router";
 import { ROUTE_PATTERNS } from "@/config/routes";
-import { useCompany } from "@/hooks/useCompanyContext";
+import { useOrganization } from "@/hooks/useOrgContext";
 import { cn } from "@/lib/utils";
 import { Badge } from "../ui/Badge";
 import { Card, CardBody } from "../ui/Card";
@@ -23,14 +23,14 @@ interface FocusZoneProps {
 
 export function FocusZone({ task }: FocusZoneProps) {
   const navigate = useNavigate();
-  const { companySlug } = useCompany();
+  const { orgSlug } = useOrganization();
 
   if (!task) return null;
 
   const handleClick = () => {
     navigate({
       to: ROUTE_PATTERNS.projects.board,
-      params: { companySlug, key: task.projectKey },
+      params: { orgSlug, key: task.projectKey },
     });
   };
 

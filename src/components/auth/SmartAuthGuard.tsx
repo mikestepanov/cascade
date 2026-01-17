@@ -32,7 +32,7 @@ function isPathPublic(pathname: string): boolean {
 
 /**
  * SmartAuthGuard - Centralized "bouncer" for authenticated routes.
- * It ensures the user is on the correct page based on their onboarding and company status.
+ * It ensures the user is on the correct page based on their onboarding and organization status.
  */
 export function SmartAuthGuard({ children }: { children?: React.ReactNode }) {
   const navigate = useNavigate();

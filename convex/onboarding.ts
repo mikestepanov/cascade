@@ -88,7 +88,7 @@ export const updateOnboardingStatus = mutation({
  */
 export const createSampleProject = mutation({
   args: {
-    companyId: v.optional(v.id("companies")), // Optional: use existing company
+    organizationId: v.optional(v.id("organizations")), // Optional: use existing organization
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
@@ -104,34 +104,34 @@ export const createSampleProject = mutation({
       throw new Error("Sample project already created");
     }
 
-    // Get or find the user's company
-    let companyId = args.companyId;
-    if (!companyId) {
-      // Try to find user's default company or any company they belong to
+    // Get or find the user's organization
+    let organizationId = args.organizationId;
+    if (!organizationId) {
+      // Try to find user's default organization or any organization they belong to
       const user = await ctx.db.get(userId);
-      if (user?.defaultCompanyId) {
-        companyId = user.defaultCompanyId;
+      if (user?.defaultOrganizationId) {
+        organizationId = user.defaultOrganizationId;
       } else {
-        // Find any company the user belongs to
+        // Find any organization the user belongs to
         const membership = await ctx.db
-          .query("companyMembers")
+          .query("organizationMembers")
           .withIndex("by_user", (q) => q.eq("userId", userId))
           .first();
         if (membership) {
-          companyId = membership.companyId;
+          organizationId = membership.organizationId;
         }
       }
     }
 
-    if (!companyId) {
-      throw new Error("No company found. Please complete onboarding first.");
+    if (!organizationId) {
+      throw new Error("No organization found. Please complete onboarding first.");
     }
 
     const now = Date.now();
 
     // Create sample workspace first
     const workspaceId = await ctx.db.insert("workspaces", {
-      companyId,
+      organizationId,
       name: "Sample Workspace",
       slug: `sample-workspace-${userId}`, // Make unique per user to avoid conflicts
       createdBy: userId,
@@ -140,7 +140,7 @@ export const createSampleProject = mutation({
     });
 
     const teamId = await ctx.db.insert("teams", {
-      companyId,
+      organizationId,
       workspaceId,
       name: "Engineering",
       slug: "engineering",
@@ -156,7 +156,7 @@ export const createSampleProject = mutation({
       key: "SAMPLE",
       description:
         "Welcome to Nixelo! This is a sample project to help you get started. Feel free to explore, edit, or delete it.",
-      companyId,
+      organizationId,
       workspaceId,
       teamId,
       ownerId: userId,
@@ -662,7 +662,7 @@ export const checkInviteStatus = query({
       wasInvited: true,
       inviterName,
       inviteRole: invite.role,
-      companyId: invite.companyId,
+      organizationId: invite.organizationId,
     };
   },
 });

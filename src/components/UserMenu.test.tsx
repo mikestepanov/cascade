@@ -34,11 +34,11 @@ vi.mock("@convex/_generated/api", () => ({
 }));
 
 // Mock useCompany hook
-vi.mock("@/hooks/useCompanyContext", () => ({
-  useCompany: () => ({
-    companyId: "company123",
-    companySlug: "test-company",
-    companyName: "Test Company",
+vi.mock("@/hooks/useOrgContext", () => ({
+  useorganization: () => ({
+    organizationId: "company123",
+    orgSlug: "test-organization",
+    organizationName: "Test organization",
     userRole: "admin",
   }),
 }));

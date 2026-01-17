@@ -2,8 +2,8 @@ import type { Id } from "@convex/_generated/dataModel";
 import { useNavigate } from "@tanstack/react-router";
 import { Typography } from "@/components/ui/Typography";
 import { ROUTE_PATTERNS } from "@/config/routes";
-import { useCompany } from "@/hooks/useCompanyContext";
 import type { useListNavigation } from "@/hooks/useListNavigation";
+import { useOrganization } from "@/hooks/useOrgContext";
 import { cn } from "@/lib/utils";
 import { getPriorityColor, getTypeIcon } from "../../lib/issue-utils";
 import { Badge } from "../ui/Badge";
@@ -52,19 +52,19 @@ export function MyIssuesList({
   status,
 }: MyIssuesListProps) {
   const navigate = useNavigate();
-  const { companySlug } = useCompany();
+  const { orgSlug } = useOrganization();
 
   const navigateToWorkspace = (projectKey: string) => {
     navigate({
       to: ROUTE_PATTERNS.projects.board,
-      params: { companySlug, key: projectKey },
+      params: { orgSlug, key: projectKey },
     });
   };
 
   const navigateToWorkspaces = () => {
     navigate({
       to: ROUTE_PATTERNS.workspaces.list,
-      params: { companySlug },
+      params: { orgSlug },
     });
   };
 

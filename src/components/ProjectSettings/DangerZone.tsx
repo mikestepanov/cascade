@@ -16,7 +16,7 @@ interface DangerZoneProps {
   projectName: string;
   projectKey: string;
   isOwner: boolean;
-  companySlug: string;
+  orgSlug: string;
 }
 
 export function DangerZone({
@@ -24,7 +24,7 @@ export function DangerZone({
   projectName,
   projectKey,
   isOwner,
-  companySlug,
+  orgSlug,
 }: DangerZoneProps) {
   const [showConfirm, setShowConfirm] = useState(false);
   const [confirmText, setConfirmText] = useState("");
@@ -43,7 +43,7 @@ export function DangerZone({
     try {
       await deleteProject({ projectId });
       showSuccess("Project deleted successfully");
-      navigate({ to: ROUTE_PATTERNS.projects.list, params: { companySlug } });
+      navigate({ to: ROUTE_PATTERNS.projects.list, params: { orgSlug } });
     } catch (error) {
       showError(error, "Failed to delete project");
       setIsDeleting(false);

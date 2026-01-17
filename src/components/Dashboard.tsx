@@ -5,7 +5,7 @@ import { usePaginatedQuery, useQuery } from "convex/react";
 import { useState } from "react";
 import { Flex } from "@/components/ui/Flex";
 import { ROUTE_PATTERNS } from "@/config/routes";
-import { useCompany } from "@/hooks/useCompanyContext";
+import { useOrganization } from "@/hooks/useOrgContext";
 import { useListNavigation } from "../hooks/useListNavigation";
 import { DashboardCustomizeModal } from "./Dashboard/DashboardCustomizeModal";
 import { FocusZone } from "./Dashboard/FocusZone";
@@ -20,7 +20,7 @@ type IssueFilter = "assigned" | "created" | "all";
 
 export function Dashboard() {
   const navigate = useNavigate();
-  const { companySlug } = useCompany();
+  const { orgSlug } = useOrganization();
   const [issueFilter, setIssueFilter] = useState<IssueFilter>("assigned");
 
   // User and Settings
@@ -51,7 +51,7 @@ export function Dashboard() {
   const navigateToWorkspace = (projectKey: string) => {
     navigate({
       to: ROUTE_PATTERNS.projects.board,
-      params: { companySlug, key: projectKey },
+      params: { orgSlug, key: projectKey },
     });
   };
 

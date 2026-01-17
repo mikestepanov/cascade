@@ -92,27 +92,27 @@ export const updateProfile = mutation({
 });
 
 /**
- * Check if the current user is a company admin
+ * Check if the current user is a organization admin
  * Returns true if user is:
- * - Owner or admin in any company
+ * - Owner or admin in any organization
  * - Creator of any project (backward compatibility)
  * - Admin in any project (backward compatibility)
  */
-export const isCompanyAdmin = query({
+export const isOrganizationAdmin = query({
   args: {},
   returns: v.boolean(),
   handler: async (ctx) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) return false;
 
-    // Primary: Check if user is admin or owner in any company
-    const companyMembership = await ctx.db
-      .query("companyMembers")
+    // Primary: Check if user is admin or owner in any organization
+    const organizationMembership = await ctx.db
+      .query("organizationMembers")
       .withIndex("by_user", (q) => q.eq("userId", userId))
       .filter((q) => q.or(q.eq(q.field("role"), "admin"), q.eq(q.field("role"), "owner")))
       .first();
 
-    return !!companyMembership;
+    return !!organizationMembership;
   },
 });
 

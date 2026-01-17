@@ -39,7 +39,7 @@ function InviteRoute() {
         ? "Welcome! You've joined the project."
         : "Welcome! You've joined the team.";
       showSuccess(successMessage);
-      // Trigger redirect to user's company dashboard
+      // Trigger redirect to user's organization dashboard
       setInviteAccepted(true);
     } catch (error) {
       const message = error instanceof Error ? error.message : "Failed to accept invite";
@@ -50,7 +50,7 @@ function InviteRoute() {
     }
   };
 
-  // After accepting invite, redirect to user's company dashboard
+  // After accepting invite, redirect to user's organization dashboard
   if (inviteAccepted) {
     return <SmartAuthGuard />;
   }

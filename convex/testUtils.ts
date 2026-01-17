@@ -84,14 +84,14 @@ export function asAuthenticatedUser(t: TestCtx, userId: Id<"users">) {
  *
  * @param t - Convex test helper
  * @param creatorId - User ID of the project creator (also becomes owner)
- * @param companyId - Company ID the project belongs to
+ * @param organizationId - organization ID the project belongs to
  * @param projectData - Optional project data
  * @returns Project ID
  */
 export async function createProjectInCompany(
   t: TestCtx,
   creatorId: Id<"users">,
-  companyId: Id<"companies">,
+  organizationId: Id<"organizations">,
   projectData?: {
     name?: string;
     key?: string;
@@ -107,7 +107,7 @@ export async function createProjectInCompany(
 
     // Create workspace and team first
     const workspaceId = await ctx.db.insert("workspaces", {
-      companyId,
+      organizationId,
       name: `Workspace for ${name}`,
       slug: `ws-${key.toLowerCase()}`,
       createdBy: creatorId,
@@ -116,7 +116,7 @@ export async function createProjectInCompany(
     });
 
     const teamId = await ctx.db.insert("teams", {
-      companyId,
+      organizationId,
       workspaceId,
       name: `Team for ${name}`,
       slug: `team-${key.toLowerCase()}`,
@@ -130,7 +130,7 @@ export async function createProjectInCompany(
       name,
       key: key.toUpperCase(),
       description: projectData?.description,
-      companyId,
+      organizationId,
       workspaceId,
       teamId,
       ownerId: creatorId,
@@ -188,9 +188,9 @@ export async function createTestProject(
     boardType?: "kanban" | "scrum";
   },
 ): Promise<Id<"projects">> {
-  // Create a company first for backward compatibility
-  const { companyId } = await createCompanyAdmin(t, creatorId);
-  return createProjectInCompany(t, creatorId, companyId, projectData);
+  // Create a organization first for backward compatibility
+  const { organizationId } = await createCompanyAdmin(t, creatorId);
+  return createProjectInCompany(t, creatorId, organizationId, projectData);
 }
 
 /**
@@ -311,15 +311,15 @@ export async function expectThrowsAsync(
 }
 
 /**
- * Create a company and add user as admin/owner
+ * Create a organization and add user as admin/owner
  *
- * This properly sets up company admin status by creating both
- * the company record and the companyMembers record.
+ * This properly sets up organization admin status by creating both
+ * the organization record and the organizationMembers record.
  *
  * @param t - Convex test helper
  * @param userId - User ID to make admin
- * @param companyData - Optional company data
- * @returns Company ID
+ * @param companyData - Optional organization data
+ * @returns organization ID
  */
 export async function createCompanyAdmin(
   t: TestCtx,
@@ -329,16 +329,16 @@ export async function createCompanyAdmin(
     slug?: string;
   },
 ): Promise<{
-  companyId: Id<"companies">;
+  organizationId: Id<"organizations">;
   workspaceId: Id<"workspaces">;
   teamId: Id<"teams">;
 }> {
   return await t.run(async (ctx) => {
     const now = Date.now();
-    const name = companyData?.name || `Test Company ${now}`;
-    const slug = companyData?.slug || `test-company-${now}`;
+    const name = companyData?.name || `Test organization ${now}`;
+    const slug = companyData?.slug || `test-organization-${now}`;
 
-    const companyId = await ctx.db.insert("companies", {
+    const organizationId = await ctx.db.insert("organizations", {
       createdBy: userId,
       timezone: "America/New_York",
       settings: {
@@ -354,9 +354,9 @@ export async function createCompanyAdmin(
       updatedAt: now,
     });
 
-    // Add user as owner in companyMembers
-    await ctx.db.insert("companyMembers", {
-      companyId,
+    // Add user as owner in organizationMembers
+    await ctx.db.insert("organizationMembers", {
+      organizationId,
       userId,
       role: "owner",
       addedBy: userId,
@@ -365,7 +365,7 @@ export async function createCompanyAdmin(
 
     // Create default workspace for tests
     const workspaceId = await ctx.db.insert("workspaces", {
-      companyId,
+      organizationId,
       name: `Default Workspace`,
       slug: `default-ws-${now}`,
       createdBy: userId,
@@ -375,7 +375,7 @@ export async function createCompanyAdmin(
 
     // Create default team for tests
     const teamId = await ctx.db.insert("teams", {
-      companyId,
+      organizationId,
       workspaceId,
       name: `Default Team`,
       slug: `default-team-${now}`,
@@ -394,6 +394,6 @@ export async function createCompanyAdmin(
       addedAt: now,
     });
 
-    return { companyId, workspaceId, teamId };
+    return { organizationId, workspaceId, teamId };
   });
 }

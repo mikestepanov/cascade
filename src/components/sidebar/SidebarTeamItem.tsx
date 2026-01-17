@@ -11,7 +11,7 @@ import { cn } from "@/lib/utils";
 interface SidebarTeamItemProps {
   team: Doc<"teams">;
   workspaceSlug: string;
-  companySlug: string;
+  orgSlug: string;
   isExpanded: boolean;
   onToggle: (slug: string) => void;
   onNavClick: () => void;
@@ -20,7 +20,7 @@ interface SidebarTeamItemProps {
 export function SidebarTeamItem({
   team,
   workspaceSlug,
-  companySlug,
+  orgSlug,
   isExpanded,
   onToggle,
   onNavClick,
@@ -46,7 +46,7 @@ export function SidebarTeamItem({
         </Button>
         <Link
           to={ROUTE_PATTERNS.workspaces.teams.detail}
-          params={{ companySlug, workspaceSlug, teamSlug: team.slug }}
+          params={{ orgSlug, workspaceSlug, teamSlug: team.slug }}
           onClick={onNavClick}
           className={cn(
             "block px-3 py-1.5 rounded-md text-sm truncate transition-colors flex-1",
@@ -65,7 +65,7 @@ export function SidebarTeamItem({
           teamId={team._id}
           teamSlug={team.slug}
           workspaceSlug={workspaceSlug}
-          companySlug={companySlug}
+          orgSlug={orgSlug}
           onNavClick={onNavClick}
         />
       )}
@@ -77,13 +77,13 @@ function SidebarTeamProjects({
   teamId,
   teamSlug,
   workspaceSlug,
-  companySlug,
+  orgSlug,
   onNavClick,
 }: {
   teamId: Id<"teams">;
   teamSlug: string;
   workspaceSlug: string;
-  companySlug: string;
+  orgSlug: string;
   onNavClick: () => void;
 }) {
   const location = useLocation();
@@ -108,7 +108,7 @@ function SidebarTeamProjects({
           <Link
             to={ROUTE_PATTERNS.workspaces.teams.projects.board}
             params={{
-              companySlug,
+              orgSlug,
               workspaceSlug,
               teamSlug,
               key: project.key,

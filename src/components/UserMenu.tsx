@@ -5,7 +5,7 @@ import { useQuery } from "convex/react";
 import { LogOut, Settings } from "lucide-react";
 import { Flex } from "@/components/ui/Flex";
 import { ROUTE_PATTERNS } from "@/config/routes";
-import { useCompany } from "@/hooks/useCompanyContext";
+import { useOrganization } from "@/hooks/useOrgContext";
 import { Avatar } from "./ui/Avatar";
 import {
   DropdownMenu,
@@ -21,7 +21,7 @@ import { Typography } from "./ui/Typography";
 export function UserMenu() {
   const user = useQuery(api.users.getCurrent);
   const { signOut } = useAuthActions();
-  const { companySlug } = useCompany();
+  const { orgSlug } = useOrganization();
 
   // Don't render menu if user data isn't ready
   if (!user) {
@@ -55,7 +55,7 @@ export function UserMenu() {
           <DropdownMenuItem asChild>
             <Link
               to={ROUTE_PATTERNS.settings.profile}
-              params={{ companySlug }}
+              params={{ orgSlug }}
               className="cursor-pointer w-full"
             >
               <Settings className="mr-2 h-4 w-4" />

@@ -27,7 +27,7 @@ export function MemberOnboarding({
   const [isCreating, setIsCreating] = useState(false);
   const [createdSlug, setCreatedSlug] = useState<string | null>(null);
 
-  const createCompany = useMutation(api.companies.createCompany);
+  const createCompany = useMutation(api.organizations.createCompany);
   const completeOnboarding = useMutation(api.onboarding.completeOnboardingFlow);
 
   const handleCreateWorkspace = async () => {

@@ -32,7 +32,7 @@ export function LeadOnboarding({
   const [createdSlug, setCreatedSlug] = useState<string | null>(null);
 
   const createSampleProject = useMutation(api.onboarding.createSampleProject);
-  const createCompany = useMutation(api.companies.createCompany);
+  const createCompany = useMutation(api.organizations.createCompany);
   const completeOnboarding = useMutation(api.onboarding.completeOnboardingFlow);
 
   const handleCreateWorkspace = async () => {

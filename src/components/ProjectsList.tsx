@@ -9,11 +9,11 @@ import { Flex } from "@/components/ui/Flex";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { Typography } from "@/components/ui/Typography";
 import { ROUTE_PATTERNS } from "@/config/routes";
-import { useCompany } from "@/hooks/useCompanyContext";
+import { useOrganization } from "@/hooks/useOrgContext";
 import { CreateProjectFromTemplate } from "./CreateProjectFromTemplate";
 
 export function ProjectsList() {
-  const { companyId, companySlug } = useCompany();
+  const { organizationId, orgSlug } = useOrganization();
   const navigate = useNavigate();
   const [isCreateOpen, setIsCreateOpen] = useState(false);
 
@@ -24,7 +24,7 @@ export function ProjectsList() {
     loadMore,
   } = usePaginatedQuery(
     api.projects.getCurrentUserProjects,
-    { companyId },
+    { organizationId },
     { initialNumItems: 20 },
   );
 
@@ -32,7 +32,7 @@ export function ProjectsList() {
     setIsCreateOpen(false);
     await navigate({
       to: ROUTE_PATTERNS.projects.board,
-      params: { companySlug, key: projectKey },
+      params: { orgSlug, key: projectKey },
     });
   };
 
@@ -77,7 +77,7 @@ export function ProjectsList() {
             <Link
               key={project._id}
               to={ROUTE_PATTERNS.projects.board}
-              params={{ companySlug, key: project.key }}
+              params={{ orgSlug, key: project.key }}
             >
               <Card className="p-6 hover:shadow-lg transition-shadow cursor-pointer">
                 <Flex direction="column" gap="md">

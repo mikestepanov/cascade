@@ -29,7 +29,7 @@ export const loggedInUser = query({
       emailVerificationTime: v.optional(v.number()),
       image: v.optional(v.string()),
       isAnonymous: v.optional(v.boolean()),
-      defaultCompanyId: v.optional(v.id("companies")),
+      defaultOrganizationId: v.optional(v.id("organizations")),
     }),
     v.null(),
   ),
@@ -72,18 +72,18 @@ export const getRedirectDestination = query({
 
     // 2. Check for companies
     const membership = await ctx.db
-      .query("companyMembers")
+      .query("organizationMembers")
       .withIndex("by_user", (q) => q.eq("userId", userId))
       .first();
 
     if (membership) {
-      const company = await ctx.db.get(membership.companyId);
-      if (company?.slug) {
-        return `/${company.slug}/dashboard`;
+      const organization = await ctx.db.get(membership.organizationId);
+      if (organization?.slug) {
+        return `/${organization.slug}/dashboard`;
       }
     }
 
-    // If they finished onboarding but have no company,
+    // If they finished onboarding but have no organization,
     // we should send them to /app gateway where InitializeCompany will handle them.
     return ROUTE_PATTERNS.app;
   },

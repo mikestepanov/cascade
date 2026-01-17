@@ -28,7 +28,7 @@ export const createFromTemplate = mutation({
     projectName: v.string(),
     projectKey: v.string(),
     description: v.optional(v.string()),
-    companyId: v.id("companies"), // Required: company this project belongs to
+    organizationId: v.id("organizations"), // Required: organization this project belongs to
     workspaceId: v.id("workspaces"), // Required: workspace this project belongs to
     teamId: v.optional(v.id("teams")), // Required: team this project belongs to
   },
@@ -43,14 +43,16 @@ export const createFromTemplate = mutation({
       throw new Error("Template not found");
     }
 
-    // Verify user is a member of the company
-    const companyMembership = await ctx.db
-      .query("companyMembers")
-      .withIndex("by_company_user", (q) => q.eq("companyId", args.companyId).eq("userId", userId))
+    // Verify user is a member of the organization
+    const organizationMembership = await ctx.db
+      .query("organizationMembers")
+      .withIndex("by_organization_user", (q) =>
+        q.eq("organizationId", args.organizationId).eq("userId", userId),
+      )
       .first();
 
-    if (!companyMembership) {
-      throw new Error("You must be a member of this company to create projects");
+    if (!organizationMembership) {
+      throw new Error("You must be a member of this organization to create projects");
     }
 
     // Check if project key already exists
@@ -71,7 +73,7 @@ export const createFromTemplate = mutation({
       name: args.projectName,
       key: args.projectKey,
       description: args.description,
-      companyId: args.companyId,
+      organizationId: args.organizationId,
       workspaceId: args.workspaceId,
       teamId: args.teamId,
       ownerId: userId,
