@@ -228,7 +228,7 @@ describe("Sprints", () => {
     it("should return sprints for organization-visible projects to organization members", async () => {
       const t = convexTest(schema, modules);
       const owner = await createTestUser(t, { name: "Owner" });
-      const companyMember = await createTestUser(t, { name: "organization Member" });
+      const organizationMember = await createTestUser(t, { name: "organization Member" });
       const { organizationId, workspaceId, teamId } = await createOrganizationAdmin(t, owner);
 
       // Add organization member (not project member)
@@ -236,7 +236,7 @@ describe("Sprints", () => {
       await t.run(async (ctx) => {
         await ctx.db.insert("organizationMembers", {
           organizationId,
-          userId: companyMember,
+          userId: organizationMember,
           role: "member",
           addedBy: owner,
           addedAt: now,
@@ -267,8 +267,8 @@ describe("Sprints", () => {
       });
 
       // organization member can see organization-visible project sprints
-      const asCompanyMember = asAuthenticatedUser(t, companyMember);
-      const sprints = await asCompanyMember.query(api.sprints.listByProject, { projectId });
+      const asOrganizationMember = asAuthenticatedUser(t, organizationMember);
+      const sprints = await asOrganizationMember.query(api.sprints.listByProject, { projectId });
 
       expect(sprints).toHaveLength(1);
       expect(sprints[0]?.name).toBe("organization Sprint");

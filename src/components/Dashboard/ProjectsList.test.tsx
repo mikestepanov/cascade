@@ -12,9 +12,9 @@ vi.mock("@tanstack/react-router", () => ({
 }));
 
 // Mock organization context
-const TEST_COMPANY_SLUG = "test-organization";
+const TEST_ORG_SLUG = "test-organization";
 vi.mock("@/hooks/useOrgContext", () => ({
-  useOrganization: () => ({ orgSlug: TEST_COMPANY_SLUG }),
+  useOrganization: () => ({ orgSlug: TEST_ORG_SLUG }),
 }));
 
 // Mock navigation hook
@@ -101,7 +101,7 @@ describe("WorkspacesList", () => {
 
     expect(mockNavigate).toHaveBeenCalledWith({
       to: ROUTES.workspaces.list.path,
-      params: { orgSlug: TEST_COMPANY_SLUG },
+      params: { orgSlug: TEST_ORG_SLUG },
     });
   });
 
@@ -144,7 +144,7 @@ describe("WorkspacesList", () => {
 
     expect(mockNavigate).toHaveBeenCalledWith({
       to: ROUTES.projects.board.path,
-      params: { orgSlug: TEST_COMPANY_SLUG, key: "ALPHA" },
+      params: { orgSlug: TEST_ORG_SLUG, key: "ALPHA" },
     });
   });
 

@@ -197,16 +197,16 @@ export const createTestUserInternal = internalMutation({
           const organizationName = "Nixelo E2E";
           const slug = "nixelo-e2e";
 
-          const existingCompany = await ctx.db
+          const existingOrganization = await ctx.db
             .query("organizations")
             .withIndex("by_slug", (q) => q.eq("slug", slug))
             .first();
 
           let organizationId: Id<"organizations">;
 
-          if (existingCompany) {
+          if (existingOrganization) {
             // organization exists - just add this user as a member
-            organizationId = existingCompany._id;
+            organizationId = existingOrganization._id;
           } else {
             // Create the organization
             organizationId = await ctx.db.insert("organizations", {
@@ -278,16 +278,16 @@ export const createTestUserInternal = internalMutation({
       const organizationName = "Nixelo E2E";
       const slug = "nixelo-e2e";
 
-      const existingCompany = await ctx.db
+      const existingOrganization = await ctx.db
         .query("organizations")
         .withIndex("by_slug", (q) => q.eq("slug", slug))
         .first();
 
       let organizationId: Id<"organizations">;
 
-      if (existingCompany) {
+      if (existingOrganization) {
         // organization exists - just add this user as a member
-        organizationId = existingCompany._id;
+        organizationId = existingOrganization._id;
       } else {
         // Create the organization (first user creates it)
         organizationId = await ctx.db.insert("organizations", {
@@ -436,7 +436,7 @@ export const deleteTestUserInternal = internalMutation({
       // Note: authRefreshTokens are tied to sessions, which we've already deleted
       // The auth system will clean up orphaned refresh tokens
 
-      // Delete user's organization memberships and any companies they created
+      // Delete user's organization memberships and any organizations they created
       const memberships = await ctx.db
         .query("organizationMembers")
         .withIndex("by_user", (q) => q.eq("userId", user._id))

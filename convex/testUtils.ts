@@ -175,7 +175,7 @@ export async function createProjectInOrganization(
 }
 
 /**
- * @deprecated Use createProjectInCompany instead
+ * @deprecated Use createProjectInOrganization instead
  */
 export async function createTestProject(
   t: TestCtx,
@@ -311,7 +311,7 @@ export async function expectThrowsAsync(
 }
 
 /**
- * Create a organization and add user as admin/owner
+ * Create an organization and add user as admin/owner
  *
  * This properly sets up organization admin status by creating both
  * the organization record and the organizationMembers record.

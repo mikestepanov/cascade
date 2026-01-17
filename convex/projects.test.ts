@@ -165,14 +165,14 @@ describe("Projects", () => {
     it("should return organization-visible projects for organization members", async () => {
       const t = convexTest(schema, modules);
       const owner = await createTestUser(t, { name: "Owner" });
-      const companyMember = await createTestUser(t, { name: "organization Member" });
+      const organizationMember = await createTestUser(t, { name: "organization Member" });
 
       // Setup organization and members
       const { organizationId, workspaceId, teamId } = await createOrganizationAdmin(t, owner);
       await t.run(async (ctx) => {
         await ctx.db.insert("organizationMembers", {
           organizationId,
-          userId: companyMember,
+          userId: organizationMember,
           role: "member",
           addedBy: owner,
           addedAt: Date.now(),
@@ -190,7 +190,7 @@ describe("Projects", () => {
         teamId,
         boardType: "kanban",
       }); // Access as different organization member
-      const asMember = asAuthenticatedUser(t, companyMember);
+      const asMember = asAuthenticatedUser(t, organizationMember);
       const project = await asMember.query(api.projects.getProject, { id: projectId });
       expect(project).toBeDefined();
       expect(project?.name).toBe("organization Visible Project");

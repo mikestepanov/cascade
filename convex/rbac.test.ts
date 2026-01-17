@@ -128,7 +128,7 @@ describe("RBAC Utilities", () => {
       const t = convexTest(schema, modules);
 
       const creatorId = await createTestUser(t, { name: "Creator" });
-      const companyMemberId = await createTestUser(t, { name: "organization Member" });
+      const organizationMemberId = await createTestUser(t, { name: "organization Member" });
       const { organizationId, workspaceId, teamId } = await createOrganizationAdmin(t, creatorId);
 
       // Add organization member (not project member)
@@ -136,7 +136,7 @@ describe("RBAC Utilities", () => {
       await t.run(async (ctx) => {
         await ctx.db.insert("organizationMembers", {
           organizationId,
-          userId: companyMemberId,
+          userId: organizationMemberId,
           role: "member",
           addedBy: creatorId,
           addedAt: now,
@@ -162,7 +162,7 @@ describe("RBAC Utilities", () => {
 
       const canAccess = await t.run(async (ctx) => {
         const { canAccessProject } = await import("./projectAccess");
-        return await canAccessProject(ctx, projectId, companyMemberId);
+        return await canAccessProject(ctx, projectId, organizationMemberId);
       });
 
       expect(canAccess).toBe(true);
