@@ -13,7 +13,8 @@
     {
       "includes": ["src/routeTree.gen.ts"],
       "linter": { "enabled": false },
-      "formatter": { "enabled": false }
+      "formatter": { "enabled": false },
+      "assist": { "enabled": false }
     },
     {
       "includes": ["convex/_generated/**"],

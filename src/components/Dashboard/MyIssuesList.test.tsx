@@ -85,8 +85,8 @@ describe("MyIssuesList", () => {
   it("should render card header", () => {
     render(<MyIssuesList {...defaultProps} />);
 
-    expect(screen.getByText("My Issues")).toBeInTheDocument();
-    expect(screen.getByText("Track your assigned and created issues")).toBeInTheDocument();
+    expect(screen.getByText("Feed")).toBeInTheDocument();
+    expect(screen.getByText("Track your active contributions")).toBeInTheDocument();
   });
 
   it("should render loading skeleton when data is undefined", () => {
@@ -107,10 +107,8 @@ describe("MyIssuesList", () => {
   it("should render empty state when no assigned issues", () => {
     render(<MyIssuesList {...defaultProps} displayIssues={[]} />);
 
-    expect(screen.getByText("No issues found")).toBeInTheDocument();
-    expect(
-      screen.getByText("You don't have any assigned issues. Visit a project to get started."),
-    ).toBeInTheDocument();
+    expect(screen.getByText("Inbox Clear")).toBeInTheDocument();
+    expect(screen.getByText("No pending items in your feed.")).toBeInTheDocument();
   });
 
   it("should render empty state when no created issues", () => {
@@ -137,15 +135,15 @@ describe("MyIssuesList", () => {
   it("should highlight active tab (assigned)", () => {
     render(<MyIssuesList {...defaultProps} issueFilter="assigned" />);
 
-    const assignedTab = screen.getByLabelText("Show assigned issues");
-    expect(assignedTab).toHaveClass("border-brand-indigo-border");
+    const assignedTab = screen.getByLabelText("Filter Assigned");
+    expect(assignedTab).toHaveClass("border-brand-600");
   });
 
   it("should highlight active tab (created)", () => {
     render(<MyIssuesList {...defaultProps} issueFilter="created" />);
 
-    const createdTab = screen.getByLabelText("Show created issues");
-    expect(createdTab).toHaveClass("border-brand-indigo-border");
+    const createdTab = screen.getByLabelText("Filter Created");
+    expect(createdTab).toHaveClass("border-brand-600");
   });
 
   it("should call onFilterChange when switching to assigned tab", async () => {
@@ -156,7 +154,7 @@ describe("MyIssuesList", () => {
       <MyIssuesList {...defaultProps} onFilterChange={onFilterChange} issueFilter="created" />,
     );
 
-    const assignedTab = screen.getByLabelText("Show assigned issues");
+    const assignedTab = screen.getByLabelText("Filter Assigned");
     await user.click(assignedTab);
 
     expect(onFilterChange).toHaveBeenCalledWith("assigned");
@@ -168,7 +166,7 @@ describe("MyIssuesList", () => {
 
     render(<MyIssuesList {...defaultProps} onFilterChange={onFilterChange} />);
 
-    const createdTab = screen.getByLabelText("Show created issues");
+    const createdTab = screen.getByLabelText("Filter Created");
     await user.click(createdTab);
 
     expect(onFilterChange).toHaveBeenCalledWith("created");
@@ -220,15 +218,15 @@ describe("MyIssuesList", () => {
   it("should render View My Workspaces button in empty state", () => {
     render(<MyIssuesList {...defaultProps} displayIssues={[]} />);
 
-    expect(screen.getByText("View My Workspaces")).toBeInTheDocument();
+    expect(screen.getByText("Explore Projects")).toBeInTheDocument();
   });
 
-  it("should navigate to projects when clicking View My Workspaces", async () => {
+  it("should navigate to projects when clicking Explore Projects", async () => {
     const user = userEvent.setup();
 
     render(<MyIssuesList {...defaultProps} displayIssues={[]} />);
 
-    const button = screen.getByText("View My Workspaces");
+    const button = screen.getByText("Explore Projects");
     await user.click(button);
 
     expect(mockNavigate).toHaveBeenCalledWith({
@@ -254,8 +252,8 @@ describe("MyIssuesList", () => {
   it("should have correct accessibility attributes", () => {
     render(<MyIssuesList {...defaultProps} />);
 
-    const assignedTab = screen.getByLabelText("Show assigned issues");
-    const createdTab = screen.getByLabelText("Show created issues");
+    const assignedTab = screen.getByLabelText("Filter Assigned");
+    const createdTab = screen.getByLabelText("Filter Created");
 
     expect(assignedTab).toHaveAttribute("type", "button");
     expect(createdTab).toHaveAttribute("type", "button");
