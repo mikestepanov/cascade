@@ -58,7 +58,8 @@ describe("NotificationCenter", () => {
 
     render(<NotificationCenter />);
 
-    expect(screen.getByRole("button")).toBeInTheDocument();
+    // Check for aria-label since we added one
+    expect(screen.getByRole("button", { name: /notifications/i })).toBeInTheDocument();
   });
 
   it("should show unread count badge when there are unread notifications", () => {
@@ -74,6 +75,8 @@ describe("NotificationCenter", () => {
     render(<NotificationCenter />);
 
     expect(screen.getByText("5")).toBeInTheDocument();
+    // Also check dynamic aria-label
+    expect(screen.getByRole("button", { name: "Notifications, 5 unread" })).toBeInTheDocument();
   });
 
   it("should not show badge when unread count is 0", () => {
@@ -90,6 +93,8 @@ describe("NotificationCenter", () => {
     // Badge should not be visible at all when count is 0
     const badge = document.querySelector(".bg-red-500");
     expect(badge).not.toBeInTheDocument();
+    // Check default aria-label
+    expect(screen.getByRole("button", { name: "Notifications" })).toBeInTheDocument();
   });
 
   it("should show 99+ when unread count exceeds 99", () => {
