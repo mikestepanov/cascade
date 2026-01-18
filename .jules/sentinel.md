@@ -12,3 +12,13 @@
 **Vulnerability:** `convex/workspaces.ts` had `// TODO` comments in place of actual permission checks for `update` and `remove` mutations, allowing any authenticated user to modify workspaces.
 **Learning:** TODO comments acting as placeholders for security checks are dangerous if the code is deployed before they are addressed.
 **Prevention:** Implemented strict `isCompanyAdmin` checks. Future feature flags or role implementations (like "Workspace Admin") must be fully implemented before relaxing these checks.
+
+## 2025-02-14 - Insecure Usage Logging
+**Vulnerability:** `recordUsage` mutation in `convex/apiKeys.ts` was exported as a public mutation, allowing any user to fabricate API usage statistics.
+**Learning:** Helper mutations used by backend logic (like logging or stats) must be `internalMutation` to prevent external manipulation, even if they don't modify sensitive data.
+**Prevention:** Converted `recordUsage` to `internalMutation` and updated calls to use `internal.apiKeys.recordUsage`.
+
+## 2025-02-14 - Mutation in Mutation Error
+**Vulnerability:** Attempted to call a mutation (`rateLimit`) from within another mutation (`validateAndRateLimit`) which causes a runtime error in Convex.
+**Learning:** Convex Mutations are atomic and cannot call other mutations via `ctx.runMutation`. Orchestration of multiple mutations or query+mutation flows must happen in an Action.
+**Prevention:** Moved orchestration logic to the HTTP Action handler.
