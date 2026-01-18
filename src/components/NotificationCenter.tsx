@@ -6,6 +6,7 @@ import { Flex } from "@/components/ui/Flex";
 import { showError } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/Popover";
+import { Tooltip } from "./ui/Tooltip";
 import { Typography } from "./ui/Typography";
 
 interface NotificationWithActor extends Doc<"notifications"> {
@@ -93,41 +94,44 @@ export function NotificationCenter() {
     [removeNotification],
   );
 
+  const dynamicLabel =
+    unreadCount != null && unreadCount > 0
+      ? `Notifications, ${unreadCount} unread`
+      : "Notifications";
+
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
-      <PopoverTrigger asChild>
-        {/* Notification Bell Button */}
-        <button
-          type="button"
-          aria-label={
-            unreadCount && unreadCount > 0
-              ? `Notifications, ${unreadCount} unread`
-              : "Notifications"
-          }
-          className="relative p-2 text-ui-text-secondary hover:text-ui-text-primary hover:bg-ui-bg-secondary rounded-lg transition-colors"
-        >
-          <svg
-            aria-hidden="true"
-            className="w-6 h-6"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
+      <Tooltip content="Notifications">
+        <PopoverTrigger asChild>
+          {/* Notification Bell Button */}
+          <button
+            type="button"
+            className="relative p-2 text-ui-text-secondary hover:text-ui-text-primary hover:bg-ui-bg-secondary rounded-lg transition-colors"
+            aria-label={dynamicLabel}
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
-            />
-          </svg>
-          {/* Unread Badge */}
-          {unreadCount != null && unreadCount > 0 && (
-            <span className="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white transform translate-x-1/2 -translate-y-1/2 bg-status-error rounded-full">
-              {unreadCount > 99 ? "99+" : unreadCount}
-            </span>
-          )}
-        </button>
-      </PopoverTrigger>
+            <svg
+              aria-hidden="true"
+              className="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
+              />
+            </svg>
+            {/* Unread Badge */}
+            {unreadCount != null && unreadCount > 0 && (
+              <span className="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white transform translate-x-1/2 -translate-y-1/2 bg-status-error rounded-full">
+                {unreadCount > 99 ? "99+" : unreadCount}
+              </span>
+            )}
+          </button>
+        </PopoverTrigger>
+      </Tooltip>
 
       <PopoverContent
         align="end"
