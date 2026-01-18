@@ -1632,12 +1632,9 @@ const applicationTables = {
     .index("by_timestamp", ["timestamp"]),
 };
 
-const authVerificationCodes = authTables.authVerificationCodes.index("by_accountId", ["accountId"]);
-
 export default defineSchema({
   ...authTables,
   ...applicationTables,
-  authVerificationCodes,
   // Override users table to add custom fields (must include all auth fields)
   users: defineTable({
     // Required auth fields from @convex-dev/auth
