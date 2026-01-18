@@ -74,7 +74,8 @@ test.describe("Dashboard Tests", () => {
       await dashboardPage.goto();
       // Ensure specific focus to capture keyboard events consistently in headless
       // Ensure application is focused
-      await page.bringToFront();
+      // Ensure specific focus to capture keyboard events consistently
+      // await page.bringToFront(); // Removed as it causes issues in parallel execution
       await page.locator("body").waitFor({ state: "visible" });
       await page.locator("body").click({ force: true });
 

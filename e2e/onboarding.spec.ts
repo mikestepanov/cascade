@@ -35,7 +35,7 @@ async function resetOnboarding(parallelIndex: number): Promise<void> {
 // NOTE: Using dedicated onboardingTest fixture ensures isolation.
 test.describe("Onboarding Wizard", () => {
   // Use a dedicated user to avoid auth token rotation issues with other tests
-  test.use({ skipAuthSave: true });
+
   // Run tests serially to prevent auth token rotation issues
   test.describe.configure({ mode: "serial" });
 
@@ -132,7 +132,6 @@ test.describe("Onboarding - Team Lead Flow", () => {
   // Run tests serially to prevent auth token rotation issues
   test.describe.configure({ mode: "serial" });
   // Skip auth save for this test - onboarding state changes can affect auth state
-  test.use({ skipAuthSave: true });
 
   // TODO: Storage state becomes invalid after earlier tests - needs investigation
   test("shows team lead features and can go back to role selection", async ({ page }, testInfo) => {
@@ -167,8 +166,6 @@ test.describe("Onboarding - Team Lead Flow", () => {
 // Uses ensureAuthenticated to re-login if tokens were invalidated by signout test.
 test.describe("Onboarding - Team Member Flow", () => {
   // Run tests serially to prevent auth token rotation issues
-  test.describe.configure({ mode: "serial" });
-  test.use({ skipAuthSave: true });
 
   // TODO: Storage state becomes invalid after earlier tests - needs investigation
   test("shows member-specific content and can complete onboarding", async ({ page }, testInfo) => {
@@ -194,8 +191,8 @@ test.describe("Onboarding - Team Member Flow", () => {
     await page.getByPlaceholder(/e.g., Acme Corp/i).fill("E2E Test Project");
     await onboarding.createProject();
 
-    // Wait for features screen and go to dashboard
-    await onboarding.goToDashboard();
+    // Wait for features screen
+    await onboarding.expectTeamMemberComplete();
 
     // Verify we are on the Team Member specific step
     // (Implicitly verified by selectTeamMember action now)

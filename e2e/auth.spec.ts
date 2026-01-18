@@ -1,5 +1,6 @@
 import { expect, test } from "./fixtures";
-import { getTestEmailAddress, waitForVerificationEmail } from "./utils/mailtrap";
+import { getTestEmailAddress } from "./utils/mailtrap";
+import { waitForMockOTP } from "./utils/otp-helpers";
 
 /**
  * Authentication E2E Tests
@@ -109,51 +110,47 @@ test.describe("Password Reset", () => {
 });
 
 /**
- * Integration tests - require running backend and Mailtrap configuration
+ * Integration tests - require running backend
  * These test the full sign up and email verification flow
  *
- * NOTE: Skipped due to Mailtrap sandbox monthly sending limits (100/month).
- * Re-enable when limits reset or use a different email testing provider.
+ * NOTE: Uses Mock OTP (direct DB read) instead of Mailtrap
+ * to avoid cost/limits and improve speed.
  */
-test.describe
-  .skip("Integration", () => {
-    test.describe.configure({ mode: "serial" });
+test.describe("Integration", () => {
+  test.describe.configure({ mode: "serial" });
 
-    test("sign up flow sends verification email", async ({ authPage }) => {
-      const testEmail = getTestEmailAddress("signup-test");
-      await authPage.gotoSignUp();
+  test("sign up flow sends verification email", async ({ authPage }) => {
+    const testEmail = getTestEmailAddress("signup-test");
+    await authPage.gotoSignUp();
 
-      // Sign up with test email
-      await authPage.signUp(testEmail, "TestPassword123!");
+    // Sign up with test email
+    await authPage.signUp(testEmail, "TestPassword123!");
 
-      // Should show verification form
-      await authPage.expectVerificationForm();
-    });
-
-    test("can complete email verification", async ({ authPage, page }) => {
-      const testEmail = getTestEmailAddress("verify-test");
-      await authPage.gotoSignUp();
-
-      // Sign up with test email
-      await authPage.signUp(testEmail, "TestPassword123!");
-
-      // Wait for verification form
-      await authPage.expectVerificationForm();
-
-      // Get OTP from Mailtrap
-      const otp = await waitForVerificationEmail(testEmail, {
-        timeout: 60000,
-        pollInterval: 3000,
-      });
-
-      // Enter the OTP
-      await authPage.verifyEmail(otp);
-
-      // Should either go to onboarding or dashboard
-      await expect(
-        page
-          .getByRole("heading", { name: /welcome to nixelo/i })
-          .or(page.getByRole("link", { name: /^dashboard$/i })),
-      ).toBeVisible({ timeout: 15000 });
-    });
+    // Should show verification form
+    await authPage.expectVerificationForm();
   });
+
+  test("can complete email verification", async ({ authPage, page }) => {
+    const testEmail = getTestEmailAddress("verify-test");
+    await authPage.gotoSignUp();
+
+    // Sign up with test email
+    await authPage.signUp(testEmail, "TestPassword123!");
+
+    // Wait for verification form
+    await authPage.expectVerificationForm();
+
+    // Get OTP from Mock Backend (fast, free, robust)
+    const otp = await waitForMockOTP(testEmail);
+
+    // Enter the OTP
+    await authPage.verifyEmail(otp);
+
+    // Should either go to onboarding or dashboard
+    await expect(
+      page
+        .getByRole("heading", { name: /welcome to nixelo/i })
+        .or(page.getByRole("link", { name: /^dashboard$/i })),
+    ).toBeVisible({ timeout: 15000 });
+  });
+});

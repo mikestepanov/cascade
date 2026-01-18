@@ -24,30 +24,30 @@ pnpm e2e:debug
 
 ### Key Settings
 
-| Setting | Local | CI |
-|---------|-------|-----|
+| Setting  | Local                   | CI                      |
+| -------- | ----------------------- | ----------------------- |
 | Base URL | `http://localhost:5555` | `http://localhost:5555` |
-| Browser | Chromium | Chromium |
-| Workers | Auto | 1 |
-| Retries | 0 | 2 |
-| Parallel | Yes | Yes |
+| Browser  | Chromium                | Chromium                |
+| Workers  | Auto                    | 1                       |
+| Retries  | 0                       | 2                       |
+| Parallel | Yes                     | Yes                     |
 
 ### Timeouts
 
-| Type | Duration |
-|------|----------|
-| Test timeout | 30 seconds |
-| Expect timeout | 5 seconds |
-| Action timeout | 10 seconds |
+| Type               | Duration   |
+| ------------------ | ---------- |
+| Test timeout       | 30 seconds |
+| Expect timeout     | 5 seconds  |
+| Action timeout     | 10 seconds |
 | Navigation timeout | 15 seconds |
 
 ### Debug Artifacts
 
-| Artifact | When Captured |
-|----------|---------------|
-| Trace | On first retry |
+| Artifact   | When Captured   |
+| ---------- | --------------- |
+| Trace      | On first retry  |
 | Screenshot | Only on failure |
-| Video | On first retry |
+| Video      | On first retry  |
 
 ## Architecture
 
@@ -184,29 +184,30 @@ test("can sign in", async ({ authPage }) => {
 
 Test users are configured in `e2e/config.ts`. All use `@inbox.mailtrap.io` for email verification.
 
-| User Key | Email | Role | Description |
-|----------|-------|------|-------------|
-| `teamLead` | `e2e-teamlead@inbox.mailtrap.io` | admin | Default test user, project admin |
-| `teamMember` | `e2e-member@inbox.mailtrap.io` | editor | Team member with edit permissions |
-| `viewer` | `e2e-viewer@inbox.mailtrap.io` | viewer | Read-only access |
+| User Key     | Email                            | Role   | Description                       |
+| ------------ | -------------------------------- | ------ | --------------------------------- |
+| `teamLead`   | `e2e-teamlead@inbox.mailtrap.io` | admin  | Default test user, project admin  |
+| `teamMember` | `e2e-member@inbox.mailtrap.io`   | editor | Team member with edit permissions |
+| `viewer`     | `e2e-viewer@inbox.mailtrap.io`   | viewer | Read-only access                  |
 
 **Password:** All test users use `E2ETestPassword123!`
 
 ### Test Company
 
-All test users share a single company:
+All test users share a single organization:
 
-| Property | Value |
-|----------|-------|
-| Company Name | `Nixelo E2E` |
-| Company Slug | `nixelo-e2e` |
+| Property          | Value        |
+| ----------------- | ------------ |
+| Organization Name | `Nixelo E2E` |
+| Organization Slug | `nixelo-e2e` |
 
 This ensures deterministic URLs: `http://localhost:5555/nixelo-e2e/dashboard`
 
 ### Automatic User Setup
 
 Test users are created automatically by `global-setup.ts` on each run:
-1. Deletes any existing user and their company (ensures fresh state)
+
+1. Deletes any existing user and their organization (ensures fresh state)
 2. Creates user via E2E API endpoint (bypasses email verification)
 3. Signs in via browser to get auth tokens
 4. Saves auth state to `e2e/.auth/user-*.json`
@@ -215,23 +216,25 @@ Test users are created automatically by `global-setup.ts` on each run:
 
 ### Auth State Files
 
-| File | User |
-|------|------|
+| File                           | User                |
+| ------------------------------ | ------------------- |
 | `e2e/.auth/user-teamlead.json` | Team lead (default) |
-| `e2e/.auth/user-member.json` | Team member |
-| `e2e/.auth/user-viewer.json` | Viewer |
+| `e2e/.auth/user-member.json`   | Team member         |
+| `e2e/.auth/user-viewer.json`   | Viewer              |
 
 ### IMPORTANT: Convex Auth Token Rotation
 
 **Convex Auth uses refresh token rotation** - once a refresh token is used, it's invalidated and a new one is issued. This has critical implications for E2E testing:
 
 **The Problem:**
+
 1. Global setup signs in users and saves auth state (JWT + refresh token) to files
 2. Test 1 loads auth from file, uses tokens → tokens get rotated in browser
 3. Test 2 loads auth from SAME file → old tokens are now INVALID
 4. Test 2 fails with authentication errors
 
 **The Solution (implemented in `global-setup.ts`):**
+
 ```typescript
 // Always delete stale auth files and create fresh tokens
 if (fs.existsSync(authStatePath)) {
@@ -241,6 +244,7 @@ if (fs.existsSync(authStatePath)) {
 ```
 
 **Key Rules for Convex Auth E2E Tests:**
+
 1. **Never reuse auth state** - Always create fresh auth per test run
 2. **Consolidate related tests** - Tests sharing the same user should be in one test file
 3. **One user per test** - Don't use multiple auth contexts in a single test (tokens rotate independently)
@@ -263,7 +267,7 @@ Tests that run after sign-out (which invalidates tokens) use `ensureAuthenticate
 
 ```typescript
 test("test after signout", async ({ page, ensureAuthenticated }) => {
-  await ensureAuthenticated();  // Re-logs in if needed
+  await ensureAuthenticated(); // Re-logs in if needed
   // ... rest of test
 });
 ```
@@ -287,8 +291,8 @@ test.describe("Sign Out Tests", () => {
 ```typescript
 // e2e/fixtures/auth.fixture.ts
 export const authenticatedTest = base.extend<AuthFixtures>({
-  storageState: AUTH_PATHS.teamLead,  // Uses saved cookies/localStorage
-  skipAuthSave: [false, { option: true }],  // Option to skip saving
+  storageState: AUTH_PATHS.teamLead, // Uses saved cookies/localStorage
+  skipAuthSave: [false, { option: true }], // Option to skip saving
 
   ensureAuthenticated: async ({ page }, use) => {
     // Re-authenticates if tokens are invalid
@@ -312,6 +316,7 @@ For tests requiring email verification (signup, password reset), we use Mailtrap
    - Account ID & Inbox ID: From inbox URL
 
 3. **Set Environment Variables:**
+
 ```bash
 MAILTRAP_API_TOKEN=your_token
 MAILTRAP_ACCOUNT_ID=your_account_id
@@ -323,10 +328,7 @@ MAILTRAP_INBOX_ID=your_inbox_id
 **File:** `e2e/utils/mailtrap.ts`
 
 ```typescript
-import {
-  waitForVerificationEmail,
-  clearInbox,
-} from "./utils/mailtrap";
+import { waitForVerificationEmail, clearInbox } from "./utils/mailtrap";
 
 // Clear inbox before test
 await clearInbox();
@@ -340,11 +342,11 @@ const otp = await waitForVerificationEmail("user@example.com", {
 
 ### Available Functions
 
-| Function | Description |
-|----------|-------------|
-| `waitForVerificationEmail(email, options)` | Polls inbox, returns OTP code |
-| `clearInbox()` | Deletes all messages (cleanup) |
-| `getTestEmailAddress(prefix)` | Generates unique test email |
+| Function                                   | Description                    |
+| ------------------------------------------ | ------------------------------ |
+| `waitForVerificationEmail(email, options)` | Polls inbox, returns OTP code  |
+| `clearInbox()`                             | Deletes all messages (cleanup) |
+| `getTestEmailAddress(prefix)`              | Generates unique test email    |
 
 ### Example: Signup Test with OTP
 
@@ -402,15 +404,18 @@ test("complete signup flow with email verification", async ({ authPage }) => {
 ### Troubleshooting
 
 **OTP email not arriving:**
+
 - Check Mailtrap inbox manually
 - Verify `MAILTRAP_API_TOKEN` has correct permissions
 - Check Convex logs for email sending errors
 
 **Timeout waiting for email:**
+
 - Increase `timeout` option (default 30s)
 - Check if email provider is configured in Convex
 
 **Cannot extract OTP:**
+
 - OTP pattern expects 8-digit code
 - Check email template format
 
@@ -420,28 +425,28 @@ test("complete signup flow with email verification", async ({ authPage }) => {
 
 ```typescript
 // Role-based (most resilient)
-page.getByRole("button", { name: /submit/i })
-page.getByRole("heading", { name: /welcome/i })
-page.getByRole("link", { name: /home/i })
+page.getByRole("button", { name: /submit/i });
+page.getByRole("heading", { name: /welcome/i });
+page.getByRole("link", { name: /home/i });
 
 // Form inputs
-page.getByLabel("Email")
-page.getByPlaceholder("Enter your email")
+page.getByLabel("Email");
+page.getByPlaceholder("Enter your email");
 
 // Visible text
-page.getByText("Sign in")
-page.getByText(/welcome back/i)
+page.getByText("Sign in");
+page.getByText(/welcome back/i);
 ```
 
 ### Avoid
 
 ```typescript
 // CSS selectors (brittle)
-page.locator(".btn-primary")
-page.locator("#submit-button")
+page.locator(".btn-primary");
+page.locator("#submit-button");
 
 // XPath (complex, hard to maintain)
-page.locator("//button[@type='submit']")
+page.locator("//button[@type='submit']");
 ```
 
 ### Test IDs (Last Resort)
@@ -483,6 +488,7 @@ test.describe("Feature Name", () => {
 ### Test Categories
 
 **UI Tests** (no backend required):
+
 ```typescript
 test("displays sign in form", async ({ authPage }) => {
   await authPage.goto();
@@ -492,6 +498,7 @@ test("displays sign in form", async ({ authPage }) => {
 ```
 
 **Integration Tests** (requires backend):
+
 ```typescript
 test("sign up sends verification email", async ({ authPage }) => {
   await authPage.goto();
@@ -524,6 +531,7 @@ pnpm e2e:debug
 ```
 
 This opens Playwright Inspector where you can:
+
 - Step through tests
 - View page state
 - Generate selectors
@@ -589,6 +597,7 @@ The Playwright MCP Server enables Claude Code to interact with your app visually
 ### Configuration
 
 `.claude/mcp.json`:
+
 ```json
 {
   "mcpServers": {
@@ -663,11 +672,11 @@ e2e/
 
 ### Test Users & Roles
 
-| Role | User | Permissions |
-|------|------|-------------|
-| Admin | `teamLead` | Full control - manage settings, members, delete project |
-| Editor | `teamMember` | Create/edit issues, sprints, documents |
-| Viewer | `viewer` | Read-only access, can only view and comment |
+| Role   | User         | Permissions                                             |
+| ------ | ------------ | ------------------------------------------------------- |
+| Admin  | `teamLead`   | Full control - manage settings, members, delete project |
+| Editor | `teamMember` | Create/edit issues, sprints, documents                  |
+| Viewer | `viewer`     | Read-only access, can only view and comment             |
 
 ### Running RBAC Tests
 
@@ -686,15 +695,18 @@ The `rbacTest` fixture provides authenticated contexts for each role:
 ```typescript
 import { rbacTest, expect } from "./fixtures";
 
-rbacTest("admin has full project access", async ({
-  adminPage,           // Admin's page instance
-  gotoRbacProject,     // Helper to navigate to RBAC project
-  rbacProjectKey,      // Project key (e.g., "RBAC")
-  rbacCompanySlug,     // Company slug from API
-}) => {
-  await gotoRbacProject(adminPage);
-  // ... test admin permissions
-});
+rbacTest(
+  "admin has full project access",
+  async ({
+    adminPage, // Admin's page instance
+    gotoRbacProject, // Helper to navigate to RBAC project
+    rbacProjectKey, // Project key (e.g., "RBAC")
+    rbacOrgSlug, // Organization slug from API
+  }) => {
+    await gotoRbacProject(adminPage);
+    // ... test admin permissions
+  },
+);
 ```
 
 ### Why Tests Are Consolidated
@@ -702,12 +714,14 @@ rbacTest("admin has full project access", async ({
 Due to Convex auth token rotation, each role's tests must be in a SINGLE test:
 
 **Before (17 tests - FAILED):**
+
 ```typescript
 rbacTest("admin can view board", ...);     // Uses admin token → ROTATED
 rbacTest("admin can create issue", ...);   // Same file → OLD TOKEN → FAIL
 ```
 
 **After (3 tests - PASSES):**
+
 ```typescript
 rbacTest("admin has full project access", async ({ adminPage }) => {
   // All admin assertions in ONE test
@@ -726,21 +740,22 @@ RBAC project configuration is saved by global-setup:
 e2e/.auth/rbac-config.json
 {
   "projectKey": "RBAC",
-  "companySlug": "nixelo-e2e",  // Deterministic slug for all test users
+  "orgSlug": "nixelo-e2e",  // Deterministic slug for all test users
   "projectId": "...",
-  "companyId": "..."
+  "organizationId": "..."
 }
 ```
 
-This file is read by `rbac.fixture.ts` to get the correct company slug for navigation URLs.
+This file is read by `rbac.fixture.ts` to get the correct organization slug for navigation URLs.
 
 ---
 
 **Related Documentation:**
+
 - [Testing Overview](./README.md)
 - [E2E Test Files](../../e2e/)
 - [Playwright Docs](https://playwright.dev/docs/intro)
 
 ---
 
-*Last Updated: 2025-12-10*
+_Last Updated: 2025-12-10_
