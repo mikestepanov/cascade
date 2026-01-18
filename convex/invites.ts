@@ -8,34 +8,20 @@ import { getSiteUrl } from "./lib/env";
 import { notDeleted } from "./lib/softDeleteHelpers";
 
 // Helper: Check if user is a organization admin
-async function isOrganizationAdmin(ctx: QueryCtx | MutationCtx, userId: Id<"users">) {
-  // Primary: Check if user is admin or owner in any organization
-  const organizationMembership = await ctx.db
+async function isOrganizationAdmin(
+  ctx: QueryCtx | MutationCtx,
+  organizationId: Id<"organizations">,
+  userId: Id<"users">,
+) {
+  // Primary: Check if user is admin or owner in the specified organization
+  const membership = await ctx.db
     .query("organizationMembers")
-    .withIndex("by_user", (q) => q.eq("userId", userId))
-    .filter((q) => q.or(q.eq(q.field("role"), "admin"), q.eq(q.field("role"), "owner")))
+    .withIndex("by_organization_user", (q) =>
+      q.eq("organizationId", organizationId).eq("userId", userId),
+    )
     .first();
 
-  if (organizationMembership) return true;
-
-  // Fallback: Check if user has created a project (backward compatibility)
-  const createdProjects = await ctx.db
-    .query("projects")
-    .withIndex("by_creator", (q) => q.eq("createdBy", userId))
-    .filter(notDeleted)
-    .first();
-
-  if (createdProjects) return true;
-
-  // Fallback: Check if user has admin role in any project (backward compatibility)
-  const adminMembership = await ctx.db
-    .query("projectMembers")
-    .withIndex("by_user", (q) => q.eq("userId", userId))
-    .filter((q) => q.eq(q.field("role"), "admin"))
-    .filter(notDeleted)
-    .first();
-
-  return !!adminMembership;
+  return membership?.role === "owner" || membership?.role === "admin";
 }
 
 // Generate a cryptographically secure invite token
@@ -203,7 +189,7 @@ export const sendInvite = mutation({
     }
 
     // Check permissions and get project info
-    const isPlatAdmin = await isOrganizationAdmin(ctx, userId);
+    const isPlatAdmin = await isOrganizationAdmin(ctx, args.organizationId, userId);
     let projectName: string | undefined;
     const effectiveProjectRole = args.projectRole || "editor";
 
@@ -296,15 +282,15 @@ export const revokeInvite = mutation({
     const userId = await getAuthUserId(ctx);
     if (!userId) throw new Error("Not authenticated");
 
-    // Check if user is admin
-    const isAdmin = await isOrganizationAdmin(ctx, userId);
-    if (!isAdmin) {
-      throw new Error("Only admins can revoke invites");
-    }
-
     const invite = await ctx.db.get(args.inviteId);
     if (!invite) {
       throw new Error("Invite not found");
+    }
+
+    // Check if user is admin of the organization the invite belongs to
+    const isAdmin = await isOrganizationAdmin(ctx, invite.organizationId, userId);
+    if (!isAdmin) {
+      throw new Error("Only admins can revoke invites");
     }
 
     if (invite.status !== "pending") {
@@ -335,15 +321,15 @@ export const resendInvite = mutation({
     const userId = await getAuthUserId(ctx);
     if (!userId) throw new Error("Not authenticated");
 
-    // Check if user is admin
-    const isAdmin = await isOrganizationAdmin(ctx, userId);
-    if (!isAdmin) {
-      throw new Error("Only admins can resend invites");
-    }
-
     const invite = await ctx.db.get(args.inviteId);
     if (!invite) {
       throw new Error("Invite not found");
+    }
+
+    // Check if user is admin of the organization the invite belongs to
+    const isAdmin = await isOrganizationAdmin(ctx, invite.organizationId, userId);
+    if (!isAdmin) {
+      throw new Error("Only admins can resend invites");
     }
 
     if (invite.status !== "pending") {
@@ -550,6 +536,7 @@ export const acceptInvite = mutation({
  */
 export const listInvites = query({
   args: {
+    organizationId: v.id("organizations"),
     status: v.optional(
       v.union(
         v.literal("pending"),
@@ -595,24 +582,29 @@ export const listInvites = query({
     if (!userId) throw new Error("Not authenticated");
 
     // Check if user is admin - return empty array for non-admins (UI-driven visibility)
-    const isAdmin = await isOrganizationAdmin(ctx, userId);
+    const isAdmin = await isOrganizationAdmin(ctx, args.organizationId, userId);
     if (!isAdmin) {
       return [];
     }
 
-    // Filter by status if provided
-    // Query invites with limit (admin function but still bounded)
+    // Query invites for the specific organization
     const MAX_INVITES = 500;
     let invites: Doc<"invites">[];
     if (args.status !== undefined) {
       const status = args.status;
       invites = await ctx.db
         .query("invites")
-        .withIndex("by_status", (q) => q.eq("status", status))
+        .withIndex("by_organization_status", (q) =>
+          q.eq("organizationId", args.organizationId).eq("status", status),
+        )
         .order("desc")
         .take(MAX_INVITES);
     } else {
-      invites = await ctx.db.query("invites").order("desc").take(MAX_INVITES);
+      invites = await ctx.db
+        .query("invites")
+        .withIndex("by_organization", (q) => q.eq("organizationId", args.organizationId))
+        .order("desc")
+        .take(MAX_INVITES);
     }
 
     // Batch fetch all related data to avoid N+1
@@ -651,7 +643,7 @@ export const listInvites = query({
  * List all users (admin only)
  */
 export const listUsers = query({
-  args: {},
+  args: { organizationId: v.id("organizations") },
   returns: v.array(
     v.object({
       _id: v.id("users"),
@@ -664,22 +656,29 @@ export const listUsers = query({
       projectMemberships: v.number(),
     }),
   ),
-  handler: async (ctx) => {
+  handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) throw new Error("Not authenticated");
 
     // Check if user is admin - return empty array for non-admins (UI-driven visibility)
-    const isAdmin = await isOrganizationAdmin(ctx, userId);
+    const isAdmin = await isOrganizationAdmin(ctx, args.organizationId, userId);
     if (!isAdmin) {
       return [];
     }
 
-    // Bounded query - admin function but still needs reasonable limits
+    // Bounded query - scope by organization
     const MAX_USERS = 500;
-    const users = await ctx.db.query("users").take(MAX_USERS);
+    const organizationMembers = await ctx.db
+      .query("organizationMembers")
+      .withIndex("by_organization", (q) => q.eq("organizationId", args.organizationId))
+      .take(MAX_USERS);
 
-    // Batch fetch all project creations and memberships to avoid N+1 queries
-    const userIds = users.map((u) => u._id);
+    const userIds = organizationMembers.map((m) => m.userId);
+
+    // Fetch users in batch
+    const users = (await Promise.all(userIds.map((uid) => ctx.db.get(uid)))).filter(
+      (u): u is Doc<"users"> => u !== null,
+    );
 
     // Parallel queries for all users at once
     const [allProjectCreations, allMemberships] = await Promise.all([

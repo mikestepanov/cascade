@@ -79,6 +79,7 @@ export function SmartAuthGuard({ children }: { children?: React.ReactNode }) {
     shouldBeOnboarding,
     isCorrectPath,
     isAuthLoading,
+    isAuthenticated,
     navigate,
   ]);
 

@@ -15,13 +15,20 @@ import { v } from "convex/values";
 import { Scrypt } from "lucia";
 import { internal } from "./_generated/api";
 import type { Doc, Id } from "./_generated/dataModel";
-import { httpAction, internalMutation } from "./_generated/server";
+import {
+  type ActionCtx,
+  httpAction,
+  internalMutation,
+  internalQuery,
+  type MutationCtx,
+  type QueryCtx,
+} from "./_generated/server";
 import { notDeleted } from "./lib/softDeleteHelpers";
 
 // Test user expiration (1 hour - for garbage collection)
 const TEST_USER_EXPIRATION_MS = 60 * 60 * 1000;
 
-import { signIn } from "./auth";
+import { api } from "./_generated/api";
 
 /**
  * Check if email is a test email
@@ -121,7 +128,7 @@ export const createTestUserEndpoint = httpAction(async (ctx, request) => {
  * POST /e2e/login-test-user
  * Body: { email: string, password: string }
  */
-export const loginTestUserEndpoint = httpAction(async (ctx, request) => {
+export const loginTestUserEndpoint = httpAction(async (ctx: ActionCtx, request: Request) => {
   // Validate API key
   const authError = validateE2EApiKey(request);
   if (authError) return authError;
@@ -149,7 +156,7 @@ export const loginTestUserEndpoint = httpAction(async (ctx, request) => {
 
     // Call the signIn action directly
     // The Password provider expects 'flow: "signIn"' in params
-    const result = await ctx.runAction(signIn, {
+    const result = await ctx.runAction(api.auth.signIn, {
       provider: "password",
       params: {
         email,
@@ -1585,7 +1592,7 @@ export const getLatestOTP = internalQuery({
     // 1. Find the user by email
     const user = await ctx.db
       .query("users")
-      .withIndex("email", (q) => q.eq("email", args.email))
+      .withIndex("email", (q: any) => q.eq("email", args.email))
       .unique();
 
     if (!user) return null;
@@ -1593,7 +1600,7 @@ export const getLatestOTP = internalQuery({
     // 2. Find ANY account for this user (password, google, etc)
     const accounts = await ctx.db
       .query("authAccounts")
-      .withIndex("userIdAndProvider", (q) => q.eq("userId", user._id))
+      .withIndex("userIdAndProvider", (q: any) => q.eq("userId", user._id))
       .collect();
 
     if (accounts.length === 0) return null;
@@ -1602,9 +1609,9 @@ export const getLatestOTP = internalQuery({
     let latestCode: { code: string; _creationTime: number } | null = null;
 
     for (const account of accounts) {
-      const code = await (ctx.db as any)
+      const code = await ctx.db
         .query("authVerificationCodes")
-        .filter((q: any) => q.eq(q.field("accountId"), account._id))
+        .filter((q) => q.eq(q.field("accountId"), account._id))
         .order("desc")
         .first();
 
@@ -2277,7 +2284,7 @@ export const listDuplicateTestUsersInternal = internalMutation({
  * POST /e2e/get-latest-otp
  * Body: { email: string }
  */
-export const getLatestOTPEndpoint = httpAction(async (ctx, request) => {
+export const getLatestOTPEndpoint = httpAction(async (ctx: ActionCtx, request: Request) => {
   // Validate API key
   const authError = validateE2EApiKey(request);
   if (authError) return authError;

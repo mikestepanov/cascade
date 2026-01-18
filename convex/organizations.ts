@@ -10,7 +10,7 @@ import { notDeleted } from "./lib/softDeleteHelpers";
 // ============================================================================
 
 /**
- * Get user's role in a organization
+ * Get user's role in an organization
  * Returns null if user is not a member
  */
 export async function getOrganizationRole(
@@ -564,7 +564,7 @@ export const getOrganizationBySlug = query({
 });
 
 /**
- * Get all companies user is a member of
+ * Get all organizations user is a member of
  */
 export const getUserOrganizations = query({
   args: {},
@@ -654,7 +654,7 @@ export const getUserOrganizations = query({
 });
 
 /**
- * Get all members of a organization
+ * Get all members of an organization
  * Admin only
  */
 export const getOrganizationMembers = query({
@@ -722,7 +722,7 @@ export const getOrganizationMembers = query({
 });
 
 /**
- * Get user's role in a organization (public query version)
+ * Get user's role in an organization (public query version)
  */
 export const getUserRole = query({
   args: {
@@ -760,7 +760,7 @@ export const initializeDefaultOrganization = mutation({
     const userId = await getAuthUserId(ctx);
     if (!userId) throw new Error("Not authenticated");
 
-    // Check if user already has a organization
+    // Check if user already has an organization
     const existingMembership = await ctx.db
       .query("organizationMembers")
       .withIndex("by_user", (q) => q.eq("userId", userId))

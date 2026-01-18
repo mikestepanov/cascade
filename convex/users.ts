@@ -126,7 +126,7 @@ export const updateProfile = mutation({
 });
 
 /**
- * Check if the current user is a organization admin
+ * Check if the current user is an organization admin
  * Returns true if user is:
  * - Owner or admin in any organization
  * - Creator of any project (backward compatibility)

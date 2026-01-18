@@ -88,8 +88,8 @@ export const OTPVerification = Resend({
         throw new Error(`Could not send verification email: ${result.error}`);
       }
     } catch (err) {
-      // Don't rethrow, to let the flow complete (code is generated regardless)
-      // Although usually we want to know... but for E2E, the code is what matters.
+      // Fail fast so users aren't stuck without a verification code.
+      throw err instanceof Error ? err : new Error("Could not send verification email");
     }
   }) as (params: { identifier: string }) => Promise<void>,
 });

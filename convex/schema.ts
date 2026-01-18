@@ -1231,7 +1231,8 @@ const applicationTables = {
     .index("by_invited_by", ["invitedBy"])
     .index("by_email_status", ["email", "status"])
     .index("by_organization", ["organizationId"])
-    .index("by_project", ["projectId"]),
+    .index("by_project", ["projectId"])
+    .index("by_organization_status", ["organizationId", "status"]),
 
   // Companies/Organizations (Multi-tenant support)
   organizations: defineTable({
@@ -1631,9 +1632,12 @@ const applicationTables = {
     .index("by_timestamp", ["timestamp"]),
 };
 
+const authVerificationCodes = authTables.authVerificationCodes.index("by_accountId", ["accountId"]);
+
 export default defineSchema({
   ...authTables,
   ...applicationTables,
+  authVerificationCodes,
   // Override users table to add custom fields (must include all auth fields)
   users: defineTable({
     // Required auth fields from @convex-dev/auth
