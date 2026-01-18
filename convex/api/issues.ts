@@ -48,7 +48,12 @@ export const handler = httpAction(async (ctx, request) => {
     // biome-ignore lint/suspicious/noConsole: Logging critical API errors
     console.error(e);
     error = e instanceof Error ? e.message : String(e);
-    response = createErrorResponse(500, "Internal server error");
+    // Explicitly handle unauthorized errors from internal queries
+    if (error.includes("Not authorized")) {
+      response = createErrorResponse(403, "Not authorized");
+    } else {
+      response = createErrorResponse(500, "Internal server error");
+    }
   }
 
   // Record usage if authenticated
@@ -141,11 +146,17 @@ async function handleList(ctx: ActionCtx, request: Request, auth: ApiAuthContext
     return createErrorResponse(400, "projectId required");
   }
 
+  // 1. Check if the *key* allows this project (Key Scope)
   if (!verifyProjectAccess(auth, projectId)) {
     return createErrorResponse(403, "Not authorized for this project");
   }
 
-  const issues = await ctx.runQuery(api.issues.listByProject, { projectId });
+  // 2. Call internal query to check if the *user* allows this project and fetch data
+  // internal.issues.queries.listIssuesInternal handles the user RBAC check
+  const issues = await ctx.runQuery(internal.issues.queries.listIssuesInternal, {
+    projectId,
+    userId: auth.userId,
+  });
 
   return createSuccessResponse({ data: issues });
 }

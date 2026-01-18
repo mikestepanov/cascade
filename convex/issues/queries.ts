@@ -2,7 +2,7 @@ import { getAuthUserId } from "@convex-dev/auth/server";
 import { paginationOptsValidator } from "convex/server";
 import { v } from "convex/values";
 import type { Doc, Id } from "../_generated/dataModel";
-import { type QueryCtx, query } from "../_generated/server";
+import { internalQuery, type QueryCtx, query } from "../_generated/server";
 import { projectQuery } from "../customFunctions";
 import { batchFetchUsers } from "../lib/batchHelpers";
 import {
@@ -15,6 +15,35 @@ import { notDeleted } from "../lib/softDeleteHelpers";
 import { sanitizeUserForAuth } from "../lib/userUtils";
 import { canAccessProject } from "../projectAccess";
 import { matchesSearchFilters, ROOT_ISSUE_TYPES } from "./helpers";
+
+/**
+ * Internal query for API usage that accepts explicit userId
+ * Bypasses getAuthUserId() which returns null in HTTP actions
+ */
+export const listIssuesInternal = internalQuery({
+  args: {
+    projectId: v.id("projects"),
+    userId: v.id("users"),
+  },
+  handler: async (ctx, args) => {
+    // 1. Verify access for the specific user
+    const hasAccess = await canAccessProject(ctx, args.projectId, args.userId);
+    if (!hasAccess) {
+      throw new Error("Not authorized for this project");
+    }
+
+    // 2. Fetch issues
+    const issues = await ctx.db
+      .query("issues")
+      .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
+      .filter(notDeleted)
+      .order("desc")
+      .take(100); // Limit for API
+
+    // 3. enrich issues
+    return await enrichIssues(ctx, issues);
+  },
+});
 
 /**
  * List all issues assigned to or reported by the current user
