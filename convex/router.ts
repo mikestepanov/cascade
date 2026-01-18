@@ -8,6 +8,8 @@ import {
   createTestUserEndpoint,
   debugVerifyPasswordEndpoint,
   deleteTestUserEndpoint,
+  getLatestOTPEndpoint,
+  loginTestUserEndpoint,
   nukeAllE2EWorkspacesEndpoint,
   nukeAllTestUsersEndpoint,
   nukeTimersEndpoint,
@@ -92,6 +94,20 @@ http.route({
   path: "/e2e/delete-test-user",
   method: "POST",
   handler: deleteTestUserEndpoint,
+});
+
+// Login test user via API
+http.route({
+  path: "/e2e/login-test-user",
+  method: "POST",
+  handler: loginTestUserEndpoint,
+});
+
+// Get latest OTP for a test user
+http.route({
+  path: "/e2e/get-latest-otp",
+  method: "POST",
+  handler: getLatestOTPEndpoint,
 });
 
 // Reset onboarding state for test user(s)

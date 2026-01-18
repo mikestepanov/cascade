@@ -21,6 +21,8 @@ import { notDeleted } from "./lib/softDeleteHelpers";
 // Test user expiration (1 hour - for garbage collection)
 const TEST_USER_EXPIRATION_MS = 60 * 60 * 1000;
 
+import { signIn } from "./auth";
+
 /**
  * Check if email is a test email
  */
@@ -103,6 +105,67 @@ export const createTestUserEndpoint = httpAction(async (ctx, request) => {
     });
 
     return new Response(JSON.stringify(result), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
+  } catch (e) {
+    return new Response(JSON.stringify({ error: String(e) }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+});
+
+/**
+ * Log in a test user via API and return tokens
+ * POST /e2e/login-test-user
+ * Body: { email: string, password: string }
+ */
+export const loginTestUserEndpoint = httpAction(async (ctx, request) => {
+  // Validate API key
+  const authError = validateE2EApiKey(request);
+  if (authError) return authError;
+
+  try {
+    const body = await request.json();
+    const { email, password } = body;
+
+    if (!(email && password)) {
+      return new Response(JSON.stringify({ error: "Missing email or password" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    if (!isTestEmail(email)) {
+      return new Response(
+        JSON.stringify({ error: "Only test emails allowed (@inbox.mailtrap.io)" }),
+        {
+          status: 403,
+          headers: { "Content-Type": "application/json" },
+        },
+      );
+    }
+
+    // Call the signIn action directly
+    // The Password provider expects 'flow: "signIn"' in params
+    const result = await ctx.runAction(signIn, {
+      provider: "password",
+      params: {
+        email,
+        password,
+        flow: "signIn",
+      },
+    });
+
+    if (!result.tokens) {
+      return new Response(JSON.stringify({ error: "No tokens returned from signIn", result }), {
+        status: 401,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    return new Response(JSON.stringify(result.tokens), {
       status: 200,
       headers: { "Content-Type": "application/json" },
     });
@@ -1513,6 +1576,50 @@ export const verifyTestUserInternal = internalMutation({
 });
 
 /**
+ * Get the latest OTP code for a user (email)
+ * NOTE: dependent on "authVerificationCodes" table existing from @convex-dev/auth
+ */
+export const getLatestOTP = internalQuery({
+  args: { email: v.string() },
+  handler: async (ctx, args) => {
+    // 1. Find the user by email
+    const user = await ctx.db
+      .query("users")
+      .withIndex("email", (q) => q.eq("email", args.email))
+      .unique();
+
+    if (!user) return null;
+
+    // 2. Find ANY account for this user (password, google, etc)
+    const accounts = await ctx.db
+      .query("authAccounts")
+      .withIndex("userIdAndProvider", (q) => q.eq("userId", user._id))
+      .collect();
+
+    if (accounts.length === 0) return null;
+
+    // 3. Find the latest verification code across all accounts
+    let latestCode: { code: string; _creationTime: number } | null = null;
+
+    for (const account of accounts) {
+      const code = await (ctx.db as any)
+        .query("authVerificationCodes")
+        .filter((q: any) => q.eq(q.field("accountId"), account._id))
+        .order("desc")
+        .first();
+
+      if (code) {
+        if (!latestCode || code._creationTime > latestCode._creationTime) {
+          latestCode = code;
+        }
+      }
+    }
+
+    return latestCode?.code ?? null;
+  },
+});
+
+/**
  * Debug endpoint: Verify password against stored hash
  * POST /e2e/debug-verify-password
  * Body: { email: string, password: string }
@@ -2163,6 +2270,41 @@ export const listDuplicateTestUsersInternal = internalMutation({
 
     return { testUsers: testUsers.length, duplicates };
   },
+});
+
+/**
+ * Get latest OTP for a user
+ * POST /e2e/get-latest-otp
+ * Body: { email: string }
+ */
+export const getLatestOTPEndpoint = httpAction(async (ctx, request) => {
+  // Validate API key
+  const authError = validateE2EApiKey(request);
+  if (authError) return authError;
+
+  try {
+    const body = await request.json();
+    const { email } = body;
+
+    if (!email) {
+      return new Response(JSON.stringify({ error: "Missing email" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    const code = await ctx.runQuery(internal.e2e.getLatestOTP, { email });
+
+    return new Response(JSON.stringify({ code }), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
+  } catch (e) {
+    return new Response(JSON.stringify({ error: String(e) }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
 });
 
 export const nukeAllTestUsersInternal = internalMutation({

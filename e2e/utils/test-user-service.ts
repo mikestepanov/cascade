@@ -76,6 +76,30 @@ export class TestUserService {
   }
 
   /**
+   * Login a test user via E2E API (bypassing UI)
+   */
+  async loginTestUser(
+    email: string,
+    password: string,
+  ): Promise<{ success: boolean; token?: string; refreshToken?: string; error?: string }> {
+    try {
+      const response = await fetch(E2E_ENDPOINTS.loginTestUser, {
+        method: "POST",
+        headers: getE2EHeaders(),
+        body: JSON.stringify({ email, password }),
+      });
+      const result = await response.json();
+      if (response.ok && result.token) {
+        return { success: true, token: result.token, refreshToken: result.refreshToken };
+      }
+      return { success: false, error: result.error || "Login failed" };
+    } catch (error) {
+      console.warn(`  ⚠️ Failed to login user ${email}:`, error);
+      return { success: false, error: String(error) };
+    }
+  }
+
+  /**
    * Verify a test user's email via E2E API
    */
   async verifyTestUser(email: string): Promise<boolean> {

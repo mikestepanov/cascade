@@ -210,6 +210,10 @@ export const TEST_USER_PREFIXES = {
 export const E2E_ENDPOINTS = {
   // Get OTP for test email (GET ?email=...)
   getOTP: `${CONVEX_SITE_URL}/e2e/otp`,
+  // Login test user via API (POST)
+  loginTestUser: `${CONVEX_SITE_URL}/e2e/login-test-user`,
+  // Get latest OTP for test email (GET ?email=...)
+  getLatestOTP: `${CONVEX_SITE_URL}/e2e/get-latest-otp`,
   // Reset onboarding state (POST)
   resetOnboarding: `${CONVEX_SITE_URL}/e2e/reset-onboarding`,
   // Create test user via API (POST) - bypasses email verification
@@ -232,6 +236,8 @@ export const E2E_ENDPOINTS = {
   seedTemplates: `${CONVEX_SITE_URL}/e2e/seed-templates`,
   // Force delete ALL test users (POST)
   nukeTestUsers: `${CONVEX_SITE_URL}/e2e/nuke-test-users`,
+  // Login test user via API (POST)
+  loginTestUser: `${CONVEX_SITE_URL}/e2e/login-test-user`,
 };
 
 /**

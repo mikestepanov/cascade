@@ -16,6 +16,7 @@ import {
   urlPatterns,
 } from "../locators";
 import { waitForVerificationEmail } from "./mailtrap";
+import { testUserService } from "./test-user-service";
 import { waitForFormReady } from "./wait-helpers";
 
 declare global {
@@ -196,6 +197,40 @@ export async function trySignInUser(
     // The "Welcome back" heading only appears after Convex determines auth state
     // (inside <Unauthenticated> wrapper). Use longer timeout for cold starts.
     // FALLBACK: Also wait for form as backup (more reliable).
+
+    // --- API FAST LOGIN ---
+    console.log("  ⚡ Attempting API login...");
+    const loginResult = await testUserService.loginTestUser(user.email, user.password);
+    if (loginResult.success && loginResult.token) {
+      console.log("  ✓ API login successful. Injecting tokens...");
+      await page.evaluate(
+        ({ token, refreshToken }) => {
+          localStorage.setItem("convexAuthToken", token);
+          if (refreshToken) {
+            localStorage.setItem("convexAuthRefreshToken", refreshToken);
+          }
+        },
+        { token: loginResult.token, refreshToken: loginResult.refreshToken ?? undefined },
+      );
+
+      // Navigate to dashboard directly
+      await page.goto(`${baseURL}/dashboard`, { waitUntil: "domcontentloaded" });
+
+      // Wait to confirm we are logged in
+      try {
+        await page.waitForURL(urlPatterns.dashboardOrOnboarding, { timeout: 15000 });
+        if (await isOnDashboard(page)) {
+          console.log("  ✓ Automatically redirected to dashboard");
+          return true;
+        }
+      } catch {
+        console.log("  ⚠️ API login injection failed to redirect. Falling back to UI login.");
+      }
+    } else {
+      console.log(`  ⚠️ API login failed: ${loginResult.error}. Falling back to UI login.`);
+    }
+
+    // --- UI LOGIN FALLBACK ---
 
     const locators = authFormLocators(page);
 
