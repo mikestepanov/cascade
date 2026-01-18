@@ -19,9 +19,6 @@ export const handler = httpAction(async (ctx, request) => {
   const startTime = Date.now();
   const url = new URL(request.url);
   const method = request.method;
-  const userAgent = request.headers.get("user-agent") || undefined;
-  const ipAddress =
-    request.headers.get("x-forwarded-for") || request.headers.get("x-real-ip") || undefined;
 
   let auth: ApiAuthContext | null = null;
   let response: Response;
@@ -41,44 +38,76 @@ export const handler = httpAction(async (ctx, request) => {
         response = createErrorResponse(404, "Not found");
       }
     } else {
-      // Should not happen if authenticateAndRateLimit is correct
       response = createErrorResponse(500, "Authentication error");
     }
   } catch (e: unknown) {
-    // biome-ignore lint/suspicious/noConsole: Logging critical API errors
-    console.error(e);
-    error = e instanceof Error ? e.message : String(e);
-    // Explicitly handle unauthorized errors from internal queries
-    if (error.includes("Not authorized")) {
-      response = createErrorResponse(403, "Not authorized");
-    } else {
-      response = createErrorResponse(500, "Internal server error");
-    }
+    const errorResult = handleError(e);
+    response = errorResult.response;
+    error = errorResult.error;
   }
 
   // Record usage if authenticated
   if (auth?.keyId) {
-    try {
-      const responseTime = Date.now() - startTime;
-      await ctx.runMutation(internal.apiKeys.recordUsage, {
-        keyId: auth.keyId,
-        method,
-        endpoint: url.pathname,
-        statusCode: response.status,
-        responseTime,
-        userAgent,
-        ipAddress,
-        error,
-      });
-    } catch (e) {
-      // Ignore usage recording errors to not affect response
-      // biome-ignore lint/suspicious/noConsole: Logging failed usage record
-      console.error("Failed to record API usage", e);
-    }
+    await recordApiUsage(ctx, {
+      auth,
+      method,
+      url,
+      response,
+      startTime,
+      request,
+      error,
+    });
   }
 
   return response;
 });
+
+function handleError(e: unknown): { response: Response; error: string } {
+  // biome-ignore lint/suspicious/noConsole: Logging critical API errors
+  console.error(e);
+  const error = e instanceof Error ? e.message : String(e);
+  // Explicitly handle unauthorized errors from internal queries
+  if (error.includes("Not authorized")) {
+    return { response: createErrorResponse(403, "Not authorized"), error };
+  }
+  return { response: createErrorResponse(500, "Internal server error"), error };
+}
+
+async function recordApiUsage(
+  ctx: ActionCtx,
+  params: {
+    auth: ApiAuthContext;
+    method: string;
+    url: URL;
+    response: Response;
+    startTime: number;
+    request: Request;
+    error?: string;
+  },
+) {
+  const { auth, method, url, response, startTime, request, error } = params;
+  try {
+    const userAgent = request.headers.get("user-agent") || undefined;
+    const ipAddress =
+      request.headers.get("x-forwarded-for") || request.headers.get("x-real-ip") || undefined;
+    const responseTime = Date.now() - startTime;
+
+    await ctx.runMutation(internal.apiKeys.recordUsage, {
+      keyId: auth.keyId,
+      method,
+      endpoint: url.pathname,
+      statusCode: response.status,
+      responseTime,
+      userAgent,
+      ipAddress,
+      error,
+    });
+  } catch (e) {
+    // Ignore usage recording errors to not affect response
+    // biome-ignore lint/suspicious/noConsole: Logging failed usage record
+    console.error("Failed to record API usage", e);
+  }
+}
 
 async function authenticateAndRateLimit(
   ctx: ActionCtx,

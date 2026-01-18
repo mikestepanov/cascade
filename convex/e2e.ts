@@ -15,14 +15,7 @@ import { v } from "convex/values";
 import { Scrypt } from "lucia";
 import { internal } from "./_generated/api";
 import type { Doc, Id } from "./_generated/dataModel";
-import {
-  type ActionCtx,
-  httpAction,
-  internalMutation,
-  internalQuery,
-  type MutationCtx,
-  type QueryCtx,
-} from "./_generated/server";
+import { type ActionCtx, httpAction, internalMutation, internalQuery } from "./_generated/server";
 import { notDeleted } from "./lib/softDeleteHelpers";
 
 // Test user expiration (1 hour - for garbage collection)
