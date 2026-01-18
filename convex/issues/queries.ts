@@ -16,6 +16,8 @@ import { sanitizeUserForAuth } from "../lib/userUtils";
 import { canAccessProject } from "../projectAccess";
 import { matchesSearchFilters, ROOT_ISSUE_TYPES } from "./helpers";
 
+const ISSUE_COUNT_LIMIT = 2000;
+
 /**
  * List all issues assigned to or reported by the current user
  * Used by onboarding checklist to track user progress
@@ -736,26 +738,39 @@ export const getTeamIssueCounts = query({
 
     await Promise.all(
       workflowStates.map(async (state: { id: string; category: string }) => {
-        const allIssues = await ctx.db
-          .query("issues")
-          .withIndex("by_team_status", (q) => q.eq("teamId", args.teamId).eq("status", state.id))
-          .filter(notDeleted)
-          .collect();
+        let visibleCount = 0;
+        let totalCount = 0;
 
         if (state.category === "done") {
+          // Cannot optimize without by_team_status_updated index.
+          // Fetch all to ensure we find recently updated issues that might be old.
+          const allIssues = await ctx.db
+            .query("issues")
+            .withIndex("by_team_status", (q) => q.eq("teamId", args.teamId).eq("status", state.id))
+            .filter(notDeleted)
+            .collect();
+
+          totalCount = allIssues.length;
           const visible = allIssues.filter((i) => i.updatedAt >= doneThreshold);
-          counts[state.id] = {
-            total: allIssues.length,
-            visible: Math.min(visible.length, DEFAULT_PAGE_SIZE),
-            hidden: Math.max(0, allIssues.length - DEFAULT_PAGE_SIZE),
-          };
+          visibleCount = Math.min(visible.length, DEFAULT_PAGE_SIZE);
         } else {
-          counts[state.id] = {
-            total: allIssues.length,
-            visible: Math.min(allIssues.length, DEFAULT_PAGE_SIZE),
-            hidden: Math.max(0, allIssues.length - DEFAULT_PAGE_SIZE),
-          };
+          // Non-done columns: safe to limit by creation time
+          const allIssues = await ctx.db
+            .query("issues")
+            .withIndex("by_team_status", (q) => q.eq("teamId", args.teamId).eq("status", state.id))
+            .order("desc")
+            .filter(notDeleted)
+            .take(ISSUE_COUNT_LIMIT);
+
+          totalCount = allIssues.length;
+          visibleCount = Math.min(totalCount, DEFAULT_PAGE_SIZE);
         }
+
+        counts[state.id] = {
+          total: totalCount,
+          visible: visibleCount,
+          hidden: Math.max(0, totalCount - DEFAULT_PAGE_SIZE),
+        };
       }),
     );
 
@@ -801,28 +816,54 @@ export const getIssueCounts = query({
     } else {
       await Promise.all(
         project.workflowStates.map(async (state: { id: string; category: string }) => {
-          const allIssues = await ctx.db
-            .query("issues")
-            .withIndex("by_project_status", (q) =>
-              q.eq("projectId", args.projectId).eq("status", state.id),
-            )
-            .filter(notDeleted)
-            .collect();
+          let visibleCount = 0;
+          let totalCount = 0;
 
           if (state.category === "done") {
-            const visibleCount = allIssues.filter((i) => i.updatedAt >= doneThreshold).length;
-            addCounts(state.id, {
-              total: allIssues.length,
-              visible: Math.min(visibleCount, DEFAULT_PAGE_SIZE),
-              hidden: Math.max(0, allIssues.length - DEFAULT_PAGE_SIZE),
-            });
+            // Optimization: fetch visible items efficiently using index
+            const visibleIssues = await ctx.db
+              .query("issues")
+              .withIndex("by_project_status_updated", (q) =>
+                q
+                  .eq("projectId", args.projectId)
+                  .eq("status", state.id)
+                  .gte("updatedAt", doneThreshold),
+              )
+              .filter(notDeleted)
+              .take(DEFAULT_PAGE_SIZE + 1);
+
+            visibleCount = Math.min(visibleIssues.length, DEFAULT_PAGE_SIZE);
+
+            // Fetch total count capped at limit
+            const totalIssues = await ctx.db
+              .query("issues")
+              .withIndex("by_project_status", (q) =>
+                q.eq("projectId", args.projectId).eq("status", state.id),
+              )
+              .order("desc")
+              .filter(notDeleted)
+              .take(ISSUE_COUNT_LIMIT);
+
+            totalCount = totalIssues.length;
           } else {
-            addCounts(state.id, {
-              total: allIssues.length,
-              visible: Math.min(allIssues.length, DEFAULT_PAGE_SIZE),
-              hidden: Math.max(0, allIssues.length - DEFAULT_PAGE_SIZE),
-            });
+            const allIssues = await ctx.db
+              .query("issues")
+              .withIndex("by_project_status", (q) =>
+                q.eq("projectId", args.projectId).eq("status", state.id),
+              )
+              .order("desc")
+              .filter(notDeleted)
+              .take(ISSUE_COUNT_LIMIT);
+
+            totalCount = allIssues.length;
+            visibleCount = Math.min(totalCount, DEFAULT_PAGE_SIZE);
           }
+
+          addCounts(state.id, {
+            total: totalCount,
+            visible: visibleCount,
+            hidden: Math.max(0, totalCount - DEFAULT_PAGE_SIZE),
+          });
         }),
       );
     }
@@ -884,30 +925,43 @@ async function getSprintIssueCounts(
 ) {
   await Promise.all(
     workflowStates.map(async (state: { id: string; category: string }) => {
-      const allIssues = await ctx.db
-        .query("issues")
-        .withIndex("by_project_sprint_status", (q) =>
-          q.eq("projectId", projectId).eq("sprintId", sprintId).eq("status", state.id),
-        )
-        .filter(notDeleted)
-        .collect();
+      let visibleCount = 0;
+      let totalCount = 0;
 
       if (state.category === "done") {
-        const visibleCount = allIssues.filter(
-          (i: Doc<"issues">) => i.updatedAt >= doneThreshold,
-        ).length;
-        addCounts(state.id, {
-          total: allIssues.length,
-          visible: Math.min(visibleCount, DEFAULT_PAGE_SIZE),
-          hidden: Math.max(0, allIssues.length - DEFAULT_PAGE_SIZE),
-        });
+        // Cannot optimize without by_project_sprint_status_updated index.
+        // Fetch all to ensure we find recently updated issues that might be old.
+        const allIssues = await ctx.db
+          .query("issues")
+          .withIndex("by_project_sprint_status", (q) =>
+            q.eq("projectId", projectId).eq("sprintId", sprintId).eq("status", state.id),
+          )
+          .filter(notDeleted)
+          .collect();
+
+        totalCount = allIssues.length;
+        const visible = allIssues.filter((i: Doc<"issues">) => i.updatedAt >= doneThreshold);
+        visibleCount = Math.min(visible.length, DEFAULT_PAGE_SIZE);
       } else {
-        addCounts(state.id, {
-          total: allIssues.length,
-          visible: Math.min(allIssues.length, DEFAULT_PAGE_SIZE),
-          hidden: Math.max(0, allIssues.length - DEFAULT_PAGE_SIZE),
-        });
+        // Non-done columns: safe to limit by creation time
+        const allIssues = await ctx.db
+          .query("issues")
+          .withIndex("by_project_sprint_status", (q) =>
+            q.eq("projectId", projectId).eq("sprintId", sprintId).eq("status", state.id),
+          )
+          .order("desc")
+          .filter(notDeleted)
+          .take(ISSUE_COUNT_LIMIT);
+
+        totalCount = allIssues.length;
+        visibleCount = Math.min(totalCount, DEFAULT_PAGE_SIZE);
       }
+
+      addCounts(state.id, {
+        total: totalCount,
+        visible: visibleCount,
+        hidden: Math.max(0, totalCount - DEFAULT_PAGE_SIZE),
+      });
     }),
   );
 }
