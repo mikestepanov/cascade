@@ -1,0 +1,1101 @@
+{
+  "total_count": 8,
+  "jobs": [
+    {
+      "id": 60685382216,
+      "run_id": 21101089072,
+      "workflow_name": "CI",
+      "head_branch": "fixes",
+      "run_url": "https://api.github.com/repos/NixeloApp/cascade/actions/runs/21101089072",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOPvBA4s8AAAAOISFySA",
+      "head_sha": "58e6c06c81cad14f3c65d237ce456e7913a1eea5",
+      "url": "https://api.github.com/repos/NixeloApp/cascade/actions/jobs/60685382216",
+      "html_url": "https://github.com/NixeloApp/cascade/actions/runs/21101089072/job/60685382216",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-01-17T21:24:41Z",
+      "started_at": "2026-01-17T21:24:54Z",
+      "completed_at": "2026-01-17T21:25:25Z",
+      "name": "Backend Tests",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-01-17T21:24:55Z",
+          "completed_at": "2026-01-17T21:24:57Z"
+        },
+        {
+          "name": "Checkout",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-01-17T21:24:57Z",
+          "completed_at": "2026-01-17T21:24:58Z"
+        },
+        {
+          "name": "Setup pnpm",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-01-17T21:24:58Z",
+          "completed_at": "2026-01-17T21:24:59Z"
+        },
+        {
+          "name": "Setup Node.js",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-01-17T21:24:59Z",
+          "completed_at": "2026-01-17T21:25:03Z"
+        },
+        {
+          "name": "Install dependencies",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-01-17T21:25:03Z",
+          "completed_at": "2026-01-17T21:25:11Z"
+        },
+        {
+          "name": "Run backend tests",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-01-17T21:25:11Z",
+          "completed_at": "2026-01-17T21:25:17Z"
+        },
+        {
+          "name": "Post Setup Node.js",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10,
+          "started_at": "2026-01-17T21:25:17Z",
+          "completed_at": "2026-01-17T21:25:22Z"
+        },
+        {
+          "name": "Post Setup pnpm",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11,
+          "started_at": "2026-01-17T21:25:22Z",
+          "completed_at": "2026-01-17T21:25:23Z"
+        },
+        {
+          "name": "Post Checkout",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12,
+          "started_at": "2026-01-17T21:25:23Z",
+          "completed_at": "2026-01-17T21:25:23Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 13,
+          "started_at": "2026-01-17T21:25:23Z",
+          "completed_at": "2026-01-17T21:25:23Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/NixeloApp/cascade/check-runs/60685382216",
+      "labels": ["ubuntu-latest"],
+      "runner_id": 1000000184,
+      "runner_name": "GitHub Actions 1000000184",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 60685382217,
+      "run_id": 21101089072,
+      "workflow_name": "CI",
+      "head_branch": "fixes",
+      "run_url": "https://api.github.com/repos/NixeloApp/cascade/actions/runs/21101089072",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOPvBA4s8AAAAOISFySQ",
+      "head_sha": "58e6c06c81cad14f3c65d237ce456e7913a1eea5",
+      "url": "https://api.github.com/repos/NixeloApp/cascade/actions/jobs/60685382217",
+      "html_url": "https://github.com/NixeloApp/cascade/actions/runs/21101089072/job/60685382217",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-01-17T21:24:41Z",
+      "started_at": "2026-01-17T21:24:43Z",
+      "completed_at": "2026-01-17T21:25:30Z",
+      "name": "Lint & Type Check",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-01-17T21:24:44Z",
+          "completed_at": "2026-01-17T21:24:45Z"
+        },
+        {
+          "name": "Checkout",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-01-17T21:24:45Z",
+          "completed_at": "2026-01-17T21:24:46Z"
+        },
+        {
+          "name": "Setup pnpm",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-01-17T21:24:46Z",
+          "completed_at": "2026-01-17T21:24:47Z"
+        },
+        {
+          "name": "Setup Node.js",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-01-17T21:24:47Z",
+          "completed_at": "2026-01-17T21:24:50Z"
+        },
+        {
+          "name": "Install dependencies",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-01-17T21:24:50Z",
+          "completed_at": "2026-01-17T21:24:59Z"
+        },
+        {
+          "name": "Biome",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-01-17T21:24:59Z",
+          "completed_at": "2026-01-17T21:25:02Z"
+        },
+        {
+          "name": "TypeScript",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-01-17T21:25:02Z",
+          "completed_at": "2026-01-17T21:25:23Z"
+        },
+        {
+          "name": "Architectural Checks",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-01-17T21:25:23Z",
+          "completed_at": "2026-01-17T21:25:25Z"
+        },
+        {
+          "name": "Post Setup Node.js",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 14,
+          "started_at": "2026-01-17T21:25:25Z",
+          "completed_at": "2026-01-17T21:25:28Z"
+        },
+        {
+          "name": "Post Setup pnpm",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 15,
+          "started_at": "2026-01-17T21:25:28Z",
+          "completed_at": "2026-01-17T21:25:28Z"
+        },
+        {
+          "name": "Post Checkout",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 16,
+          "started_at": "2026-01-17T21:25:28Z",
+          "completed_at": "2026-01-17T21:25:28Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 17,
+          "started_at": "2026-01-17T21:25:28Z",
+          "completed_at": "2026-01-17T21:25:28Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/NixeloApp/cascade/check-runs/60685382217",
+      "labels": ["ubuntu-latest"],
+      "runner_id": 1000000185,
+      "runner_name": "GitHub Actions 1000000185",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 60685382235,
+      "run_id": 21101089072,
+      "workflow_name": "CI",
+      "head_branch": "fixes",
+      "run_url": "https://api.github.com/repos/NixeloApp/cascade/actions/runs/21101089072",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOPvBA4s8AAAAOISFyWw",
+      "head_sha": "58e6c06c81cad14f3c65d237ce456e7913a1eea5",
+      "url": "https://api.github.com/repos/NixeloApp/cascade/actions/jobs/60685382235",
+      "html_url": "https://github.com/NixeloApp/cascade/actions/runs/21101089072/job/60685382235",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-01-17T21:24:41Z",
+      "started_at": "2026-01-17T21:24:43Z",
+      "completed_at": "2026-01-17T21:25:49Z",
+      "name": "Unit Tests",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-01-17T21:24:44Z",
+          "completed_at": "2026-01-17T21:24:45Z"
+        },
+        {
+          "name": "Checkout",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-01-17T21:24:45Z",
+          "completed_at": "2026-01-17T21:24:46Z"
+        },
+        {
+          "name": "Setup pnpm",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-01-17T21:24:46Z",
+          "completed_at": "2026-01-17T21:24:47Z"
+        },
+        {
+          "name": "Setup Node.js",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-01-17T21:24:47Z",
+          "completed_at": "2026-01-17T21:24:48Z"
+        },
+        {
+          "name": "Install dependencies",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-01-17T21:24:48Z",
+          "completed_at": "2026-01-17T21:24:57Z"
+        },
+        {
+          "name": "Run unit tests",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-01-17T21:24:57Z",
+          "completed_at": "2026-01-17T21:25:44Z"
+        },
+        {
+          "name": "Post Setup Node.js",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10,
+          "started_at": "2026-01-17T21:25:44Z",
+          "completed_at": "2026-01-17T21:25:47Z"
+        },
+        {
+          "name": "Post Setup pnpm",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11,
+          "started_at": "2026-01-17T21:25:47Z",
+          "completed_at": "2026-01-17T21:25:47Z"
+        },
+        {
+          "name": "Post Checkout",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12,
+          "started_at": "2026-01-17T21:25:47Z",
+          "completed_at": "2026-01-17T21:25:48Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 13,
+          "started_at": "2026-01-17T21:25:48Z",
+          "completed_at": "2026-01-17T21:25:48Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/NixeloApp/cascade/check-runs/60685382235",
+      "labels": ["ubuntu-latest"],
+      "runner_id": 1000000186,
+      "runner_name": "GitHub Actions 1000000186",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 60685411378,
+      "run_id": 21101089072,
+      "workflow_name": "CI",
+      "head_branch": "fixes",
+      "run_url": "https://api.github.com/repos/NixeloApp/cascade/actions/runs/21101089072",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOPvBA4s8AAAAOISHkMg",
+      "head_sha": "58e6c06c81cad14f3c65d237ce456e7913a1eea5",
+      "url": "https://api.github.com/repos/NixeloApp/cascade/actions/jobs/60685411378",
+      "html_url": "https://github.com/NixeloApp/cascade/actions/runs/21101089072/job/60685411378",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-01-17T21:25:49Z",
+      "started_at": "2026-01-17T21:25:51Z",
+      "completed_at": "2026-01-17T21:26:32Z",
+      "name": "Build",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-01-17T21:25:52Z",
+          "completed_at": "2026-01-17T21:25:53Z"
+        },
+        {
+          "name": "Checkout",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-01-17T21:25:53Z",
+          "completed_at": "2026-01-17T21:25:54Z"
+        },
+        {
+          "name": "Setup pnpm",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-01-17T21:25:54Z",
+          "completed_at": "2026-01-17T21:25:55Z"
+        },
+        {
+          "name": "Setup Node.js",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-01-17T21:25:55Z",
+          "completed_at": "2026-01-17T21:25:59Z"
+        },
+        {
+          "name": "Install dependencies",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-01-17T21:25:59Z",
+          "completed_at": "2026-01-17T21:26:02Z"
+        },
+        {
+          "name": "Build",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-01-17T21:26:02Z",
+          "completed_at": "2026-01-17T21:26:29Z"
+        },
+        {
+          "name": "Upload build artifacts",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-01-17T21:26:29Z",
+          "completed_at": "2026-01-17T21:26:30Z"
+        },
+        {
+          "name": "Post Setup Node.js",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12,
+          "started_at": "2026-01-17T21:26:30Z",
+          "completed_at": "2026-01-17T21:26:31Z"
+        },
+        {
+          "name": "Post Setup pnpm",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 13,
+          "started_at": "2026-01-17T21:26:31Z",
+          "completed_at": "2026-01-17T21:26:31Z"
+        },
+        {
+          "name": "Post Checkout",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 14,
+          "started_at": "2026-01-17T21:26:31Z",
+          "completed_at": "2026-01-17T21:26:31Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 15,
+          "started_at": "2026-01-17T21:26:31Z",
+          "completed_at": "2026-01-17T21:26:31Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/NixeloApp/cascade/check-runs/60685411378",
+      "labels": ["ubuntu-latest"],
+      "runner_id": 1000000187,
+      "runner_name": "GitHub Actions 1000000187",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 60685430983,
+      "run_id": 21101089072,
+      "workflow_name": "CI",
+      "head_branch": "fixes",
+      "run_url": "https://api.github.com/repos/NixeloApp/cascade/actions/runs/21101089072",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOPvBA4s8AAAAOISIwxw",
+      "head_sha": "58e6c06c81cad14f3c65d237ce456e7913a1eea5",
+      "url": "https://api.github.com/repos/NixeloApp/cascade/actions/jobs/60685430983",
+      "html_url": "https://github.com/NixeloApp/cascade/actions/runs/21101089072/job/60685430983",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-01-17T21:26:33Z",
+      "started_at": "2026-01-17T21:26:35Z",
+      "completed_at": "2026-01-17T21:28:39Z",
+      "name": "E2E Tests (3, 4)",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-01-17T21:26:36Z",
+          "completed_at": "2026-01-17T21:26:38Z"
+        },
+        {
+          "name": "Checkout",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-01-17T21:26:38Z",
+          "completed_at": "2026-01-17T21:26:39Z"
+        },
+        {
+          "name": "Download build artifacts",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-01-17T21:26:39Z",
+          "completed_at": "2026-01-17T21:26:42Z"
+        },
+        {
+          "name": "Setup pnpm",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-01-17T21:26:42Z",
+          "completed_at": "2026-01-17T21:26:43Z"
+        },
+        {
+          "name": "Setup Node.js",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-01-17T21:26:43Z",
+          "completed_at": "2026-01-17T21:26:50Z"
+        },
+        {
+          "name": "Install dependencies",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-01-17T21:26:50Z",
+          "completed_at": "2026-01-17T21:26:53Z"
+        },
+        {
+          "name": "Get Playwright version",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-01-17T21:26:53Z",
+          "completed_at": "2026-01-17T21:26:54Z"
+        },
+        {
+          "name": "Cache Playwright browsers",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-01-17T21:26:54Z",
+          "completed_at": "2026-01-17T21:26:54Z"
+        },
+        {
+          "name": "Install Playwright browsers",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-01-17T21:26:54Z",
+          "completed_at": "2026-01-17T21:27:21Z"
+        },
+        {
+          "name": "Install Playwright deps (if cached)",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 10,
+          "started_at": "2026-01-17T21:27:21Z",
+          "completed_at": "2026-01-17T21:27:21Z"
+        },
+        {
+          "name": "Run E2E tests",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11,
+          "started_at": "2026-01-17T21:27:21Z",
+          "completed_at": "2026-01-17T21:28:34Z"
+        },
+        {
+          "name": "Upload test results",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 12,
+          "started_at": "2026-01-17T21:28:34Z",
+          "completed_at": "2026-01-17T21:28:34Z"
+        },
+        {
+          "name": "Post Cache Playwright browsers",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 21,
+          "started_at": "2026-01-17T21:28:34Z",
+          "completed_at": "2026-01-17T21:28:36Z"
+        },
+        {
+          "name": "Post Setup Node.js",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 22,
+          "started_at": "2026-01-17T21:28:36Z",
+          "completed_at": "2026-01-17T21:28:36Z"
+        },
+        {
+          "name": "Post Setup pnpm",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 23,
+          "started_at": "2026-01-17T21:28:36Z",
+          "completed_at": "2026-01-17T21:28:36Z"
+        },
+        {
+          "name": "Post Checkout",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 24,
+          "started_at": "2026-01-17T21:28:36Z",
+          "completed_at": "2026-01-17T21:28:37Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 25,
+          "started_at": "2026-01-17T21:28:37Z",
+          "completed_at": "2026-01-17T21:28:37Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/NixeloApp/cascade/check-runs/60685430983",
+      "labels": ["ubuntu-latest"],
+      "runner_id": 1000000188,
+      "runner_name": "GitHub Actions 1000000188",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 60685430987,
+      "run_id": 21101089072,
+      "workflow_name": "CI",
+      "head_branch": "fixes",
+      "run_url": "https://api.github.com/repos/NixeloApp/cascade/actions/runs/21101089072",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOPvBA4s8AAAAOISIwyw",
+      "head_sha": "58e6c06c81cad14f3c65d237ce456e7913a1eea5",
+      "url": "https://api.github.com/repos/NixeloApp/cascade/actions/jobs/60685430987",
+      "html_url": "https://github.com/NixeloApp/cascade/actions/runs/21101089072/job/60685430987",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-01-17T21:26:33Z",
+      "started_at": "2026-01-17T21:26:35Z",
+      "completed_at": "2026-01-17T21:28:42Z",
+      "name": "E2E Tests (2, 4)",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-01-17T21:26:36Z",
+          "completed_at": "2026-01-17T21:26:38Z"
+        },
+        {
+          "name": "Checkout",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-01-17T21:26:38Z",
+          "completed_at": "2026-01-17T21:26:39Z"
+        },
+        {
+          "name": "Download build artifacts",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-01-17T21:26:39Z",
+          "completed_at": "2026-01-17T21:26:41Z"
+        },
+        {
+          "name": "Setup pnpm",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-01-17T21:26:41Z",
+          "completed_at": "2026-01-17T21:26:42Z"
+        },
+        {
+          "name": "Setup Node.js",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-01-17T21:26:42Z",
+          "completed_at": "2026-01-17T21:26:49Z"
+        },
+        {
+          "name": "Install dependencies",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-01-17T21:26:49Z",
+          "completed_at": "2026-01-17T21:26:52Z"
+        },
+        {
+          "name": "Get Playwright version",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-01-17T21:26:52Z",
+          "completed_at": "2026-01-17T21:26:53Z"
+        },
+        {
+          "name": "Cache Playwright browsers",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-01-17T21:26:53Z",
+          "completed_at": "2026-01-17T21:26:53Z"
+        },
+        {
+          "name": "Install Playwright browsers",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-01-17T21:26:53Z",
+          "completed_at": "2026-01-17T21:27:19Z"
+        },
+        {
+          "name": "Install Playwright deps (if cached)",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 10,
+          "started_at": "2026-01-17T21:27:19Z",
+          "completed_at": "2026-01-17T21:27:19Z"
+        },
+        {
+          "name": "Run E2E tests",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11,
+          "started_at": "2026-01-17T21:27:19Z",
+          "completed_at": "2026-01-17T21:28:37Z"
+        },
+        {
+          "name": "Upload test results",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 12,
+          "started_at": "2026-01-17T21:28:37Z",
+          "completed_at": "2026-01-17T21:28:37Z"
+        },
+        {
+          "name": "Post Cache Playwright browsers",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 21,
+          "started_at": "2026-01-17T21:28:37Z",
+          "completed_at": "2026-01-17T21:28:39Z"
+        },
+        {
+          "name": "Post Setup Node.js",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 22,
+          "started_at": "2026-01-17T21:28:39Z",
+          "completed_at": "2026-01-17T21:28:40Z"
+        },
+        {
+          "name": "Post Setup pnpm",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 23,
+          "started_at": "2026-01-17T21:28:40Z",
+          "completed_at": "2026-01-17T21:28:40Z"
+        },
+        {
+          "name": "Post Checkout",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 24,
+          "started_at": "2026-01-17T21:28:40Z",
+          "completed_at": "2026-01-17T21:28:40Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 25,
+          "started_at": "2026-01-17T21:28:40Z",
+          "completed_at": "2026-01-17T21:28:40Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/NixeloApp/cascade/check-runs/60685430987",
+      "labels": ["ubuntu-latest"],
+      "runner_id": 1000000190,
+      "runner_name": "GitHub Actions 1000000190",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 60685430989,
+      "run_id": 21101089072,
+      "workflow_name": "CI",
+      "head_branch": "fixes",
+      "run_url": "https://api.github.com/repos/NixeloApp/cascade/actions/runs/21101089072",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOPvBA4s8AAAAOISIwzQ",
+      "head_sha": "58e6c06c81cad14f3c65d237ce456e7913a1eea5",
+      "url": "https://api.github.com/repos/NixeloApp/cascade/actions/jobs/60685430989",
+      "html_url": "https://github.com/NixeloApp/cascade/actions/runs/21101089072/job/60685430989",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-01-17T21:26:33Z",
+      "started_at": "2026-01-17T21:26:35Z",
+      "completed_at": "2026-01-17T21:28:19Z",
+      "name": "E2E Tests (1, 4)",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-01-17T21:26:36Z",
+          "completed_at": "2026-01-17T21:26:39Z"
+        },
+        {
+          "name": "Checkout",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-01-17T21:26:39Z",
+          "completed_at": "2026-01-17T21:26:40Z"
+        },
+        {
+          "name": "Download build artifacts",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-01-17T21:26:40Z",
+          "completed_at": "2026-01-17T21:26:42Z"
+        },
+        {
+          "name": "Setup pnpm",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-01-17T21:26:42Z",
+          "completed_at": "2026-01-17T21:26:43Z"
+        },
+        {
+          "name": "Setup Node.js",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-01-17T21:26:43Z",
+          "completed_at": "2026-01-17T21:26:49Z"
+        },
+        {
+          "name": "Install dependencies",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-01-17T21:26:49Z",
+          "completed_at": "2026-01-17T21:26:53Z"
+        },
+        {
+          "name": "Get Playwright version",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-01-17T21:26:53Z",
+          "completed_at": "2026-01-17T21:26:53Z"
+        },
+        {
+          "name": "Cache Playwright browsers",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-01-17T21:26:53Z",
+          "completed_at": "2026-01-17T21:26:54Z"
+        },
+        {
+          "name": "Install Playwright browsers",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-01-17T21:26:54Z",
+          "completed_at": "2026-01-17T21:27:23Z"
+        },
+        {
+          "name": "Install Playwright deps (if cached)",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 10,
+          "started_at": "2026-01-17T21:27:23Z",
+          "completed_at": "2026-01-17T21:27:23Z"
+        },
+        {
+          "name": "Run E2E tests",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11,
+          "started_at": "2026-01-17T21:27:23Z",
+          "completed_at": "2026-01-17T21:28:12Z"
+        },
+        {
+          "name": "Upload test results",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 12,
+          "started_at": "2026-01-17T21:28:12Z",
+          "completed_at": "2026-01-17T21:28:12Z"
+        },
+        {
+          "name": "Post Cache Playwright browsers",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 21,
+          "started_at": "2026-01-17T21:28:12Z",
+          "completed_at": "2026-01-17T21:28:16Z"
+        },
+        {
+          "name": "Post Setup Node.js",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 22,
+          "started_at": "2026-01-17T21:28:16Z",
+          "completed_at": "2026-01-17T21:28:16Z"
+        },
+        {
+          "name": "Post Setup pnpm",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 23,
+          "started_at": "2026-01-17T21:28:16Z",
+          "completed_at": "2026-01-17T21:28:16Z"
+        },
+        {
+          "name": "Post Checkout",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 24,
+          "started_at": "2026-01-17T21:28:16Z",
+          "completed_at": "2026-01-17T21:28:17Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 25,
+          "started_at": "2026-01-17T21:28:17Z",
+          "completed_at": "2026-01-17T21:28:17Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/NixeloApp/cascade/check-runs/60685430989",
+      "labels": ["ubuntu-latest"],
+      "runner_id": 1000000189,
+      "runner_name": "GitHub Actions 1000000189",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 60685430991,
+      "run_id": 21101089072,
+      "workflow_name": "CI",
+      "head_branch": "fixes",
+      "run_url": "https://api.github.com/repos/NixeloApp/cascade/actions/runs/21101089072",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOPvBA4s8AAAAOISIwzw",
+      "head_sha": "58e6c06c81cad14f3c65d237ce456e7913a1eea5",
+      "url": "https://api.github.com/repos/NixeloApp/cascade/actions/jobs/60685430991",
+      "html_url": "https://github.com/NixeloApp/cascade/actions/runs/21101089072/job/60685430991",
+      "status": "completed",
+      "conclusion": "failure",
+      "created_at": "2026-01-17T21:26:33Z",
+      "started_at": "2026-01-17T21:26:35Z",
+      "completed_at": "2026-01-17T21:30:16Z",
+      "name": "E2E Tests (4, 4)",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-01-17T21:26:35Z",
+          "completed_at": "2026-01-17T21:26:37Z"
+        },
+        {
+          "name": "Checkout",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-01-17T21:26:37Z",
+          "completed_at": "2026-01-17T21:26:38Z"
+        },
+        {
+          "name": "Download build artifacts",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-01-17T21:26:38Z",
+          "completed_at": "2026-01-17T21:26:38Z"
+        },
+        {
+          "name": "Setup pnpm",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-01-17T21:26:38Z",
+          "completed_at": "2026-01-17T21:26:40Z"
+        },
+        {
+          "name": "Setup Node.js",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-01-17T21:26:40Z",
+          "completed_at": "2026-01-17T21:26:47Z"
+        },
+        {
+          "name": "Install dependencies",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-01-17T21:26:47Z",
+          "completed_at": "2026-01-17T21:26:51Z"
+        },
+        {
+          "name": "Get Playwright version",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-01-17T21:26:51Z",
+          "completed_at": "2026-01-17T21:26:51Z"
+        },
+        {
+          "name": "Cache Playwright browsers",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-01-17T21:26:51Z",
+          "completed_at": "2026-01-17T21:26:51Z"
+        },
+        {
+          "name": "Install Playwright browsers",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-01-17T21:26:51Z",
+          "completed_at": "2026-01-17T21:27:17Z"
+        },
+        {
+          "name": "Install Playwright deps (if cached)",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 10,
+          "started_at": "2026-01-17T21:27:17Z",
+          "completed_at": "2026-01-17T21:27:17Z"
+        },
+        {
+          "name": "Run E2E tests",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 11,
+          "started_at": "2026-01-17T21:27:17Z",
+          "completed_at": "2026-01-17T21:30:13Z"
+        },
+        {
+          "name": "Upload test results",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12,
+          "started_at": "2026-01-17T21:30:13Z",
+          "completed_at": "2026-01-17T21:30:14Z"
+        },
+        {
+          "name": "Post Cache Playwright browsers",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 21,
+          "started_at": "2026-01-17T21:30:14Z",
+          "completed_at": "2026-01-17T21:30:14Z"
+        },
+        {
+          "name": "Post Setup Node.js",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 22,
+          "started_at": "2026-01-17T21:30:14Z",
+          "completed_at": "2026-01-17T21:30:14Z"
+        },
+        {
+          "name": "Post Setup pnpm",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 23,
+          "started_at": "2026-01-17T21:30:14Z",
+          "completed_at": "2026-01-17T21:30:14Z"
+        },
+        {
+          "name": "Post Checkout",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 24,
+          "started_at": "2026-01-17T21:30:14Z",
+          "completed_at": "2026-01-17T21:30:15Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 25,
+          "started_at": "2026-01-17T21:30:15Z",
+          "completed_at": "2026-01-17T21:30:15Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/NixeloApp/cascade/check-runs/60685430991",
+      "labels": ["ubuntu-latest"],
+      "runner_id": 1000000191,
+      "runner_name": "GitHub Actions 1000000191",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    }
+  ]
+}
