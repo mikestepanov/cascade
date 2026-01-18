@@ -326,3 +326,94 @@ export const getMyStats = query({
     };
   },
 });
+
+// Get the single most important task for the Focus Zone
+export const getFocusTask = query({
+  args: {},
+  returns: v.union(
+    v.null(),
+    v.object({
+      _id: v.id("issues"),
+      _creationTime: v.number(),
+      title: v.string(),
+      key: v.string(),
+      status: v.string(),
+      priority: v.optional(v.string()),
+      projectId: v.optional(v.id("projects")),
+      assigneeId: v.optional(v.id("users")),
+      reporterId: v.optional(v.id("users")),
+      description: v.optional(v.string()),
+      createdAt: v.number(),
+      updatedAt: v.number(),
+      isDeleted: v.optional(v.boolean()),
+      projectName: v.string(),
+      projectKey: v.string(),
+    }),
+  ),
+  handler: async (ctx) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) return null;
+
+    // Fetch tasks assigned to me
+    const issues = await ctx.db
+      .query("issues")
+      .withIndex("by_assignee", (q) => q.eq("assigneeId", userId))
+      .filter(notDeleted)
+      .collect();
+
+    if (issues.length === 0) return null;
+
+    // Fetch projects to determine done states (avoid hardcoded "done" status)
+    const projectIds = [...new Set(issues.map((i) => i.projectId).filter(Boolean))];
+    const projectMap = await batchFetchProjects(ctx, projectIds as Id<"projects">[]);
+
+    const doneStatesMap = new Map<string, Set<string>>();
+    projectMap.forEach((project, projectId) => {
+      const doneStates = new Set(
+        project.workflowStates.filter((s) => s.category === "done").map((s) => s.id),
+      );
+      doneStatesMap.set(projectId, doneStates);
+    });
+
+    // Filter out uncompleted issues
+    const uncompletedIssues = issues.filter((issue) => {
+      if (!issue.projectId) return true;
+      const doneStates = doneStatesMap.get(issue.projectId.toString());
+      return !doneStates?.has(issue.status);
+    });
+
+    if (uncompletedIssues.length === 0) return null;
+
+    // Priority ordering: highest > high > medium > low > lowest
+    const priorityMap: Record<string, number> = {
+      highest: 5,
+      high: 4,
+      medium: 3,
+      low: 2,
+      lowest: 1,
+    };
+
+    const focusTask = uncompletedIssues.sort((a, b) => {
+      const pA = priorityMap[a.priority || "none"] || 0;
+      const pB = priorityMap[b.priority || "none"] || 0;
+      if (pA !== pB) return pB - pA;
+      return b.updatedAt - a.updatedAt; // Newest first for same priority
+    })[0];
+
+    // Enrich with project details
+    if (focusTask.projectId) {
+      const project = await ctx.db.get(focusTask.projectId);
+      return {
+        ...focusTask,
+        projectName: project?.name || "Unknown",
+        projectKey: project?.key || "???",
+      };
+    }
+
+    return {
+      ...focusTask,
+      projectName: "Unknown",
+      projectKey: "???",
+    };
+  },
+});

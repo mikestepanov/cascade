@@ -1,6 +1,6 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
-import { mutation, query } from "./_generated/server";
+import { internalMutation, mutation, query } from "./_generated/server";
 import type { ApiAuthContext } from "./lib/apiAuth";
 import { notDeleted } from "./lib/softDeleteHelpers";
 
@@ -308,8 +308,9 @@ export const validate = query({
 
 /**
  * Record API key usage (called by HTTP endpoints)
+ * Protected as internalMutation to prevent public tampering.
  */
-export const recordUsage = mutation({
+export const recordUsage = internalMutation({
   args: {
     keyId: v.id("apiKeys"),
     method: v.string(),

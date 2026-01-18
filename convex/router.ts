@@ -8,6 +8,8 @@ import {
   createTestUserEndpoint,
   debugVerifyPasswordEndpoint,
   deleteTestUserEndpoint,
+  getLatestOTPEndpoint,
+  loginTestUserEndpoint,
   nukeAllE2EWorkspacesEndpoint,
   nukeAllTestUsersEndpoint,
   nukeTimersEndpoint,
@@ -15,7 +17,7 @@ import {
   resetTestWorkspaceEndpoint,
   seedTemplatesEndpoint,
   setupRbacProjectEndpoint,
-  updateCompanySettingsEndpoint,
+  updateOrganizationSettingsEndpoint,
   verifyTestUserEndpoint,
 } from "./e2e";
 import {
@@ -94,6 +96,20 @@ http.route({
   handler: deleteTestUserEndpoint,
 });
 
+// Login test user via API
+http.route({
+  path: "/e2e/login-test-user",
+  method: "POST",
+  handler: loginTestUserEndpoint,
+});
+
+// Get latest OTP for a test user
+http.route({
+  path: "/e2e/get-latest-otp",
+  method: "POST",
+  handler: getLatestOTPEndpoint,
+});
+
 // Reset onboarding state for test user(s)
 http.route({
   path: "/e2e/reset-onboarding",
@@ -143,11 +159,11 @@ http.route({
   handler: debugVerifyPasswordEndpoint,
 });
 
-// Update company settings for testing different profiles
+// Update organization settings for testing different profiles
 http.route({
-  path: "/e2e/update-company-settings",
+  path: "/e2e/update-organization-settings",
   method: "POST",
-  handler: updateCompanySettingsEndpoint,
+  handler: updateOrganizationSettingsEndpoint,
 });
 
 // Seed built-in project templates

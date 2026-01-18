@@ -28,7 +28,7 @@ function getOnboardingAuthStatePath(workerIndex = 0): string {
   return path.join(AUTH_DIR, path.basename(AUTH_PATHS.onboarding(workerIndex)));
 }
 
-function loadDashboardConfig(workerIndex = 0): { companySlug: string; email: string } | null {
+function loadDashboardConfig(workerIndex = 0): { orgSlug: string; email: string } | null {
   try {
     const configPath = path.join(AUTH_DIR, `dashboard-config-${workerIndex}.json`);
     if (fs.existsSync(configPath)) {
@@ -54,7 +54,7 @@ export type AuthFixtures = {
   saveAuthState: () => Promise<void>;
   ensureAuthenticated: () => Promise<void>;
   forceNewContext: boolean;
-  companySlug: string;
+  orgSlug: string;
   monitorAuthState: unknown;
   skipAuthSave: boolean;
 };
@@ -76,9 +76,9 @@ export const authenticatedTest = base.extend<AuthFixtures>({
 
   skipAuthSave: [false, { option: true }],
 
-  ensureAuthenticated: async ({ page, companySlug }, use, testInfo) => {
+  ensureAuthenticated: async ({ page, orgSlug }, use, testInfo) => {
     const reauth = async () => {
-      const dashboardUrl = companySlug ? `/${companySlug}/dashboard` : "/";
+      const dashboardUrl = orgSlug ? `/${orgSlug}/dashboard` : "/";
       await page.goto(dashboardUrl);
       await page.waitForLoadState("domcontentloaded");
       await page.waitForTimeout(1500);
@@ -132,36 +132,39 @@ export const authenticatedTest = base.extend<AuthFixtures>({
     await use(reauth);
   },
 
-  saveAuthState: async ({ context, skipAuthSave }, use, testInfo) => {
-    const save = async () => {
-      if (skipAuthSave) return;
-      try {
-        const currentState = await context.storageState();
-        const hasAuthTokens = currentState.origins?.some((origin) =>
-          origin.localStorage?.some(
-            (item) => item.name.includes("convexAuth") || item.name.includes("__convexAuth"),
-          ),
-        );
-        if (hasAuthTokens) {
-          try {
-            const authPath = getAuthStatePath(testInfo.parallelIndex);
-            fs.writeFileSync(authPath, JSON.stringify(currentState, null, 2));
-          } catch (writeError) {
-            console.warn("⚠️ Failed to save auth state.");
+  saveAuthState: [
+    async ({ context, skipAuthSave }, use, testInfo) => {
+      const save = async () => {
+        if (skipAuthSave) return;
+        try {
+          const currentState = await context.storageState();
+          const hasAuthTokens = currentState.origins?.some((origin) =>
+            origin.localStorage?.some(
+              (item) => item.name.includes("convexAuth") || item.name.includes("__convexAuth"),
+            ),
+          );
+          if (hasAuthTokens) {
+            try {
+              const authPath = getAuthStatePath(testInfo.parallelIndex);
+              fs.writeFileSync(authPath, JSON.stringify(currentState, null, 2));
+            } catch (writeError) {
+              console.warn("⚠️ Failed to save auth state.");
+            }
           }
+        } catch (e) {
+          console.warn(`⚠️ Error in saveAuthState: ${(e as Error).message}`);
         }
-      } catch (e) {
-        console.warn(`⚠️ Error in saveAuthState: ${(e as Error).message}`);
-      }
-    };
-    await use(save);
-    await save();
-  },
+      };
+      await use(save);
+      await save();
+    },
+    { auto: true },
+  ],
 
-  companySlug: async ({}, use, testInfo) => {
+  orgSlug: async ({}, use, testInfo) => {
     const config = loadDashboardConfig(testInfo.parallelIndex);
-    if (!config?.companySlug) testInfo.skip(true, "Default user config not found.");
-    await use(config?.companySlug || "");
+    if (!config?.orgSlug) testInfo.skip(true, "Default user config not found.");
+    await use(config?.orgSlug || "");
   },
 
   authPage: async ({ page }, use) => {
@@ -281,8 +284,8 @@ export const onboardingTest = base.extend<AuthFixtures>({
     await save();
   },
 
-  companySlug: async ({}, use) => {
-    // Onboarding user doesn't have a company yet
+  orgSlug: async ({}, use) => {
+    // Onboarding user doesn't have an organization yet
     await use("");
   },
 

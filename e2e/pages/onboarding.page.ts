@@ -78,7 +78,7 @@ export class OnboardingPage extends BasePage {
     this.sprintPlanningText = page.getByText(/sprint planning/i);
 
     // Dashboard
-    this.myWorkHeading = page.getByRole("heading", { name: "My Work", exact: true });
+    this.myWorkHeading = page.getByRole("heading", { name: /feed/i }).first();
 
     // Driver.js uses these CSS classes
     this.tourOverlay = page.locator(".driver-overlay");
