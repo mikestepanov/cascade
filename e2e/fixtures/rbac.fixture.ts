@@ -110,6 +110,7 @@ export const rbacTest = base.extend<RbacFixtures>({
     (context as BrowserContext & { _role?: string; _workerIndex?: number })._workerIndex =
       workerIndex;
     await use(context);
+    await context.storageState({ path: authPath });
     await context.close();
   },
   editorContext: async ({ browser }, use, testInfo) => {
@@ -121,6 +122,7 @@ export const rbacTest = base.extend<RbacFixtures>({
     (context as BrowserContext & { _role?: string; _workerIndex?: number })._workerIndex =
       workerIndex;
     await use(context);
+    await context.storageState({ path: authPath });
     await context.close();
   },
   viewerContext: async ({ browser }, use, testInfo) => {
@@ -132,6 +134,7 @@ export const rbacTest = base.extend<RbacFixtures>({
     (context as BrowserContext & { _role?: string; _workerIndex?: number })._workerIndex =
       workerIndex;
     await use(context);
+    await context.storageState({ path: authPath });
     await context.close();
   },
 

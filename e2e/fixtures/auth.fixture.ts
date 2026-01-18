@@ -132,31 +132,34 @@ export const authenticatedTest = base.extend<AuthFixtures>({
     await use(reauth);
   },
 
-  saveAuthState: async ({ context, skipAuthSave }, use, testInfo) => {
-    const save = async () => {
-      if (skipAuthSave) return;
-      try {
-        const currentState = await context.storageState();
-        const hasAuthTokens = currentState.origins?.some((origin) =>
-          origin.localStorage?.some(
-            (item) => item.name.includes("convexAuth") || item.name.includes("__convexAuth"),
-          ),
-        );
-        if (hasAuthTokens) {
-          try {
-            const authPath = getAuthStatePath(testInfo.parallelIndex);
-            fs.writeFileSync(authPath, JSON.stringify(currentState, null, 2));
-          } catch (writeError) {
-            console.warn("⚠️ Failed to save auth state.");
+  saveAuthState: [
+    async ({ context, skipAuthSave }, use, testInfo) => {
+      const save = async () => {
+        if (skipAuthSave) return;
+        try {
+          const currentState = await context.storageState();
+          const hasAuthTokens = currentState.origins?.some((origin) =>
+            origin.localStorage?.some(
+              (item) => item.name.includes("convexAuth") || item.name.includes("__convexAuth"),
+            ),
+          );
+          if (hasAuthTokens) {
+            try {
+              const authPath = getAuthStatePath(testInfo.parallelIndex);
+              fs.writeFileSync(authPath, JSON.stringify(currentState, null, 2));
+            } catch (writeError) {
+              console.warn("⚠️ Failed to save auth state.");
+            }
           }
+        } catch (e) {
+          console.warn(`⚠️ Error in saveAuthState: ${(e as Error).message}`);
         }
-      } catch (e) {
-        console.warn(`⚠️ Error in saveAuthState: ${(e as Error).message}`);
-      }
-    };
-    await use(save);
-    await save();
-  },
+      };
+      await use(save);
+      await save();
+    },
+    { auto: true },
+  ],
 
   orgSlug: async ({}, use, testInfo) => {
     const config = loadDashboardConfig(testInfo.parallelIndex);
