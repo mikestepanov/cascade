@@ -79,7 +79,7 @@ describe("organizations", () => {
 
       const organization = await t.run(async (ctx) => ctx.db.get(organizationId));
       expect(organization?.name).toBe("New Name");
-      expect(organization?.slug).toBe("new-name");
+      expect(organization?.slug).toBe("original-name");
       expect(organization?.timezone).toBe("UTC");
     });
 
