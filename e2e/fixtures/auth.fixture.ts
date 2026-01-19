@@ -76,10 +76,6 @@ export const authenticatedTest = base.extend<AuthFixtures>({
     const authenticate = async () => {
       // 1. Clear any existing state (redundant if new context, but safe)
       await page.context().clearCookies();
-      await page.evaluate(() => {
-        localStorage.clear();
-        sessionStorage.clear();
-      });
 
       // 2. Construct worker-specific user
       const workerSuffix = `w${testInfo.parallelIndex}`;
@@ -182,10 +178,6 @@ export const onboardingTest = base.extend<AuthFixtures>({
     const authenticate = async () => {
       // 1. Clear any existing state
       await page.context().clearCookies();
-      await page.evaluate(() => {
-        localStorage.clear();
-        sessionStorage.clear();
-      });
 
       // 2. Construct worker-specific user
       const workerSuffix = `w${testInfo.parallelIndex}`;
