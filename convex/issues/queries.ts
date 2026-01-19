@@ -638,18 +638,28 @@ export const listByProjectSmart = projectQuery({
       workflowStates.map(async (state: { id: string; category: string }) => {
         const q = (() => {
           if (args.sprintId) {
-            let query = ctx.db.query("issues").withIndex("by_project_sprint_status", (q) =>
-              q
-                .eq("projectId", ctx.project._id)
-                .eq("sprintId", args.sprintId as Id<"sprints">)
-                .eq("status", state.id),
-            );
-
             if (state.category === "done") {
-              query = query.filter((q) => q.gte(q.field("updatedAt"), doneThreshold));
+              return ctx.db
+                .query("issues")
+                .withIndex("by_project_sprint_status_updated", (q) =>
+                  q
+                    .eq("projectId", ctx.project._id)
+                    .eq("sprintId", args.sprintId as Id<"sprints">)
+                    .eq("status", state.id)
+                    .gte("updatedAt", doneThreshold),
+                )
+                .filter(notDeleted);
             }
 
-            return query.filter(notDeleted);
+            return ctx.db
+              .query("issues")
+              .withIndex("by_project_sprint_status", (q) =>
+                q
+                  .eq("projectId", ctx.project._id)
+                  .eq("sprintId", args.sprintId as Id<"sprints">)
+                  .eq("status", state.id),
+              )
+              .filter(notDeleted);
           }
 
           if (state.category === "done") {
@@ -958,19 +968,32 @@ async function getSprintIssueCounts(
       let totalCount = 0;
 
       if (state.category === "done") {
-        // Cannot optimize without by_project_sprint_status_updated index.
-        // Fetch all to ensure we find recently updated issues that might be old.
-        const allIssues = await ctx.db
+        // Optimization: fetch visible items efficiently using index
+        const visibleIssues = await ctx.db
+          .query("issues")
+          .withIndex("by_project_sprint_status_updated", (q) =>
+            q
+              .eq("projectId", projectId)
+              .eq("sprintId", sprintId)
+              .eq("status", state.id)
+              .gte("updatedAt", doneThreshold),
+          )
+          .filter(notDeleted)
+          .take(DEFAULT_PAGE_SIZE + 1);
+
+        visibleCount = Math.min(visibleIssues.length, DEFAULT_PAGE_SIZE);
+
+        // Fetch total count capped at limit
+        const totalIssues = await ctx.db
           .query("issues")
           .withIndex("by_project_sprint_status", (q) =>
             q.eq("projectId", projectId).eq("sprintId", sprintId).eq("status", state.id),
           )
+          .order("desc")
           .filter(notDeleted)
-          .collect();
+          .take(ISSUE_COUNT_LIMIT);
 
-        totalCount = allIssues.length;
-        const visible = allIssues.filter((i: Doc<"issues">) => i.updatedAt >= doneThreshold);
-        visibleCount = Math.min(visible.length, DEFAULT_PAGE_SIZE);
+        totalCount = totalIssues.length;
       } else {
         // Non-done columns: safe to limit by creation time
         const allIssues = await ctx.db
