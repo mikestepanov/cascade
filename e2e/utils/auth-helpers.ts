@@ -7,7 +7,6 @@
 
 import type { Page } from "@playwright/test";
 import type { ConvexReactClient } from "convex/react";
-import { ROLES } from "@/config/rbac";
 import type { TestUser } from "../config";
 import {
   authFormLocators,
@@ -16,7 +15,6 @@ import {
   toastLocators,
   urlPatterns,
 } from "../locators";
-import { getTestEmailAddress } from "./helpers";
 import { waitForMockOTP } from "./otp-helpers";
 import { testUserService } from "./test-user-service";
 import { waitForFormReady } from "./wait-helpers";

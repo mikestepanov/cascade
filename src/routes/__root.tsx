@@ -8,7 +8,7 @@ import { LazyPostHog } from "../components/LazyPostHog";
 import { NotFoundPage } from "../components/NotFoundPage";
 import { Typography } from "../components/ui/Typography";
 import { ThemeProvider } from "../contexts/ThemeContext";
-import { promptInstall, register as registerServiceWorker } from "../lib/serviceWorker";
+import { register as registerServiceWorker } from "../lib/serviceWorker";
 
 declare global {
   interface Window {
@@ -43,8 +43,6 @@ export const Route = createRootRoute({
 function RootComponent() {
   // Register service worker for PWA (client-side only, production only)
   useEffect(() => {
-    console.log(`[ROOT] VITE_CONVEX_URL: ${import.meta.env.VITE_CONVEX_URL}`);
-
     // DO NOT register service worker in E2E tests as it can interfere with LocalStorage/Auth
     if (import.meta.env.PROD && !window.__convex_test_client) {
       registerServiceWorker();

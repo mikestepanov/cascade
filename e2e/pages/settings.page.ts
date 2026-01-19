@@ -1,5 +1,4 @@
 import { expect } from "@playwright/test";
-import { dashboardLocators, settingsLocators } from "../locators";
 import { BasePage } from "./base.page";
 
 /**
