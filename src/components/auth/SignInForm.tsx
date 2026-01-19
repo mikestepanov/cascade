@@ -23,8 +23,7 @@ export function SignInForm() {
     setHydrated(true);
   }, []);
 
-  const handleShowEmailForm = (e: React.MouseEvent) => {
-    e.preventDefault();
+  const handleShowEmailForm = () => {
     setShowEmailForm(true);
     // Use microtask to ensure fields are rendered
     void Promise.resolve().then(() => setFormReady(true));
@@ -32,7 +31,13 @@ export function SignInForm() {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!(formReady && showEmailForm)) return;
+
+    if (!showEmailForm) {
+      handleShowEmailForm();
+      return;
+    }
+
+    if (!formReady) return;
     setSubmitting(true);
 
     const formData = new FormData(e.currentTarget);
@@ -85,11 +90,10 @@ export function SignInForm() {
           </div>
         )}
         <Button
-          type={showEmailForm ? "submit" : "button"}
+          type="submit"
           variant={showEmailForm ? "primary" : "secondary"}
           size="lg"
           className="w-full"
-          onClick={!showEmailForm ? handleShowEmailForm : undefined}
           disabled={submitting || !hydrated}
         >
           {!showEmailForm ? (

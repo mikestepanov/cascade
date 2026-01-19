@@ -11,6 +11,7 @@ import {
 import { fetchPaginatedQuery } from "./lib/queryHelpers";
 import { DEFAULT_SEARCH_PAGE_SIZE, MAX_ACTIVITY_ITEMS } from "./lib/queryLimits";
 import { notDeleted } from "./lib/softDeleteHelpers";
+import { nowArg, WEEK } from "./lib/timeUtils";
 
 // Get all issues assigned to the current user across all projects
 export const getMyIssues = authenticatedQuery({
@@ -247,8 +248,10 @@ export const getMyRecentActivity = authenticatedQuery({
 
 // Get dashboard stats
 export const getMyStats = authenticatedQuery({
-  args: {},
-  handler: async (ctx) => {
+  args: {
+    now: nowArg, // Required - pass rounded timestamp from client
+  },
+  handler: async (ctx, args) => {
     // Issues assigned to me
     const assignedIssues = await ctx.db
       .query("issues")
@@ -257,7 +260,7 @@ export const getMyStats = authenticatedQuery({
       .collect();
 
     // Filter for different stats
-    const weekAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
+    const weekAgo = args.now - WEEK;
 
     // Batch fetch all projects to check workflow states (avoid N+1)
     const projectIds = [...new Set(assignedIssues.map((i) => i.projectId))];

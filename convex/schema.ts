@@ -1,6 +1,12 @@
 import { authTables } from "@convex-dev/auth/server";
 import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
+import {
+  auditMetadata,
+  blockNoteContent,
+  dashboardLayout,
+  proseMirrorSnapshot,
+} from "./validators";
 
 const applicationTables = {
   documents: defineTable({
@@ -29,7 +35,7 @@ const applicationTables = {
   documentVersions: defineTable({
     documentId: v.id("documents"),
     version: v.number(), // Version number from ProseMirror
-    snapshot: v.any(), // ProseMirror snapshot data
+    snapshot: proseMirrorSnapshot, // ProseMirror snapshot data
     title: v.string(), // Document title at this version
     createdBy: v.id("users"), // User who created this version
     createdAt: v.number(), // Timestamp when version was created
@@ -44,7 +50,7 @@ const applicationTables = {
     description: v.optional(v.string()),
     category: v.string(), // "meeting", "planning", "design", "engineering", etc.
     icon: v.string(), // Emoji or icon identifier
-    content: v.any(), // BlockNote/ProseMirror content structure
+    content: blockNoteContent, // BlockNote/ProseMirror content structure
     isBuiltIn: v.boolean(), // Built-in templates vs user-created
     isPublic: v.boolean(), // Public templates visible to all users
     createdBy: v.optional(v.id("users")), // Creator (null for built-in)
@@ -1597,7 +1603,7 @@ const applicationTables = {
 
   userSettings: defineTable({
     userId: v.id("users"),
-    dashboardLayout: v.optional(v.any()), // JSON object for dashboard widget preferences
+    dashboardLayout: v.optional(dashboardLayout), // Dashboard widget preferences
     theme: v.optional(v.string()), // "light", "dark", "system"
     sidebarCollapsed: v.optional(v.boolean()),
     // Preferences moved from users table
@@ -1623,7 +1629,7 @@ const applicationTables = {
     actorId: v.optional(v.id("users")), // Who performed the action (optional for system actions)
     targetId: v.string(), // ID of the affected object (generic string to support mixed types)
     targetType: v.string(), // "team", "project", "user", "webhook", etc.
-    metadata: v.optional(v.any()), // JSON object with details (e.g. old role, new role)
+    metadata: v.optional(auditMetadata), // Structured metadata (e.g. old role, new role)
     timestamp: v.number(),
   })
     .index("by_action", ["action"])

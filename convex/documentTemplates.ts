@@ -2,6 +2,7 @@ import { v } from "convex/values";
 import type { Doc } from "./_generated/dataModel";
 import { mutation } from "./_generated/server";
 import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
+import { blockNoteContent } from "./validators";
 
 // Create a document template
 export const create = authenticatedMutation({
@@ -10,7 +11,7 @@ export const create = authenticatedMutation({
     description: v.optional(v.string()),
     category: v.string(),
     icon: v.string(),
-    content: v.any(), // BlockNote/ProseMirror content structure
+    content: blockNoteContent, // BlockNote content structure
     isPublic: v.boolean(),
     projectId: v.optional(v.id("projects")),
   },
@@ -97,7 +98,7 @@ export const update = authenticatedMutation({
     description: v.optional(v.string()),
     category: v.optional(v.string()),
     icon: v.optional(v.string()),
-    content: v.optional(v.any()),
+    content: v.optional(blockNoteContent),
     isPublic: v.optional(v.boolean()),
   },
   handler: async (ctx, args) => {

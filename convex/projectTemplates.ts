@@ -5,10 +5,8 @@ import { notDeleted } from "./lib/softDeleteHelpers";
 
 export const list = query({
   args: {},
-  returns: v.array(v.any()), // Struct is complex, using v.any() for full doc return
-  // Or better: v.array(v.object({ _id: v.id("projectTemplates"), name: v.string(), ... }))
-  // I'll use v.array(v.any()) as a safe fallback for full doc return in this context
-  // given the complexity of nested arrays in workflowStates/defaultLabels.
+  // Note: Returns full projectTemplates documents. Return type validation omitted
+  // due to complex nested arrays (workflowStates, defaultLabels).
   handler: async (ctx) => {
     // Get all built-in templates
     const templates = await ctx.db
@@ -22,7 +20,7 @@ export const list = query({
 
 export const get = query({
   args: { id: v.id("projectTemplates") },
-  returns: v.union(v.null(), v.any()),
+  // Note: Returns full projectTemplates document or null
   handler: async (ctx, args) => {
     return await ctx.db.get(args.id);
   },

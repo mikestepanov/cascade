@@ -1,5 +1,6 @@
 import { v } from "convex/values";
 import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
+import { dashboardLayout } from "./validators";
 
 export const get = authenticatedQuery({
   args: {},
@@ -15,7 +16,7 @@ export const get = authenticatedQuery({
 
 export const update = authenticatedMutation({
   args: {
-    dashboardLayout: v.optional(v.any()), // JSON
+    dashboardLayout: v.optional(dashboardLayout), // Dashboard widget layout
     theme: v.optional(v.string()),
     sidebarCollapsed: v.optional(v.boolean()),
     emailNotifications: v.optional(v.boolean()),

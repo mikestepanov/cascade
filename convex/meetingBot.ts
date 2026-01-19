@@ -99,6 +99,7 @@ export const listRecordings = authenticatedQuery({
       isPublic: v.boolean(),
       createdAt: v.number(),
       updatedAt: v.number(),
+      /** Google Calendar event - external API structure. v.any() is intentional. */
       calendarEvent: v.union(v.any(), v.null()),
       hasTranscript: v.boolean(),
       hasSummary: v.boolean(),

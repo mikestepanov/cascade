@@ -4,6 +4,8 @@
  * Provides helpers for cursor-based pagination and smart loading strategies.
  */
 
+import { DAY } from "./timeUtils";
+
 // Default pagination settings
 export const DEFAULT_PAGE_SIZE = 50;
 export const DONE_COLUMN_DAYS = 14;
@@ -47,9 +49,12 @@ export function decodeCursor(cursor: string): { timestamp: number; id: string } 
 /**
  * Calculate the threshold date for "done" column items
  * Returns timestamp for (now - days)
+ *
+ * @param now - Current timestamp (required - pass from client)
+ * @param days - Number of days to look back
  */
-export function getDoneColumnThreshold(days: number = DONE_COLUMN_DAYS): number {
-  return Date.now() - days * 24 * 60 * 60 * 1000;
+export function getDoneColumnThreshold(now: number, days: number = DONE_COLUMN_DAYS): number {
+  return now - days * DAY;
 }
 
 /**

@@ -151,6 +151,7 @@ export const trigger = internalAction({
   args: {
     projectId: v.id("projects"),
     event: v.string(),
+    /** External webhook payload - structure varies by provider. v.any() is intentional. */
     payload: v.any(),
   },
   handler: async (ctx, args) => {

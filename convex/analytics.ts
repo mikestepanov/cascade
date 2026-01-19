@@ -16,6 +16,7 @@ import { projectQuery, sprintQuery } from "./customFunctions";
 import { batchFetchIssues, batchFetchUsers, getUserName } from "./lib/batchHelpers";
 import { MAX_ACTIVITY_FOR_ANALYTICS, MAX_VELOCITY_SPRINTS } from "./lib/queryLimits";
 import { notDeleted } from "./lib/softDeleteHelpers";
+import { DAY, nowArg } from "./lib/timeUtils";
 
 // Helper: Build issues by status from workflow states and counts
 function buildIssuesByStatus(
@@ -105,8 +106,10 @@ export const getProjectAnalytics = projectQuery({
  * Requires viewer access to project
  */
 export const getSprintBurndown = sprintQuery({
-  args: {},
-  handler: async (ctx) => {
+  args: {
+    now: nowArg, // Required - pass rounded timestamp from client
+  },
+  handler: async (ctx, args) => {
     // Get all issues in the sprint
     const sprintIssues = await ctx.db
       .query("issues")
@@ -138,11 +141,8 @@ export const getSprintBurndown = sprintQuery({
     // Calculate ideal burndown if sprint has dates
     const idealBurndown: Array<{ day: number; points: number }> = [];
     if (ctx.sprint.startDate && ctx.sprint.endDate) {
-      const now = Date.now();
-      const totalDays = Math.ceil(
-        (ctx.sprint.endDate - ctx.sprint.startDate) / (1000 * 60 * 60 * 24),
-      );
-      const daysElapsed = Math.ceil((now - ctx.sprint.startDate) / (1000 * 60 * 60 * 24));
+      const totalDays = Math.ceil((ctx.sprint.endDate - ctx.sprint.startDate) / DAY);
+      const daysElapsed = Math.ceil((args.now - ctx.sprint.startDate) / DAY);
 
       for (let day = 0; day <= totalDays; day++) {
         const remainingIdeal = totalPoints * (1 - day / totalDays);
