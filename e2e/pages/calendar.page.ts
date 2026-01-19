@@ -7,8 +7,6 @@ import { BasePage } from "./base.page";
  * Handles the calendar view with events and meetings
  */
 export class CalendarPage extends BasePage {
-  private orgSlug: string;
-
   // ===================
   // Locators - Calendar View
   // ===================
@@ -56,9 +54,8 @@ export class CalendarPage extends BasePage {
   readonly attendeesList: Locator;
   readonly markAttendanceButton: Locator;
 
-  constructor(page: Page, orgSlug = "nixelo-e2e") {
-    super(page);
-    this.orgSlug = orgSlug;
+  constructor(page: Page, orgSlug: string) {
+    super(page, orgSlug);
 
     // Calendar view
     this.calendar = page

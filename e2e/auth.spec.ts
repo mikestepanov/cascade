@@ -1,5 +1,5 @@
 import { expect, test } from "./fixtures";
-import { getTestEmailAddress } from "./utils/mailtrap";
+import { getTestEmailAddress } from "./utils/helpers";
 import { waitForMockOTP } from "./utils/otp-helpers";
 
 /**

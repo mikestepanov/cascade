@@ -1,5 +1,5 @@
 import { api } from "@convex/_generated/api";
-import { createFileRoute, Outlet, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Outlet, useLocation, useNavigate } from "@tanstack/react-router";
 import { useConvexAuth, useMutation, useQuery } from "convex/react";
 import { useEffect, useRef, useState } from "react";
 import { Flex } from "@/components/ui/Flex";
@@ -24,6 +24,7 @@ export const Route = createFileRoute("/_auth/_app")({
  */
 function AppLayout() {
   const navigate = useNavigate();
+  const { pathname } = useLocation();
   const { isLoading: isAuthLoading, isAuthenticated } = useConvexAuth();
 
   // Get redirect destination from backend (handles onboarding check)
@@ -41,9 +42,17 @@ function AppLayout() {
   // Redirect to correct destination if not at /app
   useEffect(() => {
     if (redirectPath && redirectPath !== ROUTES.app.path) {
-      navigate({ to: redirectPath, replace: true });
+      const isGateway = pathname === "/app" || pathname === "/app/";
+      const isOnboardingTarget = redirectPath.includes("/onboarding");
+      const isOnboardingCurrent = pathname.includes("/onboarding");
+
+      if (isOnboardingTarget && !isOnboardingCurrent) {
+        navigate({ to: redirectPath, replace: true });
+      } else if (isGateway) {
+        navigate({ to: redirectPath, replace: true });
+      }
     }
-  }, [redirectPath, navigate]);
+  }, [redirectPath, navigate, pathname]);
 
   // Loading state - waiting for queries
   if (isAuthLoading || redirectPath === undefined || userOrganizations === undefined) {
@@ -54,13 +63,21 @@ function AppLayout() {
     );
   }
 
-  // If we have a redirect path that's not /app, we're redirecting - show loading
+  // If we have a redirect path that's not /app, potentially show loading if we are about to redirect
   if (redirectPath && redirectPath !== ROUTES.app.path) {
-    return (
-      <Flex align="center" justify="center" className="min-h-screen bg-ui-bg-secondary">
-        <LoadingSpinner size="lg" />
-      </Flex>
-    );
+    const isGateway = pathname === "/app" || pathname === "/app/";
+    const isOnboardingTarget = redirectPath.includes("/onboarding");
+    const isOnboardingCurrent = pathname.includes("/onboarding");
+
+    const willRedirect = (isOnboardingTarget && !isOnboardingCurrent) || isGateway;
+
+    if (willRedirect) {
+      return (
+        <Flex align="center" justify="center" className="min-h-screen bg-ui-bg-secondary">
+          <LoadingSpinner size="lg" />
+        </Flex>
+      );
+    }
   }
 
   // User has no organizations - initialize default organization

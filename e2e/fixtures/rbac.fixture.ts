@@ -4,6 +4,7 @@ import { fileURLToPath } from "node:url";
 import { type BrowserContext, test as base, expect, type Page } from "@playwright/test";
 import { AUTH_PATHS, RBAC_TEST_CONFIG, TEST_USERS } from "../config";
 import { ProjectsPage, SettingsPage, WorkspacesPage } from "../pages";
+import { testUserService } from "../utils";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -35,31 +36,38 @@ function getAuthPath(role: UserRole, workerIndex = 0): string {
   return fullPath;
 }
 
-function assertAuthStateValid(role: UserRole, workerIndex = 0): void {
-  const authPath = getAuthPath(role, workerIndex);
-  if (!fs.existsSync(authPath)) {
-    throw new Error(`[AuthState] File not found: ${authPath} (Worker: ${workerIndex})`);
+// Helper to inject tokens into context
+async function injectAuth(context: BrowserContext, email: string, password: string) {
+  const loginResult = await testUserService.loginTestUser(email, password);
+  if (!(loginResult.success && loginResult.token)) {
+    throw new Error(`Failed to login as ${email}: ${loginResult.error}`);
   }
-  try {
-    const content = fs.readFileSync(authPath, "utf-8");
-    const state = JSON.parse(content);
-    if (state.origins && Array.isArray(state.origins)) {
-      for (const origin of state.origins) {
-        if (origin.localStorage && Array.isArray(origin.localStorage)) {
-          const hasAuthToken = origin.localStorage.some(
-            (item: { name: string }) =>
-              item.name.includes("auth") ||
-              item.name.includes("token") ||
-              item.name.includes("convex"),
-          );
-          if (hasAuthToken) return;
+
+  await context.addInitScript(
+    ({ token, refreshToken, convexUrl }) => {
+      // Legacy keys
+      localStorage.setItem("convexAuthToken", token);
+      if (refreshToken) {
+        localStorage.setItem("convexAuthRefreshToken", refreshToken);
+      }
+
+      // Namespaced keys
+      if (convexUrl) {
+        const namespace = convexUrl.replace(/[^a-zA-Z0-9]/g, "");
+        const jwtKey = `__convexAuthJWT_${namespace}`;
+        const refreshKey = `__convexAuthRefreshToken_${namespace}`;
+        localStorage.setItem(jwtKey, token);
+        if (refreshToken) {
+          localStorage.setItem(refreshKey, refreshToken);
         }
       }
-    }
-    throw new Error(`[AuthState] Token not found in structure. Path: ${authPath}`);
-  } catch (e) {
-    throw new Error(`[AuthState] Exception: ${(e as Error).message}. Path: ${authPath}`);
-  }
+    },
+    {
+      token: loginResult.token,
+      refreshToken: loginResult.refreshToken ?? undefined,
+      convexUrl: process.env.VITE_CONVEX_URL,
+    },
+  );
 }
 
 export type RbacFixtures = {
@@ -105,39 +113,51 @@ export async function clientSideNavigate(page: Page, url: string) {
 export const rbacTest = base.extend<RbacFixtures>({
   adminContext: async ({ browser }, use, testInfo) => {
     const workerIndex = testInfo.parallelIndex;
-    const authPath = getAuthPath("admin", workerIndex);
-    assertAuthStateValid("admin", workerIndex);
+    const context = await browser.newContext();
 
-    const context = await browser.newContext({ storageState: authPath });
+    // Calculate email for this worker
+    const workerSuffix = `w${workerIndex}`;
+    const email = TEST_USERS.teamLead.email.replace("@", `-${workerSuffix}@`);
+
+    console.log(`  🔐 adminContext: Logging in as ${email}...`);
+    await injectAuth(context, email, TEST_USERS.teamLead.password);
+
     (context as BrowserContext & { _role?: string; _workerIndex?: number })._role = "admin";
-    (context as BrowserContext & { _role?: string; _workerIndex?: number })._workerIndex =
-      workerIndex;
+    (context as BrowserContext & { _workerIndex?: number })._workerIndex = workerIndex;
+
     await use(context);
-    await context.storageState({ path: authPath });
     await context.close();
   },
   editorContext: async ({ browser }, use, testInfo) => {
     const workerIndex = testInfo.parallelIndex;
-    assertAuthStateValid("editor", workerIndex);
-    const authPath = getAuthPath("editor", workerIndex);
-    const context = await browser.newContext({ storageState: authPath });
+    const context = await browser.newContext();
+
+    const workerSuffix = `w${workerIndex}`;
+    const email = TEST_USERS.teamMember.email.replace("@", `-${workerSuffix}@`);
+
+    console.log(`  🔐 editorContext: Logging in as ${email}...`);
+    await injectAuth(context, email, TEST_USERS.teamMember.password);
+
     (context as BrowserContext & { _role?: string; _workerIndex?: number })._role = "editor";
-    (context as BrowserContext & { _role?: string; _workerIndex?: number })._workerIndex =
-      workerIndex;
+    (context as BrowserContext & { _workerIndex?: number })._workerIndex = workerIndex;
+
     await use(context);
-    await context.storageState({ path: authPath });
     await context.close();
   },
   viewerContext: async ({ browser }, use, testInfo) => {
     const workerIndex = testInfo.parallelIndex;
-    assertAuthStateValid("viewer", workerIndex);
-    const authPath = getAuthPath("viewer", workerIndex);
-    const context = await browser.newContext({ storageState: authPath });
+    const context = await browser.newContext();
+
+    const workerSuffix = `w${workerIndex}`;
+    const email = TEST_USERS.viewer.email.replace("@", `-${workerSuffix}@`);
+
+    console.log(`  🔐 viewerContext: Logging in as ${email}...`);
+    await injectAuth(context, email, TEST_USERS.viewer.password);
+
     (context as BrowserContext & { _role?: string; _workerIndex?: number })._role = "viewer";
-    (context as BrowserContext & { _role?: string; _workerIndex?: number })._workerIndex =
-      workerIndex;
+    (context as BrowserContext & { _workerIndex?: number })._workerIndex = workerIndex;
+
     await use(context);
-    await context.storageState({ path: authPath });
     await context.close();
   },
 
@@ -158,13 +178,13 @@ export const rbacTest = base.extend<RbacFixtures>({
       await adminPage.waitForLoadState("networkidle");
       await adminPage.waitForTimeout(1000);
     }
-    await use(new ProjectsPage(adminPage));
+    await use(new ProjectsPage(adminPage, rbacOrgSlug));
   },
-  adminWorkspacesPage: async ({ adminPage }, use) => {
-    await use(new WorkspacesPage(adminPage));
+  adminWorkspacesPage: async ({ adminPage, rbacOrgSlug }, use) => {
+    await use(new WorkspacesPage(adminPage, rbacOrgSlug));
   },
-  adminSettingsPage: async ({ adminPage }, use) => {
-    await use(new SettingsPage(adminPage));
+  adminSettingsPage: async ({ adminPage, rbacOrgSlug }, use) => {
+    await use(new SettingsPage(adminPage, rbacOrgSlug));
   },
 
   editorPage: async ({ editorContext }, use) => {
@@ -182,13 +202,13 @@ export const rbacTest = base.extend<RbacFixtures>({
       await editorPage.waitForLoadState("networkidle");
       await editorPage.waitForTimeout(1000);
     }
-    await use(new ProjectsPage(editorPage));
+    await use(new ProjectsPage(editorPage, rbacOrgSlug));
   },
-  editorWorkspacesPage: async ({ editorPage }, use) => {
-    await use(new WorkspacesPage(editorPage));
+  editorWorkspacesPage: async ({ editorPage, rbacOrgSlug }, use) => {
+    await use(new WorkspacesPage(editorPage, rbacOrgSlug));
   },
-  editorSettingsPage: async ({ editorPage }, use) => {
-    await use(new SettingsPage(editorPage));
+  editorSettingsPage: async ({ editorPage, rbacOrgSlug }, use) => {
+    await use(new SettingsPage(editorPage, rbacOrgSlug));
   },
 
   viewerPage: async ({ viewerContext }, use) => {
@@ -206,13 +226,13 @@ export const rbacTest = base.extend<RbacFixtures>({
       await viewerPage.waitForLoadState("networkidle");
       await viewerPage.waitForTimeout(1000);
     }
-    await use(new ProjectsPage(viewerPage));
+    await use(new ProjectsPage(viewerPage, rbacOrgSlug));
   },
-  viewerWorkspacesPage: async ({ viewerPage }, use) => {
-    await use(new WorkspacesPage(viewerPage));
+  viewerWorkspacesPage: async ({ viewerPage, rbacOrgSlug }, use) => {
+    await use(new WorkspacesPage(viewerPage, rbacOrgSlug));
   },
-  viewerSettingsPage: async ({ viewerPage }, use) => {
-    await use(new SettingsPage(viewerPage));
+  viewerSettingsPage: async ({ viewerPage, rbacOrgSlug }, use) => {
+    await use(new SettingsPage(viewerPage, rbacOrgSlug));
   },
 
   rbacProjectKey: async ({}, use, testInfo) => {
@@ -236,37 +256,8 @@ export const rbacTest = base.extend<RbacFixtures>({
         (page.context() as BrowserContext & { _workerIndex?: number })._workerIndex ?? 0;
 
       if (role) {
-        const authPath = getAuthPath(role, workerIndex);
-        try {
-          const authContent = JSON.parse(fs.readFileSync(authPath, "utf-8"));
-          const originState = authContent.origins?.[0];
-
-          if (originState?.localStorage) {
-            // Convex uses dynamic keys like __convexAuthJWT_httpsmajestic...
-            // Find any key that looks like a JWT store
-            const convexJwt = originState.localStorage.find(
-              (item: { name: string; value: string }) => item.name.includes("__convexAuthJWT_"),
-            );
-
-            if (convexJwt) {
-              console.log(
-                `[Test Manual] Preparing initScript for ${role} (Worker ${workerIndex})...`,
-              );
-              // Use context.addInitScript to inject token before ANY page code runs
-              // This is much faster and more reliable than navigating to / first
-              await page.context().addInitScript(
-                ({ name, value }) => {
-                  window.localStorage.setItem(name, value);
-                },
-                { name: convexJwt.name, value: convexJwt.value },
-              );
-            } else {
-              console.warn(`[Test Manual] No JWT found in ${authPath}`);
-            }
-          }
-        } catch (e) {
-          console.error(`[Test Manual] Token prep failed: ${(e as Error)?.message || e}`);
-        }
+        // Tokens already injected via context.addInitScript in context fixture
+        console.log(`  ✓ Auth ready for ${role} (Worker ${workerIndex})`);
       }
 
       console.log(`Navigating to ${targetUrl}...`);

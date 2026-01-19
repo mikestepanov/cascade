@@ -60,139 +60,94 @@ export type AuthFixtures = {
 };
 
 export const authenticatedTest = base.extend<AuthFixtures>({
-  storageState: async ({}, use, testInfo) => {
-    let state: unknown;
-    try {
-      const authPath = getAuthStatePath(testInfo.parallelIndex);
-      if (fs.existsSync(authPath)) {
-        const content = fs.readFileSync(authPath, "utf-8");
-        state = JSON.parse(content);
-      }
-    } catch (e) {
-      console.log(`⚠️ Auth state unavailable. Error: ${(e as Error).message}`);
-    }
-    await use(state);
+  // Disable storageState loading to force fresh login per test
+  // This prevents "Invalid refresh token" errors caused by token reuse across parallel workers
+  storageState: async ({}, use) => {
+    await use(undefined);
   },
 
-  skipAuthSave: [false, { option: true }],
+  skipAuthSave: [true, { option: true }],
 
   ensureAuthenticated: async ({ page, orgSlug }, use, testInfo) => {
-    const reauth = async () => {
-      const dashboardUrl = orgSlug ? `/${orgSlug}/dashboard` : "/";
-      await page.goto(dashboardUrl);
-      await page.waitForLoadState("domcontentloaded");
-      await page.waitForTimeout(1500);
-      const currentUrl = page.url();
-      const needsReauth = !(
-        currentUrl.includes("/dashboard") || currentUrl.includes("/onboarding")
-      );
-      if (needsReauth) {
-        console.log("  🔄 ensureAuthenticated: re-authenticating...");
-        await page.context().clearCookies();
-        await page.evaluate(() => {
-          localStorage.clear();
-          sessionStorage.clear();
-        });
-        const baseURL = page.url().split("/").slice(0, 3).join("/");
+    // Determine the base URL from the current context or config
+    // Since we are starting fresh, page.url() might be about:blank
+    const baseURL = process.env.BASE_URL || "http://localhost:5555";
 
-        // Wait for signin page to be ready
-        await page.goto(`${baseURL}/signin`);
-        await page.waitForLoadState("domcontentloaded");
+    const authenticate = async () => {
+      // 1. Clear any existing state (redundant if new context, but safe)
+      await page.context().clearCookies();
+      await page.evaluate(() => {
+        localStorage.clear();
+        sessionStorage.clear();
+      });
 
-        // Dynamically construct the worker-specific user to ensure isolation
-        // This matches the logic in global-setup.ts
-        const workerSuffix = `w${testInfo.parallelIndex}`;
-        const workerUser = {
-          ...TEST_USERS.teamLead,
-          email: TEST_USERS.teamLead.email.replace("@", `-${workerSuffix}@`),
-        };
+      // 2. Construct worker-specific user
+      const workerSuffix = `w${testInfo.parallelIndex}`;
+      const workerUser = {
+        ...TEST_USERS.teamLead,
+        email: TEST_USERS.teamLead.email.replace("@", `-${workerSuffix}@`),
+      };
 
-        console.log(`  🔐 ensureAuthenticated: Re-authenticating as ${workerUser.email}...`);
-        await trySignInUser(page, baseURL, workerUser);
+      console.log(`  🔐 ensureAuthenticated: Logging in as ${workerUser.email}...`);
 
-        // Stabilize and verify we are actually on dashboard
-        await page.goto(dashboardUrl);
-        await page.waitForLoadState("domcontentloaded");
-        await page.waitForTimeout(3000); // Give Convex time to hydrate
+      // 3. Perform fresh login (uses API fast-path internally)
+      const success = await trySignInUser(page, baseURL, workerUser);
 
-        const finalUrl = page.url();
-        if (!(finalUrl.includes("/dashboard") || finalUrl.includes("/onboarding"))) {
-          console.error(`  ❌ ensureAuthenticated failed. Still at: ${finalUrl}`);
-          throw new Error("Failed to ensure authentication after retry.");
-        }
-
-        // Save the new state so subsequent tests don't have to re-auth
-        const currentState = await page.context().storageState();
-        const authPath = getAuthStatePath(testInfo.parallelIndex);
-        fs.writeFileSync(authPath, JSON.stringify(currentState, null, 2));
-
-        console.log("  ✅ ensureAuthenticated: SUCCESS (Saved state)");
+      if (!success) {
+        throw new Error(`Failed to authenticate as ${workerUser.email}`);
       }
+
+      // 4. Navigate to the intended destination
+      const destination = orgSlug ? `/${orgSlug}/dashboard` : "/";
+      await page.goto(destination);
+      await page.waitForLoadState("domcontentloaded");
     };
-    await use(reauth);
+
+    await use(authenticate);
   },
 
-  saveAuthState: [
-    async ({ context, skipAuthSave }, use, testInfo) => {
-      const save = async () => {
-        if (skipAuthSave) return;
-        try {
-          const currentState = await context.storageState();
-          const hasAuthTokens = currentState.origins?.some((origin) =>
-            origin.localStorage?.some(
-              (item) => item.name.includes("convexAuth") || item.name.includes("__convexAuth"),
-            ),
-          );
-          if (hasAuthTokens) {
-            try {
-              const authPath = getAuthStatePath(testInfo.parallelIndex);
-              fs.writeFileSync(authPath, JSON.stringify(currentState, null, 2));
-            } catch (writeError) {
-              console.warn("⚠️ Failed to save auth state.");
-            }
-          }
-        } catch (e) {
-          console.warn(`⚠️ Error in saveAuthState: ${(e as Error).message}`);
-        }
-      };
-      await use(save);
-      await save();
-    },
-    { auto: true },
-  ],
+  // Disable saving state to disk to prevent race conditions
+  saveAuthState: async ({}, use) => {
+    await use(async () => {});
+  },
 
   orgSlug: async ({}, use, testInfo) => {
     const config = loadDashboardConfig(testInfo.parallelIndex);
-    if (!config?.orgSlug) testInfo.skip(true, "Default user config not found.");
-    await use(config?.orgSlug || "");
+    if (!config?.orgSlug) {
+      throw new Error(
+        `orgSlug not found for worker ${testInfo.parallelIndex}. ` +
+          "Ensure global-setup.ts created the worker-specific config file.",
+      );
+    }
+    await use(config.orgSlug);
   },
 
-  authPage: async ({ page }, use) => {
-    await use(new AuthPage(page));
+  authPage: async ({ page, orgSlug }, use) => {
+    await use(new AuthPage(page, orgSlug));
   },
-  dashboardPage: async ({ page }, use) => {
-    await use(new DashboardPage(page));
+  dashboardPage: async ({ page, orgSlug }, use) => {
+    await use(new DashboardPage(page, orgSlug));
   },
-  documentsPage: async ({ page }, use) => {
-    await use(new DocumentsPage(page));
+  documentsPage: async ({ page, orgSlug }, use) => {
+    await use(new DocumentsPage(page, orgSlug));
   },
-  landingPage: async ({ page }, use) => {
-    await use(new LandingPage(page));
+  landingPage: async ({ page, orgSlug }, use) => {
+    await use(new LandingPage(page, orgSlug));
   },
-  onboardingPage: async ({ page }, use) => {
-    await use(new OnboardingPage(page));
+  onboardingPage: async ({ page, orgSlug }, use) => {
+    await use(new OnboardingPage(page, orgSlug));
   },
-  projectsPage: async ({ page }, use) => {
-    await use(new ProjectsPage(page));
+  projectsPage: async ({ page, orgSlug }, use) => {
+    await use(new ProjectsPage(page, orgSlug));
   },
-  workspacesPage: async ({ page }, use) => {
-    await use(new WorkspacesPage(page));
+  workspacesPage: async ({ page, orgSlug }, use) => {
+    await use(new WorkspacesPage(page, orgSlug));
   },
-  calendarPage: async ({ page }, use) => {
-    await use(new CalendarPage(page));
+  calendarPage: async ({ page, orgSlug }, use) => {
+    await use(new CalendarPage(page, orgSlug));
   },
-  settingsPage: async ({ page }, use) => {
-    await use(new SettingsPage(page));
+  settingsPage: async ({ page, orgSlug }, use) => {
+    await use(new SettingsPage(page, orgSlug));
   },
 
   monitorAuthState: [
@@ -213,75 +168,53 @@ export const authenticatedTest = base.extend<AuthFixtures>({
 });
 
 export const onboardingTest = base.extend<AuthFixtures>({
-  storageState: async ({}, use, testInfo) => {
-    let state: unknown;
-    try {
-      const authPath = getOnboardingAuthStatePath(testInfo.parallelIndex);
-      if (fs.existsSync(authPath)) {
-        const content = fs.readFileSync(authPath, "utf-8");
-        state = JSON.parse(content);
-      }
-    } catch (e) {
-      console.log(`⚠️ Onboarding auth state unavailable. Error: ${(e as Error).message}`);
-    }
-    await use(state);
+  // Disable storageState loading
+  storageState: async ({}, use) => {
+    await use(undefined);
   },
 
-  skipAuthSave: [false, { option: true }],
+  skipAuthSave: [true, { option: true }],
 
   ensureAuthenticated: async ({ page }, use, testInfo) => {
-    const reauth = async () => {
-      const onboardingUrl = "/onboarding";
+    const baseURL = process.env.BASE_URL || "http://localhost:5555";
+    const onboardingUrl = "/onboarding";
+
+    const authenticate = async () => {
+      // 1. Clear any existing state
+      await page.context().clearCookies();
+      await page.evaluate(() => {
+        localStorage.clear();
+        sessionStorage.clear();
+      });
+
+      // 2. Construct worker-specific user
+      const workerSuffix = `w${testInfo.parallelIndex}`;
+      const onboardingUser = {
+        ...TEST_USERS.onboarding,
+        email: TEST_USERS.onboarding.email.replace("@", `-${workerSuffix}@`),
+      };
+
+      console.log(`  🔐 onboardingTest: Logging in as ${onboardingUser.email}...`);
+
+      // 3. Perform fresh login (uses API fast-path internally)
+      // Pass 'false' for autoCompleteOnboarding so we stay on onboarding page
+      const success = await trySignInUser(page, baseURL, onboardingUser, false);
+
+      if (!success) {
+        throw new Error(`Failed to authenticate as ${onboardingUser.email}`);
+      }
+
+      // 4. Ensure we are at /onboarding
       await page.goto(onboardingUrl);
       await page.waitForLoadState("domcontentloaded");
-      await page.waitForTimeout(1500);
-      const currentUrl = page.url();
-      const needsReauth = !currentUrl.includes("/onboarding");
-
-      if (needsReauth) {
-        console.log("  🔄 onboardingTest: re-authenticating...");
-        await page.context().clearCookies();
-        await page.evaluate(() => {
-          localStorage.clear();
-          sessionStorage.clear();
-        });
-        const baseURL = page.url().split("/").slice(0, 3).join("/");
-        await page.goto(`${baseURL}/signin`);
-        await page.waitForLoadState("domcontentloaded");
-
-        const workerSuffix = `w${testInfo.parallelIndex}`;
-        const onboardingUser = {
-          ...TEST_USERS.onboarding,
-          email: TEST_USERS.onboarding.email.replace("@", `-${workerSuffix}@`),
-        };
-
-        console.log(`  🔐 onboardingTest: Re-authenticating as ${onboardingUser.email}...`);
-        await trySignInUser(page, baseURL, onboardingUser, false);
-        await page.goto(onboardingUrl);
-        await page.waitForLoadState("domcontentloaded");
-        await page.waitForTimeout(2000);
-
-        const currentState = await page.context().storageState();
-        const authPath = getOnboardingAuthStatePath(testInfo.parallelIndex);
-        fs.writeFileSync(authPath, JSON.stringify(currentState, null, 2));
-      }
     };
-    await use(reauth);
+
+    await use(authenticate);
   },
 
-  saveAuthState: async ({ context, skipAuthSave }, use, testInfo) => {
-    const save = async () => {
-      if (skipAuthSave) return;
-      try {
-        const currentState = await context.storageState();
-        const authPath = getOnboardingAuthStatePath(testInfo.parallelIndex);
-        fs.writeFileSync(authPath, JSON.stringify(currentState, null, 2));
-      } catch (e) {
-        console.warn(`⚠️ Error in onboarding saveAuthState: ${(e as Error).message}`);
-      }
-    };
-    await use(save);
-    await save();
+  // Disable saving state
+  saveAuthState: async ({}, use) => {
+    await use(async () => {});
   },
 
   orgSlug: async ({}, use) => {

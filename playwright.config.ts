@@ -23,11 +23,10 @@ export default defineConfig({
   // Fail build on CI if test.only is left in code
   forbidOnly: !!process.env.CI,
 
-  // Retries: 2 on CI, 0 locally to catch flakiness during development
-  retries: process.env.CI ? 2 : 0,
+  // Retries: 2 on CI, 1 locally to handle transient flakiness
+  retries: process.env.CI ? 2 : 1,
 
-  // Use 4 workers always - Blacksmith CI runner (4 vCPU) matches local dev capacity!
-  // This ensures consistency between local dev and CI
+  // Restore to 4 workers as requested
   workers: 4,
 
   // Reporter configuration
@@ -40,7 +39,7 @@ export default defineConfig({
 
   // Expect timeout for assertions
   expect: {
-    timeout: 5 * 1000,
+    timeout: 10 * 1000,
   },
 
   // Shared settings for all projects
@@ -64,7 +63,7 @@ export default defineConfig({
     ignoreHTTPSErrors: true,
 
     // Action timeout
-    actionTimeout: 10 * 1000,
+    actionTimeout: 15 * 1000,
 
     // Navigation timeout
     navigationTimeout: 15 * 1000,

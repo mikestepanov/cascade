@@ -88,8 +88,8 @@ export class AuthPage extends BasePage {
   readonly resendCodeButton: Locator;
   readonly signOutLink: Locator;
 
-  constructor(page: Page) {
-    super(page);
+  constructor(page: Page, orgSlug: string) {
+    super(page, orgSlug);
 
     // Page headings
     this.signInHeading = page.getByRole("heading", { name: /welcome back/i });

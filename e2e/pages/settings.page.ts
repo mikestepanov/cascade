@@ -83,8 +83,8 @@ export class SettingsPage extends BasePage {
   readonly requiresTimeApprovalSwitch: Locator;
   readonly saveSettingsButton: Locator;
 
-  constructor(page: Page) {
-    super(page);
+  constructor(page: Page, orgSlug: string) {
+    super(page, orgSlug);
 
     // Settings tabs
     this.integrationsTab = page
@@ -175,11 +175,9 @@ export class SettingsPage extends BasePage {
   // Actions - Navigation
   // ===================
 
-  async goto(orgSlug?: string) {
-    const slug = orgSlug || this.getOrganizationSlug();
-
+  async goto() {
     // Navigate directly to settings URL
-    const url = `/${slug}/settings/profile`;
+    const url = `/${this.orgSlug}/settings/profile`;
     await this.page.goto(url);
 
     try {

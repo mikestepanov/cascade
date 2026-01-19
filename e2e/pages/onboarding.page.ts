@@ -51,8 +51,8 @@ export class OnboardingPage extends BasePage {
   readonly tourCloseButton: Locator;
   readonly tourProgress: Locator;
 
-  constructor(page: Page) {
-    super(page);
+  constructor(page: Page, orgSlug: string) {
+    super(page, orgSlug);
 
     // Onboarding wizard
     this.welcomeHeading = page.getByRole("heading", { name: /welcome to nixelo/i });

@@ -53,8 +53,11 @@ rbacTest.describe("Workspace Management", () => {
       const wsName2 = `WS Beta ${Date.now()}`;
 
       await adminWorkspacesPage.createWorkspace(wsName1);
-      // Should navigate to workspace detail or list, wait for it to be visible in sidebar
-      await expect(adminPage.getByRole("link", { name: wsName1 })).toBeVisible();
+
+      // Reload to ensure list is updated
+      await adminPage.reload({ waitUntil: "domcontentloaded" });
+
+      await expect(adminPage.getByRole("link", { name: wsName1 })).toBeVisible({ timeout: 15000 });
 
       // Second workspace creation is currently flaky in E2E environment due to modal/toast timing
       // TODO: Re-enable this when we have a more robust way to handle the swift transition

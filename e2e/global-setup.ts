@@ -38,8 +38,16 @@ interface SetupResult {
  * Extract organization slug from URL (e.g., /e2e-dashboard-xxxxx/dashboard -> e2e-dashboard-xxxxx)
  */
 function extractOrganizationSlug(url: string): string | undefined {
-  const match = url.match(/\/([^/]+)\/(dashboard|settings|projects|documents|issues)/);
-  return match?.[1];
+  try {
+    const urlObj = new URL(url);
+    // Match the first path segment if it's followed by a known app route
+    const match = urlObj.pathname.match(
+      /^\/([^/]+)\/(dashboard|settings|projects|documents|issues)/,
+    );
+    return match?.[1];
+  } catch {
+    return undefined;
+  }
 }
 
 /**

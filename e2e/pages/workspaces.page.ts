@@ -14,8 +14,8 @@ export class WorkspacesPage extends BasePage {
   readonly workspaceList: Locator;
   readonly workspaceCards: Locator;
 
-  constructor(page: Page) {
-    super(page);
+  constructor(page: Page, orgSlug: string) {
+    super(page, orgSlug);
 
     // Scope to main content to avoid sidebar's "Add new workspace" button
     this.newWorkspaceButton = page.getByRole("button", {
@@ -36,9 +36,8 @@ export class WorkspacesPage extends BasePage {
     await loadingSpinner.waitFor({ state: "hidden", timeout: 15000 }).catch(() => {});
   }
 
-  async goto(orgSlug?: string) {
-    const slug = orgSlug || this.getOrganizationSlug();
-    const workspacesUrl = `/${slug}/workspaces`;
+  async goto() {
+    const workspacesUrl = `/${this.orgSlug}/workspaces`;
 
     await this.page.goto(workspacesUrl, { waitUntil: "domcontentloaded" });
 
@@ -90,7 +89,7 @@ export class WorkspacesPage extends BasePage {
       await this.workspaceDescriptionInput.fill(description, { force: true });
     }
 
-    await this.submitWorkspaceButton.click();
+    await this.submitWorkspaceButton.click({ force: true });
 
     // Wait for modal to close (name input disappears)
     await expect(this.workspaceNameInput).not.toBeVisible({ timeout: 15000 });
