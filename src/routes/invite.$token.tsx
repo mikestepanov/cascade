@@ -169,9 +169,11 @@ function InviteRoute() {
       <header className="p-6 flex items-center justify-center">
         <Flex align="center" gap="sm">
           <Flex align="center" justify="center" className="h-8 w-8 rounded-lg bg-brand-main">
-            <span className="text-ui-bg-primary font-bold text-sm">N</span>
+            <Typography variant="small" className="font-bold text-ui-bg-primary">
+              N
+            </Typography>
           </Flex>
-          <span className="font-semibold text-lg text-ui-text-primary">Nixelo</span>
+          <Typography variant="large">Nixelo</Typography>
         </Flex>
       </header>
 
@@ -185,11 +187,15 @@ function InviteRoute() {
                 You're Invited!
               </Typography>
               <Typography variant="p" color="secondary">
-                <span className="font-medium text-ui-text-primary">{invite.inviterName}</span>{" "}
+                <Typography as="span" variant="small">
+                  {invite.inviterName}
+                </Typography>{" "}
                 {isProjectInvite ? (
                   <>
                     has invited you to join the project{" "}
-                    <span className="font-medium text-ui-text-primary">{invite.projectName}</span>
+                    <Typography as="span" variant="small">
+                      {invite.projectName}
+                    </Typography>
                   </>
                 ) : (
                   "has invited you to join Nixelo"
@@ -200,26 +206,28 @@ function InviteRoute() {
             {/* Invite Details */}
             <div className="bg-ui-bg-secondary rounded-lg p-4 mb-6">
               <Flex justify="between" align="center" className="text-sm">
-                <span className="text-ui-text-tertiary">Invited email</span>
-                <span className="text-ui-text-primary font-medium">{invite.email}</span>
+                <Typography variant="muted">Invited email</Typography>
+                <Typography variant="small">{invite.email}</Typography>
               </Flex>
               {isProjectInvite ? (
                 <>
                   <Flex justify="between" align="center" className="text-sm mt-2">
-                    <span className="text-ui-text-tertiary">Project</span>
-                    <span className="text-ui-text-primary font-medium">{invite.projectName}</span>
+                    <Typography variant="muted">Project</Typography>
+                    <Typography variant="small">{invite.projectName}</Typography>
                   </Flex>
                   <Flex justify="between" align="center" className="text-sm mt-2">
-                    <span className="text-ui-text-tertiary">Project Role</span>
-                    <span className="text-ui-text-primary font-medium capitalize">
+                    <Typography variant="muted">Project Role</Typography>
+                    <Typography variant="small" className="capitalize">
                       {invite.projectRole || "editor"}
-                    </span>
+                    </Typography>
                   </Flex>
                 </>
               ) : (
                 <Flex justify="between" align="center" className="text-sm mt-2">
-                  <span className="text-ui-text-tertiary">Role</span>
-                  <span className="text-ui-text-primary font-medium capitalize">{invite.role}</span>
+                  <Typography variant="muted">Role</Typography>
+                  <Typography variant="small" className="capitalize">
+                    {invite.role}
+                  </Typography>
                 </Flex>
               )}
             </div>
@@ -263,7 +271,10 @@ function InviteRoute() {
                 <div className="space-y-4">
                   <Typography className="text-sm text-center text-ui-text-secondary mb-4">
                     Sign in or create an account with{" "}
-                    <span className="font-medium">{invite.email}</span> to accept this invitation
+                    <Typography as="span" variant="small">
+                      {invite.email}
+                    </Typography>{" "}
+                    to accept this invitation
                   </Typography>
                   <SignInForm />
                 </div>

@@ -13,6 +13,7 @@ import { v } from "convex/values";
 import { customMutation, customQuery } from "convex-helpers/server/customFunctions";
 import type { Doc, Id } from "./_generated/dataModel";
 import { type MutationCtx, mutation, type QueryCtx, query } from "./_generated/server";
+import { forbidden, notFound, unauthenticated } from "./lib/errors";
 import { getProjectRole } from "./projectAccess";
 
 /**
@@ -24,7 +25,7 @@ export const authenticatedQuery = customQuery(query, {
   input: async (ctx, _args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) {
-      throw new Error("Authentication required");
+      throw unauthenticated();
     }
 
     return {
@@ -43,7 +44,7 @@ export const authenticatedMutation = customMutation(mutation, {
   input: async (ctx, _args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) {
-      throw new Error("Authentication required");
+      throw unauthenticated();
     }
 
     return {
@@ -62,19 +63,19 @@ export const projectQuery = customQuery(query, {
   input: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) {
-      throw new Error("Authentication required");
+      throw unauthenticated();
     }
 
     // Check if user has access to project
     const project = await ctx.db.get(args.projectId);
     if (!project) {
-      throw new Error("Project not found");
+      throw notFound("project", args.projectId);
     }
 
     // Check if user is member or project is public
     const role = await getProjectRole(ctx, args.projectId, userId);
     if (!(role || project.isPublic)) {
-      throw new Error("Access denied - not a project member");
+      throw forbidden();
     }
 
     return {
@@ -93,17 +94,17 @@ export const viewerMutation = customMutation(mutation, {
   input: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) {
-      throw new Error("Authentication required");
+      throw unauthenticated();
     }
 
     const project = await ctx.db.get(args.projectId);
     if (!project) {
-      throw new Error("Project not found");
+      throw notFound("project", args.projectId);
     }
 
     const role = await getProjectRole(ctx, args.projectId, userId);
     if (!role) {
-      throw new Error("Access denied - must be a project member");
+      throw forbidden("viewer");
     }
 
     return {
@@ -122,12 +123,12 @@ export const editorMutation = customMutation(mutation, {
   input: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) {
-      throw new Error("Authentication required");
+      throw unauthenticated();
     }
 
     const project = await ctx.db.get(args.projectId);
     if (!project) {
-      throw new Error("Project not found");
+      throw notFound("project", args.projectId);
     }
 
     const role = await getProjectRole(ctx, args.projectId, userId);
@@ -138,7 +139,7 @@ export const editorMutation = customMutation(mutation, {
     const requiredRoleLevel = roleHierarchy.editor;
 
     if (userRoleLevel < requiredRoleLevel) {
-      throw new Error("Access denied - editor role required");
+      throw forbidden("editor");
     }
 
     return {
@@ -157,18 +158,18 @@ export const adminMutation = customMutation(mutation, {
   input: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) {
-      throw new Error("Authentication required");
+      throw unauthenticated();
     }
 
     const project = await ctx.db.get(args.projectId);
     if (!project) {
-      throw new Error("Project not found");
+      throw notFound("project", args.projectId);
     }
 
     const role = await getProjectRole(ctx, args.projectId, userId);
 
     if (role !== "admin") {
-      throw new Error("Access denied - admin role required");
+      throw forbidden("admin");
     }
 
     return {
@@ -187,18 +188,18 @@ export const issueMutation = customMutation(mutation, {
   input: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) {
-      throw new Error("Authentication required");
+      throw unauthenticated();
     }
 
     const issue = await ctx.db.get(args.issueId);
     if (!issue) {
-      throw new Error("Issue not found");
+      throw notFound("issue", args.issueId);
     }
 
     // Issues always belong to projects now
     const project = await ctx.db.get(issue.projectId);
     if (!project) {
-      throw new Error("Project not found");
+      throw notFound("project", issue.projectId);
     }
 
     // Get role from project (handles both team and workspace-level projects)
@@ -210,7 +211,7 @@ export const issueMutation = customMutation(mutation, {
     const requiredRoleLevel = roleHierarchy.editor;
 
     if (userRoleLevel < requiredRoleLevel) {
-      throw new Error("Access denied - editor role required");
+      throw forbidden("editor");
     }
 
     return {
@@ -237,18 +238,18 @@ export const issueViewerMutation = customMutation(mutation, {
   input: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) {
-      throw new Error("Authentication required");
+      throw unauthenticated();
     }
 
     const issue = await ctx.db.get(args.issueId);
     if (!issue) {
-      throw new Error("Issue not found");
+      throw notFound("issue", args.issueId);
     }
 
     // Issues always belong to projects now
     const project = await ctx.db.get(issue.projectId);
     if (!project) {
-      throw new Error("Project not found");
+      throw notFound("project", issue.projectId);
     }
 
     // Get role from project (handles both team and workspace-level projects)
@@ -256,7 +257,7 @@ export const issueViewerMutation = customMutation(mutation, {
 
     // Check minimum role (viewer or higher)
     if (!role) {
-      throw new Error("Access denied - not authorized for this issue");
+      throw forbidden("viewer");
     }
 
     return {
@@ -267,6 +268,98 @@ export const issueViewerMutation = customMutation(mutation, {
         role,
         project,
         issue,
+      },
+      args: {},
+    };
+  },
+});
+
+/**
+ * Sprint Query - automatically loads sprint and checks project access
+ * Requires viewer role or higher (or public project)
+ */
+export const sprintQuery = customQuery(query, {
+  args: { sprintId: v.id("sprints") },
+  input: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) {
+      throw unauthenticated();
+    }
+
+    const sprint = await ctx.db.get(args.sprintId);
+    if (!sprint) {
+      throw notFound("sprint", args.sprintId);
+    }
+
+    // Sprints always belong to projects
+    const project = await ctx.db.get(sprint.projectId);
+    if (!project) {
+      throw notFound("project", sprint.projectId);
+    }
+
+    // Check if user is member or project is public
+    const role = await getProjectRole(ctx, sprint.projectId, userId);
+    if (!(role || project.isPublic)) {
+      throw forbidden();
+    }
+
+    return {
+      ctx: {
+        ...ctx,
+        userId,
+        projectId: sprint.projectId,
+        role,
+        project,
+        sprint,
+      },
+      args: {},
+    };
+  },
+});
+
+/**
+ * Sprint Mutation - automatically loads sprint and checks project permissions
+ * Requires editor role or higher
+ */
+export const sprintMutation = customMutation(mutation, {
+  args: { sprintId: v.id("sprints") },
+  input: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) {
+      throw unauthenticated();
+    }
+
+    const sprint = await ctx.db.get(args.sprintId);
+    if (!sprint) {
+      throw notFound("sprint", args.sprintId);
+    }
+
+    // Sprints always belong to projects
+    const project = await ctx.db.get(sprint.projectId);
+    if (!project) {
+      throw notFound("project", sprint.projectId);
+    }
+
+    // Get role from project
+    const role = await getProjectRole(ctx, sprint.projectId, userId);
+
+    // Check minimum role (editor required for sprint mutations)
+    const roleHierarchy = { viewer: 1, editor: 2, admin: 3 };
+    const userRoleLevel = role ? roleHierarchy[role] : 0;
+    const requiredRoleLevel = roleHierarchy.editor;
+
+    if (userRoleLevel < requiredRoleLevel) {
+      throw forbidden("editor");
+    }
+
+    return {
+      ctx: {
+        ...ctx,
+        userId,
+        projectId: sprint.projectId,
+        role,
+        project,
+        sprint,
       },
       args: {},
     };
@@ -293,4 +386,20 @@ export type IssueMutationCtx = MutationCtx &
     role: "viewer" | "editor" | "admin" | null;
     project: Doc<"projects">;
     issue: Doc<"issues">;
+  };
+
+export type SprintQueryCtx = QueryCtx &
+  AuthenticatedQueryCtx & {
+    projectId: Id<"projects">;
+    role: "viewer" | "editor" | "admin" | null;
+    project: Doc<"projects">;
+    sprint: Doc<"sprints">;
+  };
+
+export type SprintMutationCtx = MutationCtx &
+  AuthenticatedQueryCtx & {
+    projectId: Id<"projects">;
+    role: "viewer" | "editor" | "admin" | null;
+    project: Doc<"projects">;
+    sprint: Doc<"sprints">;
   };

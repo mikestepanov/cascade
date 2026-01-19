@@ -4,21 +4,18 @@
  * Run `npx convex dev` to generate component types.
  */
 
-import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import type { Id } from "./_generated/dataModel";
-import { query } from "./_generated/server";
 import {
   issueCountByAssignee,
   issueCountByPriority,
   issueCountByStatus,
   issueCountByType,
 } from "./aggregates";
+import { projectQuery, sprintQuery } from "./customFunctions";
 import { batchFetchIssues, batchFetchUsers, getUserName } from "./lib/batchHelpers";
-import { forbidden, notFound, unauthenticated } from "./lib/errors";
 import { MAX_ACTIVITY_FOR_ANALYTICS, MAX_VELOCITY_SPRINTS } from "./lib/queryLimits";
 import { notDeleted } from "./lib/softDeleteHelpers";
-import { canAccessProject } from "./projectAccess";
 
 // Helper: Build issues by status from workflow states and counts
 function buildIssuesByStatus(
@@ -56,30 +53,21 @@ function buildIssuesByPriority(priorityCounts: Record<string, number>) {
 
 /**
  * Get project analytics overview
+ * Requires viewer access to project
  */
-export const getProjectAnalytics = query({
-  args: { projectId: v.id("projects") },
-  handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw unauthenticated();
-
-    const project = await ctx.db.get(args.projectId);
-    if (!project) throw notFound("project", args.projectId);
-
-    if (!(await canAccessProject(ctx, args.projectId, userId))) {
-      throw forbidden();
-    }
-
+export const getProjectAnalytics = projectQuery({
+  args: {},
+  handler: async (ctx) => {
     // Use aggregates for fast O(log n) counting instead of O(n)
     const [statusCounts, typeCounts, priorityCounts, assigneeCounts] = await Promise.all([
-      issueCountByStatus.lookup(ctx, { projectId: args.projectId }),
-      issueCountByType.lookup(ctx, { projectId: args.projectId }),
-      issueCountByPriority.lookup(ctx, { projectId: args.projectId }),
-      issueCountByAssignee.lookup(ctx, { projectId: args.projectId }),
+      issueCountByStatus.lookup(ctx, { projectId: ctx.projectId }),
+      issueCountByType.lookup(ctx, { projectId: ctx.projectId }),
+      issueCountByPriority.lookup(ctx, { projectId: ctx.projectId }),
+      issueCountByAssignee.lookup(ctx, { projectId: ctx.projectId }),
     ]);
 
     // Build structured data using helpers
-    const issuesByStatus = buildIssuesByStatus(project.workflowStates, statusCounts);
+    const issuesByStatus = buildIssuesByStatus(ctx.project.workflowStates, statusCounts);
     const issuesByType = buildIssuesByType(typeCounts);
     const issuesByPriority = buildIssuesByPriority(priorityCounts);
     const unassignedCount = assigneeCounts.unassigned || 0;
@@ -114,30 +102,17 @@ export const getProjectAnalytics = query({
 
 /**
  * Get sprint burndown data
+ * Requires viewer access to project
  */
-export const getSprintBurndown = query({
-  args: { sprintId: v.id("sprints") },
-  handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw unauthenticated();
-
-    const sprint = await ctx.db.get(args.sprintId);
-    if (!sprint) throw notFound("sprint", args.sprintId);
-
-    // Check access to project
-    if (!(await canAccessProject(ctx, sprint.projectId, userId))) {
-      throw forbidden();
-    }
-
+export const getSprintBurndown = sprintQuery({
+  args: {},
+  handler: async (ctx) => {
     // Get all issues in the sprint
     const sprintIssues = await ctx.db
       .query("issues")
-      .withIndex("by_sprint", (q) => q.eq("sprintId", args.sprintId))
+      .withIndex("by_sprint", (q) => q.eq("sprintId", ctx.sprint._id))
       .filter(notDeleted)
       .collect();
-
-    const project = await ctx.db.get(sprint.projectId);
-    if (!project) throw notFound("project", sprint.projectId);
 
     // Calculate total points (using storyPoints, fallback to estimatedHours)
     const totalPoints = sprintIssues.reduce(
@@ -146,7 +121,9 @@ export const getSprintBurndown = query({
     );
 
     // Get done states
-    const doneStates = project.workflowStates.filter((s) => s.category === "done").map((s) => s.id);
+    const doneStates = ctx.project.workflowStates
+      .filter((s) => s.category === "done")
+      .map((s) => s.id);
 
     const completedPoints = sprintIssues
       .filter((issue) => doneStates.includes(issue.status))
@@ -160,10 +137,12 @@ export const getSprintBurndown = query({
 
     // Calculate ideal burndown if sprint has dates
     const idealBurndown: Array<{ day: number; points: number }> = [];
-    if (sprint.startDate && sprint.endDate) {
+    if (ctx.sprint.startDate && ctx.sprint.endDate) {
       const now = Date.now();
-      const totalDays = Math.ceil((sprint.endDate - sprint.startDate) / (1000 * 60 * 60 * 24));
-      const daysElapsed = Math.ceil((now - sprint.startDate) / (1000 * 60 * 60 * 24));
+      const totalDays = Math.ceil(
+        (ctx.sprint.endDate - ctx.sprint.startDate) / (1000 * 60 * 60 * 24),
+      );
+      const daysElapsed = Math.ceil((now - ctx.sprint.startDate) / (1000 * 60 * 60 * 24));
 
       for (let day = 0; day <= totalDays; day++) {
         const remainingIdeal = totalPoints * (1 - day / totalDays);
@@ -199,31 +178,23 @@ export const getSprintBurndown = query({
 
 /**
  * Get team velocity (completed points per sprint)
+ * Requires viewer access to project
  */
-export const getTeamVelocity = query({
-  args: { projectId: v.id("projects") },
-  handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw unauthenticated();
-
-    // Check access
-    if (!(await canAccessProject(ctx, args.projectId, userId))) {
-      throw forbidden();
-    }
-
-    const project = await ctx.db.get(args.projectId);
-    if (!project) throw notFound("project", args.projectId);
-
+export const getTeamVelocity = projectQuery({
+  args: {},
+  handler: async (ctx) => {
     // Get completed sprints
     const completedSprints = await ctx.db
       .query("sprints")
-      .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
+      .withIndex("by_project", (q) => q.eq("projectId", ctx.projectId))
       .filter((q) => q.eq(q.field("status"), "completed"))
       .order("desc")
       .take(MAX_VELOCITY_SPRINTS);
 
     // Get done states
-    const doneStates = project.workflowStates.filter((s) => s.category === "done").map((s) => s.id);
+    const doneStates = ctx.project.workflowStates
+      .filter((s) => s.category === "done")
+      .map((s) => s.id);
 
     // Batch fetch issues for all sprints in parallel (not sequential)
     const sprintIds = completedSprints.map((s) => s._id);
@@ -273,18 +244,11 @@ export const getTeamVelocity = query({
 
 /**
  * Get recent activity for project
+ * Requires viewer access to project
  */
-export const getRecentActivity = query({
-  args: { projectId: v.id("projects"), limit: v.optional(v.number()) },
+export const getRecentActivity = projectQuery({
+  args: { limit: v.optional(v.number()) },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw unauthenticated();
-
-    // Check access
-    if (!(await canAccessProject(ctx, args.projectId, userId))) {
-      throw forbidden();
-    }
-
     // Get recent activity (global, limited)
     const activities = await ctx.db
       .query("issueActivity")
@@ -299,7 +263,7 @@ export const getRecentActivity = query({
     const projectActivities = activities
       .filter((a) => {
         const issue = issueMap.get(a.issueId);
-        return issue && issue.projectId === args.projectId;
+        return issue && issue.projectId === ctx.projectId;
       })
       .slice(0, args.limit || 20);
 

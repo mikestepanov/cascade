@@ -8,6 +8,7 @@ import {
   batchFetchUsers,
   getUserName,
 } from "./lib/batchHelpers";
+import { conflict, forbidden, notFound, unauthenticated, validation } from "./lib/errors";
 import { assertCanAccessProject, assertIsProjectAdmin } from "./projectAccess";
 
 /**
@@ -65,7 +66,7 @@ export const startTimer = mutation({
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) {
-      throw new Error("Not authenticated");
+      throw unauthenticated();
     }
 
     // Check if user has any running timers
@@ -76,7 +77,7 @@ export const startTimer = mutation({
       .collect();
 
     if (runningTimers.length > 0) {
-      throw new Error("You already have a running timer. Stop it first.");
+      throw conflict("You already have a running timer. Stop it first.");
     }
 
     // Check project permissions if specified
@@ -126,20 +127,20 @@ export const stopTimer = mutation({
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) {
-      throw new Error("Not authenticated");
+      throw unauthenticated();
     }
 
     const entry = await ctx.db.get(args.entryId);
     if (!entry) {
-      throw new Error("Time entry not found");
+      throw notFound("timeEntry", args.entryId);
     }
 
     if (entry.userId !== userId) {
-      throw new Error("Not authorized");
+      throw forbidden();
     }
 
     if (entry.endTime) {
-      throw new Error("Timer already stopped");
+      throw conflict("Timer already stopped");
     }
 
     const now = Date.now();
@@ -173,7 +174,7 @@ export const createTimeEntry = mutation({
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) {
-      throw new Error("Not authenticated");
+      throw unauthenticated();
     }
 
     // Check project permissions if specified
@@ -183,7 +184,7 @@ export const createTimeEntry = mutation({
 
     // Validate time range
     if (args.endTime <= args.startTime) {
-      throw new Error("End time must be after start time");
+      throw validation("endTime", "End time must be after start time");
     }
 
     // Get user's current rate
@@ -239,20 +240,20 @@ export const updateTimeEntry = mutation({
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) {
-      throw new Error("Not authenticated");
+      throw unauthenticated();
     }
 
     const entry = await ctx.db.get(args.entryId);
     if (!entry) {
-      throw new Error("Time entry not found");
+      throw notFound("timeEntry", args.entryId);
     }
 
     if (entry.userId !== userId) {
-      throw new Error("Not authorized");
+      throw forbidden();
     }
 
     if (entry.isLocked) {
-      throw new Error("Cannot edit locked time entry");
+      throw forbidden(undefined, "Cannot edit locked time entry");
     }
 
     // Build basic field updates
@@ -279,24 +280,24 @@ export const deleteTimeEntry = mutation({
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) {
-      throw new Error("Not authenticated");
+      throw unauthenticated();
     }
 
     const entry = await ctx.db.get(args.entryId);
     if (!entry) {
-      throw new Error("Time entry not found");
+      throw notFound("timeEntry", args.entryId);
     }
 
     if (entry.userId !== userId) {
-      throw new Error("Not authorized");
+      throw forbidden();
     }
 
     if (entry.isLocked) {
-      throw new Error("Cannot delete locked time entry");
+      throw forbidden(undefined, "Cannot delete locked time entry");
     }
 
     if (entry.billed) {
-      throw new Error("Cannot delete billed time entry");
+      throw forbidden(undefined, "Cannot delete billed time entry");
     }
 
     await ctx.db.delete(args.entryId);
@@ -735,14 +736,14 @@ export const setUserRate = mutation({
   handler: async (ctx, args) => {
     const currentUserId = await getAuthUserId(ctx);
     if (!currentUserId) {
-      throw new Error("Not authenticated");
+      throw unauthenticated();
     }
 
     // Check permissions - must be admin of project or setting own rate
     if (args.projectId) {
       await assertIsProjectAdmin(ctx, args.projectId, currentUserId);
     } else if (args.userId !== currentUserId) {
-      throw new Error("Not authorized");
+      throw forbidden();
     }
 
     // End current rate for this user/project/type combination

@@ -2,6 +2,7 @@ import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import { internalMutation, mutation, query } from "./_generated/server";
 import type { ApiAuthContext } from "./lib/apiAuth";
+import { forbidden, notFound, unauthenticated, validation } from "./lib/errors";
 import { notDeleted } from "./lib/softDeleteHelpers";
 
 /**
@@ -78,7 +79,7 @@ export const generate = mutation({
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
+    if (!userId) throw unauthenticated();
 
     // Generate API key
     const apiKey = generateApiKey();
@@ -89,7 +90,7 @@ export const generate = mutation({
     if (args.projectId) {
       const projectId = args.projectId;
       const project = await ctx.db.get(projectId);
-      if (!project) throw new Error("Project not found");
+      if (!project) throw notFound("project", projectId);
 
       // Check if user is a member
       const membership = await ctx.db
@@ -99,7 +100,7 @@ export const generate = mutation({
         .first();
 
       if (!membership && project.createdBy !== userId) {
-        throw new Error("You don't have access to this project");
+        throw forbidden();
       }
     }
 
@@ -119,7 +120,7 @@ export const generate = mutation({
 
     for (const scope of args.scopes) {
       if (!validScopes.includes(scope)) {
-        throw new Error(`Invalid scope: ${scope}`);
+        throw validation("scopes", `Invalid scope: ${scope}`);
       }
     }
 

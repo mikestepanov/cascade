@@ -10,6 +10,7 @@ import {
   mutation,
   query,
 } from "./_generated/server";
+import { notFound, unauthenticated, validation } from "./lib/errors";
 import { fetchPaginatedQuery } from "./lib/queryHelpers";
 import { notDeleted, softDeleteFields } from "./lib/softDeleteHelpers";
 import { assertIsProjectAdmin } from "./projectAccess";
@@ -26,7 +27,7 @@ export const createWebhook = mutation({
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
+    if (!userId) throw unauthenticated();
 
     // Only admins can create webhooks
     await assertIsProjectAdmin(ctx, args.projectId, userId);
@@ -67,7 +68,7 @@ export const listByProject = query({
   args: { projectId: v.id("projects") },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
+    if (!userId) throw unauthenticated();
 
     // Only admins can view webhooks
     await assertIsProjectAdmin(ctx, args.projectId, userId);
@@ -99,14 +100,14 @@ export const updateWebhook = mutation({
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
+    if (!userId) throw unauthenticated();
 
     const webhook = await ctx.db.get(args.id);
-    if (!webhook || webhook.isDeleted) throw new Error("Webhook not found");
+    if (!webhook || webhook.isDeleted) throw notFound("webhook", args.id);
 
     // Only admins can update webhooks
     if (!webhook.projectId) {
-      throw new Error("Webhook has no project");
+      throw validation("projectId", "Webhook has no project");
     }
     await assertIsProjectAdmin(ctx, webhook.projectId, userId);
 
@@ -139,14 +140,14 @@ export const softDeleteWebhook = mutation({
   args: { id: v.id("webhooks") },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
+    if (!userId) throw unauthenticated();
 
     const webhook = await ctx.db.get(args.id);
-    if (!webhook || webhook.isDeleted) throw new Error("Webhook not found");
+    if (!webhook || webhook.isDeleted) throw notFound("webhook", args.id);
 
     // Only admins can delete webhooks
     if (!webhook.projectId) {
-      throw new Error("Webhook has no project");
+      throw validation("projectId", "Webhook has no project");
     }
     await assertIsProjectAdmin(ctx, webhook.projectId, userId);
 
@@ -268,14 +269,14 @@ export const listExecutions = query({
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
+    if (!userId) throw unauthenticated();
 
     const webhook = await ctx.db.get(args.webhookId);
-    if (!webhook || webhook.isDeleted) throw new Error("Webhook not found");
+    if (!webhook || webhook.isDeleted) throw notFound("webhook", args.webhookId);
 
     // Only admins can view webhook logs
     if (!webhook.projectId) {
-      throw new Error("Webhook has no project");
+      throw validation("projectId", "Webhook has no project");
     }
     await assertIsProjectAdmin(ctx, webhook.projectId, userId);
 
@@ -295,14 +296,14 @@ export const test = mutation({
   args: { id: v.id("webhooks") },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
+    if (!userId) throw unauthenticated();
 
     const webhook = await ctx.db.get(args.id);
-    if (!webhook || webhook.isDeleted) throw new Error("Webhook not found");
+    if (!webhook || webhook.isDeleted) throw notFound("webhook", args.id);
 
     // Only admins can test webhooks
     if (!webhook.projectId) {
-      throw new Error("Webhook has no project");
+      throw validation("projectId", "Webhook has no project");
     }
     await assertIsProjectAdmin(ctx, webhook.projectId, userId);
 
@@ -426,17 +427,17 @@ export const retryExecution = mutation({
   args: { id: v.id("webhookExecutions") },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
+    if (!userId) throw unauthenticated();
 
     const execution = await ctx.db.get(args.id);
-    if (!execution) throw new Error("Execution not found");
+    if (!execution) throw notFound("webhookExecution", args.id);
 
     const webhook = await ctx.db.get(execution.webhookId);
-    if (!webhook || webhook.isDeleted) throw new Error("Webhook not found");
+    if (!webhook || webhook.isDeleted) throw notFound("webhook", execution.webhookId);
 
     // Only admins can retry webhooks
     if (!webhook.projectId) {
-      throw new Error("Webhook has no project");
+      throw validation("projectId", "Webhook has no project");
     }
     await assertIsProjectAdmin(ctx, webhook.projectId, userId);
 
@@ -591,24 +592,24 @@ function validateWebhookUrl(url: string) {
   try {
     parsed = new URL(url);
   } catch {
-    throw new Error("Invalid URL format");
+    throw validation("url", "Invalid URL format");
   }
 
   if (parsed.protocol !== "http:" && parsed.protocol !== "https:") {
-    throw new Error("Invalid URL protocol. Must be http or https.");
+    throw validation("url", "Invalid URL protocol. Must be http or https.");
   }
 
   const hostname = parsed.hostname.toLowerCase();
 
   if (isLoopbackAddress(hostname)) {
-    throw new Error("Localhost URLs are not allowed.");
+    throw validation("url", "Localhost URLs are not allowed.");
   }
 
   if (isPrivateIPv4(hostname)) {
-    throw new Error("Private IP addresses are not allowed.");
+    throw validation("url", "Private IP addresses are not allowed.");
   }
 
   if (isMetadataEndpoint(hostname)) {
-    throw new Error("Metadata service URLs are not allowed.");
+    throw validation("url", "Metadata service URLs are not allowed.");
   }
 }

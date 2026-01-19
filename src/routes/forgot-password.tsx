@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { AuthLink, AuthPageLayout, AuthRedirect, ResetPasswordForm } from "@/components/auth";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/form/Input";
+import { Typography } from "@/components/ui/Typography";
 import { ROUTES } from "@/config/routes";
 import { getConvexSiteUrl } from "@/lib/convex";
 
@@ -82,9 +83,9 @@ function ForgotPasswordPage() {
           {submitting ? "Sending..." : "Send reset code"}
         </Button>
       </form>
-      <div className="text-center text-sm text-ui-text-tertiary mt-4">
+      <Typography variant="muted" className="text-center mt-4">
         <AuthLink to={ROUTES.signin.path}>Back to sign in</AuthLink>
-      </div>
+      </Typography>
     </AuthPageLayout>
   );
 }

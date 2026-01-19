@@ -1,5 +1,6 @@
 import type { Id } from "@convex/_generated/dataModel";
 import type { WorkflowState } from "@convex/shared/types";
+import { Plus } from "lucide-react";
 import { memo, useCallback, useMemo } from "react";
 import { Flex } from "@/components/ui/Flex";
 import { Typography } from "@/components/ui/Typography";
@@ -119,20 +120,7 @@ export const KanbanColumn = memo(function KanbanColumn({
               aria-label={`Add issue to ${state.name}`}
               {...(columnIndex === 0 ? { "data-tour": "create-issue" } : {})}
             >
-              <svg
-                aria-hidden="true"
-                className="w-4 h-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 4v16m8-8H4"
-                />
-              </svg>
+              <Plus className="w-4 h-4" />
             </button>
           )}
         </Flex>

@@ -1,6 +1,7 @@
 import { api } from "@convex/_generated/api";
 import type { Id } from "@convex/_generated/dataModel";
 import { useMutation, useQuery } from "convex/react";
+import { Plus } from "lucide-react";
 import { useState } from "react";
 import { useDeleteConfirmation } from "@/hooks/useDeleteConfirmation";
 import { Button } from "./ui/Button";
@@ -58,25 +59,7 @@ export function WebhooksManager({ projectId }: WebhooksManagerProps) {
           title="Webhooks"
           description="Configure webhooks to receive real-time notifications"
           action={
-            <Button
-              onClick={handleCreate}
-              leftIcon={
-                <svg
-                  aria-hidden="true"
-                  className="w-4 h-4"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                  />
-                </svg>
-              }
-            >
+            <Button onClick={handleCreate} leftIcon={<Plus className="w-4 h-4" />}>
               New Webhook
             </Button>
           }

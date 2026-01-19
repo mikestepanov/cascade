@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { AuthLink, AuthPageLayout, AuthRedirect, SignUpForm } from "@/components/auth";
+import { Typography } from "@/components/ui/Typography";
 import { ROUTES } from "@/config/routes";
 
 export const Route = createFileRoute("/signup")({
@@ -12,10 +13,9 @@ function SignUpRoute() {
     <AuthRedirect>
       <AuthPageLayout title="Create an account" subtitle="Sign up to get started with Nixelo">
         <SignUpForm />
-        <div className="text-center text-sm text-ui-text-tertiary mt-4">
-          <span>Already have an account? </span>
-          <AuthLink to={ROUTES.signin.path}>Sign in</AuthLink>
-        </div>
+        <Typography variant="muted" className="text-center mt-4">
+          Already have an account? <AuthLink to={ROUTES.signin.path}>Sign in</AuthLink>
+        </Typography>
       </AuthPageLayout>
     </AuthRedirect>
   );

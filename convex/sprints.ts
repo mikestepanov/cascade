@@ -1,71 +1,46 @@
-import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
-import { mutation, query } from "./_generated/server";
-import { notFound, unauthenticated, validation } from "./lib/errors";
+import { editorMutation, projectQuery, sprintMutation } from "./customFunctions";
 import { notDeleted } from "./lib/softDeleteHelpers";
-import { assertCanEditProject, canAccessProject } from "./projectAccess";
 
-export const create = mutation({
+/**
+ * Create a new sprint
+ * Requires editor role on project
+ */
+export const create = editorMutation({
   args: {
-    projectId: v.id("projects"),
     name: v.string(),
     goal: v.optional(v.string()),
     startDate: v.optional(v.number()),
     endDate: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      throw unauthenticated();
-    }
-
-    const project = await ctx.db.get(args.projectId);
-    if (!project) {
-      throw notFound("project", args.projectId);
-    }
-
-    // Check permissions - requires editor role to create sprints
-    await assertCanEditProject(ctx, args.projectId, userId);
-
     const now = Date.now();
     return await ctx.db.insert("sprints", {
-      projectId: args.projectId,
+      projectId: ctx.projectId,
       name: args.name,
       goal: args.goal,
       startDate: args.startDate,
       endDate: args.endDate,
       status: "future",
-      createdBy: userId,
+      createdBy: ctx.userId,
       createdAt: now,
       updatedAt: now,
     });
   },
 });
 
-export const listByProject = query({
-  args: { projectId: v.id("projects") },
-  handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      return [];
-    }
-
-    const project = await ctx.db.get(args.projectId);
-    if (!project) {
-      return [];
-    }
-
-    // Check permissions - requires at least viewer role or public project
-    const hasAccess = await canAccessProject(ctx, args.projectId, userId);
-    if (!hasAccess) {
-      return [];
-    }
-
+/**
+ * List sprints for a project with issue counts
+ * Requires viewer access to project
+ */
+export const listByProject = projectQuery({
+  args: {},
+  handler: async (ctx) => {
     // Sprints per project are typically few (10-50), add reasonable limit
     const MAX_SPRINTS = 100;
     const sprints = await ctx.db
       .query("sprints")
-      .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
+      .withIndex("by_project", (q) => q.eq("projectId", ctx.projectId))
       .order("desc")
       .filter(notDeleted)
       .take(MAX_SPRINTS);
@@ -98,39 +73,20 @@ export const listByProject = query({
   },
 });
 
-export const startSprint = mutation({
+/**
+ * Start a sprint
+ * Requires editor role on project
+ */
+export const startSprint = sprintMutation({
   args: {
-    sprintId: v.id("sprints"),
     startDate: v.number(),
     endDate: v.number(),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      throw unauthenticated();
-    }
-
-    const sprint = await ctx.db.get(args.sprintId);
-    if (!sprint) {
-      throw notFound("sprint", args.sprintId);
-    }
-
-    if (!sprint.projectId) {
-      throw validation("projectId", "Sprint has no project");
-    }
-
-    const project = await ctx.db.get(sprint.projectId);
-    if (!project) {
-      throw notFound("project", sprint.projectId);
-    }
-
-    // Check permissions - requires editor role to start sprints
-    await assertCanEditProject(ctx, sprint.projectId, userId);
-
     // End any currently active sprint
     const activeSprints = await ctx.db
       .query("sprints")
-      .withIndex("by_project", (q) => q.eq("projectId", sprint.projectId))
+      .withIndex("by_project", (q) => q.eq("projectId", ctx.projectId))
       .filter((q) => q.eq(q.field("status"), "active"))
       .filter(notDeleted)
       .collect();
@@ -142,7 +98,7 @@ export const startSprint = mutation({
       });
     }
 
-    await ctx.db.patch(args.sprintId, {
+    await ctx.db.patch(ctx.sprint._id, {
       status: "active",
       startDate: args.startDate,
       endDate: args.endDate,
@@ -151,32 +107,14 @@ export const startSprint = mutation({
   },
 });
 
-export const completeSprint = mutation({
-  args: { sprintId: v.id("sprints") },
-  handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      throw unauthenticated();
-    }
-
-    const sprint = await ctx.db.get(args.sprintId);
-    if (!sprint) {
-      throw notFound("sprint", args.sprintId);
-    }
-
-    if (!sprint.projectId) {
-      throw validation("projectId", "Sprint has no project");
-    }
-
-    const project = await ctx.db.get(sprint.projectId);
-    if (!project) {
-      throw notFound("project", sprint.projectId);
-    }
-
-    // Check permissions - requires editor role to complete sprints
-    await assertCanEditProject(ctx, sprint.projectId, userId);
-
-    await ctx.db.patch(args.sprintId, {
+/**
+ * Complete a sprint
+ * Requires editor role on project
+ */
+export const completeSprint = sprintMutation({
+  args: {},
+  handler: async (ctx) => {
+    await ctx.db.patch(ctx.sprint._id, {
       status: "completed",
       updatedAt: Date.now(),
     });
