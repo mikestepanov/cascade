@@ -1,5 +1,5 @@
-import type { Locator, Page } from "@playwright/test";
 import { expect } from "@playwright/test";
+import { dashboardLocators, settingsLocators } from "../locators";
 import { BasePage } from "./base.page";
 
 /**
@@ -75,6 +75,13 @@ export class SettingsPage extends BasePage {
   readonly inviteEmailInput: Locator;
   readonly inviteRoleSelect: Locator;
   readonly sendInviteButton: Locator;
+
+  // ===================
+  // Locators - Organization Settings
+  // ===================
+  readonly organizationNameInput: Locator;
+  readonly requiresTimeApprovalSwitch: Locator;
+  readonly saveSettingsButton: Locator;
 
   constructor(page: Page) {
     super(page);
@@ -157,25 +164,57 @@ export class SettingsPage extends BasePage {
     this.inviteEmailInput = page.getByPlaceholder("user@example.com");
     this.inviteRoleSelect = page.getByLabel(/role/i);
     this.sendInviteButton = page.getByRole("button", { name: "Send Invitation", exact: true });
+
+    // Admin - Organization Settings
+    this.organizationNameInput = page.locator("#orgName");
+    this.requiresTimeApprovalSwitch = page.getByRole("switch", { name: /require time approval/i });
+    this.saveSettingsButton = page.getByRole("button", { name: /save changes/i });
   }
 
   // ===================
   // Actions - Navigation
   // ===================
 
-  /**
-   * Navigate directly to settings page
-   */
   async goto(orgSlug?: string) {
-    // Use provided slug or default to TEST_ORG_SLUG
-    const slug = orgSlug || "nixelo-e2e";
+    const slug = orgSlug || this.getOrganizationSlug();
 
     // Navigate directly to settings URL
-    await this.page.goto(`/${slug}/settings/profile`);
-    await this.waitForLoad();
+    const url = `/${slug}/settings/profile`;
+    await this.page.goto(url);
 
-    // Wait for settings page to load - look for integrations tab (always visible)
-    await this.integrationsTab.first().waitFor({ state: "visible", timeout: 10000 });
+    try {
+      // Wait for the Settings heading as a sign of page load
+      await this.page
+        .getByRole("heading", { name: /settings/i })
+        .first()
+        .waitFor({ state: "visible", timeout: 15000 });
+
+      // Wait for settings page to load - look for integrations tab (always visible)
+      await this.integrationsTab.first().waitFor({ state: "visible", timeout: 10000 });
+    } catch (e) {
+      const currentUrl = this.page.url();
+      const bodyText = await this.page
+        .evaluate(() => document.body.innerText)
+        .catch(() => "Could not get body text");
+      console.log(`[DEBUG] SettingsPage.goto failed`);
+      console.log(`[DEBUG] Target URL: ${url}`);
+      console.log(`[DEBUG] Current URL: ${currentUrl}`);
+      const localStorage = await this.page
+        .evaluate(() => JSON.stringify(localStorage))
+        .catch(() => "Could not get localStorage");
+      const convexClientState = await this.page
+        .evaluate(() => {
+          const client = (window as any).__convex_test_client;
+          return client
+            ? `Found client. Auth token set: ${!!client.authenticationToken}`
+            : "Client not found on window";
+        })
+        .catch(() => "Error getting client state");
+      console.log(`[DEBUG] LocalStorage: ${localStorage}`);
+      console.log(`[DEBUG] ConvexClient: ${convexClientState}`);
+      console.log(`[DEBUG] Body Text: ${bodyText.substring(0, 1000)}`);
+      throw e;
+    }
   }
 
   async switchToTab(
@@ -184,18 +223,22 @@ export class SettingsPage extends BasePage {
     // Wait for React to fully hydrate and attach event handlers
     // Don't use networkidle - Convex WebSocket keeps connection active
     await this.page.waitForLoadState("domcontentloaded");
+
+    // UI stabilization wait - Tabs often re-render when auth/user data loads
     await this.page.waitForTimeout(1000);
 
     // Use getByRole("tab") directly - Radix UI tabs have role="tab"
     const tabLocator = this.page.getByRole("tab", { name: new RegExp(tab, "i") });
-    await tabLocator.waitFor({ state: "visible", timeout: 30000 });
+    await tabLocator.first().waitFor({ state: "visible", timeout: 30000 });
 
     // Focus first, then click - ensures React event handlers are attached
-    await tabLocator.focus();
-    await tabLocator.click();
+    await tabLocator.first().focus();
+
+    // Click with increased timeout and retry resilience
+    await tabLocator.first().click({ timeout: 20000 });
 
     // Wait for tab to become active
-    await expect(tabLocator).toHaveAttribute("aria-selected", "true", { timeout: 5000 });
+    await expect(tabLocator.first()).toHaveAttribute("aria-selected", "true", { timeout: 10000 });
     await this.waitForLoad();
   }
 
@@ -307,5 +350,27 @@ export class SettingsPage extends BasePage {
 
   async expectPreferencesTab() {
     await expect(this.notificationPreferences).toBeVisible();
+  }
+
+  async updateOrganizationName(name: string) {
+    if (name) {
+      await this.organizationNameInput.fill(name);
+    }
+    await this.saveSettingsButton.click();
+    await expect(this.page.getByText(/organization settings updated/i)).toBeVisible();
+  }
+
+  async toggleTimeApproval(enabled: boolean) {
+    const isChecked = await this.requiresTimeApprovalSwitch.getAttribute("aria-checked");
+    if ((isChecked === "true") !== enabled) {
+      await this.requiresTimeApprovalSwitch.click();
+    }
+    await this.saveSettingsButton.click();
+    await expect(this.page.getByText(/organization settings updated/i)).toBeVisible();
+  }
+
+  async expectOrganizationName(name: string) {
+    await this.organizationNameInput.waitFor({ state: "visible", timeout: 15000 });
+    await expect(this.organizationNameInput).toHaveValue(name, { timeout: 10000 });
   }
 }

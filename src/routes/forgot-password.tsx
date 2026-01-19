@@ -2,7 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Authenticated, Unauthenticated } from "convex/react";
 import { useState } from "react";
 import { toast } from "sonner";
-import { AuthLink, AuthPageLayout, ResetPasswordForm, SmartAuthGuard } from "@/components/auth";
+import { AuthLink, AuthPageLayout, AuthRedirect, ResetPasswordForm } from "@/components/auth";
 import { ROUTES } from "@/config/routes";
 import { getConvexSiteUrl } from "@/lib/convex";
 
@@ -15,7 +15,8 @@ function ForgotPasswordRoute() {
   return (
     <>
       <Authenticated>
-        <SmartAuthGuard />
+        {/* Redirect authenticated users to their dashboard */}
+        <AuthRedirect>{null}</AuthRedirect>
       </Authenticated>
       <Unauthenticated>
         <ForgotPasswordPage />
@@ -62,7 +63,7 @@ function ForgotPasswordPage() {
         <ResetPasswordForm
           email={email}
           onSuccess={() => {
-            // Redirect to /app gateway to trigger SmartAuthGuard logic
+            // Redirect to /app gateway which handles auth routing
             navigate({ to: ROUTES.app.path });
           }}
           onRetry={() => {

@@ -3,7 +3,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Authenticated, Unauthenticated, useMutation, useQuery } from "convex/react";
 import { AlertCircle, CheckCircle, Clock, Loader2 } from "lucide-react";
 import { useState } from "react";
-import { SignInForm, SmartAuthGuard } from "@/components/auth";
+import { AuthRedirect, SignInForm } from "@/components/auth";
 import { Button } from "@/components/ui/Button";
 import { Flex } from "@/components/ui/Flex";
 import { Typography } from "@/components/ui/Typography";
@@ -51,8 +51,9 @@ function InviteRoute() {
   };
 
   // After accepting invite, redirect to user's organization dashboard
+  // AuthRedirect will query getRedirectDestination and navigate appropriately
   if (inviteAccepted) {
-    return <SmartAuthGuard />;
+    return <AuthRedirect>{null}</AuthRedirect>;
   }
 
   // Loading state

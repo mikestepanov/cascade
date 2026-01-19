@@ -11,8 +11,26 @@ export const Route = createFileRoute("/_auth/_app")({
   component: AppLayout,
 });
 
+/**
+ * AppLayout - The /app gateway route.
+ *
+ * This is the SOLE redirect resolver for authenticated users:
+ * 1. If onboarding incomplete → redirect to /onboarding
+ * 2. If user has org → redirect to /$orgSlug/dashboard
+ * 3. If user has no org → Initialize one, then redirect
+ *
+ * Google OAuth and other auth flows land here, and this gateway
+ * ensures users end up in the right place.
+ */
 function AppLayout() {
+  const navigate = useNavigate();
   const { isLoading: isAuthLoading, isAuthenticated } = useConvexAuth();
+
+  // Get redirect destination from backend (handles onboarding check)
+  const redirectPath = useQuery(
+    api.auth.getRedirectDestination,
+    isAuthenticated ? undefined : "skip",
+  );
 
   // Get user's organizations to check if we need initialization
   const userOrganizations = useQuery(
@@ -20,7 +38,24 @@ function AppLayout() {
     isAuthenticated ? undefined : "skip",
   );
 
-  if (isAuthLoading || userOrganizations === undefined) {
+  // Redirect to correct destination if not at /app
+  useEffect(() => {
+    if (redirectPath && redirectPath !== ROUTES.app.path) {
+      navigate({ to: redirectPath, replace: true });
+    }
+  }, [redirectPath, navigate]);
+
+  // Loading state - waiting for queries
+  if (isAuthLoading || redirectPath === undefined || userOrganizations === undefined) {
+    return (
+      <Flex align="center" justify="center" className="min-h-screen bg-ui-bg-secondary">
+        <LoadingSpinner size="lg" />
+      </Flex>
+    );
+  }
+
+  // If we have a redirect path that's not /app, we're redirecting - show loading
+  if (redirectPath && redirectPath !== ROUTES.app.path) {
     return (
       <Flex align="center" justify="center" className="min-h-screen bg-ui-bg-secondary">
         <LoadingSpinner size="lg" />
@@ -30,8 +65,6 @@ function AppLayout() {
 
   // User has no organizations - initialize default organization
   if (userOrganizations.length === 0) {
-    // Check if we already have a default organization being created?
-    // The InitializeOrganization component handles concurrent creation via ref.
     return <InitializeOrganization />;
   }
 

@@ -32,7 +32,7 @@ export function SignInForm() {
 
     void signIn("password", formData)
       .then(() => {
-        // Redirect to /app gateway to trigger SmartAuthGuard logic
+        // Redirect to /app gateway which handles auth routing
         navigate({ to: ROUTES.app.path });
       })
       .catch((error) => {

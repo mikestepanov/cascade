@@ -204,13 +204,30 @@ export async function trySignInUser(
     if (loginResult.success && loginResult.token) {
       console.log("  ✓ API login successful. Injecting tokens...");
       await page.evaluate(
-        ({ token, refreshToken }) => {
+        ({ token, refreshToken, convexUrl }) => {
+          // Legacy keys (for ConvexReactClient direct usage)
           localStorage.setItem("convexAuthToken", token);
           if (refreshToken) {
             localStorage.setItem("convexAuthRefreshToken", refreshToken);
           }
+
+          // @convex-dev/auth keys (namespaced by convex URL)
+          if (convexUrl) {
+            const namespace = convexUrl.replace(/[^a-zA-Z0-9]/g, "");
+            const jwtKey = `__convexAuthJWT_${namespace}`;
+            const refreshKey = `__convexAuthRefreshToken_${namespace}`;
+
+            localStorage.setItem(jwtKey, token);
+            if (refreshToken) {
+              localStorage.setItem(refreshKey, refreshToken);
+            }
+          }
         },
-        { token: loginResult.token, refreshToken: loginResult.refreshToken ?? undefined },
+        {
+          token: loginResult.token,
+          refreshToken: loginResult.refreshToken ?? undefined,
+          convexUrl: process.env.VITE_CONVEX_URL,
+        },
       );
 
       // Navigate to dashboard directly

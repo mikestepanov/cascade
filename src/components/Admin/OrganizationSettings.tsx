@@ -12,6 +12,7 @@ import { Switch } from "../ui/Switch";
 import { Typography } from "../ui/Typography";
 
 interface OrganizationSettingsFormData {
+  name: string;
   defaultMaxHoursPerWeek: number;
   defaultMaxHoursPerDay: number;
   requiresTimeApproval: boolean;
@@ -30,10 +31,13 @@ export function OrganizationSettings() {
 
   // Initialize form data when organization loads
   useEffect(() => {
-    if (settings && !formData) {
-      setFormData({ ...settings });
+    if (organization && settings && !formData) {
+      setFormData({
+        name: organization.name,
+        ...settings,
+      });
     }
-  }, [settings, formData]);
+  }, [organization, settings, formData]);
 
   const handleSave = async () => {
     if (!formData) return;
@@ -42,7 +46,13 @@ export function OrganizationSettings() {
     try {
       await updateOrganization({
         organizationId,
-        settings: formData,
+        name: formData.name,
+        settings: {
+          defaultMaxHoursPerWeek: formData.defaultMaxHoursPerWeek,
+          defaultMaxHoursPerDay: formData.defaultMaxHoursPerDay,
+          requiresTimeApproval: formData.requiresTimeApproval,
+          billingEnabled: formData.billingEnabled,
+        },
       });
       showSuccess("Organization settings updated");
     } catch (error) {
@@ -53,20 +63,25 @@ export function OrganizationSettings() {
   };
 
   const handleReset = () => {
-    if (settings) {
-      setFormData({ ...settings });
+    if (organization && settings) {
+      setFormData({
+        name: organization.name,
+        ...settings,
+      });
     }
   };
 
   const hasChanges =
+    organization &&
     settings &&
     formData &&
-    (formData.defaultMaxHoursPerWeek !== settings.defaultMaxHoursPerWeek ||
+    (formData.name !== organization.name ||
+      formData.defaultMaxHoursPerWeek !== settings.defaultMaxHoursPerWeek ||
       formData.defaultMaxHoursPerDay !== settings.defaultMaxHoursPerDay ||
       formData.requiresTimeApproval !== settings.requiresTimeApproval ||
       formData.billingEnabled !== settings.billingEnabled);
 
-  if (!(organization && formData)) {
+  if (!formData) {
     return (
       <Card>
         <CardBody>
@@ -89,6 +104,33 @@ export function OrganizationSettings() {
           Configure settings for {organizationName}
         </Typography>
       </div>
+
+      {/* General Settings */}
+      <Card>
+        <CardHeader title="General" description="Basic information about your organization" />
+        <CardBody>
+          <Flex direction="column" gap="lg">
+            <div>
+              <label
+                htmlFor="orgName"
+                className="block text-sm font-medium text-ui-text-primary mb-2"
+              >
+                Organization Name
+              </label>
+              <Input
+                id="orgName"
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                placeholder="Acme Corp"
+                className="max-w-md"
+              />
+              <Typography variant="muted" className="mt-1 text-sm">
+                Changing your organization name will also update your URL slug
+              </Typography>
+            </div>
+          </Flex>
+        </CardBody>
+      </Card>
 
       {/* Time Tracking Settings */}
       <Card>

@@ -50,7 +50,7 @@ export function SignUpForm() {
       <EmailVerificationForm
         email={email}
         onVerified={() => {
-          // Redirect to /app gateway to trigger SmartAuthGuard logic
+          // Redirect to /app gateway which handles auth routing
           navigate({ to: ROUTES.app.path });
         }}
         onResend={() => {

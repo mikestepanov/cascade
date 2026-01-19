@@ -259,6 +259,9 @@ export const updateOrganization = mutation({
 
     if (args.name !== undefined) {
       updates.name = args.name;
+      // NOTE: We do NOT regenerate slug when name changes to preserve URL stability.
+      // Slugs should only be updated via a dedicated mutation if needed.
+      /*
       // Regenerate slug if name changes
       const baseSlug = generateSlug(args.name);
 
@@ -284,6 +287,7 @@ export const updateOrganization = mutation({
         counter++;
       }
       updates.slug = slug;
+      */
     }
 
     if (args.timezone !== undefined) updates.timezone = args.timezone;

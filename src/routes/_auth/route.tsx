@@ -1,22 +1,30 @@
 import { createFileRoute, Outlet } from "@tanstack/react-router";
-import { AuthLoading } from "convex/react";
-import { AppSplashScreen, SmartAuthGuard } from "@/components/auth";
+import { Authenticated, AuthLoading } from "convex/react";
+import { AppSplashScreen } from "@/components/auth";
 
 export const Route = createFileRoute("/_auth")({
   component: AuthLayout,
   ssr: false,
 });
 
+/**
+ * AuthLayout - Protected route layout using standard Convex auth components.
+ *
+ * - AuthLoading: Shows splash during initial auth check
+ * - Authenticated: Gates content to logged-in users only
+ *
+ * Unauthenticated users will see nothing (blank) - the router handles
+ * redirecting them to public routes.
+ */
 function AuthLayout() {
   return (
     <>
       <AuthLoading>
-        {/* Use the premium splash screen for the initial auth check */}
         <AppSplashScreen />
       </AuthLoading>
-      <SmartAuthGuard>
+      <Authenticated>
         <Outlet />
-      </SmartAuthGuard>
+      </Authenticated>
     </>
   );
 }

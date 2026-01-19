@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Unauthenticated } from "convex/react";
-import { AuthLink, AuthPageLayout, SignUpForm, SmartAuthGuard } from "@/components/auth";
+import { AuthLink, AuthPageLayout, AuthRedirect, SignUpForm } from "@/components/auth";
 import { ROUTES } from "@/config/routes";
 
 export const Route = createFileRoute("/signup")({
@@ -10,7 +10,7 @@ export const Route = createFileRoute("/signup")({
 
 function SignUpRoute() {
   return (
-    <SmartAuthGuard>
+    <AuthRedirect>
       <Unauthenticated>
         <AuthPageLayout title="Create an account" subtitle="Sign up to get started with Nixelo">
           <SignUpForm />
@@ -20,6 +20,6 @@ function SignUpRoute() {
           </div>
         </AuthPageLayout>
       </Unauthenticated>
-    </SmartAuthGuard>
+    </AuthRedirect>
   );
 }

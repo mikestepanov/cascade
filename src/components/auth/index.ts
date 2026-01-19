@@ -1,6 +1,7 @@
 export { AppSplashScreen } from "./AppSplashScreen";
 export { AuthLink, AuthLinkButton } from "./AuthLink";
 export { AuthPageLayout } from "./AuthPageLayout";
+export { AuthRedirect } from "./AuthRedirect";
 export { EmailVerificationForm } from "./EmailVerificationForm";
 export { EmailVerificationRequired } from "./EmailVerificationRequired";
 export { ForgotPasswordForm } from "./ForgotPasswordForm";
@@ -8,4 +9,3 @@ export { GoogleAuthButton } from "./GoogleAuthButton";
 export { ResetPasswordForm } from "./ResetPasswordForm";
 export { SignInForm } from "./SignInForm";
 export { SignUpForm } from "./SignUpForm";
-export { SmartAuthGuard } from "./SmartAuthGuard";

@@ -43,10 +43,11 @@ export const Route = createRootRoute({
 function RootComponent() {
   // Register service worker for PWA (client-side only, production only)
   useEffect(() => {
+    console.log(`[ROOT] VITE_CONVEX_URL: ${import.meta.env.VITE_CONVEX_URL}`);
+
     // DO NOT register service worker in E2E tests as it can interfere with LocalStorage/Auth
     if (import.meta.env.PROD && !window.__convex_test_client) {
       registerServiceWorker();
-      promptInstall();
     }
   }, []);
 

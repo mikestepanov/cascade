@@ -3,7 +3,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { type BrowserContext, test as base, expect, type Page } from "@playwright/test";
 import { AUTH_PATHS, RBAC_TEST_CONFIG, TEST_USERS } from "../config";
-import { ProjectsPage, WorkspacesPage } from "../pages";
+import { ProjectsPage, SettingsPage, WorkspacesPage } from "../pages";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -67,16 +67,19 @@ export type RbacFixtures = {
   adminPage: Page;
   adminProjectsPage: ProjectsPage;
   adminWorkspacesPage: WorkspacesPage;
+  adminSettingsPage: SettingsPage;
 
   editorContext: BrowserContext;
   editorPage: Page;
   editorProjectsPage: ProjectsPage;
   editorWorkspacesPage: WorkspacesPage;
+  editorSettingsPage: SettingsPage;
 
   viewerContext: BrowserContext;
   viewerPage: Page;
   viewerProjectsPage: ProjectsPage;
   viewerWorkspacesPage: WorkspacesPage;
+  viewerSettingsPage: SettingsPage;
 
   rbacProjectKey: string;
   rbacProjectUrl: string;
@@ -139,17 +142,19 @@ export const rbacTest = base.extend<RbacFixtures>({
   },
 
   adminPage: async ({ adminContext }, use) => {
-    const page = await adminContext.newPage();
-    page.on("console", (msg) => console.log(`BROWSER [${msg.type()}]: ${msg.text()}`));
+    const page = await adminContext.newPage(); // Setup console listener
+    page.on("console", (msg) => {
+      console.log(`BROWSER [${msg.type()}]: ${msg.text()}`);
+    });
     page.on("pageerror", (err) => console.log(`BROWSER ERROR: ${err.message}`));
     await use(page);
     await page.close();
   },
-  adminProjectsPage: async ({ adminPage }, use) => {
+  adminProjectsPage: async ({ adminPage, rbacOrgSlug }, use) => {
     // Add re-auth check for admin (handle redirect to landing page)
     const targetUrl = adminPage.url();
     if (targetUrl === "http://localhost:5555/" || targetUrl.endsWith("/signin")) {
-      await adminPage.goto("/nixelo-e2e/dashboard");
+      await adminPage.goto(`/${rbacOrgSlug}/dashboard`);
       await adminPage.waitForLoadState("networkidle");
       await adminPage.waitForTimeout(1000);
     }
@@ -157,6 +162,9 @@ export const rbacTest = base.extend<RbacFixtures>({
   },
   adminWorkspacesPage: async ({ adminPage }, use) => {
     await use(new WorkspacesPage(adminPage));
+  },
+  adminSettingsPage: async ({ adminPage }, use) => {
+    await use(new SettingsPage(adminPage));
   },
 
   editorPage: async ({ editorContext }, use) => {
@@ -166,11 +174,11 @@ export const rbacTest = base.extend<RbacFixtures>({
     await use(page);
     await page.close();
   },
-  editorProjectsPage: async ({ editorPage }, use) => {
+  editorProjectsPage: async ({ editorPage, rbacOrgSlug }, use) => {
     // Add re-auth check for editor
     const targetUrl = editorPage.url();
     if (targetUrl === "http://localhost:5555/" || targetUrl.endsWith("/signin")) {
-      await editorPage.goto("/nixelo-e2e/dashboard");
+      await editorPage.goto(`/${rbacOrgSlug}/dashboard`);
       await editorPage.waitForLoadState("networkidle");
       await editorPage.waitForTimeout(1000);
     }
@@ -178,6 +186,9 @@ export const rbacTest = base.extend<RbacFixtures>({
   },
   editorWorkspacesPage: async ({ editorPage }, use) => {
     await use(new WorkspacesPage(editorPage));
+  },
+  editorSettingsPage: async ({ editorPage }, use) => {
+    await use(new SettingsPage(editorPage));
   },
 
   viewerPage: async ({ viewerContext }, use) => {
@@ -187,11 +198,11 @@ export const rbacTest = base.extend<RbacFixtures>({
     await use(page);
     await page.close();
   },
-  viewerProjectsPage: async ({ viewerPage }, use) => {
+  viewerProjectsPage: async ({ viewerPage, rbacOrgSlug }, use) => {
     // Add re-auth check for viewer
     const targetUrl = viewerPage.url();
     if (targetUrl === "http://localhost:5555/" || targetUrl.endsWith("/signin")) {
-      await viewerPage.goto("/nixelo-e2e/dashboard");
+      await viewerPage.goto(`/${rbacOrgSlug}/dashboard`);
       await viewerPage.waitForLoadState("networkidle");
       await viewerPage.waitForTimeout(1000);
     }
@@ -199,6 +210,9 @@ export const rbacTest = base.extend<RbacFixtures>({
   },
   viewerWorkspacesPage: async ({ viewerPage }, use) => {
     await use(new WorkspacesPage(viewerPage));
+  },
+  viewerSettingsPage: async ({ viewerPage }, use) => {
+    await use(new SettingsPage(viewerPage));
   },
 
   rbacProjectKey: async ({}, use, testInfo) => {
