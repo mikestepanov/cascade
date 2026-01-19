@@ -1,5 +1,5 @@
 import { v } from "convex/values";
-import { internalMutation, query } from "./_generated/server";
+import { internalMutation, internalQuery } from "./_generated/server";
 import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
 import type { ApiAuthContext } from "./lib/apiAuth";
 import { forbidden, notFound, requireOwned, validation } from "./lib/errors";
@@ -38,7 +38,7 @@ async function hashApiKey(key: string): Promise<string> {
  * Query to validate API key (for use in HTTP actions)
  * This is public but only contains validation logic, not sensitive data
  */
-export const validateApiKey = query({
+export const validateApiKey = internalQuery({
   args: {
     apiKey: v.string(),
   },
@@ -359,7 +359,7 @@ export const listExpiringSoon = authenticatedQuery({
  * Validate API key (used by HTTP endpoints)
  * Returns user ID and key metadata if valid
  */
-export const validate = query({
+export const validate = internalQuery({
   args: {
     apiKey: v.string(),
   },
