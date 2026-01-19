@@ -1,8 +1,7 @@
-import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import type { Doc, Id } from "./_generated/dataModel";
-import { type QueryCtx, query } from "./_generated/server";
-import { authenticatedMutation } from "./customFunctions";
+import type { QueryCtx } from "./_generated/server";
+import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
 import {
   batchFetchIssues,
   batchFetchProjects,
@@ -282,17 +281,12 @@ export const deleteTimeEntry = authenticatedMutation({
 
 // ===== Queries =====
 
-export const getRunningTimer = query({
+export const getRunningTimer = authenticatedQuery({
   args: {},
   handler: async (ctx) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      return null;
-    }
-
     const runningTimer = await ctx.db
       .query("timeEntries")
-      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .withIndex("by_user", (q) => q.eq("userId", ctx.userId))
       .filter((q) => q.eq(q.field("endTime"), undefined))
       .first();
 
@@ -332,7 +326,7 @@ export const getRunningTimer = query({
   },
 });
 
-export const listTimeEntries = query({
+export const listTimeEntries = authenticatedQuery({
   args: {
     projectId: v.optional(v.id("projects")),
     issueId: v.optional(v.id("issues")),
@@ -342,12 +336,7 @@ export const listTimeEntries = query({
     limit: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
-    const currentUserId = await getAuthUserId(ctx);
-    if (!currentUserId) {
-      return [];
-    }
-
-    const userId = args.userId || currentUserId;
+    const userId = args.userId || ctx.userId;
 
     let entries: Doc<"timeEntries">[];
 
@@ -435,14 +424,9 @@ export const listTimeEntries = query({
 });
 
 // Get current week timesheet for the logged in user
-export const getCurrentWeekTimesheet = query({
+export const getCurrentWeekTimesheet = authenticatedQuery({
   args: {},
   handler: async (ctx) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      return null;
-    }
-
     // Calculate week start (Monday) and end (Sunday)
     const now = new Date();
     const dayOfWeek = now.getDay();
@@ -463,7 +447,7 @@ export const getCurrentWeekTimesheet = query({
     const entries = await ctx.db
       .query("timeEntries")
       .withIndex("by_user_date", (q) =>
-        q.eq("userId", userId).gte("date", startDate).lte("date", endDate),
+        q.eq("userId", ctx.userId).gte("date", startDate).lte("date", endDate),
       )
       .collect();
 
@@ -528,20 +512,15 @@ export const getCurrentWeekTimesheet = query({
 
 // ===== Burn Rate & Cost Analysis =====
 
-export const getBurnRate = query({
+export const getBurnRate = authenticatedQuery({
   args: {
     projectId: v.id("projects"),
     startDate: v.number(),
     endDate: v.number(),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      return null;
-    }
-
     // Check permissions
-    await assertCanAccessProject(ctx, args.projectId, userId);
+    await assertCanAccessProject(ctx, args.projectId, ctx.userId);
 
     // Get all time entries in date range
     const entries = await ctx.db
@@ -612,22 +591,17 @@ export const getBurnRate = query({
   },
 });
 
-export const getTeamCosts = query({
+export const getTeamCosts = authenticatedQuery({
   args: {
     projectId: v.optional(v.id("projects")),
     startDate: v.number(),
     endDate: v.number(),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      return [];
-    }
-
     // Get all time entries in date range
     let entries: Doc<"timeEntries">[];
     if (args.projectId) {
-      await assertCanAccessProject(ctx, args.projectId, userId);
+      await assertCanAccessProject(ctx, args.projectId, ctx.userId);
       entries = await ctx.db
         .query("timeEntries")
         .withIndex("by_project_date", (q) =>
@@ -750,35 +724,25 @@ export const setUserRate = authenticatedMutation({
   },
 });
 
-export const getUserRate = query({
+export const getUserRate = authenticatedQuery({
   args: {
     userId: v.id("users"),
     projectId: v.optional(v.id("projects")),
     rateType: v.optional(v.union(v.literal("internal"), v.literal("billable"))),
   },
   handler: async (ctx, args) => {
-    const currentUserId = await getAuthUserId(ctx);
-    if (!currentUserId) {
-      return null;
-    }
-
     return await getUserCurrentRate(ctx, args.userId, args.projectId, args.rateType);
   },
 });
 
-export const listUserRates = query({
+export const listUserRates = authenticatedQuery({
   args: {
     projectId: v.optional(v.id("projects")),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      return [];
-    }
-
     // Check permissions if project-specific
     if (args.projectId) {
-      await assertIsProjectAdmin(ctx, args.projectId, userId);
+      await assertIsProjectAdmin(ctx, args.projectId, ctx.userId);
     }
 
     const rates = args.projectId
@@ -814,26 +778,14 @@ export const listUserRates = query({
 });
 
 // Get billing summary for a project
-export const getProjectBilling = query({
+export const getProjectBilling = authenticatedQuery({
   args: {
     projectId: v.id("projects"),
     startDate: v.optional(v.number()),
     endDate: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      return {
-        totalHours: 0,
-        billableHours: 0,
-        nonBillableHours: 0,
-        totalRevenue: 0,
-        entries: 0,
-        byUser: {},
-      };
-    }
-
-    await assertCanAccessProject(ctx, args.projectId, userId);
+    await assertCanAccessProject(ctx, args.projectId, ctx.userId);
 
     // Get time entries for this project
     let entries: Doc<"timeEntries">[];

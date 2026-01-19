@@ -1,6 +1,6 @@
-import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
+import { authenticatedMutation } from "./customFunctions";
 import { notDeleted } from "./lib/softDeleteHelpers";
 
 export const list = query({
@@ -28,7 +28,7 @@ export const get = query({
   },
 });
 
-export const createFromTemplate = mutation({
+export const createFromTemplate = authenticatedMutation({
   args: {
     templateId: v.id("projectTemplates"),
     projectName: v.string(),
@@ -40,11 +40,6 @@ export const createFromTemplate = mutation({
   },
   returns: v.id("projects"),
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      throw new Error("Not authenticated");
-    }
-
     const template = await ctx.db.get(args.templateId);
     if (!template) {
       throw new Error("Template not found");
@@ -54,7 +49,7 @@ export const createFromTemplate = mutation({
     const organizationMembership = await ctx.db
       .query("organizationMembers")
       .withIndex("by_organization_user", (q) =>
-        q.eq("organizationId", args.organizationId).eq("userId", userId),
+        q.eq("organizationId", args.organizationId).eq("userId", ctx.userId),
       )
       .first();
 
@@ -83,8 +78,8 @@ export const createFromTemplate = mutation({
       organizationId: args.organizationId,
       workspaceId: args.workspaceId,
       teamId: args.teamId,
-      ownerId: userId,
-      createdBy: userId,
+      ownerId: ctx.userId,
+      createdBy: ctx.userId,
       createdAt: now,
       updatedAt: now,
       isPublic: false,
@@ -95,9 +90,9 @@ export const createFromTemplate = mutation({
     // Add creator as admin member
     await ctx.db.insert("projectMembers", {
       projectId,
-      userId,
+      userId: ctx.userId,
       role: "admin",
-      addedBy: userId,
+      addedBy: ctx.userId,
       addedAt: now,
     });
 
@@ -107,7 +102,7 @@ export const createFromTemplate = mutation({
         projectId,
         name: labelTemplate.name,
         color: labelTemplate.color,
-        createdBy: userId,
+        createdBy: ctx.userId,
         createdAt: now,
       });
     }

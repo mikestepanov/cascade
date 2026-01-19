@@ -1,6 +1,5 @@
-import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
-import { mutation, query } from "./_generated/server";
+import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
 
 /**
  * Availability Slots - Manage when users are available for bookings
@@ -8,7 +7,7 @@ import { mutation, query } from "./_generated/server";
  */
 
 // Set availability for a specific day
-export const setDayAvailability = mutation({
+export const setDayAvailability = authenticatedMutation({
   args: {
     dayOfWeek: v.union(
       v.literal("monday"),
@@ -25,8 +24,7 @@ export const setDayAvailability = mutation({
     isActive: v.optional(v.boolean()),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
+    const userId = ctx.userId;
 
     // Validate time format (HH:MM)
     const timeRegex = /^([01]\d|2[0-3]):([0-5]\d)$/;
@@ -65,15 +63,14 @@ export const setDayAvailability = mutation({
 });
 
 // Set default working hours (Mon-Fri 9-5)
-export const setDefaultWorkingHours = mutation({
+export const setDefaultWorkingHours = authenticatedMutation({
   args: {
     timezone: v.string(),
     startTime: v.optional(v.string()), // Default "09:00"
     endTime: v.optional(v.string()), // Default "17:00"
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
+    const userId = ctx.userId;
 
     const startTime = args.startTime || "09:00";
     const endTime = args.endTime || "17:00";
@@ -112,14 +109,12 @@ export const setDefaultWorkingHours = mutation({
 });
 
 // Get user's availability schedule
-export const getMyAvailability = query({
+export const getMyAvailability = authenticatedQuery({
+  args: {},
   handler: async (ctx) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) return [];
-
     const slots = await ctx.db
       .query("availabilitySlots")
-      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .withIndex("by_user", (q) => q.eq("userId", ctx.userId))
       .collect();
 
     return slots.sort((a, b) => {
@@ -163,33 +158,27 @@ export const getUserAvailability = query({
 });
 
 // Toggle availability on/off
-export const toggleSlot = mutation({
+export const toggleSlot = authenticatedMutation({
   args: {
     slotId: v.id("availabilitySlots"),
     isActive: v.boolean(),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
-
     const slot = await ctx.db.get(args.slotId);
     if (!slot) throw new Error("Slot not found");
-    if (slot.userId !== userId) throw new Error("Not authorized");
+    if (slot.userId !== ctx.userId) throw new Error("Not authorized");
 
     await ctx.db.patch(args.slotId, { isActive: args.isActive });
   },
 });
 
 // Delete an availability slot
-export const removeSlot = mutation({
+export const removeSlot = authenticatedMutation({
   args: { slotId: v.id("availabilitySlots") },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
-
     const slot = await ctx.db.get(args.slotId);
     if (!slot) throw new Error("Slot not found");
-    if (slot.userId !== userId) throw new Error("Not authorized");
+    if (slot.userId !== ctx.userId) throw new Error("Not authorized");
 
     await ctx.db.delete(args.slotId);
   },

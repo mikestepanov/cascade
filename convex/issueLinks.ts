@@ -1,7 +1,5 @@
-import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
-import { query } from "./_generated/server";
-import { authenticatedMutation } from "./customFunctions";
+import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
 import { batchFetchIssues } from "./lib/batchHelpers";
 import { conflict, notFound, validation } from "./lib/errors";
 import { assertCanEditProject } from "./projectAccess";
@@ -107,18 +105,12 @@ export const remove = authenticatedMutation({
 
 /**
  * Get all links for an issue (both outgoing and incoming)
- * Returns empty for unauthenticated users (soft fail)
  */
-export const getForIssue = query({
+export const getForIssue = authenticatedQuery({
   args: {
     issueId: v.id("issues"),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      return { outgoing: [], incoming: [] };
-    }
-
     // Get outgoing links (this issue links to others)
     const outgoingLinks = await ctx.db
       .query("issueLinks")

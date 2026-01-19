@@ -1,8 +1,7 @@
-import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import type { Id } from "./_generated/dataModel";
 import { query } from "./_generated/server";
-import { authenticatedMutation } from "./customFunctions";
+import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
 import { batchFetchProjects, batchFetchUsers, getUserName } from "./lib/batchHelpers";
 import { conflict, forbidden, notFound } from "./lib/errors";
 import {
@@ -32,17 +31,12 @@ export const create = authenticatedMutation({
   },
 });
 
-export const list = query({
+export const list = authenticatedQuery({
   args: {
     limit: v.optional(v.number()),
     cursor: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      return { documents: [], nextCursor: null, hasMore: false };
-    }
-
     // Cap limit to prevent abuse
     const requestedLimit = args.limit ?? DEFAULT_PAGE_SIZE;
     const limit = Math.min(requestedLimit, MAX_PAGE_SIZE);
@@ -54,7 +48,7 @@ export const list = query({
     // Get user's private documents (their own non-public docs)
     const privateDocuments = await ctx.db
       .query("documents")
-      .withIndex("by_creator", (q) => q.eq("createdBy", userId))
+      .withIndex("by_creator", (q) => q.eq("createdBy", ctx.userId))
       .filter((q) => q.eq(q.field("isPublic"), false))
       .order("desc")
       .filter(notDeleted)
@@ -102,7 +96,7 @@ export const list = query({
       return {
         ...doc,
         creatorName: creator?.name || creator?.email || "Unknown",
-        isOwner: doc.createdBy === userId,
+        isOwner: doc.createdBy === ctx.userId,
       };
     });
 
@@ -110,10 +104,9 @@ export const list = query({
   },
 });
 
-export const get = query({
+export const get = authenticatedQuery({
   args: { id: v.id("documents") },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
     const document = await ctx.db.get(args.id);
 
     if (!document || document.isDeleted) {
@@ -121,7 +114,7 @@ export const get = query({
     }
 
     // Check if user can access this document
-    if (!document.isPublic && document.createdBy !== userId) {
+    if (!document.isPublic && document.createdBy !== ctx.userId) {
       throw forbidden(undefined, "Not authorized to access this document");
     }
 
@@ -129,7 +122,7 @@ export const get = query({
     return {
       ...document,
       creatorName: creator?.name || creator?.email || "Unknown",
-      isOwner: document.createdBy === userId,
+      isOwner: document.createdBy === ctx.userId,
     };
   },
 });
@@ -267,7 +260,7 @@ function matchesDocumentFilters(
   return true;
 }
 
-export const search = query({
+export const search = authenticatedQuery({
   args: {
     query: v.string(),
     limit: v.optional(v.number()),
@@ -279,11 +272,6 @@ export const search = query({
     dateTo: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      return { results: [], total: 0, hasMore: false };
-    }
-
     if (!args.query.trim()) {
       return { results: [], total: 0, hasMore: false };
     }
@@ -306,12 +294,12 @@ export const search = query({
     const filtered = [];
     for (const doc of results) {
       // Check access permissions
-      if (!doc.isPublic && doc.createdBy !== userId) {
+      if (!doc.isPublic && doc.createdBy !== ctx.userId) {
         continue;
       }
 
       // Apply all search filters
-      if (!matchesDocumentFilters(doc, args, userId)) {
+      if (!matchesDocumentFilters(doc, args, ctx.userId)) {
         continue;
       }
 
@@ -346,7 +334,7 @@ export const search = query({
       return {
         ...doc,
         creatorName: getUserName(creator),
-        isOwner: doc.createdBy === userId,
+        isOwner: doc.createdBy === ctx.userId,
         project: project
           ? {
               _id: project._id,

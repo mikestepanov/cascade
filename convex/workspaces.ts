@@ -5,9 +5,8 @@
  * organization → Workspaces (departments) → Teams → Projects → Issues
  */
 
-import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
-import { mutation, query } from "./_generated/server";
+import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
 import { notDeleted } from "./lib/softDeleteHelpers";
 import { isOrganizationAdmin } from "./organizations";
 
@@ -15,7 +14,7 @@ import { isOrganizationAdmin } from "./organizations";
  * Create a new workspace (department)
  * Only organization admins can create workspaces
  */
-export const create = mutation({
+export const create = authenticatedMutation({
   args: {
     name: v.string(),
     slug: v.string(),
@@ -24,11 +23,8 @@ export const create = mutation({
     organizationId: v.id("organizations"),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
-
     // Check if user is organization admin
-    const isAdmin = await isOrganizationAdmin(ctx, args.organizationId, userId);
+    const isAdmin = await isOrganizationAdmin(ctx, args.organizationId, ctx.userId);
     if (!isAdmin) throw new Error("Only organization admins can create workspaces");
 
     // Check if slug is unique within organization
@@ -49,7 +45,7 @@ export const create = mutation({
       description: args.description,
       icon: args.icon,
       organizationId: args.organizationId,
-      createdBy: userId,
+      createdBy: ctx.userId,
       createdAt: Date.now(),
       updatedAt: Date.now(),
     });
@@ -61,12 +57,9 @@ export const create = mutation({
 /**
  * List all workspaces for a organization
  */
-export const list = query({
+export const list = authenticatedQuery({
   args: { organizationId: v.id("organizations") },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) return [];
-
     const workspaces = await ctx.db
       .query("workspaces")
       .withIndex("by_organization", (q) => q.eq("organizationId", args.organizationId))
@@ -79,12 +72,9 @@ export const list = query({
 /**
  * Get a single workspace by ID
  */
-export const get = query({
+export const get = authenticatedQuery({
   args: { id: v.id("workspaces") },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
-
     const workspace = await ctx.db.get(args.id);
     if (!workspace) throw new Error("Workspace not found");
 
@@ -95,15 +85,12 @@ export const get = query({
 /**
  * Get workspace by slug
  */
-export const getBySlug = query({
+export const getBySlug = authenticatedQuery({
   args: {
     organizationId: v.id("organizations"),
     slug: v.string(),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
-
     const workspace = await ctx.db
       .query("workspaces")
       .withIndex("by_organization_slug", (q) =>
@@ -120,7 +107,7 @@ export const getBySlug = query({
 /**
  * Update workspace
  */
-export const update = mutation({
+export const update = authenticatedMutation({
   args: {
     id: v.id("workspaces"),
     name: v.optional(v.string()),
@@ -134,14 +121,11 @@ export const update = mutation({
     ),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
-
     const workspace = await ctx.db.get(args.id);
     if (!workspace) throw new Error("Workspace not found");
 
     // Check permissions: Only organization admins can update workspaces
-    const isAdmin = await isOrganizationAdmin(ctx, workspace.organizationId, userId);
+    const isAdmin = await isOrganizationAdmin(ctx, workspace.organizationId, ctx.userId);
     if (!isAdmin) {
       throw new Error("Only organization admins can perform this action");
     }
@@ -161,18 +145,15 @@ export const update = mutation({
  * Delete workspace
  * WARNING: This will orphan all teams and projects in this workspace
  */
-export const remove = mutation({
+export const remove = authenticatedMutation({
   args: { id: v.id("workspaces") },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
-
     const workspace = await ctx.db.get(args.id);
     if (!workspace) throw new Error("Workspace not found");
 
     // Check permissions (workspace admin or organization admin)
-    const isCreator = workspace.createdBy === userId;
-    const isOrgAdmin = await isOrganizationAdmin(ctx, workspace.organizationId, userId);
+    const isCreator = workspace.createdBy === ctx.userId;
+    const isOrgAdmin = await isOrganizationAdmin(ctx, workspace.organizationId, ctx.userId);
 
     if (!(isCreator || isOrgAdmin)) {
       throw new Error("Only workspace admins or organization admins can delete workspaces");
@@ -207,12 +188,9 @@ export const remove = mutation({
 /**
  * Get workspace stats (teams, projects count)
  */
-export const getStats = query({
+export const getStats = authenticatedQuery({
   args: { workspaceId: v.id("workspaces") },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) return null;
-
     const teams = await ctx.db
       .query("teams")
       .withIndex("by_workspace", (q) => q.eq("workspaceId", args.workspaceId))

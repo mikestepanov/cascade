@@ -1,18 +1,15 @@
-import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
-import { internalMutation, mutation, query } from "./_generated/server";
+import { internalMutation } from "./_generated/server";
+import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
 import { assertCanAccessProject, assertIsProjectAdmin } from "./projectAccess";
 
-export const list = query({
+export const list = authenticatedQuery({
   args: {
     projectId: v.id("projects"),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) return [];
-
     try {
-      await assertCanAccessProject(ctx, args.projectId, userId);
+      await assertCanAccessProject(ctx, args.projectId, ctx.userId);
     } catch {
       return [];
     }
@@ -24,7 +21,7 @@ export const list = query({
   },
 });
 
-export const create = mutation({
+export const create = authenticatedMutation({
   args: {
     projectId: v.id("projects"),
     name: v.string(),
@@ -35,12 +32,7 @@ export const create = mutation({
     actionValue: v.string(),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      throw new Error("Not authenticated");
-    }
-
-    await assertIsProjectAdmin(ctx, args.projectId, userId);
+    await assertIsProjectAdmin(ctx, args.projectId, ctx.userId);
 
     const now = Date.now();
     return await ctx.db.insert("automationRules", {
@@ -52,7 +44,7 @@ export const create = mutation({
       triggerValue: args.triggerValue,
       actionType: args.actionType,
       actionValue: args.actionValue,
-      createdBy: userId,
+      createdBy: ctx.userId,
       createdAt: now,
       updatedAt: now,
       executionCount: 0,
@@ -60,7 +52,7 @@ export const create = mutation({
   },
 });
 
-export const update = mutation({
+export const update = authenticatedMutation({
   args: {
     id: v.id("automationRules"),
     name: v.optional(v.string()),
@@ -72,11 +64,6 @@ export const update = mutation({
     actionValue: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      throw new Error("Not authenticated");
-    }
-
     const rule = await ctx.db.get(args.id);
     if (!rule) {
       throw new Error("Rule not found");
@@ -86,7 +73,7 @@ export const update = mutation({
       throw new Error("Rule has no project");
     }
 
-    await assertIsProjectAdmin(ctx, rule.projectId, userId);
+    await assertIsProjectAdmin(ctx, rule.projectId, ctx.userId);
 
     const updates: Partial<typeof rule> & { updatedAt: number } = { updatedAt: Date.now() };
     if (args.name !== undefined) updates.name = args.name;
@@ -101,16 +88,11 @@ export const update = mutation({
   },
 });
 
-export const remove = mutation({
+export const remove = authenticatedMutation({
   args: {
     id: v.id("automationRules"),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      throw new Error("Not authenticated");
-    }
-
     const rule = await ctx.db.get(args.id);
     if (!rule) {
       throw new Error("Rule not found");
@@ -120,7 +102,7 @@ export const remove = mutation({
       throw new Error("Rule has no project");
     }
 
-    await assertIsProjectAdmin(ctx, rule.projectId, userId);
+    await assertIsProjectAdmin(ctx, rule.projectId, ctx.userId);
 
     await ctx.db.delete(args.id);
   },

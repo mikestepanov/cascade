@@ -1,6 +1,6 @@
-import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
-import { internalQuery, mutation, query } from "./_generated/server";
+import { internalQuery, query } from "./_generated/server";
+import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
 import { batchFetchUsers } from "./lib/batchHelpers";
 import { notDeleted } from "./lib/softDeleteHelpers";
 import { sanitizeUserForAuth } from "./lib/userUtils";
@@ -34,7 +34,7 @@ export const get = query({
   },
 });
 
-export const getCurrent = query({
+export const getCurrent = authenticatedQuery({
   args: {},
   returns: v.union(
     v.null(),
@@ -60,14 +60,12 @@ export const getCurrent = query({
     }),
   ),
   handler: async (ctx) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) return null;
     // Current user can see their full profile
-    return await ctx.db.get(userId);
+    return await ctx.db.get(ctx.userId);
   },
 });
 
-export const updateProfile = mutation({
+export const updateProfile = authenticatedMutation({
   args: {
     name: v.optional(v.string()),
     email: v.optional(v.string()),
@@ -79,11 +77,6 @@ export const updateProfile = mutation({
   },
   returns: v.null(),
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      throw new Error("Not authenticated");
-    }
-
     const updates: {
       name?: string;
       email?: string;
@@ -107,7 +100,7 @@ export const updateProfile = mutation({
         .withIndex("email", (q) => q.eq("email", args.email))
         .first();
 
-      if (existingUser && existingUser._id !== userId) {
+      if (existingUser && existingUser._id !== ctx.userId) {
         throw new Error("Email already in use");
       }
 
@@ -121,7 +114,7 @@ export const updateProfile = mutation({
     if (args.desktopNotifications !== undefined)
       updates.desktopNotifications = args.desktopNotifications;
 
-    await ctx.db.patch(userId, updates);
+    await ctx.db.patch(ctx.userId, updates);
   },
 });
 
@@ -132,24 +125,21 @@ export const updateProfile = mutation({
  * - Creator of any project (backward compatibility)
  * - Admin in any project (backward compatibility)
  */
-export const isOrganizationAdmin = query({
+export const isOrganizationAdmin = authenticatedQuery({
   args: {},
   returns: v.boolean(),
   handler: async (ctx) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) return false;
-
     // Primary: Check if user is admin or owner in any organization
     const adminMembership = await ctx.db
       .query("organizationMembers")
-      .withIndex("by_user_role", (q) => q.eq("userId", userId).eq("role", "admin"))
+      .withIndex("by_user_role", (q) => q.eq("userId", ctx.userId).eq("role", "admin"))
       .first();
 
     if (adminMembership) return true;
 
     const ownerMembership = await ctx.db
       .query("organizationMembers")
-      .withIndex("by_user_role", (q) => q.eq("userId", userId).eq("role", "owner"))
+      .withIndex("by_user_role", (q) => q.eq("userId", ctx.userId).eq("role", "owner"))
       .first();
 
     return !!ownerMembership;

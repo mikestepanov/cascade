@@ -1,19 +1,16 @@
-import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
-import { mutation, query } from "./_generated/server";
+import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
 
 // Generate upload URL for files
-export const generateUploadUrl = mutation(async (ctx) => {
-  const userId = await getAuthUserId(ctx);
-  if (!userId) {
-    throw new Error("Not authenticated");
-  }
-
-  return await ctx.storage.generateUploadUrl();
+export const generateUploadUrl = authenticatedMutation({
+  args: {},
+  handler: async (ctx) => {
+    return await ctx.storage.generateUploadUrl();
+  },
 });
 
 // Add attachment to an issue
-export const addAttachment = mutation({
+export const addAttachment = authenticatedMutation({
   args: {
     issueId: v.id("issues"),
     storageId: v.id("_storage"),
@@ -22,11 +19,6 @@ export const addAttachment = mutation({
     size: v.number(),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      throw new Error("Not authenticated");
-    }
-
     const issue = await ctx.db.get(args.issueId);
     if (!issue) {
       throw new Error("Issue not found");
@@ -41,7 +33,7 @@ export const addAttachment = mutation({
     // Log activity (store storageId in oldValue for reliable lookup)
     await ctx.db.insert("issueActivity", {
       issueId: args.issueId,
-      userId,
+      userId: ctx.userId,
       action: "attached",
       field: "attachment",
       oldValue: args.storageId, // Store storageId for direct lookup
@@ -54,17 +46,12 @@ export const addAttachment = mutation({
 });
 
 // Remove attachment from an issue
-export const removeAttachment = mutation({
+export const removeAttachment = authenticatedMutation({
   args: {
     issueId: v.id("issues"),
     storageId: v.id("_storage"),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      throw new Error("Not authenticated");
-    }
-
     const issue = await ctx.db.get(args.issueId);
     if (!issue) {
       throw new Error("Issue not found");
@@ -82,7 +69,7 @@ export const removeAttachment = mutation({
     // Log activity
     await ctx.db.insert("issueActivity", {
       issueId: args.issueId,
-      userId,
+      userId: ctx.userId,
       action: "removed",
       field: "attachment",
       createdAt: Date.now(),
@@ -93,27 +80,17 @@ export const removeAttachment = mutation({
 });
 
 // Get attachment URL
-export const getAttachmentUrl = query({
+export const getAttachmentUrl = authenticatedQuery({
   args: { storageId: v.id("_storage") },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      return null;
-    }
-
     return await ctx.storage.getUrl(args.storageId);
   },
 });
 
 // Get all attachments for an issue with metadata
-export const getIssueAttachments = query({
+export const getIssueAttachments = authenticatedQuery({
   args: { issueId: v.id("issues") },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      return [];
-    }
-
     const issue = await ctx.db.get(args.issueId);
     if (!issue?.attachments) {
       return [];

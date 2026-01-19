@@ -2,26 +2,23 @@
  * AI Mutations - Create chats, add messages, track usage
  */
 
-import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import { type MutationCtx, mutation } from "../_generated/server";
+import { authenticatedMutation } from "../customFunctions";
 
 /**
  * Create a new AI chat
  */
-export const createChat = mutation({
+export const createChat = authenticatedMutation({
   args: {
     title: v.optional(v.string()),
     projectId: v.optional(v.id("projects")),
   },
-  handler: async (ctx: MutationCtx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
-
+  handler: async (ctx, args) => {
     const now = Date.now();
 
     const chatId = await ctx.db.insert("aiChats", {
-      userId,
+      userId: ctx.userId,
       projectId: args.projectId,
       title: args.title || "New Chat",
       createdAt: now,
@@ -35,17 +32,14 @@ export const createChat = mutation({
 /**
  * Update chat title
  */
-export const updateChatTitle = mutation({
+export const updateChatTitle = authenticatedMutation({
   args: {
     chatId: v.id("aiChats"),
     title: v.string(),
   },
-  handler: async (ctx: MutationCtx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
-
+  handler: async (ctx, args) => {
     const chat = await ctx.db.get(args.chatId);
-    if (!chat || chat.userId !== userId) {
+    if (!chat || chat.userId !== ctx.userId) {
       throw new Error("Chat not found or unauthorized");
     }
 
@@ -59,16 +53,13 @@ export const updateChatTitle = mutation({
 /**
  * Delete a chat and all its messages
  */
-export const deleteChat = mutation({
+export const deleteChat = authenticatedMutation({
   args: {
     chatId: v.id("aiChats"),
   },
-  handler: async (ctx: MutationCtx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
-
+  handler: async (ctx, args) => {
     const chat = await ctx.db.get(args.chatId);
-    if (!chat || chat.userId !== userId) {
+    if (!chat || chat.userId !== ctx.userId) {
       throw new Error("Chat not found or unauthorized");
     }
 
@@ -90,7 +81,7 @@ export const deleteChat = mutation({
 /**
  * Add a message to a chat
  */
-export const addMessage = mutation({
+export const addMessage = authenticatedMutation({
   args: {
     chatId: v.id("aiChats"),
     role: v.union(v.literal("user"), v.literal("assistant"), v.literal("system")),
@@ -99,13 +90,10 @@ export const addMessage = mutation({
     tokensUsed: v.optional(v.number()),
     responseTime: v.optional(v.number()),
   },
-  handler: async (ctx: MutationCtx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
-
+  handler: async (ctx, args) => {
     // Verify chat ownership
     const chat = await ctx.db.get(args.chatId);
-    if (!chat || chat.userId !== userId) {
+    if (!chat || chat.userId !== ctx.userId) {
       throw new Error("Chat not found or unauthorized");
     }
 
@@ -178,14 +166,11 @@ export const createSuggestion = mutation({
 /**
  * Accept an AI suggestion
  */
-export const acceptSuggestion = mutation({
+export const acceptSuggestion = authenticatedMutation({
   args: {
     suggestionId: v.id("aiSuggestions"),
   },
-  handler: async (ctx: MutationCtx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
-
+  handler: async (ctx, args) => {
     const suggestion = await ctx.db.get(args.suggestionId);
     if (!suggestion) throw new Error("Suggestion not found");
 
@@ -200,14 +185,11 @@ export const acceptSuggestion = mutation({
 /**
  * Dismiss an AI suggestion
  */
-export const dismissSuggestion = mutation({
+export const dismissSuggestion = authenticatedMutation({
   args: {
     suggestionId: v.id("aiSuggestions"),
   },
-  handler: async (ctx: MutationCtx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
-
+  handler: async (ctx, args) => {
     const suggestion = await ctx.db.get(args.suggestionId);
     if (!suggestion) throw new Error("Suggestion not found");
 

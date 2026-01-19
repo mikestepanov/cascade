@@ -1,10 +1,8 @@
-import { getAuthUserId } from "@convex-dev/auth/server";
 import { paginationOptsValidator } from "convex/server";
 import { v } from "convex/values";
 import { internal } from "./_generated/api";
 import type { Doc } from "./_generated/dataModel";
-import { query } from "./_generated/server";
-import { authenticatedMutation } from "./customFunctions";
+import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
 import { batchFetchProjects, batchFetchUsers, getUserName } from "./lib/batchHelpers";
 import { conflict, forbidden, notFound, validation } from "./lib/errors";
 import { fetchPaginatedQuery } from "./lib/queryHelpers";
@@ -105,23 +103,19 @@ export const createProject = authenticatedMutation({
   },
 });
 
-export const getCurrentUserProjects = query({
+export const getCurrentUserProjects = authenticatedQuery({
   args: {
     organizationId: v.optional(v.id("organizations")),
     paginationOpts: v.optional(paginationOptsValidator),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      return { page: [], isDone: true, continueCursor: "" };
-    }
-
     const paginationOpts = args.paginationOpts || { numItems: 20, cursor: null };
 
     // Paginate memberships directly via index
     const results = await fetchPaginatedQuery<Doc<"projectMembers">>(ctx, {
       paginationOpts,
-      query: (db) => db.query("projectMembers").withIndex("by_user", (q) => q.eq("userId", userId)),
+      query: (db) =>
+        db.query("projectMembers").withIndex("by_user", (q) => q.eq("userId", ctx.userId)),
     });
 
     if (results.page.length === 0) {
@@ -174,7 +168,7 @@ export const getCurrentUserProjects = query({
           ...project,
           creatorName: getUserName(creator),
           issueCount: issueCountByProject.get(projId) ?? 0,
-          isOwner: project.ownerId === userId || project.createdBy === userId,
+          isOwner: project.ownerId === ctx.userId || project.createdBy === ctx.userId,
           userRole: roleMap.get(projId) ?? null,
         };
       })
@@ -187,17 +181,12 @@ export const getCurrentUserProjects = query({
   },
 });
 
-export const getTeamProjects = query({
+export const getTeamProjects = authenticatedQuery({
   args: {
     teamId: v.id("teams"),
     paginationOpts: v.optional(paginationOptsValidator),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      return { page: [], isDone: true, continueCursor: "" };
-    }
-
     // Check access control
     const team = await ctx.db.get(args.teamId);
     if (!team) {
@@ -207,8 +196,8 @@ export const getTeamProjects = query({
     const { getTeamRole } = await import("./teams");
     const { isOrganizationAdmin } = await import("./organizations");
 
-    const role = await getTeamRole(ctx, args.teamId, userId);
-    const isAdmin = await isOrganizationAdmin(ctx, team.organizationId, userId);
+    const role = await getTeamRole(ctx, args.teamId, ctx.userId);
+    const isAdmin = await isOrganizationAdmin(ctx, team.organizationId, ctx.userId);
 
     if (!(role || isAdmin)) {
       return { page: [], isDone: true, continueCursor: "" };
@@ -221,18 +210,12 @@ export const getTeamProjects = query({
   },
 });
 
-export const getWorkspaceProjects = query({
+export const getWorkspaceProjects = authenticatedQuery({
   args: {
     workspaceId: v.id("workspaces"),
     paginationOpts: v.optional(paginationOptsValidator),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      return { page: [], isDone: true, continueCursor: "" };
-    }
-
-    // Check workspace access
     // Check workspace access
     const workspace = await ctx.db.get(args.workspaceId);
     if (!workspace) {
@@ -259,10 +242,9 @@ export const getWorkspaceProjects = query({
   },
 });
 
-export const getProject = query({
+export const getProject = authenticatedQuery({
   args: { id: v.id("projects") },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
     const project = await ctx.db.get(args.id);
 
     if (!project) {
@@ -270,13 +252,8 @@ export const getProject = query({
     }
 
     // Check access permissions
-    if (userId) {
-      const hasAccess = await canAccessProject(ctx, project._id, userId);
-      if (!hasAccess) throw forbidden();
-    } else {
-      // Unauthenticated users cannot access projects
-      throw forbidden();
-    }
+    const hasAccess = await canAccessProject(ctx, project._id, ctx.userId);
+    if (!hasAccess) throw forbidden();
 
     const creator = await ctx.db.get(project.createdBy);
 
@@ -303,25 +280,23 @@ export const getProject = query({
       };
     });
 
-    const userRole = userId ? await getProjectRole(ctx, project._id, userId) : null;
+    const userRole = await getProjectRole(ctx, project._id, ctx.userId);
 
     return {
       ...project,
 
       creatorName: getUserName(creator),
       members,
-      isOwner: project.ownerId === userId || project.createdBy === userId,
+      isOwner: project.ownerId === ctx.userId || project.createdBy === ctx.userId,
       userRole,
     };
   },
 });
 
 // Get project by key (e.g., "PROJ")
-export const getByKey = query({
+export const getByKey = authenticatedQuery({
   args: { key: v.string() },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-
     // Find project by key
     const project = await ctx.db
       .query("projects")
@@ -333,12 +308,7 @@ export const getByKey = query({
       return null;
     }
 
-    // Check access permissions (requires authentication)
-    if (!userId) {
-      return null; // Unauthenticated users cannot access projects
-    }
-
-    const hasAccess = await canAccessProject(ctx, project._id, userId);
+    const hasAccess = await canAccessProject(ctx, project._id, ctx.userId);
     if (!hasAccess) {
       return null; // Return null instead of throwing for cleaner UI handling
     }
@@ -368,14 +338,14 @@ export const getByKey = query({
       };
     });
 
-    const userRole = await getProjectRole(ctx, project._id, userId);
+    const userRole = await getProjectRole(ctx, project._id, ctx.userId);
 
     return {
       ...project,
 
       creatorName: getUserName(creator),
       members,
-      isOwner: project.ownerId === userId || project.createdBy === userId,
+      isOwner: project.ownerId === ctx.userId || project.createdBy === ctx.userId,
       userRole,
     };
   },
@@ -681,14 +651,11 @@ export const removeProjectMember = authenticatedMutation({
 /**
  * Get user's role in a project
  */
-export const getProjectUserRole = query({
+export const getProjectUserRole = authenticatedQuery({
   args: {
     projectId: v.id("projects"),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) return null;
-
-    return await getProjectRole(ctx, args.projectId, userId);
+    return await getProjectRole(ctx, args.projectId, ctx.userId);
   },
 });

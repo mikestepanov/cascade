@@ -1,8 +1,7 @@
-import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import type { Id } from "./_generated/dataModel";
-import { type MutationCtx, query } from "./_generated/server";
-import { authenticatedMutation } from "./customFunctions";
+import type { MutationCtx } from "./_generated/server";
+import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
 import { getSearchContent } from "./issues/helpers";
 import { conflict, forbidden, notFound, validation } from "./lib/errors";
 import { notDeleted } from "./lib/softDeleteHelpers";
@@ -14,7 +13,7 @@ const isTestEmail = (email?: string) => email?.endsWith("@inbox.mailtrap.io") ??
 /**
  * Get onboarding status for current user
  */
-export const getOnboardingStatus = query({
+export const getOnboardingStatus = authenticatedQuery({
   args: {},
   returns: v.union(
     v.null(),
@@ -37,12 +36,9 @@ export const getOnboardingStatus = query({
     }),
   ),
   handler: async (ctx) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) return null;
-
     const onboarding = await ctx.db
       .query("userOnboarding")
-      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .withIndex("by_user", (q) => q.eq("userId", ctx.userId))
       .first();
 
     return onboarding;
@@ -663,7 +659,7 @@ export const deleteSampleProject = authenticatedMutation({
  * Check if current user was invited (for persona-based onboarding)
  * Returns invite info if user was invited, null otherwise
  */
-export const checkInviteStatus = query({
+export const checkInviteStatus = authenticatedQuery({
   args: {},
   returns: v.union(
     v.null(),
@@ -675,11 +671,8 @@ export const checkInviteStatus = query({
     }),
   ),
   handler: async (ctx) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) return null;
-
     // Check if user has an inviteId (was invited)
-    const user = await ctx.db.get(userId);
+    const user = await ctx.db.get(ctx.userId);
     if (!user?.inviteId) {
       return { wasInvited: false, inviterName: null };
     }

@@ -1,4 +1,3 @@
-import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import { query } from "./_generated/server";
 import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
@@ -105,21 +104,15 @@ export const getWatchers = query({
 
 /**
  * Check if current user is watching an issue
- * Returns false for unauthenticated users (soft fail)
  */
-export const isWatching = query({
+export const isWatching = authenticatedQuery({
   args: {
     issueId: v.id("issues"),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      return false;
-    }
-
     const watcher = await ctx.db
       .query("issueWatchers")
-      .withIndex("by_issue_user", (q) => q.eq("issueId", args.issueId).eq("userId", userId))
+      .withIndex("by_issue_user", (q) => q.eq("issueId", args.issueId).eq("userId", ctx.userId))
       .first();
 
     return !!watcher;

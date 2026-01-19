@@ -5,9 +5,9 @@
  * Runs daily via cron job
  */
 
-import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
-import { internalMutation, query } from "./_generated/server";
+import { internalMutation } from "./_generated/server";
+import { authenticatedQuery } from "./customFunctions";
 import { cascadeDelete } from "./lib/relationships";
 import { isEligibleForPermanentDeletion, onlyDeleted } from "./lib/softDeleteHelpers";
 
@@ -57,16 +57,15 @@ export const permanentlyDeleteOld = internalMutation({
  * List deleted projects (trash view)
  * Shows projects deleted by current user
  */
-export const listDeletedProjects = query({
+export const listDeletedProjects = authenticatedQuery({
   args: {},
   handler: async (ctx) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) return [];
-
     const deleted = await ctx.db.query("projects").filter(onlyDeleted).collect();
 
     // Filter to projects user has access to
-    return deleted.filter((p) => p.createdBy === userId || p.ownerId === userId || p.isPublic);
+    return deleted.filter(
+      (p) => p.createdBy === ctx.userId || p.ownerId === ctx.userId || p.isPublic,
+    );
   },
 });
 
@@ -74,16 +73,13 @@ export const listDeletedProjects = query({
  * List deleted documents (trash view)
  * Shows documents deleted by current user
  */
-export const listDeletedDocuments = query({
+export const listDeletedDocuments = authenticatedQuery({
   args: {},
   handler: async (ctx) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) return [];
-
     return await ctx.db
       .query("documents")
       .filter(onlyDeleted)
-      .filter((q) => q.eq(q.field("createdBy"), userId))
+      .filter((q) => q.eq(q.field("createdBy"), ctx.userId))
       .collect();
   },
 });
@@ -92,14 +88,11 @@ export const listDeletedDocuments = query({
  * List deleted issues for a project (trash view)
  * Shows all deleted issues in a project
  */
-export const listDeletedIssues = query({
+export const listDeletedIssues = authenticatedQuery({
   args: {
     projectId: v.id("projects"),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) return [];
-
     return await ctx.db
       .query("issues")
       .withIndex("by_project", (q) => q.eq("projectId", args.projectId))

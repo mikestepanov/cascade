@@ -1,8 +1,8 @@
-import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
-import { internalMutation, mutation, query } from "./_generated/server";
+import { internalMutation, query } from "./_generated/server";
+import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
 import type { ApiAuthContext } from "./lib/apiAuth";
-import { forbidden, notFound, unauthenticated, validation } from "./lib/errors";
+import { forbidden, notFound, validation } from "./lib/errors";
 import { notDeleted } from "./lib/softDeleteHelpers";
 
 /**
@@ -69,7 +69,7 @@ export const validateApiKey = query({
 /**
  * Generate a new API key
  */
-export const generate = mutation({
+export const generate = authenticatedMutation({
   args: {
     name: v.string(),
     scopes: v.array(v.string()),
@@ -78,9 +78,6 @@ export const generate = mutation({
     expiresAt: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw unauthenticated();
-
     // Generate API key
     const apiKey = generateApiKey();
     const keyHash = await hashApiKey(apiKey);
@@ -95,11 +92,11 @@ export const generate = mutation({
       // Check if user is a member
       const membership = await ctx.db
         .query("projectMembers")
-        .withIndex("by_project_user", (q) => q.eq("projectId", projectId).eq("userId", userId))
+        .withIndex("by_project_user", (q) => q.eq("projectId", projectId).eq("userId", ctx.userId))
         .filter(notDeleted)
         .first();
 
-      if (!membership && project.createdBy !== userId) {
+      if (!membership && project.createdBy !== ctx.userId) {
         throw forbidden();
       }
     }
@@ -126,7 +123,7 @@ export const generate = mutation({
 
     // Create API key record
     const keyId = await ctx.db.insert("apiKeys", {
-      userId,
+      userId: ctx.userId,
       name: args.name,
       keyHash,
       keyPrefix,
@@ -153,15 +150,12 @@ export const generate = mutation({
 /**
  * List user's API keys
  */
-export const list = query({
+export const list = authenticatedQuery({
   args: {},
   handler: async (ctx) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
-
     const keys = await ctx.db
       .query("apiKeys")
-      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .withIndex("by_user", (q) => q.eq("userId", ctx.userId))
       .filter(notDeleted)
       .collect();
 
@@ -186,17 +180,14 @@ export const list = query({
 /**
  * Revoke an API key
  */
-export const revoke = mutation({
+export const revoke = authenticatedMutation({
   args: {
     keyId: v.id("apiKeys"),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
-
     const key = await ctx.db.get(args.keyId);
     if (!key) throw new Error("API key not found");
-    if (key.userId !== userId) throw new Error("Not authorized");
+    if (key.userId !== ctx.userId) throw new Error("Not authorized");
 
     await ctx.db.patch(args.keyId, {
       isActive: false,
@@ -210,17 +201,14 @@ export const revoke = mutation({
 /**
  * Delete an API key permanently
  */
-export const remove = mutation({
+export const remove = authenticatedMutation({
   args: {
     keyId: v.id("apiKeys"),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
-
     const key = await ctx.db.get(args.keyId);
     if (!key) throw new Error("API key not found");
-    if (key.userId !== userId) throw new Error("Not authorized");
+    if (key.userId !== ctx.userId) throw new Error("Not authorized");
 
     await ctx.db.delete(args.keyId);
 
@@ -231,7 +219,7 @@ export const remove = mutation({
 /**
  * Update API key settings
  */
-export const update = mutation({
+export const update = authenticatedMutation({
   args: {
     keyId: v.id("apiKeys"),
     name: v.optional(v.string()),
@@ -240,12 +228,9 @@ export const update = mutation({
     expiresAt: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
-
     const key = await ctx.db.get(args.keyId);
     if (!key) throw new Error("API key not found");
-    if (key.userId !== userId) throw new Error("Not authorized");
+    if (key.userId !== ctx.userId) throw new Error("Not authorized");
 
     const updates: Partial<{
       name: string;
@@ -351,17 +336,14 @@ export const recordUsage = internalMutation({
 /**
  * Get API usage statistics
  */
-export const getUsageStats = query({
+export const getUsageStats = authenticatedQuery({
   args: {
     keyId: v.id("apiKeys"),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
-
     const key = await ctx.db.get(args.keyId);
     if (!key) throw new Error("API key not found");
-    if (key.userId !== userId) throw new Error("Not authorized");
+    if (key.userId !== ctx.userId) throw new Error("Not authorized");
 
     // Get recent usage logs
     const logs = await ctx.db

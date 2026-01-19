@@ -1,22 +1,19 @@
-import { getAuthUserId } from "@convex-dev/auth/server";
 import { paginationOptsValidator } from "convex/server";
 import { v } from "convex/values";
 import type { Doc } from "./_generated/dataModel";
-import { internalMutation, internalQuery, mutation, query } from "./_generated/server";
+import { internalMutation, internalQuery } from "./_generated/server";
+import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
 import { batchFetchIssues, batchFetchUsers } from "./lib/batchHelpers";
 import { fetchPaginatedQuery } from "./lib/queryHelpers";
 import { notDeleted, softDeleteFields } from "./lib/softDeleteHelpers";
 
 // Get notifications for current user
-export const list = query({
+export const list = authenticatedQuery({
   args: {
     paginationOpts: paginationOptsValidator,
     onlyUnread: v.optional(v.boolean()),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
-
     const onlyUnread = args.onlyUnread ?? false;
 
     const results = await fetchPaginatedQuery<Doc<"notifications">>(ctx, {
@@ -25,12 +22,12 @@ export const list = query({
         if (onlyUnread) {
           return db
             .query("notifications")
-            .withIndex("by_user_read", (q) => q.eq("userId", userId).eq("isRead", false))
+            .withIndex("by_user_read", (q) => q.eq("userId", ctx.userId).eq("isRead", false))
             .filter(notDeleted);
         }
         return db
           .query("notifications")
-          .withIndex("by_user", (q) => q.eq("userId", userId))
+          .withIndex("by_user", (q) => q.eq("userId", ctx.userId))
           .filter(notDeleted);
       },
     });
@@ -56,17 +53,14 @@ export const list = query({
 });
 
 // Get unread count (capped at 99+ for display)
-export const getUnreadCount = query({
+export const getUnreadCount = authenticatedQuery({
   args: {},
   handler: async (ctx) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) return 0;
-
     // Cap at 100 - UI typically shows "99+" anyway
     const MAX_UNREAD_COUNT = 100;
     const unread = await ctx.db
       .query("notifications")
-      .withIndex("by_user_read", (q) => q.eq("userId", userId).eq("isRead", false))
+      .withIndex("by_user_read", (q) => q.eq("userId", ctx.userId).eq("isRead", false))
       .filter(notDeleted)
       .take(MAX_UNREAD_COUNT);
 
@@ -75,16 +69,13 @@ export const getUnreadCount = query({
 });
 
 // Mark notification as read
-export const markAsRead = mutation({
+export const markAsRead = authenticatedMutation({
   args: { id: v.id("notifications") },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
-
     const notification = await ctx.db.get(args.id);
     if (!notification) throw new Error("Notification not found");
 
-    if (notification.userId !== userId) {
+    if (notification.userId !== ctx.userId) {
       throw new Error("Not authorized");
     }
 
@@ -93,18 +84,15 @@ export const markAsRead = mutation({
 });
 
 // Mark all as read (with reasonable limit per call)
-export const markAllAsRead = mutation({
+export const markAllAsRead = authenticatedMutation({
   args: {},
   returns: v.object({ marked: v.number(), hasMore: v.boolean() }),
   handler: async (ctx) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
-
     // Limit per mutation call - can be called multiple times if needed
     const MAX_TO_MARK = 500;
     const unread = await ctx.db
       .query("notifications")
-      .withIndex("by_user_read", (q) => q.eq("userId", userId).eq("isRead", false))
+      .withIndex("by_user_read", (q) => q.eq("userId", ctx.userId).eq("isRead", false))
       .filter(notDeleted)
       .take(MAX_TO_MARK);
 
@@ -117,20 +105,17 @@ export const markAllAsRead = mutation({
 });
 
 // Delete a notification
-export const softDeleteNotification = mutation({
+export const softDeleteNotification = authenticatedMutation({
   args: { id: v.id("notifications") },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
-
     const notification = await ctx.db.get(args.id);
     if (!notification) throw new Error("Notification not found");
 
-    if (notification.userId !== userId) {
+    if (notification.userId !== ctx.userId) {
       throw new Error("Not authorized");
     }
 
-    await ctx.db.patch(args.id, softDeleteFields(userId));
+    await ctx.db.patch(args.id, softDeleteFields(ctx.userId));
   },
 });
 

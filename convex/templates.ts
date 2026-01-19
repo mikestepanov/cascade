@@ -1,11 +1,10 @@
-import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import type { Doc } from "./_generated/dataModel";
-import { mutation, query } from "./_generated/server";
+import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
 import { assertCanAccessProject, assertCanEditProject } from "./projectAccess";
 
 // Create an issue template
-export const create = mutation({
+export const create = authenticatedMutation({
   args: {
     projectId: v.id("projects"),
     name: v.string(),
@@ -22,11 +21,8 @@ export const create = mutation({
     defaultLabels: v.array(v.string()),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
-
     // Check if user can edit project (requires editor role or higher)
-    await assertCanEditProject(ctx, args.projectId, userId);
+    await assertCanEditProject(ctx, args.projectId, ctx.userId);
 
     const templateId = await ctx.db.insert("issueTemplates", {
       projectId: args.projectId,
@@ -36,7 +32,7 @@ export const create = mutation({
       descriptionTemplate: args.descriptionTemplate,
       defaultPriority: args.defaultPriority,
       defaultLabels: args.defaultLabels,
-      createdBy: userId,
+      createdBy: ctx.userId,
       createdAt: Date.now(),
     });
 
@@ -45,7 +41,7 @@ export const create = mutation({
 });
 
 // List templates for a project
-export const listByProject = query({
+export const listByProject = authenticatedQuery({
   args: {
     projectId: v.id("projects"),
     type: v.optional(
@@ -53,11 +49,8 @@ export const listByProject = query({
     ),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
-
     // Check if user has access to project
-    await assertCanAccessProject(ctx, args.projectId, userId);
+    await assertCanAccessProject(ctx, args.projectId, ctx.userId);
 
     let templates: Array<Doc<"issueTemplates">>;
     if (args.type) {
@@ -83,18 +76,15 @@ export const listByProject = query({
 export const list = listByProject;
 
 // Get a single template
-export const get = query({
+export const get = authenticatedQuery({
   args: { id: v.id("issueTemplates") },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
-
     const template = await ctx.db.get(args.id);
     if (!template) return null;
 
     // Check if user has access to project
     if (template.projectId) {
-      await assertCanAccessProject(ctx, template.projectId, userId);
+      await assertCanAccessProject(ctx, template.projectId, ctx.userId);
     }
 
     return template;
@@ -102,7 +92,7 @@ export const get = query({
 });
 
 // Update a template
-export const update = mutation({
+export const update = authenticatedMutation({
   args: {
     id: v.id("issueTemplates"),
     name: v.optional(v.string()),
@@ -120,15 +110,12 @@ export const update = mutation({
     defaultLabels: v.optional(v.array(v.string())),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
-
     const template = await ctx.db.get(args.id);
     if (!template) throw new Error("Template not found");
 
     // Check if user can edit project
     if (template.projectId) {
-      await assertCanEditProject(ctx, template.projectId, userId);
+      await assertCanEditProject(ctx, template.projectId, ctx.userId);
     } else {
       throw new Error("Cannot edit global templates");
     }
@@ -146,18 +133,15 @@ export const update = mutation({
 });
 
 // Delete a template
-export const remove = mutation({
+export const remove = authenticatedMutation({
   args: { id: v.id("issueTemplates") },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
-
     const template = await ctx.db.get(args.id);
     if (!template) throw new Error("Template not found");
 
     // Check if user can edit project
     if (template.projectId) {
-      await assertCanEditProject(ctx, template.projectId, userId);
+      await assertCanEditProject(ctx, template.projectId, ctx.userId);
     } else {
       throw new Error("Cannot delete global templates");
     }

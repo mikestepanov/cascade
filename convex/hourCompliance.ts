@@ -1,7 +1,7 @@
-import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import type { Doc, Id } from "./_generated/dataModel";
-import { type MutationCtx, mutation, type QueryCtx, query } from "./_generated/server";
+import type { MutationCtx, QueryCtx } from "./_generated/server";
+import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
 import { batchFetchUsers } from "./lib/batchHelpers";
 import { notDeleted } from "./lib/softDeleteHelpers";
 
@@ -337,7 +337,7 @@ async function sendComplianceNotifications(
 }
 
 // Check and record compliance for a user for a specific period
-export const checkUserCompliance = mutation({
+export const checkUserCompliance = authenticatedMutation({
   args: {
     userId: v.id("users"),
     periodType: v.union(v.literal("week"), v.literal("month")),
@@ -345,11 +345,8 @@ export const checkUserCompliance = mutation({
     periodEnd: v.number(),
   },
   handler: async (ctx, args) => {
-    const currentUserId = await getAuthUserId(ctx);
-    if (!currentUserId) throw new Error("Not authenticated");
-
     // Only admins can check compliance
-    if (!(await isAdmin(ctx, currentUserId))) {
+    if (!(await isAdmin(ctx, ctx.userId))) {
       throw new Error("Admin access required");
     }
 
@@ -358,17 +355,14 @@ export const checkUserCompliance = mutation({
 });
 
 // Check compliance for all active users for a period
-export const checkAllUsersCompliance = mutation({
+export const checkAllUsersCompliance = authenticatedMutation({
   args: {
     periodType: v.union(v.literal("week"), v.literal("month")),
     periodStart: v.number(),
     periodEnd: v.number(),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
-
-    if (!(await isAdmin(ctx, userId))) {
+    if (!(await isAdmin(ctx, ctx.userId))) {
       throw new Error("Admin access required");
     }
 
@@ -403,7 +397,7 @@ export const checkAllUsersCompliance = mutation({
 });
 
 // List compliance records (admin only)
-export const listComplianceRecords = query({
+export const listComplianceRecords = authenticatedQuery({
   args: {
     userId: v.optional(v.id("users")),
     status: v.optional(
@@ -419,11 +413,8 @@ export const listComplianceRecords = query({
     limit: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
-
     // Return empty for non-admins (UI-driven visibility)
-    if (!(await isAdmin(ctx, userId))) {
+    if (!(await isAdmin(ctx, ctx.userId))) {
       return [];
     }
 
@@ -482,17 +473,14 @@ export const listComplianceRecords = query({
 });
 
 // Get compliance summary stats
-export const getComplianceSummary = query({
+export const getComplianceSummary = authenticatedQuery({
   args: {
     startDate: v.optional(v.number()),
     endDate: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
-
     // Return empty summary for non-admins (UI-driven visibility)
-    if (!(await isAdmin(ctx, userId))) {
+    if (!(await isAdmin(ctx, ctx.userId))) {
       return {
         totalRecords: 0,
         compliant: 0,
@@ -531,21 +519,18 @@ export const getComplianceSummary = query({
 });
 
 // Mark compliance record as reviewed
-export const reviewComplianceRecord = mutation({
+export const reviewComplianceRecord = authenticatedMutation({
   args: {
     recordId: v.id("hourComplianceRecords"),
     notes: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
-
-    if (!(await isAdmin(ctx, userId))) {
+    if (!(await isAdmin(ctx, ctx.userId))) {
       throw new Error("Admin access required");
     }
 
     await ctx.db.patch(args.recordId, {
-      reviewedBy: userId,
+      reviewedBy: ctx.userId,
       reviewedAt: Date.now(),
       reviewNotes: args.notes,
     });

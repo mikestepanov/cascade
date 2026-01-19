@@ -1,23 +1,19 @@
-import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
-import { mutation, query } from "./_generated/server";
+import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
 
-export const get = query({
+export const get = authenticatedQuery({
   args: {},
   handler: async (ctx) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) return null;
-
     const settings = await ctx.db
       .query("userSettings")
-      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .withIndex("by_user", (q) => q.eq("userId", ctx.userId))
       .unique();
 
     return settings;
   },
 });
 
-export const update = mutation({
+export const update = authenticatedMutation({
   args: {
     dashboardLayout: v.optional(v.any()), // JSON
     theme: v.optional(v.string()),
@@ -27,14 +23,9 @@ export const update = mutation({
     timezone: v.optional(v.string()), // IANA timezone
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      throw new Error("Unauthenticated");
-    }
-
     const existinghelper = await ctx.db
       .query("userSettings")
-      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .withIndex("by_user", (q) => q.eq("userId", ctx.userId))
       .unique();
 
     if (existinghelper) {
@@ -44,7 +35,7 @@ export const update = mutation({
       });
     } else {
       await ctx.db.insert("userSettings", {
-        userId,
+        userId: ctx.userId,
         ...args,
         createdAt: Date.now(),
         updatedAt: Date.now(),

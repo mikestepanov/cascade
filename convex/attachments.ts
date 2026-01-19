@@ -1,7 +1,5 @@
-import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
-import { query } from "./_generated/server";
-import { authenticatedMutation, issueMutation } from "./customFunctions";
+import { authenticatedMutation, authenticatedQuery, issueMutation } from "./customFunctions";
 
 /**
  * Generate upload URL for file attachment
@@ -79,14 +77,11 @@ export const removeAttachment = issueMutation({
 
 /**
  * Get attachment URL
- * Returns null for unauthenticated users (soft fail)
+ * Requires authentication
  */
-export const getAttachment = query({
+export const getAttachment = authenticatedQuery({
   args: { storageId: v.id("_storage") },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) return null;
-
     const url = await ctx.storage.getUrl(args.storageId);
     return url;
   },

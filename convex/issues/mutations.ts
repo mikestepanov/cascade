@@ -1,7 +1,5 @@
-import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import type { Doc, Id } from "../_generated/dataModel";
-import { mutation } from "../_generated/server";
 import {
   authenticatedMutation,
   editorMutation,
@@ -315,17 +313,12 @@ export const addComment = issueViewerMutation({
   },
 });
 
-export const bulkUpdateStatus = mutation({
+export const bulkUpdateStatus = authenticatedMutation({
   args: {
     issueIds: v.array(v.id("issues")),
     newStatus: v.string(),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      throw new Error("Not authenticated");
-    }
-
     const issues = await Promise.all(args.issueIds.map((id) => ctx.db.get(id)));
 
     const now = Date.now();
@@ -337,7 +330,7 @@ export const bulkUpdateStatus = mutation({
       if (!issue) continue;
 
       try {
-        await assertCanEditProject(ctx, issue.projectId as Id<"projects">, userId);
+        await assertCanEditProject(ctx, issue.projectId as Id<"projects">, ctx.userId);
       } catch {
         continue;
       }
@@ -352,7 +345,7 @@ export const bulkUpdateStatus = mutation({
       if (oldStatus !== args.newStatus) {
         await ctx.db.insert("issueActivity", {
           issueId,
-          userId,
+          userId: ctx.userId,
           action: "updated",
           field: "status",
           oldValue: oldStatus,
@@ -368,7 +361,7 @@ export const bulkUpdateStatus = mutation({
   },
 });
 
-export const bulkUpdatePriority = mutation({
+export const bulkUpdatePriority = authenticatedMutation({
   args: {
     issueIds: v.array(v.id("issues")),
     priority: v.union(
@@ -380,11 +373,6 @@ export const bulkUpdatePriority = mutation({
     ),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      throw new Error("Not authenticated");
-    }
-
     const issues = await Promise.all(args.issueIds.map((id) => ctx.db.get(id)));
 
     const now = Date.now();
@@ -396,7 +384,7 @@ export const bulkUpdatePriority = mutation({
       if (!issue) continue;
 
       try {
-        await assertCanEditProject(ctx, issue.projectId as Id<"projects">, userId);
+        await assertCanEditProject(ctx, issue.projectId as Id<"projects">, ctx.userId);
       } catch {
         continue;
       }
@@ -410,7 +398,7 @@ export const bulkUpdatePriority = mutation({
 
       await ctx.db.insert("issueActivity", {
         issueId,
-        userId,
+        userId: ctx.userId,
         action: "updated",
         field: "priority",
         oldValue: oldPriority,

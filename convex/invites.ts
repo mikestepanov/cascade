@@ -1,11 +1,11 @@
-import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import type { Doc, Id } from "./_generated/dataModel";
-import { type MutationCtx, mutation, type QueryCtx, query } from "./_generated/server";
+import { type MutationCtx, type QueryCtx, query } from "./_generated/server";
+import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
 import { sendEmail } from "./email/index";
 import { batchFetchProjects, batchFetchUsers } from "./lib/batchHelpers";
 import { getSiteUrl } from "./lib/env";
-import { conflict, forbidden, notFound, unauthenticated, validation } from "./lib/errors";
+import { conflict, forbidden, notFound, validation } from "./lib/errors";
 import { notDeleted } from "./lib/softDeleteHelpers";
 
 // Helper: Check if user is a organization admin
@@ -160,7 +160,7 @@ function buildInviteEmail(
  * Only admins can send invites
  * Supports both platform-level and project-level invites
  */
-export const sendInvite = mutation({
+export const sendInvite = authenticatedMutation({
   args: {
     email: v.string(),
     role: v.union(v.literal("user"), v.literal("superAdmin")),
@@ -181,16 +181,13 @@ export const sendInvite = mutation({
     }),
   ),
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw unauthenticated();
-
     // Validate email format early
     if (!isValidEmail(args.email)) {
       throw validation("email", "Invalid email address");
     }
 
     // Check permissions and get project info
-    const isPlatAdmin = await isOrganizationAdmin(ctx, args.organizationId, userId);
+    const isPlatAdmin = await isOrganizationAdmin(ctx, args.organizationId, ctx.userId);
     let projectName: string | undefined;
     const effectiveProjectRole = args.projectRole || "editor";
 
@@ -200,7 +197,7 @@ export const sendInvite = mutation({
       projectName = project.name;
 
       // Allow if platform admin OR project admin
-      const hasProjectAdmin = await isProjectAdmin(ctx, args.projectId, userId);
+      const hasProjectAdmin = await isProjectAdmin(ctx, args.projectId, ctx.userId);
       if (!(isPlatAdmin || hasProjectAdmin)) {
         throw forbidden("admin", "Only project admins can invite to projects");
       }
@@ -221,7 +218,7 @@ export const sendInvite = mutation({
         args.projectId,
         existingUser._id,
         effectiveProjectRole,
-        userId,
+        ctx.userId,
       );
     }
     if (existingUser) {
@@ -241,7 +238,7 @@ export const sendInvite = mutation({
       organizationId: args.organizationId,
       projectId: args.projectId,
       projectRole: args.projectId ? effectiveProjectRole : undefined,
-      invitedBy: userId,
+      invitedBy: ctx.userId,
       token,
       expiresAt: now + 7 * 24 * 60 * 60 * 1000, // 7 days
       status: "pending",
@@ -274,22 +271,19 @@ export const sendInvite = mutation({
  * Revoke an invitation
  * Only admins can revoke invites
  */
-export const revokeInvite = mutation({
+export const revokeInvite = authenticatedMutation({
   args: {
     inviteId: v.id("invites"),
   },
   returns: v.object({ success: v.boolean() }),
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw unauthenticated();
-
     const invite = await ctx.db.get(args.inviteId);
     if (!invite) {
       throw notFound("invite", args.inviteId);
     }
 
     // Check if user is admin of the organization the invite belongs to
-    const isAdmin = await isOrganizationAdmin(ctx, invite.organizationId, userId);
+    const isAdmin = await isOrganizationAdmin(ctx, invite.organizationId, ctx.userId);
     if (!isAdmin) {
       throw forbidden("admin", "Only admins can revoke invites");
     }
@@ -300,7 +294,7 @@ export const revokeInvite = mutation({
 
     await ctx.db.patch(args.inviteId, {
       status: "revoked",
-      revokedBy: userId,
+      revokedBy: ctx.userId,
       revokedAt: Date.now(),
       updatedAt: Date.now(),
     });
@@ -313,22 +307,19 @@ export const revokeInvite = mutation({
  * Resend an invitation
  * Only admins can resend invites
  */
-export const resendInvite = mutation({
+export const resendInvite = authenticatedMutation({
   args: {
     inviteId: v.id("invites"),
   },
   returns: v.object({ success: v.boolean() }),
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw unauthenticated();
-
     const invite = await ctx.db.get(args.inviteId);
     if (!invite) {
       throw notFound("invite", args.inviteId);
     }
 
     // Check if user is admin of the organization the invite belongs to
-    const isAdmin = await isOrganizationAdmin(ctx, invite.organizationId, userId);
+    const isAdmin = await isOrganizationAdmin(ctx, invite.organizationId, ctx.userId);
     if (!isAdmin) {
       throw forbidden("admin", "Only admins can resend invites");
     }
@@ -448,7 +439,7 @@ export const getInviteByToken = query({
  * Accept an invitation (called during signup)
  * This should be called after a user creates their account with the email from the invite
  */
-export const acceptInvite = mutation({
+export const acceptInvite = authenticatedMutation({
   args: {
     token: v.string(),
   },
@@ -459,9 +450,6 @@ export const acceptInvite = mutation({
     projectRole: v.optional(v.union(v.literal("admin"), v.literal("editor"), v.literal("viewer"))),
   }),
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw unauthenticated();
-
     const invite = await ctx.db
       .query("invites")
       .withIndex("by_token", (q) => q.eq("token", args.token))
@@ -485,7 +473,7 @@ export const acceptInvite = mutation({
     }
 
     // Verify the user's email matches the invite
-    const user = await ctx.db.get(userId);
+    const user = await ctx.db.get(ctx.userId);
     if (user?.email !== invite.email) {
       throw forbidden(undefined, "This invitation was sent to a different email address");
     }
@@ -493,13 +481,13 @@ export const acceptInvite = mutation({
     // Mark invite as accepted
     await ctx.db.patch(invite._id, {
       status: "accepted",
-      acceptedBy: userId,
+      acceptedBy: ctx.userId,
       acceptedAt: Date.now(),
       updatedAt: Date.now(),
     });
 
     // Link the invite to the user (for tracking "was invited" vs "self-signup")
-    await ctx.db.patch(userId, {
+    await ctx.db.patch(ctx.userId, {
       inviteId: invite._id,
     });
 
@@ -511,7 +499,7 @@ export const acceptInvite = mutation({
       const existingMember = await ctx.db
         .query("projectMembers")
         .withIndex("by_project_user", (q) =>
-          q.eq("projectId", inviteProjectId).eq("userId", userId),
+          q.eq("projectId", inviteProjectId).eq("userId", ctx.userId),
         )
         .filter(notDeleted)
         .first();
@@ -519,7 +507,7 @@ export const acceptInvite = mutation({
       if (!existingMember) {
         await ctx.db.insert("projectMembers", {
           projectId: inviteProjectId,
-          userId,
+          userId: ctx.userId,
           role: invite.projectRole || "editor",
           addedBy: invite.invitedBy,
           addedAt: Date.now(),
@@ -535,7 +523,7 @@ export const acceptInvite = mutation({
 /**
  * List all invitations (admin only)
  */
-export const listInvites = query({
+export const listInvites = authenticatedQuery({
   args: {
     organizationId: v.id("organizations"),
     status: v.optional(
@@ -579,11 +567,8 @@ export const listInvites = query({
     }),
   ),
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw unauthenticated();
-
     // Check if user is admin - return empty array for non-admins (UI-driven visibility)
-    const isAdmin = await isOrganizationAdmin(ctx, args.organizationId, userId);
+    const isAdmin = await isOrganizationAdmin(ctx, args.organizationId, ctx.userId);
     if (!isAdmin) {
       return [];
     }
@@ -643,7 +628,7 @@ export const listInvites = query({
 /**
  * List all users (admin only)
  */
-export const listUsers = query({
+export const listUsers = authenticatedQuery({
   args: { organizationId: v.id("organizations") },
   returns: v.array(
     v.object({
@@ -658,11 +643,8 @@ export const listUsers = query({
     }),
   ),
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw unauthenticated();
-
     // Check if user is admin - return empty array for non-admins (UI-driven visibility)
-    const isAdmin = await isOrganizationAdmin(ctx, args.organizationId, userId);
+    const isAdmin = await isOrganizationAdmin(ctx, args.organizationId, ctx.userId);
     if (!isAdmin) {
       return [];
     }

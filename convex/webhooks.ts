@@ -1,23 +1,17 @@
-import { getAuthUserId } from "@convex-dev/auth/server";
 import { paginationOptsValidator } from "convex/server";
 import { v } from "convex/values";
 import { internal } from "./_generated/api";
 import type { Id } from "./_generated/dataModel";
-import {
-  internalAction,
-  internalMutation,
-  internalQuery,
-  mutation,
-  query,
-} from "./_generated/server";
-import { notFound, unauthenticated, validation } from "./lib/errors";
+import { internalAction, internalMutation, internalQuery } from "./_generated/server";
+import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
+import { notFound, validation } from "./lib/errors";
 import { fetchPaginatedQuery } from "./lib/queryHelpers";
 import { notDeleted, softDeleteFields } from "./lib/softDeleteHelpers";
 import { assertIsProjectAdmin } from "./projectAccess";
 import { isTest } from "./testConfig";
 
 // Create a webhook
-export const createWebhook = mutation({
+export const createWebhook = authenticatedMutation({
   args: {
     projectId: v.id("projects"),
     name: v.string(),
@@ -26,11 +20,8 @@ export const createWebhook = mutation({
     secret: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw unauthenticated();
-
     // Only admins can create webhooks
-    await assertIsProjectAdmin(ctx, args.projectId, userId);
+    await assertIsProjectAdmin(ctx, args.projectId, ctx.userId);
 
     validateWebhookUrl(args.url);
 
@@ -41,14 +32,14 @@ export const createWebhook = mutation({
       events: args.events,
       secret: args.secret,
       isActive: true,
-      createdBy: userId,
+      createdBy: ctx.userId,
       createdAt: Date.now(),
     });
 
     if (!isTest) {
       await ctx.scheduler.runAfter(0, internal.auditLogs.log, {
         action: "webhook_created",
-        actorId: userId,
+        actorId: ctx.userId,
         targetId: webhookId,
         targetType: "webhooks",
         metadata: {
@@ -64,14 +55,11 @@ export const createWebhook = mutation({
 });
 
 // List webhooks for a project
-export const listByProject = query({
+export const listByProject = authenticatedQuery({
   args: { projectId: v.id("projects") },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw unauthenticated();
-
     // Only admins can view webhooks
-    await assertIsProjectAdmin(ctx, args.projectId, userId);
+    await assertIsProjectAdmin(ctx, args.projectId, ctx.userId);
 
     const webhooks = await ctx.db
       .query("webhooks")
@@ -89,7 +77,7 @@ export const listByProject = query({
 });
 
 // Update a webhook
-export const updateWebhook = mutation({
+export const updateWebhook = authenticatedMutation({
   args: {
     id: v.id("webhooks"),
     name: v.optional(v.string()),
@@ -99,9 +87,6 @@ export const updateWebhook = mutation({
     isActive: v.optional(v.boolean()),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw unauthenticated();
-
     const webhook = await ctx.db.get(args.id);
     if (!webhook || webhook.isDeleted) throw notFound("webhook", args.id);
 
@@ -109,7 +94,7 @@ export const updateWebhook = mutation({
     if (!webhook.projectId) {
       throw validation("projectId", "Webhook has no project");
     }
-    await assertIsProjectAdmin(ctx, webhook.projectId, userId);
+    await assertIsProjectAdmin(ctx, webhook.projectId, ctx.userId);
 
     const updates: Partial<typeof webhook> = {};
     if (args.name !== undefined) updates.name = args.name;
@@ -126,7 +111,7 @@ export const updateWebhook = mutation({
     if (!isTest) {
       await ctx.scheduler.runAfter(0, internal.auditLogs.log, {
         action: "webhook_updated",
-        actorId: userId,
+        actorId: ctx.userId,
         targetId: args.id,
         targetType: "webhooks",
         metadata: updates,
@@ -136,12 +121,9 @@ export const updateWebhook = mutation({
 });
 
 // Delete a webhook
-export const softDeleteWebhook = mutation({
+export const softDeleteWebhook = authenticatedMutation({
   args: { id: v.id("webhooks") },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw unauthenticated();
-
     const webhook = await ctx.db.get(args.id);
     if (!webhook || webhook.isDeleted) throw notFound("webhook", args.id);
 
@@ -149,14 +131,14 @@ export const softDeleteWebhook = mutation({
     if (!webhook.projectId) {
       throw validation("projectId", "Webhook has no project");
     }
-    await assertIsProjectAdmin(ctx, webhook.projectId, userId);
+    await assertIsProjectAdmin(ctx, webhook.projectId, ctx.userId);
 
-    await ctx.db.patch(args.id, softDeleteFields(userId));
+    await ctx.db.patch(args.id, softDeleteFields(ctx.userId));
 
     if (!isTest) {
       await ctx.scheduler.runAfter(0, internal.auditLogs.log, {
         action: "webhook_deleted",
-        actorId: userId,
+        actorId: ctx.userId,
         targetId: args.id,
         targetType: "webhooks",
       });
@@ -262,15 +244,12 @@ export const updateLastTriggered = internalMutation({
 });
 
 // Query webhook executions for a webhook
-export const listExecutions = query({
+export const listExecutions = authenticatedQuery({
   args: {
     webhookId: v.id("webhooks"),
     paginationOpts: paginationOptsValidator,
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw unauthenticated();
-
     const webhook = await ctx.db.get(args.webhookId);
     if (!webhook || webhook.isDeleted) throw notFound("webhook", args.webhookId);
 
@@ -278,7 +257,7 @@ export const listExecutions = query({
     if (!webhook.projectId) {
       throw validation("projectId", "Webhook has no project");
     }
-    await assertIsProjectAdmin(ctx, webhook.projectId, userId);
+    await assertIsProjectAdmin(ctx, webhook.projectId, ctx.userId);
 
     return await fetchPaginatedQuery(ctx, {
       paginationOpts: args.paginationOpts,
@@ -292,12 +271,9 @@ export const listExecutions = query({
 });
 
 // Test webhook (sends ping event)
-export const test = mutation({
+export const test = authenticatedMutation({
   args: { id: v.id("webhooks") },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw unauthenticated();
-
     const webhook = await ctx.db.get(args.id);
     if (!webhook || webhook.isDeleted) throw notFound("webhook", args.id);
 
@@ -305,7 +281,7 @@ export const test = mutation({
     if (!webhook.projectId) {
       throw validation("projectId", "Webhook has no project");
     }
-    await assertIsProjectAdmin(ctx, webhook.projectId, userId);
+    await assertIsProjectAdmin(ctx, webhook.projectId, ctx.userId);
 
     // Schedule the test webhook delivery
     await ctx.scheduler.runAfter(0, internal.webhooks.deliverTestWebhook, {
@@ -423,12 +399,9 @@ export const updateExecution = internalMutation({
 });
 
 // Retry failed webhook execution
-export const retryExecution = mutation({
+export const retryExecution = authenticatedMutation({
   args: { id: v.id("webhookExecutions") },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw unauthenticated();
-
     const execution = await ctx.db.get(args.id);
     if (!execution) throw notFound("webhookExecution", args.id);
 
@@ -439,7 +412,7 @@ export const retryExecution = mutation({
     if (!webhook.projectId) {
       throw validation("projectId", "Webhook has no project");
     }
-    await assertIsProjectAdmin(ctx, webhook.projectId, userId);
+    await assertIsProjectAdmin(ctx, webhook.projectId, ctx.userId);
 
     // Schedule the retry
     await ctx.scheduler.runAfter(0, internal.webhooks.retryWebhookDelivery, {

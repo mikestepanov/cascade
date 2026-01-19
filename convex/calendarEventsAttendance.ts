@@ -1,7 +1,6 @@
-import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import type { Doc, Id } from "./_generated/dataModel";
-import { mutation, query } from "./_generated/server";
+import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
 import { batchFetchCalendarEvents, batchFetchUsers, getUserName } from "./lib/batchHelpers";
 
 /**
@@ -74,7 +73,7 @@ function updateAttendanceSummary(
 }
 
 // Mark attendance for an attendee
-export const markAttendance = mutation({
+export const markAttendance = authenticatedMutation({
   args: {
     eventId: v.id("calendarEvents"),
     userId: v.id("users"),
@@ -82,15 +81,12 @@ export const markAttendance = mutation({
     notes: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    const currentUserId = await getAuthUserId(ctx);
-    if (!currentUserId) throw new Error("Not authenticated");
-
     // Get event
     const event = await ctx.db.get(args.eventId);
     if (!event) throw new Error("Event not found");
 
     // Only organizer can mark attendance
-    if (event.organizerId !== currentUserId) {
+    if (event.organizerId !== ctx.userId) {
       throw new Error("Only the event organizer can mark attendance");
     }
 
@@ -107,7 +103,7 @@ export const markAttendance = mutation({
       await ctx.db.patch(existing._id, {
         status: args.status,
         notes: args.notes,
-        markedBy: currentUserId,
+        markedBy: ctx.userId,
         markedAt: now,
       });
       return existing._id;
@@ -118,7 +114,7 @@ export const markAttendance = mutation({
       eventId: args.eventId,
       userId: args.userId,
       status: args.status,
-      markedBy: currentUserId,
+      markedBy: ctx.userId,
       markedAt: now,
       notes: args.notes,
     });
@@ -127,18 +123,15 @@ export const markAttendance = mutation({
 });
 
 // Get attendance for an event
-export const getAttendance = query({
+export const getAttendance = authenticatedQuery({
   args: { eventId: v.id("calendarEvents") },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) return null;
-
     // Get event
     const event = await ctx.db.get(args.eventId);
     if (!event) return null;
 
     // Only organizer can view attendance
-    if (event.organizerId !== userId) {
+    if (event.organizerId !== ctx.userId) {
       return null;
     }
 
@@ -175,16 +168,13 @@ export const getAttendance = query({
 });
 
 // Get attendance history for a user (for reports)
-export const getUserAttendanceHistory = query({
+export const getUserAttendanceHistory = authenticatedQuery({
   args: {
     userId: v.id("users"),
     startDate: v.optional(v.number()),
     endDate: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
-    const currentUserId = await getAuthUserId(ctx);
-    if (!currentUserId) return [];
-
     // Get attendance records for user
     const attendanceRecords = await ctx.db
       .query("meetingAttendance")
@@ -227,15 +217,12 @@ export const getUserAttendanceHistory = query({
 });
 
 // Get attendance summary report (for admins/CEO)
-export const getAttendanceReport = query({
+export const getAttendanceReport = authenticatedQuery({
   args: {
     startDate: v.optional(v.number()),
     endDate: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) return null;
-
     // Get only required meetings using index (not ALL events!)
     const requiredEvents = await ctx.db
       .query("calendarEvents")

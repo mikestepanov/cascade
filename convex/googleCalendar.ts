@@ -1,6 +1,6 @@
-import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
-import { internalMutation, mutation, query } from "./_generated/server";
+import { internalMutation, mutation } from "./_generated/server";
+import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
 
 // Internal mutation for connecting Google Calendar (called from HTTP action)
 export const connectGoogleInternal = internalMutation({
@@ -56,7 +56,7 @@ export const connectGoogleInternal = internalMutation({
 });
 
 // Connect Google Calendar (OAuth callback) - for authenticated users
-export const connectGoogle = mutation({
+export const connectGoogle = authenticatedMutation({
   args: {
     providerAccountId: v.string(), // Google email
     accessToken: v.string(),
@@ -67,13 +67,10 @@ export const connectGoogle = mutation({
     ),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
-
     // Check if connection already exists for this provider
     const existing = await ctx.db
       .query("calendarConnections")
-      .withIndex("by_user_provider", (q) => q.eq("userId", userId).eq("provider", "google"))
+      .withIndex("by_user_provider", (q) => q.eq("userId", ctx.userId).eq("provider", "google"))
       .first();
 
     const now = Date.now();
@@ -92,7 +89,7 @@ export const connectGoogle = mutation({
 
     // Create new connection
     return await ctx.db.insert("calendarConnections", {
-      userId,
+      userId: ctx.userId,
       provider: "google",
       providerAccountId: args.providerAccountId,
       accessToken: args.accessToken,
@@ -108,27 +105,23 @@ export const connectGoogle = mutation({
 });
 
 // Get Google Calendar connection
-export const getConnection = query({
+export const getConnection = authenticatedQuery({
+  args: {},
   handler: async (ctx) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) return null;
-
     return await ctx.db
       .query("calendarConnections")
-      .withIndex("by_user_provider", (q) => q.eq("userId", userId).eq("provider", "google"))
+      .withIndex("by_user_provider", (q) => q.eq("userId", ctx.userId).eq("provider", "google"))
       .first();
   },
 });
 
 // Disconnect Google Calendar
-export const disconnectGoogle = mutation({
+export const disconnectGoogle = authenticatedMutation({
+  args: {},
   handler: async (ctx) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
-
     const connection = await ctx.db
       .query("calendarConnections")
-      .withIndex("by_user_provider", (q) => q.eq("userId", userId).eq("provider", "google"))
+      .withIndex("by_user_provider", (q) => q.eq("userId", ctx.userId).eq("provider", "google"))
       .first();
 
     if (connection) {
@@ -138,7 +131,7 @@ export const disconnectGoogle = mutation({
 });
 
 // Update sync settings
-export const updateSyncSettings = mutation({
+export const updateSyncSettings = authenticatedMutation({
   args: {
     syncEnabled: v.optional(v.boolean()),
     syncDirection: v.optional(
@@ -146,12 +139,9 @@ export const updateSyncSettings = mutation({
     ),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
-
     const connection = await ctx.db
       .query("calendarConnections")
-      .withIndex("by_user_provider", (q) => q.eq("userId", userId).eq("provider", "google"))
+      .withIndex("by_user_provider", (q) => q.eq("userId", ctx.userId).eq("provider", "google"))
       .first();
 
     if (!connection) {
@@ -201,14 +191,12 @@ export const markSynced = mutation({
 });
 
 // Get all calendar connections for user (for settings UI)
-export const listConnections = query({
+export const listConnections = authenticatedQuery({
+  args: {},
   handler: async (ctx) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) return [];
-
     return await ctx.db
       .query("calendarConnections")
-      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .withIndex("by_user", (q) => q.eq("userId", ctx.userId))
       .collect();
   },
 });
@@ -274,18 +262,15 @@ export const syncFromGoogle = mutation({
 });
 
 // Get events that need to be synced to Google
-export const getEventsToSync = query({
+export const getEventsToSync = authenticatedQuery({
   args: {
     since: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) return [];
-
     // Get connection
     const connection = await ctx.db
       .query("calendarConnections")
-      .withIndex("by_user_provider", (q) => q.eq("userId", userId).eq("provider", "google"))
+      .withIndex("by_user_provider", (q) => q.eq("userId", ctx.userId).eq("provider", "google"))
       .first();
 
     if (!connection?.syncEnabled || connection.syncDirection === "import") {
@@ -297,7 +282,7 @@ export const getEventsToSync = query({
 
     return await ctx.db
       .query("calendarEvents")
-      .withIndex("by_organizer", (q) => q.eq("organizerId", userId))
+      .withIndex("by_organizer", (q) => q.eq("organizerId", ctx.userId))
       .filter((q) => q.gte(q.field("updatedAt"), sinceTime))
       .collect();
   },
