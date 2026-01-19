@@ -1,5 +1,4 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Unauthenticated } from "convex/react";
 import { AuthLink, AuthPageLayout, AuthRedirect, SignUpForm } from "@/components/auth";
 import { ROUTES } from "@/config/routes";
 

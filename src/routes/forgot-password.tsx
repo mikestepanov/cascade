@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { Authenticated, Unauthenticated } from "convex/react";
+
 import { useState } from "react";
 import { toast } from "sonner";
 import { AuthLink, AuthPageLayout, AuthRedirect, ResetPasswordForm } from "@/components/auth";

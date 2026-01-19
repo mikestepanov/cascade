@@ -1,7 +1,6 @@
-import { api } from "@convex/_generated/api";
 import { createFileRoute, Navigate, Outlet } from "@tanstack/react-router";
-import { Authenticated, AuthLoading, Unauthenticated, useQuery } from "convex/react";
-import { AppSplashScreen, EmailVerificationRequired } from "@/components/auth";
+import { Authenticated, AuthLoading, Unauthenticated } from "convex/react";
+import { AppSplashScreen } from "@/components/auth";
 import { ROUTES } from "@/config/routes";
 
 export const Route = createFileRoute("/_auth")({
