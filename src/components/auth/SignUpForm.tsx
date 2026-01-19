@@ -1,6 +1,6 @@
 import { useAuthActions } from "@convex-dev/auth/react";
 import { useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Flex } from "@/components/ui/Flex";
 import { ROUTES } from "@/config/routes";
@@ -18,15 +18,23 @@ export function SignUpForm() {
   const [showVerification, setShowVerification] = useState(false);
   const [showEmailForm, setShowEmailForm] = useState(false);
   const [formReady, setFormReady] = useState(false);
+  const [hydrated, setHydrated] = useState(false);
 
-  const handleShowEmailForm = () => {
+  // Set hydrated on mount
+  useEffect(() => {
+    setHydrated(true);
+  }, []);
+
+  const handleShowEmailForm = (e: React.MouseEvent) => {
+    e.preventDefault();
     setShowEmailForm(true);
-    setTimeout(() => setFormReady(true), 350);
+    // Use microtask to ensure fields are rendered
+    void Promise.resolve().then(() => setFormReady(true));
   };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!formReady) return;
+    if (!(formReady && showEmailForm)) return;
     setSubmitting(true);
 
     const formData = new FormData(e.currentTarget);
@@ -39,8 +47,9 @@ export function SignUpForm() {
         setEmail(formEmail);
         setShowVerification(true);
       })
-      .catch(() => {
-        toast.error("Could not create account. Email may already be registered.");
+      .catch((err) => {
+        const message = err instanceof Error ? err.message : "Could not create account";
+        toast.error(message);
         setSubmitting(false);
       });
   };
@@ -68,7 +77,12 @@ export function SignUpForm() {
         <span className="mx-4 text-ui-text-secondary text-sm">or</span>
         <hr className="grow border-ui-border-primary" />
       </Flex>
-      <form className="flex flex-col" onSubmit={handleSubmit} data-form-ready={formReady}>
+      <form
+        className="flex flex-col"
+        onSubmit={handleSubmit}
+        data-form-ready={formReady}
+        data-hydrated={hydrated}
+      >
         <div
           className={cn(
             "grid transition-all duration-300 ease-out",
@@ -92,7 +106,7 @@ export function SignUpForm() {
           size="lg"
           className="w-full"
           onClick={!showEmailForm ? handleShowEmailForm : undefined}
-          disabled={submitting}
+          disabled={submitting || !hydrated}
         >
           {!showEmailForm ? (
             <Flex align="center" gap="md">

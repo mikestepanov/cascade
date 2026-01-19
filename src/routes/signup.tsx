@@ -11,15 +11,13 @@ export const Route = createFileRoute("/signup")({
 function SignUpRoute() {
   return (
     <AuthRedirect>
-      <Unauthenticated>
-        <AuthPageLayout title="Create an account" subtitle="Sign up to get started with Nixelo">
-          <SignUpForm />
-          <div className="text-center text-sm text-ui-text-tertiary mt-4">
-            <span>Already have an account? </span>
-            <AuthLink to={ROUTES.signin.path}>Sign in</AuthLink>
-          </div>
-        </AuthPageLayout>
-      </Unauthenticated>
+      <AuthPageLayout title="Create an account" subtitle="Sign up to get started with Nixelo">
+        <SignUpForm />
+        <div className="text-center text-sm text-ui-text-tertiary mt-4">
+          <span>Already have an account? </span>
+          <AuthLink to={ROUTES.signin.path}>Sign in</AuthLink>
+        </div>
+      </AuthPageLayout>
     </AuthRedirect>
   );
 }

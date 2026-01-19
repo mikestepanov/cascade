@@ -586,8 +586,8 @@ pnpm run dev:frontend # Start only Vite dev server
 pnpm run dev:backend  # Start only Convex dev server
 pnpm run build        # Build for production
 pnpm run preview      # Preview production build
-pnpm run lint         # Run Biome linting (with auto-fix)
-pnpm run lint:check   # Run Biome linting (check only)
+pnpm run biome        # Run Biome linting (with auto-fix)
+pnpm run biome:check  # Run Biome linting (check only)
 pnpm run format       # Run Biome formatting (with auto-fix)
 pnpm run format:check # Run Biome formatting (check only)
 pnpm run typecheck    # Run TypeScript type checking
@@ -622,7 +622,7 @@ pnpm run check        # Run typecheck, lint check, and all tests
 
 ```bash
 pnpm run typecheck  # Ensure no TypeScript errors
-pnpm run lint       # Run Biome linting and auto-fix issues
+pnpm run biome      # Run Biome linting and auto-fix issues
 # OR use combined check
 pnpm run check      # Run typecheck, lint check, and all tests
 ```

@@ -11,15 +11,13 @@ export const Route = createFileRoute("/signin")({
 function SignInRoute() {
   return (
     <AuthRedirect>
-      <Unauthenticated>
-        <AuthPageLayout title="Welcome back" subtitle="Sign in to your account to continue">
-          <SignInForm />
-          <div className="text-center text-sm text-ui-text-tertiary mt-4">
-            <span>Don't have an account? </span>
-            <AuthLink to={ROUTES.signup.path}>Sign up</AuthLink>
-          </div>
-        </AuthPageLayout>
-      </Unauthenticated>
+      <AuthPageLayout title="Welcome back" subtitle="Sign in to your account to continue">
+        <SignInForm />
+        <div className="text-center text-sm text-ui-text-tertiary mt-4">
+          <span>Don't have an account? </span>
+          <AuthLink to={ROUTES.signup.path}>Sign up</AuthLink>
+        </div>
+      </AuthPageLayout>
     </AuthRedirect>
   );
 }

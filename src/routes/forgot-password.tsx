@@ -13,15 +13,9 @@ export const Route = createFileRoute("/forgot-password")({
 
 function ForgotPasswordRoute() {
   return (
-    <>
-      <Authenticated>
-        {/* Redirect authenticated users to their dashboard */}
-        <AuthRedirect>{null}</AuthRedirect>
-      </Authenticated>
-      <Unauthenticated>
-        <ForgotPasswordPage />
-      </Unauthenticated>
-    </>
+    <AuthRedirect>
+      <ForgotPasswordPage />
+    </AuthRedirect>
   );
 }
 

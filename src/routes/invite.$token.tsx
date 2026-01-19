@@ -225,46 +225,50 @@ function InviteRoute() {
             </div>
 
             {/* Auth-dependent content */}
-            <Authenticated>
-              {/* User is logged in - show accept button */}
-              <div className="space-y-4">
-                {acceptError && (
-                  <div className="p-3 rounded-lg bg-status-error-bg text-status-error-text text-sm">
-                    {acceptError}
-                  </div>
-                )}
-                <Button
-                  variant="primary"
-                  size="lg"
-                  className="w-full"
-                  onClick={handleAcceptInvite}
-                  disabled={isAccepting}
-                >
-                  {isAccepting ? (
-                    <>
-                      <Loader2 className="w-4 h-4 animate-spin mr-2" />
-                      Accepting...
-                    </>
-                  ) : (
-                    "Accept Invitation"
+            {invite.status === "pending" && (
+              <Authenticated>
+                {/* User is logged in - show accept button */}
+                <div className="space-y-4">
+                  {acceptError && (
+                    <div className="p-3 rounded-lg bg-status-error-bg text-status-error-text text-sm">
+                      {acceptError}
+                    </div>
                   )}
-                </Button>
-                <Typography className="text-xs text-center text-ui-text-tertiary">
-                  By accepting, you'll join the team and can start collaborating
-                </Typography>
-              </div>
-            </Authenticated>
+                  <Button
+                    variant="primary"
+                    size="lg"
+                    className="w-full"
+                    onClick={handleAcceptInvite}
+                    disabled={isAccepting}
+                  >
+                    {isAccepting ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                        Accepting...
+                      </>
+                    ) : (
+                      "Accept Invitation"
+                    )}
+                  </Button>
+                  <Typography className="text-xs text-center text-ui-text-tertiary">
+                    By accepting, you'll join the team and can start collaborating
+                  </Typography>
+                </div>
+              </Authenticated>
+            )}
 
-            <Unauthenticated>
-              {/* User is not logged in - show sign up/in form */}
-              <div className="space-y-4">
-                <Typography className="text-sm text-center text-ui-text-secondary mb-4">
-                  Sign in or create an account with{" "}
-                  <span className="font-medium">{invite.email}</span> to accept this invitation
-                </Typography>
-                <SignInForm />
-              </div>
-            </Unauthenticated>
+            {invite.status === "pending" && (
+              <Unauthenticated>
+                {/* User is not logged in - show sign up/in form */}
+                <div className="space-y-4">
+                  <Typography className="text-sm text-center text-ui-text-secondary mb-4">
+                    Sign in or create an account with{" "}
+                    <span className="font-medium">{invite.email}</span> to accept this invitation
+                  </Typography>
+                  <SignInForm />
+                </div>
+              </Unauthenticated>
+            )}
           </div>
         </div>
       </main>

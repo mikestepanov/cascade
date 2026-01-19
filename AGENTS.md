@@ -39,7 +39,7 @@ Before submitting PRs, run the following commands. These are also enforced by CI
 
 - `pnpm run check`: TypeScript type checking + linting.
 - `pnpm run typecheck`: TypeScript type checking only.
-- `pnpm run lint`: Biome linting with auto-fix.
+- `pnpm run biome`: Biome linting with auto-fix.
 - `pnpm run format`: Biome formatting with auto-fix.
 - `pnpm test`: Run unit tests.
 

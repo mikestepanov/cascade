@@ -39,7 +39,7 @@ git checkout -b fix/your-bug-fix
 pnpm run typecheck
 
 # Linting
-pnpm run lint
+pnpm run biome
 
 # Frontend tests
 pnpm test

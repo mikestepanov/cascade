@@ -59,6 +59,13 @@ export const getRedirectDestination = query({
     const userId = await getAuthUserId(ctx);
     if (!userId) return null;
 
+    const user = await ctx.db.get(userId);
+    // If the user has an email but it's not verified, don't suggest a redirect destination.
+    // This allows them to stay on the signup/signin page to complete verification.
+    if (!user || (user.email && !user.emailVerificationTime)) {
+      return null;
+    }
+
     // 1. Check onboarding status
     const onboarding = await ctx.db
       .query("userOnboarding")

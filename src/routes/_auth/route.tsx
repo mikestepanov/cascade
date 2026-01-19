@@ -1,6 +1,7 @@
+import { api } from "@convex/_generated/api";
 import { createFileRoute, Navigate, Outlet } from "@tanstack/react-router";
-import { Authenticated, AuthLoading, Unauthenticated } from "convex/react";
-import { AppSplashScreen } from "@/components/auth";
+import { Authenticated, AuthLoading, Unauthenticated, useQuery } from "convex/react";
+import { AppSplashScreen, EmailVerificationRequired } from "@/components/auth";
 import { ROUTES } from "@/config/routes";
 
 export const Route = createFileRoute("/_auth")({
@@ -12,7 +13,7 @@ export const Route = createFileRoute("/_auth")({
  * AuthLayout - Protected route layout using standard Convex auth components.
  *
  * - AuthLoading: Shows splash during initial auth check
- * - Authenticated: Renders protected content
+ * - Authenticated: Renders protected content (checks for verification)
  * - Unauthenticated: Redirects to home/signin
  */
 function AuthLayout() {

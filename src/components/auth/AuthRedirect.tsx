@@ -24,11 +24,7 @@ export function AuthRedirect({ children }: { children: React.ReactNode }) {
     }
   }, [redirectPath, navigate, location.pathname]);
 
-  // If we have a redirect destination, user is authenticated - show nothing while redirecting
-  if (redirectPath) {
-    return null;
-  }
-
-  // Otherwise, render children (unauthenticated content)
+  // We always render children to avoid unmounting forms during auth transitions.
+  // The useEffect handles redirecting away when authentication is fully resolved.
   return <>{children}</>;
 }
