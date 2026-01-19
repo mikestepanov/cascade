@@ -3,6 +3,7 @@ import { v } from "convex/values";
 import type { Id } from "./_generated/dataModel";
 import { mutation, query } from "./_generated/server";
 import { batchFetchProjects, batchFetchUsers, getUserName } from "./lib/batchHelpers";
+import { conflict, forbidden, notFound, unauthenticated } from "./lib/errors";
 import {
   DEFAULT_PAGE_SIZE,
   DEFAULT_SEARCH_PAGE_SIZE,
@@ -21,7 +22,7 @@ export const create = mutation({
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) {
-      throw new Error("Not authenticated");
+      throw unauthenticated();
     }
 
     const now = Date.now();
@@ -125,7 +126,7 @@ export const get = query({
 
     // Check if user can access this document
     if (!document.isPublic && document.createdBy !== userId) {
-      throw new Error("Not authorized to access this document");
+      throw forbidden(undefined, "Not authorized to access this document");
     }
 
     const creator = await ctx.db.get(document.createdBy);
@@ -145,16 +146,16 @@ export const updateTitle = mutation({
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) {
-      throw new Error("Not authenticated");
+      throw unauthenticated();
     }
 
     const document = await ctx.db.get(args.id);
     if (!document) {
-      throw new Error("Document not found");
+      throw notFound("document", args.id);
     }
 
     if (document.createdBy !== userId) {
-      throw new Error("Not authorized to edit this document");
+      throw forbidden(undefined, "Not authorized to edit this document");
     }
 
     await ctx.db.patch(args.id, {
@@ -169,16 +170,16 @@ export const togglePublic = mutation({
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) {
-      throw new Error("Not authenticated");
+      throw unauthenticated();
     }
 
     const document = await ctx.db.get(args.id);
     if (!document) {
-      throw new Error("Document not found");
+      throw notFound("document", args.id);
     }
 
     if (document.createdBy !== userId) {
-      throw new Error("Not authorized to edit this document");
+      throw forbidden(undefined, "Not authorized to edit this document");
     }
 
     await ctx.db.patch(args.id, {
@@ -193,16 +194,16 @@ export const deleteDocument = mutation({
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) {
-      throw new Error("Not authenticated");
+      throw unauthenticated();
     }
 
     const document = await ctx.db.get(args.id);
     if (!document) {
-      throw new Error("Document not found");
+      throw notFound("document", args.id);
     }
 
     if (document.createdBy !== userId) {
-      throw new Error("Not authorized to delete this document");
+      throw forbidden(undefined, "Not authorized to delete this document");
     }
 
     // Soft delete with automatic cascading
@@ -217,20 +218,20 @@ export const restoreDocument = mutation({
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) {
-      throw new Error("Not authenticated");
+      throw unauthenticated();
     }
 
     const document = await ctx.db.get(args.id);
     if (!document) {
-      throw new Error("Document not found");
+      throw notFound("document", args.id);
     }
 
     if (!document.isDeleted) {
-      throw new Error("Document is not deleted");
+      throw conflict("Document is not deleted");
     }
 
     if (document.createdBy !== userId) {
-      throw new Error("Not authorized to restore this document");
+      throw forbidden(undefined, "Not authorized to restore this document");
     }
 
     // Restore document

@@ -5,6 +5,7 @@ import { type MutationCtx, mutation, type QueryCtx, query } from "./_generated/s
 import { sendEmail } from "./email/index";
 import { batchFetchProjects, batchFetchUsers } from "./lib/batchHelpers";
 import { getSiteUrl } from "./lib/env";
+import { conflict, forbidden, notFound, unauthenticated, validation } from "./lib/errors";
 import { notDeleted } from "./lib/softDeleteHelpers";
 
 // Helper: Check if user is a organization admin
@@ -76,7 +77,7 @@ async function addExistingUserToProject(
     .first();
 
   if (existingMember) {
-    throw new Error("User is already a member of this project");
+    throw conflict("User is already a member of this project");
   }
 
   // Add them directly to the project
@@ -108,10 +109,10 @@ async function checkDuplicatePendingInvite(
   const bothPlatform = !(projectId || existingInvite.projectId);
 
   if (sameProject) {
-    throw new Error("An invitation has already been sent to this email for this project");
+    throw conflict("An invitation has already been sent to this email for this project");
   }
   if (bothPlatform) {
-    throw new Error("An invitation has already been sent to this email");
+    throw conflict("An invitation has already been sent to this email");
   }
 }
 
@@ -181,11 +182,11 @@ export const sendInvite = mutation({
   ),
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
+    if (!userId) throw unauthenticated();
 
     // Validate email format early
     if (!isValidEmail(args.email)) {
-      throw new Error("Invalid email address");
+      throw validation("email", "Invalid email address");
     }
 
     // Check permissions and get project info
@@ -195,16 +196,16 @@ export const sendInvite = mutation({
 
     if (args.projectId) {
       const project = await ctx.db.get(args.projectId);
-      if (!project) throw new Error("Project not found");
+      if (!project) throw notFound("project", args.projectId);
       projectName = project.name;
 
       // Allow if platform admin OR project admin
       const hasProjectAdmin = await isProjectAdmin(ctx, args.projectId, userId);
       if (!(isPlatAdmin || hasProjectAdmin)) {
-        throw new Error("Only project admins can invite to projects");
+        throw forbidden("admin", "Only project admins can invite to projects");
       }
     } else if (!isPlatAdmin) {
-      throw new Error("Only admins can send platform invites");
+      throw forbidden("admin", "Only admins can send platform invites");
     }
 
     // Check if user already exists with this email
@@ -224,7 +225,7 @@ export const sendInvite = mutation({
       );
     }
     if (existingUser) {
-      throw new Error("A user with this email already exists");
+      throw conflict("A user with this email already exists");
     }
 
     // Check for duplicate pending invites
@@ -280,21 +281,21 @@ export const revokeInvite = mutation({
   returns: v.object({ success: v.boolean() }),
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
+    if (!userId) throw unauthenticated();
 
     const invite = await ctx.db.get(args.inviteId);
     if (!invite) {
-      throw new Error("Invite not found");
+      throw notFound("invite", args.inviteId);
     }
 
     // Check if user is admin of the organization the invite belongs to
     const isAdmin = await isOrganizationAdmin(ctx, invite.organizationId, userId);
     if (!isAdmin) {
-      throw new Error("Only admins can revoke invites");
+      throw forbidden("admin", "Only admins can revoke invites");
     }
 
     if (invite.status !== "pending") {
-      throw new Error("Can only revoke pending invites");
+      throw conflict("Can only revoke pending invites");
     }
 
     await ctx.db.patch(args.inviteId, {
@@ -319,21 +320,21 @@ export const resendInvite = mutation({
   returns: v.object({ success: v.boolean() }),
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
+    if (!userId) throw unauthenticated();
 
     const invite = await ctx.db.get(args.inviteId);
     if (!invite) {
-      throw new Error("Invite not found");
+      throw notFound("invite", args.inviteId);
     }
 
     // Check if user is admin of the organization the invite belongs to
     const isAdmin = await isOrganizationAdmin(ctx, invite.organizationId, userId);
     if (!isAdmin) {
-      throw new Error("Only admins can resend invites");
+      throw forbidden("admin", "Only admins can resend invites");
     }
 
     if (invite.status !== "pending") {
-      throw new Error("Can only resend pending invites");
+      throw conflict("Can only resend pending invites");
     }
 
     // Extend expiration by another 7 days
@@ -459,7 +460,7 @@ export const acceptInvite = mutation({
   }),
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
+    if (!userId) throw unauthenticated();
 
     const invite = await ctx.db
       .query("invites")
@@ -467,11 +468,11 @@ export const acceptInvite = mutation({
       .first();
 
     if (!invite) {
-      throw new Error("Invalid invitation token");
+      throw notFound("invite");
     }
 
     if (invite.status !== "pending") {
-      throw new Error(`This invitation is ${invite.status}`);
+      throw conflict(`This invitation is ${invite.status}`);
     }
 
     if (invite.expiresAt < Date.now()) {
@@ -480,13 +481,13 @@ export const acceptInvite = mutation({
         status: "expired",
         updatedAt: Date.now(),
       });
-      throw new Error("This invitation has expired");
+      throw validation("token", "This invitation has expired");
     }
 
     // Verify the user's email matches the invite
     const user = await ctx.db.get(userId);
     if (user?.email !== invite.email) {
-      throw new Error("This invitation was sent to a different email address");
+      throw forbidden(undefined, "This invitation was sent to a different email address");
     }
 
     // Mark invite as accepted
@@ -579,7 +580,7 @@ export const listInvites = query({
   ),
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
+    if (!userId) throw unauthenticated();
 
     // Check if user is admin - return empty array for non-admins (UI-driven visibility)
     const isAdmin = await isOrganizationAdmin(ctx, args.organizationId, userId);
@@ -658,7 +659,7 @@ export const listUsers = query({
   ),
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
+    if (!userId) throw unauthenticated();
 
     // Check if user is admin - return empty array for non-admins (UI-driven visibility)
     const isAdmin = await isOrganizationAdmin(ctx, args.organizationId, userId);

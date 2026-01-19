@@ -1,6 +1,7 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
+import { notFound, unauthenticated, validation } from "./lib/errors";
 import { notDeleted } from "./lib/softDeleteHelpers";
 import { assertCanEditProject, canAccessProject } from "./projectAccess";
 
@@ -15,12 +16,12 @@ export const create = mutation({
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) {
-      throw new Error("Not authenticated");
+      throw unauthenticated();
     }
 
     const project = await ctx.db.get(args.projectId);
     if (!project) {
-      throw new Error("Project not found");
+      throw notFound("project", args.projectId);
     }
 
     // Check permissions - requires editor role to create sprints
@@ -106,21 +107,21 @@ export const startSprint = mutation({
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) {
-      throw new Error("Not authenticated");
+      throw unauthenticated();
     }
 
     const sprint = await ctx.db.get(args.sprintId);
     if (!sprint) {
-      throw new Error("Sprint not found");
+      throw notFound("sprint", args.sprintId);
     }
 
     if (!sprint.projectId) {
-      throw new Error("Sprint has no project");
+      throw validation("projectId", "Sprint has no project");
     }
 
     const project = await ctx.db.get(sprint.projectId);
     if (!project) {
-      throw new Error("Project not found");
+      throw notFound("project", sprint.projectId);
     }
 
     // Check permissions - requires editor role to start sprints
@@ -155,21 +156,21 @@ export const completeSprint = mutation({
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) {
-      throw new Error("Not authenticated");
+      throw unauthenticated();
     }
 
     const sprint = await ctx.db.get(args.sprintId);
     if (!sprint) {
-      throw new Error("Sprint not found");
+      throw notFound("sprint", args.sprintId);
     }
 
     if (!sprint.projectId) {
-      throw new Error("Sprint has no project");
+      throw validation("projectId", "Sprint has no project");
     }
 
     const project = await ctx.db.get(sprint.projectId);
     if (!project) {
-      throw new Error("Project not found");
+      throw notFound("project", sprint.projectId);
     }
 
     // Check permissions - requires editor role to complete sprints

@@ -22,7 +22,7 @@ function WorkspaceLayout() {
 
   if (workspace === undefined) {
     return (
-      <Flex direction="column" align="center" justify="center" style={{ minHeight: "400px" }}>
+      <Flex direction="column" align="center" justify="center" className="min-h-[400px]">
         <LoadingSpinner />
       </Flex>
     );

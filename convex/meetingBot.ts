@@ -6,6 +6,7 @@ import type { MutationCtx, QueryCtx } from "./_generated/server";
 import { internalAction, internalMutation, mutation, query } from "./_generated/server";
 import { batchFetchCalendarEvents, batchFetchRecordings } from "./lib/batchHelpers";
 import { getBotServiceApiKey, getBotServiceUrl } from "./lib/env";
+import { conflict, forbidden, notFound, unauthenticated } from "./lib/errors";
 import { notDeleted } from "./lib/softDeleteHelpers";
 
 // ===========================================
@@ -40,11 +41,11 @@ function validateBotApiKey(_ctx: QueryCtx | MutationCtx, apiKey: string): boolea
  */
 function requireBotApiKey(ctx: QueryCtx | MutationCtx, apiKey: string | undefined): void {
   if (!apiKey) {
-    throw new Error("Bot service API key required");
+    throw unauthenticated();
   }
   const isValid = validateBotApiKey(ctx, apiKey);
   if (!isValid) {
-    throw new Error("Invalid bot service API key");
+    throw forbidden(undefined, "Invalid bot service API key");
   }
 }
 
@@ -105,7 +106,7 @@ export const listRecordings = query({
   ),
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
+    if (!userId) throw unauthenticated();
 
     const limit = args.limit ?? 20;
 
@@ -172,7 +173,7 @@ export const getRecordingByCalendarEvent = query({
   args: { calendarEventId: v.id("calendarEvents") },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
+    if (!userId) throw unauthenticated();
 
     const recording = await ctx.db
       .query("meetingRecordings")
@@ -210,14 +211,14 @@ export const getRecording = query({
   args: { recordingId: v.id("meetingRecordings") },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
+    if (!userId) throw unauthenticated();
 
     const recording = await ctx.db.get(args.recordingId);
-    if (!recording) throw new Error("Recording not found");
+    if (!recording) throw notFound("recording", args.recordingId);
 
     // Check access
     if (recording.createdBy !== userId && !recording.isPublic) {
-      throw new Error("Not authorized to view this recording");
+      throw forbidden(undefined, "Not authorized to view this recording");
     }
 
     const calendarEvent = recording.calendarEventId
@@ -260,13 +261,13 @@ export const getTranscript = query({
   args: { recordingId: v.id("meetingRecordings") },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
+    if (!userId) throw unauthenticated();
 
     const recording = await ctx.db.get(args.recordingId);
-    if (!recording) throw new Error("Recording not found");
+    if (!recording) throw notFound("recording", args.recordingId);
 
     if (recording.createdBy !== userId && !recording.isPublic) {
-      throw new Error("Not authorized");
+      throw forbidden();
     }
 
     return ctx.db
@@ -281,13 +282,13 @@ export const getSummary = query({
   args: { recordingId: v.id("meetingRecordings") },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
+    if (!userId) throw unauthenticated();
 
     const recording = await ctx.db.get(args.recordingId);
-    if (!recording) throw new Error("Recording not found");
+    if (!recording) throw notFound("recording", args.recordingId);
 
     if (recording.createdBy !== userId && !recording.isPublic) {
-      throw new Error("Not authorized");
+      throw forbidden();
     }
 
     return ctx.db
@@ -353,7 +354,7 @@ export const scheduleRecording = mutation({
   returns: v.id("meetingRecordings"),
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
+    if (!userId) throw unauthenticated();
 
     const now = Date.now();
 
@@ -412,7 +413,7 @@ export const startRecordingNow = mutation({
   returns: v.id("meetingRecordings"),
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
+    if (!userId) throw unauthenticated();
 
     const now = Date.now();
 
@@ -456,17 +457,17 @@ export const cancelRecording = mutation({
   returns: v.null(),
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
+    if (!userId) throw unauthenticated();
 
     const recording = await ctx.db.get(args.recordingId);
-    if (!recording) throw new Error("Recording not found");
+    if (!recording) throw notFound("recording", args.recordingId);
 
     if (recording.createdBy !== userId) {
-      throw new Error("Not authorized to cancel this recording");
+      throw forbidden(undefined, "Not authorized to cancel this recording");
     }
 
     if (recording.status !== "scheduled") {
-      throw new Error(
+      throw conflict(
         `Cannot cancel recording with status '${recording.status}'. Only scheduled recordings can be cancelled.`,
       );
     }
@@ -522,7 +523,7 @@ export const updateRecordingStatus = mutation({
     await requireBotApiKey(ctx, args.apiKey);
 
     const recording = await ctx.db.get(args.recordingId);
-    if (!recording) throw new Error("Recording not found");
+    if (!recording) throw notFound("recording", args.recordingId);
 
     await ctx.db.patch(args.recordingId, {
       status: args.status,
@@ -566,7 +567,7 @@ export const saveTranscript = mutation({
     await requireBotApiKey(ctx, args.apiKey);
 
     const recording = await ctx.db.get(args.recordingId);
-    if (!recording) throw new Error("Recording not found");
+    if (!recording) throw notFound("recording", args.recordingId);
 
     const transcriptId = await ctx.db.insert("meetingTranscripts", {
       recordingId: args.recordingId,
@@ -638,7 +639,7 @@ export const saveSummary = mutation({
     await requireBotApiKey(ctx, args.apiKey);
 
     const recording = await ctx.db.get(args.recordingId);
-    if (!recording) throw new Error("Recording not found");
+    if (!recording) throw notFound("recording", args.recordingId);
 
     const summaryId = await ctx.db.insert("meetingSummaries", {
       recordingId: args.recordingId,
@@ -705,7 +706,7 @@ export const saveParticipants = mutation({
     await requireBotApiKey(ctx, args.apiKey);
 
     const recording = await ctx.db.get(args.recordingId);
-    if (!recording) throw new Error("Recording not found");
+    if (!recording) throw notFound("recording", args.recordingId);
 
     // Try to match participants to Nixelo users by email
     for (const participant of args.participants) {
@@ -744,17 +745,17 @@ export const createIssueFromActionItem = mutation({
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
+    if (!userId) throw unauthenticated();
 
     const summary = await ctx.db.get(args.summaryId);
-    if (!summary) throw new Error("Summary not found");
+    if (!summary) throw notFound("summary", args.summaryId);
 
     const actionItem = summary.actionItems[args.actionItemIndex];
-    if (!actionItem) throw new Error("Action item not found");
+    if (!actionItem) throw notFound("actionItem");
 
     // Get project for issue key
     const project = await ctx.db.get(args.projectId);
-    if (!project) throw new Error("Project not found");
+    if (!project) throw notFound("project", args.projectId);
 
     // Get next issue number
     const existingIssues = await ctx.db

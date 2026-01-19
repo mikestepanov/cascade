@@ -3,6 +3,7 @@ import { v } from "convex/values";
 import type { Doc, Id } from "./_generated/dataModel";
 import { type MutationCtx, mutation, type QueryCtx, query } from "./_generated/server";
 import { batchFetchOrganizations, batchFetchUsers } from "./lib/batchHelpers";
+import { conflict, forbidden, notFound, unauthenticated, validation } from "./lib/errors";
 import { notDeleted } from "./lib/softDeleteHelpers";
 
 // ============================================================================
@@ -50,7 +51,7 @@ async function assertOrganizationAdmin(
 ): Promise<void> {
   const isAdmin = await isOrganizationAdmin(ctx, organizationId, userId);
   if (!isAdmin) {
-    throw new Error("Only organization admins can perform this action");
+    throw forbidden("admin", "Only organization admins can perform this action");
   }
 }
 
@@ -64,7 +65,7 @@ async function assertOrganizationOwner(
 ): Promise<void> {
   const role = await getOrganizationRole(ctx, organizationId, userId);
   if (role !== "owner") {
-    throw new Error("Only organization owner can perform this action");
+    throw forbidden("owner", "Only organization owner can perform this action");
   }
 }
 
@@ -168,14 +169,15 @@ export const createOrganization = mutation({
   }),
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
+    if (!userId) throw unauthenticated();
 
     // Generate slug from name
     const baseSlug = generateSlug(args.name);
 
     // Validate slug is not reserved (GitHub-style validation)
     if (isReservedSlug(baseSlug)) {
-      throw new Error(
+      throw validation(
+        "name",
         `The name "${args.name}" cannot be used because "${baseSlug}" is a reserved URL path. Please choose a different name.`,
       );
     }
@@ -249,7 +251,7 @@ export const updateOrganization = mutation({
   returns: v.object({ success: v.boolean() }),
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
+    if (!userId) throw unauthenticated();
 
     await assertOrganizationAdmin(ctx, args.organizationId, userId);
 
@@ -310,7 +312,7 @@ export const deleteOrganization = mutation({
   returns: v.object({ success: v.boolean() }),
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
+    if (!userId) throw unauthenticated();
 
     await assertOrganizationOwner(ctx, args.organizationId, userId);
 
@@ -350,7 +352,7 @@ export const addMember = mutation({
   returns: v.object({ success: v.boolean() }),
   handler: async (ctx, args) => {
     const currentUserId = await getAuthUserId(ctx);
-    if (!currentUserId) throw new Error("Not authenticated");
+    if (!currentUserId) throw unauthenticated();
 
     await assertOrganizationAdmin(ctx, args.organizationId, currentUserId);
 
@@ -363,7 +365,7 @@ export const addMember = mutation({
       .first();
 
     if (existing) {
-      throw new Error("User is already a member of this organization");
+      throw conflict("User is already a member of this organization");
     }
 
     const now = Date.now();
@@ -399,7 +401,7 @@ export const updateMemberRole = mutation({
   returns: v.object({ success: v.boolean() }),
   handler: async (ctx, args) => {
     const currentUserId = await getAuthUserId(ctx);
-    if (!currentUserId) throw new Error("Not authenticated");
+    if (!currentUserId) throw unauthenticated();
 
     await assertOrganizationOwner(ctx, args.organizationId, currentUserId);
 
@@ -411,11 +413,11 @@ export const updateMemberRole = mutation({
       .first();
 
     if (!membership) {
-      throw new Error("User is not a member of this organization");
+      throw notFound("membership", args.userId);
     }
 
     if (membership.role === "owner") {
-      throw new Error("Cannot change owner role");
+      throw forbidden("owner", "Cannot change owner role");
     }
 
     await ctx.db.patch(membership._id, {
@@ -438,7 +440,7 @@ export const removeMember = mutation({
   returns: v.object({ success: v.boolean() }),
   handler: async (ctx, args) => {
     const currentUserId = await getAuthUserId(ctx);
-    if (!currentUserId) throw new Error("Not authenticated");
+    if (!currentUserId) throw unauthenticated();
 
     await assertOrganizationAdmin(ctx, args.organizationId, currentUserId);
 
@@ -450,11 +452,11 @@ export const removeMember = mutation({
       .first();
 
     if (!membership) {
-      throw new Error("User is not a member of this organization");
+      throw notFound("membership", args.userId);
     }
 
     if (membership.role === "owner") {
-      throw new Error("Cannot remove organization owner");
+      throw forbidden("owner", "Cannot remove organization owner");
     }
 
     await ctx.db.delete(membership._id);
@@ -688,7 +690,7 @@ export const getOrganizationMembers = query({
   ),
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
+    if (!userId) throw unauthenticated();
 
     await assertOrganizationAdmin(ctx, args.organizationId, userId);
 
@@ -762,7 +764,7 @@ export const initializeDefaultOrganization = mutation({
   }),
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
+    if (!userId) throw unauthenticated();
 
     // Check if user already has an organization
     const existingMembership = await ctx.db

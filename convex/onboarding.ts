@@ -3,6 +3,7 @@ import { v } from "convex/values";
 import type { Id } from "./_generated/dataModel";
 import { type MutationCtx, mutation, query } from "./_generated/server";
 import { getSearchContent } from "./issues/helpers";
+import { conflict, forbidden, notFound, unauthenticated, validation } from "./lib/errors";
 import { notDeleted } from "./lib/softDeleteHelpers";
 import { getOrganizationRole } from "./organizations";
 
@@ -62,7 +63,7 @@ export const updateOnboardingStatus = mutation({
   returns: v.null(),
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
+    if (!userId) throw unauthenticated();
 
     const existing = await ctx.db
       .query("userOnboarding")
@@ -115,7 +116,7 @@ export const createSampleProject = mutation({
   returns: v.id("projects"),
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
+    if (!userId) throw unauthenticated();
 
     // Check if sample project already exists
     const onboarding = await ctx.db
@@ -124,7 +125,7 @@ export const createSampleProject = mutation({
       .first();
 
     if (onboarding?.sampleWorkspaceCreated) {
-      throw new Error("Sample project already created");
+      throw conflict("Sample project already created");
     }
 
     // Get or find the user's organization
@@ -147,13 +148,19 @@ export const createSampleProject = mutation({
     }
 
     if (!organizationId) {
-      throw new Error("No organization found. Please complete onboarding first.");
+      throw validation(
+        "organizationId",
+        "No organization found. Please complete onboarding first.",
+      );
     }
 
     // RBAC Check: Ensure user is a member of the organization
     const role = await getOrganizationRole(ctx, organizationId, userId);
     if (!role) {
-      throw new Error("You must be a member of the organization to create a sample project");
+      throw forbidden(
+        undefined,
+        "You must be a member of the organization to create a sample project",
+      );
     }
 
     const now = Date.now();
@@ -525,12 +532,12 @@ export const resetOnboarding = mutation({
   returns: v.object({ success: v.boolean() }),
   handler: async (ctx) => {
     const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
+    if (!userId) throw unauthenticated();
 
     // Get user and verify test email
     const user = await ctx.db.get(userId);
     if (!(user && isTestEmail(user.email))) {
-      throw new Error("Reset onboarding is only available for test accounts");
+      throw forbidden(undefined, "Reset onboarding is only available for test accounts");
     }
 
     // Delete onboarding record
@@ -570,7 +577,7 @@ export const deleteSampleProject = mutation({
   returns: v.null(),
   handler: async (ctx) => {
     const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
+    if (!userId) throw unauthenticated();
 
     // Find sample project
     const project = await ctx.db
@@ -581,7 +588,7 @@ export const deleteSampleProject = mutation({
       .first();
 
     if (!project) {
-      throw new Error("Sample project not found");
+      throw notFound("project");
     }
 
     // Delete all related data (issues, comments, sprints, etc.)
@@ -717,7 +724,7 @@ export const setOnboardingPersona = mutation({
   returns: v.object({ success: v.boolean() }),
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
+    if (!userId) throw unauthenticated();
 
     // Check invite status to populate wasInvited field
     const user = await ctx.db.get(userId);
@@ -792,7 +799,7 @@ export const completeOnboardingFlow = mutation({
   returns: v.object({ success: v.boolean() }),
   handler: async (ctx) => {
     const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
+    if (!userId) throw unauthenticated();
 
     const existing = await ctx.db
       .query("userOnboarding")

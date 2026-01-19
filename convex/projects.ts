@@ -5,6 +5,7 @@ import { internal } from "./_generated/api";
 import type { Doc } from "./_generated/dataModel";
 import { mutation, query } from "./_generated/server";
 import { batchFetchProjects, batchFetchUsers, getUserName } from "./lib/batchHelpers";
+import { conflict, forbidden, notFound, unauthenticated, validation } from "./lib/errors";
 import { fetchPaginatedQuery } from "./lib/queryHelpers";
 import { cascadeSoftDelete } from "./lib/relationships";
 import { notDeleted, softDeleteFields } from "./lib/softDeleteHelpers";
@@ -29,9 +30,7 @@ export const createProject = mutation({
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      throw new Error("Not authenticated");
-    }
+    if (!userId) throw unauthenticated();
 
     // Check if project key already exists
     const existingProject = await ctx.db
@@ -40,18 +39,14 @@ export const createProject = mutation({
       .filter(notDeleted)
       .first();
 
-    if (existingProject) {
-      throw new Error("Project key already exists");
-    }
+    if (existingProject) throw conflict("Project key already exists");
 
     // Validate: if teamId provided, ensure it belongs to the workspace
     if (args.teamId) {
       const team = await ctx.db.get(args.teamId);
-      if (!team) {
-        throw new Error("Team not found");
-      }
+      if (!team) throw notFound("team", args.teamId);
       if (team.workspaceId !== args.workspaceId) {
-        throw new Error("Team must belong to the specified workspace");
+        throw validation("teamId", "Team must belong to the specified workspace");
       }
     }
 
@@ -279,12 +274,10 @@ export const getProject = query({
     // Check access permissions
     if (userId) {
       const hasAccess = await canAccessProject(ctx, project._id, userId);
-      if (!hasAccess) {
-        throw new Error("Not authorized to access this project");
-      }
+      if (!hasAccess) throw forbidden();
     } else {
       // Unauthenticated users cannot access projects
-      throw new Error("Not authorized to access this project");
+      throw forbidden();
     }
 
     const creator = await ctx.db.get(project.createdBy);
@@ -399,14 +392,10 @@ export const updateProject = mutation({
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      throw new Error("Not authenticated");
-    }
+    if (!userId) throw unauthenticated();
 
     const project = await ctx.db.get(args.projectId);
-    if (!project) {
-      throw new Error("Project not found");
-    }
+    if (!project) throw notFound("project", args.projectId);
 
     // Only project admins can update project settings
     await assertIsProjectAdmin(ctx, args.projectId, userId);
@@ -447,18 +436,14 @@ export const softDeleteProject = mutation({
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      throw new Error("Not authenticated");
-    }
+    if (!userId) throw unauthenticated();
 
     const project = await ctx.db.get(args.projectId);
-    if (!project) {
-      throw new Error("Project not found");
-    }
+    if (!project) throw notFound("project", args.projectId);
 
     // Only project owner can delete the project
     if (project.createdBy !== userId && project.ownerId !== userId) {
-      throw new Error("Only project owner can delete the project");
+      throw forbidden("owner");
     }
 
     // Soft delete with automatic cascading
@@ -486,22 +471,18 @@ export const restoreProject = mutation({
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      throw new Error("Not authenticated");
-    }
+    if (!userId) throw unauthenticated();
 
     const project = await ctx.db.get(args.projectId);
-    if (!project) {
-      throw new Error("Project not found");
-    }
+    if (!project) throw notFound("project", args.projectId);
 
     if (!project.isDeleted) {
-      throw new Error("Project is not deleted");
+      throw validation("projectId", "Project is not deleted");
     }
 
     // Only project owner can restore
     if (project.createdBy !== userId && project.ownerId !== userId) {
-      throw new Error("Only project owner can restore the project");
+      throw forbidden("owner");
     }
 
     // Restore with automatic cascading
@@ -541,14 +522,10 @@ export const updateWorkflow = mutation({
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      throw new Error("Not authenticated");
-    }
+    if (!userId) throw unauthenticated();
 
     const project = await ctx.db.get(args.projectId);
-    if (!project) {
-      throw new Error("Project not found");
-    }
+    if (!project) throw notFound("project", args.projectId);
 
     // Only project admins can modify workflow
     await assertIsProjectAdmin(ctx, args.projectId, userId);
@@ -578,14 +555,10 @@ export const addProjectMember = mutation({
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      throw new Error("Not authenticated");
-    }
+    if (!userId) throw unauthenticated();
 
     const project = await ctx.db.get(args.projectId);
-    if (!project) {
-      throw new Error("Project not found");
-    }
+    if (!project) throw notFound("project", args.projectId);
 
     // Only project admins can add members
     await assertIsProjectAdmin(ctx, args.projectId, userId);
@@ -596,9 +569,7 @@ export const addProjectMember = mutation({
       .withIndex("email", (q) => q.eq("email", args.userEmail))
       .first();
 
-    if (!user) {
-      throw new Error("User not found");
-    }
+    if (!user) throw notFound("user");
 
     // Check if already a member
     const existingMembership = await ctx.db
@@ -606,9 +577,7 @@ export const addProjectMember = mutation({
       .withIndex("by_project_user", (q) => q.eq("projectId", args.projectId).eq("userId", user._id))
       .first();
 
-    if (existingMembership) {
-      throw new Error("User is already a member");
-    }
+    if (existingMembership) throw conflict("User is already a member");
 
     const now = Date.now();
 
@@ -644,21 +613,17 @@ export const updateProjectMemberRole = mutation({
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      throw new Error("Not authenticated");
-    }
+    if (!userId) throw unauthenticated();
 
     const project = await ctx.db.get(args.projectId);
-    if (!project) {
-      throw new Error("Project not found");
-    }
+    if (!project) throw notFound("project", args.projectId);
 
     // Only project admins can change roles
     await assertIsProjectAdmin(ctx, args.projectId, userId);
 
     // Can't change project owner's role
     if (project.ownerId === args.memberId || project.createdBy === args.memberId) {
-      throw new Error("Cannot change project owner's role");
+      throw forbidden(undefined, "Cannot change project owner's role");
     }
 
     // Find membership
@@ -669,9 +634,7 @@ export const updateProjectMemberRole = mutation({
       )
       .first();
 
-    if (!membership) {
-      throw new Error("User is not a member of this project");
-    }
+    if (!membership) throw notFound("membership");
 
     await ctx.db.patch(membership._id, {
       role: args.newRole,
@@ -699,21 +662,17 @@ export const removeProjectMember = mutation({
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      throw new Error("Not authenticated");
-    }
+    if (!userId) throw unauthenticated();
 
     const project = await ctx.db.get(args.projectId);
-    if (!project) {
-      throw new Error("Project not found");
-    }
+    if (!project) throw notFound("project", args.projectId);
 
     // Only project admins can remove members
     await assertIsProjectAdmin(ctx, args.projectId, userId);
 
     // Can't remove the project owner
     if (project.ownerId === args.memberId || project.createdBy === args.memberId) {
-      throw new Error("Cannot remove project owner");
+      throw forbidden(undefined, "Cannot remove project owner");
     }
 
     // Find and delete membership

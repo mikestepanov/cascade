@@ -3,6 +3,8 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
 import { AuthLink, AuthPageLayout, AuthRedirect, ResetPasswordForm } from "@/components/auth";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/form/Input";
 import { ROUTES } from "@/config/routes";
 import { getConvexSiteUrl } from "@/lib/convex";
 
@@ -75,16 +77,10 @@ function ForgotPasswordPage() {
       subtitle="Enter your email and we'll send you a reset code"
     >
       <form className="flex flex-col gap-form-field" onSubmit={handleSubmit}>
-        <input
-          className="auth-input-field"
-          type="email"
-          name="email"
-          placeholder="Email"
-          required
-        />
-        <button className="auth-button" type="submit" disabled={submitting}>
+        <Input type="email" name="email" placeholder="Email" required />
+        <Button className="w-full" type="submit" disabled={submitting}>
           {submitting ? "Sending..." : "Send reset code"}
-        </button>
+        </Button>
       </form>
       <div className="text-center text-sm text-ui-text-tertiary mt-4">
         <AuthLink to={ROUTES.signin.path}>Back to sign in</AuthLink>

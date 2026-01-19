@@ -15,6 +15,7 @@ import {
   issueCountByType,
 } from "./aggregates";
 import { batchFetchIssues, batchFetchUsers, getUserName } from "./lib/batchHelpers";
+import { forbidden, notFound, unauthenticated } from "./lib/errors";
 import { MAX_ACTIVITY_FOR_ANALYTICS, MAX_VELOCITY_SPRINTS } from "./lib/queryLimits";
 import { notDeleted } from "./lib/softDeleteHelpers";
 import { canAccessProject } from "./projectAccess";
@@ -60,13 +61,13 @@ export const getProjectAnalytics = query({
   args: { projectId: v.id("projects") },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
+    if (!userId) throw unauthenticated();
 
     const project = await ctx.db.get(args.projectId);
-    if (!project) throw new Error("Project not found");
+    if (!project) throw notFound("project", args.projectId);
 
     if (!(await canAccessProject(ctx, args.projectId, userId))) {
-      throw new Error("Not authorized to access this project");
+      throw forbidden();
     }
 
     // Use aggregates for fast O(log n) counting instead of O(n)
@@ -118,18 +119,14 @@ export const getSprintBurndown = query({
   args: { sprintId: v.id("sprints") },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      throw new Error("Not authenticated");
-    }
+    if (!userId) throw unauthenticated();
 
     const sprint = await ctx.db.get(args.sprintId);
-    if (!sprint) {
-      throw new Error("Sprint not found");
-    }
+    if (!sprint) throw notFound("sprint", args.sprintId);
 
     // Check access to project
     if (!(await canAccessProject(ctx, sprint.projectId, userId))) {
-      throw new Error("Not authorized to access this sprint");
+      throw forbidden();
     }
 
     // Get all issues in the sprint
@@ -140,9 +137,7 @@ export const getSprintBurndown = query({
       .collect();
 
     const project = await ctx.db.get(sprint.projectId);
-    if (!project) {
-      throw new Error("Project not found");
-    }
+    if (!project) throw notFound("project", sprint.projectId);
 
     // Calculate total points (using storyPoints, fallback to estimatedHours)
     const totalPoints = sprintIssues.reduce(
@@ -209,19 +204,15 @@ export const getTeamVelocity = query({
   args: { projectId: v.id("projects") },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      throw new Error("Not authenticated");
-    }
+    if (!userId) throw unauthenticated();
 
     // Check access
     if (!(await canAccessProject(ctx, args.projectId, userId))) {
-      throw new Error("Not authorized to access this project");
+      throw forbidden();
     }
 
     const project = await ctx.db.get(args.projectId);
-    if (!project) {
-      throw new Error("Project not found");
-    }
+    if (!project) throw notFound("project", args.projectId);
 
     // Get completed sprints
     const completedSprints = await ctx.db
@@ -287,13 +278,11 @@ export const getRecentActivity = query({
   args: { projectId: v.id("projects"), limit: v.optional(v.number()) },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      throw new Error("Not authenticated");
-    }
+    if (!userId) throw unauthenticated();
 
     // Check access
     if (!(await canAccessProject(ctx, args.projectId, userId))) {
-      throw new Error("Not authorized to access this project");
+      throw forbidden();
     }
 
     // Get recent activity (global, limited)

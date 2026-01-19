@@ -5,6 +5,7 @@ import { internal } from "./_generated/api";
 import type { Doc, Id } from "./_generated/dataModel";
 import { type MutationCtx, mutation, type QueryCtx, query } from "./_generated/server";
 import { batchFetchTeams, batchFetchUsers, getUserName } from "./lib/batchHelpers";
+import { conflict, forbidden, notFound, unauthenticated, validation } from "./lib/errors";
 import { fetchPaginatedQuery } from "./lib/queryHelpers";
 import { cascadeSoftDelete } from "./lib/relationships";
 import { notDeleted, softDeleteFields } from "./lib/softDeleteHelpers";
@@ -72,7 +73,7 @@ async function assertCanManageTeam(
 ): Promise<void> {
   const canManage = await canManageTeam(ctx, teamId, userId);
   if (!canManage) {
-    throw new Error("Only team leads or organization admins can perform this action");
+    throw forbidden("lead", "Only team leads or organization admins can perform this action");
   }
 }
 
@@ -105,7 +106,7 @@ export const createTeam = mutation({
 
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
+    if (!userId) throw unauthenticated();
 
     // Must be organization member to create team
     const organizationMembership = await ctx.db
@@ -116,7 +117,7 @@ export const createTeam = mutation({
       .first();
 
     if (!organizationMembership) {
-      throw new Error("You must be an organization member to create a team");
+      throw forbidden(undefined, "You must be an organization member to create a team");
     }
 
     // Generate unique slug
@@ -190,12 +191,12 @@ export const updateTeam = mutation({
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
+    if (!userId) throw unauthenticated();
 
     await assertCanManageTeam(ctx, args.teamId, userId);
 
     const team = await ctx.db.get(args.teamId);
-    if (!team) throw new Error("Team not found");
+    if (!team) throw notFound("team", args.teamId);
 
     const updates: {
       name?: string;
@@ -261,7 +262,7 @@ export const softDeleteTeam = mutation({
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
+    if (!userId) throw unauthenticated();
 
     await assertCanManageTeam(ctx, args.teamId, userId);
 
@@ -295,23 +296,22 @@ export const restoreTeam = mutation({
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      throw new Error("Not authenticated");
-    }
+    if (!userId) throw unauthenticated();
 
     const team = await ctx.db.get(args.teamId);
-    if (!team) {
-      throw new Error("Team not found");
-    }
+    if (!team) throw notFound("team", args.teamId);
 
     if (!team.isDeleted) {
-      throw new Error("Team is not deleted");
+      throw validation("teamId", "Team is not deleted");
     }
 
     // Must be organization admin or the deletedBy user
     const isAdmin = await isOrganizationAdmin(ctx, team.organizationId, userId);
     if (!isAdmin && team.deletedBy !== userId) {
-      throw new Error("Only organization admins or the user who deleted the team can restore it");
+      throw forbidden(
+        undefined,
+        "Only organization admins or the user who deleted the team can restore it",
+      );
     }
 
     // Restore with automatic cascading
@@ -355,7 +355,7 @@ export const addTeamMember = mutation({
   },
   handler: async (ctx, args) => {
     const currentUserId = await getAuthUserId(ctx);
-    if (!currentUserId) throw new Error("Not authenticated");
+    if (!currentUserId) throw unauthenticated();
 
     await assertCanManageTeam(ctx, args.teamId, currentUserId);
 
@@ -365,13 +365,11 @@ export const addTeamMember = mutation({
       .withIndex("by_team_user", (q) => q.eq("teamId", args.teamId).eq("userId", args.userId))
       .first();
 
-    if (existing) {
-      throw new Error("User is already a member of this team");
-    }
+    if (existing) throw conflict("User is already a member of this team");
 
     // Verify user is organization member
     const team = await ctx.db.get(args.teamId);
-    if (!team) throw new Error("Team not found");
+    if (!team) throw notFound("team", args.teamId);
 
     const organizationMembership = await ctx.db
       .query("organizationMembers")
@@ -381,7 +379,7 @@ export const addTeamMember = mutation({
       .first();
 
     if (!organizationMembership) {
-      throw new Error("User must be an organization member to join this team");
+      throw forbidden(undefined, "User must be an organization member to join this team");
     }
 
     const now = Date.now();
@@ -421,7 +419,7 @@ export const updateTeamMemberRole = mutation({
   },
   handler: async (ctx, args) => {
     const currentUserId = await getAuthUserId(ctx);
-    if (!currentUserId) throw new Error("Not authenticated");
+    if (!currentUserId) throw unauthenticated();
 
     await assertCanManageTeam(ctx, args.teamId, currentUserId);
 
@@ -430,9 +428,7 @@ export const updateTeamMemberRole = mutation({
       .withIndex("by_team_user", (q) => q.eq("teamId", args.teamId).eq("userId", args.userId))
       .first();
 
-    if (!membership) {
-      throw new Error("User is not a member of this team");
-    }
+    if (!membership) throw notFound("membership");
 
     await ctx.db.patch(membership._id, {
       role: args.role,
@@ -464,7 +460,7 @@ export const removeTeamMember = mutation({
   },
   handler: async (ctx, args) => {
     const currentUserId = await getAuthUserId(ctx);
-    if (!currentUserId) throw new Error("Not authenticated");
+    if (!currentUserId) throw unauthenticated();
 
     await assertCanManageTeam(ctx, args.teamId, currentUserId);
 
@@ -473,9 +469,7 @@ export const removeTeamMember = mutation({
       .withIndex("by_team_user", (q) => q.eq("teamId", args.teamId).eq("userId", args.userId))
       .first();
 
-    if (!membership) {
-      throw new Error("User is not a member of this team");
-    }
+    if (!membership) throw notFound("membership");
 
     await ctx.db.delete(membership._id);
 
@@ -851,18 +845,16 @@ export const getTeamMembers = query({
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
+    if (!userId) throw unauthenticated();
 
     const team = await ctx.db.get(args.teamId);
-    if (!team) throw new Error("Team not found");
+    if (!team) throw notFound("team", args.teamId);
 
     // Check access
     const role = await getTeamRole(ctx, args.teamId, userId);
     const isAdmin = await isOrganizationAdmin(ctx, team.organizationId, userId);
 
-    if (!(role || isAdmin)) {
-      throw new Error("Only team members or organization admins can view team members");
-    }
+    if (!(role || isAdmin)) throw forbidden();
 
     const memberships = await ctx.db
       .query("teamMembers")

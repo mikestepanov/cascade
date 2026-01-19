@@ -1061,6 +1061,10 @@ The project includes Chef (Convex's development platform) integration:
 
 ### Internal Documentation
 
+- [Convex Best Practices](./docs/CONVEX_BEST_PRACTICES.md) - **Schema, queries, mutations, errors, auth, performance**
+- [Convex TODO](./docs/CONVEX_TODO.md) - Implementation gaps and improvement roadmap
+- [Convex Components](./docs/CONVEX_COMPONENTS.md) - Rate limiter, action cache, aggregate
+- [Convex Helpers Guide](./convex/HELPERS_GUIDE.md) - Custom functions and RBAC wrappers
 - [Testing Overview](./docs/testing/README.md) - Testing strategy, commands, architecture
 - [Email System](./docs/email/README.md) - Email notifications setup & usage
 - [AI Overview](./docs/ai/README.md) - AI features overview
