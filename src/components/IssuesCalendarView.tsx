@@ -8,13 +8,17 @@ import { cn } from "@/lib/utils";
 import { IssueDetailModal } from "./IssueDetailModal";
 import { Typography } from "./ui/Typography";
 
-interface CalendarViewProps {
+interface IssuesCalendarViewProps {
   projectId: Id<"projects">;
   sprintId?: Id<"sprints">;
   canEdit?: boolean;
 }
 
-export function CalendarView({ projectId, sprintId, canEdit = true }: CalendarViewProps) {
+export function IssuesCalendarView({
+  projectId,
+  sprintId,
+  canEdit = true,
+}: IssuesCalendarViewProps) {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedIssue, setSelectedIssue] = useState<Id<"issues"> | null>(null);
 
@@ -167,7 +171,7 @@ export function CalendarView({ projectId, sprintId, canEdit = true }: CalendarVi
         className="mb-6 sm:flex-row sm:items-center"
       >
         <Typography variant="h2" className="text-xl sm:text-2xl font-bold">
-          Calendar View
+          Issues Calendar
         </Typography>
 
         {/* Month Navigation */}

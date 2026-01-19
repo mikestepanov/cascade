@@ -160,7 +160,7 @@ export function AppSidebar() {
           <Flex align="center" justify="between" className="p-4 border-b border-ui-border-primary">
             {!isCollapsed && (
               <Link to={ROUTES.dashboard.path} params={{ orgSlug }} onClick={handleNavClick}>
-                <Typography variant="h3" className="text-lg font-bold truncate max-w-[160px]">
+                <Typography variant="h3" className="text-lg font-bold truncate max-w-40">
                   {organizationName}
                 </Typography>
               </Link>

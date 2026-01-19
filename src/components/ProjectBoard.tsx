@@ -7,10 +7,10 @@ import { cn } from "@/lib/utils";
 import { ActivityFeed } from "./ActivityFeed";
 import { AnalyticsDashboard } from "./AnalyticsDashboard";
 import { AutomationRulesManager } from "./AutomationRulesManager";
-import { CalendarView } from "./CalendarView";
 import { CustomFieldsManager } from "./CustomFieldsManager";
 import { ErrorBoundary } from "./ErrorBoundary";
 import { ExportButton } from "./ExportButton";
+import { IssuesCalendarView } from "./IssuesCalendarView";
 import { KanbanBoard } from "./KanbanBoard";
 import { LabelsManager } from "./LabelsManager";
 import { RoadmapView } from "./RoadmapView";
@@ -101,7 +101,7 @@ function TabContent({
     return <RoadmapView projectId={projectId} sprintId={sprintId} canEdit={canEdit} />;
   }
   if (activeTab === "calendar") {
-    return <CalendarView projectId={projectId} sprintId={sprintId} canEdit={canEdit} />;
+    return <IssuesCalendarView projectId={projectId} sprintId={sprintId} canEdit={canEdit} />;
   }
   if (activeTab === "activity") {
     return (

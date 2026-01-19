@@ -1,8 +1,7 @@
-import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
-import { mutation, query } from "./_generated/server";
+import { authenticatedMutation, projectQuery, viewerMutation } from "./customFunctions";
 import { batchFetchUsers, getUserName } from "./lib/batchHelpers";
-import { assertCanAccessProject } from "./projectAccess";
+import { forbidden, notFound } from "./lib/errors";
 
 const filtersValidator = v.object({
   type: v.optional(
@@ -26,25 +25,21 @@ const filtersValidator = v.object({
   epicId: v.optional(v.id("issues")),
 });
 
-export const create = mutation({
+/**
+ * Create a saved filter
+ * Requires viewer access to project
+ */
+export const create = viewerMutation({
   args: {
-    projectId: v.id("projects"),
     name: v.string(),
     filters: filtersValidator,
     isPublic: v.boolean(),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      throw new Error("Not authenticated");
-    }
-
-    await assertCanAccessProject(ctx, args.projectId, userId);
-
     const now = Date.now();
     return await ctx.db.insert("savedFilters", {
-      projectId: args.projectId,
-      userId,
+      projectId: ctx.projectId,
+      userId: ctx.userId,
       name: args.name,
       filters: args.filters,
       isPublic: args.isPublic,
@@ -54,34 +49,26 @@ export const create = mutation({
   },
 });
 
-export const list = query({
-  args: {
-    projectId: v.id("projects"),
-  },
-  handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      return [];
-    }
-
-    try {
-      await assertCanAccessProject(ctx, args.projectId, userId);
-    } catch {
-      return [];
-    }
-
+/**
+ * List saved filters for a project
+ * Returns user's own filters + public filters from others
+ * Requires viewer access to project
+ */
+export const list = projectQuery({
+  args: {},
+  handler: async (ctx) => {
     // Get user's own filters
     const myFilters = await ctx.db
       .query("savedFilters")
-      .withIndex("by_user", (q) => q.eq("userId", userId))
-      .filter((q) => q.eq(q.field("projectId"), args.projectId))
+      .withIndex("by_user", (q) => q.eq("userId", ctx.userId))
+      .filter((q) => q.eq(q.field("projectId"), ctx.projectId))
       .collect();
 
     // Get public filters from other users
     const publicFilters = await ctx.db
       .query("savedFilters")
-      .withIndex("by_project_public", (q) => q.eq("projectId", args.projectId).eq("isPublic", true))
-      .filter((q) => q.neq(q.field("userId"), userId))
+      .withIndex("by_project_public", (q) => q.eq("projectId", ctx.projectId).eq("isPublic", true))
+      .filter((q) => q.neq(q.field("userId"), ctx.userId))
       .collect();
 
     // Combine and batch fetch creators to avoid N+1 queries
@@ -93,12 +80,16 @@ export const list = query({
     return all.map((filter) => ({
       ...filter,
       creatorName: getUserName(creatorMap.get(filter.userId)),
-      isOwner: filter.userId === userId,
+      isOwner: filter.userId === ctx.userId,
     }));
   },
 });
 
-export const update = mutation({
+/**
+ * Update a saved filter
+ * Only the owner can update their filter
+ */
+export const update = authenticatedMutation({
   args: {
     id: v.id("savedFilters"),
     name: v.optional(v.string()),
@@ -106,18 +97,13 @@ export const update = mutation({
     isPublic: v.optional(v.boolean()),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      throw new Error("Not authenticated");
-    }
-
     const filter = await ctx.db.get(args.id);
     if (!filter) {
-      throw new Error("Filter not found");
+      throw notFound("filter", args.id);
     }
 
-    if (filter.userId !== userId) {
-      throw new Error("Not authorized");
+    if (filter.userId !== ctx.userId) {
+      throw forbidden();
     }
 
     const updates: Partial<typeof filter> & { updatedAt: number } = { updatedAt: Date.now() };
@@ -129,23 +115,22 @@ export const update = mutation({
   },
 });
 
-export const remove = mutation({
+/**
+ * Delete a saved filter
+ * Only the owner can delete their filter
+ */
+export const remove = authenticatedMutation({
   args: {
     id: v.id("savedFilters"),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      throw new Error("Not authenticated");
-    }
-
     const filter = await ctx.db.get(args.id);
     if (!filter) {
-      throw new Error("Filter not found");
+      throw notFound("filter", args.id);
     }
 
-    if (filter.userId !== userId) {
-      throw new Error("Not authorized");
+    if (filter.userId !== ctx.userId) {
+      throw forbidden();
     }
 
     await ctx.db.delete(args.id);

@@ -33,7 +33,7 @@ function TeamsList() {
 
   if (!(workspace && teams)) {
     return (
-      <Flex direction="column" align="center" justify="center" className="min-h-[400px]">
+      <Flex direction="column" align="center" justify="center" className="min-h-96">
         <LoadingSpinner />
       </Flex>
     );
@@ -81,7 +81,7 @@ function TeamsList() {
                     </Typography>
                   )}
 
-                  <Flex gap="md" className="text-sm text-gray-500">
+                  <Flex gap="md" className="text-sm text-ui-text-secondary">
                     <span>0 members</span>
                     <span>•</span>
                     <span>0 projects</span>

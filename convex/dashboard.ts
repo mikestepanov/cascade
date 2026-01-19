@@ -1,8 +1,7 @@
-import { getAuthUserId } from "@convex-dev/auth/server";
 import { paginationOptsValidator } from "convex/server"; // Added
 import { v } from "convex/values";
 import type { Doc, Id } from "./_generated/dataModel";
-import { query } from "./_generated/server";
+import { authenticatedQuery } from "./customFunctions";
 import {
   batchFetchIssues,
   batchFetchProjects,
@@ -14,18 +13,9 @@ import { DEFAULT_SEARCH_PAGE_SIZE, MAX_ACTIVITY_ITEMS } from "./lib/queryLimits"
 import { notDeleted } from "./lib/softDeleteHelpers";
 
 // Get all issues assigned to the current user across all projects
-export const getMyIssues = query({
+export const getMyIssues = authenticatedQuery({
   args: { paginationOpts: v.optional(paginationOptsValidator) }, // Pagination args
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      return {
-        page: [],
-        isDone: true,
-        continueCursor: "",
-      };
-    }
-
     const paginationOpts = args.paginationOpts || { numItems: 20, cursor: null };
 
     // Paginate using the by_assignee index
@@ -34,7 +24,7 @@ export const getMyIssues = query({
       query: (db) =>
         db
           .query("issues")
-          .withIndex("by_assignee", (q) => q.eq("assigneeId", userId))
+          .withIndex("by_assignee", (q) => q.eq("assigneeId", ctx.userId))
           .order("desc"), // Sort by creation time (descending)
     });
 
@@ -85,15 +75,12 @@ export const getMyIssues = query({
 });
 
 // Get issues created by the current user
-export const getMyCreatedIssues = query({
+export const getMyCreatedIssues = authenticatedQuery({
   args: {},
   handler: async (ctx) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) return [];
-
     const issues = await ctx.db
       .query("issues")
-      .withIndex("by_reporter", (q) => q.eq("reporterId", userId))
+      .withIndex("by_reporter", (q) => q.eq("reporterId", ctx.userId))
       .filter(notDeleted)
       .collect();
 
@@ -139,16 +126,13 @@ export const getMyCreatedIssues = query({
 });
 
 // Get projects the user is a member of
-export const getMyProjects = query({
+export const getMyProjects = authenticatedQuery({
   args: {},
   handler: async (ctx) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) return [];
-
     // Get projects where user is a member
     const memberships = await ctx.db
       .query("projectMembers")
-      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .withIndex("by_user", (q) => q.eq("userId", ctx.userId))
       .filter(notDeleted)
       .collect();
 
@@ -162,7 +146,7 @@ export const getMyProjects = query({
     // This is scalable because per-user assignment count is usually small (<1000)
     const myIssues = await ctx.db
       .query("issues")
-      .withIndex("by_assignee", (q) => q.eq("assigneeId", userId))
+      .withIndex("by_assignee", (q) => q.eq("assigneeId", ctx.userId))
       .filter(notDeleted)
       .collect();
 
@@ -200,18 +184,15 @@ export const getMyProjects = query({
 });
 
 // Get recent activity across all projects the user has access to
-export const getMyRecentActivity = query({
+export const getMyRecentActivity = authenticatedQuery({
   args: { limit: v.optional(v.number()) },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) return [];
-
     const limit = args.limit || DEFAULT_SEARCH_PAGE_SIZE;
 
     // Get projects where user is a member
     const memberships = await ctx.db
       .query("projectMembers")
-      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .withIndex("by_user", (q) => q.eq("userId", ctx.userId))
       .filter(notDeleted)
       .collect();
 
@@ -265,23 +246,13 @@ export const getMyRecentActivity = query({
 });
 
 // Get dashboard stats
-export const getMyStats = query({
+export const getMyStats = authenticatedQuery({
   args: {},
   handler: async (ctx) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      return {
-        assignedToMe: 0,
-        createdByMe: 0,
-        completedThisWeek: 0,
-        highPriority: 0,
-      };
-    }
-
     // Issues assigned to me
     const assignedIssues = await ctx.db
       .query("issues")
-      .withIndex("by_assignee", (q) => q.eq("assigneeId", userId))
+      .withIndex("by_assignee", (q) => q.eq("assigneeId", ctx.userId))
       .filter(notDeleted)
       .collect();
 
@@ -314,7 +285,7 @@ export const getMyStats = query({
     // Created by me - using index instead of filter (avoids full table scan)
     const createdByMe = await ctx.db
       .query("issues")
-      .withIndex("by_reporter", (q) => q.eq("reporterId", userId))
+      .withIndex("by_reporter", (q) => q.eq("reporterId", ctx.userId))
       .filter(notDeleted)
       .collect();
 
@@ -328,7 +299,7 @@ export const getMyStats = query({
 });
 
 // Get the single most important task for the Focus Zone
-export const getFocusTask = query({
+export const getFocusTask = authenticatedQuery({
   args: {},
   returns: v.union(
     v.null(),
@@ -351,13 +322,10 @@ export const getFocusTask = query({
     }),
   ),
   handler: async (ctx) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) return null;
-
     // Fetch tasks assigned to me
     const issues = await ctx.db
       .query("issues")
-      .withIndex("by_assignee", (q) => q.eq("assigneeId", userId))
+      .withIndex("by_assignee", (q) => q.eq("assigneeId", ctx.userId))
       .filter(notDeleted)
       .collect();
 

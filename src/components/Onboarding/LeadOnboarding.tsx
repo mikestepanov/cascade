@@ -197,7 +197,7 @@ export function LeadOnboarding({
               autoFocus
             />
             {projectError && (
-              <Typography variant="p" className="text-red-500 text-sm mt-2 text-center">
+              <Typography variant="p" className="text-status-error text-sm mt-2 text-center">
                 {projectError}
               </Typography>
             )}

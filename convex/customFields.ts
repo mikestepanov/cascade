@@ -1,8 +1,8 @@
-import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import type { Doc } from "./_generated/dataModel";
-import { mutation, query } from "./_generated/server";
+import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
 import { batchFetchCustomFields } from "./lib/batchHelpers";
+import { conflict, notFound, validation } from "./lib/errors";
 import {
   assertCanAccessProject,
   assertCanEditProject,
@@ -51,16 +51,13 @@ function validateCustomFieldValue(field: Doc<"customFields">, value: string): vo
 }
 
 // Get all custom fields for a project
-export const list = query({
+export const list = authenticatedQuery({
   args: {
     projectId: v.id("projects"),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) return [];
-
     try {
-      await assertCanAccessProject(ctx, args.projectId, userId);
+      await assertCanAccessProject(ctx, args.projectId, ctx.userId);
     } catch {
       return [];
     }
@@ -73,7 +70,7 @@ export const list = query({
 });
 
 // Create a new custom field
-export const create = mutation({
+export const create = authenticatedMutation({
   args: {
     projectId: v.id("projects"),
     name: v.string(),
@@ -92,12 +89,7 @@ export const create = mutation({
     description: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      throw new Error("Not authenticated");
-    }
-
-    await assertIsProjectAdmin(ctx, args.projectId, userId);
+    await assertIsProjectAdmin(ctx, args.projectId, ctx.userId);
 
     // Check if field key already exists for this project
     const existing = await ctx.db
@@ -108,7 +100,7 @@ export const create = mutation({
       .first();
 
     if (existing) {
-      throw new Error("A field with this key already exists");
+      throw conflict("A field with this key already exists");
     }
 
     return await ctx.db.insert("customFields", {
@@ -119,14 +111,14 @@ export const create = mutation({
       options: args.options,
       isRequired: args.isRequired,
       description: args.description,
-      createdBy: userId,
+      createdBy: ctx.userId,
       createdAt: Date.now(),
     });
   },
 });
 
 // Update a custom field
-export const update = mutation({
+export const update = authenticatedMutation({
   args: {
     id: v.id("customFields"),
     name: v.optional(v.string()),
@@ -135,21 +127,16 @@ export const update = mutation({
     description: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      throw new Error("Not authenticated");
-    }
-
     const field = await ctx.db.get(args.id);
     if (!field) {
-      throw new Error("Field not found");
+      throw notFound("customField", args.id);
     }
 
     if (!field.projectId) {
-      throw new Error("Field has no project");
+      throw validation("projectId", "Field has no project");
     }
 
-    await assertIsProjectAdmin(ctx, field.projectId, userId);
+    await assertIsProjectAdmin(ctx, field.projectId, ctx.userId);
 
     const updates: Partial<typeof field> = {};
     if (args.name !== undefined) updates.name = args.name;
@@ -162,26 +149,21 @@ export const update = mutation({
 });
 
 // Delete a custom field
-export const remove = mutation({
+export const remove = authenticatedMutation({
   args: {
     id: v.id("customFields"),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      throw new Error("Not authenticated");
-    }
-
     const field = await ctx.db.get(args.id);
     if (!field) {
-      throw new Error("Field not found");
+      throw notFound("customField", args.id);
     }
 
     if (!field.projectId) {
-      throw new Error("Field has no project");
+      throw validation("projectId", "Field has no project");
     }
 
-    await assertIsProjectAdmin(ctx, field.projectId, userId);
+    await assertIsProjectAdmin(ctx, field.projectId, ctx.userId);
 
     // Delete all values for this field
     const values = await ctx.db
@@ -198,20 +180,17 @@ export const remove = mutation({
 });
 
 // Get custom field values for an issue
-export const getValuesForIssue = query({
+export const getValuesForIssue = authenticatedQuery({
   args: {
     issueId: v.id("issues"),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) return [];
-
     const issue = await ctx.db.get(args.issueId);
     if (!issue) return [];
 
     try {
       if (!issue.projectId) return [];
-      await assertCanAccessProject(ctx, issue.projectId, userId);
+      await assertCanAccessProject(ctx, issue.projectId, ctx.userId);
     } catch {
       return [];
     }
@@ -236,32 +215,27 @@ export const getValuesForIssue = query({
 });
 
 // Set a custom field value for an issue
-export const setValue = mutation({
+export const setValue = authenticatedMutation({
   args: {
     issueId: v.id("issues"),
     fieldId: v.id("customFields"),
     value: v.string(),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      throw new Error("Not authenticated");
-    }
-
     const issue = await ctx.db.get(args.issueId);
     if (!issue) {
-      throw new Error("Issue not found");
+      throw notFound("issue", args.issueId);
     }
 
     if (!issue.projectId) {
-      throw new Error("Issue has no project");
+      throw validation("projectId", "Issue has no project");
     }
 
-    await assertCanEditProject(ctx, issue.projectId, userId);
+    await assertCanEditProject(ctx, issue.projectId, ctx.userId);
 
     const field = await ctx.db.get(args.fieldId);
     if (!field) {
-      throw new Error("Field not found");
+      throw notFound("customField", args.fieldId);
     }
 
     // Validate value based on field type
@@ -290,7 +264,7 @@ export const setValue = mutation({
     // Log activity
     await ctx.db.insert("issueActivity", {
       issueId: args.issueId,
-      userId,
+      userId: ctx.userId,
       action: "updated",
       field: `custom_${field.fieldKey}`,
       newValue: args.value,
@@ -300,27 +274,22 @@ export const setValue = mutation({
 });
 
 // Remove a custom field value
-export const removeValue = mutation({
+export const removeValue = authenticatedMutation({
   args: {
     issueId: v.id("issues"),
     fieldId: v.id("customFields"),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      throw new Error("Not authenticated");
-    }
-
     const issue = await ctx.db.get(args.issueId);
     if (!issue) {
-      throw new Error("Issue not found");
+      throw notFound("issue", args.issueId);
     }
 
     if (!issue.projectId) {
-      throw new Error("Issue has no project");
+      throw validation("projectId", "Issue has no project");
     }
 
-    await assertCanEditProject(ctx, issue.projectId, userId);
+    await assertCanEditProject(ctx, issue.projectId, ctx.userId);
 
     const existing = await ctx.db
       .query("customFieldValues")
@@ -334,7 +303,7 @@ export const removeValue = mutation({
       if (field) {
         await ctx.db.insert("issueActivity", {
           issueId: args.issueId,
-          userId,
+          userId: ctx.userId,
           action: "updated",
           field: `custom_${field.fieldKey}`,
           oldValue: existing.value,

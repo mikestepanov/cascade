@@ -1,24 +1,20 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
-import { mutation, query } from "./_generated/server";
+import { query } from "./_generated/server";
+import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
 
 /**
  * Add current user as a watcher to an issue
  */
-export const watch = mutation({
+export const watch = authenticatedMutation({
   args: {
     issueId: v.id("issues"),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      throw new Error("Not authenticated");
-    }
-
     // Check if already watching
     const existing = await ctx.db
       .query("issueWatchers")
-      .withIndex("by_issue_user", (q) => q.eq("issueId", args.issueId).eq("userId", userId))
+      .withIndex("by_issue_user", (q) => q.eq("issueId", args.issueId).eq("userId", ctx.userId))
       .first();
 
     if (existing) {
@@ -28,14 +24,14 @@ export const watch = mutation({
     // Add watcher
     const watcherId = await ctx.db.insert("issueWatchers", {
       issueId: args.issueId,
-      userId,
+      userId: ctx.userId,
       createdAt: Date.now(),
     });
 
     // Log activity
     await ctx.db.insert("issueActivity", {
       issueId: args.issueId,
-      userId,
+      userId: ctx.userId,
       action: "started_watching",
       createdAt: Date.now(),
     });
@@ -47,20 +43,15 @@ export const watch = mutation({
 /**
  * Remove current user as a watcher from an issue
  */
-export const unwatch = mutation({
+export const unwatch = authenticatedMutation({
   args: {
     issueId: v.id("issues"),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      throw new Error("Not authenticated");
-    }
-
     // Find watcher record
     const watcher = await ctx.db
       .query("issueWatchers")
-      .withIndex("by_issue_user", (q) => q.eq("issueId", args.issueId).eq("userId", userId))
+      .withIndex("by_issue_user", (q) => q.eq("issueId", args.issueId).eq("userId", ctx.userId))
       .first();
 
     if (!watcher) {
@@ -73,7 +64,7 @@ export const unwatch = mutation({
     // Log activity
     await ctx.db.insert("issueActivity", {
       issueId: args.issueId,
-      userId,
+      userId: ctx.userId,
       action: "stopped_watching",
       createdAt: Date.now(),
     });
@@ -82,6 +73,7 @@ export const unwatch = mutation({
 
 /**
  * Get all watchers for an issue with user details
+ * Public query - no auth required
  */
 export const getWatchers = query({
   args: {
@@ -113,6 +105,7 @@ export const getWatchers = query({
 
 /**
  * Check if current user is watching an issue
+ * Returns false for unauthenticated users (soft fail)
  */
 export const isWatching = query({
   args: {
@@ -136,16 +129,12 @@ export const isWatching = query({
 /**
  * Get all issues the current user is watching
  */
-export const getWatchedIssues = query({
+export const getWatchedIssues = authenticatedQuery({
+  args: {},
   handler: async (ctx) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      return [];
-    }
-
     const watchers = await ctx.db
       .query("issueWatchers")
-      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .withIndex("by_user", (q) => q.eq("userId", ctx.userId))
       .collect();
 
     // Get issue details for each watched issue

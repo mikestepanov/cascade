@@ -3,16 +3,17 @@ import { paginationOptsValidator } from "convex/server";
 import { v } from "convex/values";
 import { internal } from "./_generated/api";
 import type { Doc } from "./_generated/dataModel";
-import { mutation, query } from "./_generated/server";
+import { query } from "./_generated/server";
+import { authenticatedMutation } from "./customFunctions";
 import { batchFetchProjects, batchFetchUsers, getUserName } from "./lib/batchHelpers";
-import { conflict, forbidden, notFound, unauthenticated, validation } from "./lib/errors";
+import { conflict, forbidden, notFound, validation } from "./lib/errors";
 import { fetchPaginatedQuery } from "./lib/queryHelpers";
 import { cascadeSoftDelete } from "./lib/relationships";
 import { notDeleted, softDeleteFields } from "./lib/softDeleteHelpers";
 import { assertIsProjectAdmin, canAccessProject, getProjectRole } from "./projectAccess";
 import { isTest } from "./testConfig";
 
-export const createProject = mutation({
+export const createProject = authenticatedMutation({
   args: {
     name: v.string(),
     key: v.string(),
@@ -29,9 +30,6 @@ export const createProject = mutation({
     sharedWithTeamIds: v.optional(v.array(v.id("teams"))), // Share with specific teams
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw unauthenticated();
-
     // Check if project key already exists
     const existingProject = await ctx.db
       .query("projects")
@@ -59,13 +57,13 @@ export const createProject = mutation({
     ];
 
     // Owner is the specified user, or defaults to creator
-    const ownerId = args.ownerId ?? userId;
+    const ownerId = args.ownerId ?? ctx.userId;
 
     const projectId = await ctx.db.insert("projects", {
       name: args.name,
       key: args.key.toUpperCase(),
       description: args.description,
-      createdBy: userId,
+      createdBy: ctx.userId,
       createdAt: now,
       updatedAt: now,
       boardType: args.boardType,
@@ -83,16 +81,16 @@ export const createProject = mutation({
     // Add creator as admin in projectMembers table (for individual access control)
     await ctx.db.insert("projectMembers", {
       projectId,
-      userId,
+      userId: ctx.userId,
       role: "admin",
-      addedBy: userId,
+      addedBy: ctx.userId,
       addedAt: now,
     });
 
     if (!isTest) {
       await ctx.scheduler.runAfter(0, internal.auditLogs.log, {
         action: "project_created",
-        actorId: userId,
+        actorId: ctx.userId,
         targetId: projectId,
         targetType: "projects",
         metadata: {
@@ -383,7 +381,7 @@ export const getByKey = query({
   },
 });
 
-export const updateProject = mutation({
+export const updateProject = authenticatedMutation({
   args: {
     projectId: v.id("projects"),
     name: v.optional(v.string()),
@@ -391,14 +389,11 @@ export const updateProject = mutation({
     isPublic: v.optional(v.boolean()), // organization-visible
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw unauthenticated();
-
     const project = await ctx.db.get(args.projectId);
     if (!project) throw notFound("project", args.projectId);
 
     // Only project admins can update project settings
-    await assertIsProjectAdmin(ctx, args.projectId, userId);
+    await assertIsProjectAdmin(ctx, args.projectId, ctx.userId);
 
     const updates: Record<string, unknown> = {
       updatedAt: Date.now(),
@@ -419,7 +414,7 @@ export const updateProject = mutation({
     if (!isTest) {
       await ctx.scheduler.runAfter(0, internal.auditLogs.log, {
         action: "project_updated",
-        actorId: userId,
+        actorId: ctx.userId,
         targetId: args.projectId,
         targetType: "projects",
         metadata: updates,
@@ -430,31 +425,28 @@ export const updateProject = mutation({
   },
 });
 
-export const softDeleteProject = mutation({
+export const softDeleteProject = authenticatedMutation({
   args: {
     projectId: v.id("projects"),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw unauthenticated();
-
     const project = await ctx.db.get(args.projectId);
     if (!project) throw notFound("project", args.projectId);
 
     // Only project owner can delete the project
-    if (project.createdBy !== userId && project.ownerId !== userId) {
+    if (project.createdBy !== ctx.userId && project.ownerId !== ctx.userId) {
       throw forbidden("owner");
     }
 
     // Soft delete with automatic cascading
     const deletedAt = Date.now();
-    await ctx.db.patch(args.projectId, softDeleteFields(userId));
-    await cascadeSoftDelete(ctx, "projects", args.projectId, userId, deletedAt);
+    await ctx.db.patch(args.projectId, softDeleteFields(ctx.userId));
+    await cascadeSoftDelete(ctx, "projects", args.projectId, ctx.userId, deletedAt);
 
     if (!isTest) {
       await ctx.scheduler.runAfter(0, internal.auditLogs.log, {
         action: "project_deleted",
-        actorId: userId,
+        actorId: ctx.userId,
         targetId: args.projectId,
         targetType: "projects",
         metadata: { deletedAt },
@@ -465,14 +457,11 @@ export const softDeleteProject = mutation({
   },
 });
 
-export const restoreProject = mutation({
+export const restoreProject = authenticatedMutation({
   args: {
     projectId: v.id("projects"),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw unauthenticated();
-
     const project = await ctx.db.get(args.projectId);
     if (!project) throw notFound("project", args.projectId);
 
@@ -481,7 +470,7 @@ export const restoreProject = mutation({
     }
 
     // Only project owner can restore
-    if (project.createdBy !== userId && project.ownerId !== userId) {
+    if (project.createdBy !== ctx.userId && project.ownerId !== ctx.userId) {
       throw forbidden("owner");
     }
 
@@ -498,7 +487,7 @@ export const restoreProject = mutation({
     if (!isTest) {
       await ctx.scheduler.runAfter(0, internal.auditLogs.log, {
         action: "project_restored",
-        actorId: userId,
+        actorId: ctx.userId,
         targetId: args.projectId,
         targetType: "projects",
       });
@@ -508,7 +497,7 @@ export const restoreProject = mutation({
   },
 });
 
-export const updateWorkflow = mutation({
+export const updateWorkflow = authenticatedMutation({
   args: {
     projectId: v.id("projects"),
     workflowStates: v.array(
@@ -521,14 +510,11 @@ export const updateWorkflow = mutation({
     ),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw unauthenticated();
-
     const project = await ctx.db.get(args.projectId);
     if (!project) throw notFound("project", args.projectId);
 
     // Only project admins can modify workflow
-    await assertIsProjectAdmin(ctx, args.projectId, userId);
+    await assertIsProjectAdmin(ctx, args.projectId, ctx.userId);
 
     await ctx.db.patch(args.projectId, {
       workflowStates: args.workflowStates,
@@ -538,7 +524,7 @@ export const updateWorkflow = mutation({
     if (!isTest) {
       await ctx.scheduler.runAfter(0, internal.auditLogs.log, {
         action: "workflow_updated",
-        actorId: userId,
+        actorId: ctx.userId,
         targetId: args.projectId,
         targetType: "projects",
         metadata: { workflowStates: args.workflowStates },
@@ -547,21 +533,18 @@ export const updateWorkflow = mutation({
   },
 });
 
-export const addProjectMember = mutation({
+export const addProjectMember = authenticatedMutation({
   args: {
     projectId: v.id("projects"),
     userEmail: v.string(),
     role: v.union(v.literal("admin"), v.literal("editor"), v.literal("viewer")),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw unauthenticated();
-
     const project = await ctx.db.get(args.projectId);
     if (!project) throw notFound("project", args.projectId);
 
     // Only project admins can add members
-    await assertIsProjectAdmin(ctx, args.projectId, userId);
+    await assertIsProjectAdmin(ctx, args.projectId, ctx.userId);
 
     // Find user by email
     const user = await ctx.db
@@ -586,14 +569,14 @@ export const addProjectMember = mutation({
       projectId: args.projectId,
       userId: user._id,
       role: args.role,
-      addedBy: userId,
+      addedBy: ctx.userId,
       addedAt: now,
     });
 
     if (!isTest) {
       await ctx.scheduler.runAfter(0, internal.auditLogs.log, {
         action: "member_added",
-        actorId: userId,
+        actorId: ctx.userId,
         targetId: args.projectId,
         targetType: "projects",
         metadata: {
@@ -605,21 +588,18 @@ export const addProjectMember = mutation({
   },
 });
 
-export const updateProjectMemberRole = mutation({
+export const updateProjectMemberRole = authenticatedMutation({
   args: {
     projectId: v.id("projects"),
     memberId: v.id("users"),
     newRole: v.union(v.literal("admin"), v.literal("editor"), v.literal("viewer")),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw unauthenticated();
-
     const project = await ctx.db.get(args.projectId);
     if (!project) throw notFound("project", args.projectId);
 
     // Only project admins can change roles
-    await assertIsProjectAdmin(ctx, args.projectId, userId);
+    await assertIsProjectAdmin(ctx, args.projectId, ctx.userId);
 
     // Can't change project owner's role
     if (project.ownerId === args.memberId || project.createdBy === args.memberId) {
@@ -643,7 +623,7 @@ export const updateProjectMemberRole = mutation({
     if (!isTest) {
       await ctx.scheduler.runAfter(0, internal.auditLogs.log, {
         action: "member_role_updated",
-        actorId: userId,
+        actorId: ctx.userId,
         targetId: args.projectId,
         targetType: "projects",
         metadata: {
@@ -655,20 +635,17 @@ export const updateProjectMemberRole = mutation({
   },
 });
 
-export const removeProjectMember = mutation({
+export const removeProjectMember = authenticatedMutation({
   args: {
     projectId: v.id("projects"),
     memberId: v.id("users"),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw unauthenticated();
-
     const project = await ctx.db.get(args.projectId);
     if (!project) throw notFound("project", args.projectId);
 
     // Only project admins can remove members
-    await assertIsProjectAdmin(ctx, args.projectId, userId);
+    await assertIsProjectAdmin(ctx, args.projectId, ctx.userId);
 
     // Can't remove the project owner
     if (project.ownerId === args.memberId || project.createdBy === args.memberId) {
@@ -689,7 +666,7 @@ export const removeProjectMember = mutation({
       if (!isTest) {
         await ctx.scheduler.runAfter(0, internal.auditLogs.log, {
           action: "member_removed",
-          actorId: userId,
+          actorId: ctx.userId,
           targetId: args.projectId,
           targetType: "projects",
           metadata: {

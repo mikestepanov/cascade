@@ -275,6 +275,46 @@ export const issueViewerMutation = customMutation(mutation, {
 });
 
 /**
+ * Team Query - automatically checks team membership
+ * Requires user to be a member of the team
+ */
+export const teamQuery = customQuery(query, {
+  args: { teamId: v.id("teams") },
+  input: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) {
+      throw unauthenticated();
+    }
+
+    const team = await ctx.db.get(args.teamId);
+    if (!team) {
+      throw notFound("team", args.teamId);
+    }
+
+    // Check team membership
+    const membership = await ctx.db
+      .query("teamMembers")
+      .withIndex("by_team_user", (q) => q.eq("teamId", args.teamId).eq("userId", userId))
+      .first();
+
+    if (!membership || membership.isDeleted) {
+      throw forbidden("team member");
+    }
+
+    return {
+      ctx: {
+        ...ctx,
+        userId,
+        teamId: args.teamId,
+        team,
+        membership,
+      },
+      args: {},
+    };
+  },
+});
+
+/**
  * Sprint Query - automatically loads sprint and checks project access
  * Requires viewer role or higher (or public project)
  */
@@ -386,6 +426,13 @@ export type IssueMutationCtx = MutationCtx &
     role: "viewer" | "editor" | "admin" | null;
     project: Doc<"projects">;
     issue: Doc<"issues">;
+  };
+
+export type TeamQueryCtx = QueryCtx &
+  AuthenticatedQueryCtx & {
+    teamId: Id<"teams">;
+    team: Doc<"teams">;
+    membership: Doc<"teamMembers">;
   };
 
 export type SprintQueryCtx = QueryCtx &

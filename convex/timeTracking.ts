@@ -1,14 +1,15 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import type { Doc, Id } from "./_generated/dataModel";
-import { mutation, type QueryCtx, query } from "./_generated/server";
+import { type QueryCtx, query } from "./_generated/server";
+import { authenticatedMutation } from "./customFunctions";
 import {
   batchFetchIssues,
   batchFetchProjects,
   batchFetchUsers,
   getUserName,
 } from "./lib/batchHelpers";
-import { conflict, forbidden, notFound, unauthenticated, validation } from "./lib/errors";
+import { conflict, forbidden, notFound, validation } from "./lib/errors";
 import { assertCanAccessProject, assertIsProjectAdmin } from "./projectAccess";
 
 /**
@@ -54,7 +55,7 @@ function calculateTimeEntryCost(
 
 // ===== Time Entry Management =====
 
-export const startTimer = mutation({
+export const startTimer = authenticatedMutation({
   args: {
     projectId: v.optional(v.id("projects")),
     issueId: v.optional(v.id("issues")),
@@ -64,15 +65,10 @@ export const startTimer = mutation({
     tags: v.optional(v.array(v.string())),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      throw unauthenticated();
-    }
-
     // Check if user has any running timers
     const runningTimers = await ctx.db
       .query("timeEntries")
-      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .withIndex("by_user", (q) => q.eq("userId", ctx.userId))
       .filter((q) => q.eq(q.field("endTime"), undefined))
       .collect();
 
@@ -82,17 +78,17 @@ export const startTimer = mutation({
 
     // Check project permissions if specified
     if (args.projectId) {
-      await assertCanAccessProject(ctx, args.projectId, userId);
+      await assertCanAccessProject(ctx, args.projectId, ctx.userId);
     }
 
     // Get user's current rate
-    const rate = await getUserCurrentRate(ctx, userId, args.projectId);
+    const rate = await getUserCurrentRate(ctx, ctx.userId, args.projectId);
 
     const now = Date.now();
     const startOfDay = new Date(now).setHours(0, 0, 0, 0);
 
     return await ctx.db.insert("timeEntries", {
-      userId,
+      userId: ctx.userId,
       projectId: args.projectId,
       issueId: args.issueId,
       startTime: now,
@@ -120,22 +116,17 @@ export const startTimer = mutation({
   },
 });
 
-export const stopTimer = mutation({
+export const stopTimer = authenticatedMutation({
   args: {
     entryId: v.id("timeEntries"),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      throw unauthenticated();
-    }
-
     const entry = await ctx.db.get(args.entryId);
     if (!entry) {
       throw notFound("timeEntry", args.entryId);
     }
 
-    if (entry.userId !== userId) {
+    if (entry.userId !== ctx.userId) {
       throw forbidden();
     }
 
@@ -159,7 +150,7 @@ export const stopTimer = mutation({
   },
 });
 
-export const createTimeEntry = mutation({
+export const createTimeEntry = authenticatedMutation({
   args: {
     projectId: v.optional(v.id("projects")),
     issueId: v.optional(v.id("issues")),
@@ -172,14 +163,9 @@ export const createTimeEntry = mutation({
     isEquityHour: v.optional(v.boolean()),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      throw unauthenticated();
-    }
-
     // Check project permissions if specified
     if (args.projectId) {
-      await assertCanAccessProject(ctx, args.projectId, userId);
+      await assertCanAccessProject(ctx, args.projectId, ctx.userId);
     }
 
     // Validate time range
@@ -188,7 +174,7 @@ export const createTimeEntry = mutation({
     }
 
     // Get user's current rate
-    const rate = await getUserCurrentRate(ctx, userId, args.projectId);
+    const rate = await getUserCurrentRate(ctx, ctx.userId, args.projectId);
 
     const duration = Math.floor((args.endTime - args.startTime) / 1000);
     const hours = duration / 3600;
@@ -198,7 +184,7 @@ export const createTimeEntry = mutation({
     const startOfDay = new Date(args.startTime).setHours(0, 0, 0, 0);
 
     return await ctx.db.insert("timeEntries", {
-      userId,
+      userId: ctx.userId,
       projectId: args.projectId,
       issueId: args.issueId,
       startTime: args.startTime,
@@ -226,7 +212,7 @@ export const createTimeEntry = mutation({
   },
 });
 
-export const updateTimeEntry = mutation({
+export const updateTimeEntry = authenticatedMutation({
   args: {
     entryId: v.id("timeEntries"),
     startTime: v.optional(v.number()),
@@ -238,17 +224,12 @@ export const updateTimeEntry = mutation({
     isEquityHour: v.optional(v.boolean()),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      throw unauthenticated();
-    }
-
     const entry = await ctx.db.get(args.entryId);
     if (!entry) {
       throw notFound("timeEntry", args.entryId);
     }
 
-    if (entry.userId !== userId) {
+    if (entry.userId !== ctx.userId) {
       throw forbidden();
     }
 
@@ -273,22 +254,17 @@ export const updateTimeEntry = mutation({
   },
 });
 
-export const deleteTimeEntry = mutation({
+export const deleteTimeEntry = authenticatedMutation({
   args: {
     entryId: v.id("timeEntries"),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      throw unauthenticated();
-    }
-
     const entry = await ctx.db.get(args.entryId);
     if (!entry) {
       throw notFound("timeEntry", args.entryId);
     }
 
-    if (entry.userId !== userId) {
+    if (entry.userId !== ctx.userId) {
       throw forbidden();
     }
 
@@ -724,7 +700,7 @@ export const getTeamCosts = query({
 
 // ===== User Rates Management =====
 
-export const setUserRate = mutation({
+export const setUserRate = authenticatedMutation({
   args: {
     userId: v.id("users"),
     projectId: v.optional(v.id("projects")),
@@ -734,15 +710,10 @@ export const setUserRate = mutation({
     notes: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    const currentUserId = await getAuthUserId(ctx);
-    if (!currentUserId) {
-      throw unauthenticated();
-    }
-
     // Check permissions - must be admin of project or setting own rate
     if (args.projectId) {
-      await assertIsProjectAdmin(ctx, args.projectId, currentUserId);
-    } else if (args.userId !== currentUserId) {
+      await assertIsProjectAdmin(ctx, args.projectId, ctx.userId);
+    } else if (args.userId !== ctx.userId) {
       throw forbidden();
     }
 
@@ -771,7 +742,7 @@ export const setUserRate = mutation({
       effectiveFrom: now,
       effectiveTo: undefined,
       rateType: args.rateType,
-      setBy: currentUserId,
+      setBy: ctx.userId,
       notes: args.notes,
       createdAt: now,
       updatedAt: now,

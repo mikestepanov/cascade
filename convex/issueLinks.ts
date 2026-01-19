@@ -1,31 +1,32 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
-import { mutation, query } from "./_generated/server";
+import { query } from "./_generated/server";
+import { authenticatedMutation } from "./customFunctions";
 import { batchFetchIssues } from "./lib/batchHelpers";
+import { conflict, notFound, validation } from "./lib/errors";
 import { assertCanEditProject } from "./projectAccess";
 
-export const create = mutation({
+/**
+ * Create a link between two issues
+ * Requires editor role on the source issue's project
+ */
+export const create = authenticatedMutation({
   args: {
     fromIssueId: v.id("issues"),
     toIssueId: v.id("issues"),
     linkType: v.union(v.literal("blocks"), v.literal("relates"), v.literal("duplicates")),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      throw new Error("Not authenticated");
-    }
-
     const fromIssue = await ctx.db.get(args.fromIssueId);
     if (!fromIssue) {
-      throw new Error("Issue not found");
+      throw notFound("issue", args.fromIssueId);
     }
 
     if (!fromIssue.projectId) {
-      throw new Error("Issue has no project");
+      throw validation("projectId", "Issue has no project");
     }
 
-    await assertCanEditProject(ctx, fromIssue.projectId, userId);
+    await assertCanEditProject(ctx, fromIssue.projectId, ctx.userId);
 
     // Check if link already exists
     const existing = await ctx.db
@@ -37,7 +38,7 @@ export const create = mutation({
       .first();
 
     if (existing) {
-      throw new Error("Link already exists");
+      throw conflict("Link already exists");
     }
 
     const now = Date.now();
@@ -45,7 +46,7 @@ export const create = mutation({
       fromIssueId: args.fromIssueId,
       toIssueId: args.toIssueId,
       linkType: args.linkType,
-      createdBy: userId,
+      createdBy: ctx.userId,
       createdAt: now,
     });
 
@@ -53,7 +54,7 @@ export const create = mutation({
     const toIssue = await ctx.db.get(args.toIssueId);
     await ctx.db.insert("issueActivity", {
       issueId: args.fromIssueId,
-      userId,
+      userId: ctx.userId,
       action: "linked",
       field: args.linkType,
       newValue: toIssue?.key || args.toIssueId,
@@ -64,31 +65,30 @@ export const create = mutation({
   },
 });
 
-export const remove = mutation({
+/**
+ * Remove a link between issues
+ * Requires editor role on the source issue's project
+ */
+export const remove = authenticatedMutation({
   args: {
     linkId: v.id("issueLinks"),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      throw new Error("Not authenticated");
-    }
-
     const link = await ctx.db.get(args.linkId);
     if (!link) {
-      throw new Error("Link not found");
+      throw notFound("issueLink", args.linkId);
     }
 
     const issue = await ctx.db.get(link.fromIssueId);
     if (!issue) {
-      throw new Error("Issue not found");
+      throw notFound("issue", link.fromIssueId);
     }
 
     if (!issue.projectId) {
-      throw new Error("Issue has no project");
+      throw validation("projectId", "Issue has no project");
     }
 
-    await assertCanEditProject(ctx, issue.projectId, userId);
+    await assertCanEditProject(ctx, issue.projectId, ctx.userId);
 
     await ctx.db.delete(args.linkId);
 
@@ -96,7 +96,7 @@ export const remove = mutation({
     const toIssue = await ctx.db.get(link.toIssueId);
     await ctx.db.insert("issueActivity", {
       issueId: link.fromIssueId,
-      userId,
+      userId: ctx.userId,
       action: "unlinked",
       field: link.linkType,
       oldValue: toIssue?.key || link.toIssueId,
@@ -105,6 +105,10 @@ export const remove = mutation({
   },
 });
 
+/**
+ * Get all links for an issue (both outgoing and incoming)
+ * Returns empty for unauthenticated users (soft fail)
+ */
 export const getForIssue = query({
   args: {
     issueId: v.id("issues"),

@@ -274,7 +274,7 @@ export function HighlightedText({
   text,
   matches,
   className = "",
-  highlightClassName = "bg-yellow-200 dark:bg-yellow-800 font-semibold",
+  highlightClassName = "bg-status-warning-bg font-semibold",
 }: {
   text: string;
   matches?: Array<[number, number]>;

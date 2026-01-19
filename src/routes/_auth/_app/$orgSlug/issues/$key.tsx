@@ -41,7 +41,7 @@ function IssuePage() {
           <Link
             to={ROUTES.dashboard.path}
             params={{ orgSlug }}
-            className="mt-4 inline-block text-primary-600 hover:text-primary-700"
+            className="mt-4 inline-block text-brand-600 hover:text-brand-700"
           >
             Back to dashboard
           </Link>
@@ -56,14 +56,16 @@ function IssuePage() {
         <Link
           to={ROUTES.projects.board.path}
           params={{ orgSlug, key: projectKey }}
-          className="text-sm text-primary-600 hover:text-primary-700"
+          className="text-sm text-brand-600 hover:text-brand-700"
         >
           ← Back to {projectKey} board
         </Link>
       </div>
       <div className="bg-ui-bg-primary rounded-lg border border-ui-border-primary p-6">
         <Flex align="center" gap="sm" className="mb-2">
-          <span className="text-sm font-medium text-ui-text-secondary">{issue.key}</span>
+          <Typography variant="small" color="secondary">
+            {issue.key}
+          </Typography>
           <span
             className={cn(
               "px-2 py-0.5 rounded text-xs font-medium",
@@ -90,12 +92,20 @@ function IssuePage() {
         <div className="mt-6 pt-4 border-t border-ui-border-primary">
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div>
-              <span className="text-ui-text-tertiary">Type:</span>
-              <span className="ml-2 text-ui-text-primary capitalize">{issue.type}</span>
+              <Typography as="span" variant="muted">
+                Type:
+              </Typography>
+              <Typography as="span" variant="small" className="ml-2 capitalize">
+                {issue.type}
+              </Typography>
             </div>
             <div>
-              <span className="text-ui-text-tertiary">Priority:</span>
-              <span className="ml-2 text-ui-text-primary capitalize">{issue.priority}</span>
+              <Typography as="span" variant="muted">
+                Priority:
+              </Typography>
+              <Typography as="span" variant="small" className="ml-2 capitalize">
+                {issue.priority}
+              </Typography>
             </div>
           </div>
         </div>

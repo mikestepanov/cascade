@@ -1,38 +1,33 @@
-import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
-import { mutation, query } from "./_generated/server";
+import { authenticatedMutation, editorMutation, projectQuery } from "./customFunctions";
+import { conflict, notFound, validation } from "./lib/errors";
+import { assertCanEditProject } from "./projectAccess";
 
-import { assertCanAccessProject, assertCanEditProject } from "./projectAccess";
-
-// Create a new label
-export const create = mutation({
+/**
+ * Create a new label
+ * Requires editor role on project
+ */
+export const create = editorMutation({
   args: {
-    projectId: v.id("projects"),
     name: v.string(),
     color: v.string(),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
-
-    // Check if user can edit project (requires editor role or higher)
-    await assertCanEditProject(ctx, args.projectId, userId);
-
     // Check if label with same name already exists in project
     const existing = await ctx.db
       .query("labels")
-      .withIndex("by_project_name", (q) => q.eq("projectId", args.projectId).eq("name", args.name))
+      .withIndex("by_project_name", (q) => q.eq("projectId", ctx.projectId).eq("name", args.name))
       .first();
 
     if (existing) {
-      throw new Error("Label with this name already exists");
+      throw conflict("Label with this name already exists");
     }
 
     const labelId = await ctx.db.insert("labels", {
-      projectId: args.projectId,
+      projectId: ctx.projectId,
       name: args.name,
       color: args.color,
-      createdBy: userId,
+      createdBy: ctx.userId,
       createdAt: Date.now(),
     });
 
@@ -40,56 +35,53 @@ export const create = mutation({
   },
 });
 
-// List all labels for a project
-export const list = query({
-  args: { projectId: v.id("projects") },
-  handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
-
-    // Check if user has access to project (viewer or higher)
-    await assertCanAccessProject(ctx, args.projectId, userId);
-
+/**
+ * List all labels for a project
+ * Requires viewer access to project
+ */
+export const list = projectQuery({
+  args: {},
+  handler: async (ctx) => {
     const labels = await ctx.db
       .query("labels")
-      .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
+      .withIndex("by_project", (q) => q.eq("projectId", ctx.projectId))
       .collect();
 
     return labels;
   },
 });
 
-// Update a label
-export const update = mutation({
+/**
+ * Update a label
+ * Requires editor role on label's project
+ */
+export const update = authenticatedMutation({
   args: {
     id: v.id("labels"),
     name: v.optional(v.string()),
     color: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
-
     const label = await ctx.db.get(args.id);
-    if (!label) throw new Error("Label not found");
+    if (!label) throw notFound("label", args.id);
 
     if (!label.projectId) {
-      throw new Error("Label has no project");
+      throw validation("projectId", "Label has no project");
     }
 
     // Check if user can edit project
-    await assertCanEditProject(ctx, label.projectId, userId);
+    await assertCanEditProject(ctx, label.projectId, ctx.userId);
 
     // If name is changing, check for duplicates
     if (args.name && args.name !== label.name) {
-      const newName = args.name; // Store in variable for type narrowing
+      const newName = args.name;
       const existing = await ctx.db
         .query("labels")
         .withIndex("by_project_name", (q) => q.eq("projectId", label.projectId).eq("name", newName))
         .first();
 
       if (existing) {
-        throw new Error("Label with this name already exists");
+        throw conflict("Label with this name already exists");
       }
     }
 
@@ -101,22 +93,22 @@ export const update = mutation({
   },
 });
 
-// Delete a label
-export const remove = mutation({
+/**
+ * Delete a label
+ * Requires editor role on label's project
+ */
+export const remove = authenticatedMutation({
   args: { id: v.id("labels") },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
-
     const label = await ctx.db.get(args.id);
-    if (!label) throw new Error("Label not found");
+    if (!label) throw notFound("label", args.id);
 
     if (!label.projectId) {
-      throw new Error("Label has no project");
+      throw validation("projectId", "Label has no project");
     }
 
     // Check if user can edit project
-    await assertCanEditProject(ctx, label.projectId, userId);
+    await assertCanEditProject(ctx, label.projectId, ctx.userId);
 
     // Remove label from all issues (with reasonable limit)
     const MAX_ISSUES_TO_UPDATE = 5000;

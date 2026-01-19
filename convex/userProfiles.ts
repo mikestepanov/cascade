@@ -1,8 +1,9 @@
-import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import type { Doc, Id } from "./_generated/dataModel";
-import { type MutationCtx, mutation, type QueryCtx, query } from "./_generated/server";
+import type { MutationCtx, QueryCtx } from "./_generated/server";
+import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
 import { batchFetchUsers } from "./lib/batchHelpers";
+import { forbidden, notFound } from "./lib/errors";
 import { notDeleted } from "./lib/softDeleteHelpers";
 
 // Check if user is admin (has admin role in any project they created)
@@ -30,12 +31,9 @@ async function isAdmin(ctx: QueryCtx | MutationCtx, userId: Id<"users">) {
 // ===== EMPLOYMENT TYPE CONFIGURATIONS =====
 
 // Initialize default employment type configurations (run once)
-export const initializeEmploymentTypes = mutation({
+export const initializeEmploymentTypes = authenticatedMutation({
   args: {},
   handler: async (ctx) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
-
     // Check if configs already exist
     const existing = await ctx.db.query("employmentTypeConfigs").first();
     if (existing) {
@@ -97,26 +95,20 @@ export const initializeEmploymentTypes = mutation({
 });
 
 // Get all employment type configurations
-export const getEmploymentTypeConfigs = query({
+export const getEmploymentTypeConfigs = authenticatedQuery({
   args: {},
   handler: async (ctx) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
-
     const configs = await ctx.db.query("employmentTypeConfigs").collect();
     return configs;
   },
 });
 
 // Get a specific employment type configuration
-export const getEmploymentTypeConfig = query({
+export const getEmploymentTypeConfig = authenticatedQuery({
   args: {
     type: v.union(v.literal("employee"), v.literal("contractor"), v.literal("intern")),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
-
     const config = await ctx.db
       .query("employmentTypeConfigs")
       .withIndex("by_type", (q) => q.eq("type", args.type))
@@ -127,7 +119,7 @@ export const getEmploymentTypeConfig = query({
 });
 
 // Update employment type configuration (admin only)
-export const updateEmploymentTypeConfig = mutation({
+export const updateEmploymentTypeConfig = authenticatedMutation({
   args: {
     type: v.union(v.literal("employee"), v.literal("contractor"), v.literal("intern")),
     name: v.optional(v.string()),
@@ -140,12 +132,9 @@ export const updateEmploymentTypeConfig = mutation({
     canManageProjects: v.optional(v.boolean()),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
-
     // Check admin permissions
-    if (!(await isAdmin(ctx, userId))) {
-      throw new Error("Admin access required");
+    if (!(await isAdmin(ctx, ctx.userId))) {
+      throw forbidden("admin", "Admin access required");
     }
 
     const config = await ctx.db
@@ -154,7 +143,7 @@ export const updateEmploymentTypeConfig = mutation({
       .first();
 
     if (!config) {
-      throw new Error("Employment type configuration not found");
+      throw notFound("employmentTypeConfig", args.type);
     }
 
     const updates: {
@@ -188,7 +177,7 @@ export const updateEmploymentTypeConfig = mutation({
 // ===== USER PROFILES =====
 
 // Create or update user profile (admin only)
-export const upsertUserProfile = mutation({
+export const upsertUserProfile = authenticatedMutation({
   args: {
     userId: v.id("users"),
     employmentType: v.union(v.literal("employee"), v.literal("contractor"), v.literal("intern")),
@@ -212,12 +201,9 @@ export const upsertUserProfile = mutation({
     isActive: v.boolean(),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
-
     // Check admin permissions
-    if (!(await isAdmin(ctx, userId))) {
-      throw new Error("Admin access required");
+    if (!(await isAdmin(ctx, ctx.userId))) {
+      throw forbidden("admin", "Admin access required");
     }
 
     // Check if profile already exists
@@ -257,19 +243,16 @@ export const upsertUserProfile = mutation({
 
     return await ctx.db.insert("userProfiles", {
       ...profileData,
-      createdBy: userId,
+      createdBy: ctx.userId,
       createdAt: now,
     });
   },
 });
 
 // Get user profile
-export const getUserProfile = query({
+export const getUserProfile = authenticatedQuery({
   args: { userId: v.id("users") },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
-
     const profile = await ctx.db
       .query("userProfiles")
       .withIndex("by_user", (q) => q.eq("userId", args.userId))
@@ -280,12 +263,9 @@ export const getUserProfile = query({
 });
 
 // Get user profile with computed effective hours (merging defaults with overrides)
-export const getUserProfileWithDefaults = query({
+export const getUserProfileWithDefaults = authenticatedQuery({
   args: { userId: v.id("users") },
   handler: async (ctx, args) => {
-    const currentUserId = await getAuthUserId(ctx);
-    if (!currentUserId) throw new Error("Not authenticated");
-
     const profile = await ctx.db
       .query("userProfiles")
       .withIndex("by_user", (q) => q.eq("userId", args.userId))
@@ -314,7 +294,7 @@ export const getUserProfileWithDefaults = query({
 });
 
 // List all user profiles (admin only)
-export const listUserProfiles = query({
+export const listUserProfiles = authenticatedQuery({
   args: {
     employmentType: v.optional(
       v.union(v.literal("employee"), v.literal("contractor"), v.literal("intern")),
@@ -322,11 +302,8 @@ export const listUserProfiles = query({
     isActive: v.optional(v.boolean()),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
-
     // Check admin permissions - return empty for non-admins (UI-driven visibility)
-    if (!(await isAdmin(ctx, userId))) {
+    if (!(await isAdmin(ctx, ctx.userId))) {
       return [];
     }
 
@@ -377,14 +354,11 @@ export const listUserProfiles = query({
 });
 
 // Get all users without profiles (for admin to assign)
-export const getUsersWithoutProfiles = query({
+export const getUsersWithoutProfiles = authenticatedQuery({
   args: {},
   handler: async (ctx) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
-
     // Check admin permissions - return empty for non-admins (UI-driven visibility)
-    if (!(await isAdmin(ctx, userId))) {
+    if (!(await isAdmin(ctx, ctx.userId))) {
       return [];
     }
 
@@ -405,15 +379,12 @@ export const getUsersWithoutProfiles = query({
 });
 
 // Delete user profile (admin only)
-export const deleteUserProfile = mutation({
+export const deleteUserProfile = authenticatedMutation({
   args: { userId: v.id("users") },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
-
     // Check admin permissions
-    if (!(await isAdmin(ctx, userId))) {
-      throw new Error("Admin access required");
+    if (!(await isAdmin(ctx, ctx.userId))) {
+      throw forbidden("admin", "Admin access required");
     }
 
     const profile = await ctx.db
@@ -422,7 +393,7 @@ export const deleteUserProfile = mutation({
       .first();
 
     if (!profile) {
-      throw new Error("User profile not found");
+      throw notFound("userProfile", args.userId);
     }
 
     await ctx.db.delete(profile._id);
@@ -430,20 +401,17 @@ export const deleteUserProfile = mutation({
 });
 
 // Get equity hours statistics for a user (for a specific time period)
-export const getEquityHoursStats = query({
+export const getEquityHoursStats = authenticatedQuery({
   args: {
     userId: v.id("users"),
     startDate: v.number(), // Unix timestamp
     endDate: v.number(), // Unix timestamp
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
-
     // Users can view their own stats, admins can view anyone's
-    const isAdminUser = await isAdmin(ctx, userId);
-    if (userId !== args.userId && !isAdminUser) {
-      throw new Error("Not authorized to view equity hours for this user");
+    const isAdminUser = await isAdmin(ctx, ctx.userId);
+    if (ctx.userId !== args.userId && !isAdminUser) {
+      throw forbidden("equityHoursStats", "Not authorized to view equity hours for this user");
     }
 
     // Get user profile with equity configuration

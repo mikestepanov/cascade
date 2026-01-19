@@ -3,7 +3,7 @@ import { paginationOptsValidator } from "convex/server";
 import { v } from "convex/values";
 import type { Doc, Id } from "../_generated/dataModel";
 import { internalQuery, type QueryCtx, query } from "../_generated/server";
-import { projectQuery } from "../customFunctions";
+import { authenticatedQuery, projectQuery } from "../customFunctions";
 import { batchFetchUsers } from "../lib/batchHelpers";
 import {
   type EnrichedIssue,
@@ -52,24 +52,15 @@ export const listIssuesInternal = internalQuery({
  * Used by onboarding checklist to track user progress
  * Returns paginated results to handle users with many issues
  */
-export const listByUser = query({
+export const listByUser = authenticatedQuery({
   args: {
     paginationOpts: paginationOptsValidator,
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      return {
-        page: [],
-        isDone: true,
-        continueCursor: "",
-      };
-    }
-
     // Paginate assigned issues
     const assignedResult = await ctx.db
       .query("issues")
-      .withIndex("by_assignee", (q) => q.eq("assigneeId", userId))
+      .withIndex("by_assignee", (q) => q.eq("assigneeId", ctx.userId))
       .filter(notDeleted)
       .paginate(args.paginationOpts);
 
@@ -91,23 +82,18 @@ export const listByUser = query({
   },
 });
 
-export const listRoadmapIssues = query({
+export const listRoadmapIssues = authenticatedQuery({
   args: {
     projectId: v.id("projects"),
     sprintId: v.optional(v.id("sprints")),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      return [];
-    }
-
     const project = await ctx.db.get(args.projectId);
     if (!project) {
       return [];
     }
 
-    const hasAccess = await canAccessProject(ctx, args.projectId, userId);
+    const hasAccess = await canAccessProject(ctx, args.projectId, ctx.userId);
     if (!hasAccess) {
       return [];
     }
@@ -144,22 +130,13 @@ export const listRoadmapIssues = query({
   },
 });
 
-export const listRoadmapIssuesPaginated = query({
+export const listRoadmapIssuesPaginated = authenticatedQuery({
   args: {
     projectId: v.id("projects"),
     sprintId: v.optional(v.id("sprints")),
     paginationOpts: paginationOptsValidator,
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      return {
-        page: [],
-        isDone: true,
-        continueCursor: "",
-      };
-    }
-
     const project = await ctx.db.get(args.projectId);
     if (!project) {
       return {
@@ -169,7 +146,7 @@ export const listRoadmapIssuesPaginated = query({
       };
     }
 
-    const hasAccess = await canAccessProject(ctx, args.projectId, userId);
+    const hasAccess = await canAccessProject(ctx, args.projectId, ctx.userId);
     if (!hasAccess) {
       return {
         page: [],
@@ -212,16 +189,13 @@ export const listRoadmapIssuesPaginated = query({
   },
 });
 
-export const listSelectableIssues = query({
+export const listSelectableIssues = authenticatedQuery({
   args: {
     projectId: v.id("projects"),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) return [];
-
     // Check if user has access to the project
-    const hasAccess = await canAccessProject(ctx, args.projectId, userId);
+    const hasAccess = await canAccessProject(ctx, args.projectId, ctx.userId);
     if (!hasAccess) {
       return [];
     }
@@ -242,7 +216,7 @@ export const listSelectableIssues = query({
   },
 });
 
-export const listProjectIssues = query({
+export const listProjectIssues = authenticatedQuery({
   args: {
     projectId: v.id("projects"),
     sprintId: v.optional(v.id("sprints")),
@@ -250,17 +224,12 @@ export const listProjectIssues = query({
     paginationOpts: paginationOptsValidator,
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      return { page: [], isDone: true, continueCursor: "" };
-    }
-
     const project = await ctx.db.get(args.projectId);
     if (!project) {
       return { page: [], isDone: true, continueCursor: "" };
     }
 
-    const hasAccess = await canAccessProject(ctx, args.projectId, userId);
+    const hasAccess = await canAccessProject(ctx, args.projectId, ctx.userId);
     if (!hasAccess) {
       return { page: [], isDone: true, continueCursor: "" };
     }
@@ -293,21 +262,16 @@ export const listProjectIssues = query({
   },
 });
 
-export const listTeamIssues = query({
+export const listTeamIssues = authenticatedQuery({
   args: {
     teamId: v.id("teams"),
     status: v.optional(v.string()),
     paginationOpts: paginationOptsValidator,
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      return { page: [], isDone: true, continueCursor: "" };
-    }
-
     const teamMember = await ctx.db
       .query("teamMembers")
-      .withIndex("by_team_user", (q) => q.eq("teamId", args.teamId).eq("userId", userId))
+      .withIndex("by_team_user", (q) => q.eq("teamId", args.teamId).eq("userId", ctx.userId))
       .filter(notDeleted)
       .first();
 
@@ -509,14 +473,9 @@ export const getByKey = query({
   },
 });
 
-export const listSubtasks = query({
+export const listSubtasks = authenticatedQuery({
   args: { parentId: v.id("issues") },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      return [];
-    }
-
     const parentIssue = await ctx.db.get(args.parentId);
     if (!parentIssue) {
       return [];
@@ -558,7 +517,7 @@ export const listSubtasks = query({
   },
 });
 
-export const search = query({
+export const search = authenticatedQuery({
   args: {
     query: v.string(),
     limit: v.optional(v.number()),
@@ -576,9 +535,6 @@ export const search = query({
     dateTo: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) return { page: [], total: 0 };
-
     const limit = args.limit ?? 50;
     const offset = args.offset ?? 0;
 
@@ -606,7 +562,7 @@ export const search = query({
 
     // Apply advanced filters in memory
     const filteredIssues = issues.filter((issue: Doc<"issues">) =>
-      matchesSearchFilters(issue, args, userId),
+      matchesSearchFilters(issue, args, ctx.userId),
     );
 
     // Return paginated slice
@@ -626,9 +582,7 @@ export const listByProjectSmart = projectQuery({
     doneColumnDays: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) return [];
-
+    // ctx.userId provided by projectQuery wrapper
     const doneThreshold = getDoneColumnThreshold(args.doneColumnDays);
 
     const workflowStates = ctx.project.workflowStates;
@@ -689,18 +643,15 @@ export const listByProjectSmart = projectQuery({
   },
 });
 
-export const listByTeamSmart = query({
+export const listByTeamSmart = authenticatedQuery({
   args: {
     teamId: v.id("teams"),
     doneColumnDays: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) return [];
-
     const teamMember = await ctx.db
       .query("teamMembers")
-      .withIndex("by_team_user", (q) => q.eq("teamId", args.teamId).eq("userId", userId))
+      .withIndex("by_team_user", (q) => q.eq("teamId", args.teamId).eq("userId", ctx.userId))
       .filter(notDeleted)
       .first();
 
@@ -744,15 +695,12 @@ export const listByTeamSmart = query({
   },
 });
 
-export const getTeamIssueCounts = query({
+export const getTeamIssueCounts = authenticatedQuery({
   args: {
     teamId: v.id("teams"),
     doneColumnDays: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) return null;
-
     const team = await ctx.db.get(args.teamId);
     if (!team) return null;
 
@@ -807,20 +755,17 @@ export const getTeamIssueCounts = query({
   },
 });
 
-export const getIssueCounts = query({
+export const getIssueCounts = authenticatedQuery({
   args: {
     projectId: v.id("projects"),
     sprintId: v.optional(v.id("sprints")),
     doneColumnDays: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) return null;
-
     const project = await ctx.db.get(args.projectId);
     if (!project) return null;
 
-    const hasAccess = await canAccessProject(ctx, args.projectId, userId);
+    const hasAccess = await canAccessProject(ctx, args.projectId, ctx.userId);
     if (!hasAccess) return null;
 
     const doneThreshold = getDoneColumnThreshold(args.doneColumnDays);
@@ -901,7 +846,7 @@ export const getIssueCounts = query({
   },
 });
 
-export const loadMoreDoneIssues = query({
+export const loadMoreDoneIssues = authenticatedQuery({
   args: {
     projectId: v.id("projects"),
     sprintId: v.optional(v.id("sprints")),
@@ -910,9 +855,6 @@ export const loadMoreDoneIssues = query({
     limit: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) return [];
-
     const project = await ctx.db.get(args.projectId);
     if (!project) return [];
 
@@ -995,7 +937,7 @@ async function getSprintIssueCounts(
   );
 }
 
-export const listIssuesByDateRange = query({
+export const listIssuesByDateRange = authenticatedQuery({
   args: {
     projectId: v.id("projects"),
     sprintId: v.optional(v.id("sprints")),
@@ -1003,12 +945,7 @@ export const listIssuesByDateRange = query({
     to: v.number(),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      return [];
-    }
-
-    const hasAccess = await canAccessProject(ctx, args.projectId, userId);
+    const hasAccess = await canAccessProject(ctx, args.projectId, ctx.userId);
     if (!hasAccess) {
       return [];
     }

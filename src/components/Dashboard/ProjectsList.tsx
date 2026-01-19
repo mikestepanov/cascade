@@ -95,12 +95,12 @@ export function WorkspacesList({ projects, projectNavigation }: WorkspacesListPr
                   </Typography>
                   <Badge
                     variant="neutral"
-                    className="text-[10px] uppercase tracking-tighter bg-ui-bg-tertiary/50"
+                    className="text-xs uppercase tracking-tighter bg-ui-bg-tertiary/50"
                   >
                     {project.role}
                   </Badge>
                 </Flex>
-                <div className="text-[10px] text-ui-text-tertiary uppercase tracking-wider font-bold">
+                <div className="text-xs text-ui-text-tertiary uppercase tracking-wider font-bold">
                   {project.myIssues} assigned issues
                 </div>
               </button>
