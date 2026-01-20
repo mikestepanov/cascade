@@ -4,7 +4,7 @@ import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
 import { batchFetchUsers } from "./lib/batchHelpers";
 import { forbidden, notFound, validation } from "./lib/errors";
 import { MAX_PAGE_SIZE } from "./lib/queryLimits";
-import { DAY, nowArg, WEEK } from "./lib/timeUtils";
+import { DAY, WEEK } from "./lib/timeUtils";
 import { calendarStatuses } from "./validators";
 
 /**
@@ -212,12 +212,12 @@ export const listMine = authenticatedQuery({
     // Date range bounds - defaults to past 30 days through next 90 days
     startDate: v.optional(v.number()),
     endDate: v.optional(v.number()),
-    now: nowArg, // Required - pass rounded timestamp from client
   },
   handler: async (ctx, args) => {
+    const now = Date.now();
     // Default date range: past 30 days through next 90 days
-    const defaultStart = args.now - 30 * DAY; // 30 days ago
-    const defaultEnd = args.now + 90 * DAY; // 90 days from now
+    const defaultStart = now - 30 * DAY; // 30 days ago
+    const defaultEnd = now + 90 * DAY; // 90 days from now
     const startDate = args.startDate ?? defaultStart;
     const endDate = args.endDate ?? defaultEnd;
 
@@ -343,16 +343,16 @@ export const remove = authenticatedMutation({
 export const getUpcoming = authenticatedQuery({
   args: {
     limit: v.optional(v.number()),
-    now: nowArg, // Required - pass rounded timestamp from client
   },
   handler: async (ctx, args) => {
-    const sevenDaysFromNow = args.now + WEEK;
+    const now = Date.now();
+    const sevenDaysFromNow = now + WEEK;
 
     const events = await ctx.db
       .query("calendarEvents")
       .withIndex("by_start_time")
       .filter((q) =>
-        q.and(q.gte(q.field("startTime"), args.now), q.lte(q.field("startTime"), sevenDaysFromNow)),
+        q.and(q.gte(q.field("startTime"), now), q.lte(q.field("startTime"), sevenDaysFromNow)),
       )
       .take(MAX_PAGE_SIZE);
 

@@ -86,10 +86,7 @@ describe("Analytics", () => {
         estimatedHours: 8,
       });
 
-      const burndown = await asUser.query(api.analytics.getSprintBurndown, {
-        sprintId,
-        now: Date.now(),
-      });
+      const burndown = await asUser.query(api.analytics.getSprintBurndown, { sprintId });
 
       expect(burndown.totalPoints).toBe(13); // 5 + 8
       expect(burndown.totalIssues).toBe(2);
@@ -143,10 +140,7 @@ describe("Analytics", () => {
         });
       }
 
-      const burndown = await asUser.query(api.analytics.getSprintBurndown, {
-        sprintId,
-        now: Date.now(),
-      });
+      const burndown = await asUser.query(api.analytics.getSprintBurndown, { sprintId });
 
       expect(burndown.totalPoints).toBe(13);
       expect(burndown.completedPoints).toBe(5);
@@ -176,10 +170,7 @@ describe("Analytics", () => {
         estimatedHours: 5,
       });
 
-      const burndown = await asUser.query(api.analytics.getSprintBurndown, {
-        sprintId,
-        now: Date.now(),
-      });
+      const burndown = await asUser.query(api.analytics.getSprintBurndown, { sprintId });
 
       expect(burndown.totalPoints).toBe(5);
       expect(burndown.idealBurndown).toEqual([]);
@@ -199,10 +190,7 @@ describe("Analytics", () => {
         name: "Sprint 1",
       });
 
-      const burndown = await asUser.query(api.analytics.getSprintBurndown, {
-        sprintId,
-        now: Date.now(),
-      });
+      const burndown = await asUser.query(api.analytics.getSprintBurndown, { sprintId });
 
       expect(burndown.totalPoints).toBe(0);
       expect(burndown.totalIssues).toBe(0);
@@ -221,7 +209,7 @@ describe("Analytics", () => {
       });
 
       await expect(async () => {
-        await t.query(api.analytics.getSprintBurndown, { sprintId, now: Date.now() });
+        await t.query(api.analytics.getSprintBurndown, { sprintId });
       }).rejects.toThrow("Not authenticated");
     });
 
@@ -240,7 +228,7 @@ describe("Analytics", () => {
       const asOther = asAuthenticatedUser(t, other);
 
       await expect(async () => {
-        await asOther.query(api.analytics.getSprintBurndown, { sprintId, now: Date.now() });
+        await asOther.query(api.analytics.getSprintBurndown, { sprintId });
       }).rejects.toThrow("Not authorized");
     });
 
@@ -261,10 +249,7 @@ describe("Analytics", () => {
       });
 
       await expect(async () => {
-        await asUser.query(api.analytics.getSprintBurndown, {
-          sprintId,
-          now: Date.now(),
-        });
+        await asUser.query(api.analytics.getSprintBurndown, { sprintId });
       }).rejects.toThrow("Sprint not found");
     });
   });
