@@ -326,8 +326,8 @@ describe("HighlightedText", () => {
   it("should use default highlight className when not provided", () => {
     const { container } = render(<HighlightedText text="Hello" matches={[[0, 4]]} />);
 
-    // Default is "bg-yellow-200 dark:bg-yellow-800 font-semibold"
-    const highlighted = container.querySelector(".bg-yellow-200");
+    // Default is "bg-status-warning-bg font-semibold"
+    const highlighted = container.querySelector(".bg-status-warning-bg");
     expect(highlighted).toBeInTheDocument();
   });
 

@@ -221,7 +221,7 @@ describe("Analytics", () => {
       });
 
       await expect(async () => {
-        await t.query(api.analytics.getSprintBurndown, { sprintId });
+        await t.query(api.analytics.getSprintBurndown, { sprintId, now: Date.now() });
       }).rejects.toThrow("Not authenticated");
     });
 
@@ -240,7 +240,7 @@ describe("Analytics", () => {
       const asOther = asAuthenticatedUser(t, other);
 
       await expect(async () => {
-        await asOther.query(api.analytics.getSprintBurndown, { sprintId });
+        await asOther.query(api.analytics.getSprintBurndown, { sprintId, now: Date.now() });
       }).rejects.toThrow("Not authorized");
     });
 
@@ -263,6 +263,7 @@ describe("Analytics", () => {
       await expect(async () => {
         await asUser.query(api.analytics.getSprintBurndown, {
           sprintId,
+          now: Date.now(),
         });
       }).rejects.toThrow("Sprint not found");
     });

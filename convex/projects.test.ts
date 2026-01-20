@@ -219,7 +219,7 @@ describe("Projects", () => {
       const asNonMember = asAuthenticatedUser(t, nonMember);
       await expect(async () => {
         await asNonMember.query(api.projects.getProject, { id: projectId });
-      }).rejects.toThrow("Not authorized to access this project");
+      }).rejects.toThrow("Not authorized");
       await t.finishInProgressScheduledFunctions();
     });
 
@@ -311,13 +311,14 @@ describe("Projects", () => {
       await t.finishInProgressScheduledFunctions();
     });
 
-    it("should return empty array for unauthenticated users", async () => {
+    it("should deny unauthenticated users", async () => {
       const t = convexTest(schema, modules);
 
-      const { page: projects } = await t.query(api.projects.getCurrentUserProjects, {
-        paginationOpts: { numItems: 10, cursor: null },
-      });
-      expect(projects).toEqual([]);
+      await expect(
+        t.query(api.projects.getCurrentUserProjects, {
+          paginationOpts: { numItems: 10, cursor: null },
+        }),
+      ).rejects.toThrow("Not authenticated");
     });
 
     it("should include project metadata (issue count, role)", async () => {
@@ -597,7 +598,7 @@ describe("Projects", () => {
         const asMember = asAuthenticatedUser(t, memberId);
         await expect(async () => {
           await asMember.query(api.projects.getProject, { id: projectId });
-        }).rejects.toThrow("Not authorized to access this project");
+        }).rejects.toThrow("Not authorized");
         await t.finishInProgressScheduledFunctions();
       });
 

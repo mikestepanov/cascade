@@ -313,7 +313,7 @@ describe("RBAC Utilities", () => {
           const { assertCanEditProject } = await import("./projectAccess");
           await assertCanEditProject(ctx, projectId, viewerId);
         });
-      }).rejects.toThrow("You don't have permission to edit this project");
+      }).rejects.toThrow("Not authorized");
     });
 
     it("should pass for sufficient permissions", async () => {

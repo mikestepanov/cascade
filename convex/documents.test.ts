@@ -211,10 +211,9 @@ describe("Documents", () => {
       expect(titles).not.toContain("User 1 Private");
     });
 
-    it("should return empty result for unauthenticated users", async () => {
+    it("should deny unauthenticated users", async () => {
       const t = convexTest(schema, modules);
-      const result = await t.query(api.documents.list, {});
-      expect(result.documents).toEqual([]);
+      await expect(t.query(api.documents.list, {})).rejects.toThrow("Not authenticated");
     });
 
     it("should include creator information", async () => {

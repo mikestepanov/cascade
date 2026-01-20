@@ -237,12 +237,12 @@ describe("Notifications", () => {
       expect(count).toBe(0);
     });
 
-    it("should return zero for unauthenticated users", async () => {
+    it("should deny unauthenticated users", async () => {
       const t = convexTest(schema, modules);
 
-      const count = await t.query(api.notifications.getUnreadCount, {});
-
-      expect(count).toBe(0);
+      await expect(t.query(api.notifications.getUnreadCount, {})).rejects.toThrow(
+        "Not authenticated",
+      );
     });
   });
 

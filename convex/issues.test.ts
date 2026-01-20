@@ -117,7 +117,7 @@ describe("Issues", () => {
           type: "task",
           priority: "medium",
         });
-      }).rejects.toThrow("Authentication required");
+      }).rejects.toThrow("Not authenticated");
       await t.finishInProgressScheduledFunctions();
     });
 
@@ -454,7 +454,7 @@ describe("Issues", () => {
           issueId,
           content: "Unauthorized comment",
         });
-      }).rejects.toThrow("Authentication required");
+      }).rejects.toThrow("Not authenticated");
       await t.finishInProgressScheduledFunctions();
     });
   });
