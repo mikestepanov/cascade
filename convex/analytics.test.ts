@@ -88,6 +88,7 @@ describe("Analytics", () => {
 
       const burndown = await asUser.query(api.analytics.getSprintBurndown, {
         sprintId,
+        now: Date.now(),
       });
 
       expect(burndown.totalPoints).toBe(13); // 5 + 8
@@ -144,6 +145,7 @@ describe("Analytics", () => {
 
       const burndown = await asUser.query(api.analytics.getSprintBurndown, {
         sprintId,
+        now: Date.now(),
       });
 
       expect(burndown.totalPoints).toBe(13);
@@ -176,6 +178,7 @@ describe("Analytics", () => {
 
       const burndown = await asUser.query(api.analytics.getSprintBurndown, {
         sprintId,
+        now: Date.now(),
       });
 
       expect(burndown.totalPoints).toBe(5);
@@ -198,6 +201,7 @@ describe("Analytics", () => {
 
       const burndown = await asUser.query(api.analytics.getSprintBurndown, {
         sprintId,
+        now: Date.now(),
       });
 
       expect(burndown.totalPoints).toBe(0);
