@@ -9,6 +9,7 @@ import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import { api } from "../_generated/api";
 import { type ActionCtx, action } from "../_generated/server";
+import { unauthenticated } from "../lib/errors";
 import { getAIConfig } from "./config";
 import { type AIMessage, callAI } from "./providers";
 
@@ -23,7 +24,7 @@ export const sendChatMessage = action({
   },
   handler: async (ctx: ActionCtx, args) => {
     const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
+    if (!userId) throw unauthenticated();
 
     const startTime = Date.now();
 
@@ -122,7 +123,7 @@ export const generateIssueSuggestions = action({
   },
   handler: async (ctx: ActionCtx, args) => {
     const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
+    if (!userId) throw unauthenticated();
 
     const startTime = Date.now();
 
@@ -204,7 +205,7 @@ export const generateProjectInsights = action({
   },
   handler: async (ctx: ActionCtx, args) => {
     const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
+    if (!userId) throw unauthenticated();
 
     const startTime = Date.now();
 
@@ -320,7 +321,7 @@ export const answerQuestion = action({
   },
   handler: async (ctx: ActionCtx, args) => {
     const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
+    if (!userId) throw unauthenticated();
 
     const startTime = Date.now();
 

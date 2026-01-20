@@ -1,14 +1,20 @@
-import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import type { Doc, Id } from "./_generated/dataModel";
-import { mutation, type QueryCtx, query } from "./_generated/server";
+import type { QueryCtx } from "./_generated/server";
+import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
 import {
   batchFetchIssues,
   batchFetchProjects,
   batchFetchUsers,
   getUserName,
 } from "./lib/batchHelpers";
+import { conflict, forbidden, notFound, validation } from "./lib/errors";
+import { MAX_PAGE_SIZE } from "./lib/queryLimits";
 import { assertCanAccessProject, assertIsProjectAdmin } from "./projectAccess";
+import { rateTypes } from "./validators";
+
+// Time entries can be large - use a reasonable limit
+const MAX_TIME_ENTRIES = 500;
 
 /**
  * Native Time Tracking - Kimai-like Features
@@ -53,7 +59,7 @@ function calculateTimeEntryCost(
 
 // ===== Time Entry Management =====
 
-export const startTimer = mutation({
+export const startTimer = authenticatedMutation({
   args: {
     projectId: v.optional(v.id("projects")),
     issueId: v.optional(v.id("issues")),
@@ -63,35 +69,30 @@ export const startTimer = mutation({
     tags: v.optional(v.array(v.string())),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      throw new Error("Not authenticated");
-    }
-
-    // Check if user has any running timers
-    const runningTimers = await ctx.db
+    // Check if user has any running timers - just need to know if one exists
+    const runningTimer = await ctx.db
       .query("timeEntries")
-      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .withIndex("by_user", (q) => q.eq("userId", ctx.userId))
       .filter((q) => q.eq(q.field("endTime"), undefined))
-      .collect();
+      .first();
 
-    if (runningTimers.length > 0) {
-      throw new Error("You already have a running timer. Stop it first.");
+    if (runningTimer) {
+      throw conflict("You already have a running timer. Stop it first.");
     }
 
     // Check project permissions if specified
     if (args.projectId) {
-      await assertCanAccessProject(ctx, args.projectId, userId);
+      await assertCanAccessProject(ctx, args.projectId, ctx.userId);
     }
 
     // Get user's current rate
-    const rate = await getUserCurrentRate(ctx, userId, args.projectId);
+    const rate = await getUserCurrentRate(ctx, ctx.userId, args.projectId);
 
     const now = Date.now();
     const startOfDay = new Date(now).setHours(0, 0, 0, 0);
 
     return await ctx.db.insert("timeEntries", {
-      userId,
+      userId: ctx.userId,
       projectId: args.projectId,
       issueId: args.issueId,
       startTime: now,
@@ -119,27 +120,22 @@ export const startTimer = mutation({
   },
 });
 
-export const stopTimer = mutation({
+export const stopTimer = authenticatedMutation({
   args: {
     entryId: v.id("timeEntries"),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      throw new Error("Not authenticated");
-    }
-
     const entry = await ctx.db.get(args.entryId);
     if (!entry) {
-      throw new Error("Time entry not found");
+      throw notFound("timeEntry", args.entryId);
     }
 
-    if (entry.userId !== userId) {
-      throw new Error("Not authorized");
+    if (entry.userId !== ctx.userId) {
+      throw forbidden();
     }
 
     if (entry.endTime) {
-      throw new Error("Timer already stopped");
+      throw conflict("Timer already stopped");
     }
 
     const now = Date.now();
@@ -158,7 +154,7 @@ export const stopTimer = mutation({
   },
 });
 
-export const createTimeEntry = mutation({
+export const createTimeEntry = authenticatedMutation({
   args: {
     projectId: v.optional(v.id("projects")),
     issueId: v.optional(v.id("issues")),
@@ -171,23 +167,18 @@ export const createTimeEntry = mutation({
     isEquityHour: v.optional(v.boolean()),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      throw new Error("Not authenticated");
-    }
-
     // Check project permissions if specified
     if (args.projectId) {
-      await assertCanAccessProject(ctx, args.projectId, userId);
+      await assertCanAccessProject(ctx, args.projectId, ctx.userId);
     }
 
     // Validate time range
     if (args.endTime <= args.startTime) {
-      throw new Error("End time must be after start time");
+      throw validation("endTime", "End time must be after start time");
     }
 
     // Get user's current rate
-    const rate = await getUserCurrentRate(ctx, userId, args.projectId);
+    const rate = await getUserCurrentRate(ctx, ctx.userId, args.projectId);
 
     const duration = Math.floor((args.endTime - args.startTime) / 1000);
     const hours = duration / 3600;
@@ -197,7 +188,7 @@ export const createTimeEntry = mutation({
     const startOfDay = new Date(args.startTime).setHours(0, 0, 0, 0);
 
     return await ctx.db.insert("timeEntries", {
-      userId,
+      userId: ctx.userId,
       projectId: args.projectId,
       issueId: args.issueId,
       startTime: args.startTime,
@@ -225,7 +216,7 @@ export const createTimeEntry = mutation({
   },
 });
 
-export const updateTimeEntry = mutation({
+export const updateTimeEntry = authenticatedMutation({
   args: {
     entryId: v.id("timeEntries"),
     startTime: v.optional(v.number()),
@@ -237,22 +228,17 @@ export const updateTimeEntry = mutation({
     isEquityHour: v.optional(v.boolean()),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      throw new Error("Not authenticated");
-    }
-
     const entry = await ctx.db.get(args.entryId);
     if (!entry) {
-      throw new Error("Time entry not found");
+      throw notFound("timeEntry", args.entryId);
     }
 
-    if (entry.userId !== userId) {
-      throw new Error("Not authorized");
+    if (entry.userId !== ctx.userId) {
+      throw forbidden();
     }
 
     if (entry.isLocked) {
-      throw new Error("Cannot edit locked time entry");
+      throw forbidden(undefined, "Cannot edit locked time entry");
     }
 
     // Build basic field updates
@@ -272,31 +258,26 @@ export const updateTimeEntry = mutation({
   },
 });
 
-export const deleteTimeEntry = mutation({
+export const deleteTimeEntry = authenticatedMutation({
   args: {
     entryId: v.id("timeEntries"),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      throw new Error("Not authenticated");
-    }
-
     const entry = await ctx.db.get(args.entryId);
     if (!entry) {
-      throw new Error("Time entry not found");
+      throw notFound("timeEntry", args.entryId);
     }
 
-    if (entry.userId !== userId) {
-      throw new Error("Not authorized");
+    if (entry.userId !== ctx.userId) {
+      throw forbidden();
     }
 
     if (entry.isLocked) {
-      throw new Error("Cannot delete locked time entry");
+      throw forbidden(undefined, "Cannot delete locked time entry");
     }
 
     if (entry.billed) {
-      throw new Error("Cannot delete billed time entry");
+      throw forbidden(undefined, "Cannot delete billed time entry");
     }
 
     await ctx.db.delete(args.entryId);
@@ -305,17 +286,12 @@ export const deleteTimeEntry = mutation({
 
 // ===== Queries =====
 
-export const getRunningTimer = query({
+export const getRunningTimer = authenticatedQuery({
   args: {},
   handler: async (ctx) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      return null;
-    }
-
     const runningTimer = await ctx.db
       .query("timeEntries")
-      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .withIndex("by_user", (q) => q.eq("userId", ctx.userId))
       .filter((q) => q.eq(q.field("endTime"), undefined))
       .first();
 
@@ -355,7 +331,7 @@ export const getRunningTimer = query({
   },
 });
 
-export const listTimeEntries = query({
+export const listTimeEntries = authenticatedQuery({
   args: {
     projectId: v.optional(v.id("projects")),
     issueId: v.optional(v.id("issues")),
@@ -365,12 +341,7 @@ export const listTimeEntries = query({
     limit: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
-    const currentUserId = await getAuthUserId(ctx);
-    if (!currentUserId) {
-      return [];
-    }
-
-    const userId = args.userId || currentUserId;
+    const userId = args.userId || ctx.userId;
 
     let entries: Doc<"timeEntries">[];
 
@@ -458,14 +429,9 @@ export const listTimeEntries = query({
 });
 
 // Get current week timesheet for the logged in user
-export const getCurrentWeekTimesheet = query({
+export const getCurrentWeekTimesheet = authenticatedQuery({
   args: {},
   handler: async (ctx) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      return null;
-    }
-
     // Calculate week start (Monday) and end (Sunday)
     const now = new Date();
     const dayOfWeek = now.getDay();
@@ -486,9 +452,9 @@ export const getCurrentWeekTimesheet = query({
     const entries = await ctx.db
       .query("timeEntries")
       .withIndex("by_user_date", (q) =>
-        q.eq("userId", userId).gte("date", startDate).lte("date", endDate),
+        q.eq("userId", ctx.userId).gte("date", startDate).lte("date", endDate),
       )
-      .collect();
+      .take(MAX_TIME_ENTRIES);
 
     // Group by day
 
@@ -551,20 +517,15 @@ export const getCurrentWeekTimesheet = query({
 
 // ===== Burn Rate & Cost Analysis =====
 
-export const getBurnRate = query({
+export const getBurnRate = authenticatedQuery({
   args: {
     projectId: v.id("projects"),
     startDate: v.number(),
     endDate: v.number(),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      return null;
-    }
-
     // Check permissions
-    await assertCanAccessProject(ctx, args.projectId, userId);
+    await assertCanAccessProject(ctx, args.projectId, ctx.userId);
 
     // Get all time entries in date range
     const entries = await ctx.db
@@ -572,7 +533,7 @@ export const getBurnRate = query({
       .withIndex("by_project_date", (q) =>
         q.eq("projectId", args.projectId).gte("date", args.startDate).lte("date", args.endDate),
       )
-      .collect();
+      .take(MAX_TIME_ENTRIES);
 
     // Batch fetch all users upfront (avoid N+1!)
     const userIds = [...new Set(entries.map((e) => e.userId))];
@@ -635,33 +596,28 @@ export const getBurnRate = query({
   },
 });
 
-export const getTeamCosts = query({
+export const getTeamCosts = authenticatedQuery({
   args: {
     projectId: v.optional(v.id("projects")),
     startDate: v.number(),
     endDate: v.number(),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      return [];
-    }
-
     // Get all time entries in date range
     let entries: Doc<"timeEntries">[];
     if (args.projectId) {
-      await assertCanAccessProject(ctx, args.projectId, userId);
+      await assertCanAccessProject(ctx, args.projectId, ctx.userId);
       entries = await ctx.db
         .query("timeEntries")
         .withIndex("by_project_date", (q) =>
           q.eq("projectId", args.projectId).gte("date", args.startDate).lte("date", args.endDate),
         )
-        .collect();
+        .take(MAX_TIME_ENTRIES);
     } else {
       entries = await ctx.db
         .query("timeEntries")
         .withIndex("by_date", (q) => q.gte("date", args.startDate).lte("date", args.endDate))
-        .collect();
+        .take(MAX_TIME_ENTRIES);
     }
 
     // Batch fetch all users upfront (avoid N+1!)
@@ -723,26 +679,21 @@ export const getTeamCosts = query({
 
 // ===== User Rates Management =====
 
-export const setUserRate = mutation({
+export const setUserRate = authenticatedMutation({
   args: {
     userId: v.id("users"),
     projectId: v.optional(v.id("projects")),
     hourlyRate: v.number(),
     currency: v.string(),
-    rateType: v.union(v.literal("internal"), v.literal("billable")),
+    rateType: rateTypes,
     notes: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    const currentUserId = await getAuthUserId(ctx);
-    if (!currentUserId) {
-      throw new Error("Not authenticated");
-    }
-
     // Check permissions - must be admin of project or setting own rate
     if (args.projectId) {
-      await assertIsProjectAdmin(ctx, args.projectId, currentUserId);
-    } else if (args.userId !== currentUserId) {
-      throw new Error("Not authorized");
+      await assertIsProjectAdmin(ctx, args.projectId, ctx.userId);
+    } else if (args.userId !== ctx.userId) {
+      throw forbidden();
     }
 
     // End current rate for this user/project/type combination
@@ -751,7 +702,7 @@ export const setUserRate = mutation({
       .withIndex("by_user_project", (q) =>
         q.eq("userId", args.userId).eq("projectId", args.projectId),
       )
-      .collect();
+      .take(MAX_PAGE_SIZE);
 
     const now = Date.now();
 
@@ -770,7 +721,7 @@ export const setUserRate = mutation({
       effectiveFrom: now,
       effectiveTo: undefined,
       rateType: args.rateType,
-      setBy: currentUserId,
+      setBy: ctx.userId,
       notes: args.notes,
       createdAt: now,
       updatedAt: now,
@@ -778,35 +729,25 @@ export const setUserRate = mutation({
   },
 });
 
-export const getUserRate = query({
+export const getUserRate = authenticatedQuery({
   args: {
     userId: v.id("users"),
     projectId: v.optional(v.id("projects")),
-    rateType: v.optional(v.union(v.literal("internal"), v.literal("billable"))),
+    rateType: v.optional(rateTypes),
   },
   handler: async (ctx, args) => {
-    const currentUserId = await getAuthUserId(ctx);
-    if (!currentUserId) {
-      return null;
-    }
-
     return await getUserCurrentRate(ctx, args.userId, args.projectId, args.rateType);
   },
 });
 
-export const listUserRates = query({
+export const listUserRates = authenticatedQuery({
   args: {
     projectId: v.optional(v.id("projects")),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      return [];
-    }
-
     // Check permissions if project-specific
     if (args.projectId) {
-      await assertIsProjectAdmin(ctx, args.projectId, userId);
+      await assertIsProjectAdmin(ctx, args.projectId, ctx.userId);
     }
 
     const rates = args.projectId
@@ -814,11 +755,11 @@ export const listUserRates = query({
           .query("userRates")
           .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
           .filter((q) => q.eq(q.field("effectiveTo"), undefined))
-          .collect()
+          .take(MAX_PAGE_SIZE)
       : await ctx.db
           .query("userRates")
           .filter((q) => q.eq(q.field("effectiveTo"), undefined))
-          .collect();
+          .take(MAX_PAGE_SIZE);
 
     // Batch fetch all users (avoid N+1!)
     const userIds = rates.map((r) => r.userId);
@@ -842,26 +783,14 @@ export const listUserRates = query({
 });
 
 // Get billing summary for a project
-export const getProjectBilling = query({
+export const getProjectBilling = authenticatedQuery({
   args: {
     projectId: v.id("projects"),
     startDate: v.optional(v.number()),
     endDate: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      return {
-        totalHours: 0,
-        billableHours: 0,
-        nonBillableHours: 0,
-        totalRevenue: 0,
-        entries: 0,
-        byUser: {},
-      };
-    }
-
-    await assertCanAccessProject(ctx, args.projectId, userId);
+    await assertCanAccessProject(ctx, args.projectId, ctx.userId);
 
     // Get time entries for this project
     let entries: Doc<"timeEntries">[];
@@ -872,12 +801,12 @@ export const getProjectBilling = query({
         .withIndex("by_project_date", (q) =>
           q.eq("projectId", args.projectId).gte("date", startDate).lte("date", endDate),
         )
-        .collect();
+        .take(MAX_TIME_ENTRIES);
     } else {
       entries = await ctx.db
         .query("timeEntries")
         .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
-        .collect();
+        .take(MAX_TIME_ENTRIES);
     }
 
     // Batch fetch all users upfront (avoid N+1!)

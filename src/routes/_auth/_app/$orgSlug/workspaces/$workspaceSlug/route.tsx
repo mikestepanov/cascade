@@ -22,7 +22,7 @@ function WorkspaceLayout() {
 
   if (workspace === undefined) {
     return (
-      <Flex direction="column" align="center" justify="center" style={{ minHeight: "400px" }}>
+      <Flex direction="column" align="center" justify="center" className="min-h-96">
         <LoadingSpinner />
       </Flex>
     );
@@ -43,12 +43,16 @@ function WorkspaceLayout() {
         <Link
           to={ROUTES.workspaces.list.path}
           params={{ orgSlug }}
-          className="text-blue-600 hover:underline"
+          className="text-brand-600 hover:underline"
         >
           Workspaces
         </Link>
-        <span className="mx-2">/</span>
-        <span>{workspace.name}</span>
+        <Typography as="span" variant="muted" className="mx-2">
+          /
+        </Typography>
+        <Typography as="span" variant="small">
+          {workspace.name}
+        </Typography>
       </div>
 
       {/* Workspace Header */}
@@ -65,19 +69,19 @@ function WorkspaceLayout() {
       </div>
 
       {/* Tabs */}
-      <div className="border-b border-gray-200 mb-6">
+      <div className="border-b border-ui-border-primary mb-6">
         <nav className="flex gap-6">
           <Link
             to={ROUTES.workspaces.detail.path}
             params={{ orgSlug, workspaceSlug }}
-            className="px-1 py-3 border-b-2 border-blue-600 font-medium text-blue-600"
+            className="px-1 py-3 border-b-2 border-brand-600 font-medium text-brand-600"
           >
             Teams
           </Link>
           <Link
             to={ROUTES.workspaces.settings.path}
             params={{ orgSlug, workspaceSlug }}
-            className="px-1 py-3 border-b-2 border-transparent hover:border-gray-300 text-gray-600"
+            className="px-1 py-3 border-b-2 border-transparent hover:border-ui-border-secondary text-ui-text-secondary hover:text-ui-text-primary"
           >
             Settings
           </Link>

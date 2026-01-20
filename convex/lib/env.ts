@@ -4,13 +4,15 @@
  * All env vars are required. Set them in Convex dashboard.
  */
 
+import { validation } from "./errors";
+
 /**
  * Get a required environment variable. Throws if not defined.
  */
 export function requireEnv(name: string): string {
   const value = process.env[name];
   if (!value) {
-    throw new Error(`Missing required environment variable: ${name}`);
+    throw validation(name, `Missing required environment variable: ${name}`);
   }
   return value;
 }
@@ -142,7 +144,10 @@ export function getMailtrapFromEmail(): string {
 export function getMailtrapMode(): "sandbox" | "production" {
   const mode = requireEnv("MAILTRAP_MODE");
   if (mode !== "sandbox" && mode !== "production") {
-    throw new Error(`Invalid MAILTRAP_MODE: ${mode}. Must be "sandbox" or "production"`);
+    throw validation(
+      "MAILTRAP_MODE",
+      `Invalid MAILTRAP_MODE: ${mode}. Must be "sandbox" or "production"`,
+    );
   }
   return mode;
 }

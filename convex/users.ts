@@ -1,9 +1,17 @@
-import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
-import { internalQuery, mutation, query } from "./_generated/server";
+import { pruneNull } from "convex-helpers";
+import { internalQuery, query } from "./_generated/server";
+import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
 import { batchFetchUsers } from "./lib/batchHelpers";
+import { conflict, validation } from "./lib/errors";
+import { MAX_PAGE_SIZE } from "./lib/queryLimits";
 import { notDeleted } from "./lib/softDeleteHelpers";
 import { sanitizeUserForAuth } from "./lib/userUtils";
+import { digestFrequencies } from "./validators";
+
+// Limits for user stats queries
+const MAX_ISSUES_FOR_STATS = 1000;
+const MAX_COMMENTS_FOR_STATS = 1000;
 
 // Helper: Validate email format
 function isValidEmail(email: string): boolean {
@@ -34,7 +42,7 @@ export const get = query({
   },
 });
 
-export const getCurrent = query({
+export const getCurrent = authenticatedQuery({
   args: {},
   returns: v.union(
     v.null(),
@@ -60,14 +68,12 @@ export const getCurrent = query({
     }),
   ),
   handler: async (ctx) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) return null;
     // Current user can see their full profile
-    return await ctx.db.get(userId);
+    return await ctx.db.get(ctx.userId);
   },
 });
 
-export const updateProfile = mutation({
+export const updateProfile = authenticatedMutation({
   args: {
     name: v.optional(v.string()),
     email: v.optional(v.string()),
@@ -79,11 +85,6 @@ export const updateProfile = mutation({
   },
   returns: v.null(),
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      throw new Error("Not authenticated");
-    }
-
     const updates: {
       name?: string;
       email?: string;
@@ -98,7 +99,7 @@ export const updateProfile = mutation({
 
     if (args.email !== undefined) {
       if (!isValidEmail(args.email)) {
-        throw new Error("Invalid email address");
+        throw validation("email", "Invalid email address");
       }
 
       // Check if email is already in use by another user
@@ -107,8 +108,8 @@ export const updateProfile = mutation({
         .withIndex("email", (q) => q.eq("email", args.email))
         .first();
 
-      if (existingUser && existingUser._id !== userId) {
-        throw new Error("Email already in use");
+      if (existingUser && existingUser._id !== ctx.userId) {
+        throw conflict("Email already in use");
       }
 
       updates.email = args.email;
@@ -121,7 +122,7 @@ export const updateProfile = mutation({
     if (args.desktopNotifications !== undefined)
       updates.desktopNotifications = args.desktopNotifications;
 
-    await ctx.db.patch(userId, updates);
+    await ctx.db.patch(ctx.userId, updates);
   },
 });
 
@@ -132,24 +133,21 @@ export const updateProfile = mutation({
  * - Creator of any project (backward compatibility)
  * - Admin in any project (backward compatibility)
  */
-export const isOrganizationAdmin = query({
+export const isOrganizationAdmin = authenticatedQuery({
   args: {},
   returns: v.boolean(),
   handler: async (ctx) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) return false;
-
     // Primary: Check if user is admin or owner in any organization
     const adminMembership = await ctx.db
       .query("organizationMembers")
-      .withIndex("by_user_role", (q) => q.eq("userId", userId).eq("role", "admin"))
+      .withIndex("by_user_role", (q) => q.eq("userId", ctx.userId).eq("role", "admin"))
       .first();
 
     if (adminMembership) return true;
 
     const ownerMembership = await ctx.db
       .query("organizationMembers")
-      .withIndex("by_user_role", (q) => q.eq("userId", userId).eq("role", "owner"))
+      .withIndex("by_user_role", (q) => q.eq("userId", ctx.userId).eq("role", "owner"))
       .first();
 
     return !!ownerMembership;
@@ -171,28 +169,28 @@ export const getUserStats = query({
       .query("issues")
       .withIndex("by_reporter", (q) => q.eq("reporterId", args.userId))
       .filter(notDeleted)
-      .collect();
+      .take(MAX_ISSUES_FOR_STATS);
 
     // Get issues assigned
     const issuesAssigned = await ctx.db
       .query("issues")
       .withIndex("by_assignee", (q) => q.eq("assigneeId", args.userId))
       .filter(notDeleted)
-      .collect();
+      .take(MAX_ISSUES_FOR_STATS);
 
     // Get comments
     const comments = await ctx.db
       .query("issueComments")
       .withIndex("by_author", (q) => q.eq("authorId", args.userId))
       .filter(notDeleted)
-      .collect();
+      .take(MAX_COMMENTS_FOR_STATS);
 
     // Get projects (as member)
     const projectMemberships = await ctx.db
       .query("projectMembers")
       .withIndex("by_user", (q) => q.eq("userId", args.userId))
       .filter(notDeleted)
-      .collect();
+      .take(MAX_PAGE_SIZE);
 
     return {
       issuesCreated: issuesCreated.length,
@@ -213,7 +211,7 @@ export const getUserStats = query({
  */
 export const listWithDigestPreference = internalQuery({
   args: {
-    frequency: v.union(v.literal("daily"), v.literal("weekly")),
+    frequency: digestFrequencies,
   },
   returns: v.array(
     v.object({
@@ -237,8 +235,6 @@ export const listWithDigestPreference = internalQuery({
     const userMap = await batchFetchUsers(ctx, userIds);
 
     // Return users that exist (filter out deleted users)
-    return filtered
-      .map((pref) => userMap.get(pref.userId))
-      .filter((user): user is NonNullable<typeof user> => user !== null);
+    return pruneNull(filtered.map((pref) => userMap.get(pref.userId)));
   },
 });

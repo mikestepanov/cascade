@@ -87,8 +87,8 @@ export class DashboardPage extends BasePage {
   readonly newProjectButton: Locator;
   readonly projectList: Locator;
 
-  constructor(page: Page) {
-    super(page);
+  constructor(page: Page, orgSlug: string) {
+    super(page, orgSlug);
 
     // Navigation tabs - TanStack Router uses links, not buttons
     this.dashboardTab = page
@@ -185,10 +185,8 @@ export class DashboardPage extends BasePage {
   // Navigation
   // ===================
 
-  async goto(orgSlug?: string) {
-    // Use provided slug or default to TEST_ORG_SLUG
-    const slug = orgSlug || "nixelo-e2e";
-    const dashboardUrl = `/${slug}/dashboard`;
+  async goto() {
+    const dashboardUrl = `/${this.orgSlug}/dashboard`;
 
     // Determine baseURL from current URL
     const urlObj = new URL(this.page.url());
@@ -196,7 +194,7 @@ export class DashboardPage extends BasePage {
 
     // Check if already on dashboard - skip navigation to avoid token rotation
     const currentUrl = this.page.url();
-    if (currentUrl.includes(`/${slug}/dashboard`)) {
+    if (currentUrl.includes(`/${this.orgSlug}/dashboard`)) {
       // Already on dashboard, just verify it's loaded
       const isLoaded = await this.commandPaletteButton.isVisible().catch(() => false);
       if (isLoaded) {
@@ -218,7 +216,7 @@ export class DashboardPage extends BasePage {
       finalUrl.includes("/signin") ||
       finalUrl === baseUrl ||
       finalUrl === `${baseUrl}/` ||
-      !finalUrl.includes(slug)
+      !finalUrl.includes(this.orgSlug)
     ) {
       console.warn(
         "⚠️  Auth redirect detected: navigated to",
@@ -237,7 +235,7 @@ export class DashboardPage extends BasePage {
       finalUrl.includes("/signin") ||
       finalUrl === baseUrl ||
       finalUrl === `${baseUrl}/` ||
-      !finalUrl.includes(slug)
+      !finalUrl.includes(this.orgSlug)
     ) {
       console.error("❌ Still on landing page after retry. Auth failed.");
       throw new Error(`Redirected to landing/signin page: ${finalUrl}. Auth session invalid.`);
@@ -252,7 +250,7 @@ export class DashboardPage extends BasePage {
       if (
         currentUrl.includes("/signin") ||
         currentUrl === "http://localhost:5555/" ||
-        !currentUrl.includes(slug)
+        !currentUrl.includes(this.orgSlug)
       ) {
         throw new Error(`Redirected to landing/signin page: ${currentUrl}. Auth session invalid.`);
       }

@@ -81,8 +81,9 @@ export function UserManagement() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Queries
-  const invites = useQuery(api.invites.listInvites, {});
-  const users = useQuery(api.invites.listUsers, {});
+  // Queries
+  const invites = useQuery(api.invites.listInvites, organizationId ? { organizationId } : "skip");
+  const users = useQuery(api.invites.listUsers, organizationId ? { organizationId } : "skip");
 
   // Mutations
   const sendInvite = useMutation(api.invites.sendInvite);

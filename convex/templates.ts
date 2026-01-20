@@ -1,32 +1,24 @@
-import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import type { Doc } from "./_generated/dataModel";
-import { mutation, query } from "./_generated/server";
+import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
+import { forbidden, notFound } from "./lib/errors";
 import { assertCanAccessProject, assertCanEditProject } from "./projectAccess";
+import { issuePriorities, issueTypes } from "./validators";
 
 // Create an issue template
-export const create = mutation({
+export const create = authenticatedMutation({
   args: {
     projectId: v.id("projects"),
     name: v.string(),
-    type: v.union(v.literal("task"), v.literal("bug"), v.literal("story"), v.literal("epic")),
+    type: issueTypes,
     titleTemplate: v.string(),
     descriptionTemplate: v.string(),
-    defaultPriority: v.union(
-      v.literal("lowest"),
-      v.literal("low"),
-      v.literal("medium"),
-      v.literal("high"),
-      v.literal("highest"),
-    ),
+    defaultPriority: issuePriorities,
     defaultLabels: v.array(v.string()),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
-
     // Check if user can edit project (requires editor role or higher)
-    await assertCanEditProject(ctx, args.projectId, userId);
+    await assertCanEditProject(ctx, args.projectId, ctx.userId);
 
     const templateId = await ctx.db.insert("issueTemplates", {
       projectId: args.projectId,
@@ -36,7 +28,7 @@ export const create = mutation({
       descriptionTemplate: args.descriptionTemplate,
       defaultPriority: args.defaultPriority,
       defaultLabels: args.defaultLabels,
-      createdBy: userId,
+      createdBy: ctx.userId,
       createdAt: Date.now(),
     });
 
@@ -45,19 +37,14 @@ export const create = mutation({
 });
 
 // List templates for a project
-export const listByProject = query({
+export const listByProject = authenticatedQuery({
   args: {
     projectId: v.id("projects"),
-    type: v.optional(
-      v.union(v.literal("task"), v.literal("bug"), v.literal("story"), v.literal("epic")),
-    ),
+    type: v.optional(issueTypes),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
-
     // Check if user has access to project
-    await assertCanAccessProject(ctx, args.projectId, userId);
+    await assertCanAccessProject(ctx, args.projectId, ctx.userId);
 
     let templates: Array<Doc<"issueTemplates">>;
     if (args.type) {
@@ -83,18 +70,15 @@ export const listByProject = query({
 export const list = listByProject;
 
 // Get a single template
-export const get = query({
+export const get = authenticatedQuery({
   args: { id: v.id("issueTemplates") },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
-
     const template = await ctx.db.get(args.id);
     if (!template) return null;
 
     // Check if user has access to project
     if (template.projectId) {
-      await assertCanAccessProject(ctx, template.projectId, userId);
+      await assertCanAccessProject(ctx, template.projectId, ctx.userId);
     }
 
     return template;
@@ -102,7 +86,7 @@ export const get = query({
 });
 
 // Update a template
-export const update = mutation({
+export const update = authenticatedMutation({
   args: {
     id: v.id("issueTemplates"),
     name: v.optional(v.string()),
@@ -120,17 +104,14 @@ export const update = mutation({
     defaultLabels: v.optional(v.array(v.string())),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
-
     const template = await ctx.db.get(args.id);
-    if (!template) throw new Error("Template not found");
+    if (!template) throw notFound("template", args.id);
 
     // Check if user can edit project
     if (template.projectId) {
-      await assertCanEditProject(ctx, template.projectId, userId);
+      await assertCanEditProject(ctx, template.projectId, ctx.userId);
     } else {
-      throw new Error("Cannot edit global templates");
+      throw forbidden("edit global templates");
     }
 
     const updates: Partial<typeof template> = {};
@@ -146,20 +127,17 @@ export const update = mutation({
 });
 
 // Delete a template
-export const remove = mutation({
+export const remove = authenticatedMutation({
   args: { id: v.id("issueTemplates") },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
-
     const template = await ctx.db.get(args.id);
-    if (!template) throw new Error("Template not found");
+    if (!template) throw notFound("template", args.id);
 
     // Check if user can edit project
     if (template.projectId) {
-      await assertCanEditProject(ctx, template.projectId, userId);
+      await assertCanEditProject(ctx, template.projectId, ctx.userId);
     } else {
-      throw new Error("Cannot delete global templates");
+      throw forbidden("delete global templates");
     }
 
     await ctx.db.delete(args.id);

@@ -3,6 +3,7 @@ import { ProsemirrorSync } from "@convex-dev/prosemirror-sync";
 import type { GenericMutationCtx, GenericQueryCtx } from "convex/server";
 import { components } from "./_generated/api";
 import type { DataModel, Id } from "./_generated/dataModel";
+import { forbidden, notFound, unauthenticated, validation } from "./lib/errors";
 
 const prosemirrorSync = new ProsemirrorSync(components.prosemirrorSync);
 
@@ -12,43 +13,43 @@ async function checkPermissions(
 ) {
   const userId = await getAuthUserId(ctx);
   if (!userId) {
-    throw new Error("Not authenticated");
+    throw unauthenticated();
   }
 
   const document = await ctx.db.get(documentId as Id<"documents">);
   if (!document) {
-    throw new Error("Document not found");
+    throw notFound("document", documentId);
   }
 
   // Check if user can access this document
   if (!("isPublic" in document && "createdBy" in document)) {
-    throw new Error("Invalid document");
+    throw validation("document", "Invalid document");
   }
 
   if (!document.isPublic && document.createdBy !== userId) {
-    throw new Error("Not authorized to access this document");
+    throw forbidden();
   }
 }
 
 async function checkWritePermissions(ctx: GenericMutationCtx<DataModel>, documentId: string) {
   const userId = await getAuthUserId(ctx);
   if (!userId) {
-    throw new Error("Not authenticated");
+    throw unauthenticated();
   }
 
   const document = await ctx.db.get(documentId as Id<"documents">);
   if (!document) {
-    throw new Error("Document not found");
+    throw notFound("document", documentId);
   }
 
   // Check if user can write to this document
   if (!("isPublic" in document && "createdBy" in document)) {
-    throw new Error("Invalid document");
+    throw validation("document", "Invalid document");
   }
 
   // Only allow writes to public documents or documents owned by the user
   if (!document.isPublic && document.createdBy !== userId) {
-    throw new Error("Not authorized to edit this document");
+    throw forbidden();
   }
 }
 

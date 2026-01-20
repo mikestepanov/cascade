@@ -1,7 +1,8 @@
-import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
-import { internalMutation, mutation, query } from "./_generated/server";
+import { internalMutation, query } from "./_generated/server";
+import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
 import type { ApiAuthContext } from "./lib/apiAuth";
+import { forbidden, notFound, requireOwned, validation } from "./lib/errors";
 import { notDeleted } from "./lib/softDeleteHelpers";
 
 /**
@@ -68,7 +69,7 @@ export const validateApiKey = query({
 /**
  * Generate a new API key
  */
-export const generate = mutation({
+export const generate = authenticatedMutation({
   args: {
     name: v.string(),
     scopes: v.array(v.string()),
@@ -77,9 +78,6 @@ export const generate = mutation({
     expiresAt: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
-
     // Generate API key
     const apiKey = generateApiKey();
     const keyHash = await hashApiKey(apiKey);
@@ -89,17 +87,17 @@ export const generate = mutation({
     if (args.projectId) {
       const projectId = args.projectId;
       const project = await ctx.db.get(projectId);
-      if (!project) throw new Error("Project not found");
+      if (!project) throw notFound("project", projectId);
 
       // Check if user is a member
       const membership = await ctx.db
         .query("projectMembers")
-        .withIndex("by_project_user", (q) => q.eq("projectId", projectId).eq("userId", userId))
+        .withIndex("by_project_user", (q) => q.eq("projectId", projectId).eq("userId", ctx.userId))
         .filter(notDeleted)
         .first();
 
-      if (!membership && project.createdBy !== userId) {
-        throw new Error("You don't have access to this project");
+      if (!membership && project.createdBy !== ctx.userId) {
+        throw forbidden();
       }
     }
 
@@ -119,13 +117,13 @@ export const generate = mutation({
 
     for (const scope of args.scopes) {
       if (!validScopes.includes(scope)) {
-        throw new Error(`Invalid scope: ${scope}`);
+        throw validation("scopes", `Invalid scope: ${scope}`);
       }
     }
 
     // Create API key record
     const keyId = await ctx.db.insert("apiKeys", {
-      userId,
+      userId: ctx.userId,
       name: args.name,
       keyHash,
       keyPrefix,
@@ -152,15 +150,12 @@ export const generate = mutation({
 /**
  * List user's API keys
  */
-export const list = query({
+export const list = authenticatedQuery({
   args: {},
   handler: async (ctx) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
-
     const keys = await ctx.db
       .query("apiKeys")
-      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .withIndex("by_user", (q) => q.eq("userId", ctx.userId))
       .filter(notDeleted)
       .collect();
 
@@ -178,6 +173,9 @@ export const list = query({
       expiresAt: key.expiresAt,
       createdAt: key.createdAt,
       revokedAt: key.revokedAt,
+      // Rotation info
+      rotatedFromId: key.rotatedFromId,
+      rotatedAt: key.rotatedAt,
     }));
   },
 });
@@ -185,17 +183,13 @@ export const list = query({
 /**
  * Revoke an API key
  */
-export const revoke = mutation({
+export const revoke = authenticatedMutation({
   args: {
     keyId: v.id("apiKeys"),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
-
     const key = await ctx.db.get(args.keyId);
-    if (!key) throw new Error("API key not found");
-    if (key.userId !== userId) throw new Error("Not authorized");
+    requireOwned(key, ctx.userId, "apiKey");
 
     await ctx.db.patch(args.keyId, {
       isActive: false,
@@ -209,17 +203,13 @@ export const revoke = mutation({
 /**
  * Delete an API key permanently
  */
-export const remove = mutation({
+export const remove = authenticatedMutation({
   args: {
     keyId: v.id("apiKeys"),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
-
     const key = await ctx.db.get(args.keyId);
-    if (!key) throw new Error("API key not found");
-    if (key.userId !== userId) throw new Error("Not authorized");
+    requireOwned(key, ctx.userId, "apiKey");
 
     await ctx.db.delete(args.keyId);
 
@@ -230,7 +220,7 @@ export const remove = mutation({
 /**
  * Update API key settings
  */
-export const update = mutation({
+export const update = authenticatedMutation({
   args: {
     keyId: v.id("apiKeys"),
     name: v.optional(v.string()),
@@ -239,12 +229,8 @@ export const update = mutation({
     expiresAt: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
-
     const key = await ctx.db.get(args.keyId);
-    if (!key) throw new Error("API key not found");
-    if (key.userId !== userId) throw new Error("Not authorized");
+    requireOwned(key, ctx.userId, "apiKey");
 
     const updates: Partial<{
       name: string;
@@ -261,6 +247,111 @@ export const update = mutation({
     await ctx.db.patch(args.keyId, updates);
 
     return { success: true };
+  },
+});
+
+/** Default grace period for rotated keys (24 hours) */
+const DEFAULT_ROTATION_GRACE_PERIOD = 24 * 60 * 60 * 1000;
+
+/**
+ * Rotate an API key - creates a new key and sets up grace period for old key
+ *
+ * The old key remains valid for a grace period (default 24h) to allow
+ * systems to transition to the new key without downtime.
+ *
+ * @returns The new API key (must be saved - won't be shown again)
+ */
+export const rotate = authenticatedMutation({
+  args: {
+    keyId: v.id("apiKeys"),
+    gracePeriodMs: v.optional(v.number()), // Custom grace period (default 24h)
+  },
+  handler: async (ctx, args) => {
+    const oldKey = await ctx.db.get(args.keyId);
+    requireOwned(oldKey, ctx.userId, "apiKey");
+
+    if (!oldKey.isActive) {
+      throw validation("keyId", "Cannot rotate an inactive key");
+    }
+
+    if (oldKey.rotatedAt) {
+      throw validation("keyId", "This key has already been rotated");
+    }
+
+    // Generate new API key
+    const newApiKey = generateApiKey();
+    const newKeyHash = await hashApiKey(newApiKey);
+    const newKeyPrefix = newApiKey.substring(0, 16);
+
+    const now = Date.now();
+    const gracePeriod = args.gracePeriodMs ?? DEFAULT_ROTATION_GRACE_PERIOD;
+
+    // Create new key with same settings
+    const newKeyId = await ctx.db.insert("apiKeys", {
+      userId: ctx.userId,
+      name: `${oldKey.name} (rotated)`,
+      keyHash: newKeyHash,
+      keyPrefix: newKeyPrefix,
+      scopes: oldKey.scopes,
+      projectId: oldKey.projectId,
+      rateLimit: oldKey.rateLimit,
+      isActive: true,
+      usageCount: 0,
+      createdAt: now,
+      expiresAt: oldKey.expiresAt, // Inherit expiration
+      rotatedFromId: args.keyId, // Link to old key
+    });
+
+    // Mark old key as rotated with grace period expiration
+    await ctx.db.patch(args.keyId, {
+      rotatedAt: now,
+      expiresAt: now + gracePeriod, // Old key expires after grace period
+    });
+
+    return {
+      id: newKeyId,
+      apiKey: newApiKey, // ⚠️ User must save this - won't be shown again
+      name: `${oldKey.name} (rotated)`,
+      scopes: oldKey.scopes,
+      keyPrefix: newKeyPrefix,
+      oldKeyExpiresAt: now + gracePeriod,
+      gracePeriodMs: gracePeriod,
+    };
+  },
+});
+
+/**
+ * Get keys expiring soon (for notifications/warnings)
+ * Returns keys expiring within the specified window
+ */
+export const listExpiringSoon = authenticatedQuery({
+  args: {
+    withinMs: v.optional(v.number()), // Default: 7 days
+  },
+  handler: async (ctx, args) => {
+    const withinMs = args.withinMs ?? 7 * 24 * 60 * 60 * 1000; // 7 days
+    const now = Date.now();
+    const threshold = now + withinMs;
+
+    // Get all user's active keys
+    const keys = await ctx.db
+      .query("apiKeys")
+      .withIndex("by_user_active", (q) => q.eq("userId", ctx.userId).eq("isActive", true))
+      .collect();
+
+    // Filter to expiring keys
+    const expiring = keys.filter((key) => key.expiresAt && key.expiresAt <= threshold);
+
+    return expiring.map((key) => ({
+      id: key._id,
+      name: key.name,
+      keyPrefix: key.keyPrefix,
+      expiresAt: key.expiresAt,
+      daysUntilExpiry: key.expiresAt
+        ? Math.ceil((key.expiresAt - now) / (24 * 60 * 60 * 1000))
+        : null,
+      wasRotated: !!key.rotatedAt,
+    }));
   },
 });
 
@@ -350,17 +441,13 @@ export const recordUsage = internalMutation({
 /**
  * Get API usage statistics
  */
-export const getUsageStats = query({
+export const getUsageStats = authenticatedQuery({
   args: {
     keyId: v.id("apiKeys"),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
-
     const key = await ctx.db.get(args.keyId);
-    if (!key) throw new Error("API key not found");
-    if (key.userId !== userId) throw new Error("Not authorized");
+    requireOwned(key, ctx.userId, "apiKey");
 
     // Get recent usage logs
     const logs = await ctx.db

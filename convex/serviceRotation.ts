@@ -7,6 +7,8 @@
 
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
+import { notFound } from "./lib/errors";
+import { freeUnitTypes, serviceTypes } from "./validators";
 
 // Service types
 export type ServiceType = "transcription" | "email" | "sms" | "ai";
@@ -27,12 +29,7 @@ function getCurrentMonth(): string {
  */
 export const selectProvider = query({
   args: {
-    serviceType: v.union(
-      v.literal("transcription"),
-      v.literal("email"),
-      v.literal("sms"),
-      v.literal("ai"),
-    ),
+    serviceType: serviceTypes,
     unitsNeeded: v.optional(v.number()), // Estimate of units needed (optional)
   },
   returns: v.union(
@@ -118,22 +115,12 @@ export const selectProvider = query({
  */
 export const getUsageSummary = query({
   args: {
-    serviceType: v.union(
-      v.literal("transcription"),
-      v.literal("email"),
-      v.literal("sms"),
-      v.literal("ai"),
-    ),
+    serviceType: serviceTypes,
     month: v.optional(v.string()),
   },
   returns: v.object({
     month: v.string(),
-    serviceType: v.union(
-      v.literal("transcription"),
-      v.literal("email"),
-      v.literal("sms"),
-      v.literal("ai"),
-    ),
+    serviceType: serviceTypes,
     providers: v.array(
       v.object({
         provider: v.string(),
@@ -142,7 +129,7 @@ export const getUsageSummary = query({
         isConfigured: v.boolean(),
         priority: v.number(),
         freeUnitsPerMonth: v.number(),
-        freeUnitsType: v.union(v.literal("monthly"), v.literal("one_time"), v.literal("yearly")),
+        freeUnitsType: freeUnitTypes,
         unitsUsed: v.number(),
         freeUnitsRemaining: v.number(),
         paidUnitsUsed: v.number(),
@@ -229,12 +216,7 @@ export const getUsageSummary = query({
  */
 export const recordUsage = mutation({
   args: {
-    serviceType: v.union(
-      v.literal("transcription"),
-      v.literal("email"),
-      v.literal("sms"),
-      v.literal("ai"),
-    ),
+    serviceType: serviceTypes,
     provider: v.string(),
     unitsUsed: v.number(),
   },
@@ -255,7 +237,7 @@ export const recordUsage = mutation({
       .first();
 
     if (!providerConfig) {
-      throw new Error(`Unknown provider: ${args.provider}`);
+      throw notFound("provider", args.provider);
     }
 
     // Get or create usage record for this month
@@ -322,16 +304,11 @@ export const recordUsage = mutation({
  */
 export const upsertProvider = mutation({
   args: {
-    serviceType: v.union(
-      v.literal("transcription"),
-      v.literal("email"),
-      v.literal("sms"),
-      v.literal("ai"),
-    ),
+    serviceType: serviceTypes,
     provider: v.string(),
     displayName: v.string(),
     freeUnitsPerMonth: v.number(),
-    freeUnitsType: v.union(v.literal("monthly"), v.literal("one_time"), v.literal("yearly")),
+    freeUnitsType: freeUnitTypes,
     oneTimeUnitsRemaining: v.optional(v.number()),
     costPerUnit: v.number(),
     unitType: v.string(),
@@ -531,7 +508,7 @@ export const setProviderConfigured = mutation({
       .first();
 
     if (!existing) {
-      throw new Error(`Unknown provider: ${args.provider}`);
+      throw notFound("provider", args.provider);
     }
 
     await ctx.db.patch(existing._id, {

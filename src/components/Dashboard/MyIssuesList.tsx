@@ -161,7 +161,7 @@ export function MyIssuesList({
                       </Typography>
                       <Badge
                         variant="neutral"
-                        className="text-[10px] uppercase font-bold bg-ui-bg-tertiary/50"
+                        className="text-xs uppercase font-bold bg-ui-bg-tertiary/50"
                       >
                         {issue.priority}
                       </Badge>
@@ -175,7 +175,7 @@ export function MyIssuesList({
                     <Flex
                       gap="xs"
                       align="center"
-                      className="text-[10px] text-ui-text-tertiary uppercase tracking-wider font-bold"
+                      className="text-xs text-ui-text-tertiary uppercase tracking-wider font-bold"
                     >
                       <span>{issue.projectName}</span>
                       <span>•</span>

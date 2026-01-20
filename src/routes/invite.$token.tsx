@@ -3,7 +3,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Authenticated, Unauthenticated, useMutation, useQuery } from "convex/react";
 import { AlertCircle, CheckCircle, Clock, Loader2 } from "lucide-react";
 import { useState } from "react";
-import { SignInForm, SmartAuthGuard } from "@/components/auth";
+import { AuthRedirect, SignInForm } from "@/components/auth";
 import { Button } from "@/components/ui/Button";
 import { Flex } from "@/components/ui/Flex";
 import { Typography } from "@/components/ui/Typography";
@@ -51,8 +51,9 @@ function InviteRoute() {
   };
 
   // After accepting invite, redirect to user's organization dashboard
+  // AuthRedirect will query getRedirectDestination and navigate appropriately
   if (inviteAccepted) {
-    return <SmartAuthGuard />;
+    return <AuthRedirect>{null}</AuthRedirect>;
   }
 
   // Loading state
@@ -168,9 +169,11 @@ function InviteRoute() {
       <header className="p-6 flex items-center justify-center">
         <Flex align="center" gap="sm">
           <Flex align="center" justify="center" className="h-8 w-8 rounded-lg bg-brand-main">
-            <span className="text-ui-bg-primary font-bold text-sm">N</span>
+            <Typography variant="small" className="font-bold text-ui-bg-primary">
+              N
+            </Typography>
           </Flex>
-          <span className="font-semibold text-lg text-ui-text-primary">Nixelo</span>
+          <Typography variant="large">Nixelo</Typography>
         </Flex>
       </header>
 
@@ -184,11 +187,15 @@ function InviteRoute() {
                 You're Invited!
               </Typography>
               <Typography variant="p" color="secondary">
-                <span className="font-medium text-ui-text-primary">{invite.inviterName}</span>{" "}
+                <Typography as="span" variant="small">
+                  {invite.inviterName}
+                </Typography>{" "}
                 {isProjectInvite ? (
                   <>
                     has invited you to join the project{" "}
-                    <span className="font-medium text-ui-text-primary">{invite.projectName}</span>
+                    <Typography as="span" variant="small">
+                      {invite.projectName}
+                    </Typography>
                   </>
                 ) : (
                   "has invited you to join Nixelo"
@@ -199,71 +206,80 @@ function InviteRoute() {
             {/* Invite Details */}
             <div className="bg-ui-bg-secondary rounded-lg p-4 mb-6">
               <Flex justify="between" align="center" className="text-sm">
-                <span className="text-ui-text-tertiary">Invited email</span>
-                <span className="text-ui-text-primary font-medium">{invite.email}</span>
+                <Typography variant="muted">Invited email</Typography>
+                <Typography variant="small">{invite.email}</Typography>
               </Flex>
               {isProjectInvite ? (
                 <>
                   <Flex justify="between" align="center" className="text-sm mt-2">
-                    <span className="text-ui-text-tertiary">Project</span>
-                    <span className="text-ui-text-primary font-medium">{invite.projectName}</span>
+                    <Typography variant="muted">Project</Typography>
+                    <Typography variant="small">{invite.projectName}</Typography>
                   </Flex>
                   <Flex justify="between" align="center" className="text-sm mt-2">
-                    <span className="text-ui-text-tertiary">Project Role</span>
-                    <span className="text-ui-text-primary font-medium capitalize">
+                    <Typography variant="muted">Project Role</Typography>
+                    <Typography variant="small" className="capitalize">
                       {invite.projectRole || "editor"}
-                    </span>
+                    </Typography>
                   </Flex>
                 </>
               ) : (
                 <Flex justify="between" align="center" className="text-sm mt-2">
-                  <span className="text-ui-text-tertiary">Role</span>
-                  <span className="text-ui-text-primary font-medium capitalize">{invite.role}</span>
+                  <Typography variant="muted">Role</Typography>
+                  <Typography variant="small" className="capitalize">
+                    {invite.role}
+                  </Typography>
                 </Flex>
               )}
             </div>
 
             {/* Auth-dependent content */}
-            <Authenticated>
-              {/* User is logged in - show accept button */}
-              <div className="space-y-4">
-                {acceptError && (
-                  <div className="p-3 rounded-lg bg-status-error-bg text-status-error-text text-sm">
-                    {acceptError}
-                  </div>
-                )}
-                <Button
-                  variant="primary"
-                  size="lg"
-                  className="w-full"
-                  onClick={handleAcceptInvite}
-                  disabled={isAccepting}
-                >
-                  {isAccepting ? (
-                    <>
-                      <Loader2 className="w-4 h-4 animate-spin mr-2" />
-                      Accepting...
-                    </>
-                  ) : (
-                    "Accept Invitation"
+            {invite.status === "pending" && (
+              <Authenticated>
+                {/* User is logged in - show accept button */}
+                <div className="space-y-4">
+                  {acceptError && (
+                    <div className="p-3 rounded-lg bg-status-error-bg text-status-error-text text-sm">
+                      {acceptError}
+                    </div>
                   )}
-                </Button>
-                <Typography className="text-xs text-center text-ui-text-tertiary">
-                  By accepting, you'll join the team and can start collaborating
-                </Typography>
-              </div>
-            </Authenticated>
+                  <Button
+                    variant="primary"
+                    size="lg"
+                    className="w-full"
+                    onClick={handleAcceptInvite}
+                    disabled={isAccepting}
+                  >
+                    {isAccepting ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                        Accepting...
+                      </>
+                    ) : (
+                      "Accept Invitation"
+                    )}
+                  </Button>
+                  <Typography className="text-xs text-center text-ui-text-tertiary">
+                    By accepting, you'll join the team and can start collaborating
+                  </Typography>
+                </div>
+              </Authenticated>
+            )}
 
-            <Unauthenticated>
-              {/* User is not logged in - show sign up/in form */}
-              <div className="space-y-4">
-                <Typography className="text-sm text-center text-ui-text-secondary mb-4">
-                  Sign in or create an account with{" "}
-                  <span className="font-medium">{invite.email}</span> to accept this invitation
-                </Typography>
-                <SignInForm />
-              </div>
-            </Unauthenticated>
+            {invite.status === "pending" && (
+              <Unauthenticated>
+                {/* User is not logged in - show sign up/in form */}
+                <div className="space-y-4">
+                  <Typography className="text-sm text-center text-ui-text-secondary mb-4">
+                    Sign in or create an account with{" "}
+                    <Typography as="span" variant="small">
+                      {invite.email}
+                    </Typography>{" "}
+                    to accept this invitation
+                  </Typography>
+                  <SignInForm />
+                </div>
+              </Unauthenticated>
+            )}
           </div>
         </div>
       </main>

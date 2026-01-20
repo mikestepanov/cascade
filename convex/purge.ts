@@ -1,6 +1,7 @@
 import { v } from "convex/values";
 import type { TableNames } from "./_generated/dataModel";
 import { mutation } from "./_generated/server";
+import { validation } from "./lib/errors";
 
 const TABLES: TableNames[] = [
   "documents",
@@ -83,7 +84,7 @@ export const purgeData = mutation({
   },
   handler: async (ctx, args) => {
     if (!args.confirm) {
-      throw new Error("Confirmation required to purge data.");
+      throw validation("confirm", "Confirmation required to purge data.");
     }
 
     let totalDeleted = 0;

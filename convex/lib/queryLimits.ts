@@ -62,6 +62,9 @@ export const MAX_SEARCH_CONTEXT_ITEMS = 20;
 /** Max sprints to include in velocity calculation */
 export const MAX_VELOCITY_SPRINTS = 10;
 
+/** Max issues per sprint for counting/analysis */
+export const MAX_SPRINT_ISSUES = 1000;
+
 /** Max API key usage records per query */
 export const MAX_API_KEY_USAGE_RECORDS = 100;
 
@@ -70,6 +73,21 @@ export const MAX_OFFLINE_SYNC_ITEMS = 50;
 
 /** Max compliance records for reports */
 export const MAX_COMPLIANCE_RECORDS = 1000;
+
+/** Max team members per team query (reasonable upper bound) */
+export const MAX_TEAM_MEMBERS = 500;
+
+/** Max teams per organization query */
+export const MAX_TEAMS_PER_ORG = 200;
+
+/** Max projects per team query */
+export const MAX_PROJECTS_PER_TEAM = 200;
+
+/** Max organization members per query */
+export const MAX_ORG_MEMBERS = 1000;
+
+/** Max user's assigned issues for focus task (reasonable upper bound) */
+export const MAX_USER_ASSIGNED_ISSUES = 500;
 
 // =============================================================================
 // HELPER FUNCTIONS

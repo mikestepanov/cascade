@@ -1,5 +1,5 @@
 import { api } from "@convex/_generated/api";
-import { useMutation, usePaginatedQuery, useQuery } from "convex/react";
+import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
 import { Check, ChevronDown, ChevronUp, X } from "@/lib/icons";
 import { cn } from "@/lib/utils";
@@ -18,27 +18,19 @@ export function OnboardingChecklist() {
   const [isExpanded, setIsExpanded] = useState(true);
   const onboarding = useQuery(api.onboarding.getOnboardingStatus);
   const projects = useQuery(api.projects.getCurrentUserProjects, {});
-  const { results: issues } = usePaginatedQuery(
-    api.issues.listByUser,
-    {},
-    { initialNumItems: 100 },
-  );
+  // Efficient query - only checks if user has any completed issue
+  const hasCompletedIssue = useQuery(api.onboarding.hasCompletedIssue);
+  // Check if user has created any issues (just need count > 0)
+  const userIssueCount = useQuery(api.issues.getUserIssueCount);
   const updateOnboarding = useMutation(api.onboarding.updateOnboardingStatus);
 
   if (!onboarding || onboarding.checklistDismissed || onboarding.onboardingCompleted) {
     return null;
   }
 
-  // Calculate completion status for each task
+  // Calculate completion status for each task (using efficient backend queries)
   const hasProjects = (projects?.length ?? 0) > 0;
-  const hasCreatedIssue = (issues?.length ?? 0) > 0;
-  const hasCompletedIssue =
-    issues?.some((issue) => {
-      // Check if issue has a status in the "done" category
-      // This would require fetching the project to check workflow states
-      // For now, we'll use a simple check
-      return issue.status === "done";
-    }) ?? false;
+  const hasCreatedIssue = (userIssueCount ?? 0) > 0;
 
   const items: ChecklistItem[] = [
     {

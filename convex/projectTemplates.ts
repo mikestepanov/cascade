@@ -1,14 +1,13 @@
-import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
+import { authenticatedMutation } from "./customFunctions";
+import { conflict, forbidden, notFound } from "./lib/errors";
 import { notDeleted } from "./lib/softDeleteHelpers";
 
 export const list = query({
   args: {},
-  returns: v.array(v.any()), // Struct is complex, using v.any() for full doc return
-  // Or better: v.array(v.object({ _id: v.id("projectTemplates"), name: v.string(), ... }))
-  // I'll use v.array(v.any()) as a safe fallback for full doc return in this context
-  // given the complexity of nested arrays in workflowStates/defaultLabels.
+  // Note: Returns full projectTemplates documents. Return type validation omitted
+  // due to complex nested arrays (workflowStates, defaultLabels).
   handler: async (ctx) => {
     // Get all built-in templates
     const templates = await ctx.db
@@ -22,13 +21,13 @@ export const list = query({
 
 export const get = query({
   args: { id: v.id("projectTemplates") },
-  returns: v.union(v.null(), v.any()),
+  // Note: Returns full projectTemplates document or null
   handler: async (ctx, args) => {
     return await ctx.db.get(args.id);
   },
 });
 
-export const createFromTemplate = mutation({
+export const createFromTemplate = authenticatedMutation({
   args: {
     templateId: v.id("projectTemplates"),
     projectName: v.string(),
@@ -40,26 +39,21 @@ export const createFromTemplate = mutation({
   },
   returns: v.id("projects"),
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      throw new Error("Not authenticated");
-    }
-
     const template = await ctx.db.get(args.templateId);
     if (!template) {
-      throw new Error("Template not found");
+      throw notFound("template", args.templateId);
     }
 
     // Verify user is a member of the organization
     const organizationMembership = await ctx.db
       .query("organizationMembers")
       .withIndex("by_organization_user", (q) =>
-        q.eq("organizationId", args.organizationId).eq("userId", userId),
+        q.eq("organizationId", args.organizationId).eq("userId", ctx.userId),
       )
       .first();
 
     if (!organizationMembership) {
-      throw new Error("You must be a member of this organization to create projects");
+      throw forbidden("organization member");
     }
 
     // Check if project key already exists
@@ -70,7 +64,7 @@ export const createFromTemplate = mutation({
       .first();
 
     if (existing) {
-      throw new Error("Project key already exists");
+      throw conflict("Project key already exists");
     }
 
     const now = Date.now();
@@ -83,8 +77,8 @@ export const createFromTemplate = mutation({
       organizationId: args.organizationId,
       workspaceId: args.workspaceId,
       teamId: args.teamId,
-      ownerId: userId,
-      createdBy: userId,
+      ownerId: ctx.userId,
+      createdBy: ctx.userId,
       createdAt: now,
       updatedAt: now,
       isPublic: false,
@@ -95,9 +89,9 @@ export const createFromTemplate = mutation({
     // Add creator as admin member
     await ctx.db.insert("projectMembers", {
       projectId,
-      userId,
+      userId: ctx.userId,
       role: "admin",
-      addedBy: userId,
+      addedBy: ctx.userId,
       addedAt: now,
     });
 
@@ -107,7 +101,7 @@ export const createFromTemplate = mutation({
         projectId,
         name: labelTemplate.name,
         color: labelTemplate.color,
-        createdBy: userId,
+        createdBy: ctx.userId,
         createdAt: now,
       });
     }

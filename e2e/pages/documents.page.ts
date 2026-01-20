@@ -39,11 +39,8 @@ export class DocumentsPage extends BasePage {
   readonly confirmDeleteButton: Locator;
   readonly cancelDeleteButton: Locator;
 
-  private orgSlug: string;
-
-  constructor(page: Page, orgSlug = "nixelo-e2e") {
-    super(page);
-    this.orgSlug = orgSlug;
+  constructor(page: Page, orgSlug: string) {
+    super(page, orgSlug);
 
     // Sidebar
     this.sidebar = page.locator("[data-tour='sidebar']").or(page.locator("aside").first());

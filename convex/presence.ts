@@ -6,6 +6,7 @@ import { components } from "./_generated/api";
 import type { Id } from "./_generated/dataModel";
 import { mutation, query } from "./_generated/server";
 import { batchFetchUsers } from "./lib/batchHelpers";
+import { unauthenticated } from "./lib/errors";
 
 // Type assertion for component - unavoidable without running dev server
 // Two-step cast ensures type safety: unknown → ConstructorParameters<typeof Presence>[0]
@@ -31,7 +32,7 @@ export const heartbeat = mutation({
   handler: async (ctx, { roomId, sessionId, interval }) => {
     const authUserId = await getAuthUserId(ctx);
     if (!authUserId) {
-      throw new Error("Not authenticated");
+      throw unauthenticated();
     }
     return await presence.heartbeat(ctx, roomId, authUserId, sessionId, interval);
   },

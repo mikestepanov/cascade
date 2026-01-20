@@ -6,6 +6,7 @@
  */
 
 import { getSendPulseFromEmail, getSendPulseId, getSendPulseSecret } from "../lib/env";
+import { validation } from "../lib/errors";
 import type { EmailProvider, EmailSendParams, EmailSendResult } from "./provider";
 
 interface SendPulseTokenResponse {
@@ -61,7 +62,10 @@ export class SendPulseProvider implements EmailProvider {
     });
 
     if (!response.ok) {
-      throw new Error(`SendPulse auth failed: ${response.status} ${await response.text()}`);
+      throw validation(
+        "sendpulse",
+        `SendPulse auth failed: ${response.status} ${await response.text()}`,
+      );
     }
 
     const data = (await response.json()) as SendPulseTokenResponse;

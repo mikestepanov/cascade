@@ -5,6 +5,7 @@
  * Unified interface for Anthropic Claude
  */
 
+import { validation } from "../lib/errors";
 import type { AIConfig } from "./config";
 
 export interface AIMessage {
@@ -43,7 +44,7 @@ async function callAnthropic(config: AIConfig, messages: AIMessage[]): Promise<A
 
   if (!response.ok) {
     const error = await response.text();
-    throw new Error(`Anthropic API error: ${error}`);
+    throw validation("anthropic", `Anthropic API error: ${error}`);
   }
 
   const data = await response.json();
@@ -63,7 +64,10 @@ async function callAnthropic(config: AIConfig, messages: AIMessage[]): Promise<A
  */
 export async function callAI(config: AIConfig, messages: AIMessage[]): Promise<AIResponse> {
   if (config.provider !== "anthropic") {
-    throw new Error(`Unsupported AI provider: ${config.provider}. Only Anthropic is supported.`);
+    throw validation(
+      "provider",
+      `Unsupported AI provider: ${config.provider}. Only Anthropic is supported.`,
+    );
   }
   return await callAnthropic(config, messages);
 }

@@ -1,11 +1,13 @@
-import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import type { Id } from "./_generated/dataModel";
-import { mutation, query } from "./_generated/server";
+import { mutation } from "./_generated/server";
+import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
+import { conflict, forbidden, notFound, validation } from "./lib/errors";
 import { notDeleted } from "./lib/softDeleteHelpers";
+import { ciStatuses, prStates } from "./validators";
 
 // Connect GitHub account (OAuth callback)
-export const connectGitHub = mutation({
+export const connectGitHub = authenticatedMutation({
   args: {
     githubUserId: v.string(),
     githubUsername: v.string(),
@@ -14,13 +16,10 @@ export const connectGitHub = mutation({
     expiresAt: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
-
     // Check if connection already exists
     const existing = await ctx.db
       .query("githubConnections")
-      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .withIndex("by_user", (q) => q.eq("userId", ctx.userId))
       .first();
 
     const now = Date.now();
@@ -40,7 +39,7 @@ export const connectGitHub = mutation({
 
     // Create new connection
     return await ctx.db.insert("githubConnections", {
-      userId,
+      userId: ctx.userId,
       githubUserId: args.githubUserId,
       githubUsername: args.githubUsername,
       accessToken: args.accessToken,
@@ -53,27 +52,23 @@ export const connectGitHub = mutation({
 });
 
 // Get GitHub connection for current user
-export const getConnection = query({
+export const getConnection = authenticatedQuery({
+  args: {},
   handler: async (ctx) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) return null;
-
     return await ctx.db
       .query("githubConnections")
-      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .withIndex("by_user", (q) => q.eq("userId", ctx.userId))
       .first();
   },
 });
 
 // Disconnect GitHub account
-export const disconnectGitHub = mutation({
+export const disconnectGitHub = authenticatedMutation({
+  args: {},
   handler: async (ctx) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
-
     const connection = await ctx.db
       .query("githubConnections")
-      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .withIndex("by_user", (q) => q.eq("userId", ctx.userId))
       .first();
 
     if (connection) {
@@ -83,7 +78,7 @@ export const disconnectGitHub = mutation({
 });
 
 // Link a GitHub repository to a project
-export const linkRepository = mutation({
+export const linkRepository = authenticatedMutation({
   args: {
     projectId: v.id("projects"),
     repoOwner: v.string(),
@@ -94,26 +89,25 @@ export const linkRepository = mutation({
     autoLinkCommits: v.optional(v.boolean()),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
-
     // Verify user has access to project
     const project = await ctx.db.get(args.projectId);
-    if (!project) throw new Error("Project not found");
+    if (!project) throw notFound("project", args.projectId);
 
     // Check permission (at least editor)
     const member = await ctx.db
       .query("projectMembers")
-      .withIndex("by_project_user", (q) => q.eq("projectId", args.projectId).eq("userId", userId))
+      .withIndex("by_project_user", (q) =>
+        q.eq("projectId", args.projectId).eq("userId", ctx.userId),
+      )
       .filter(notDeleted)
       .first();
 
-    if (!member && project.createdBy !== userId) {
-      throw new Error("You don't have permission to link repositories to this project");
+    if (!member && project.createdBy !== ctx.userId) {
+      throw forbidden("project member");
     }
 
     if (member && member.role === "viewer") {
-      throw new Error("Viewers cannot link repositories");
+      throw forbidden("editor");
     }
 
     // Check if repo already linked
@@ -124,7 +118,7 @@ export const linkRepository = mutation({
       .first();
 
     if (existing) {
-      throw new Error("This repository is already linked to a project");
+      throw conflict("This repository is already linked to a project");
     }
 
     const now = Date.now();
@@ -146,30 +140,29 @@ export const linkRepository = mutation({
 });
 
 // Unlink repository from project
-export const unlinkRepository = mutation({
+export const unlinkRepository = authenticatedMutation({
   args: {
     repositoryId: v.id("githubRepositories"),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
-
     const repo = await ctx.db.get(args.repositoryId);
-    if (!repo) throw new Error("Repository not found");
+    if (!repo) throw notFound("repository", args.repositoryId);
 
     const project = await ctx.db.get(repo.projectId);
-    if (!project) throw new Error("Project not found");
+    if (!project) throw notFound("project", repo.projectId);
 
     // Check permission (admin only)
     const member = await ctx.db
       .query("projectMembers")
-      .withIndex("by_project_user", (q) => q.eq("projectId", repo.projectId).eq("userId", userId))
+      .withIndex("by_project_user", (q) =>
+        q.eq("projectId", repo.projectId).eq("userId", ctx.userId),
+      )
       .filter(notDeleted)
       .first();
 
-    const isAdmin = project.createdBy === userId || member?.role === "admin";
+    const isAdmin = project.createdBy === ctx.userId || member?.role === "admin";
     if (!isAdmin) {
-      throw new Error("Only admins can unlink repositories");
+      throw forbidden("admin");
     }
 
     await ctx.db.delete(args.repositoryId);
@@ -177,14 +170,11 @@ export const unlinkRepository = mutation({
 });
 
 // List repositories linked to a project
-export const listRepositories = query({
+export const listRepositories = authenticatedQuery({
   args: {
     projectId: v.id("projects"),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) return [];
-
     // Verify access to project
     const project = await ctx.db.get(args.projectId);
     if (!project) return [];
@@ -192,11 +182,13 @@ export const listRepositories = query({
     if (!project.isPublic) {
       const member = await ctx.db
         .query("projectMembers")
-        .withIndex("by_project_user", (q) => q.eq("projectId", args.projectId).eq("userId", userId))
+        .withIndex("by_project_user", (q) =>
+          q.eq("projectId", args.projectId).eq("userId", ctx.userId),
+        )
         .filter(notDeleted)
         .first();
 
-      if (!member && project.createdBy !== userId) {
+      if (!member && project.createdBy !== ctx.userId) {
         return [];
       }
     }
@@ -217,20 +209,18 @@ export const upsertPullRequest = mutation({
     prId: v.string(),
     title: v.string(),
     body: v.optional(v.string()),
-    state: v.union(v.literal("open"), v.literal("closed"), v.literal("merged")),
+    state: prStates,
     mergedAt: v.optional(v.number()),
     closedAt: v.optional(v.number()),
     authorUsername: v.string(),
     authorAvatarUrl: v.optional(v.string()),
     htmlUrl: v.string(),
-    checksStatus: v.optional(
-      v.union(v.literal("pending"), v.literal("success"), v.literal("failure")),
-    ),
+    checksStatus: v.optional(ciStatuses),
     issueKey: v.optional(v.string()), // e.g., "PROJ-123"
   },
   handler: async (ctx, args) => {
     const repo = await ctx.db.get(args.repositoryId);
-    if (!repo) throw new Error("Repository not found");
+    if (!repo) throw notFound("repository", args.repositoryId);
 
     const now = Date.now();
 
@@ -295,25 +285,22 @@ export const upsertPullRequest = mutation({
 });
 
 // Link PR to issue manually
-export const linkPRToIssue = mutation({
+export const linkPRToIssue = authenticatedMutation({
   args: {
     prId: v.id("githubPullRequests"),
     issueId: v.id("issues"),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
-
     const pr = await ctx.db.get(args.prId);
-    if (!pr) throw new Error("Pull request not found");
+    if (!pr) throw notFound("pull request", args.prId);
 
     const issue = await ctx.db.get(args.issueId);
-    if (!issue) throw new Error("Issue not found");
+    if (!issue) throw notFound("issue", args.issueId);
 
     // Verify project match
-    if (!issue.projectId) throw new Error("Issue has no project");
+    if (!issue.projectId) throw validation("issue", "Issue has no project");
     if (pr.projectId !== issue.projectId) {
-      throw new Error("PR and issue must be in the same project");
+      throw validation("project", "PR and issue must be in the same project");
     }
 
     await ctx.db.patch(args.prId, {
@@ -324,14 +311,11 @@ export const linkPRToIssue = mutation({
 });
 
 // Get PRs for an issue
-export const getPullRequests = query({
+export const getPullRequests = authenticatedQuery({
   args: {
     issueId: v.id("issues"),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) return [];
-
     const issue = await ctx.db.get(args.issueId);
     if (!issue) return [];
 
@@ -344,12 +328,12 @@ export const getPullRequests = query({
       const member = await ctx.db
         .query("projectMembers")
         .withIndex("by_project_user", (q) =>
-          q.eq("projectId", issue.projectId as Id<"projects">).eq("userId", userId),
+          q.eq("projectId", issue.projectId as Id<"projects">).eq("userId", ctx.userId),
         )
         .filter(notDeleted)
         .first();
 
-      if (!member && project.createdBy !== userId) {
+      if (!member && project.createdBy !== ctx.userId) {
         return [];
       }
     }
@@ -376,7 +360,7 @@ export const upsertCommit = mutation({
   },
   handler: async (ctx, args) => {
     const repo = await ctx.db.get(args.repositoryId);
-    if (!repo) throw new Error("Repository not found");
+    if (!repo) throw notFound("repository", args.repositoryId);
 
     const now = Date.now();
 
@@ -426,14 +410,11 @@ export const upsertCommit = mutation({
 });
 
 // Get commits for an issue
-export const getCommits = query({
+export const getCommits = authenticatedQuery({
   args: {
     issueId: v.id("issues"),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) return [];
-
     const issue = await ctx.db.get(args.issueId);
     if (!issue) return [];
 
@@ -446,12 +427,12 @@ export const getCommits = query({
       const member = await ctx.db
         .query("projectMembers")
         .withIndex("by_project_user", (q) =>
-          q.eq("projectId", issue.projectId as Id<"projects">).eq("userId", userId),
+          q.eq("projectId", issue.projectId as Id<"projects">).eq("userId", ctx.userId),
         )
         .filter(notDeleted)
         .first();
 
-      if (!member && project.createdBy !== userId) {
+      if (!member && project.createdBy !== ctx.userId) {
         return [];
       }
     }

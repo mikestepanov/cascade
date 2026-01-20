@@ -13,6 +13,8 @@ import { v } from "convex/values";
 import type { Id } from "../_generated/dataModel";
 import { internalAction, internalMutation, internalQuery } from "../_generated/server";
 import { getVoyageApiKey } from "../lib/env";
+import { notFound, validation } from "../lib/errors";
+import { chatRoles } from "../validators";
 
 /**
  * Generate embedding for text using Voyage AI (Anthropic recommended)
@@ -29,7 +31,7 @@ export const generateEmbedding = internalAction({
   handler: async (_ctx, args) => {
     const apiKey = getVoyageApiKey();
     if (!apiKey) {
-      throw new Error("VOYAGE_API_KEY not configured");
+      throw validation("VOYAGE_API_KEY", "VOYAGE_API_KEY not configured");
     }
 
     const response = await fetch("https://api.voyageai.com/v1/embeddings", {
@@ -46,7 +48,7 @@ export const generateEmbedding = internalAction({
 
     if (!response.ok) {
       const error = await response.text();
-      throw new Error(`Voyage AI error: ${error}`);
+      throw validation("voyageAI", `Voyage AI error: ${error}`);
     }
 
     const data = await response.json();
@@ -96,7 +98,7 @@ export const createChat = internalMutation({
       .first();
 
     if (!user) {
-      throw new Error("User not found");
+      throw notFound("user");
     }
 
     return await ctx.db.insert("aiChats", {
@@ -115,7 +117,7 @@ export const createChat = internalMutation({
 export const addMessage = internalMutation({
   args: {
     chatId: v.id("aiChats"),
-    role: v.union(v.literal("user"), v.literal("assistant"), v.literal("system")),
+    role: chatRoles,
     content: v.string(),
     modelUsed: v.optional(v.string()),
     tokensUsed: v.optional(v.number()),
@@ -210,7 +212,7 @@ export const trackUsage = internalMutation({
       .first();
 
     if (!user) {
-      throw new Error("User not found");
+      throw notFound("user");
     }
 
     await ctx.db.insert("aiUsage", {

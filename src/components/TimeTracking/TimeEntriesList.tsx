@@ -2,6 +2,7 @@ import { api } from "@convex/_generated/api";
 import type { Id } from "@convex/_generated/dataModel";
 import { useMutation, useQuery } from "convex/react";
 import type { FunctionReturnType } from "convex/server";
+import { FileText, Folder, Lock, Plus, Trash } from "lucide-react";
 import { useMemo, useState } from "react";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
@@ -119,15 +120,7 @@ export function TimeEntriesList({
           onClick={() => setShowManualEntryModal(true)}
           variant="primary"
           size="sm"
-          leftIcon={
-            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
-              <path
-                fillRule="evenodd"
-                d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
-                clipRule="evenodd"
-              />
-            </svg>
-          }
+          leftIcon={<Plus className="w-4 h-4" />}
         >
           Add Time Entry
         </Button>
@@ -162,32 +155,14 @@ export function TimeEntriesList({
 
                     {entry.project && (
                       <Flex align="center" gap="xs" className="inline-flex">
-                        <svg
-                          className="w-3 h-3"
-                          fill="currentColor"
-                          viewBox="0 0 20 20"
-                          aria-hidden="true"
-                        >
-                          <path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" />
-                        </svg>
+                        <Folder className="w-3 h-3" />
                         {entry.project.name}
                       </Flex>
                     )}
 
                     {entry.issue && (
                       <Flex align="center" gap="xs" className="inline-flex">
-                        <svg
-                          className="w-3 h-3"
-                          fill="currentColor"
-                          viewBox="0 0 20 20"
-                          aria-hidden="true"
-                        >
-                          <path
-                            fillRule="evenodd"
-                            d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
-                            clipRule="evenodd"
-                          />
-                        </svg>
+                        <FileText className="w-3 h-3" />
                         {entry.issue.key}
                       </Flex>
                     )}
@@ -196,18 +171,7 @@ export function TimeEntriesList({
 
                     {entry.isLocked && (
                       <Flex align="center" gap="xs" className="inline-flex text-status-warning">
-                        <svg
-                          className="w-3 h-3"
-                          fill="currentColor"
-                          viewBox="0 0 20 20"
-                          aria-hidden="true"
-                        >
-                          <path
-                            fillRule="evenodd"
-                            d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
-                            clipRule="evenodd"
-                          />
-                        </svg>
+                        <Lock className="w-3 h-3" />
                         Locked
                       </Flex>
                     )}
@@ -236,18 +200,7 @@ export function TimeEntriesList({
                       className="p-1 min-w-0 text-ui-text-tertiary hover:text-status-error"
                       aria-label="Delete entry"
                     >
-                      <svg
-                        className="w-4 h-4"
-                        fill="currentColor"
-                        viewBox="0 0 20 20"
-                        aria-hidden="true"
-                      >
-                        <path
-                          fillRule="evenodd"
-                          d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
+                      <Trash className="w-4 h-4" />
                     </Button>
                   </div>
                 )}

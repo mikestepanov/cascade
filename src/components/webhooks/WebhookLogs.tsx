@@ -101,19 +101,17 @@ export function WebhookLogs({ webhookId, open, onOpenChange }: WebhookLogsProps)
                   <Flex justify="between" align="center" className="mb-3">
                     <Flex gap="md" align="center">
                       {getStatusBadge(execution.status)}
-                      <span className="text-sm font-medium text-ui-text-primary">
-                        {execution.event}
-                      </span>
+                      <Typography variant="small">{execution.event}</Typography>
                       {execution.responseStatus && (
-                        <span className="text-xs text-ui-text-secondary">
+                        <Typography variant="muted" size="xs" color="secondary">
                           HTTP {execution.responseStatus}
-                        </span>
+                        </Typography>
                       )}
                     </Flex>
                     <Flex gap="md" align="center">
-                      <span className="text-xs text-ui-text-secondary">
+                      <Typography variant="muted" size="xs">
                         {formatDate(execution.createdAt)}
-                      </span>
+                      </Typography>
                       {execution.status === "failed" && (
                         <Button
                           variant="ghost"
@@ -138,17 +136,19 @@ export function WebhookLogs({ webhookId, open, onOpenChange }: WebhookLogsProps)
                   </Flex>
 
                   {/* Metadata */}
-                  <div className="grid grid-cols-3 gap-4 text-xs text-ui-text-secondary mb-2">
-                    <div>
-                      <span className="font-medium">Attempts:</span> {execution.attempts}
-                    </div>
-                    <div>
-                      <span className="font-medium">Duration:</span>{" "}
+                  <div className="grid grid-cols-3 gap-4 mb-2">
+                    <Typography variant="muted" size="xs">
+                      <span className="font-medium text-ui-text-primary">Attempts:</span>{" "}
+                      {execution.attempts}
+                    </Typography>
+                    <Typography variant="muted" size="xs">
+                      <span className="font-medium text-ui-text-primary">Duration:</span>{" "}
                       {formatDuration(execution.createdAt, execution.completedAt)}
-                    </div>
-                    <div>
-                      <span className="font-medium">Status:</span> {execution.status}
-                    </div>
+                    </Typography>
+                    <Typography variant="muted" size="xs">
+                      <span className="font-medium text-ui-text-primary">Status:</span>{" "}
+                      {execution.status}
+                    </Typography>
                   </div>
 
                   {/* Error message */}
@@ -166,9 +166,9 @@ export function WebhookLogs({ webhookId, open, onOpenChange }: WebhookLogsProps)
                     <div className="mt-3 pt-3 border-t border-ui-border-primary space-y-3">
                       {/* Request Payload */}
                       <div>
-                        <div className="text-xs font-medium text-ui-text-primary mb-1">
+                        <Typography variant="small" className="mb-1">
                           Request Payload:
-                        </div>
+                        </Typography>
                         <pre className="bg-ui-bg-secondary border border-ui-border-primary rounded p-3 text-xs overflow-x-auto">
                           {JSON.stringify(JSON.parse(execution.requestPayload), null, 2)}
                         </pre>
@@ -177,9 +177,9 @@ export function WebhookLogs({ webhookId, open, onOpenChange }: WebhookLogsProps)
                       {/* Response Body */}
                       {execution.responseBody && (
                         <div>
-                          <div className="text-xs font-medium text-ui-text-primary mb-1">
+                          <Typography variant="small" className="mb-1">
                             Response Body:
-                          </div>
+                          </Typography>
                           <pre className="bg-ui-bg-secondary border border-ui-border-primary rounded p-3 text-xs overflow-x-auto max-h-48">
                             {execution.responseBody}
                           </pre>

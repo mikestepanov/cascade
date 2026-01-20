@@ -1,8 +1,8 @@
-import { getAuthUserId } from "@convex-dev/auth/server";
 import { paginationOptsValidator } from "convex/server"; // Added
+import { pruneNull } from "convex-helpers";
 import { v } from "convex/values";
 import type { Doc, Id } from "./_generated/dataModel";
-import { query } from "./_generated/server";
+import { authenticatedQuery } from "./customFunctions";
 import {
   batchFetchIssues,
   batchFetchProjects,
@@ -10,22 +10,19 @@ import {
   getUserName,
 } from "./lib/batchHelpers";
 import { fetchPaginatedQuery } from "./lib/queryHelpers";
-import { DEFAULT_SEARCH_PAGE_SIZE, MAX_ACTIVITY_ITEMS } from "./lib/queryLimits";
+import {
+  DEFAULT_SEARCH_PAGE_SIZE,
+  MAX_ACTIVITY_ITEMS,
+  MAX_PAGE_SIZE,
+  MAX_USER_ASSIGNED_ISSUES,
+} from "./lib/queryLimits";
 import { notDeleted } from "./lib/softDeleteHelpers";
+import { nowArg, WEEK } from "./lib/timeUtils";
 
 // Get all issues assigned to the current user across all projects
-export const getMyIssues = query({
+export const getMyIssues = authenticatedQuery({
   args: { paginationOpts: v.optional(paginationOptsValidator) }, // Pagination args
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      return {
-        page: [],
-        isDone: true,
-        continueCursor: "",
-      };
-    }
-
     const paginationOpts = args.paginationOpts || { numItems: 20, cursor: null };
 
     // Paginate using the by_assignee index
@@ -34,7 +31,7 @@ export const getMyIssues = query({
       query: (db) =>
         db
           .query("issues")
-          .withIndex("by_assignee", (q) => q.eq("assigneeId", userId))
+          .withIndex("by_assignee", (q) => q.eq("assigneeId", ctx.userId))
           .order("desc"), // Sort by creation time (descending)
     });
 
@@ -50,17 +47,10 @@ export const getMyIssues = query({
       ...new Set(results.page.flatMap((i) => [i.reporterId, i.assigneeId]).filter(Boolean)),
     ] as Id<"users">[];
 
-    const [projects, users] = await Promise.all([
-      Promise.all(projectIds.map((id) => ctx.db.get(id))),
-      Promise.all(userIds.map((id) => ctx.db.get(id))),
+    const [projectMap, userMap] = await Promise.all([
+      batchFetchProjects(ctx, projectIds),
+      batchFetchUsers(ctx, userIds),
     ]);
-
-    const projectMap = new Map(
-      projects.filter((p): p is NonNullable<typeof p> => p !== null).map((p) => [p._id, p]),
-    );
-    const userMap = new Map(
-      users.filter((u): u is NonNullable<typeof u> => u !== null).map((u) => [u._id, u]),
-    );
 
     // Enrich with pre-fetched data
     const enrichedIssues = results.page.map((issue) => {
@@ -85,17 +75,14 @@ export const getMyIssues = query({
 });
 
 // Get issues created by the current user
-export const getMyCreatedIssues = query({
+export const getMyCreatedIssues = authenticatedQuery({
   args: {},
   handler: async (ctx) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) return [];
-
     const issues = await ctx.db
       .query("issues")
-      .withIndex("by_reporter", (q) => q.eq("reporterId", userId))
+      .withIndex("by_reporter", (q) => q.eq("reporterId", ctx.userId))
       .filter(notDeleted)
-      .collect();
+      .take(MAX_USER_ASSIGNED_ISSUES);
 
     // Batch fetch all related data to avoid N+1 queries
     const projectIds = [
@@ -109,17 +96,10 @@ export const getMyCreatedIssues = query({
       ...new Set(issues.map((i) => i.assigneeId).filter(Boolean)),
     ] as Id<"users">[];
 
-    const [projects, assignees] = await Promise.all([
-      Promise.all(projectIds.map((id) => ctx.db.get(id))),
-      Promise.all(assigneeIds.map((id) => ctx.db.get(id))),
+    const [projectMap, assigneeMap] = await Promise.all([
+      batchFetchProjects(ctx, projectIds),
+      batchFetchUsers(ctx, assigneeIds),
     ]);
-
-    const projectMap = new Map(
-      projects.filter((p): p is NonNullable<typeof p> => p !== null).map((p) => [p._id, p]),
-    );
-    const assigneeMap = new Map(
-      assignees.filter((u): u is NonNullable<typeof u> => u !== null).map((u) => [u._id, u]),
-    );
 
     // Enrich with pre-fetched data
     const enrichedIssues = issues.map((issue) => {
@@ -139,18 +119,15 @@ export const getMyCreatedIssues = query({
 });
 
 // Get projects the user is a member of
-export const getMyProjects = query({
+export const getMyProjects = authenticatedQuery({
   args: {},
   handler: async (ctx) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) return [];
-
     // Get projects where user is a member
     const memberships = await ctx.db
       .query("projectMembers")
-      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .withIndex("by_user", (q) => q.eq("userId", ctx.userId))
       .filter(notDeleted)
-      .collect();
+      .take(MAX_PAGE_SIZE);
 
     if (memberships.length === 0) return [];
 
@@ -162,9 +139,9 @@ export const getMyProjects = query({
     // This is scalable because per-user assignment count is usually small (<1000)
     const myIssues = await ctx.db
       .query("issues")
-      .withIndex("by_assignee", (q) => q.eq("assigneeId", userId))
+      .withIndex("by_assignee", (q) => q.eq("assigneeId", ctx.userId))
       .filter(notDeleted)
-      .collect();
+      .take(MAX_USER_ASSIGNED_ISSUES);
 
     const myIssuesByProject = new Map<string, number>();
     for (const issue of myIssues) {
@@ -179,8 +156,8 @@ export const getMyProjects = query({
     // If total counts are needed, they should be pre-aggregated in a stats table.
 
     // Enrich memberships with project data and counts
-    const projects = memberships
-      .map((membership) => {
+    const projects = pruneNull(
+      memberships.map((membership) => {
         const project = projectMap.get(membership.projectId);
         if (!project) return null;
 
@@ -192,28 +169,25 @@ export const getMyProjects = query({
           totalIssues: 0, // Disabled for performance
           myIssues: myIssuesByProject.get(projId) ?? 0,
         };
-      })
-      .filter((p) => p !== null);
+      }),
+    );
 
     return projects;
   },
 });
 
 // Get recent activity across all projects the user has access to
-export const getMyRecentActivity = query({
+export const getMyRecentActivity = authenticatedQuery({
   args: { limit: v.optional(v.number()) },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) return [];
-
     const limit = args.limit || DEFAULT_SEARCH_PAGE_SIZE;
 
     // Get projects where user is a member
     const memberships = await ctx.db
       .query("projectMembers")
-      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .withIndex("by_user", (q) => q.eq("userId", ctx.userId))
       .filter(notDeleted)
-      .collect();
+      .take(MAX_PAGE_SIZE);
 
     const projectIdSet = new Set(memberships.map((m) => m.projectId.toString()));
 
@@ -243,8 +217,8 @@ export const getMyRecentActivity = query({
     ]);
 
     // Enrich activities
-    const enrichedActivity = accessibleActivity
-      .map((activity) => {
+    const enrichedActivity = pruneNull(
+      accessibleActivity.map((activity) => {
         const issue = issueMap.get(activity.issueId);
         if (!issue?.projectId) return null;
         const project = projectMap.get(issue.projectId);
@@ -257,36 +231,28 @@ export const getMyRecentActivity = query({
           projectName: project?.name || "Unknown",
           userName: getUserName(user),
         };
-      })
-      .filter((a): a is NonNullable<typeof a> => a !== null);
+      }),
+    );
 
     return enrichedActivity.slice(0, limit);
   },
 });
 
 // Get dashboard stats
-export const getMyStats = query({
-  args: {},
-  handler: async (ctx) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      return {
-        assignedToMe: 0,
-        createdByMe: 0,
-        completedThisWeek: 0,
-        highPriority: 0,
-      };
-    }
-
+export const getMyStats = authenticatedQuery({
+  args: {
+    now: nowArg, // Required - pass rounded timestamp from client
+  },
+  handler: async (ctx, args) => {
     // Issues assigned to me
     const assignedIssues = await ctx.db
       .query("issues")
-      .withIndex("by_assignee", (q) => q.eq("assigneeId", userId))
+      .withIndex("by_assignee", (q) => q.eq("assigneeId", ctx.userId))
       .filter(notDeleted)
-      .collect();
+      .take(MAX_USER_ASSIGNED_ISSUES);
 
     // Filter for different stats
-    const weekAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
+    const weekAgo = args.now - WEEK;
 
     // Batch fetch all projects to check workflow states (avoid N+1)
     const projectIds = [...new Set(assignedIssues.map((i) => i.projectId))];
@@ -314,9 +280,9 @@ export const getMyStats = query({
     // Created by me - using index instead of filter (avoids full table scan)
     const createdByMe = await ctx.db
       .query("issues")
-      .withIndex("by_reporter", (q) => q.eq("reporterId", userId))
+      .withIndex("by_reporter", (q) => q.eq("reporterId", ctx.userId))
       .filter(notDeleted)
-      .collect();
+      .take(MAX_USER_ASSIGNED_ISSUES);
 
     return {
       assignedToMe: assignedIssues.length,
@@ -328,7 +294,7 @@ export const getMyStats = query({
 });
 
 // Get the single most important task for the Focus Zone
-export const getFocusTask = query({
+export const getFocusTask = authenticatedQuery({
   args: {},
   returns: v.union(
     v.null(),
@@ -351,15 +317,12 @@ export const getFocusTask = query({
     }),
   ),
   handler: async (ctx) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) return null;
-
-    // Fetch tasks assigned to me
+    // Fetch tasks assigned to me (with reasonable limit)
     const issues = await ctx.db
       .query("issues")
-      .withIndex("by_assignee", (q) => q.eq("assigneeId", userId))
+      .withIndex("by_assignee", (q) => q.eq("assigneeId", ctx.userId))
       .filter(notDeleted)
-      .collect();
+      .take(MAX_USER_ASSIGNED_ISSUES);
 
     if (issues.length === 0) return null;
 

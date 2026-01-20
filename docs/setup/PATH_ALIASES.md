@@ -137,7 +137,7 @@ Biome is configured to organize imports automatically. It will group:
 3. `@convex/` imports (backend code)
 4. Relative imports (siblings)
 
-Run `pnpm lint` to auto-organize imports.
+Run `pnpm biome` to auto-organize imports.
 
 ---
 

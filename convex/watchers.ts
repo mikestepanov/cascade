@@ -1,24 +1,22 @@
-import { getAuthUserId } from "@convex-dev/auth/server";
+import { pruneNull } from "convex-helpers";
 import { v } from "convex/values";
-import { mutation, query } from "./_generated/server";
+import { query } from "./_generated/server";
+import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
+import { batchFetchIssues, batchFetchProjects, batchFetchUsers } from "./lib/batchHelpers";
+import { MAX_PAGE_SIZE } from "./lib/queryLimits";
 
 /**
  * Add current user as a watcher to an issue
  */
-export const watch = mutation({
+export const watch = authenticatedMutation({
   args: {
     issueId: v.id("issues"),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      throw new Error("Not authenticated");
-    }
-
     // Check if already watching
     const existing = await ctx.db
       .query("issueWatchers")
-      .withIndex("by_issue_user", (q) => q.eq("issueId", args.issueId).eq("userId", userId))
+      .withIndex("by_issue_user", (q) => q.eq("issueId", args.issueId).eq("userId", ctx.userId))
       .first();
 
     if (existing) {
@@ -28,14 +26,14 @@ export const watch = mutation({
     // Add watcher
     const watcherId = await ctx.db.insert("issueWatchers", {
       issueId: args.issueId,
-      userId,
+      userId: ctx.userId,
       createdAt: Date.now(),
     });
 
     // Log activity
     await ctx.db.insert("issueActivity", {
       issueId: args.issueId,
-      userId,
+      userId: ctx.userId,
       action: "started_watching",
       createdAt: Date.now(),
     });
@@ -47,20 +45,15 @@ export const watch = mutation({
 /**
  * Remove current user as a watcher from an issue
  */
-export const unwatch = mutation({
+export const unwatch = authenticatedMutation({
   args: {
     issueId: v.id("issues"),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      throw new Error("Not authenticated");
-    }
-
     // Find watcher record
     const watcher = await ctx.db
       .query("issueWatchers")
-      .withIndex("by_issue_user", (q) => q.eq("issueId", args.issueId).eq("userId", userId))
+      .withIndex("by_issue_user", (q) => q.eq("issueId", args.issueId).eq("userId", ctx.userId))
       .first();
 
     if (!watcher) {
@@ -73,7 +66,7 @@ export const unwatch = mutation({
     // Log activity
     await ctx.db.insert("issueActivity", {
       issueId: args.issueId,
-      userId,
+      userId: ctx.userId,
       action: "stopped_watching",
       createdAt: Date.now(),
     });
@@ -82,6 +75,7 @@ export const unwatch = mutation({
 
 /**
  * Get all watchers for an issue with user details
+ * Public query - no auth required
  */
 export const getWatchers = query({
   args: {
@@ -91,42 +85,37 @@ export const getWatchers = query({
     const watchers = await ctx.db
       .query("issueWatchers")
       .withIndex("by_issue", (q) => q.eq("issueId", args.issueId))
-      .collect();
+      .take(MAX_PAGE_SIZE);
 
-    // Get user details for each watcher
-    const watchersWithUsers = await Promise.all(
-      watchers.map(async (watcher) => {
-        const user = await ctx.db.get(watcher.userId);
-        return {
-          _id: watcher._id,
-          userId: watcher.userId,
-          userName: user?.name || "Unknown User",
-          userEmail: user?.email,
-          createdAt: watcher.createdAt,
-        };
-      }),
-    );
+    // Batch fetch all users (avoid N+1)
+    const userIds = watchers.map((w) => w.userId);
+    const userMap = await batchFetchUsers(ctx, userIds);
 
-    return watchersWithUsers;
+    // Enrich with pre-fetched user data
+    return watchers.map((watcher) => {
+      const user = userMap.get(watcher.userId);
+      return {
+        _id: watcher._id,
+        userId: watcher.userId,
+        userName: user?.name || "Unknown User",
+        userEmail: user?.email,
+        createdAt: watcher.createdAt,
+      };
+    });
   },
 });
 
 /**
  * Check if current user is watching an issue
  */
-export const isWatching = query({
+export const isWatching = authenticatedQuery({
   args: {
     issueId: v.id("issues"),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      return false;
-    }
-
     const watcher = await ctx.db
       .query("issueWatchers")
-      .withIndex("by_issue_user", (q) => q.eq("issueId", args.issueId).eq("userId", userId))
+      .withIndex("by_issue_user", (q) => q.eq("issueId", args.issueId).eq("userId", ctx.userId))
       .first();
 
     return !!watcher;
@@ -136,27 +125,42 @@ export const isWatching = query({
 /**
  * Get all issues the current user is watching
  */
-export const getWatchedIssues = query({
+export const getWatchedIssues = authenticatedQuery({
+  args: {},
   handler: async (ctx) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      return [];
-    }
-
     const watchers = await ctx.db
       .query("issueWatchers")
-      .withIndex("by_user", (q) => q.eq("userId", userId))
-      .collect();
+      .withIndex("by_user", (q) => q.eq("userId", ctx.userId))
+      .take(MAX_PAGE_SIZE);
 
-    // Get issue details for each watched issue
-    const issues = await Promise.all(
-      watchers.map(async (watcher) => {
-        const issue = await ctx.db.get(watcher.issueId);
-        if (!issue) return null;
+    if (watchers.length === 0) return [];
 
-        if (!issue.projectId) return null;
-        const project = await ctx.db.get(issue.projectId);
-        const assignee = issue.assigneeId ? await ctx.db.get(issue.assigneeId) : null;
+    // Batch fetch all issues (avoid N+1)
+    const issueIds = watchers.map((w) => w.issueId);
+    const issueMap = await batchFetchIssues(ctx, issueIds);
+
+    // Collect project and assignee IDs for batch fetch
+    const projectIds: Set<string> = new Set();
+    const assigneeIds: Set<string> = new Set();
+    for (const issue of issueMap.values()) {
+      if (issue.projectId) projectIds.add(issue.projectId);
+      if (issue.assigneeId) assigneeIds.add(issue.assigneeId);
+    }
+
+    // Batch fetch projects and assignees
+    const [projectMap, assigneeMap] = await Promise.all([
+      batchFetchProjects(ctx, [...projectIds] as any),
+      batchFetchUsers(ctx, [...assigneeIds] as any),
+    ]);
+
+    // Build result with pre-fetched data (no N+1)
+    const issues = pruneNull(
+      watchers.map((watcher) => {
+        const issue = issueMap.get(watcher.issueId);
+        if (!(issue && issue.projectId)) return null;
+
+        const project = projectMap.get(issue.projectId);
+        const assignee = issue.assigneeId ? assigneeMap.get(issue.assigneeId) : null;
 
         return {
           _id: issue._id,
@@ -172,6 +176,6 @@ export const getWatchedIssues = query({
       }),
     );
 
-    return issues.filter((issue) => issue !== null);
+    return issues;
   },
 });

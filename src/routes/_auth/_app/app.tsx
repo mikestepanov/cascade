@@ -6,9 +6,9 @@ export const Route = createFileRoute("/_auth/_app/app")({
 });
 
 /**
- * AppPage - Minimal gateway component.
- * The SmartAuthGuard in the parent route layout handles the actual redirection.
- * This page just shows a splash screen if the guard hasn't triggered yet.
+ * AppPage - Gateway splash screen.
+ * The parent /app route layout handles redirect logic via getRedirectDestination.
+ * This page shows a splash screen while that logic executes.
  */
 function AppPage() {
   return <AppSplashScreen />;

@@ -32,14 +32,6 @@ function WorkspacesList() {
     });
   };
 
-  if (workspaces === undefined) {
-    return (
-      <Flex direction="column" align="center" justify="center" style={{ minHeight: "400px" }}>
-        <LoadingSpinner />
-      </Flex>
-    );
-  }
-
   return (
     <div className="container mx-auto p-6">
       <Flex direction="column" gap="lg">
@@ -62,8 +54,12 @@ function WorkspacesList() {
           onCreated={handleWorkspaceCreated}
         />
 
-        {/* Workspaces Grid */}
-        {workspaces.length === 0 ? (
+        {/* Workspaces List State */}
+        {workspaces === undefined ? (
+          <Flex direction="column" align="center" justify="center" className="min-h-96">
+            <LoadingSpinner />
+          </Flex>
+        ) : workspaces.length === 0 ? (
           <EmptyState
             icon="🏢"
             title="No workspaces yet"
@@ -76,7 +72,7 @@ function WorkspacesList() {
           />
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {workspaces?.map((workspace: Doc<"workspaces">) => (
+            {workspaces.map((workspace: Doc<"workspaces">) => (
               <Link
                 key={workspace._id}
                 to={ROUTES.workspaces.detail.path}
@@ -95,7 +91,7 @@ function WorkspacesList() {
                       </Typography>
                     )}
 
-                    <Flex gap="md" className="text-sm text-gray-500">
+                    <Flex gap="md" className="text-sm text-ui-text-secondary">
                       <span>0 teams</span>
                       <span>•</span>
                       <span>0 projects</span>

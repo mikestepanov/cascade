@@ -40,14 +40,34 @@ function OrganizationLayout() {
     isAuthenticated ? undefined : "skip",
   ) as UserOrganization[] | undefined;
 
+  // Cache strict userOrganizations data
+  const [stableUserOrganizations, setStableUserOrganizations] = useState(userOrganizations);
+  if (userOrganizations !== undefined && userOrganizations !== stableUserOrganizations) {
+    setStableUserOrganizations(userOrganizations);
+  }
+
   // Fetch organization by slug - also skip until authenticated
   const organization = useQuery(
     api.organizations.getOrganizationBySlug,
     isAuthenticated ? { slug: orgSlug } : "skip",
   );
 
+  // Cache strict organization data to prevent unmounting during auth refreshes
+  const [stableOrganization, setStableOrganization] = useState(organization);
+  if (organization !== undefined && organization !== stableOrganization) {
+    setStableOrganization(organization);
+  }
+
   // Loading state - wait for auth AND queries
-  if (isAuthLoading || organization === undefined || userOrganizations === undefined) {
+  // But if we have stable data, keep rendering to avoid UI flicker/input loss
+  const effectiveOrg = organization ?? stableOrganization;
+  const effectiveUserOrgs = userOrganizations ?? stableUserOrganizations;
+
+  if (
+    (isAuthLoading && !effectiveOrg) ||
+    effectiveOrg === undefined ||
+    effectiveUserOrgs === undefined
+  ) {
     return (
       <Flex align="center" justify="center" className="min-h-screen bg-ui-bg-secondary">
         <LoadingSpinner size="lg" />
@@ -56,7 +76,8 @@ function OrganizationLayout() {
   }
 
   // Not authenticated - parent _auth route should handle this, but just in case
-  if (!isAuthenticated) {
+  // If we have stable data (effectiveOrg), keep rendering to prevent flicker/unmount
+  if (!(isAuthenticated || effectiveOrg)) {
     return (
       <Flex align="center" justify="center" className="min-h-screen bg-ui-bg-secondary">
         <LoadingSpinner size="lg" />
@@ -65,7 +86,7 @@ function OrganizationLayout() {
   }
 
   // organization not found
-  if (organization === null) {
+  if (effectiveOrg === null) {
     return (
       <Flex align="center" justify="center" className="min-h-screen bg-ui-bg-secondary p-4">
         <div className="text-center">
@@ -81,7 +102,7 @@ function OrganizationLayout() {
   }
 
   // Check if user has access to this organization
-  const userOrganization = userOrganizations?.find((c) => c._id === organization._id);
+  const userOrganization = effectiveUserOrgs?.find((c) => c._id === effectiveOrg._id);
 
   if (!userOrganization) {
     return (
@@ -99,11 +120,11 @@ function OrganizationLayout() {
   }
 
   const orgContextValue: OrgContextType = {
-    organizationId: organization._id,
-    orgSlug: organization.slug,
-    organizationName: organization.name,
+    organizationId: effectiveOrg._id,
+    orgSlug: effectiveOrg.slug,
+    organizationName: effectiveOrg.name,
     userRole: userOrganization.userRole,
-    billingEnabled: organization.settings.billingEnabled,
+    billingEnabled: effectiveOrg.settings.billingEnabled,
   };
 
   return (

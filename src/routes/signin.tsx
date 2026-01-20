@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Unauthenticated } from "convex/react";
-import { AuthLink, AuthPageLayout, SignInForm, SmartAuthGuard } from "@/components/auth";
+import { AuthLink, AuthPageLayout, AuthRedirect, SignInForm } from "@/components/auth";
+import { Typography } from "@/components/ui/Typography";
 import { ROUTES } from "@/config/routes";
 
 export const Route = createFileRoute("/signin")({
@@ -10,16 +10,13 @@ export const Route = createFileRoute("/signin")({
 
 function SignInRoute() {
   return (
-    <SmartAuthGuard>
-      <Unauthenticated>
-        <AuthPageLayout title="Welcome back" subtitle="Sign in to your account to continue">
-          <SignInForm />
-          <div className="text-center text-sm text-ui-text-tertiary mt-4">
-            <span>Don't have an account? </span>
-            <AuthLink to={ROUTES.signup.path}>Sign up</AuthLink>
-          </div>
-        </AuthPageLayout>
-      </Unauthenticated>
-    </SmartAuthGuard>
+    <AuthRedirect>
+      <AuthPageLayout title="Welcome back" subtitle="Sign in to your account to continue">
+        <SignInForm />
+        <Typography variant="muted" className="text-center mt-4">
+          Don't have an account? <AuthLink to={ROUTES.signup.path}>Sign up</AuthLink>
+        </Typography>
+      </AuthPageLayout>
+    </AuthRedirect>
   );
 }

@@ -4,17 +4,25 @@ import { expect } from "@playwright/test";
 /**
  * Base Page Object with common functionality
  * All page objects should extend this class
+ *
+ * IMPORTANT: orgSlug is REQUIRED. No fallbacks.
+ * Tests must explicitly provide the organization context.
  */
 export abstract class BasePage {
   readonly page: Page;
+  readonly orgSlug: string;
 
-  constructor(page: Page) {
+  constructor(page: Page, orgSlug: string) {
+    if (!orgSlug) {
+      throw new Error("orgSlug is required. Tests must provide explicit organization context.");
+    }
     this.page = page;
+    this.orgSlug = orgSlug;
   }
 
   /**
    * Navigate to this page
-   * Subclasses should override with specific URL
+   * Subclasses should override with specific URL using this.orgSlug
    */
   abstract goto(): Promise<void>;
 
@@ -116,24 +124,5 @@ export abstract class BasePage {
     for (let i = 0; i < count; i++) {
       await toasts.nth(i).click();
     }
-  }
-
-  /**
-   * Get current organization slug from URL robustly.
-   * Extracts slug from paths like /slug/dashboard or /slug/projects/...
-   * Defaults to 'nixelo-e2e' if no valid slug is found or if on signin/landing.
-   */
-  getOrganizationSlug(): string {
-    const url = this.page.url();
-    // Match the first path segment if it's not a known system route
-    const match = url.match(/^https?:\/\/[^/]+\/([^/]+)/);
-    const slug = match ? match[1] : null;
-
-    const systemRoutes = ["signin", "signup", "onboarding", "terms", "privacy", ""];
-    if (!slug || systemRoutes.includes(slug) || slug === "localhost:5555") {
-      return "nixelo-e2e";
-    }
-
-    return slug;
   }
 }

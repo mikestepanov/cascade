@@ -2,7 +2,7 @@ import { api } from "@convex/_generated/api";
 import type { Doc, Id } from "@convex/_generated/dataModel";
 import { Link, type LinkProps, useLocation, useNavigate } from "@tanstack/react-router";
 import { useMutation, useQuery } from "convex/react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { CreateTeamModal } from "@/components/CreateTeamModal";
 import { SidebarTeamItem } from "@/components/sidebar/SidebarTeamItem";
 import { ROUTES } from "@/config/routes";
@@ -58,6 +58,21 @@ export function AppSidebar() {
   const teams = useQuery(api.teams.getOrganizationTeams, { organizationId });
   const myProjects = useQuery(api.dashboard.getMyProjects);
   const defaultProject = myProjects?.[0];
+
+  // Group teams by workspace - O(T) once, not O(W*T) per render
+  const teamsByWorkspace = useMemo(() => {
+    const map = new Map<Id<"workspaces">, Doc<"teams">[]>();
+    if (!teams) return map;
+    for (const team of teams) {
+      const existing = map.get(team.workspaceId);
+      if (existing) {
+        existing.push(team);
+      } else {
+        map.set(team.workspaceId, [team]);
+      }
+    }
+    return map;
+  }, [teams]);
 
   // Mutations
   const createDocument = useMutation(api.documents.create);
@@ -160,7 +175,7 @@ export function AppSidebar() {
           <Flex align="center" justify="between" className="p-4 border-b border-ui-border-primary">
             {!isCollapsed && (
               <Link to={ROUTES.dashboard.path} params={{ orgSlug }} onClick={handleNavClick}>
-                <Typography variant="h3" className="text-lg font-bold truncate max-w-[160px]">
+                <Typography variant="h3" className="text-lg font-bold truncate max-w-40">
                   {organizationName}
                 </Typography>
               </Link>
@@ -260,8 +275,8 @@ export function AppSidebar() {
               data-tour="nav-projects"
             >
               {workspaces?.map((workspace: Doc<"workspaces">) => {
-                const workspaceTeams =
-                  teams?.filter((t: Doc<"teams">) => t.workspaceId === workspace._id) || [];
+                // O(1) lookup from pre-computed Map instead of O(T) filter
+                const workspaceTeams = teamsByWorkspace.get(workspace._id) || [];
                 const isWorkspaceExpanded = expandedWorkspaces.has(workspace.slug);
 
                 return (

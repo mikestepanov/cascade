@@ -1,5 +1,5 @@
 import { expect, test } from "./fixtures";
-import { getTestEmailAddress } from "./utils/mailtrap";
+import { getTestEmailAddress } from "./utils/helpers";
 import { waitForMockOTP } from "./utils/otp-helpers";
 
 /**
@@ -146,7 +146,10 @@ test.describe("Integration", () => {
     // Enter the OTP
     await authPage.verifyEmail(otp);
 
-    // Should either go to onboarding or dashboard
+    // Wait for the redirect to take place
+    await page.waitForTimeout(2000);
+
+    // Should redirect to dashboard or onboarding
     await expect(
       page
         .getByRole("heading", { name: /welcome to nixelo/i })

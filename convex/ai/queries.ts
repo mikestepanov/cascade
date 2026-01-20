@@ -2,28 +2,34 @@
  * AI Queries - Fetch AI chat history and context
  */
 
-import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
-import { type QueryCtx, query } from "../_generated/server";
+import { authenticatedQuery } from "../customFunctions";
 import { batchFetchUsers, getUserName } from "../lib/batchHelpers";
+import { forbidden, notFound, requireOwned } from "../lib/errors";
+import { MAX_PAGE_SIZE } from "../lib/queryLimits";
 import type { AIProvider } from "./config";
+
+// Reasonable limits for AI-related queries
+const MAX_CHATS = 100;
+const MAX_MESSAGES_PER_CHAT = 500;
+const MAX_SUGGESTIONS = 200;
+const MAX_USAGE_RECORDS = 1000;
+const MAX_PROJECT_ISSUES_FOR_AI = 500;
 
 type AIOperation = "chat" | "suggestion" | "automation" | "analysis";
 
 /**
  * Get all AI chats for current user
  */
-export const getUserChats = query({
+export const getUserChats = authenticatedQuery({
   args: {
     projectId: v.optional(v.id("projects")),
   },
-  handler: async (ctx: QueryCtx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) return [];
-
-    const chatsQuery = ctx.db.query("aiChats").withIndex("by_user", (q) => q.eq("userId", userId));
-
-    const chats = await chatsQuery.collect();
+  handler: async (ctx, args) => {
+    const chats = await ctx.db
+      .query("aiChats")
+      .withIndex("by_user", (q) => q.eq("userId", ctx.userId))
+      .take(MAX_CHATS);
 
     // Filter by project if specified
     const filtered = args.projectId
@@ -38,24 +44,19 @@ export const getUserChats = query({
 /**
  * Get messages for a specific chat
  */
-export const getChatMessages = query({
+export const getChatMessages = authenticatedQuery({
   args: {
     chatId: v.id("aiChats"),
   },
-  handler: async (ctx: QueryCtx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) return [];
-
+  handler: async (ctx, args) => {
     // Verify user owns this chat
     const chat = await ctx.db.get(args.chatId);
-    if (!chat || chat.userId !== userId) {
-      throw new Error("Chat not found or unauthorized");
-    }
+    requireOwned(chat, ctx.userId, "chat");
 
     const messages = await ctx.db
       .query("aiMessages")
       .withIndex("by_chat_created", (q) => q.eq("chatId", args.chatId))
-      .collect();
+      .take(MAX_MESSAGES_PER_CHAT);
 
     return messages.sort((a, b) => a.createdAt - b.createdAt);
   },
@@ -64,26 +65,25 @@ export const getChatMessages = query({
 /**
  * Get project context for AI
  */
-export const getProjectContext = query({
+export const getProjectContext = authenticatedQuery({
   args: {
     projectId: v.id("projects"),
   },
-  handler: async (ctx: QueryCtx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
-
+  handler: async (ctx, args) => {
     // Get project
     const project = await ctx.db.get(args.projectId);
-    if (!project) throw new Error("Project not found");
+    if (!project) throw notFound("project", args.projectId);
 
     // Check access
     const member = await ctx.db
       .query("projectMembers")
-      .withIndex("by_project_user", (q) => q.eq("projectId", args.projectId).eq("userId", userId))
+      .withIndex("by_project_user", (q) =>
+        q.eq("projectId", args.projectId).eq("userId", ctx.userId),
+      )
       .first();
 
-    if (!member && project.createdBy !== userId && !project.isPublic) {
-      throw new Error("Access denied");
+    if (!member && project.createdBy !== ctx.userId && !project.isPublic) {
+      throw forbidden();
     }
 
     // Get active sprint
@@ -93,11 +93,11 @@ export const getProjectContext = query({
       .filter((q) => q.eq(q.field("status"), "active"))
       .first();
 
-    // Get issues
+    // Get issues (limit for AI context - don't need all issues)
     const issues = await ctx.db
       .query("issues")
       .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
-      .collect();
+      .take(MAX_PROJECT_ISSUES_FOR_AI);
 
     // Calculate stats
     const stats = {
@@ -120,7 +120,7 @@ export const getProjectContext = query({
     const memberRecords = await ctx.db
       .query("projectMembers")
       .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
-      .collect();
+      .take(MAX_PAGE_SIZE);
 
     // Batch fetch users to avoid N+1 queries
     const userIds = memberRecords.map((m) => m.userId);
@@ -136,7 +136,7 @@ export const getProjectContext = query({
     const labels = await ctx.db
       .query("labels")
       .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
-      .collect();
+      .take(MAX_PAGE_SIZE);
 
     return {
       project: {
@@ -171,7 +171,7 @@ export const getProjectContext = query({
 /**
  * Get AI suggestions for a project
  */
-export const getProjectSuggestions = query({
+export const getProjectSuggestions = authenticatedQuery({
   args: {
     projectId: v.id("projects"),
     suggestionType: v.optional(
@@ -187,15 +187,11 @@ export const getProjectSuggestions = query({
     ),
     includeResponded: v.optional(v.boolean()),
   },
-  handler: async (ctx: QueryCtx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) return [];
-
-    const query = ctx.db
+  handler: async (ctx, args) => {
+    const suggestions = await ctx.db
       .query("aiSuggestions")
-      .withIndex("by_project", (q) => q.eq("projectId", args.projectId));
-
-    const suggestions = await query.collect();
+      .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
+      .take(MAX_SUGGESTIONS);
 
     // Filter by type if specified
     let filtered = args.suggestionType
@@ -215,20 +211,18 @@ export const getProjectSuggestions = query({
 /**
  * Get AI usage statistics
  */
-export const getUsageStats = query({
+export const getUsageStats = authenticatedQuery({
   args: {
     projectId: v.optional(v.id("projects")),
     startDate: v.optional(v.number()),
     endDate: v.optional(v.number()),
   },
-  handler: async (ctx: QueryCtx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) return null;
-
+  handler: async (ctx, args) => {
     // Query usage records
-    const usageQuery = ctx.db.query("aiUsage").withIndex("by_user", (q) => q.eq("userId", userId));
-
-    const usage = await usageQuery.collect();
+    const usage = await ctx.db
+      .query("aiUsage")
+      .withIndex("by_user", (q) => q.eq("userId", ctx.userId))
+      .take(MAX_USAGE_RECORDS);
 
     // Filter by project and date range
     let filtered = usage;

@@ -4,6 +4,7 @@
  */
 
 import { getAnthropicApiKey, getAnthropicModel, isAnthropicConfigured } from "../lib/env";
+import { validation } from "../lib/errors";
 
 export type AIProvider = "anthropic";
 
@@ -38,7 +39,8 @@ export const DEFAULT_MODELS = {
 export function getAIConfig(): AIConfig {
   const anthropicKey = getAnthropicApiKey();
   if (!anthropicKey) {
-    throw new Error(
+    throw validation(
+      "ANTHROPIC_API_KEY",
       "ANTHROPIC_API_KEY not configured. Set ANTHROPIC_API_KEY in environment variables.",
     );
   }

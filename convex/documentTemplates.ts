@@ -1,23 +1,22 @@
-import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import type { Doc } from "./_generated/dataModel";
-import { mutation, query } from "./_generated/server";
+import { mutation } from "./_generated/server";
+import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
+import { forbidden, notFound } from "./lib/errors";
+import { blockNoteContent } from "./validators";
 
 // Create a document template
-export const create = mutation({
+export const create = authenticatedMutation({
   args: {
     name: v.string(),
     description: v.optional(v.string()),
     category: v.string(),
     icon: v.string(),
-    content: v.any(), // BlockNote/ProseMirror content structure
+    content: blockNoteContent, // BlockNote content structure
     isPublic: v.boolean(),
     projectId: v.optional(v.id("projects")),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
-
     const templateId = await ctx.db.insert("documentTemplates", {
       name: args.name,
       description: args.description,
@@ -26,7 +25,7 @@ export const create = mutation({
       content: args.content,
       isBuiltIn: false,
       isPublic: args.isPublic,
-      createdBy: userId,
+      createdBy: ctx.userId,
       projectId: args.projectId,
       createdAt: Date.now(),
       updatedAt: Date.now(),
@@ -37,15 +36,12 @@ export const create = mutation({
 });
 
 // List all available templates (built-in + user's templates + public templates)
-export const list = query({
+export const list = authenticatedQuery({
   args: {
     category: v.optional(v.string()),
     projectId: v.optional(v.id("projects")),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
-
     let templates: Array<Doc<"documentTemplates">>;
 
     if (args.category) {
@@ -66,7 +62,7 @@ export const list = query({
     const filtered = templates.filter((t) => {
       if (t.isBuiltIn) return true;
       if (t.isPublic) return true;
-      if (t.createdBy === userId) return true;
+      if (t.createdBy === ctx.userId) return true;
       if (args.projectId && t.projectId === args.projectId) return true;
       return false;
     });
@@ -76,22 +72,19 @@ export const list = query({
 });
 
 // Get a single template
-export const get = query({
+export const get = authenticatedQuery({
   args: { id: v.id("documentTemplates") },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
-
     const template = await ctx.db.get(args.id);
     if (!template) return null;
 
     // Check if user has access to this template
     if (
       !(template.isBuiltIn || template.isPublic) &&
-      template.createdBy !== userId &&
+      template.createdBy !== ctx.userId &&
       !template.projectId
     ) {
-      throw new Error("No access to this template");
+      throw forbidden();
     }
 
     return template;
@@ -99,29 +92,26 @@ export const get = query({
 });
 
 // Update a template
-export const update = mutation({
+export const update = authenticatedMutation({
   args: {
     id: v.id("documentTemplates"),
     name: v.optional(v.string()),
     description: v.optional(v.string()),
     category: v.optional(v.string()),
     icon: v.optional(v.string()),
-    content: v.optional(v.any()),
+    content: v.optional(blockNoteContent),
     isPublic: v.optional(v.boolean()),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
-
     const template = await ctx.db.get(args.id);
-    if (!template) throw new Error("Template not found");
+    if (!template) throw notFound("template", args.id);
 
     // Only creator can update their templates (built-in templates can't be updated)
     if (template.isBuiltIn) {
-      throw new Error("Cannot update built-in templates");
+      throw forbidden();
     }
-    if (template.createdBy !== userId) {
-      throw new Error("Not authorized to update this template");
+    if (template.createdBy !== ctx.userId) {
+      throw forbidden();
     }
 
     const updates: Partial<typeof template> = {
@@ -139,21 +129,18 @@ export const update = mutation({
 });
 
 // Delete a template
-export const remove = mutation({
+export const remove = authenticatedMutation({
   args: { id: v.id("documentTemplates") },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
-
     const template = await ctx.db.get(args.id);
-    if (!template) throw new Error("Template not found");
+    if (!template) throw notFound("template", args.id);
 
     // Only creator can delete their templates (built-in templates can't be deleted)
     if (template.isBuiltIn) {
-      throw new Error("Cannot delete built-in templates");
+      throw forbidden();
     }
-    if (template.createdBy !== userId) {
-      throw new Error("Not authorized to delete this template");
+    if (template.createdBy !== ctx.userId) {
+      throw forbidden();
     }
 
     await ctx.db.delete(args.id);
@@ -161,7 +148,7 @@ export const remove = mutation({
 });
 
 // Create a document from a template
-export const createDocumentFromTemplate = mutation({
+export const createDocumentFromTemplate = authenticatedMutation({
   args: {
     templateId: v.id("documentTemplates"),
     title: v.string(),
@@ -169,26 +156,23 @@ export const createDocumentFromTemplate = mutation({
     isPublic: v.boolean(),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
-
     const template = await ctx.db.get(args.templateId);
-    if (!template) throw new Error("Template not found");
+    if (!template) throw notFound("template", args.templateId);
 
     // Check if user has access to this template
     if (
       !(template.isBuiltIn || template.isPublic) &&
-      template.createdBy !== userId &&
+      template.createdBy !== ctx.userId &&
       !template.projectId
     ) {
-      throw new Error("No access to this template");
+      throw forbidden();
     }
 
     // Create document
     const documentId = await ctx.db.insert("documents", {
       title: args.title,
       isPublic: args.isPublic,
-      createdBy: userId,
+      createdBy: ctx.userId,
       projectId: args.projectId,
       createdAt: Date.now(),
       updatedAt: Date.now(),

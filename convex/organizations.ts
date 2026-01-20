@@ -1,9 +1,17 @@
-import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
+import { pruneNull } from "convex-helpers";
 import type { Doc, Id } from "./_generated/dataModel";
-import { type MutationCtx, mutation, type QueryCtx, query } from "./_generated/server";
+import type { MutationCtx, QueryCtx } from "./_generated/server";
+import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
 import { batchFetchOrganizations, batchFetchUsers } from "./lib/batchHelpers";
+import { conflict, forbidden, notFound, validation } from "./lib/errors";
+import { MAX_ORG_MEMBERS } from "./lib/queryLimits";
 import { notDeleted } from "./lib/softDeleteHelpers";
+import {
+  nullableOrganizationRoles,
+  organizationMemberRoles,
+  organizationRoles,
+} from "./validators";
 
 // ============================================================================
 // Helper Functions
@@ -50,7 +58,7 @@ async function assertOrganizationAdmin(
 ): Promise<void> {
   const isAdmin = await isOrganizationAdmin(ctx, organizationId, userId);
   if (!isAdmin) {
-    throw new Error("Only organization admins can perform this action");
+    throw forbidden("admin", "Only organization admins can perform this action");
   }
 }
 
@@ -64,7 +72,7 @@ async function assertOrganizationOwner(
 ): Promise<void> {
   const role = await getOrganizationRole(ctx, organizationId, userId);
   if (role !== "owner") {
-    throw new Error("Only organization owner can perform this action");
+    throw forbidden("owner", "Only organization owner can perform this action");
   }
 }
 
@@ -149,7 +157,7 @@ const DEFAULT_ORGANIZATION_SETTINGS = {
  * Create a new organization
  * Creator automatically becomes owner
  */
-export const createOrganization = mutation({
+export const createOrganization = authenticatedMutation({
   args: {
     name: v.string(),
     timezone: v.string(), // IANA timezone
@@ -167,15 +175,13 @@ export const createOrganization = mutation({
     slug: v.string(),
   }),
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
-
     // Generate slug from name
     const baseSlug = generateSlug(args.name);
 
     // Validate slug is not reserved (GitHub-style validation)
     if (isReservedSlug(baseSlug)) {
-      throw new Error(
+      throw validation(
+        "name",
         `The name "${args.name}" cannot be used because "${baseSlug}" is a reserved URL path. Please choose a different name.`,
       );
     }
@@ -204,7 +210,7 @@ export const createOrganization = mutation({
       slug,
       timezone: args.timezone,
       settings: args.settings ?? DEFAULT_ORGANIZATION_SETTINGS,
-      createdBy: userId,
+      createdBy: ctx.userId,
       createdAt: now,
       updatedAt: now,
     });
@@ -212,16 +218,16 @@ export const createOrganization = mutation({
     // Add creator as owner
     await ctx.db.insert("organizationMembers", {
       organizationId,
-      userId,
+      userId: ctx.userId,
       role: "owner",
-      addedBy: userId,
+      addedBy: ctx.userId,
       addedAt: now,
     });
 
     // Set as user's default organization if they don't have one
-    const user = await ctx.db.get(userId);
+    const user = await ctx.db.get(ctx.userId);
     if (!user?.defaultOrganizationId) {
-      await ctx.db.patch(userId, { defaultOrganizationId: organizationId });
+      await ctx.db.patch(ctx.userId, { defaultOrganizationId: organizationId });
     }
 
     return { organizationId, slug };
@@ -232,7 +238,7 @@ export const createOrganization = mutation({
  * Update organization details
  * Admin only
  */
-export const updateOrganization = mutation({
+export const updateOrganization = authenticatedMutation({
   args: {
     organizationId: v.id("organizations"),
     name: v.optional(v.string()),
@@ -248,10 +254,7 @@ export const updateOrganization = mutation({
   },
   returns: v.object({ success: v.boolean() }),
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
-
-    await assertOrganizationAdmin(ctx, args.organizationId, userId);
+    await assertOrganizationAdmin(ctx, args.organizationId, ctx.userId);
 
     const updates: Partial<Doc<"organizations">> = {
       updatedAt: Date.now(),
@@ -259,31 +262,8 @@ export const updateOrganization = mutation({
 
     if (args.name !== undefined) {
       updates.name = args.name;
-      // Regenerate slug if name changes
-      const baseSlug = generateSlug(args.name);
-
-      // Validate slug is not reserved (GitHub-style validation)
-      if (isReservedSlug(baseSlug)) {
-        throw new Error(
-          `The name "${args.name}" cannot be used because "${baseSlug}" is a reserved URL path. Please choose a different name.`,
-        );
-      }
-
-      let slug = baseSlug;
-      let counter = 1;
-
-      while (true) {
-        const existing = await ctx.db
-          .query("organizations")
-          .withIndex("by_slug", (q) => q.eq("slug", slug))
-          .first();
-
-        if (!existing || existing._id === args.organizationId) break;
-
-        slug = `${baseSlug}-${counter}`;
-        counter++;
-      }
-      updates.slug = slug;
+      // NOTE: We do NOT regenerate slug when name changes to preserve URL stability.
+      // Slugs should only be updated via a dedicated mutation if needed.
     }
 
     if (args.timezone !== undefined) updates.timezone = args.timezone;
@@ -299,28 +279,29 @@ export const updateOrganization = mutation({
  * Delete organization
  * Owner only - will also delete all organization members
  */
-export const deleteOrganization = mutation({
+export const deleteOrganization = authenticatedMutation({
   args: {
     organizationId: v.id("organizations"),
   },
   returns: v.object({ success: v.boolean() }),
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
-
-    await assertOrganizationOwner(ctx, args.organizationId, userId);
+    await assertOrganizationOwner(ctx, args.organizationId, ctx.userId);
 
     // Delete all organization members
     const members = await ctx.db
       .query("organizationMembers")
       .withIndex("by_organization", (q) => q.eq("organizationId", args.organizationId))
-      .collect();
+      .take(MAX_ORG_MEMBERS);
+
+    // Batch fetch all users to avoid N+1
+    const userIds = members.map((m) => m.userId);
+    const userMap = await batchFetchUsers(ctx, userIds);
 
     for (const member of members) {
       await ctx.db.delete(member._id);
 
       // Clear defaultOrganizationId if this was the user's default
-      const user = await ctx.db.get(member.userId);
+      const user = userMap.get(member.userId);
       if (user?.defaultOrganizationId === args.organizationId) {
         await ctx.db.patch(member.userId, { defaultOrganizationId: undefined });
       }
@@ -337,18 +318,15 @@ export const deleteOrganization = mutation({
  * Add member to organization
  * Admin only
  */
-export const addMember = mutation({
+export const addMember = authenticatedMutation({
   args: {
     organizationId: v.id("organizations"),
     userId: v.id("users"),
-    role: v.union(v.literal("admin"), v.literal("member")), // Can't directly add as owner
+    role: organizationMemberRoles, // Can't directly add as owner
   },
   returns: v.object({ success: v.boolean() }),
   handler: async (ctx, args) => {
-    const currentUserId = await getAuthUserId(ctx);
-    if (!currentUserId) throw new Error("Not authenticated");
-
-    await assertOrganizationAdmin(ctx, args.organizationId, currentUserId);
+    await assertOrganizationAdmin(ctx, args.organizationId, ctx.userId);
 
     // Check if user is already a member
     const existing = await ctx.db
@@ -359,7 +337,7 @@ export const addMember = mutation({
       .first();
 
     if (existing) {
-      throw new Error("User is already a member of this organization");
+      throw conflict("User is already a member of this organization");
     }
 
     const now = Date.now();
@@ -368,7 +346,7 @@ export const addMember = mutation({
       organizationId: args.organizationId,
       userId: args.userId,
       role: args.role,
-      addedBy: currentUserId,
+      addedBy: ctx.userId,
       addedAt: now,
     });
 
@@ -386,18 +364,15 @@ export const addMember = mutation({
  * Update member role
  * Owner only - owner role can't be changed
  */
-export const updateMemberRole = mutation({
+export const updateMemberRole = authenticatedMutation({
   args: {
     organizationId: v.id("organizations"),
     userId: v.id("users"),
-    role: v.union(v.literal("owner"), v.literal("admin"), v.literal("member")),
+    role: organizationRoles,
   },
   returns: v.object({ success: v.boolean() }),
   handler: async (ctx, args) => {
-    const currentUserId = await getAuthUserId(ctx);
-    if (!currentUserId) throw new Error("Not authenticated");
-
-    await assertOrganizationOwner(ctx, args.organizationId, currentUserId);
+    await assertOrganizationOwner(ctx, args.organizationId, ctx.userId);
 
     const membership = await ctx.db
       .query("organizationMembers")
@@ -407,11 +382,11 @@ export const updateMemberRole = mutation({
       .first();
 
     if (!membership) {
-      throw new Error("User is not a member of this organization");
+      throw notFound("membership", args.userId);
     }
 
     if (membership.role === "owner") {
-      throw new Error("Cannot change owner role");
+      throw forbidden("owner", "Cannot change owner role");
     }
 
     await ctx.db.patch(membership._id, {
@@ -426,17 +401,14 @@ export const updateMemberRole = mutation({
  * Remove member from organization
  * Admin only - owner can't be removed
  */
-export const removeMember = mutation({
+export const removeMember = authenticatedMutation({
   args: {
     organizationId: v.id("organizations"),
     userId: v.id("users"),
   },
   returns: v.object({ success: v.boolean() }),
   handler: async (ctx, args) => {
-    const currentUserId = await getAuthUserId(ctx);
-    if (!currentUserId) throw new Error("Not authenticated");
-
-    await assertOrganizationAdmin(ctx, args.organizationId, currentUserId);
+    await assertOrganizationAdmin(ctx, args.organizationId, ctx.userId);
 
     const membership = await ctx.db
       .query("organizationMembers")
@@ -446,11 +418,11 @@ export const removeMember = mutation({
       .first();
 
     if (!membership) {
-      throw new Error("User is not a member of this organization");
+      throw notFound("membership", args.userId);
     }
 
     if (membership.role === "owner") {
-      throw new Error("Cannot remove organization owner");
+      throw forbidden("owner", "Cannot remove organization owner");
     }
 
     await ctx.db.delete(membership._id);
@@ -472,7 +444,7 @@ export const removeMember = mutation({
 /**
  * Get organization by ID
  */
-export const getOrganization = query({
+export const getOrganization = authenticatedQuery({
   args: {
     organizationId: v.id("organizations"),
   },
@@ -493,18 +465,15 @@ export const getOrganization = query({
       createdBy: v.id("users"),
       createdAt: v.number(),
       updatedAt: v.number(),
-      userRole: v.union(v.literal("owner"), v.literal("admin"), v.literal("member"), v.null()),
+      userRole: nullableOrganizationRoles,
     }),
   ),
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) return null;
-
     const organization = await ctx.db.get(args.organizationId);
     if (!organization) return null;
 
     // Check if user is a member
-    const role = await getOrganizationRole(ctx, args.organizationId, userId);
+    const role = await getOrganizationRole(ctx, args.organizationId, ctx.userId);
     if (!role) return null;
 
     return {
@@ -517,7 +486,7 @@ export const getOrganization = query({
 /**
  * Get organization by slug
  */
-export const getOrganizationBySlug = query({
+export const getOrganizationBySlug = authenticatedQuery({
   args: {
     slug: v.string(),
   },
@@ -538,13 +507,10 @@ export const getOrganizationBySlug = query({
       createdBy: v.id("users"),
       createdAt: v.number(),
       updatedAt: v.number(),
-      userRole: v.union(v.literal("owner"), v.literal("admin"), v.literal("member"), v.null()),
+      userRole: nullableOrganizationRoles,
     }),
   ),
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) return null;
-
     const organization = await ctx.db
       .query("organizations")
       .withIndex("by_slug", (q) => q.eq("slug", args.slug))
@@ -553,7 +519,7 @@ export const getOrganizationBySlug = query({
     if (!organization) return null;
 
     // Check if user is a member
-    const role = await getOrganizationRole(ctx, organization._id, userId);
+    const role = await getOrganizationRole(ctx, organization._id, ctx.userId);
     if (!role) return null;
 
     return {
@@ -566,7 +532,7 @@ export const getOrganizationBySlug = query({
 /**
  * Get all organizations user is a member of
  */
-export const getUserOrganizations = query({
+export const getUserOrganizations = authenticatedQuery({
   args: {},
   returns: v.array(
     v.object({
@@ -584,19 +550,16 @@ export const getUserOrganizations = query({
       createdBy: v.id("users"),
       createdAt: v.number(),
       updatedAt: v.number(),
-      userRole: v.union(v.literal("owner"), v.literal("admin"), v.literal("member"), v.null()),
+      userRole: nullableOrganizationRoles,
       memberCount: v.number(),
       projectCount: v.number(),
     }),
   ),
   handler: async (ctx) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) return [];
-
     const memberships = await ctx.db
       .query("organizationMembers")
-      .withIndex("by_user", (q) => q.eq("userId", userId))
-      .collect();
+      .withIndex("by_user", (q) => q.eq("userId", ctx.userId))
+      .take(MAX_ORG_MEMBERS);
 
     // Batch fetch all organizations
     const organizationIds = memberships.map((m) => m.organizationId);
@@ -634,8 +597,8 @@ export const getUserOrganizations = query({
     const roleMap = new Map(memberships.map((m) => [m.organizationId.toString(), m.role]));
 
     // Enrich with pre-fetched data (no N+1)
-    const organizations = memberships
-      .map((membership) => {
+    const organizations = pruneNull(
+      memberships.map((membership) => {
         const organization = organizationMap.get(membership.organizationId);
         if (!organization) return null;
 
@@ -646,8 +609,8 @@ export const getUserOrganizations = query({
           memberCount: memberCountMap.get(organizationIdStr) ?? 0,
           projectCount: projectCountMap.get(organizationIdStr) ?? 0,
         };
-      })
-      .filter((c): c is NonNullable<typeof c> => c !== null);
+      }),
+    );
 
     return organizations;
   },
@@ -657,7 +620,7 @@ export const getUserOrganizations = query({
  * Get all members of an organization
  * Admin only
  */
-export const getOrganizationMembers = query({
+export const getOrganizationMembers = authenticatedQuery({
   args: {
     organizationId: v.id("organizations"),
   },
@@ -667,7 +630,7 @@ export const getOrganizationMembers = query({
       _creationTime: v.number(),
       organizationId: v.id("organizations"),
       userId: v.id("users"),
-      role: v.union(v.literal("owner"), v.literal("admin"), v.literal("member")),
+      role: organizationRoles,
       addedBy: v.id("users"),
       addedAt: v.number(),
       user: v.union(
@@ -683,16 +646,13 @@ export const getOrganizationMembers = query({
     }),
   ),
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
-
-    await assertOrganizationAdmin(ctx, args.organizationId, userId);
+    await assertOrganizationAdmin(ctx, args.organizationId, ctx.userId);
 
     const memberships = await ctx.db
       .query("organizationMembers")
       .withIndex("by_organization", (q) => q.eq("organizationId", args.organizationId))
       .filter(notDeleted)
-      .collect();
+      .take(MAX_ORG_MEMBERS);
 
     // Batch fetch all users (members + addedBy)
     const userIds = [...memberships.map((m) => m.userId), ...memberships.map((m) => m.addedBy)];
@@ -724,16 +684,13 @@ export const getOrganizationMembers = query({
 /**
  * Get user's role in an organization (public query version)
  */
-export const getUserRole = query({
+export const getUserRole = authenticatedQuery({
   args: {
     organizationId: v.id("organizations"),
   },
-  returns: v.union(v.literal("owner"), v.literal("admin"), v.literal("member"), v.null()),
+  returns: nullableOrganizationRoles,
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) return null;
-
-    return await getOrganizationRole(ctx, args.organizationId, userId);
+    return await getOrganizationRole(ctx, args.organizationId, ctx.userId);
   },
 });
 
@@ -745,7 +702,7 @@ export const getUserRole = query({
  * Initialize default organization for a user
  * Creates a personal project named after the user
  */
-export const initializeDefaultOrganization = mutation({
+export const initializeDefaultOrganization = authenticatedMutation({
   args: {
     organizationName: v.optional(v.string()), // Optional custom name
     timezone: v.optional(v.string()), // Optional timezone, defaults to "America/New_York"
@@ -757,13 +714,10 @@ export const initializeDefaultOrganization = mutation({
     usersAssigned: v.number(),
   }),
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
-
     // Check if user already has an organization
     const existingMembership = await ctx.db
       .query("organizationMembers")
-      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .withIndex("by_user", (q) => q.eq("userId", ctx.userId))
       .filter(notDeleted)
       .first();
 
@@ -778,7 +732,7 @@ export const initializeDefaultOrganization = mutation({
     }
 
     // Get user info to generate organization name
-    const user = await ctx.db.get(userId);
+    const user = await ctx.db.get(ctx.userId);
     const userName = user?.name || user?.email?.split("@")[0] || "user";
 
     const now = Date.now();
@@ -814,7 +768,7 @@ export const initializeDefaultOrganization = mutation({
       slug,
       timezone,
       settings: DEFAULT_ORGANIZATION_SETTINGS,
-      createdBy: userId,
+      createdBy: ctx.userId,
       createdAt: now,
       updatedAt: now,
     });
@@ -822,14 +776,14 @@ export const initializeDefaultOrganization = mutation({
     // Add current user as owner
     await ctx.db.insert("organizationMembers", {
       organizationId,
-      userId,
+      userId: ctx.userId,
       role: "owner",
-      addedBy: userId,
+      addedBy: ctx.userId,
       addedAt: now,
     });
 
     // Set as user's default organization
-    await ctx.db.patch(userId, { defaultOrganizationId: organizationId });
+    await ctx.db.patch(ctx.userId, { defaultOrganizationId: organizationId });
 
     return {
       organizationId,

@@ -1,8 +1,11 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { Authenticated, Unauthenticated } from "convex/react";
+
 import { useState } from "react";
 import { toast } from "sonner";
-import { AuthLink, AuthPageLayout, ResetPasswordForm, SmartAuthGuard } from "@/components/auth";
+import { AuthLink, AuthPageLayout, AuthRedirect, ResetPasswordForm } from "@/components/auth";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/form/Input";
+import { Typography } from "@/components/ui/Typography";
 import { ROUTES } from "@/config/routes";
 import { getConvexSiteUrl } from "@/lib/convex";
 
@@ -13,14 +16,9 @@ export const Route = createFileRoute("/forgot-password")({
 
 function ForgotPasswordRoute() {
   return (
-    <>
-      <Authenticated>
-        <SmartAuthGuard />
-      </Authenticated>
-      <Unauthenticated>
-        <ForgotPasswordPage />
-      </Unauthenticated>
-    </>
+    <AuthRedirect>
+      <ForgotPasswordPage />
+    </AuthRedirect>
   );
 }
 
@@ -62,7 +60,7 @@ function ForgotPasswordPage() {
         <ResetPasswordForm
           email={email}
           onSuccess={() => {
-            // Redirect to /app gateway to trigger SmartAuthGuard logic
+            // Redirect to /app gateway which handles auth routing
             navigate({ to: ROUTES.app.path });
           }}
           onRetry={() => {
@@ -80,20 +78,14 @@ function ForgotPasswordPage() {
       subtitle="Enter your email and we'll send you a reset code"
     >
       <form className="flex flex-col gap-form-field" onSubmit={handleSubmit}>
-        <input
-          className="auth-input-field"
-          type="email"
-          name="email"
-          placeholder="Email"
-          required
-        />
-        <button className="auth-button" type="submit" disabled={submitting}>
+        <Input type="email" name="email" placeholder="Email" required />
+        <Button className="w-full" type="submit" disabled={submitting}>
           {submitting ? "Sending..." : "Send reset code"}
-        </button>
+        </Button>
       </form>
-      <div className="text-center text-sm text-ui-text-tertiary mt-4">
+      <Typography variant="muted" className="text-center mt-4">
         <AuthLink to={ROUTES.signin.path}>Back to sign in</AuthLink>
-      </div>
+      </Typography>
     </AuthPageLayout>
   );
 }

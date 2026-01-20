@@ -1,5 +1,6 @@
 import type { Id } from "../_generated/dataModel";
 import type { MutationCtx } from "../_generated/server";
+import { notFound, validation } from "../lib/errors";
 import { notDeleted } from "../lib/softDeleteHelpers";
 
 export const ROOT_ISSUE_TYPES = ["task", "bug", "story", "epic"] as const;
@@ -26,17 +27,20 @@ export async function validateParentIssue(
 
   const parentIssue = await ctx.db.get(parentId);
   if (!parentIssue) {
-    throw new Error("Parent issue not found");
+    throw notFound("issue", parentId);
   }
 
   // Prevent sub-tasks of sub-tasks (only 1 level deep)
   if (parentIssue.parentId) {
-    throw new Error("Cannot create sub-task of a sub-task. Sub-tasks can only be one level deep.");
+    throw validation(
+      "parentId",
+      "Cannot create sub-task of a sub-task. Sub-tasks can only be one level deep.",
+    );
   }
 
   // Sub-tasks must be of type "subtask"
   if (issueType !== "subtask") {
-    throw new Error("Issues with a parent must be of type 'subtask'");
+    throw validation("type", "Issues with a parent must be of type 'subtask'");
   }
 
   // Inherit epicId from parent if not explicitly provided

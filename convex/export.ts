@@ -1,8 +1,9 @@
-import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import type { Id } from "./_generated/dataModel";
-import { type MutationCtx, mutation, query } from "./_generated/server";
+import type { MutationCtx } from "./_generated/server";
+import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
 import { batchFetchSprints, batchFetchUsers } from "./lib/batchHelpers";
+import { notFound, validation } from "./lib/errors";
 import { notDeleted } from "./lib/softDeleteHelpers";
 import { assertCanAccessProject, assertCanEditProject } from "./projectAccess";
 
@@ -35,12 +36,12 @@ function validateJSONImportData(jsonData: string): { issues: unknown[] } {
   try {
     data = JSON.parse(jsonData);
   } catch {
-    throw new Error("Invalid JSON format");
+    throw validation("jsonData", "Invalid JSON format");
   }
 
   // Type guard and validation
   if (!data || typeof data !== "object" || !("issues" in data) || !Array.isArray(data.issues)) {
-    throw new Error("JSON must contain an 'issues' array");
+    throw validation("jsonData", "JSON must contain an 'issues' array");
   }
 
   return { issues: data.issues };
@@ -75,7 +76,7 @@ async function processJSONIssue(
 
   // Validate required fields
   if (!issueData.title) {
-    throw new Error("Missing required field: title");
+    throw validation("title", "Missing required field: title");
   }
 
   // Generate next issue key
@@ -129,7 +130,7 @@ function parseCSVHeaders(headerLine: string): {
   const titleIndex = headers.indexOf("title");
 
   if (titleIndex === -1) {
-    throw new Error("CSV must contain a 'title' column");
+    throw validation("csvData", "CSV must contain a 'title' column");
   }
 
   return {
@@ -171,7 +172,7 @@ function parseCSVRow(
   order: number;
 } {
   if (!values[indices.titleIndex]) {
-    throw new Error("Title is required");
+    throw validation("title", "Title is required");
   }
 
   return {
@@ -256,22 +257,19 @@ async function createIssueWithActivity(
 }
 
 // Export issues as CSV
-export const exportIssuesCSV = query({
+export const exportIssuesCSV = authenticatedQuery({
   args: {
     projectId: v.id("projects"),
     sprintId: v.optional(v.id("sprints")),
     status: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
-
     // Check if user has access to project
-    await assertCanAccessProject(ctx, args.projectId, userId);
+    await assertCanAccessProject(ctx, args.projectId, ctx.userId);
 
     // Get project to access workflow states
     const project = await ctx.db.get(args.projectId);
-    if (!project) throw new Error("Project not found");
+    if (!project) throw notFound("project", args.projectId);
 
     // Get issues
     const issuesQuery = ctx.db
@@ -368,17 +366,14 @@ export const exportIssuesCSV = query({
 });
 
 // Export analytics data
-export const exportAnalytics = query({
+export const exportAnalytics = authenticatedQuery({
   args: { projectId: v.id("projects") },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
-
     // Check if user has access to project
-    await assertCanAccessProject(ctx, args.projectId, userId);
+    await assertCanAccessProject(ctx, args.projectId, ctx.userId);
 
     const project = await ctx.db.get(args.projectId);
-    if (!project) throw new Error("Project not found");
+    if (!project) throw notFound("project", args.projectId);
 
     // Get all issues
     const issues = await ctx.db
@@ -438,20 +433,17 @@ export const exportAnalytics = query({
 });
 
 // Export issues as JSON
-export const exportIssuesJSON = query({
+export const exportIssuesJSON = authenticatedQuery({
   args: {
     projectId: v.id("projects"),
     sprintId: v.optional(v.id("sprints")),
     status: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
-
-    await assertCanAccessProject(ctx, args.projectId, userId);
+    await assertCanAccessProject(ctx, args.projectId, ctx.userId);
 
     const project = await ctx.db.get(args.projectId);
-    if (!project) throw new Error("Project not found");
+    if (!project) throw notFound("project", args.projectId);
 
     // Get issues with same filtering as CSV export
     const issuesQuery = ctx.db
@@ -530,19 +522,16 @@ export const exportIssuesJSON = query({
 });
 
 // Import issues from JSON
-export const importIssuesJSON = mutation({
+export const importIssuesJSON = authenticatedMutation({
   args: {
     projectId: v.id("projects"),
     jsonData: v.string(),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
-
-    await assertCanEditProject(ctx, args.projectId, userId);
+    await assertCanEditProject(ctx, args.projectId, ctx.userId);
 
     const project = await ctx.db.get(args.projectId);
-    if (!project) throw new Error("Project not found");
+    if (!project) throw notFound("project", args.projectId);
 
     // Validate and parse JSON data
     const { issues } = validateJSONImportData(args.jsonData);
@@ -559,7 +548,7 @@ export const importIssuesJSON = mutation({
           project.key,
           project.workspaceId,
           project.teamId,
-          userId,
+          ctx.userId,
           project.workflowStates[0].id,
         );
         imported.push(issueKey);
@@ -580,24 +569,21 @@ export const importIssuesJSON = mutation({
 });
 
 // Import issues from CSV
-export const importIssuesCSV = mutation({
+export const importIssuesCSV = authenticatedMutation({
   args: {
     projectId: v.id("projects"),
     csvData: v.string(),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
-
-    await assertCanEditProject(ctx, args.projectId, userId);
+    await assertCanEditProject(ctx, args.projectId, ctx.userId);
 
     const project = await ctx.db.get(args.projectId);
-    if (!project) throw new Error("Project not found");
+    if (!project) throw notFound("project", args.projectId);
 
     // Parse CSV
     const lines = args.csvData.trim().split("\n");
     if (lines.length < 2) {
-      throw new Error("CSV must have at least a header row and one data row");
+      throw validation("csvData", "CSV must have at least a header row and one data row");
     }
 
     // Parse headers to get column indices
@@ -625,12 +611,12 @@ export const importIssuesCSV = mutation({
           project.workspaceId,
           project.teamId,
           issueKey,
-          userId,
+          ctx.userId,
           project.workflowStates[0].id,
           order,
         );
 
-        await createIssueWithActivity(ctx, issueData, userId);
+        await createIssueWithActivity(ctx, issueData, ctx.userId);
         imported.push(issueKey);
       } catch (error) {
         errors.push({

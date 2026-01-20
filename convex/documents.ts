@@ -1,8 +1,9 @@
-import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import type { Id } from "./_generated/dataModel";
-import { mutation, query } from "./_generated/server";
+
+import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
 import { batchFetchProjects, batchFetchUsers, getUserName } from "./lib/batchHelpers";
+import { conflict, forbidden, notFound } from "./lib/errors";
 import {
   DEFAULT_PAGE_SIZE,
   DEFAULT_SEARCH_PAGE_SIZE,
@@ -13,39 +14,29 @@ import {
 import { cascadeSoftDelete } from "./lib/relationships";
 import { notDeleted, softDeleteFields } from "./lib/softDeleteHelpers";
 
-export const create = mutation({
+export const create = authenticatedMutation({
   args: {
     title: v.string(),
     isPublic: v.boolean(),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      throw new Error("Not authenticated");
-    }
-
     const now = Date.now();
     return await ctx.db.insert("documents", {
       title: args.title,
       isPublic: args.isPublic,
-      createdBy: userId,
+      createdBy: ctx.userId,
       createdAt: now,
       updatedAt: now,
     });
   },
 });
 
-export const list = query({
+export const list = authenticatedQuery({
   args: {
     limit: v.optional(v.number()),
     cursor: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      return { documents: [], nextCursor: null, hasMore: false };
-    }
-
     // Cap limit to prevent abuse
     const requestedLimit = args.limit ?? DEFAULT_PAGE_SIZE;
     const limit = Math.min(requestedLimit, MAX_PAGE_SIZE);
@@ -57,7 +48,7 @@ export const list = query({
     // Get user's private documents (their own non-public docs)
     const privateDocuments = await ctx.db
       .query("documents")
-      .withIndex("by_creator", (q) => q.eq("createdBy", userId))
+      .withIndex("by_creator", (q) => q.eq("createdBy", ctx.userId))
       .filter((q) => q.eq(q.field("isPublic"), false))
       .order("desc")
       .filter(notDeleted)
@@ -105,7 +96,7 @@ export const list = query({
       return {
         ...doc,
         creatorName: creator?.name || creator?.email || "Unknown",
-        isOwner: doc.createdBy === userId,
+        isOwner: doc.createdBy === ctx.userId,
       };
     });
 
@@ -113,10 +104,9 @@ export const list = query({
   },
 });
 
-export const get = query({
+export const get = authenticatedQuery({
   args: { id: v.id("documents") },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
     const document = await ctx.db.get(args.id);
 
     if (!document || document.isDeleted) {
@@ -124,37 +114,32 @@ export const get = query({
     }
 
     // Check if user can access this document
-    if (!document.isPublic && document.createdBy !== userId) {
-      throw new Error("Not authorized to access this document");
+    if (!document.isPublic && document.createdBy !== ctx.userId) {
+      throw forbidden(undefined, "Not authorized to access this document");
     }
 
     const creator = await ctx.db.get(document.createdBy);
     return {
       ...document,
       creatorName: creator?.name || creator?.email || "Unknown",
-      isOwner: document.createdBy === userId,
+      isOwner: document.createdBy === ctx.userId,
     };
   },
 });
 
-export const updateTitle = mutation({
+export const updateTitle = authenticatedMutation({
   args: {
     id: v.id("documents"),
     title: v.string(),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      throw new Error("Not authenticated");
-    }
-
     const document = await ctx.db.get(args.id);
     if (!document) {
-      throw new Error("Document not found");
+      throw notFound("document", args.id);
     }
 
-    if (document.createdBy !== userId) {
-      throw new Error("Not authorized to edit this document");
+    if (document.createdBy !== ctx.userId) {
+      throw forbidden(undefined, "Not authorized to edit this document");
     }
 
     await ctx.db.patch(args.id, {
@@ -164,21 +149,16 @@ export const updateTitle = mutation({
   },
 });
 
-export const togglePublic = mutation({
+export const togglePublic = authenticatedMutation({
   args: { id: v.id("documents") },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      throw new Error("Not authenticated");
-    }
-
     const document = await ctx.db.get(args.id);
     if (!document) {
-      throw new Error("Document not found");
+      throw notFound("document", args.id);
     }
 
-    if (document.createdBy !== userId) {
-      throw new Error("Not authorized to edit this document");
+    if (document.createdBy !== ctx.userId) {
+      throw forbidden(undefined, "Not authorized to edit this document");
     }
 
     await ctx.db.patch(args.id, {
@@ -188,49 +168,39 @@ export const togglePublic = mutation({
   },
 });
 
-export const deleteDocument = mutation({
+export const deleteDocument = authenticatedMutation({
   args: { id: v.id("documents") },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      throw new Error("Not authenticated");
-    }
-
     const document = await ctx.db.get(args.id);
     if (!document) {
-      throw new Error("Document not found");
+      throw notFound("document", args.id);
     }
 
-    if (document.createdBy !== userId) {
-      throw new Error("Not authorized to delete this document");
+    if (document.createdBy !== ctx.userId) {
+      throw forbidden(undefined, "Not authorized to delete this document");
     }
 
     // Soft delete with automatic cascading
     const deletedAt = Date.now();
-    await ctx.db.patch(args.id, softDeleteFields(userId));
-    await cascadeSoftDelete(ctx, "documents", args.id, userId, deletedAt);
+    await ctx.db.patch(args.id, softDeleteFields(ctx.userId));
+    await cascadeSoftDelete(ctx, "documents", args.id, ctx.userId, deletedAt);
   },
 });
 
-export const restoreDocument = mutation({
+export const restoreDocument = authenticatedMutation({
   args: { id: v.id("documents") },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      throw new Error("Not authenticated");
-    }
-
     const document = await ctx.db.get(args.id);
     if (!document) {
-      throw new Error("Document not found");
+      throw notFound("document", args.id);
     }
 
     if (!document.isDeleted) {
-      throw new Error("Document is not deleted");
+      throw conflict("Document is not deleted");
     }
 
-    if (document.createdBy !== userId) {
-      throw new Error("Not authorized to restore this document");
+    if (document.createdBy !== ctx.userId) {
+      throw forbidden(undefined, "Not authorized to restore this document");
     }
 
     // Restore document
@@ -290,7 +260,7 @@ function matchesDocumentFilters(
   return true;
 }
 
-export const search = query({
+export const search = authenticatedQuery({
   args: {
     query: v.string(),
     limit: v.optional(v.number()),
@@ -302,11 +272,6 @@ export const search = query({
     dateTo: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      return { results: [], total: 0, hasMore: false };
-    }
-
     if (!args.query.trim()) {
       return { results: [], total: 0, hasMore: false };
     }
@@ -329,12 +294,12 @@ export const search = query({
     const filtered = [];
     for (const doc of results) {
       // Check access permissions
-      if (!doc.isPublic && doc.createdBy !== userId) {
+      if (!doc.isPublic && doc.createdBy !== ctx.userId) {
         continue;
       }
 
       // Apply all search filters
-      if (!matchesDocumentFilters(doc, args, userId)) {
+      if (!matchesDocumentFilters(doc, args, ctx.userId)) {
         continue;
       }
 
@@ -369,7 +334,7 @@ export const search = query({
       return {
         ...doc,
         creatorName: getUserName(creator),
-        isOwner: doc.createdBy === userId,
+        isOwner: doc.createdBy === ctx.userId,
         project: project
           ? {
               _id: project._id,

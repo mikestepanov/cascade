@@ -61,8 +61,8 @@ export class LandingPage extends BasePage {
   readonly signInHeading: Locator;
   readonly signUpHeading: Locator;
 
-  constructor(page: Page) {
-    super(page);
+  constructor(page: Page, orgSlug: string) {
+    super(page, orgSlug);
 
     // Navigation
     this.nav = page.locator("nav");

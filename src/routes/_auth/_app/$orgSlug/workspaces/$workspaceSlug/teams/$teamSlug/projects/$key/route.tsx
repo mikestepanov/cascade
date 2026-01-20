@@ -65,32 +65,41 @@ function ProjectLayout() {
   return (
     <Flex direction="column" className="h-full">
       {/* Breadcrumb */}
+      {/* Breadcrumb */}
       <div className="px-4 py-2 border-b border-ui-border-primary bg-ui-bg-secondary text-sm">
         <Link
           to={ROUTES.workspaces.list.path}
           params={{ orgSlug }}
-          className="text-blue-600 hover:underline"
+          className="text-brand-600 hover:underline"
         >
           Workspaces
         </Link>
-        <span className="mx-2 text-ui-text-tertiary">/</span>
+        <Typography as="span" variant="muted" className="mx-2">
+          /
+        </Typography>
         <Link
           to={ROUTES.workspaces.detail.path}
           params={{ orgSlug, workspaceSlug }}
-          className="text-blue-600 hover:underline"
+          className="text-brand-600 hover:underline"
         >
           {workspaceSlug}
         </Link>
-        <span className="mx-2 text-ui-text-tertiary">/</span>
+        <Typography as="span" variant="muted" className="mx-2">
+          /
+        </Typography>
         <Link
           to={ROUTES.workspaces.teams.detail.path}
           params={{ orgSlug, workspaceSlug, teamSlug }}
-          className="text-blue-600 hover:underline"
+          className="text-brand-600 hover:underline"
         >
           {teamSlug}
         </Link>
-        <span className="mx-2 text-ui-text-tertiary">/</span>
-        <span className="font-medium">{project.name}</span>
+        <Typography as="span" variant="muted" className="mx-2">
+          /
+        </Typography>
+        <Typography as="span" variant="small" className="font-medium">
+          {project.name}
+        </Typography>
       </div>
 
       {/* Tab Navigation */}
@@ -103,7 +112,7 @@ function ProjectLayout() {
               params={tab.params}
               className="border-b-2 py-3 px-1 text-sm font-medium transition-colors"
               activeProps={{
-                className: "border-brand-indigo-border text-brand-indigo-text",
+                className: "border-brand-600 text-brand-600",
               }}
               inactiveProps={{
                 className:

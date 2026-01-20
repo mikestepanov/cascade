@@ -1,7 +1,8 @@
-import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
+import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
 import { batchFetchBookingPages } from "./lib/batchHelpers";
+import { conflict, notFound, requireOwned, validation } from "./lib/errors";
 
 /**
  * Bookings - Handle meeting bookings via booking pages
@@ -27,7 +28,7 @@ export const createBooking = mutation({
       .first();
 
     if (!page?.isActive) {
-      throw new Error("Booking page not found or inactive");
+      throw notFound("bookingPage");
     }
 
     // Calculate end time
@@ -37,7 +38,7 @@ export const createBooking = mutation({
     const now = Date.now();
     const hoursUntilMeeting = (args.startTime - now) / (1000 * 60 * 60);
     if (hoursUntilMeeting < page.minimumNotice) {
-      throw new Error(`This meeting requires at least ${page.minimumNotice} hours notice`);
+      throw validation("startTime", `Requires at least ${page.minimumNotice} hours notice`);
     }
 
     // Check if slot is still available
@@ -63,7 +64,7 @@ export const createBooking = mutation({
       .collect();
 
     if (conflictingBookings.length > 0) {
-      throw new Error("This time slot is no longer available");
+      throw conflict("This time slot is no longer available");
     }
 
     // Create the booking
@@ -208,7 +209,7 @@ export const getAvailableSlots = query({
 });
 
 // List bookings for host
-export const listMyBookings = query({
+export const listMyBookings = authenticatedQuery({
   args: {
     status: v.optional(
       v.union(
@@ -220,21 +221,18 @@ export const listMyBookings = query({
     ),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) return [];
-
     const bookings = args.status
       ? await ctx.db
           .query("bookings")
           .withIndex("by_host_status", (q) =>
             q
-              .eq("hostId", userId)
+              .eq("hostId", ctx.userId)
               .eq("status", args.status as "pending" | "confirmed" | "cancelled" | "completed"),
           )
           .collect()
       : await ctx.db
           .query("bookings")
-          .withIndex("by_host", (q) => q.eq("hostId", userId))
+          .withIndex("by_host", (q) => q.eq("hostId", ctx.userId))
           .collect();
 
     // Batch fetch booking pages to avoid N+1 queries
@@ -256,23 +254,19 @@ export const listMyBookings = query({
 });
 
 // Confirm a pending booking
-export const confirmBooking = mutation({
+export const confirmBooking = authenticatedMutation({
   args: { id: v.id("bookings") },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
-
     const booking = await ctx.db.get(args.id);
-    if (!booking) throw new Error("Booking not found");
-    if (booking.hostId !== userId) throw new Error("Not authorized");
+    requireOwned(booking, ctx.userId, "booking", "hostId");
 
     if (booking.status !== "pending") {
-      throw new Error("Only pending bookings can be confirmed");
+      throw validation("status", "Only pending bookings can be confirmed");
     }
 
     // Create calendar event
     const page = await ctx.db.get(booking.bookingPageId);
-    if (!page) throw new Error("Booking page not found");
+    if (!page) throw notFound("bookingPage", booking.bookingPageId);
 
     const now = Date.now();
 
@@ -284,7 +278,7 @@ export const confirmBooking = mutation({
       allDay: false,
       location: booking.locationDetails,
       eventType: "meeting",
-      organizerId: userId,
+      organizerId: ctx.userId,
       attendeeIds: [],
       externalAttendees: [booking.bookerEmail],
       status: "confirmed",
@@ -303,21 +297,17 @@ export const confirmBooking = mutation({
 });
 
 // Cancel a booking
-export const cancelBooking = mutation({
+export const cancelBooking = authenticatedMutation({
   args: {
     id: v.id("bookings"),
     reason: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
-
     const booking = await ctx.db.get(args.id);
-    if (!booking) throw new Error("Booking not found");
-    if (booking.hostId !== userId) throw new Error("Not authorized");
+    requireOwned(booking, ctx.userId, "booking", "hostId");
 
     if (booking.status === "cancelled" || booking.status === "completed") {
-      throw new Error("Cannot cancel this booking");
+      throw validation("status", "Cannot cancel this booking");
     }
 
     // Cancel linked calendar event if it exists

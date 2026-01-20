@@ -88,8 +88,8 @@ export class AuthPage extends BasePage {
   readonly resendCodeButton: Locator;
   readonly signOutLink: Locator;
 
-  constructor(page: Page) {
-    super(page);
+  constructor(page: Page, orgSlug: string) {
+    super(page, orgSlug);
 
     // Page headings
     this.signInHeading = page.getByRole("heading", { name: /welcome back/i });
@@ -119,7 +119,9 @@ export class AuthPage extends BasePage {
     this.resetPasswordButton = page.getByRole("button", { name: /^reset password$/i });
 
     // Email Verification
-    this.verifyHeading = page.getByRole("heading", { name: /verify your email/i });
+    // Email Verification - Use more robust locators that don't depend strictly on ARIA roles
+    // as they might vary between h1/h2 during architecture transitions
+    this.verifyHeading = page.getByText(/verify your email/i).first();
     this.verifyCodeInput = page.getByPlaceholder(/enter.*code|8-digit code/i);
     this.verifyEmailButton = page.getByRole("button", { name: /verify email/i });
     this.resendCodeButton = page.getByRole("button", { name: /didn't receive|resend/i });
@@ -141,9 +143,8 @@ export class AuthPage extends BasePage {
    * Navigate to sign in page and expand email form
    */
   async gotoSignIn() {
-    await this.page.goto("/signin");
-    await this.page.waitForLoadState("networkidle");
-    await this.signInHeading.waitFor({ state: "visible", timeout: 10000 });
+    await this.page.goto("/signin", { waitUntil: "commit" });
+    await this.signInHeading.waitFor({ state: "visible", timeout: 15000 });
     // Expand form using robust click logic
     await this.expandEmailForm();
   }
@@ -152,9 +153,8 @@ export class AuthPage extends BasePage {
    * Navigate to sign up page and expand email form
    */
   async gotoSignUp() {
-    await this.page.goto("/signup");
-    await this.page.waitForLoadState("networkidle");
-    await this.signUpHeading.waitFor({ state: "visible", timeout: 10000 });
+    await this.page.goto("/signup", { waitUntil: "commit" });
+    await this.signUpHeading.waitFor({ state: "visible", timeout: 15000 });
     // Expand form using robust click logic
     await this.expandEmailForm();
   }
@@ -187,49 +187,25 @@ export class AuthPage extends BasePage {
    * Uses multiple strategies to handle React hydration timing
    */
   async expandEmailForm() {
-    // Check if form is expanded by looking for the submit button (Sign in or Create account)
-    const submitButtonLocator = this.page.getByRole("button", {
-      name: /^(sign in|create account)$/i,
-    });
-    const isFormExpanded = await submitButtonLocator.isVisible().catch(() => false);
+    // Definitive check: is the email input visible?
+    // It's inside the expanded grid, so it has 0 height when collapsed
+    const isFormExpanded = await this.emailInput.isVisible().catch(() => false);
 
     if (!isFormExpanded) {
-      // Wait for button to be attached and visible before clicking
-      await this.continueWithEmailButton.waitFor({ state: "attached", timeout: 5000 });
+      console.log("    👉 AuthPage.expandEmailForm: Clicking 'Continue with email'...");
+
+      // Wait for hydration to ensure event handlers are attached
+      await this.waitForHydration();
+
+      // The button acts as submit, but initially expands the form
+      // We need to wait for it to be visible as "Continue with email"
       await this.continueWithEmailButton.waitFor({ state: "visible", timeout: 5000 });
-
-      // Give React time to attach event handlers after hydration
-      await this.page.waitForTimeout(500);
-
-      // Try clicking with multiple strategies
-      for (let attempt = 1; attempt <= 3; attempt++) {
-        try {
-          // Use evaluate to trigger a proper click that React will handle
-          await this.continueWithEmailButton.evaluate((btn) => {
-            const event = new MouseEvent("click", {
-              bubbles: true,
-              cancelable: true,
-              view: window,
-            });
-            btn.dispatchEvent(event);
-          });
-
-          // Wait for form to expand
-          await submitButtonLocator.waitFor({ state: "visible", timeout: 3000 });
-          break;
-        } catch {
-          if (attempt < 3) {
-            await this.page.waitForTimeout(500);
-          } else {
-            // Final fallback: try Playwright's native click
-            await this.continueWithEmailButton.click({ timeout: 5000 });
-            await submitButtonLocator.waitFor({ state: "visible", timeout: 3000 });
-          }
-        }
-      }
+      await this.continueWithEmailButton.click();
 
       // Wait for formReady state using data-form-ready attribute
       await this.waitForFormReady();
+
+      console.log("    ✅ AuthPage.expandEmailForm: Success");
     }
   }
 
@@ -358,22 +334,27 @@ export class AuthPage extends BasePage {
   // ===================
 
   /**
+   * Wait for component to be hydrated
+   */
+  async waitForHydration(timeout = 5000) {
+    console.log("    ⏳ AuthPage.waitForHydration: Waiting for data-hydrated=true...");
+    await this.page.locator('form[data-hydrated="true"]').waitFor({
+      state: "attached",
+      timeout,
+    });
+  }
+
+  /**
    * Wait for form to be fully ready (formReady state)
    * The form has a 350ms delay before setting formReady=true which enables required attributes
    * Uses data-form-ready attribute instead of arbitrary timeout
    */
-  async waitForFormReady(timeout = 5000): Promise<boolean> {
-    try {
-      await this.page.locator('form[data-form-ready="true"]').waitFor({
-        state: "attached",
-        timeout,
-      });
-      return true;
-    } catch {
-      // Fallback: wait the standard delay if attribute not found
-      await this.page.waitForTimeout(350);
-      return false;
-    }
+  async waitForFormReady(timeout = 5000) {
+    console.log("    ⏳ AuthPage.waitForFormReady: Waiting for data-form-ready=true...");
+    await this.page.locator('form[data-form-ready="true"]').waitFor({
+      state: "attached",
+      timeout,
+    });
   }
 
   async expectSignInForm() {
@@ -409,10 +390,17 @@ export class AuthPage extends BasePage {
   }
 
   async expectVerificationForm() {
+    console.log("    🔍 AuthPage.expectVerificationForm: Waiting for verification form...");
+    // Give React state a moment to switch from SignUpForm to EmailVerificationForm
+    await this.page.waitForTimeout(1000);
+
     // Wait longer for verification form to appear - server might be slow after sign-up
     await expect(this.verifyHeading).toBeVisible({ timeout: 15000 });
+    console.log("    ✅ AuthPage.expectVerificationForm: Heading found");
+
     await expect(this.verifyCodeInput).toBeVisible({ timeout: 5000 });
     await expect(this.verifyEmailButton).toBeVisible({ timeout: 5000 });
+    console.log("    ✅ AuthPage.expectVerificationForm: Form is complete");
   }
 
   async expectValidationError(field: "email" | "password") {

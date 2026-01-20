@@ -1,5 +1,6 @@
 import type { Doc, Id } from "./_generated/dataModel";
 import type { MutationCtx, QueryCtx } from "./_generated/server";
+import { forbidden } from "./lib/errors";
 import { notDeleted } from "./lib/softDeleteHelpers";
 import { isOrganizationAdmin } from "./organizations";
 import { getTeamRole } from "./teams";
@@ -233,7 +234,7 @@ export async function assertCanAccessProject(
 ): Promise<void> {
   const canAccess = await canAccessProject(ctx, projectId, userId);
   if (!canAccess) {
-    throw new Error("You don't have permission to access this project");
+    throw forbidden();
   }
 }
 
@@ -247,7 +248,7 @@ export async function assertCanEditProject(
 ): Promise<void> {
   const canEdit = await canEditProject(ctx, projectId, userId);
   if (!canEdit) {
-    throw new Error("You don't have permission to edit this project");
+    throw forbidden("editor");
   }
 }
 
@@ -261,7 +262,7 @@ export async function assertIsProjectAdmin(
 ): Promise<void> {
   const isAdmin = await isProjectAdmin(ctx, projectId, userId);
   if (!isAdmin) {
-    throw new Error("Only project admins can perform this action");
+    throw forbidden("admin");
   }
 }
 

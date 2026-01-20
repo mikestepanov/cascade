@@ -1,15 +1,16 @@
-import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
-import type { Doc, Id } from "../_generated/dataModel";
-import { mutation } from "../_generated/server";
+import { asyncMap, pruneNull } from "convex-helpers";
+import type { Id } from "../_generated/dataModel";
 import {
   authenticatedMutation,
   editorMutation,
   issueMutation,
   issueViewerMutation,
 } from "../customFunctions";
+import { validation } from "../lib/errors";
 import { cascadeDelete } from "../lib/relationships";
 import { assertCanEditProject, assertIsProjectAdmin } from "../projectAccess";
+import { workflowCategories } from "../validators";
 import {
   generateIssueKey,
   getMaxOrderForStatus,
@@ -61,8 +62,8 @@ export const create = editorMutation({
     // Get label names from IDs
     let labelNames: string[] = [];
     if (args.labels && args.labels.length > 0) {
-      const labels = await Promise.all(args.labels.map((id) => ctx.db.get(id)));
-      labelNames = labels.filter((l): l is Doc<"labels"> => l !== null).map((l) => l.name);
+      const labels = await asyncMap(args.labels, (id) => ctx.db.get(id));
+      labelNames = pruneNull(labels).map((l) => l.name);
     }
 
     const now = Date.now();
@@ -137,7 +138,7 @@ export const updateStatus = issueMutation({
 
 export const updateStatusByCategory = issueMutation({
   args: {
-    category: v.union(v.literal("todo"), v.literal("inprogress"), v.literal("done")),
+    category: workflowCategories,
     newOrder: v.number(),
   },
   handler: async (ctx, args) => {
@@ -147,7 +148,8 @@ export const updateStatusByCategory = issueMutation({
       .find((s) => s.category === args.category);
 
     if (!targetState) {
-      throw new Error(
+      throw validation(
+        "category",
         `No workflow state found for category ${args.category}${ctx.project ? ` in project ${ctx.project.name}` : ""}`,
       );
     }
@@ -315,18 +317,13 @@ export const addComment = issueViewerMutation({
   },
 });
 
-export const bulkUpdateStatus = mutation({
+export const bulkUpdateStatus = authenticatedMutation({
   args: {
     issueIds: v.array(v.id("issues")),
     newStatus: v.string(),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      throw new Error("Not authenticated");
-    }
-
-    const issues = await Promise.all(args.issueIds.map((id) => ctx.db.get(id)));
+    const issues = await asyncMap(args.issueIds, (id) => ctx.db.get(id));
 
     const now = Date.now();
     const results = [];
@@ -337,7 +334,7 @@ export const bulkUpdateStatus = mutation({
       if (!issue) continue;
 
       try {
-        await assertCanEditProject(ctx, issue.projectId as Id<"projects">, userId);
+        await assertCanEditProject(ctx, issue.projectId as Id<"projects">, ctx.userId);
       } catch {
         continue;
       }
@@ -352,7 +349,7 @@ export const bulkUpdateStatus = mutation({
       if (oldStatus !== args.newStatus) {
         await ctx.db.insert("issueActivity", {
           issueId,
-          userId,
+          userId: ctx.userId,
           action: "updated",
           field: "status",
           oldValue: oldStatus,
@@ -368,7 +365,7 @@ export const bulkUpdateStatus = mutation({
   },
 });
 
-export const bulkUpdatePriority = mutation({
+export const bulkUpdatePriority = authenticatedMutation({
   args: {
     issueIds: v.array(v.id("issues")),
     priority: v.union(
@@ -380,12 +377,7 @@ export const bulkUpdatePriority = mutation({
     ),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      throw new Error("Not authenticated");
-    }
-
-    const issues = await Promise.all(args.issueIds.map((id) => ctx.db.get(id)));
+    const issues = await asyncMap(args.issueIds, (id) => ctx.db.get(id));
 
     const now = Date.now();
     const results = [];
@@ -396,7 +388,7 @@ export const bulkUpdatePriority = mutation({
       if (!issue) continue;
 
       try {
-        await assertCanEditProject(ctx, issue.projectId as Id<"projects">, userId);
+        await assertCanEditProject(ctx, issue.projectId as Id<"projects">, ctx.userId);
       } catch {
         continue;
       }
@@ -410,7 +402,7 @@ export const bulkUpdatePriority = mutation({
 
       await ctx.db.insert("issueActivity", {
         issueId,
-        userId,
+        userId: ctx.userId,
         action: "updated",
         field: "priority",
         oldValue: oldPriority,
@@ -431,7 +423,7 @@ export const bulkAssign = authenticatedMutation({
     assigneeId: v.union(v.id("users"), v.null()),
   },
   handler: async (ctx, args) => {
-    const issues = await Promise.all(args.issueIds.map((id) => ctx.db.get(id)));
+    const issues = await asyncMap(args.issueIds, (id) => ctx.db.get(id));
 
     const now = Date.now();
     const results = [];
@@ -477,7 +469,7 @@ export const bulkAddLabels = authenticatedMutation({
     labels: v.array(v.string()),
   },
   handler: async (ctx, args) => {
-    const issues = await Promise.all(args.issueIds.map((id) => ctx.db.get(id)));
+    const issues = await asyncMap(args.issueIds, (id) => ctx.db.get(id));
 
     const now = Date.now();
     const results = [];
@@ -523,7 +515,7 @@ export const bulkMoveToSprint = authenticatedMutation({
     sprintId: v.union(v.id("sprints"), v.null()),
   },
   handler: async (ctx, args) => {
-    const issues = await Promise.all(args.issueIds.map((id) => ctx.db.get(id)));
+    const issues = await asyncMap(args.issueIds, (id) => ctx.db.get(id));
 
     const now = Date.now();
     const results = [];
@@ -568,7 +560,7 @@ export const bulkDelete = authenticatedMutation({
     issueIds: v.array(v.id("issues")),
   },
   handler: async (ctx, args) => {
-    const issues = await Promise.all(args.issueIds.map((id) => ctx.db.get(id)));
+    const issues = await asyncMap(args.issueIds, (id) => ctx.db.get(id));
 
     const results = [];
 

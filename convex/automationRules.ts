@@ -1,30 +1,26 @@
-import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
-import { internalMutation, mutation, query } from "./_generated/server";
+import { internalMutation } from "./_generated/server";
+import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
+import { notFound, validation } from "./lib/errors";
+import { MAX_PAGE_SIZE } from "./lib/queryLimits";
 import { assertCanAccessProject, assertIsProjectAdmin } from "./projectAccess";
 
-export const list = query({
+export const list = authenticatedQuery({
   args: {
     projectId: v.id("projects"),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) return [];
-
-    try {
-      await assertCanAccessProject(ctx, args.projectId, userId);
-    } catch {
-      return [];
-    }
+    // Throws if user doesn't have access (proper error propagation)
+    await assertCanAccessProject(ctx, args.projectId, ctx.userId);
 
     return await ctx.db
       .query("automationRules")
       .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
-      .collect();
+      .take(MAX_PAGE_SIZE);
   },
 });
 
-export const create = mutation({
+export const create = authenticatedMutation({
   args: {
     projectId: v.id("projects"),
     name: v.string(),
@@ -35,12 +31,7 @@ export const create = mutation({
     actionValue: v.string(),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      throw new Error("Not authenticated");
-    }
-
-    await assertIsProjectAdmin(ctx, args.projectId, userId);
+    await assertIsProjectAdmin(ctx, args.projectId, ctx.userId);
 
     const now = Date.now();
     return await ctx.db.insert("automationRules", {
@@ -52,7 +43,7 @@ export const create = mutation({
       triggerValue: args.triggerValue,
       actionType: args.actionType,
       actionValue: args.actionValue,
-      createdBy: userId,
+      createdBy: ctx.userId,
       createdAt: now,
       updatedAt: now,
       executionCount: 0,
@@ -60,7 +51,7 @@ export const create = mutation({
   },
 });
 
-export const update = mutation({
+export const update = authenticatedMutation({
   args: {
     id: v.id("automationRules"),
     name: v.optional(v.string()),
@@ -72,21 +63,16 @@ export const update = mutation({
     actionValue: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      throw new Error("Not authenticated");
-    }
-
     const rule = await ctx.db.get(args.id);
     if (!rule) {
-      throw new Error("Rule not found");
+      throw notFound("automationRule", args.id);
     }
 
     if (!rule.projectId) {
-      throw new Error("Rule has no project");
+      throw validation("projectId", "Rule has no project");
     }
 
-    await assertIsProjectAdmin(ctx, rule.projectId, userId);
+    await assertIsProjectAdmin(ctx, rule.projectId, ctx.userId);
 
     const updates: Partial<typeof rule> & { updatedAt: number } = { updatedAt: Date.now() };
     if (args.name !== undefined) updates.name = args.name;
@@ -101,26 +87,21 @@ export const update = mutation({
   },
 });
 
-export const remove = mutation({
+export const remove = authenticatedMutation({
   args: {
     id: v.id("automationRules"),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      throw new Error("Not authenticated");
-    }
-
     const rule = await ctx.db.get(args.id);
     if (!rule) {
-      throw new Error("Rule not found");
+      throw notFound("automationRule", args.id);
     }
 
     if (!rule.projectId) {
-      throw new Error("Rule has no project");
+      throw validation("projectId", "Rule has no project");
     }
 
-    await assertIsProjectAdmin(ctx, rule.projectId, userId);
+    await assertIsProjectAdmin(ctx, rule.projectId, ctx.userId);
 
     await ctx.db.delete(args.id);
   },
@@ -140,7 +121,7 @@ export const executeRules = internalMutation({
       .query("automationRules")
       .withIndex("by_project_active", (q) => q.eq("projectId", args.projectId).eq("isActive", true))
       .filter((q) => q.eq(q.field("trigger"), args.trigger))
-      .collect();
+      .take(MAX_PAGE_SIZE);
 
     const issue = await ctx.db.get(args.issueId);
     if (!issue) return;

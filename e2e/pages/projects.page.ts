@@ -13,6 +13,7 @@ export class ProjectsPage extends BasePage {
   // ===================
   readonly sidebar: Locator;
   readonly newProjectButton: Locator;
+  readonly newWorkspaceButton: Locator;
   readonly createEntityButton: Locator; // Alias for sidebar "Add new project" or "Create Workspace" button
   readonly projectList: Locator;
   readonly projectItems: Locator;
@@ -71,8 +72,8 @@ export class ProjectsPage extends BasePage {
   readonly workspaceDescriptionInput: Locator;
   readonly submitWorkspaceButton: Locator;
 
-  constructor(page: Page, _orgSlug = "nixelo-e2e") {
-    super(page);
+  constructor(page: Page, orgSlug: string) {
+    super(page, orgSlug);
 
     // Sidebar
     this.sidebar = page.locator("[data-tour='sidebar']").or(page.locator("aside").first());
@@ -169,13 +170,8 @@ export class ProjectsPage extends BasePage {
   // ===================
 
   async goto() {
-    // Navigate directly to the legacy projects route to ensure we hit ProjectsList
-    // which has the "Create Project" button wired up correctly.
-    // Assumes we are already logged in and on a page with organization slug in URL.
-    // Fallback to nixelo-e2e if not found (dashboard test default).
-    const slug = this.getOrganizationSlug();
-    if (!slug) throw new Error("Organization slug not found in URL");
-    await this.page.goto(`/${slug}/projects`);
+    // Navigate directly to the projects route
+    await this.page.goto(`/${this.orgSlug}/projects`);
     await this.page.waitForLoadState("networkidle");
     await this.waitForLoad();
   }

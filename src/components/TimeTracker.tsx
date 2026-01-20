@@ -1,6 +1,7 @@
 import { api } from "@convex/_generated/api";
 import type { Doc, Id } from "@convex/_generated/dataModel";
 import { useMutation, useQuery } from "convex/react";
+import { ChevronDown, Play, Plus, Square } from "lucide-react";
 import { useState } from "react";
 import { Flex } from "@/components/ui/Flex";
 import { formatCurrency, formatDate, formatHours } from "@/lib/formatting";
@@ -189,20 +190,7 @@ export function TimeTracker({
                 variant="danger"
                 size="sm"
                 onClick={handleStopTimer}
-                leftIcon={
-                  <svg
-                    aria-hidden="true"
-                    className="w-4 h-4"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M10 18a8 8 0 100-16 8 8 0 000 16zM8 7a1 1 0 00-1 1v4a1 1 0 001 1h4a1 1 0 001-1V8a1 1 0 00-1-1H8z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                }
+                leftIcon={<Square className="w-4 h-4" fill="currentColor" />}
               >
                 Stop Timer
               </Button>
@@ -213,20 +201,7 @@ export function TimeTracker({
                 onClick={handleStartTimer}
                 disabled={!!runningTimer}
                 title={runningTimer ? "Stop the current timer first" : "Start timer for this issue"}
-                leftIcon={
-                  <svg
-                    aria-hidden="true"
-                    className="w-4 h-4"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                }
+                leftIcon={<Play className="w-4 h-4" fill="currentColor" />}
               >
                 Start Timer
               </Button>
@@ -237,22 +212,7 @@ export function TimeTracker({
               variant="secondary"
               size="sm"
               onClick={() => setShowLogModal(true)}
-              leftIcon={
-                <svg
-                  aria-hidden="true"
-                  className="w-4 h-4"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                  />
-                </svg>
-              }
+              leftIcon={<Plus className="w-4 h-4" />}
             >
               Log Time
             </Button>
@@ -271,20 +231,9 @@ export function TimeTracker({
           onClick={() => setShowEntries(!showEntries)}
           className="w-full justify-between min-h-0 rounded-none"
           rightIcon={
-            <svg
-              aria-hidden="true"
+            <ChevronDown
               className={cn("w-4 h-4 transition-transform", showEntries ? "rotate-180" : "")}
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M19 9l-7 7-7-7"
-              />
-            </svg>
+            />
           }
         >
           View Time Entries ({timeEntries?.length || 0})

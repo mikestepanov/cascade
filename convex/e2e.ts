@@ -15,14 +15,7 @@ import { v } from "convex/values";
 import { Scrypt } from "lucia";
 import { internal } from "./_generated/api";
 import type { Doc, Id } from "./_generated/dataModel";
-import {
-  type ActionCtx,
-  httpAction,
-  internalMutation,
-  internalQuery,
-  type MutationCtx,
-  type QueryCtx,
-} from "./_generated/server";
+import { type ActionCtx, httpAction, internalMutation, internalQuery } from "./_generated/server";
 import { notDeleted } from "./lib/softDeleteHelpers";
 
 // Test user expiration (1 hour - for garbage collection)
@@ -263,9 +256,11 @@ export const createTestUserInternal = internalMutation({
           .first();
 
         if (!existingMembership) {
-          // Check if shared E2E test organization already exists
-          const organizationName = "Nixelo E2E";
-          const slug = "nixelo-e2e";
+          // Use isolated organization per worker to avoid interference in parallel tests
+          const workerMatch = args.email.match(/-w(\d+)@/);
+          const workerSuffix = workerMatch ? `w${workerMatch[1]}` : "";
+          const organizationName = workerSuffix ? `Nixelo E2E ${workerSuffix}` : "Nixelo E2E";
+          const slug = workerSuffix ? `nixelo-e2e-${workerSuffix}` : "nixelo-e2e";
 
           const existingOrganization = await ctx.db
             .query("organizations")
@@ -344,9 +339,11 @@ export const createTestUserInternal = internalMutation({
         updatedAt: now,
       });
 
-      // Check if shared E2E test organization already exists
-      const organizationName = "Nixelo E2E";
-      const slug = "nixelo-e2e";
+      // Use isolated organization per worker to avoid interference in parallel tests
+      const workerMatch = args.email.match(/-w(\d+)@/);
+      const workerSuffix = workerMatch ? `w${workerMatch[1]}` : "";
+      const organizationName = workerSuffix ? `Nixelo E2E ${workerSuffix}` : "Nixelo E2E";
+      const slug = workerSuffix ? `nixelo-e2e-${workerSuffix}` : "nixelo-e2e";
 
       const existingOrganization = await ctx.db
         .query("organizations")
@@ -376,14 +373,23 @@ export const createTestUserInternal = internalMutation({
         });
       }
 
-      // Add user as admin of the organization
-      await ctx.db.insert("organizationMembers", {
-        organizationId,
-        userId,
-        role: "admin",
-        addedBy: userId,
-        addedAt: now,
-      });
+      // Add user as admin of the organization if not already a member
+      const existingMember = await ctx.db
+        .query("organizationMembers")
+        .withIndex("by_organization_user", (q) =>
+          q.eq("organizationId", organizationId).eq("userId", userId),
+        )
+        .first();
+
+      if (!existingMember) {
+        await ctx.db.insert("organizationMembers", {
+          organizationId,
+          userId,
+          role: "admin",
+          addedBy: userId,
+          addedAt: now,
+        });
+      }
 
       // Set as user's default organization
       await ctx.db.patch(userId, { defaultOrganizationId: organizationId });
@@ -906,13 +912,66 @@ export const setupRbacProjectInternal = internalMutation({
     // =========================================================================
     // Step 1: Find the admin user's existing organization (created during login)
     // =========================================================================
-    const adminMembership = await ctx.db
+    let adminMembership = await ctx.db
       .query("organizationMembers")
       .withIndex("by_user", (q) => q.eq("userId", adminUser._id))
       .first();
 
+    // FALLBACK: If admin has no organization, create/link it now
     if (!adminMembership) {
-      return { success: false, error: "Admin user has no organization membership" };
+      console.log(`[RBAC-SETUP] Admin ${adminUser._id} has no organization. Attempting repair...`);
+
+      const workerMatch = args.adminEmail.match(/-w(\d+)@/);
+      const workerSuffix = workerMatch ? `w${workerMatch[1]}` : "";
+      const organizationName = workerSuffix ? `Nixelo E2E ${workerSuffix}` : "Nixelo E2E";
+      const slug = workerSuffix ? `nixelo-e2e-${workerSuffix}` : "nixelo-e2e";
+
+      let organization = await ctx.db
+        .query("organizations")
+        .withIndex("by_slug", (q) => q.eq("slug", slug))
+        .first();
+
+      if (!organization) {
+        console.log(`[RBAC-SETUP] creating organization ${slug}`);
+        const orgId = await ctx.db.insert("organizations", {
+          name: organizationName,
+          slug,
+          timezone: "UTC",
+          settings: {
+            defaultMaxHoursPerWeek: 40,
+            defaultMaxHoursPerDay: 8,
+            requiresTimeApproval: false,
+            billingEnabled: true,
+          },
+          createdBy: adminUser._id,
+          createdAt: now,
+          updatedAt: now,
+        });
+        organization = await ctx.db.get(orgId);
+      }
+
+      if (organization) {
+        await ctx.db.insert("organizationMembers", {
+          organizationId: organization._id,
+          userId: adminUser._id,
+          role: "admin",
+          addedBy: adminUser._id, // Self-add
+          addedAt: now,
+        });
+
+        // Refresh membership query
+        adminMembership = await ctx.db
+          .query("organizationMembers")
+          .withIndex("by_user", (q) => q.eq("userId", adminUser._id))
+          .first();
+
+        // Correct default org
+        await ctx.db.patch(adminUser._id, { defaultOrganizationId: organization._id });
+      }
+    }
+
+    if (!adminMembership) {
+      return { success: false, error: "Admin user has no organization membership (repair failed)" };
     }
 
     const organization = (await ctx.db.get(
@@ -2351,11 +2410,49 @@ export const nukeAllTestUsersInternal = internalMutation({
         .collect();
       for (const p of projects) await ctx.db.delete(p._id);
 
+      // Delete auth sessions
+      const sessions = await ctx.db
+        .query("authSessions")
+        .withIndex("userId", (q) => q.eq("userId", user._id))
+        .collect();
+      for (const s of sessions) await ctx.db.delete(s._id);
+
       const createdProjects = await ctx.db
         .query("projects")
         .withIndex("by_creator", (q) => q.eq("createdBy", user._id))
         .collect();
       for (const p of createdProjects) await ctx.db.delete(p._id);
+
+      // Delete organizations created by test users
+      const organizations = await ctx.db
+        .query("organizations")
+        .withIndex("by_creator", (q) => q.eq("createdBy", user._id))
+        .collect();
+
+      for (const org of organizations) {
+        // Delete all members of this organization
+        const members = await ctx.db
+          .query("organizationMembers")
+          .withIndex("by_organization", (q) => q.eq("organizationId", org._id))
+          .collect();
+        for (const m of members) await ctx.db.delete(m._id);
+
+        // Delete all workspaces in this organization
+        const workspaces = await ctx.db
+          .query("workspaces")
+          .withIndex("by_organization", (q) => q.eq("organizationId", org._id))
+          .collect();
+        for (const w of workspaces) await ctx.db.delete(w._id);
+
+        // Delete all teams in this organization
+        const teams = await ctx.db
+          .query("teams")
+          .withIndex("by_organization", (q) => q.eq("organizationId", org._id))
+          .collect();
+        for (const t of teams) await ctx.db.delete(t._id);
+
+        await ctx.db.delete(org._id);
+      }
 
       await ctx.db.delete(user._id);
       deletedCount++;

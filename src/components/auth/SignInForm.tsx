@@ -1,6 +1,6 @@
 import { useAuthActions } from "@convex-dev/auth/react";
 import { useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Flex } from "@/components/ui/Flex";
 import { ROUTES } from "@/config/routes";
@@ -16,14 +16,27 @@ export function SignInForm() {
   const [submitting, setSubmitting] = useState(false);
   const [showEmailForm, setShowEmailForm] = useState(false);
   const [formReady, setFormReady] = useState(false);
+  const [hydrated, setHydrated] = useState(false);
+
+  // Set hydrated on mount
+  useEffect(() => {
+    setHydrated(true);
+  }, []);
 
   const handleShowEmailForm = () => {
     setShowEmailForm(true);
-    setTimeout(() => setFormReady(true), 350);
+    // Use microtask to ensure fields are rendered
+    void Promise.resolve().then(() => setFormReady(true));
   };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    if (!showEmailForm) {
+      handleShowEmailForm();
+      return;
+    }
+
     if (!formReady) return;
     setSubmitting(true);
 
@@ -32,7 +45,7 @@ export function SignInForm() {
 
     void signIn("password", formData)
       .then(() => {
-        // Redirect to /app gateway to trigger SmartAuthGuard logic
+        // Redirect to /app gateway which handles auth routing
         navigate({ to: ROUTES.app.path });
       })
       .catch((error) => {
@@ -52,7 +65,12 @@ export function SignInForm() {
         <span className="mx-4 text-ui-text-secondary text-sm">or</span>
         <hr className="grow border-ui-border-primary" />
       </Flex>
-      <form className="flex flex-col" onSubmit={handleSubmit} data-form-ready={formReady}>
+      <form
+        className="flex flex-col"
+        onSubmit={handleSubmit}
+        data-form-ready={formReady}
+        data-hydrated={hydrated}
+      >
         <div
           className={cn(
             "grid transition-all duration-300 ease-out",
@@ -72,12 +90,11 @@ export function SignInForm() {
           </div>
         )}
         <Button
-          type={showEmailForm ? "submit" : "button"}
+          type="submit"
           variant={showEmailForm ? "primary" : "secondary"}
           size="lg"
           className="w-full"
-          onClick={!showEmailForm ? handleShowEmailForm : undefined}
-          disabled={submitting}
+          disabled={submitting || !hydrated}
         >
           {!showEmailForm ? (
             <Flex align="center" gap="md">

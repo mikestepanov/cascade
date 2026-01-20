@@ -1,8 +1,11 @@
-import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import type { Id } from "./_generated/dataModel";
-import { mutation, query } from "./_generated/server";
+import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
 import { batchFetchUsers } from "./lib/batchHelpers";
+import { forbidden, notFound, validation } from "./lib/errors";
+import { MAX_PAGE_SIZE } from "./lib/queryLimits";
+import { DAY, nowArg, WEEK } from "./lib/timeUtils";
+import { calendarStatuses } from "./validators";
 
 /**
  * Calendar Events - CRUD operations for internal calendar
@@ -68,7 +71,7 @@ function buildEventUpdateObject(args: {
 }
 
 // Create a new calendar event
-export const create = mutation({
+export const create = authenticatedMutation({
   args: {
     title: v.string(),
     description: v.optional(v.string()),
@@ -86,9 +89,7 @@ export const create = mutation({
     externalAttendees: v.optional(v.array(v.string())),
     projectId: v.optional(v.id("projects")),
     issueId: v.optional(v.id("issues")),
-    status: v.optional(
-      v.union(v.literal("confirmed"), v.literal("tentative"), v.literal("cancelled")),
-    ),
+    status: v.optional(calendarStatuses),
     isRecurring: v.optional(v.boolean()),
     recurrenceRule: v.optional(v.string()),
     meetingUrl: v.optional(v.string()),
@@ -96,12 +97,9 @@ export const create = mutation({
     isRequired: v.optional(v.boolean()),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
-
     // Validate times
     if (args.endTime <= args.startTime) {
-      throw new Error("End time must be after start time");
+      throw validation("endTime", "End time must be after start time");
     }
 
     const now = Date.now();
@@ -114,7 +112,7 @@ export const create = mutation({
       allDay: args.allDay,
       location: args.location,
       eventType: args.eventType,
-      organizerId: userId,
+      organizerId: ctx.userId,
       attendeeIds: args.attendeeIds || [],
       externalAttendees: args.externalAttendees,
       projectId: args.projectId,
@@ -134,18 +132,15 @@ export const create = mutation({
 });
 
 // Get a single event by ID
-export const get = query({
+export const get = authenticatedQuery({
   args: { id: v.id("calendarEvents") },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) return null;
-
     const event = await ctx.db.get(args.id);
     if (!event) return null;
 
     // Check access: user must be organizer or attendee
-    const isOrganizer = event.organizerId === userId;
-    const isAttendee = event.attendeeIds.includes(userId);
+    const isOrganizer = event.organizerId === ctx.userId;
+    const isAttendee = event.attendeeIds.includes(ctx.userId);
 
     if (!(isOrganizer || isAttendee)) {
       return null; // Not authorized to view
@@ -163,16 +158,13 @@ export const get = query({
 });
 
 // List events for a date range
-export const listByDateRange = query({
+export const listByDateRange = authenticatedQuery({
   args: {
     startDate: v.number(), // Unix timestamp
     endDate: v.number(), // Unix timestamp
     projectId: v.optional(v.id("projects")),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) return [];
-
     // Get all events in the date range
     const events = await ctx.db
       .query("calendarEvents")
@@ -183,11 +175,11 @@ export const listByDateRange = query({
           q.lte(q.field("startTime"), args.endDate),
         ),
       )
-      .collect();
+      .take(MAX_PAGE_SIZE);
 
     // Filter to events user can see (organizer or attendee)
     const visibleEvents = events.filter(
-      (event) => event.organizerId === userId || event.attendeeIds.includes(userId),
+      (event) => event.organizerId === ctx.userId || event.attendeeIds.includes(ctx.userId),
     );
 
     // Filter by project if specified
@@ -214,32 +206,29 @@ export const listByDateRange = query({
 });
 
 // List all events for current user (optimized with date bounds)
-export const listMine = query({
+export const listMine = authenticatedQuery({
   args: {
     includeCompleted: v.optional(v.boolean()),
     // Date range bounds - defaults to past 30 days through next 90 days
     startDate: v.optional(v.number()),
     endDate: v.optional(v.number()),
+    now: nowArg, // Required - pass rounded timestamp from client
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) return [];
-
     // Default date range: past 30 days through next 90 days
-    const now = Date.now();
-    const defaultStart = now - 30 * 24 * 60 * 60 * 1000; // 30 days ago
-    const defaultEnd = now + 90 * 24 * 60 * 60 * 1000; // 90 days from now
+    const defaultStart = args.now - 30 * DAY; // 30 days ago
+    const defaultEnd = args.now + 90 * DAY; // 90 days from now
     const startDate = args.startDate ?? defaultStart;
     const endDate = args.endDate ?? defaultEnd;
 
     // Get events where user is organizer (indexed query)
     const organizedEvents = await ctx.db
       .query("calendarEvents")
-      .withIndex("by_organizer", (q) => q.eq("organizerId", userId))
+      .withIndex("by_organizer", (q) => q.eq("organizerId", ctx.userId))
       .filter((q) =>
         q.and(q.gte(q.field("startTime"), startDate), q.lte(q.field("startTime"), endDate)),
       )
-      .collect();
+      .take(MAX_PAGE_SIZE);
 
     // Get events in date range and filter for user as attendee
     // This is bounded by date range, not loading all events
@@ -249,11 +238,11 @@ export const listMine = query({
       .filter((q) =>
         q.and(q.gte(q.field("startTime"), startDate), q.lte(q.field("startTime"), endDate)),
       )
-      .collect();
+      .take(MAX_PAGE_SIZE);
 
     // Filter for events where user is attendee (not organizer - already got those)
     const attendingEvents = eventsInRange.filter(
-      (event) => event.organizerId !== userId && event.attendeeIds.includes(userId),
+      (event) => event.organizerId !== ctx.userId && event.attendeeIds.includes(ctx.userId),
     );
 
     // Combine (no duplicates since we excluded organizer events above)
@@ -283,7 +272,7 @@ export const listMine = query({
 });
 
 // Update an existing event
-export const update = mutation({
+export const update = authenticatedMutation({
   args: {
     id: v.id("calendarEvents"),
     title: v.optional(v.string()),
@@ -304,31 +293,26 @@ export const update = mutation({
     externalAttendees: v.optional(v.array(v.string())),
     projectId: v.optional(v.id("projects")),
     issueId: v.optional(v.id("issues")),
-    status: v.optional(
-      v.union(v.literal("confirmed"), v.literal("tentative"), v.literal("cancelled")),
-    ),
+    status: v.optional(calendarStatuses),
     isRecurring: v.optional(v.boolean()),
     recurrenceRule: v.optional(v.string()),
     meetingUrl: v.optional(v.string()),
     notes: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
-
     const event = await ctx.db.get(args.id);
-    if (!event) throw new Error("Event not found");
+    if (!event) throw notFound("calendarEvent", args.id);
 
     // Only organizer can update event
-    if (event.organizerId !== userId) {
-      throw new Error("Only the event organizer can update this event");
+    if (event.organizerId !== ctx.userId) {
+      throw forbidden("organizer", "Only the event organizer can update this event");
     }
 
     // Validate times if provided
     const startTime = args.startTime ?? event.startTime;
     const endTime = args.endTime ?? event.endTime;
     if (endTime <= startTime) {
-      throw new Error("End time must be after start time");
+      throw validation("endTime", "End time must be after start time");
     }
 
     // Build update object using helper
@@ -340,18 +324,15 @@ export const update = mutation({
 });
 
 // Delete an event
-export const remove = mutation({
+export const remove = authenticatedMutation({
   args: { id: v.id("calendarEvents") },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
-
     const event = await ctx.db.get(args.id);
-    if (!event) throw new Error("Event not found");
+    if (!event) throw notFound("calendarEvent", args.id);
 
     // Only organizer can delete event
-    if (event.organizerId !== userId) {
-      throw new Error("Only the event organizer can delete this event");
+    if (event.organizerId !== ctx.userId) {
+      throw forbidden("organizer", "Only the event organizer can delete this event");
     }
 
     await ctx.db.delete(args.id);
@@ -359,29 +340,26 @@ export const remove = mutation({
 });
 
 // Get upcoming events (next 7 days)
-export const getUpcoming = query({
+export const getUpcoming = authenticatedQuery({
   args: {
     limit: v.optional(v.number()),
+    now: nowArg, // Required - pass rounded timestamp from client
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) return [];
-
-    const now = Date.now();
-    const sevenDaysFromNow = now + 7 * 24 * 60 * 60 * 1000;
+    const sevenDaysFromNow = args.now + WEEK;
 
     const events = await ctx.db
       .query("calendarEvents")
       .withIndex("by_start_time")
       .filter((q) =>
-        q.and(q.gte(q.field("startTime"), now), q.lte(q.field("startTime"), sevenDaysFromNow)),
+        q.and(q.gte(q.field("startTime"), args.now), q.lte(q.field("startTime"), sevenDaysFromNow)),
       )
-      .collect();
+      .take(MAX_PAGE_SIZE);
 
     // Filter to events user can see
     const visibleEvents = events.filter(
       (event) =>
-        (event.organizerId === userId || event.attendeeIds.includes(userId)) &&
+        (event.organizerId === ctx.userId || event.attendeeIds.includes(ctx.userId)) &&
         event.status !== "cancelled",
     );
 

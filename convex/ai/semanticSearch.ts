@@ -14,6 +14,7 @@
 import { v } from "convex/values";
 import { internal } from "../_generated/api";
 import { action } from "../_generated/server";
+import { unauthenticated } from "../lib/errors";
 import { asVectorResults } from "../lib/vectorSearchHelpers";
 import { rateLimit } from "../rateLimits";
 
@@ -29,7 +30,7 @@ export const searchSimilarIssues = action({
   handler: async (ctx, args) => {
     const userId = await ctx.auth.getUserIdentity();
     if (!userId) {
-      throw new Error("Not authenticated");
+      throw unauthenticated();
     }
 
     // Rate limit: 30 searches per minute per user

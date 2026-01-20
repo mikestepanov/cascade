@@ -19,6 +19,7 @@
  * }));
  */
 
+import { asyncMap, pruneNull } from "convex-helpers";
 import type { Doc, Id } from "../_generated/dataModel";
 import type { QueryCtx } from "../_generated/server";
 
@@ -37,8 +38,8 @@ export async function batchFetchUsers(
   const uniqueIds = [...new Set(userIds.filter((id): id is Id<"users"> => !!id))];
   if (uniqueIds.length === 0) return new Map();
 
-  const users = await Promise.all(uniqueIds.map((id) => ctx.db.get(id)));
-  return new Map(users.filter((u): u is Doc<"users"> => u !== null).map((u) => [u._id, u]));
+  const users = await asyncMap(uniqueIds, (id) => ctx.db.get(id));
+  return new Map(pruneNull(users).map((u) => [u._id, u]));
 }
 
 /**
@@ -51,8 +52,8 @@ export async function batchFetchIssues(
   const uniqueIds = [...new Set(issueIds.filter((id): id is Id<"issues"> => !!id))];
   if (uniqueIds.length === 0) return new Map();
 
-  const issues = await Promise.all(uniqueIds.map((id) => ctx.db.get(id)));
-  return new Map(issues.filter((i): i is Doc<"issues"> => i !== null).map((i) => [i._id, i]));
+  const issues = await asyncMap(uniqueIds, (id) => ctx.db.get(id));
+  return new Map(pruneNull(issues).map((i) => [i._id, i]));
 }
 
 /**
@@ -65,8 +66,8 @@ export async function batchFetchProjects(
   const uniqueIds = [...new Set(projectIds.filter((id): id is Id<"projects"> => !!id))];
   if (uniqueIds.length === 0) return new Map();
 
-  const projects = await Promise.all(uniqueIds.map((id) => ctx.db.get(id)));
-  return new Map(projects.filter((w): w is Doc<"projects"> => w !== null).map((w) => [w._id, w]));
+  const projects = await asyncMap(uniqueIds, (id) => ctx.db.get(id));
+  return new Map(pruneNull(projects).map((p) => [p._id, p]));
 }
 
 /**
@@ -79,10 +80,8 @@ export async function batchFetchCalendarEvents(
   const uniqueIds = [...new Set(eventIds.filter((id): id is Id<"calendarEvents"> => !!id))];
   if (uniqueIds.length === 0) return new Map();
 
-  const events = await Promise.all(uniqueIds.map((id) => ctx.db.get(id)));
-  return new Map(
-    events.filter((e): e is Doc<"calendarEvents"> => e !== null).map((e) => [e._id, e]),
-  );
+  const events = await asyncMap(uniqueIds, (id) => ctx.db.get(id));
+  return new Map(pruneNull(events).map((e) => [e._id, e]));
 }
 
 /**
@@ -95,8 +94,8 @@ export async function batchFetchTeams(
   const uniqueIds = [...new Set(teamIds.filter((id): id is Id<"teams"> => !!id))];
   if (uniqueIds.length === 0) return new Map();
 
-  const teams = await Promise.all(uniqueIds.map((id) => ctx.db.get(id)));
-  return new Map(teams.filter((t): t is Doc<"teams"> => t !== null).map((t) => [t._id, t]));
+  const teams = await asyncMap(uniqueIds, (id) => ctx.db.get(id));
+  return new Map(pruneNull(teams).map((t) => [t._id, t]));
 }
 
 /**
@@ -109,10 +108,8 @@ export async function batchFetchOrganizations(
   const uniqueIds = [...new Set(organizationIds.filter((id): id is Id<"organizations"> => !!id))];
   if (uniqueIds.length === 0) return new Map();
 
-  const organizations = await Promise.all(uniqueIds.map((id) => ctx.db.get(id)));
-  return new Map(
-    organizations.filter((c): c is Doc<"organizations"> => c !== null).map((c) => [c._id, c]),
-  );
+  const organizations = await asyncMap(uniqueIds, (id) => ctx.db.get(id));
+  return new Map(pruneNull(organizations).map((o) => [o._id, o]));
 }
 
 /**
@@ -125,8 +122,8 @@ export async function batchFetchSprints(
   const uniqueIds = [...new Set(sprintIds.filter((id): id is Id<"sprints"> => !!id))];
   if (uniqueIds.length === 0) return new Map();
 
-  const sprints = await Promise.all(uniqueIds.map((id) => ctx.db.get(id)));
-  return new Map(sprints.filter((s): s is Doc<"sprints"> => s !== null).map((s) => [s._id, s]));
+  const sprints = await asyncMap(uniqueIds, (id) => ctx.db.get(id));
+  return new Map(pruneNull(sprints).map((s) => [s._id, s]));
 }
 
 /**
@@ -139,8 +136,8 @@ export async function batchFetchBookingPages(
   const uniqueIds = [...new Set(pageIds.filter((id): id is Id<"bookingPages"> => !!id))];
   if (uniqueIds.length === 0) return new Map();
 
-  const pages = await Promise.all(uniqueIds.map((id) => ctx.db.get(id)));
-  return new Map(pages.filter((p): p is Doc<"bookingPages"> => p !== null).map((p) => [p._id, p]));
+  const pages = await asyncMap(uniqueIds, (id) => ctx.db.get(id));
+  return new Map(pruneNull(pages).map((p) => [p._id, p]));
 }
 
 /**
@@ -153,8 +150,8 @@ export async function batchFetchDocuments(
   const uniqueIds = [...new Set(docIds.filter((id): id is Id<"documents"> => !!id))];
   if (uniqueIds.length === 0) return new Map();
 
-  const docs = await Promise.all(uniqueIds.map((id) => ctx.db.get(id)));
-  return new Map(docs.filter((d): d is Doc<"documents"> => d !== null).map((d) => [d._id, d]));
+  const docs = await asyncMap(uniqueIds, (id) => ctx.db.get(id));
+  return new Map(pruneNull(docs).map((d) => [d._id, d]));
 }
 
 /**
@@ -167,8 +164,8 @@ export async function batchFetchCustomFields(
   const uniqueIds = [...new Set(fieldIds.filter((id): id is Id<"customFields"> => !!id))];
   if (uniqueIds.length === 0) return new Map();
 
-  const fields = await Promise.all(uniqueIds.map((id) => ctx.db.get(id)));
-  return new Map(fields.filter((f): f is Doc<"customFields"> => f !== null).map((f) => [f._id, f]));
+  const fields = await asyncMap(uniqueIds, (id) => ctx.db.get(id));
+  return new Map(pruneNull(fields).map((f) => [f._id, f]));
 }
 
 /**
@@ -181,10 +178,8 @@ export async function batchFetchRecordings(
   const uniqueIds = [...new Set(recordingIds.filter((id): id is Id<"meetingRecordings"> => !!id))];
   if (uniqueIds.length === 0) return new Map();
 
-  const recordings = await Promise.all(uniqueIds.map((id) => ctx.db.get(id)));
-  return new Map(
-    recordings.filter((r): r is Doc<"meetingRecordings"> => r !== null).map((r) => [r._id, r]),
-  );
+  const recordings = await asyncMap(uniqueIds, (id) => ctx.db.get(id));
+  return new Map(pruneNull(recordings).map((r) => [r._id, r]));
 }
 
 // ============================================================================

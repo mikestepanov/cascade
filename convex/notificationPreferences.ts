@@ -4,9 +4,10 @@
  * Manages user email notification preferences
  */
 
-import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
-import { internalMutation, internalQuery, mutation, query } from "./_generated/server";
+import { internalMutation, internalQuery } from "./_generated/server";
+import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
+import { emailDigests } from "./validators";
 
 // Default preferences for new users
 export const DEFAULT_PREFERENCES = {
@@ -23,22 +24,19 @@ export const DEFAULT_PREFERENCES = {
 /**
  * Get notification preferences for current user
  */
-export const get = query({
+export const get = authenticatedQuery({
   args: {},
   handler: async (ctx) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
-
     const prefs = await ctx.db
       .query("notificationPreferences")
-      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .withIndex("by_user", (q) => q.eq("userId", ctx.userId))
       .first();
 
     // Return defaults if no preferences exist
     if (!prefs) {
       return {
         ...DEFAULT_PREFERENCES,
-        userId,
+        userId: ctx.userId,
         _id: undefined,
         createdAt: Date.now(),
         updatedAt: Date.now(),
@@ -71,24 +69,21 @@ export const getForUser = internalMutation({
 /**
  * Update notification preferences
  */
-export const update = mutation({
+export const update = authenticatedMutation({
   args: {
     emailEnabled: v.optional(v.boolean()),
     emailMentions: v.optional(v.boolean()),
     emailAssignments: v.optional(v.boolean()),
     emailComments: v.optional(v.boolean()),
     emailStatusChanges: v.optional(v.boolean()),
-    emailDigest: v.optional(v.union(v.literal("none"), v.literal("daily"), v.literal("weekly"))),
+    emailDigest: v.optional(emailDigests),
     digestDay: v.optional(v.string()),
     digestTime: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
-
     const existing = await ctx.db
       .query("notificationPreferences")
-      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .withIndex("by_user", (q) => q.eq("userId", ctx.userId))
       .first();
 
     const updates = {
@@ -103,7 +98,7 @@ export const update = mutation({
     } else {
       // Create new preferences
       return await ctx.db.insert("notificationPreferences", {
-        userId,
+        userId: ctx.userId,
         emailEnabled: args.emailEnabled ?? DEFAULT_PREFERENCES.emailEnabled,
         emailMentions: args.emailMentions ?? DEFAULT_PREFERENCES.emailMentions,
         emailAssignments: args.emailAssignments ?? DEFAULT_PREFERENCES.emailAssignments,

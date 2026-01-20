@@ -1,47 +1,39 @@
-import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
-import { mutation, query } from "./_generated/server";
-import { getIssueWithProject } from "./lib/issueHelpers";
-import { assertCanEditProject } from "./projectAccess";
+import { authenticatedMutation, authenticatedQuery, issueMutation } from "./customFunctions";
 
-// Generate upload URL for file attachment
-export const generateUploadUrl = mutation(async (ctx) => {
-  const userId = await getAuthUserId(ctx);
-  if (!userId) throw new Error("Not authenticated");
-
-  return await ctx.storage.generateUploadUrl();
+/**
+ * Generate upload URL for file attachment
+ * Requires authentication
+ */
+export const generateUploadUrl = authenticatedMutation({
+  args: {},
+  handler: async (ctx) => {
+    return await ctx.storage.generateUploadUrl();
+  },
 });
 
-// Attach uploaded file to an issue
-export const attachToIssue = mutation({
+/**
+ * Attach uploaded file to an issue
+ * Requires editor role on issue's project
+ */
+export const attachToIssue = issueMutation({
   args: {
-    issueId: v.id("issues"),
     storageId: v.id("_storage"),
     filename: v.string(),
     contentType: v.string(),
     size: v.number(),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
-
-    const issue = await ctx.db.get(args.issueId);
-    if (!issue) throw new Error("Issue not found");
-    if (!issue.projectId) throw new Error("Issue missing projectId - run migration");
-
-    // Check if user has access to the project
-    await assertCanEditProject(ctx, issue.projectId, userId);
-
     // Add attachment to issue
-    await ctx.db.patch(args.issueId, {
-      attachments: [...issue.attachments, args.storageId],
+    await ctx.db.patch(ctx.issue._id, {
+      attachments: [...ctx.issue.attachments, args.storageId],
       updatedAt: Date.now(),
     });
 
     // Log activity
     await ctx.db.insert("issueActivity", {
-      issueId: args.issueId,
-      userId,
+      issueId: ctx.issue._id,
+      userId: ctx.userId,
       action: "attached",
       field: "attachment",
       newValue: args.filename,
@@ -52,24 +44,18 @@ export const attachToIssue = mutation({
   },
 });
 
-// Remove attachment from issue
-export const removeAttachment = mutation({
+/**
+ * Remove attachment from issue
+ * Requires editor role on issue's project
+ */
+export const removeAttachment = issueMutation({
   args: {
-    issueId: v.id("issues"),
     storageId: v.id("_storage"),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
-
-    const issue = await getIssueWithProject(ctx, args.issueId);
-
-    // Check if user has access to the project
-    await assertCanEditProject(ctx, issue.projectId, userId);
-
     // Remove attachment from issue
-    await ctx.db.patch(args.issueId, {
-      attachments: issue.attachments.filter((id) => id !== args.storageId),
+    await ctx.db.patch(ctx.issue._id, {
+      attachments: ctx.issue.attachments.filter((id) => id !== args.storageId),
       updatedAt: Date.now(),
     });
 
@@ -78,8 +64,8 @@ export const removeAttachment = mutation({
 
     // Log activity
     await ctx.db.insert("issueActivity", {
-      issueId: args.issueId,
-      userId,
+      issueId: ctx.issue._id,
+      userId: ctx.userId,
       action: "removed",
       field: "attachment",
       createdAt: Date.now(),
@@ -89,13 +75,13 @@ export const removeAttachment = mutation({
   },
 });
 
-// Get attachment metadata
-export const getAttachment = query({
+/**
+ * Get attachment URL
+ * Requires authentication
+ */
+export const getAttachment = authenticatedQuery({
   args: { storageId: v.id("_storage") },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) return null;
-
     const url = await ctx.storage.getUrl(args.storageId);
     return url;
   },

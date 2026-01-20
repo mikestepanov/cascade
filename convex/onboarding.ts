@@ -1,10 +1,13 @@
-import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import type { Id } from "./_generated/dataModel";
-import { type MutationCtx, mutation, query } from "./_generated/server";
+import type { MutationCtx } from "./_generated/server";
+import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
 import { getSearchContent } from "./issues/helpers";
+import { BOUNDED_DELETE_BATCH, BOUNDED_RELATION_LIMIT, safeCollect } from "./lib/boundedQueries";
+import { conflict, forbidden, notFound, validation } from "./lib/errors";
 import { notDeleted } from "./lib/softDeleteHelpers";
 import { getOrganizationRole } from "./organizations";
+import { inviteRoles, personas } from "./validators";
 
 /** Check if email is a test email (@inbox.mailtrap.io) */
 const isTestEmail = (email?: string) => email?.endsWith("@inbox.mailtrap.io") ?? false;
@@ -12,7 +15,7 @@ const isTestEmail = (email?: string) => email?.endsWith("@inbox.mailtrap.io") ??
 /**
  * Get onboarding status for current user
  */
-export const getOnboardingStatus = query({
+export const getOnboardingStatus = authenticatedQuery({
   args: {},
   returns: v.union(
     v.null(),
@@ -27,7 +30,7 @@ export const getOnboardingStatus = query({
       tourShown: v.boolean(),
       wizardCompleted: v.boolean(),
       checklistDismissed: v.boolean(),
-      onboardingPersona: v.optional(v.union(v.literal("team_lead"), v.literal("team_member"))),
+      onboardingPersona: v.optional(personas),
       wasInvited: v.optional(v.boolean()),
       invitedByName: v.optional(v.string()),
       createdAt: v.number(),
@@ -35,12 +38,9 @@ export const getOnboardingStatus = query({
     }),
   ),
   handler: async (ctx) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) return null;
-
     const onboarding = await ctx.db
       .query("userOnboarding")
-      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .withIndex("by_user", (q) => q.eq("userId", ctx.userId))
       .first();
 
     return onboarding;
@@ -48,9 +48,53 @@ export const getOnboardingStatus = query({
 });
 
 /**
+ * Check if user has completed any issue (for onboarding checklist)
+ * More efficient than loading all issues just to check this
+ */
+export const hasCompletedIssue = authenticatedQuery({
+  args: {},
+  returns: v.boolean(),
+  handler: async (ctx) => {
+    // Get user's projects to check their workflow states
+    const memberships = await ctx.db
+      .query("projectMembers")
+      .withIndex("by_user", (q) => q.eq("userId", ctx.userId))
+      .filter(notDeleted)
+      .take(10); // Only check first 10 projects
+
+    for (const membership of memberships) {
+      const project = await ctx.db.get(membership.projectId);
+      if (!project) continue;
+
+      // Get done state IDs for this project
+      const doneStateIds = project.workflowStates
+        .filter((s) => s.category === "done")
+        .map((s) => s.id);
+
+      // Check if user has any issues in done states
+      for (const stateId of doneStateIds) {
+        const doneIssue = await ctx.db
+          .query("issues")
+          .withIndex("by_project_status", (q) =>
+            q.eq("projectId", membership.projectId).eq("status", stateId),
+          )
+          .filter(notDeleted)
+          .first();
+
+        if (doneIssue && doneIssue.assigneeId === ctx.userId) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  },
+});
+
+/**
  * Update onboarding progress
  */
-export const updateOnboardingStatus = mutation({
+export const updateOnboardingStatus = authenticatedMutation({
   args: {
     onboardingCompleted: v.optional(v.boolean()),
     onboardingStep: v.optional(v.number()),
@@ -61,12 +105,9 @@ export const updateOnboardingStatus = mutation({
   },
   returns: v.null(),
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
-
     const existing = await ctx.db
       .query("userOnboarding")
-      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .withIndex("by_user", (q) => q.eq("userId", ctx.userId))
       .first();
 
     if (existing) {
@@ -78,7 +119,7 @@ export const updateOnboardingStatus = mutation({
       // Double-check for race condition - another request might have inserted while we were processing
       const doubleCheck = await ctx.db
         .query("userOnboarding")
-        .withIndex("by_user", (q) => q.eq("userId", userId))
+        .withIndex("by_user", (q) => q.eq("userId", ctx.userId))
         .first();
 
       if (doubleCheck) {
@@ -90,7 +131,7 @@ export const updateOnboardingStatus = mutation({
       } else {
         // Create initial onboarding record
         await ctx.db.insert("userOnboarding", {
-          userId,
+          userId: ctx.userId,
           onboardingCompleted: args.onboardingCompleted ?? false,
           onboardingStep: args.onboardingStep ?? 0,
           sampleWorkspaceCreated: args.sampleWorkspaceCreated ?? false,
@@ -108,37 +149,34 @@ export const updateOnboardingStatus = mutation({
 /**
  * Create a sample project with demo data for new users
  */
-export const createSampleProject = mutation({
+export const createSampleProject = authenticatedMutation({
   args: {
     organizationId: v.optional(v.id("organizations")), // Optional: use existing organization
   },
   returns: v.id("projects"),
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
-
     // Check if sample project already exists
     const onboarding = await ctx.db
       .query("userOnboarding")
-      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .withIndex("by_user", (q) => q.eq("userId", ctx.userId))
       .first();
 
     if (onboarding?.sampleWorkspaceCreated) {
-      throw new Error("Sample project already created");
+      throw conflict("Sample project already created");
     }
 
     // Get or find the user's organization
     let organizationId = args.organizationId;
     if (!organizationId) {
       // Try to find user's default organization or any organization they belong to
-      const user = await ctx.db.get(userId);
+      const user = await ctx.db.get(ctx.userId);
       if (user?.defaultOrganizationId) {
         organizationId = user.defaultOrganizationId;
       } else {
         // Find any organization the user belongs to
         const membership = await ctx.db
           .query("organizationMembers")
-          .withIndex("by_user", (q) => q.eq("userId", userId))
+          .withIndex("by_user", (q) => q.eq("userId", ctx.userId))
           .first();
         if (membership) {
           organizationId = membership.organizationId;
@@ -147,13 +185,19 @@ export const createSampleProject = mutation({
     }
 
     if (!organizationId) {
-      throw new Error("No organization found. Please complete onboarding first.");
+      throw validation(
+        "organizationId",
+        "No organization found. Please complete onboarding first.",
+      );
     }
 
     // RBAC Check: Ensure user is a member of the organization
-    const role = await getOrganizationRole(ctx, organizationId, userId);
+    const role = await getOrganizationRole(ctx, organizationId, ctx.userId);
     if (!role) {
-      throw new Error("You must be a member of the organization to create a sample project");
+      throw forbidden(
+        undefined,
+        "You must be a member of the organization to create a sample project",
+      );
     }
 
     const now = Date.now();
@@ -162,8 +206,8 @@ export const createSampleProject = mutation({
     const workspaceId = await ctx.db.insert("workspaces", {
       organizationId,
       name: "Sample Workspace",
-      slug: `sample-workspace-${userId}`, // Make unique per user to avoid conflicts
-      createdBy: userId,
+      slug: `sample-workspace-${ctx.userId}`, // Make unique per user to avoid conflicts
+      createdBy: ctx.userId,
       createdAt: now,
       updatedAt: now,
     });
@@ -173,7 +217,7 @@ export const createSampleProject = mutation({
       workspaceId,
       name: "Engineering",
       slug: "engineering",
-      createdBy: userId,
+      createdBy: ctx.userId,
       createdAt: now,
       updatedAt: now,
       isPrivate: false,
@@ -188,8 +232,8 @@ export const createSampleProject = mutation({
       organizationId,
       workspaceId,
       teamId,
-      ownerId: userId,
-      createdBy: userId,
+      ownerId: ctx.userId,
+      createdBy: ctx.userId,
       createdAt: now,
       updatedAt: now,
       isPublic: false,
@@ -204,9 +248,9 @@ export const createSampleProject = mutation({
     // Add user as project admin
     await ctx.db.insert("projectMembers", {
       projectId,
-      userId,
+      userId: ctx.userId,
       role: "admin",
-      addedBy: userId,
+      addedBy: ctx.userId,
       addedAt: Date.now(),
     });
 
@@ -215,7 +259,7 @@ export const createSampleProject = mutation({
       projectId,
       name: "urgent",
       color: "#EF4444", // Red
-      createdBy: userId,
+      createdBy: ctx.userId,
       createdAt: Date.now(),
     });
 
@@ -223,7 +267,7 @@ export const createSampleProject = mutation({
       projectId,
       name: "needs-review",
       color: "#F59E0B", // Orange
-      createdBy: userId,
+      createdBy: ctx.userId,
       createdAt: Date.now(),
     });
 
@@ -235,7 +279,7 @@ export const createSampleProject = mutation({
       startDate: Date.now(),
       endDate: Date.now() + 14 * 24 * 60 * 60 * 1000, // 2 weeks from now
       status: "active",
-      createdBy: userId,
+      createdBy: ctx.userId,
       createdAt: Date.now(),
       updatedAt: Date.now(),
     });
@@ -370,8 +414,8 @@ export const createSampleProject = mutation({
         type: issue.type,
         status: issue.status,
         priority: issue.priority,
-        assigneeId: userId, // Assign first few to user
-        reporterId: userId,
+        assigneeId: ctx.userId, // Assign first few to user
+        reporterId: ctx.userId,
         createdAt: Date.now() - (issues.length - createdIssues.length) * 60 * 60 * 1000, // Stagger creation times
         updatedAt: Date.now(),
         labels: issue.labels,
@@ -387,7 +431,7 @@ export const createSampleProject = mutation({
       // Add activity log
       await ctx.db.insert("issueActivity", {
         issueId,
-        userId,
+        userId: ctx.userId,
         action: "created",
         createdAt: Date.now() - (issues.length - createdIssues.length) * 60 * 60 * 1000,
       });
@@ -414,7 +458,7 @@ export const createSampleProject = mutation({
         issueIndex: 5, // Demo video task
         content:
           "Video is live! Check it out: https://youtube.com/... Got great feedback from the team. @you might want to review the script.",
-        mentions: [userId],
+        mentions: [ctx.userId],
       },
       {
         issueIndex: 7, // Filter story
@@ -426,7 +470,7 @@ export const createSampleProject = mutation({
     for (const { issueIndex, content, mentions = [] } of commentsData) {
       await ctx.db.insert("issueComments", {
         issueId: createdIssues[issueIndex],
-        authorId: userId,
+        authorId: ctx.userId,
         content,
         mentions,
         createdAt:
@@ -438,7 +482,7 @@ export const createSampleProject = mutation({
 
     // Update onboarding status
     await ctx.db.insert("userOnboarding", {
-      userId,
+      userId: ctx.userId,
       onboardingCompleted: false,
       onboardingStep: 1,
       sampleWorkspaceCreated: true,
@@ -455,27 +499,36 @@ export const createSampleProject = mutation({
 
 /**
  * Helper: Delete all issues and their related data for a project
+ * Bounded to prevent OOM on large projects
  */
 async function deleteProjectIssues(ctx: MutationCtx, projectId: Id<"projects">) {
-  const issues = await ctx.db
-    .query("issues")
-    .withIndex("by_project", (q) => q.eq("projectId", projectId))
-    .filter(notDeleted)
-    .collect();
+  // Bounded: delete in batches to prevent OOM
+  const issues = await safeCollect(
+    ctx.db
+      .query("issues")
+      .withIndex("by_project", (q) => q.eq("projectId", projectId))
+      .filter(notDeleted),
+    BOUNDED_DELETE_BATCH,
+    "delete project issues",
+  );
 
   for (const issue of issues) {
-    const comments = await ctx.db
-      .query("issueComments")
-      .withIndex("by_issue", (q) => q.eq("issueId", issue._id))
-      .collect();
+    // Bounded: comments per issue
+    const comments = await safeCollect(
+      ctx.db.query("issueComments").withIndex("by_issue", (q) => q.eq("issueId", issue._id)),
+      BOUNDED_RELATION_LIMIT,
+      "delete issue comments",
+    );
     for (const comment of comments) {
       await ctx.db.delete(comment._id);
     }
 
-    const activities = await ctx.db
-      .query("issueActivity")
-      .withIndex("by_issue", (q) => q.eq("issueId", issue._id))
-      .collect();
+    // Bounded: activities per issue
+    const activities = await safeCollect(
+      ctx.db.query("issueActivity").withIndex("by_issue", (q) => q.eq("issueId", issue._id)),
+      BOUNDED_RELATION_LIMIT,
+      "delete issue activities",
+    );
     for (const activity of activities) {
       await ctx.db.delete(activity._id);
     }
@@ -486,30 +539,41 @@ async function deleteProjectIssues(ctx: MutationCtx, projectId: Id<"projects">) 
 
 /**
  * Helper: Delete sprints, labels, and members for a project
+ * Bounded to prevent OOM
  */
 async function deleteProjectMetadata(ctx: MutationCtx, projectId: Id<"projects">) {
-  const sprints = await ctx.db
-    .query("sprints")
-    .withIndex("by_project", (q) => q.eq("projectId", projectId))
-    .filter(notDeleted)
-    .collect();
+  // Bounded: sprints per project (typically small)
+  const sprints = await safeCollect(
+    ctx.db
+      .query("sprints")
+      .withIndex("by_project", (q) => q.eq("projectId", projectId))
+      .filter(notDeleted),
+    BOUNDED_RELATION_LIMIT,
+    "delete project sprints",
+  );
   for (const sprint of sprints) {
     await ctx.db.delete(sprint._id);
   }
 
-  const labels = await ctx.db
-    .query("labels")
-    .withIndex("by_project", (q) => q.eq("projectId", projectId))
-    .collect();
+  // Bounded: labels per project (typically small)
+  const labels = await safeCollect(
+    ctx.db.query("labels").withIndex("by_project", (q) => q.eq("projectId", projectId)),
+    BOUNDED_RELATION_LIMIT,
+    "delete project labels",
+  );
   for (const label of labels) {
     await ctx.db.delete(label._id);
   }
 
-  const members = await ctx.db
-    .query("projectMembers")
-    .withIndex("by_project", (q) => q.eq("projectId", projectId))
-    .filter(notDeleted)
-    .collect();
+  // Bounded: members per project (typically small)
+  const members = await safeCollect(
+    ctx.db
+      .query("projectMembers")
+      .withIndex("by_project", (q) => q.eq("projectId", projectId))
+      .filter(notDeleted),
+    BOUNDED_RELATION_LIMIT,
+    "delete project members",
+  );
   for (const member of members) {
     await ctx.db.delete(member._id);
   }
@@ -520,23 +584,20 @@ async function deleteProjectMetadata(ctx: MutationCtx, projectId: Id<"projects">
  * Deletes the userOnboarding record so user can start fresh
  * Only available for test accounts (@inbox.mailtrap.io)
  */
-export const resetOnboarding = mutation({
+export const resetOnboarding = authenticatedMutation({
   args: {},
   returns: v.object({ success: v.boolean() }),
   handler: async (ctx) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
-
     // Get user and verify test email
-    const user = await ctx.db.get(userId);
+    const user = await ctx.db.get(ctx.userId);
     if (!(user && isTestEmail(user.email))) {
-      throw new Error("Reset onboarding is only available for test accounts");
+      throw forbidden(undefined, "Reset onboarding is only available for test accounts");
     }
 
     // Delete onboarding record
     const onboarding = await ctx.db
       .query("userOnboarding")
-      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .withIndex("by_user", (q) => q.eq("userId", ctx.userId))
       .filter(notDeleted)
       .first();
 
@@ -548,7 +609,7 @@ export const resetOnboarding = mutation({
     const project = await ctx.db
       .query("projects")
       .withIndex("by_key", (q) => q.eq("key", "SAMPLE"))
-      .filter((q) => q.eq(q.field("createdBy"), userId))
+      .filter((q) => q.eq(q.field("createdBy"), ctx.userId))
       .filter(notDeleted)
       .first();
 
@@ -565,84 +626,25 @@ export const resetOnboarding = mutation({
 /**
  * Delete sample project (for users who want to start fresh)
  */
-export const deleteSampleProject = mutation({
+export const deleteSampleProject = authenticatedMutation({
   args: {},
   returns: v.null(),
   handler: async (ctx) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
-
     // Find sample project
     const project = await ctx.db
       .query("projects")
       .withIndex("by_key", (q) => q.eq("key", "SAMPLE"))
-      .filter((q) => q.eq(q.field("createdBy"), userId))
+      .filter((q) => q.eq(q.field("createdBy"), ctx.userId))
       .filter(notDeleted)
       .first();
 
     if (!project) {
-      throw new Error("Sample project not found");
+      throw notFound("project");
     }
 
-    // Delete all related data (issues, comments, sprints, etc.)
-    const issues = await ctx.db
-      .query("issues")
-      .withIndex("by_project", (q) => q.eq("projectId", project._id))
-      .filter(notDeleted)
-      .collect();
-
-    for (const issue of issues) {
-      // Delete comments
-      const comments = await ctx.db
-        .query("issueComments")
-        .withIndex("by_issue", (q) => q.eq("issueId", issue._id))
-        .filter(notDeleted)
-        .collect();
-      for (const comment of comments) {
-        await ctx.db.delete(comment._id);
-      }
-
-      // Delete activity
-      const activities = await ctx.db
-        .query("issueActivity")
-        .withIndex("by_issue", (q) => q.eq("issueId", issue._id))
-        .collect();
-      for (const activity of activities) {
-        await ctx.db.delete(activity._id);
-      }
-
-      // Delete issue
-      await ctx.db.delete(issue._id);
-    }
-
-    // Delete sprints
-    const sprints = await ctx.db
-      .query("sprints")
-      .withIndex("by_project", (q) => q.eq("projectId", project._id))
-      .filter(notDeleted)
-      .collect();
-    for (const sprint of sprints) {
-      await ctx.db.delete(sprint._id);
-    }
-
-    // Delete labels
-    const labels = await ctx.db
-      .query("labels")
-      .withIndex("by_project", (q) => q.eq("projectId", project._id))
-      .collect();
-    for (const label of labels) {
-      await ctx.db.delete(label._id);
-    }
-
-    // Delete project members
-    const members = await ctx.db
-      .query("projectMembers")
-      .withIndex("by_project", (q) => q.eq("projectId", project._id))
-      .filter(notDeleted)
-      .collect();
-    for (const member of members) {
-      await ctx.db.delete(member._id);
-    }
+    // Delete all related data using helper functions (bounded)
+    await deleteProjectIssues(ctx, project._id);
+    await deleteProjectMetadata(ctx, project._id);
 
     // Delete project
     await ctx.db.delete(project._id);
@@ -650,7 +652,7 @@ export const deleteSampleProject = mutation({
     // Update onboarding status
     const onboarding = await ctx.db
       .query("userOnboarding")
-      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .withIndex("by_user", (q) => q.eq("userId", ctx.userId))
       .filter(notDeleted)
       .first();
 
@@ -667,23 +669,20 @@ export const deleteSampleProject = mutation({
  * Check if current user was invited (for persona-based onboarding)
  * Returns invite info if user was invited, null otherwise
  */
-export const checkInviteStatus = query({
+export const checkInviteStatus = authenticatedQuery({
   args: {},
   returns: v.union(
     v.null(),
     v.object({
       wasInvited: v.boolean(),
       inviterName: v.union(v.string(), v.null()),
-      inviteRole: v.optional(v.union(v.literal("user"), v.literal("superAdmin"))),
+      inviteRole: v.optional(inviteRoles),
       organizationId: v.optional(v.id("organizations")),
     }),
   ),
   handler: async (ctx) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) return null;
-
     // Check if user has an inviteId (was invited)
-    const user = await ctx.db.get(userId);
+    const user = await ctx.db.get(ctx.userId);
     if (!user?.inviteId) {
       return { wasInvited: false, inviterName: null };
     }
@@ -710,17 +709,14 @@ export const checkInviteStatus = query({
 /**
  * Set onboarding persona (team_lead or team_member)
  */
-export const setOnboardingPersona = mutation({
+export const setOnboardingPersona = authenticatedMutation({
   args: {
-    persona: v.union(v.literal("team_lead"), v.literal("team_member")),
+    persona: personas,
   },
   returns: v.object({ success: v.boolean() }),
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
-
     // Check invite status to populate wasInvited field
-    const user = await ctx.db.get(userId);
+    const user = await ctx.db.get(ctx.userId);
     let wasInvited = false;
     let invitedByName: string | undefined;
 
@@ -735,7 +731,7 @@ export const setOnboardingPersona = mutation({
 
     const existing = await ctx.db
       .query("userOnboarding")
-      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .withIndex("by_user", (q) => q.eq("userId", ctx.userId))
       .filter(notDeleted)
       .first();
 
@@ -750,7 +746,7 @@ export const setOnboardingPersona = mutation({
       // Double-check for race condition - another request might have inserted while we were processing
       const doubleCheck = await ctx.db
         .query("userOnboarding")
-        .withIndex("by_user", (q) => q.eq("userId", userId))
+        .withIndex("by_user", (q) => q.eq("userId", ctx.userId))
         .filter(notDeleted)
         .first();
 
@@ -764,7 +760,7 @@ export const setOnboardingPersona = mutation({
         });
       } else {
         await ctx.db.insert("userOnboarding", {
-          userId,
+          userId: ctx.userId,
           onboardingCompleted: false,
           onboardingStep: 1,
           sampleWorkspaceCreated: false,
@@ -787,16 +783,13 @@ export const setOnboardingPersona = mutation({
 /**
  * Complete onboarding flow
  */
-export const completeOnboardingFlow = mutation({
+export const completeOnboardingFlow = authenticatedMutation({
   args: {},
   returns: v.object({ success: v.boolean() }),
   handler: async (ctx) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
-
     const existing = await ctx.db
       .query("userOnboarding")
-      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .withIndex("by_user", (q) => q.eq("userId", ctx.userId))
       .first();
 
     if (existing) {
@@ -809,7 +802,7 @@ export const completeOnboardingFlow = mutation({
       // Double-check for race condition - another request might have inserted while we were processing
       const doubleCheck = await ctx.db
         .query("userOnboarding")
-        .withIndex("by_user", (q) => q.eq("userId", userId))
+        .withIndex("by_user", (q) => q.eq("userId", ctx.userId))
         .first();
 
       if (doubleCheck) {
@@ -822,7 +815,7 @@ export const completeOnboardingFlow = mutation({
       } else {
         // Create record if it doesn't exist
         await ctx.db.insert("userOnboarding", {
-          userId,
+          userId: ctx.userId,
           onboardingCompleted: true,
           onboardingStep: 99,
           sampleWorkspaceCreated: false,

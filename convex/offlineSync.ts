@@ -1,21 +1,19 @@
-import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
-import { internalMutation, mutation, query } from "./_generated/server";
+import { internalMutation } from "./_generated/server";
+import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
+import { forbidden, notFound } from "./lib/errors";
 
 // Add mutation to offline queue
-export const queueMutation = mutation({
+export const queueMutation = authenticatedMutation({
   args: {
     mutationType: v.string(), // e.g., "issues.update"
     mutationArgs: v.string(), // JSON string of arguments
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
-
     const now = Date.now();
 
     return await ctx.db.insert("offlineSyncQueue", {
-      userId,
+      userId: ctx.userId,
       mutationType: args.mutationType,
       mutationArgs: args.mutationArgs,
       status: "pending",
@@ -27,33 +25,28 @@ export const queueMutation = mutation({
 });
 
 // Get pending mutations for user
-export const getPendingMutations = query({
+export const getPendingMutations = authenticatedQuery({
+  args: {},
   handler: async (ctx) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) return [];
-
     return await ctx.db
       .query("offlineSyncQueue")
-      .withIndex("by_user_status", (q) => q.eq("userId", userId).eq("status", "pending"))
+      .withIndex("by_user_status", (q) => q.eq("userId", ctx.userId).eq("status", "pending"))
       .order("asc") // Process in order
       .collect();
   },
 });
 
 // Mark mutation as syncing
-export const markSyncing = mutation({
+export const markSyncing = authenticatedMutation({
   args: {
     queueId: v.id("offlineSyncQueue"),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
-
     const item = await ctx.db.get(args.queueId);
-    if (!item) throw new Error("Queue item not found");
+    if (!item) throw notFound("offlineSyncQueue", args.queueId);
 
-    if (item.userId !== userId) {
-      throw new Error("Unauthorized");
+    if (item.userId !== ctx.userId) {
+      throw forbidden(undefined, "Unauthorized");
     }
 
     await ctx.db.patch(args.queueId, {
@@ -65,19 +58,16 @@ export const markSyncing = mutation({
 });
 
 // Mark mutation as completed
-export const markCompleted = mutation({
+export const markCompleted = authenticatedMutation({
   args: {
     queueId: v.id("offlineSyncQueue"),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
-
     const item = await ctx.db.get(args.queueId);
-    if (!item) throw new Error("Queue item not found");
+    if (!item) throw notFound("offlineSyncQueue", args.queueId);
 
-    if (item.userId !== userId) {
-      throw new Error("Unauthorized");
+    if (item.userId !== ctx.userId) {
+      throw forbidden(undefined, "Unauthorized");
     }
 
     await ctx.db.patch(args.queueId, {
@@ -88,20 +78,17 @@ export const markCompleted = mutation({
 });
 
 // Mark mutation as failed
-export const markFailed = mutation({
+export const markFailed = authenticatedMutation({
   args: {
     queueId: v.id("offlineSyncQueue"),
     error: v.string(),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
-
     const item = await ctx.db.get(args.queueId);
-    if (!item) throw new Error("Queue item not found");
+    if (!item) throw notFound("offlineSyncQueue", args.queueId);
 
-    if (item.userId !== userId) {
-      throw new Error("Unauthorized");
+    if (item.userId !== ctx.userId) {
+      throw forbidden(undefined, "Unauthorized");
     }
 
     const attempts = item.attempts + 1;
@@ -121,30 +108,22 @@ export const markFailed = mutation({
 });
 
 // Get sync queue status for user
-export const getSyncStatus = query({
+export const getSyncStatus = authenticatedQuery({
+  args: {},
   handler: async (ctx) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId)
-      return {
-        pending: 0,
-        syncing: 0,
-        failed: 0,
-        hasItems: false,
-      };
-
     const pending = await ctx.db
       .query("offlineSyncQueue")
-      .withIndex("by_user_status", (q) => q.eq("userId", userId).eq("status", "pending"))
+      .withIndex("by_user_status", (q) => q.eq("userId", ctx.userId).eq("status", "pending"))
       .collect();
 
     const syncing = await ctx.db
       .query("offlineSyncQueue")
-      .withIndex("by_user_status", (q) => q.eq("userId", userId).eq("status", "syncing"))
+      .withIndex("by_user_status", (q) => q.eq("userId", ctx.userId).eq("status", "syncing"))
       .collect();
 
     const failed = await ctx.db
       .query("offlineSyncQueue")
-      .withIndex("by_user_status", (q) => q.eq("userId", userId).eq("status", "failed"))
+      .withIndex("by_user_status", (q) => q.eq("userId", ctx.userId).eq("status", "failed"))
       .collect();
 
     return {
@@ -157,19 +136,16 @@ export const getSyncStatus = query({
 });
 
 // Clear completed items (cleanup)
-export const clearCompleted = mutation({
+export const clearCompleted = authenticatedMutation({
   args: {
     olderThan: v.optional(v.number()), // Clear items older than timestamp
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
-
     const cutoff = args.olderThan ?? Date.now() - 24 * 60 * 60 * 1000; // Default: 24 hours ago
 
     const completed = await ctx.db
       .query("offlineSyncQueue")
-      .withIndex("by_user_status", (q) => q.eq("userId", userId).eq("status", "completed"))
+      .withIndex("by_user_status", (q) => q.eq("userId", ctx.userId).eq("status", "completed"))
       .filter((q) => q.lt(q.field("updatedAt"), cutoff))
       .collect();
 
@@ -182,14 +158,12 @@ export const clearCompleted = mutation({
 });
 
 // Retry failed items
-export const retryFailed = mutation({
+export const retryFailed = authenticatedMutation({
+  args: {},
   handler: async (ctx) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
-
     const failed = await ctx.db
       .query("offlineSyncQueue")
-      .withIndex("by_user_status", (q) => q.eq("userId", userId).eq("status", "failed"))
+      .withIndex("by_user_status", (q) => q.eq("userId", ctx.userId).eq("status", "failed"))
       .collect();
 
     for (const item of failed) {
@@ -283,14 +257,12 @@ export const cleanupOldItems = internalMutation({
 });
 
 // Get all queue items for debugging
-export const listQueue = query({
+export const listQueue = authenticatedQuery({
+  args: {},
   handler: async (ctx) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) return [];
-
     return await ctx.db
       .query("offlineSyncQueue")
-      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .withIndex("by_user", (q) => q.eq("userId", ctx.userId))
       .order("desc")
       .take(50); // Limit to recent 50 items
   },

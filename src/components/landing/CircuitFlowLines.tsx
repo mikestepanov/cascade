@@ -124,12 +124,7 @@ export function CircuitFlowLines() {
           path="M0,150 Q200,130 400,170 T800,140 T1200,180 T1600,150 T2000,170"
         />
       </circle>
-      <circle
-        r="3"
-        style={{ color: "var(--color-status-info)" }}
-        fill="currentColor"
-        filter="url(#flowGlow)"
-      >
+      <circle r="3" className="text-status-info" fill="currentColor" filter="url(#flowGlow)">
         <animateMotion
           dur="8s"
           begin="-6s"
@@ -154,12 +149,7 @@ export function CircuitFlowLines() {
           path="M0,300 Q250,280 500,320 T1000,290 T1500,330 T2000,300"
         />
       </circle>
-      <circle
-        r="2.5"
-        style={{ color: "var(--color-accent-500)" }}
-        fill="currentColor"
-        filter="url(#flowGlow)"
-      >
+      <circle r="2.5" className="text-accent-500" fill="currentColor" filter="url(#flowGlow)">
         <animateMotion
           dur="10s"
           begin="-7s"
@@ -176,12 +166,7 @@ export function CircuitFlowLines() {
           path="M0,450 Q300,420 600,460 T1200,430 T1800,470 T2400,440"
         />
       </circle>
-      <circle
-        r="2.5"
-        style={{ color: "var(--color-status-success)" }}
-        fill="currentColor"
-        filter="url(#flowGlow)"
-      >
+      <circle r="2.5" className="text-status-success" fill="currentColor" filter="url(#flowGlow)">
         <animateMotion
           dur="9s"
           begin="-4.5s"

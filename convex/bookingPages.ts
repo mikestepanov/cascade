@@ -1,6 +1,8 @@
-import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
-import { mutation, query } from "./_generated/server";
+import { query } from "./_generated/server";
+import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
+import { conflict, requireOwned, validation } from "./lib/errors";
+import { bookingFieldTypes } from "./validators";
 
 /**
  * Booking Pages - Cal.com-style booking page management
@@ -49,7 +51,7 @@ function buildBookingPageUpdates(args: {
 }
 
 // Create a booking page
-export const create = mutation({
+export const create = authenticatedMutation({
   args: {
     slug: v.string(),
     title: v.string(),
@@ -72,7 +74,7 @@ export const create = mutation({
       v.array(
         v.object({
           label: v.string(),
-          type: v.union(v.literal("text"), v.literal("email"), v.literal("phone")),
+          type: bookingFieldTypes,
           required: v.boolean(),
         }),
       ),
@@ -81,9 +83,6 @@ export const create = mutation({
     color: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
-
     // Check if slug is already taken
     const existing = await ctx.db
       .query("bookingPages")
@@ -91,19 +90,19 @@ export const create = mutation({
       .first();
 
     if (existing) {
-      throw new Error("This booking URL is already taken");
+      throw conflict("This booking URL is already taken");
     }
 
     // Validate slug format (lowercase, alphanumeric, hyphens)
     const slugRegex = /^[a-z0-9-]+$/;
     if (!slugRegex.test(args.slug)) {
-      throw new Error("Slug must contain only lowercase letters, numbers, and hyphens");
+      throw validation("slug", "Must contain only lowercase letters, numbers, and hyphens");
     }
 
     const now = Date.now();
 
     return await ctx.db.insert("bookingPages", {
-      userId,
+      userId: ctx.userId,
       slug: args.slug,
       title: args.title,
       description: args.description,
@@ -147,14 +146,12 @@ export const getBySlug = query({
 });
 
 // List user's booking pages
-export const listMine = query({
+export const listMine = authenticatedQuery({
+  args: {},
   handler: async (ctx) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) return [];
-
     const pages = await ctx.db
       .query("bookingPages")
-      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .withIndex("by_user", (q) => q.eq("userId", ctx.userId))
       .collect();
 
     return pages.sort((a, b) => b.createdAt - a.createdAt);
@@ -162,7 +159,7 @@ export const listMine = query({
 });
 
 // Update booking page
-export const update = mutation({
+export const update = authenticatedMutation({
   args: {
     id: v.id("bookingPages"),
     title: v.optional(v.string()),
@@ -187,7 +184,7 @@ export const update = mutation({
       v.array(
         v.object({
           label: v.string(),
-          type: v.union(v.literal("text"), v.literal("email"), v.literal("phone")),
+          type: bookingFieldTypes,
           required: v.boolean(),
         }),
       ),
@@ -197,12 +194,8 @@ export const update = mutation({
     color: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
-
     const page = await ctx.db.get(args.id);
-    if (!page) throw new Error("Booking page not found");
-    if (page.userId !== userId) throw new Error("Not authorized");
+    requireOwned(page, ctx.userId, "bookingPage");
 
     // Build update object using helper
     const updates = buildBookingPageUpdates(args);
@@ -211,15 +204,11 @@ export const update = mutation({
 });
 
 // Delete booking page
-export const remove = mutation({
+export const remove = authenticatedMutation({
   args: { id: v.id("bookingPages") },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
-
     const page = await ctx.db.get(args.id);
-    if (!page) throw new Error("Booking page not found");
-    if (page.userId !== userId) throw new Error("Not authorized");
+    requireOwned(page, ctx.userId, "bookingPage");
 
     // Check for active bookings
     const activeBookings = await ctx.db
@@ -229,9 +218,7 @@ export const remove = mutation({
       .collect();
 
     if (activeBookings.length > 0) {
-      throw new Error(
-        "Cannot delete booking page with active bookings. Cancel or complete them first.",
-      );
+      throw conflict("Cannot delete booking page with active bookings");
     }
 
     await ctx.db.delete(args.id);
@@ -239,18 +226,14 @@ export const remove = mutation({
 });
 
 // Toggle booking page active status
-export const toggleActive = mutation({
+export const toggleActive = authenticatedMutation({
   args: {
     id: v.id("bookingPages"),
     isActive: v.boolean(),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
-
     const page = await ctx.db.get(args.id);
-    if (!page) throw new Error("Booking page not found");
-    if (page.userId !== userId) throw new Error("Not authorized");
+    requireOwned(page, ctx.userId, "bookingPage");
 
     await ctx.db.patch(args.id, {
       isActive: args.isActive,

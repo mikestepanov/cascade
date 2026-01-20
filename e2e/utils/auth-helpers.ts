@@ -15,9 +15,35 @@ import {
   toastLocators,
   urlPatterns,
 } from "../locators";
-import { waitForVerificationEmail } from "./mailtrap";
+import { waitForMockOTP } from "./otp-helpers";
 import { testUserService } from "./test-user-service";
 import { waitForFormReady } from "./wait-helpers";
+
+/**
+ * Complete email verification with OTP from Mock Backend
+ */
+export async function completeEmailVerification(page: Page, email: string): Promise<boolean> {
+  console.log(`  📬 Waiting for verification email for ${email}...`);
+  try {
+    const otp = await waitForMockOTP(email, {
+      timeout: 15000,
+      pollInterval: 500,
+    });
+    console.log(`  ✓ Retrieved OTP: ${otp}`);
+
+    const locators = authFormLocators(page);
+    await locators.verifyCodeInput.waitFor({ state: "visible", timeout: 5000 });
+    await locators.verifyCodeInput.fill(otp);
+
+    await locators.verifyEmailButton.click();
+    // Wait for redirect to onboarding or organization dashboard
+    await page.waitForURL(urlPatterns.dashboardOrOnboarding, { timeout: 15000 });
+    return true;
+  } catch (verifyError) {
+    console.error(`  ❌ Email verification failed for ${email}:`, verifyError);
+    return false;
+  }
+}
 
 declare global {
   interface Window {
@@ -204,13 +230,30 @@ export async function trySignInUser(
     if (loginResult.success && loginResult.token) {
       console.log("  ✓ API login successful. Injecting tokens...");
       await page.evaluate(
-        ({ token, refreshToken }) => {
+        ({ token, refreshToken, convexUrl }) => {
+          // Legacy keys (for ConvexReactClient direct usage)
           localStorage.setItem("convexAuthToken", token);
           if (refreshToken) {
             localStorage.setItem("convexAuthRefreshToken", refreshToken);
           }
+
+          // @convex-dev/auth keys (namespaced by convex URL)
+          if (convexUrl) {
+            const namespace = convexUrl.replace(/[^a-zA-Z0-9]/g, "");
+            const jwtKey = `__convexAuthJWT_${namespace}`;
+            const refreshKey = `__convexAuthRefreshToken_${namespace}`;
+
+            localStorage.setItem(jwtKey, token);
+            if (refreshToken) {
+              localStorage.setItem(refreshKey, refreshToken);
+            }
+          }
         },
-        { token: loginResult.token, refreshToken: loginResult.refreshToken ?? undefined },
+        {
+          token: loginResult.token,
+          refreshToken: loginResult.refreshToken ?? undefined,
+          convexUrl: process.env.VITE_CONVEX_URL,
+        },
       );
 
       // Navigate to dashboard directly
@@ -477,32 +520,6 @@ export async function waitForSignUpResult(page: Page): Promise<"verification" | 
     await page.waitForTimeout(500);
   }
   return null;
-}
-
-/**
- * Complete email verification with OTP from Mailtrap
- */
-export async function completeEmailVerification(page: Page, email: string): Promise<boolean> {
-  console.log(`  📬 Waiting for verification email for ${email}...`);
-  try {
-    const otp = await waitForVerificationEmail(email, {
-      timeout: 90000,
-      pollInterval: 2000,
-    });
-    console.log(`  ✓ Retrieved OTP: ${otp}`);
-
-    const locators = authFormLocators(page);
-    await locators.verifyCodeInput.waitFor({ state: "visible", timeout: 5000 });
-    await locators.verifyCodeInput.fill(otp);
-
-    await locators.verifyEmailButton.click();
-    // Wait for redirect to onboarding or organization dashboard
-    await page.waitForURL(urlPatterns.dashboardOrOnboarding, { timeout: 15000 });
-    return true;
-  } catch (verifyError) {
-    console.error(`  ❌ Email verification failed for ${email}:`, verifyError);
-    return false;
-  }
 }
 
 /**

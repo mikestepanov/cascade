@@ -1,0 +1,313 @@
+/**
+ * Bounded Query Helpers
+ *
+ * Prevents unbounded .collect() calls that could exceed memory limits.
+ * All queries have explicit limits to ensure predictable performance.
+ *
+ * @example
+ * // ❌ BAD: Unbounded collect - could load 100k+ docs
+ * const issues = await ctx.db.query("issues").withIndex(...).collect();
+ *
+ * // ✅ GOOD: Bounded collect with limit
+ * const { items, hasMore } = await boundedCollect(
+ *   ctx.db.query("issues").withIndex(...).filter(notDeleted),
+ *   { limit: 500 }
+ * );
+ *
+ * // ✅ GOOD: Bounded count
+ * const { count, isExact } = await boundedCount(
+ *   ctx.db.query("issues").withIndex(...).filter(notDeleted),
+ *   { limit: 2000 }
+ * );
+ */
+
+// =============================================================================
+// DEFAULT LIMITS (import and use these for consistency)
+// =============================================================================
+
+/** Max items for general list queries (e.g., all issues in a project) */
+export const BOUNDED_LIST_LIMIT = 1000;
+
+/** Max items for relationship queries (e.g., comments per issue) */
+export const BOUNDED_RELATION_LIMIT = 500;
+
+/** Max items for search results */
+export const BOUNDED_SEARCH_LIMIT = 200;
+
+/** Max items for batch delete operations per call */
+export const BOUNDED_DELETE_BATCH = 500;
+
+/** Max items for count operations (returns capped count) */
+export const BOUNDED_COUNT_LIMIT = 2000;
+
+/** Max items for "select/dropdown" queries (e.g., issue picker) */
+export const BOUNDED_SELECT_LIMIT = 500;
+
+// =============================================================================
+// TYPES
+// =============================================================================
+
+/** Result of bounded collect */
+export interface BoundedCollectResult<T> {
+  /** The collected items (up to limit) */
+  items: T[];
+  /** True if there are more items beyond the limit */
+  hasMore: boolean;
+  /** The limit that was used */
+  limit: number;
+}
+
+/** Result of bounded count */
+export interface BoundedCountResult {
+  /** The count (capped at limit) */
+  count: number;
+  /** True if count is exact (less than limit), false if capped */
+  isExact: boolean;
+  /** The limit that was used */
+  limit: number;
+}
+
+/** Options for bounded collect */
+export interface BoundedCollectOptions {
+  /** Maximum items to collect (default: BOUNDED_LIST_LIMIT) */
+  limit?: number;
+}
+
+/** Options for bounded count */
+export interface BoundedCountOptions {
+  /** Maximum items to count (default: BOUNDED_COUNT_LIMIT) */
+  limit?: number;
+}
+
+/** Options for bounded collect with filter */
+export interface BoundedFilterOptions<T> {
+  /** Filter function to apply */
+  filter: (item: T) => boolean;
+  /** Desired number of results after filtering */
+  targetLimit: number;
+  /** Multiplier for fetch size (default: 3) */
+  fetchMultiplier?: number;
+}
+
+// =============================================================================
+// QUERY INTERFACE (matches Convex query builder)
+// =============================================================================
+
+/** Minimal query interface for bounded helpers */
+interface TakeableQuery<T> {
+  take(n: number): Promise<T[]>;
+}
+
+/** Minimal query interface for collect (to help migration) */
+
+// =============================================================================
+// BOUNDED QUERY FUNCTIONS
+// =============================================================================
+
+/**
+ * Bounded collect - replaces .collect() with explicit limit
+ *
+ * @example
+ * // Instead of:
+ * const issues = await ctx.db.query("issues").withIndex(...).collect();
+ *
+ * // Use:
+ * const { items: issues, hasMore } = await boundedCollect(
+ *   ctx.db.query("issues").withIndex(...).filter(notDeleted),
+ *   { limit: 500 }
+ * );
+ *
+ * if (hasMore) {
+ *   console.warn("Results truncated, consider pagination");
+ * }
+ */
+export async function boundedCollect<T>(
+  query: TakeableQuery<T>,
+  options: BoundedCollectOptions = {},
+): Promise<BoundedCollectResult<T>> {
+  const limit = options.limit ?? BOUNDED_LIST_LIMIT;
+
+  // Fetch one extra to detect if there are more
+  const items = await query.take(limit + 1);
+  const hasMore = items.length > limit;
+
+  return {
+    items: hasMore ? items.slice(0, limit) : items,
+    hasMore,
+    limit,
+  };
+}
+
+/**
+ * Bounded count - counts items up to a limit
+ *
+ * @example
+ * const { count, isExact } = await boundedCount(
+ *   ctx.db.query("issues").withIndex("by_project", q => q.eq("projectId", projectId)),
+ *   { limit: 2000 }
+ * );
+ *
+ * // Display: "1,234 issues" or "2,000+ issues"
+ * const display = isExact ? `${count} issues` : `${count}+ issues`;
+ */
+export async function boundedCount<T>(
+  query: TakeableQuery<T>,
+  options: BoundedCountOptions = {},
+): Promise<BoundedCountResult> {
+  const limit = options.limit ?? BOUNDED_COUNT_LIMIT;
+  const items = await query.take(limit);
+
+  return {
+    count: items.length,
+    isExact: items.length < limit,
+    limit,
+  };
+}
+
+/**
+ * Bounded collect with in-memory filter
+ *
+ * Fetches extra items to account for filtering, ensuring you get enough results.
+ *
+ * @example
+ * // Get up to 50 high-priority issues
+ * const { items, hasMore } = await boundedCollectWithFilter(
+ *   ctx.db.query("issues").withIndex("by_project", q => q.eq("projectId", projectId)),
+ *   {
+ *     filter: (issue) => issue.priority === "high" || issue.priority === "highest",
+ *     targetLimit: 50,
+ *   }
+ * );
+ */
+export async function boundedCollectWithFilter<T>(
+  query: TakeableQuery<T>,
+  options: BoundedFilterOptions<T>,
+): Promise<BoundedCollectResult<T>> {
+  const { filter, targetLimit, fetchMultiplier = 3 } = options;
+  const fetchLimit = Math.min(targetLimit * fetchMultiplier, BOUNDED_LIST_LIMIT);
+
+  const items = await query.take(fetchLimit);
+  const filtered = items.filter(filter);
+  const hasMore = items.length >= fetchLimit;
+
+  return {
+    items: filtered.slice(0, targetLimit),
+    hasMore,
+    limit: targetLimit,
+  };
+}
+
+/**
+ * Safe collect - a drop-in replacement for .collect() that adds a limit
+ *
+ * Use this when migrating existing code - it maintains the same return type
+ * but prevents unbounded queries. Logs a warning if limit is hit.
+ *
+ * @example
+ * // Migration: Just wrap the query
+ * // Before: const items = await query.collect();
+ * // After:  const items = await safeCollect(query, 1000, "issues by project");
+ */
+export async function safeCollect<T>(
+  query: TakeableQuery<T>,
+  limit: number = BOUNDED_LIST_LIMIT,
+  context?: string,
+): Promise<T[]> {
+  const items = await query.take(limit + 1);
+
+  if (items.length > limit) {
+    const ctx = context ? ` (${context})` : "";
+    // biome-ignore lint/suspicious/noConsole: Expected warning for bounded queries
+    console.warn(`[boundedQueries] Query exceeded limit of ${limit}${ctx}, results truncated`);
+    return items.slice(0, limit);
+  }
+
+  return items;
+}
+
+/**
+ * Collect all items in batches (for operations that truly need all items)
+ *
+ * Use sparingly! This is for administrative operations like cleanup.
+ * Each batch is a separate query, so this is slower but safer.
+ *
+ * @example
+ * // Delete all comments for an issue (administrative cleanup)
+ * const allComments = await collectInBatches(
+ *   (cursor) => ctx.db.query("issueComments")
+ *     .withIndex("by_issue", q => q.eq("issueId", issueId))
+ *     .paginate({ numItems: 100, cursor }),
+ *   { maxBatches: 10 } // Safety limit: max 1000 items
+ * );
+ */
+export async function collectInBatches<T>(
+  paginatedQuery: (cursor: string | null) => Promise<{
+    page: T[];
+    continueCursor: string;
+    isDone: boolean;
+  }>,
+  options: { maxBatches?: number; batchSize?: number } = {},
+): Promise<T[]> {
+  const { maxBatches = 10 } = options;
+  const allItems: T[] = [];
+  let cursor: string | null = null;
+  let batchCount = 0;
+
+  while (batchCount < maxBatches) {
+    const result = await paginatedQuery(cursor);
+    allItems.push(...result.page);
+    batchCount++;
+
+    if (result.isDone) break;
+    cursor = result.continueCursor;
+  }
+
+  if (batchCount >= maxBatches) {
+    // biome-ignore lint/suspicious/noConsole: Expected warning for bounded queries
+    console.warn(
+      `[boundedQueries] collectInBatches hit max batches (${maxBatches}), ` +
+        `collected ${allItems.length} items`,
+    );
+  }
+
+  return allItems;
+}
+
+// =============================================================================
+// USAGE GUIDELINES
+// =============================================================================
+
+/**
+ * MIGRATION GUIDE
+ * ===============
+ *
+ * 1. SIMPLE REPLACEMENT (when you just need items):
+ *    Before: const items = await query.collect();
+ *    After:  const items = await safeCollect(query, 1000);
+ *
+ * 2. WITH hasMore INDICATOR (for UI "load more"):
+ *    const { items, hasMore } = await boundedCollect(query, { limit: 100 });
+ *    // Show "Load more" button if hasMore
+ *
+ * 3. FOR COUNTING (when you need a count):
+ *    Before: const count = (await query.collect()).length;
+ *    After:  const { count, isExact } = await boundedCount(query);
+ *            // Display: isExact ? count : `${count}+`
+ *
+ * 4. WITH IN-MEMORY FILTER:
+ *    Before: const items = (await query.collect()).filter(fn);
+ *    After:  const { items } = await boundedCollectWithFilter(query, {
+ *              filter: fn,
+ *              targetLimit: 50,
+ *            });
+ *
+ * 5. FOR ADMINISTRATIVE OPS (delete cascades, etc.):
+ *    Use collectInBatches() with pagination
+ *
+ * WHICH LIMIT TO USE:
+ * - BOUNDED_LIST_LIMIT (1000) - General lists
+ * - BOUNDED_RELATION_LIMIT (500) - Per-parent relations
+ * - BOUNDED_SEARCH_LIMIT (200) - Search results
+ * - BOUNDED_SELECT_LIMIT (500) - Dropdowns/pickers
+ * - BOUNDED_COUNT_LIMIT (2000) - Counting operations
+ */

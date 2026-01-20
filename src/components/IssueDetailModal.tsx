@@ -134,7 +134,7 @@ export function IssueDetailModal({
                         aria-label="Copy issue key"
                       >
                         {hasCopied ? (
-                          <Check className="w-3.5 h-3.5 text-green-500" />
+                          <Check className="w-3.5 h-3.5 text-status-success" />
                         ) : (
                           <Copy className="w-3.5 h-3.5" />
                         )}

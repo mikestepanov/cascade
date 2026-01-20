@@ -1,22 +1,24 @@
-import { getAuthUserId } from "@convex-dev/auth/server";
 import { paginationOptsValidator } from "convex/server";
 import { v } from "convex/values";
+import { pruneNull } from "convex-helpers";
 import { internal } from "./_generated/api";
 import type { Doc } from "./_generated/dataModel";
-import { mutation, query } from "./_generated/server";
+import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
 import { batchFetchProjects, batchFetchUsers, getUserName } from "./lib/batchHelpers";
+import { conflict, forbidden, notFound, validation } from "./lib/errors";
 import { fetchPaginatedQuery } from "./lib/queryHelpers";
 import { cascadeSoftDelete } from "./lib/relationships";
 import { notDeleted, softDeleteFields } from "./lib/softDeleteHelpers";
 import { assertIsProjectAdmin, canAccessProject, getProjectRole } from "./projectAccess";
 import { isTest } from "./testConfig";
+import { boardTypes, projectRoles, workflowCategories } from "./validators";
 
-export const createProject = mutation({
+export const createProject = authenticatedMutation({
   args: {
     name: v.string(),
     key: v.string(),
     description: v.optional(v.string()),
-    boardType: v.union(v.literal("kanban"), v.literal("scrum")),
+    boardType: boardTypes,
     // Ownership (required)
     organizationId: v.id("organizations"), // organization this project belongs to
     workspaceId: v.id("workspaces"), // Workspace this project belongs to
@@ -28,11 +30,6 @@ export const createProject = mutation({
     sharedWithTeamIds: v.optional(v.array(v.id("teams"))), // Share with specific teams
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      throw new Error("Not authenticated");
-    }
-
     // Check if project key already exists
     const existingProject = await ctx.db
       .query("projects")
@@ -40,18 +37,14 @@ export const createProject = mutation({
       .filter(notDeleted)
       .first();
 
-    if (existingProject) {
-      throw new Error("Project key already exists");
-    }
+    if (existingProject) throw conflict("Project key already exists");
 
     // Validate: if teamId provided, ensure it belongs to the workspace
     if (args.teamId) {
       const team = await ctx.db.get(args.teamId);
-      if (!team) {
-        throw new Error("Team not found");
-      }
+      if (!team) throw notFound("team", args.teamId);
       if (team.workspaceId !== args.workspaceId) {
-        throw new Error("Team must belong to the specified workspace");
+        throw validation("teamId", "Team must belong to the specified workspace");
       }
     }
 
@@ -64,13 +57,13 @@ export const createProject = mutation({
     ];
 
     // Owner is the specified user, or defaults to creator
-    const ownerId = args.ownerId ?? userId;
+    const ownerId = args.ownerId ?? ctx.userId;
 
     const projectId = await ctx.db.insert("projects", {
       name: args.name,
       key: args.key.toUpperCase(),
       description: args.description,
-      createdBy: userId,
+      createdBy: ctx.userId,
       createdAt: now,
       updatedAt: now,
       boardType: args.boardType,
@@ -88,16 +81,16 @@ export const createProject = mutation({
     // Add creator as admin in projectMembers table (for individual access control)
     await ctx.db.insert("projectMembers", {
       projectId,
-      userId,
+      userId: ctx.userId,
       role: "admin",
-      addedBy: userId,
+      addedBy: ctx.userId,
       addedAt: now,
     });
 
     if (!isTest) {
       await ctx.scheduler.runAfter(0, internal.auditLogs.log, {
         action: "project_created",
-        actorId: userId,
+        actorId: ctx.userId,
         targetId: projectId,
         targetType: "projects",
         metadata: {
@@ -112,23 +105,19 @@ export const createProject = mutation({
   },
 });
 
-export const getCurrentUserProjects = query({
+export const getCurrentUserProjects = authenticatedQuery({
   args: {
     organizationId: v.optional(v.id("organizations")),
     paginationOpts: v.optional(paginationOptsValidator),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      return { page: [], isDone: true, continueCursor: "" };
-    }
-
     const paginationOpts = args.paginationOpts || { numItems: 20, cursor: null };
 
     // Paginate memberships directly via index
     const results = await fetchPaginatedQuery<Doc<"projectMembers">>(ctx, {
       paginationOpts,
-      query: (db) => db.query("projectMembers").withIndex("by_user", (q) => q.eq("userId", userId)),
+      query: (db) =>
+        db.query("projectMembers").withIndex("by_user", (q) => q.eq("userId", ctx.userId)),
     });
 
     if (results.page.length === 0) {
@@ -164,8 +153,8 @@ export const getCurrentUserProjects = query({
     );
 
     // Build result
-    const page = results.page
-      .map((membership) => {
+    const page = pruneNull(
+      results.page.map((membership) => {
         const project = projectMap.get(membership.projectId);
         if (!project) return null;
 
@@ -181,11 +170,11 @@ export const getCurrentUserProjects = query({
           ...project,
           creatorName: getUserName(creator),
           issueCount: issueCountByProject.get(projId) ?? 0,
-          isOwner: project.ownerId === userId || project.createdBy === userId,
+          isOwner: project.ownerId === ctx.userId || project.createdBy === ctx.userId,
           userRole: roleMap.get(projId) ?? null,
         };
-      })
-      .filter((w): w is NonNullable<typeof w> => w !== null);
+      }),
+    );
 
     return {
       ...results,
@@ -194,17 +183,12 @@ export const getCurrentUserProjects = query({
   },
 });
 
-export const getTeamProjects = query({
+export const getTeamProjects = authenticatedQuery({
   args: {
     teamId: v.id("teams"),
     paginationOpts: v.optional(paginationOptsValidator),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      return { page: [], isDone: true, continueCursor: "" };
-    }
-
     // Check access control
     const team = await ctx.db.get(args.teamId);
     if (!team) {
@@ -214,8 +198,8 @@ export const getTeamProjects = query({
     const { getTeamRole } = await import("./teams");
     const { isOrganizationAdmin } = await import("./organizations");
 
-    const role = await getTeamRole(ctx, args.teamId, userId);
-    const isAdmin = await isOrganizationAdmin(ctx, team.organizationId, userId);
+    const role = await getTeamRole(ctx, args.teamId, ctx.userId);
+    const isAdmin = await isOrganizationAdmin(ctx, team.organizationId, ctx.userId);
 
     if (!(role || isAdmin)) {
       return { page: [], isDone: true, continueCursor: "" };
@@ -228,18 +212,12 @@ export const getTeamProjects = query({
   },
 });
 
-export const getWorkspaceProjects = query({
+export const getWorkspaceProjects = authenticatedQuery({
   args: {
     workspaceId: v.id("workspaces"),
     paginationOpts: v.optional(paginationOptsValidator),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      return { page: [], isDone: true, continueCursor: "" };
-    }
-
-    // Check workspace access
     // Check workspace access
     const workspace = await ctx.db.get(args.workspaceId);
     if (!workspace) {
@@ -266,10 +244,9 @@ export const getWorkspaceProjects = query({
   },
 });
 
-export const getProject = query({
+export const getProject = authenticatedQuery({
   args: { id: v.id("projects") },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
     const project = await ctx.db.get(args.id);
 
     if (!project) {
@@ -277,15 +254,8 @@ export const getProject = query({
     }
 
     // Check access permissions
-    if (userId) {
-      const hasAccess = await canAccessProject(ctx, project._id, userId);
-      if (!hasAccess) {
-        throw new Error("Not authorized to access this project");
-      }
-    } else {
-      // Unauthenticated users cannot access projects
-      throw new Error("Not authorized to access this project");
-    }
+    const hasAccess = await canAccessProject(ctx, project._id, ctx.userId);
+    if (!hasAccess) throw forbidden();
 
     const creator = await ctx.db.get(project.createdBy);
 
@@ -312,25 +282,23 @@ export const getProject = query({
       };
     });
 
-    const userRole = userId ? await getProjectRole(ctx, project._id, userId) : null;
+    const userRole = await getProjectRole(ctx, project._id, ctx.userId);
 
     return {
       ...project,
 
       creatorName: getUserName(creator),
       members,
-      isOwner: project.ownerId === userId || project.createdBy === userId,
+      isOwner: project.ownerId === ctx.userId || project.createdBy === ctx.userId,
       userRole,
     };
   },
 });
 
 // Get project by key (e.g., "PROJ")
-export const getByKey = query({
+export const getByKey = authenticatedQuery({
   args: { key: v.string() },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-
     // Find project by key
     const project = await ctx.db
       .query("projects")
@@ -342,12 +310,7 @@ export const getByKey = query({
       return null;
     }
 
-    // Check access permissions (requires authentication)
-    if (!userId) {
-      return null; // Unauthenticated users cannot access projects
-    }
-
-    const hasAccess = await canAccessProject(ctx, project._id, userId);
+    const hasAccess = await canAccessProject(ctx, project._id, ctx.userId);
     if (!hasAccess) {
       return null; // Return null instead of throwing for cleaner UI handling
     }
@@ -377,20 +340,20 @@ export const getByKey = query({
       };
     });
 
-    const userRole = await getProjectRole(ctx, project._id, userId);
+    const userRole = await getProjectRole(ctx, project._id, ctx.userId);
 
     return {
       ...project,
 
       creatorName: getUserName(creator),
       members,
-      isOwner: project.ownerId === userId || project.createdBy === userId,
+      isOwner: project.ownerId === ctx.userId || project.createdBy === ctx.userId,
       userRole,
     };
   },
 });
 
-export const updateProject = mutation({
+export const updateProject = authenticatedMutation({
   args: {
     projectId: v.id("projects"),
     name: v.optional(v.string()),
@@ -398,18 +361,11 @@ export const updateProject = mutation({
     isPublic: v.optional(v.boolean()), // organization-visible
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      throw new Error("Not authenticated");
-    }
-
     const project = await ctx.db.get(args.projectId);
-    if (!project) {
-      throw new Error("Project not found");
-    }
+    if (!project) throw notFound("project", args.projectId);
 
     // Only project admins can update project settings
-    await assertIsProjectAdmin(ctx, args.projectId, userId);
+    await assertIsProjectAdmin(ctx, args.projectId, ctx.userId);
 
     const updates: Record<string, unknown> = {
       updatedAt: Date.now(),
@@ -430,7 +386,7 @@ export const updateProject = mutation({
     if (!isTest) {
       await ctx.scheduler.runAfter(0, internal.auditLogs.log, {
         action: "project_updated",
-        actorId: userId,
+        actorId: ctx.userId,
         targetId: args.projectId,
         targetType: "projects",
         metadata: updates,
@@ -441,35 +397,28 @@ export const updateProject = mutation({
   },
 });
 
-export const softDeleteProject = mutation({
+export const softDeleteProject = authenticatedMutation({
   args: {
     projectId: v.id("projects"),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      throw new Error("Not authenticated");
-    }
-
     const project = await ctx.db.get(args.projectId);
-    if (!project) {
-      throw new Error("Project not found");
-    }
+    if (!project) throw notFound("project", args.projectId);
 
     // Only project owner can delete the project
-    if (project.createdBy !== userId && project.ownerId !== userId) {
-      throw new Error("Only project owner can delete the project");
+    if (project.createdBy !== ctx.userId && project.ownerId !== ctx.userId) {
+      throw forbidden("owner");
     }
 
     // Soft delete with automatic cascading
     const deletedAt = Date.now();
-    await ctx.db.patch(args.projectId, softDeleteFields(userId));
-    await cascadeSoftDelete(ctx, "projects", args.projectId, userId, deletedAt);
+    await ctx.db.patch(args.projectId, softDeleteFields(ctx.userId));
+    await cascadeSoftDelete(ctx, "projects", args.projectId, ctx.userId, deletedAt);
 
     if (!isTest) {
       await ctx.scheduler.runAfter(0, internal.auditLogs.log, {
         action: "project_deleted",
-        actorId: userId,
+        actorId: ctx.userId,
         targetId: args.projectId,
         targetType: "projects",
         metadata: { deletedAt },
@@ -480,28 +429,21 @@ export const softDeleteProject = mutation({
   },
 });
 
-export const restoreProject = mutation({
+export const restoreProject = authenticatedMutation({
   args: {
     projectId: v.id("projects"),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      throw new Error("Not authenticated");
-    }
-
     const project = await ctx.db.get(args.projectId);
-    if (!project) {
-      throw new Error("Project not found");
-    }
+    if (!project) throw notFound("project", args.projectId);
 
     if (!project.isDeleted) {
-      throw new Error("Project is not deleted");
+      throw validation("projectId", "Project is not deleted");
     }
 
     // Only project owner can restore
-    if (project.createdBy !== userId && project.ownerId !== userId) {
-      throw new Error("Only project owner can restore the project");
+    if (project.createdBy !== ctx.userId && project.ownerId !== ctx.userId) {
+      throw forbidden("owner");
     }
 
     // Restore with automatic cascading
@@ -517,7 +459,7 @@ export const restoreProject = mutation({
     if (!isTest) {
       await ctx.scheduler.runAfter(0, internal.auditLogs.log, {
         action: "project_restored",
-        actorId: userId,
+        actorId: ctx.userId,
         targetId: args.projectId,
         targetType: "projects",
       });
@@ -527,31 +469,24 @@ export const restoreProject = mutation({
   },
 });
 
-export const updateWorkflow = mutation({
+export const updateWorkflow = authenticatedMutation({
   args: {
     projectId: v.id("projects"),
     workflowStates: v.array(
       v.object({
         id: v.string(),
         name: v.string(),
-        category: v.union(v.literal("todo"), v.literal("inprogress"), v.literal("done")),
+        category: workflowCategories,
         order: v.number(),
       }),
     ),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      throw new Error("Not authenticated");
-    }
-
     const project = await ctx.db.get(args.projectId);
-    if (!project) {
-      throw new Error("Project not found");
-    }
+    if (!project) throw notFound("project", args.projectId);
 
     // Only project admins can modify workflow
-    await assertIsProjectAdmin(ctx, args.projectId, userId);
+    await assertIsProjectAdmin(ctx, args.projectId, ctx.userId);
 
     await ctx.db.patch(args.projectId, {
       workflowStates: args.workflowStates,
@@ -561,7 +496,7 @@ export const updateWorkflow = mutation({
     if (!isTest) {
       await ctx.scheduler.runAfter(0, internal.auditLogs.log, {
         action: "workflow_updated",
-        actorId: userId,
+        actorId: ctx.userId,
         targetId: args.projectId,
         targetType: "projects",
         metadata: { workflowStates: args.workflowStates },
@@ -570,25 +505,18 @@ export const updateWorkflow = mutation({
   },
 });
 
-export const addProjectMember = mutation({
+export const addProjectMember = authenticatedMutation({
   args: {
     projectId: v.id("projects"),
     userEmail: v.string(),
-    role: v.union(v.literal("admin"), v.literal("editor"), v.literal("viewer")),
+    role: projectRoles,
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      throw new Error("Not authenticated");
-    }
-
     const project = await ctx.db.get(args.projectId);
-    if (!project) {
-      throw new Error("Project not found");
-    }
+    if (!project) throw notFound("project", args.projectId);
 
     // Only project admins can add members
-    await assertIsProjectAdmin(ctx, args.projectId, userId);
+    await assertIsProjectAdmin(ctx, args.projectId, ctx.userId);
 
     // Find user by email
     const user = await ctx.db
@@ -596,9 +524,7 @@ export const addProjectMember = mutation({
       .withIndex("email", (q) => q.eq("email", args.userEmail))
       .first();
 
-    if (!user) {
-      throw new Error("User not found");
-    }
+    if (!user) throw notFound("user");
 
     // Check if already a member
     const existingMembership = await ctx.db
@@ -606,9 +532,7 @@ export const addProjectMember = mutation({
       .withIndex("by_project_user", (q) => q.eq("projectId", args.projectId).eq("userId", user._id))
       .first();
 
-    if (existingMembership) {
-      throw new Error("User is already a member");
-    }
+    if (existingMembership) throw conflict("User is already a member");
 
     const now = Date.now();
 
@@ -617,14 +541,14 @@ export const addProjectMember = mutation({
       projectId: args.projectId,
       userId: user._id,
       role: args.role,
-      addedBy: userId,
+      addedBy: ctx.userId,
       addedAt: now,
     });
 
     if (!isTest) {
       await ctx.scheduler.runAfter(0, internal.auditLogs.log, {
         action: "member_added",
-        actorId: userId,
+        actorId: ctx.userId,
         targetId: args.projectId,
         targetType: "projects",
         metadata: {
@@ -636,29 +560,22 @@ export const addProjectMember = mutation({
   },
 });
 
-export const updateProjectMemberRole = mutation({
+export const updateProjectMemberRole = authenticatedMutation({
   args: {
     projectId: v.id("projects"),
     memberId: v.id("users"),
-    newRole: v.union(v.literal("admin"), v.literal("editor"), v.literal("viewer")),
+    newRole: projectRoles,
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      throw new Error("Not authenticated");
-    }
-
     const project = await ctx.db.get(args.projectId);
-    if (!project) {
-      throw new Error("Project not found");
-    }
+    if (!project) throw notFound("project", args.projectId);
 
     // Only project admins can change roles
-    await assertIsProjectAdmin(ctx, args.projectId, userId);
+    await assertIsProjectAdmin(ctx, args.projectId, ctx.userId);
 
     // Can't change project owner's role
     if (project.ownerId === args.memberId || project.createdBy === args.memberId) {
-      throw new Error("Cannot change project owner's role");
+      throw forbidden(undefined, "Cannot change project owner's role");
     }
 
     // Find membership
@@ -669,9 +586,7 @@ export const updateProjectMemberRole = mutation({
       )
       .first();
 
-    if (!membership) {
-      throw new Error("User is not a member of this project");
-    }
+    if (!membership) throw notFound("membership");
 
     await ctx.db.patch(membership._id, {
       role: args.newRole,
@@ -680,7 +595,7 @@ export const updateProjectMemberRole = mutation({
     if (!isTest) {
       await ctx.scheduler.runAfter(0, internal.auditLogs.log, {
         action: "member_role_updated",
-        actorId: userId,
+        actorId: ctx.userId,
         targetId: args.projectId,
         targetType: "projects",
         metadata: {
@@ -692,28 +607,21 @@ export const updateProjectMemberRole = mutation({
   },
 });
 
-export const removeProjectMember = mutation({
+export const removeProjectMember = authenticatedMutation({
   args: {
     projectId: v.id("projects"),
     memberId: v.id("users"),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      throw new Error("Not authenticated");
-    }
-
     const project = await ctx.db.get(args.projectId);
-    if (!project) {
-      throw new Error("Project not found");
-    }
+    if (!project) throw notFound("project", args.projectId);
 
     // Only project admins can remove members
-    await assertIsProjectAdmin(ctx, args.projectId, userId);
+    await assertIsProjectAdmin(ctx, args.projectId, ctx.userId);
 
     // Can't remove the project owner
     if (project.ownerId === args.memberId || project.createdBy === args.memberId) {
-      throw new Error("Cannot remove project owner");
+      throw forbidden(undefined, "Cannot remove project owner");
     }
 
     // Find and delete membership
@@ -730,7 +638,7 @@ export const removeProjectMember = mutation({
       if (!isTest) {
         await ctx.scheduler.runAfter(0, internal.auditLogs.log, {
           action: "member_removed",
-          actorId: userId,
+          actorId: ctx.userId,
           targetId: args.projectId,
           targetType: "projects",
           metadata: {
@@ -745,14 +653,11 @@ export const removeProjectMember = mutation({
 /**
  * Get user's role in a project
  */
-export const getProjectUserRole = query({
+export const getProjectUserRole = authenticatedQuery({
   args: {
     projectId: v.id("projects"),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) return null;
-
-    return await getProjectRole(ctx, args.projectId, userId);
+    return await getProjectRole(ctx, args.projectId, ctx.userId);
   },
 });

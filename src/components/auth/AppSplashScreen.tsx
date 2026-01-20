@@ -8,7 +8,7 @@ export function AppSplashScreen({ message }: { message?: string }) {
       direction="column"
       align="center"
       justify="center"
-      className="fixed inset-0 bg-ui-bg-hero z-[9999]"
+      className="fixed inset-0 bg-ui-bg-hero z-50"
     >
       {/* Background Glow */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">

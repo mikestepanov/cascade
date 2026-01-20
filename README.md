@@ -145,7 +145,7 @@ See [SETUP.md](./SETUP.md) for detailed configuration (email, OAuth, etc.)
 pnpm run dev          # Start development
 pnpm run build        # Build for production
 pnpm run typecheck    # Type checking
-pnpm run lint         # Linting
+pnpm run biome        # Linting
 pnpm test             # Run tests
 ```
 

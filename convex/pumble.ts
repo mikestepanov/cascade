@@ -1,8 +1,9 @@
-import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import { api } from "./_generated/api";
 import type { Doc } from "./_generated/dataModel";
-import { action, mutation, query } from "./_generated/server";
+import { action, mutation } from "./_generated/server";
+import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
+import { forbidden, notFound, validation } from "./lib/errors";
 import { notDeleted } from "./lib/softDeleteHelpers";
 
 /**
@@ -15,7 +16,7 @@ import { notDeleted } from "./lib/softDeleteHelpers";
 /**
  * Add a new Pumble webhook
  */
-export const addWebhook = mutation({
+export const addWebhook = authenticatedMutation({
   args: {
     name: v.string(),
     webhookUrl: v.string(),
@@ -26,34 +27,31 @@ export const addWebhook = mutation({
     sendStatusChanges: v.optional(v.boolean()),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
-
     // Validate webhook URL
     if (!args.webhookUrl.includes("pumble.com")) {
-      throw new Error("Invalid Pumble webhook URL");
+      throw validation("webhookUrl", "Invalid Pumble webhook URL");
     }
 
     // If project is specified, verify access
     if (args.projectId) {
       const projectId = args.projectId;
       const project = await ctx.db.get(projectId);
-      if (!project) throw new Error("Project not found");
+      if (!project) throw notFound("project", projectId);
 
       // Check if user has access to project
       const membership = await ctx.db
         .query("projectMembers")
-        .withIndex("by_project_user", (q) => q.eq("projectId", projectId).eq("userId", userId))
+        .withIndex("by_project_user", (q) => q.eq("projectId", projectId).eq("userId", ctx.userId))
         .filter(notDeleted)
         .first();
 
-      if (!membership && project.createdBy !== userId) {
-        throw new Error("Not authorized for this project");
+      if (!membership && project.createdBy !== ctx.userId) {
+        throw forbidden("project member");
       }
     }
 
     const webhookId = await ctx.db.insert("pumbleWebhooks", {
-      userId,
+      userId: ctx.userId,
       projectId: args.projectId,
       name: args.name,
       webhookUrl: args.webhookUrl,
@@ -74,15 +72,12 @@ export const addWebhook = mutation({
 /**
  * List user's Pumble webhooks
  */
-export const listWebhooks = query({
+export const listWebhooks = authenticatedQuery({
   args: {},
   handler: async (ctx) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) return [];
-
     return await ctx.db
       .query("pumbleWebhooks")
-      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .withIndex("by_user", (q) => q.eq("userId", ctx.userId))
       .filter(notDeleted)
       .collect();
   },
@@ -91,15 +86,12 @@ export const listWebhooks = query({
 /**
  * Get a single webhook
  */
-export const getWebhook = query({
+export const getWebhook = authenticatedQuery({
   args: { webhookId: v.id("pumbleWebhooks") },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) return null;
-
     const webhook = await ctx.db.get(args.webhookId);
     if (!webhook) return null;
-    if (webhook.userId !== userId) throw new Error("Not authorized");
+    if (webhook.userId !== ctx.userId) throw forbidden();
 
     return webhook;
   },
@@ -108,7 +100,7 @@ export const getWebhook = query({
 /**
  * Update webhook settings
  */
-export const updateWebhook = mutation({
+export const updateWebhook = authenticatedMutation({
   args: {
     webhookId: v.id("pumbleWebhooks"),
     name: v.optional(v.string()),
@@ -120,12 +112,9 @@ export const updateWebhook = mutation({
     sendStatusChanges: v.optional(v.boolean()),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
-
     const webhook = await ctx.db.get(args.webhookId);
-    if (!webhook) throw new Error("Webhook not found");
-    if (webhook.userId !== userId) throw new Error("Not authorized");
+    if (!webhook) throw notFound("webhook", args.webhookId);
+    if (webhook.userId !== ctx.userId) throw forbidden();
 
     const updates: {
       updatedAt: number;
@@ -152,15 +141,12 @@ export const updateWebhook = mutation({
 /**
  * Delete a webhook
  */
-export const deleteWebhook = mutation({
+export const deleteWebhook = authenticatedMutation({
   args: { webhookId: v.id("pumbleWebhooks") },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
-
     const webhook = await ctx.db.get(args.webhookId);
-    if (!webhook) throw new Error("Webhook not found");
-    if (webhook.userId !== userId) throw new Error("Not authorized");
+    if (!webhook) throw notFound("webhook", args.webhookId);
+    if (webhook.userId !== ctx.userId) throw forbidden();
 
     await ctx.db.delete(args.webhookId);
   },
@@ -192,11 +178,11 @@ export const sendMessage = action({
     });
 
     if (!webhook) {
-      throw new Error("Webhook not found");
+      throw notFound("webhook", args.webhookId);
     }
 
     if (!webhook.isActive) {
-      throw new Error("Webhook is not active");
+      throw validation("webhook", "Webhook is not active");
     }
 
     // Build Pumble message payload
@@ -237,7 +223,7 @@ export const sendMessage = action({
 
       if (!response.ok) {
         const error = await response.text();
-        throw new Error(`Pumble API error: ${response.status} ${error}`);
+        throw validation("pumble", `Pumble API error: ${response.status} ${error}`);
       }
 
       // Update webhook stats
