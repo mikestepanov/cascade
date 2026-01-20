@@ -6,7 +6,13 @@ import { batchFetchSprints, batchFetchUsers } from "./lib/batchHelpers";
 import { validation } from "./lib/errors";
 import { notDeleted } from "./lib/softDeleteHelpers";
 
-// Helper: Generate next issue key for a project
+/**
+ * Compute the next sequential issue key and the insertion order for a project.
+ *
+ * @param projectId - The project identifier used to find existing issues
+ * @param projectKey - The project's short key used as the prefix for generated issue keys (for example, `PROJ`)
+ * @returns An object with `key` set to the next issue key (e.g., `PROJ-12`) and `order` equal to the current count of existing issues
+ */
 async function generateNextIssueKey(
   ctx: MutationCtx,
   projectId: Id<"projects">,
@@ -211,7 +217,16 @@ function parseCSVRow(
   };
 }
 
-// Helper: Create issue and log activity
+/**
+ * Create a new issue record and record a creation activity for the given user.
+ *
+ * Inserts a new issue with provided fields (including initial timestamps, loggedHours = 0,
+ * empty linkedDocuments and attachments) and creates an `issueActivity` entry with action `"created"`.
+ *
+ * @param issueData - Initial issue fields used to populate the created issue
+ * @param userId - ID of the user who created the issue (recorded on the activity)
+ * @returns The ID of the newly created issue
+ */
 async function createIssueWithActivity(
   ctx: MutationCtx,
   issueData: {

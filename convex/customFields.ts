@@ -6,7 +6,12 @@ import { conflict, notFound, validation } from "./lib/errors";
 import { MAX_PAGE_SIZE } from "./lib/queryLimits";
 import { assertCanAccessProject, assertCanEditProject, assertIsProjectAdmin } from "./projectAccess";
 
-// Helper: Validate number field value
+/**
+ * Validate that a string represents a valid number.
+ *
+ * @param value - The string to validate as a number
+ * @throws A validation error when `value` is not a valid number
+ */
 function validateNumberField(value: string): void {
   if (Number.isNaN(Number(value))) {
     throw validation("value", "Must be a valid number");
@@ -36,7 +41,13 @@ function validateSelectField(
   }
 }
 
-// Helper: Validate custom field value based on type
+/**
+ * Validate a custom field value according to the field's type.
+ *
+ * @param field - The custom field definition to validate against
+ * @param value - The value to validate
+ * @throws Throws a validation error if `value` is not valid for the field's `fieldType`
+ */
 function validateCustomFieldValue(field: Doc<"customFields">, value: string): void {
   if (field.fieldType === "number") {
     validateNumberField(value);
