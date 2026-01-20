@@ -237,6 +237,7 @@ export function CreateIssueModal({
                 align="center"
                 gap="xs"
                 className="text-sm text-status-success dark:text-status-success"
+                aria-live="polite"
               >
                 <span>✓</span>
                 <span>AI suggestions applied</span>
@@ -321,6 +322,7 @@ export function CreateIssueModal({
                     key={label._id}
                     type="button"
                     onClick={() => toggleLabel(label._id)}
+                    aria-pressed={selectedLabels.includes(label._id)}
                     className={cn(
                       "inline-flex items-center px-3 py-1 rounded-full text-sm font-medium text-white transition-opacity",
                       selectedLabels.includes(label._id)

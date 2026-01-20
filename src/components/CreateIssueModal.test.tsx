@@ -134,4 +134,25 @@ describe("CreateIssueModal", () => {
       );
     });
   });
+
+  it("should have accessible labels with aria-pressed state", async () => {
+    // Reset mock calls for this test to ensure clean state
+    (useQuery as any).mockReset();
+    (useQuery as any)
+      .mockReturnValueOnce(mockProject)
+      .mockReturnValueOnce(mockTemplates)
+      .mockReturnValueOnce(mockLabels);
+
+    render(
+      <CreateIssueModal projectId={mockProjectId} open={true} onOpenChange={mockOnOpenChange} />,
+    );
+
+    // Find label buttons
+    const bugLabel = screen.getByRole("button", { name: /bug/i });
+    const featureLabel = screen.getByRole("button", { name: /feature/i });
+
+    // Initially not selected (assuming no default template selects them)
+    expect(bugLabel).toHaveAttribute("aria-pressed", "false");
+    expect(featureLabel).toHaveAttribute("aria-pressed", "false");
+  });
 });
