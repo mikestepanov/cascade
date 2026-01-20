@@ -14,6 +14,7 @@ import { Flex } from "../ui/Flex";
 import { Checkbox } from "../ui/form/Checkbox";
 import { Input } from "../ui/form/Input";
 import { LoadingSpinner } from "../ui/LoadingSpinner";
+import { Tooltip } from "../ui/Tooltip";
 import { Typography } from "../ui/Typography";
 
 /**
@@ -181,15 +182,17 @@ function ApiKeyCard({ apiKey, onViewStats }: { apiKey: Doc<"apiKeys">; onViewSta
             <code className="text-sm font-mono bg-ui-bg-primary px-2 py-1 rounded border border-ui-border-primary">
               {apiKey.keyPrefix}...
             </code>
-            <Button
-              onClick={copyKeyPrefix}
-              variant="ghost"
-              size="sm"
-              className="p-1 min-w-0"
-              aria-label="Copy key prefix"
-            >
-              <Copy className="h-4 w-4" />
-            </Button>
+            <Tooltip content="Copy key prefix">
+              <Button
+                onClick={copyKeyPrefix}
+                variant="ghost"
+                size="sm"
+                className="p-1 min-w-0"
+                aria-label="Copy key prefix"
+              >
+                <Copy className="h-4 w-4" />
+              </Button>
+            </Tooltip>
           </Flex>
 
           {/* Scopes */}
@@ -232,15 +235,17 @@ function ApiKeyCard({ apiKey, onViewStats }: { apiKey: Doc<"apiKeys">; onViewSta
 
         {/* Actions */}
         <Flex gap="sm" align="center" className="ml-4">
-          <Button
-            onClick={onViewStats}
-            variant="ghost"
-            size="sm"
-            className="p-2 min-w-0 text-ui-text-tertiary hover:text-brand-600 dark:hover:text-brand-400"
-            aria-label="View usage statistics"
-          >
-            <TrendingUp className="h-4 w-4" />
-          </Button>
+          <Tooltip content="View usage statistics">
+            <Button
+              onClick={onViewStats}
+              variant="ghost"
+              size="sm"
+              className="p-2 min-w-0 text-ui-text-tertiary hover:text-brand-600 dark:hover:text-brand-400"
+              aria-label="View usage statistics"
+            >
+              <TrendingUp className="h-4 w-4" />
+            </Button>
+          </Tooltip>
           {apiKey.isActive && (
             <Button
               onClick={handleRevoke}
@@ -253,16 +258,18 @@ function ApiKeyCard({ apiKey, onViewStats }: { apiKey: Doc<"apiKeys">; onViewSta
               {isRevoking ? "Revoking..." : "Revoke"}
             </Button>
           )}
-          <Button
-            onClick={handleDelete}
-            variant="ghost"
-            size="sm"
-            isLoading={isDeleting}
-            className="p-2 min-w-0 text-ui-text-tertiary hover:text-status-error dark:hover:text-status-error"
-            aria-label="Delete key"
-          >
-            <Trash2 className="h-4 w-4" />
-          </Button>
+          <Tooltip content="Delete API key">
+            <Button
+              onClick={handleDelete}
+              variant="ghost"
+              size="sm"
+              isLoading={isDeleting}
+              className="p-2 min-w-0 text-ui-text-tertiary hover:text-status-error dark:hover:text-status-error"
+              aria-label="Delete key"
+            >
+              <Trash2 className="h-4 w-4" />
+            </Button>
+          </Tooltip>
         </Flex>
       </Flex>
     </div>
