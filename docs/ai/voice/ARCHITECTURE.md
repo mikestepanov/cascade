@@ -309,7 +309,7 @@ console.log(`Recording ${id}: Completed successfully`);
 ---
 
 **Related Documentation:**
-- [Voice AI Overview](./README.md)
+- [Docs Index](../../README.md)
 - [Setup Guide](./SETUP.md)
 - [Bot Service Code](../../../bot-service/)
 

@@ -752,7 +752,7 @@ This file is read by `rbac.fixture.ts` to get the correct organization slug for 
 
 **Related Documentation:**
 
-- [Testing Overview](./README.md)
+- [Docs Index](../README.md)
 - [E2E Test Files](../../e2e/)
 - [Playwright Docs](https://playwright.dev/docs/intro)
 

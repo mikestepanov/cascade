@@ -455,7 +455,7 @@ pnpm test:convex
 ---
 
 **Related Documentation:**
-- [Testing Overview](./README.md)
+- [Docs Index](../README.md)
 - [Convex Testing Docs](https://docs.convex.dev/functions/testing)
 - [convex-test on npm](https://www.npmjs.com/package/convex-test)
 - [Backend README](../../convex/README.md)

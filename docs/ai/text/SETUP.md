@@ -174,9 +174,8 @@ Wait and retry. Default limits:
 ---
 
 **Related Documentation:**
-- [Text AI Overview](./README.md)
+- [Docs Index](../../README.md)
 - [Voice AI Setup](../voice/SETUP.md)
-- [AI Overview](../README.md)
 
 ---
 
