@@ -57,7 +57,7 @@ export interface ErrorData {
  * if (!userId) throw unauthenticated();
  */
 export function unauthenticated(): ConvexError<ErrorData> {
-  return new ConvexError({ code: "UNAUTHENTICATED" });
+  return new ConvexError({ code: "UNAUTHENTICATED", message: "Not authenticated" });
 }
 
 /**
@@ -73,7 +73,7 @@ export function forbidden(requiredRole?: string, message?: string): ConvexError<
   return new ConvexError({
     code: "FORBIDDEN",
     requiredRole,
-    message,
+    message: message ?? "Not authorized",
   });
 }
 
@@ -88,11 +88,13 @@ export function forbidden(requiredRole?: string, message?: string): ConvexError<
  * if (!project) throw notFound("project", projectId);
  */
 export function notFound(resource: string, id?: string): ConvexError<ErrorData> {
+  // Capitalize first letter for readable message
+  const capitalized = resource.charAt(0).toUpperCase() + resource.slice(1);
   return new ConvexError({
     code: "NOT_FOUND",
     resource,
     id,
-    message: id ? `${resource} not found` : undefined,
+    message: `${capitalized} not found`,
   });
 }
 
