@@ -3,13 +3,13 @@ import { v } from "convex/values";
 import { pruneNull } from "convex-helpers";
 import { internal } from "./_generated/api";
 import type { Doc } from "./_generated/dataModel";
-import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
+import { adminMutation, authenticatedMutation, authenticatedQuery } from "./customFunctions";
 import { batchFetchProjects, batchFetchUsers, getUserName } from "./lib/batchHelpers";
 import { conflict, forbidden, notFound, validation } from "./lib/errors";
 import { fetchPaginatedQuery } from "./lib/queryHelpers";
 import { cascadeSoftDelete } from "./lib/relationships";
 import { notDeleted, softDeleteFields } from "./lib/softDeleteHelpers";
-import { assertIsProjectAdmin, canAccessProject, getProjectRole } from "./projectAccess";
+import { canAccessProject, getProjectRole } from "./projectAccess";
 import { isTest } from "./testConfig";
 import { boardTypes, projectRoles, workflowCategories } from "./validators";
 
@@ -353,19 +353,14 @@ export const getByKey = authenticatedQuery({
   },
 });
 
-export const updateProject = authenticatedMutation({
+export const updateProject = adminMutation({
   args: {
-    projectId: v.id("projects"),
     name: v.optional(v.string()),
     description: v.optional(v.string()),
     isPublic: v.optional(v.boolean()), // organization-visible
   },
   handler: async (ctx, args) => {
-    const project = await ctx.db.get(args.projectId);
-    if (!project) throw notFound("project", args.projectId);
-
-    // Only project admins can update project settings
-    await assertIsProjectAdmin(ctx, args.projectId, ctx.userId);
+    // adminMutation handles auth + admin check + provides ctx.projectId, ctx.project
 
     const updates: Record<string, unknown> = {
       updatedAt: Date.now(),
@@ -381,19 +376,19 @@ export const updateProject = authenticatedMutation({
       updates.isPublic = args.isPublic;
     }
 
-    await ctx.db.patch(args.projectId, updates);
+    await ctx.db.patch(ctx.projectId, updates);
 
     if (!isTest) {
       await ctx.scheduler.runAfter(0, internal.auditLogs.log, {
         action: "project_updated",
         actorId: ctx.userId,
-        targetId: args.projectId,
+        targetId: ctx.projectId,
         targetType: "projects",
         metadata: updates,
       });
     }
 
-    return { projectId: args.projectId };
+    return { projectId: ctx.projectId };
   },
 });
 
@@ -469,9 +464,8 @@ export const restoreProject = authenticatedMutation({
   },
 });
 
-export const updateWorkflow = authenticatedMutation({
+export const updateWorkflow = adminMutation({
   args: {
-    projectId: v.id("projects"),
     workflowStates: v.array(
       v.object({
         id: v.string(),
@@ -482,13 +476,9 @@ export const updateWorkflow = authenticatedMutation({
     ),
   },
   handler: async (ctx, args) => {
-    const project = await ctx.db.get(args.projectId);
-    if (!project) throw notFound("project", args.projectId);
+    // adminMutation handles auth + admin check + provides ctx.projectId
 
-    // Only project admins can modify workflow
-    await assertIsProjectAdmin(ctx, args.projectId, ctx.userId);
-
-    await ctx.db.patch(args.projectId, {
+    await ctx.db.patch(ctx.projectId, {
       workflowStates: args.workflowStates,
       updatedAt: Date.now(),
     });
@@ -497,7 +487,7 @@ export const updateWorkflow = authenticatedMutation({
       await ctx.scheduler.runAfter(0, internal.auditLogs.log, {
         action: "workflow_updated",
         actorId: ctx.userId,
-        targetId: args.projectId,
+        targetId: ctx.projectId,
         targetType: "projects",
         metadata: { workflowStates: args.workflowStates },
       });
@@ -505,18 +495,13 @@ export const updateWorkflow = authenticatedMutation({
   },
 });
 
-export const addProjectMember = authenticatedMutation({
+export const addProjectMember = adminMutation({
   args: {
-    projectId: v.id("projects"),
     userEmail: v.string(),
     role: projectRoles,
   },
   handler: async (ctx, args) => {
-    const project = await ctx.db.get(args.projectId);
-    if (!project) throw notFound("project", args.projectId);
-
-    // Only project admins can add members
-    await assertIsProjectAdmin(ctx, args.projectId, ctx.userId);
+    // adminMutation handles auth + admin check + provides ctx.projectId
 
     // Find user by email
     const user = await ctx.db
@@ -529,7 +514,7 @@ export const addProjectMember = authenticatedMutation({
     // Check if already a member
     const existingMembership = await ctx.db
       .query("projectMembers")
-      .withIndex("by_project_user", (q) => q.eq("projectId", args.projectId).eq("userId", user._id))
+      .withIndex("by_project_user", (q) => q.eq("projectId", ctx.projectId).eq("userId", user._id))
       .first();
 
     if (existingMembership) throw conflict("User is already a member");
@@ -538,7 +523,7 @@ export const addProjectMember = authenticatedMutation({
 
     // Add to projectMembers table
     await ctx.db.insert("projectMembers", {
-      projectId: args.projectId,
+      projectId: ctx.projectId,
       userId: user._id,
       role: args.role,
       addedBy: ctx.userId,
@@ -549,7 +534,7 @@ export const addProjectMember = authenticatedMutation({
       await ctx.scheduler.runAfter(0, internal.auditLogs.log, {
         action: "member_added",
         actorId: ctx.userId,
-        targetId: args.projectId,
+        targetId: ctx.projectId,
         targetType: "projects",
         metadata: {
           memberId: user._id,
@@ -560,21 +545,16 @@ export const addProjectMember = authenticatedMutation({
   },
 });
 
-export const updateProjectMemberRole = authenticatedMutation({
+export const updateProjectMemberRole = adminMutation({
   args: {
-    projectId: v.id("projects"),
     memberId: v.id("users"),
     newRole: projectRoles,
   },
   handler: async (ctx, args) => {
-    const project = await ctx.db.get(args.projectId);
-    if (!project) throw notFound("project", args.projectId);
-
-    // Only project admins can change roles
-    await assertIsProjectAdmin(ctx, args.projectId, ctx.userId);
+    // adminMutation handles auth + admin check + provides ctx.projectId, ctx.project
 
     // Can't change project owner's role
-    if (project.ownerId === args.memberId || project.createdBy === args.memberId) {
+    if (ctx.project.ownerId === args.memberId || ctx.project.createdBy === args.memberId) {
       throw forbidden(undefined, "Cannot change project owner's role");
     }
 
@@ -582,7 +562,7 @@ export const updateProjectMemberRole = authenticatedMutation({
     const membership = await ctx.db
       .query("projectMembers")
       .withIndex("by_project_user", (q) =>
-        q.eq("projectId", args.projectId).eq("userId", args.memberId),
+        q.eq("projectId", ctx.projectId).eq("userId", args.memberId),
       )
       .first();
 
@@ -596,7 +576,7 @@ export const updateProjectMemberRole = authenticatedMutation({
       await ctx.scheduler.runAfter(0, internal.auditLogs.log, {
         action: "member_role_updated",
         actorId: ctx.userId,
-        targetId: args.projectId,
+        targetId: ctx.projectId,
         targetType: "projects",
         metadata: {
           memberId: args.memberId,
@@ -607,20 +587,15 @@ export const updateProjectMemberRole = authenticatedMutation({
   },
 });
 
-export const removeProjectMember = authenticatedMutation({
+export const removeProjectMember = adminMutation({
   args: {
-    projectId: v.id("projects"),
     memberId: v.id("users"),
   },
   handler: async (ctx, args) => {
-    const project = await ctx.db.get(args.projectId);
-    if (!project) throw notFound("project", args.projectId);
-
-    // Only project admins can remove members
-    await assertIsProjectAdmin(ctx, args.projectId, ctx.userId);
+    // adminMutation handles auth + admin check + provides ctx.projectId, ctx.project
 
     // Can't remove the project owner
-    if (project.ownerId === args.memberId || project.createdBy === args.memberId) {
+    if (ctx.project.ownerId === args.memberId || ctx.project.createdBy === args.memberId) {
       throw forbidden(undefined, "Cannot remove project owner");
     }
 
@@ -628,7 +603,7 @@ export const removeProjectMember = authenticatedMutation({
     const membership = await ctx.db
       .query("projectMembers")
       .withIndex("by_project_user", (q) =>
-        q.eq("projectId", args.projectId).eq("userId", args.memberId),
+        q.eq("projectId", ctx.projectId).eq("userId", args.memberId),
       )
       .first();
 
@@ -639,7 +614,7 @@ export const removeProjectMember = authenticatedMutation({
         await ctx.scheduler.runAfter(0, internal.auditLogs.log, {
           action: "member_removed",
           actorId: ctx.userId,
-          targetId: args.projectId,
+          targetId: ctx.projectId,
           targetType: "projects",
           metadata: {
             memberId: args.memberId,

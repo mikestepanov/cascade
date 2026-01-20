@@ -1,14 +1,13 @@
 import { v } from "convex/values";
 import type { Doc } from "./_generated/dataModel";
-import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
+import { authenticatedMutation, authenticatedQuery, editorMutation, projectQuery } from "./customFunctions";
 import { forbidden, notFound } from "./lib/errors";
-import { assertCanAccessProject, assertCanEditProject } from "./projectAccess";
+import { assertCanEditProject } from "./projectAccess";
 import { issuePriorities, issueTypes } from "./validators";
 
 // Create an issue template
-export const create = authenticatedMutation({
+export const create = editorMutation({
   args: {
-    projectId: v.id("projects"),
     name: v.string(),
     type: issueTypes,
     titleTemplate: v.string(),
@@ -17,11 +16,9 @@ export const create = authenticatedMutation({
     defaultLabels: v.array(v.string()),
   },
   handler: async (ctx, args) => {
-    // Check if user can edit project (requires editor role or higher)
-    await assertCanEditProject(ctx, args.projectId, ctx.userId);
-
+    // editorMutation handles auth + editor check
     const templateId = await ctx.db.insert("issueTemplates", {
-      projectId: args.projectId,
+      projectId: ctx.projectId,
       name: args.name,
       type: args.type,
       titleTemplate: args.titleTemplate,
@@ -37,28 +34,25 @@ export const create = authenticatedMutation({
 });
 
 // List templates for a project
-export const listByProject = authenticatedQuery({
+export const listByProject = projectQuery({
   args: {
-    projectId: v.id("projects"),
     type: v.optional(issueTypes),
   },
   handler: async (ctx, args) => {
-    // Check if user has access to project
-    await assertCanAccessProject(ctx, args.projectId, ctx.userId);
-
+    // projectQuery handles auth + project access check
     let templates: Array<Doc<"issueTemplates">>;
     if (args.type) {
       const templateType = args.type; // Store in variable for type narrowing
       templates = await ctx.db
         .query("issueTemplates")
         .withIndex("by_project_type", (q) =>
-          q.eq("projectId", args.projectId).eq("type", templateType),
+          q.eq("projectId", ctx.projectId).eq("type", templateType),
         )
         .collect();
     } else {
       templates = await ctx.db
         .query("issueTemplates")
-        .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
+        .withIndex("by_project", (q) => q.eq("projectId", ctx.projectId))
         .collect();
     }
 

@@ -1,14 +1,10 @@
 import { v } from "convex/values";
 import type { Doc } from "./_generated/dataModel";
-import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
+import { adminMutation, authenticatedMutation, authenticatedQuery, projectQuery } from "./customFunctions";
 import { batchFetchCustomFields } from "./lib/batchHelpers";
 import { conflict, notFound, validation } from "./lib/errors";
 import { MAX_PAGE_SIZE } from "./lib/queryLimits";
-import {
-  assertCanAccessProject,
-  assertCanEditProject,
-  assertIsProjectAdmin,
-} from "./projectAccess";
+import { assertCanAccessProject, assertCanEditProject, assertIsProjectAdmin } from "./projectAccess";
 
 // Helper: Validate number field value
 function validateNumberField(value: string): void {
@@ -52,25 +48,20 @@ function validateCustomFieldValue(field: Doc<"customFields">, value: string): vo
 }
 
 // Get all custom fields for a project
-export const list = authenticatedQuery({
-  args: {
-    projectId: v.id("projects"),
-  },
-  handler: async (ctx, args) => {
-    // Throws if user doesn't have access (proper error propagation)
-    await assertCanAccessProject(ctx, args.projectId, ctx.userId);
-
+export const list = projectQuery({
+  args: {},
+  handler: async (ctx) => {
+    // projectQuery handles auth + project access check
     return await ctx.db
       .query("customFields")
-      .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
+      .withIndex("by_project", (q) => q.eq("projectId", ctx.projectId))
       .take(MAX_PAGE_SIZE);
   },
 });
 
 // Create a new custom field
-export const create = authenticatedMutation({
+export const create = adminMutation({
   args: {
-    projectId: v.id("projects"),
     name: v.string(),
     fieldKey: v.string(),
     fieldType: v.union(
@@ -87,13 +78,13 @@ export const create = authenticatedMutation({
     description: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    await assertIsProjectAdmin(ctx, args.projectId, ctx.userId);
+    // adminMutation handles auth + admin check
 
     // Check if field key already exists for this project
     const existing = await ctx.db
       .query("customFields")
       .withIndex("by_project_key", (q) =>
-        q.eq("projectId", args.projectId).eq("fieldKey", args.fieldKey),
+        q.eq("projectId", ctx.projectId).eq("fieldKey", args.fieldKey),
       )
       .first();
 
@@ -102,7 +93,7 @@ export const create = authenticatedMutation({
     }
 
     return await ctx.db.insert("customFields", {
-      projectId: args.projectId,
+      projectId: ctx.projectId,
       name: args.name,
       fieldKey: args.fieldKey,
       fieldType: args.fieldType,

@@ -1,11 +1,10 @@
 import { v } from "convex/values";
 import type { Id } from "./_generated/dataModel";
 import type { MutationCtx } from "./_generated/server";
-import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
+import { editorMutation, projectQuery } from "./customFunctions";
 import { batchFetchSprints, batchFetchUsers } from "./lib/batchHelpers";
-import { notFound, validation } from "./lib/errors";
+import { validation } from "./lib/errors";
 import { notDeleted } from "./lib/softDeleteHelpers";
-import { assertCanAccessProject, assertCanEditProject } from "./projectAccess";
 
 // Helper: Generate next issue key for a project
 async function generateNextIssueKey(
@@ -257,24 +256,18 @@ async function createIssueWithActivity(
 }
 
 // Export issues as CSV
-export const exportIssuesCSV = authenticatedQuery({
+export const exportIssuesCSV = projectQuery({
   args: {
-    projectId: v.id("projects"),
     sprintId: v.optional(v.id("sprints")),
     status: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    // Check if user has access to project
-    await assertCanAccessProject(ctx, args.projectId, ctx.userId);
-
-    // Get project to access workflow states
-    const project = await ctx.db.get(args.projectId);
-    if (!project) throw notFound("project", args.projectId);
+    // projectQuery handles auth + access check + provides ctx.projectId, ctx.project
 
     // Get issues
     const issuesQuery = ctx.db
       .query("issues")
-      .withIndex("by_project", (q) => q.eq("projectId", args.projectId));
+      .withIndex("by_project", (q) => q.eq("projectId", ctx.projectId));
 
     let issues = await issuesQuery.collect();
 
@@ -307,7 +300,7 @@ export const exportIssuesCSV = authenticatedQuery({
       const sprint = issue.sprintId ? sprintMap.get(issue.sprintId) : null;
 
       // Get status name from workflow
-      const statusState = project.workflowStates.find((s) => s.id === issue.status);
+      const statusState = ctx.project.workflowStates.find((s) => s.id === issue.status);
 
       return {
         key: issue.key,
@@ -366,33 +359,29 @@ export const exportIssuesCSV = authenticatedQuery({
 });
 
 // Export analytics data
-export const exportAnalytics = authenticatedQuery({
-  args: { projectId: v.id("projects") },
-  handler: async (ctx, args) => {
-    // Check if user has access to project
-    await assertCanAccessProject(ctx, args.projectId, ctx.userId);
-
-    const project = await ctx.db.get(args.projectId);
-    if (!project) throw notFound("project", args.projectId);
+export const exportAnalytics = projectQuery({
+  args: {},
+  handler: async (ctx) => {
+    // projectQuery handles auth + access check + provides ctx.projectId, ctx.project
 
     // Get all issues
     const issues = await ctx.db
       .query("issues")
-      .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
+      .withIndex("by_project", (q) => q.eq("projectId", ctx.projectId))
       .filter(notDeleted)
       .collect();
 
     // Get all sprints
     const sprints = await ctx.db
       .query("sprints")
-      .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
+      .withIndex("by_project", (q) => q.eq("projectId", ctx.projectId))
       .filter(notDeleted)
       .collect();
 
     // Calculate metrics
     const totalIssues = issues.length;
     const completedIssues = issues.filter((i) => {
-      const state = project.workflowStates.find((s) => s.id === i.status);
+      const state = ctx.project.workflowStates.find((s) => s.id === i.status);
       return state?.category === "done";
     }).length;
 
@@ -416,8 +405,8 @@ export const exportAnalytics = authenticatedQuery({
     const totalLogged = issues.reduce((sum, i) => sum + (i.loggedHours ?? 0), 0);
 
     return {
-      projectName: project.name,
-      projectKey: project.key,
+      projectName: ctx.project.name,
+      projectKey: ctx.project.key,
       totalIssues,
       completedIssues,
       completionRate: totalIssues > 0 ? (completedIssues / totalIssues) * 100 : 0,
@@ -433,22 +422,18 @@ export const exportAnalytics = authenticatedQuery({
 });
 
 // Export issues as JSON
-export const exportIssuesJSON = authenticatedQuery({
+export const exportIssuesJSON = projectQuery({
   args: {
-    projectId: v.id("projects"),
     sprintId: v.optional(v.id("sprints")),
     status: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    await assertCanAccessProject(ctx, args.projectId, ctx.userId);
-
-    const project = await ctx.db.get(args.projectId);
-    if (!project) throw notFound("project", args.projectId);
+    // projectQuery handles auth + access check + provides ctx.projectId, ctx.project
 
     // Get issues with same filtering as CSV export
     const issuesQuery = ctx.db
       .query("issues")
-      .withIndex("by_project", (q) => q.eq("projectId", args.projectId));
+      .withIndex("by_project", (q) => q.eq("projectId", ctx.projectId));
 
     let issues = await issuesQuery.collect();
 
@@ -492,7 +477,7 @@ export const exportIssuesJSON = authenticatedQuery({
       const assignee = issue.assigneeId ? userMap.get(issue.assigneeId) : null;
       const reporter = userMap.get(issue.reporterId);
       const sprint = issue.sprintId ? sprintMap.get(issue.sprintId) : null;
-      const statusState = project.workflowStates.find((s) => s.id === issue.status);
+      const statusState = ctx.project.workflowStates.find((s) => s.id === issue.status);
 
       return {
         ...issue,
@@ -507,9 +492,9 @@ export const exportIssuesJSON = authenticatedQuery({
     return JSON.stringify(
       {
         project: {
-          name: project.name,
-          key: project.key,
-          description: project.description,
+          name: ctx.project.name,
+          key: ctx.project.key,
+          description: ctx.project.description,
         },
         exportedAt: new Date().toISOString(),
         totalIssues: enrichedIssues.length,
@@ -522,16 +507,12 @@ export const exportIssuesJSON = authenticatedQuery({
 });
 
 // Import issues from JSON
-export const importIssuesJSON = authenticatedMutation({
+export const importIssuesJSON = editorMutation({
   args: {
-    projectId: v.id("projects"),
     jsonData: v.string(),
   },
   handler: async (ctx, args) => {
-    await assertCanEditProject(ctx, args.projectId, ctx.userId);
-
-    const project = await ctx.db.get(args.projectId);
-    if (!project) throw notFound("project", args.projectId);
+    // editorMutation handles auth + editor check + provides ctx.projectId, ctx.project
 
     // Validate and parse JSON data
     const { issues } = validateJSONImportData(args.jsonData);
@@ -544,12 +525,12 @@ export const importIssuesJSON = authenticatedMutation({
         const issueKey = await processJSONIssue(
           ctx,
           issue,
-          args.projectId,
-          project.key,
-          project.workspaceId,
-          project.teamId,
+          ctx.projectId,
+          ctx.project.key,
+          ctx.project.workspaceId,
+          ctx.project.teamId,
           ctx.userId,
-          project.workflowStates[0].id,
+          ctx.project.workflowStates[0].id,
         );
         imported.push(issueKey);
       } catch (error) {
@@ -569,16 +550,12 @@ export const importIssuesJSON = authenticatedMutation({
 });
 
 // Import issues from CSV
-export const importIssuesCSV = authenticatedMutation({
+export const importIssuesCSV = editorMutation({
   args: {
-    projectId: v.id("projects"),
     csvData: v.string(),
   },
   handler: async (ctx, args) => {
-    await assertCanEditProject(ctx, args.projectId, ctx.userId);
-
-    const project = await ctx.db.get(args.projectId);
-    if (!project) throw notFound("project", args.projectId);
+    // editorMutation handles auth + editor check + provides ctx.projectId, ctx.project
 
     // Parse CSV
     const lines = args.csvData.trim().split("\n");
@@ -599,20 +576,20 @@ export const importIssuesCSV = authenticatedMutation({
         // Generate next issue key
         const { key: issueKey, order } = await generateNextIssueKey(
           ctx,
-          args.projectId,
-          project.key,
+          ctx.projectId,
+          ctx.project.key,
         );
 
         // Parse CSV row into issue data
         const issueData = parseCSVRow(
           values,
           indices,
-          args.projectId,
-          project.workspaceId,
-          project.teamId,
+          ctx.projectId,
+          ctx.project.workspaceId,
+          ctx.project.teamId,
           issueKey,
           ctx.userId,
-          project.workflowStates[0].id,
+          ctx.project.workflowStates[0].id,
           order,
         );
 
