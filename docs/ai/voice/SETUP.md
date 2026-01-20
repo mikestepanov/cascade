@@ -313,7 +313,7 @@ pnpm dev  # Logs to console
 ---
 
 **Related Documentation:**
-- [Voice AI Overview](./README.md)
+- [Docs Index](../../README.md)
 - [Architecture](./ARCHITECTURE.md)
 - [Text AI Setup](../text/SETUP.md)
 

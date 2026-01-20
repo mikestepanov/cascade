@@ -274,7 +274,7 @@ A: The system falls back to the first provider (SendPulse) which will result in 
 ---
 
 **Related Documentation:**
-- [Email Overview](./README.md)
+- [Docs Index](../README.md)
 - [Convex Email Module](../../convex/email/)
 
 ---

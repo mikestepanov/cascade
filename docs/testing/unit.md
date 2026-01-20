@@ -496,7 +496,7 @@ afterEach(() => {
 ---
 
 **Related Documentation:**
-- [Testing Overview](./README.md)
+- [Docs Index](../README.md)
 - [Vitest Docs](https://vitest.dev/)
 - [React Testing Library](https://testing-library.com/docs/react-testing-library/intro/)
 - [jest-dom Matchers](https://github.com/testing-library/jest-dom)

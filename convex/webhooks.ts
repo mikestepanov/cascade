@@ -3,7 +3,7 @@ import { v } from "convex/values";
 import { internal } from "./_generated/api";
 import type { Id } from "./_generated/dataModel";
 import { internalAction, internalMutation, internalQuery } from "./_generated/server";
-import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
+import { adminMutation, authenticatedMutation, authenticatedQuery } from "./customFunctions";
 import { notFound, validation } from "./lib/errors";
 import { fetchPaginatedQuery } from "./lib/queryHelpers";
 import { MAX_PAGE_SIZE } from "./lib/queryLimits";
@@ -13,22 +13,19 @@ import { isTest } from "./testConfig";
 import { webhookResultStatuses } from "./validators";
 
 // Create a webhook
-export const createWebhook = authenticatedMutation({
+export const createWebhook = adminMutation({
   args: {
-    projectId: v.id("projects"),
     name: v.string(),
     url: v.string(),
     events: v.array(v.string()),
     secret: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    // Only admins can create webhooks
-    await assertIsProjectAdmin(ctx, args.projectId, ctx.userId);
-
+    // adminMutation handles auth + admin check
     validateWebhookUrl(args.url);
 
     const webhookId = await ctx.db.insert("webhooks", {
-      projectId: args.projectId,
+      projectId: ctx.projectId,
       name: args.name,
       url: args.url,
       events: args.events,
@@ -45,7 +42,7 @@ export const createWebhook = authenticatedMutation({
         targetId: webhookId,
         targetType: "webhooks",
         metadata: {
-          projectId: args.projectId,
+          projectId: ctx.projectId,
           name: args.name,
           events: args.events,
         },

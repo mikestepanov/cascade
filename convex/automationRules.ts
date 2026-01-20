@@ -1,28 +1,23 @@
 import { v } from "convex/values";
 import { internalMutation } from "./_generated/server";
-import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
+import { adminMutation, authenticatedMutation, projectQuery } from "./customFunctions";
 import { notFound, validation } from "./lib/errors";
 import { MAX_PAGE_SIZE } from "./lib/queryLimits";
-import { assertCanAccessProject, assertIsProjectAdmin } from "./projectAccess";
+import { assertIsProjectAdmin } from "./projectAccess";
 
-export const list = authenticatedQuery({
-  args: {
-    projectId: v.id("projects"),
-  },
-  handler: async (ctx, args) => {
-    // Throws if user doesn't have access (proper error propagation)
-    await assertCanAccessProject(ctx, args.projectId, ctx.userId);
-
+export const list = projectQuery({
+  args: {},
+  handler: async (ctx) => {
+    // projectQuery handles auth + project access check
     return await ctx.db
       .query("automationRules")
-      .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
+      .withIndex("by_project", (q) => q.eq("projectId", ctx.projectId))
       .take(MAX_PAGE_SIZE);
   },
 });
 
-export const create = authenticatedMutation({
+export const create = adminMutation({
   args: {
-    projectId: v.id("projects"),
     name: v.string(),
     description: v.optional(v.string()),
     trigger: v.string(),
@@ -31,11 +26,10 @@ export const create = authenticatedMutation({
     actionValue: v.string(),
   },
   handler: async (ctx, args) => {
-    await assertIsProjectAdmin(ctx, args.projectId, ctx.userId);
-
+    // adminMutation handles auth + admin check
     const now = Date.now();
     return await ctx.db.insert("automationRules", {
-      projectId: args.projectId,
+      projectId: ctx.projectId,
       name: args.name,
       description: args.description,
       isActive: true,
