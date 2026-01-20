@@ -1,5 +1,5 @@
 import { MINUTE } from "@convex-dev/rate-limiter";
-import { api, components, internal } from "../_generated/api";
+import { components, internal } from "../_generated/api";
 import type { Id } from "../_generated/dataModel";
 import { type ActionCtx, httpAction } from "../_generated/server";
 import {
@@ -98,7 +98,7 @@ async function authenticateAndRateLimit(
   }
 
   // 1. Validate Key (Read-only)
-  const auth = await ctx.runQuery(api.apiKeys.validateApiKey, { apiKey });
+  const auth = await ctx.runQuery(internal.apiKeys.validateApiKey, { apiKey });
 
   if (!auth) {
     return {
