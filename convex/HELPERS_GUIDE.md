@@ -30,24 +30,42 @@ This guide explains how to use `convex-helpers` in the Nixelo project for cleane
 
 Located in: `convex/customFunctions.ts`
 
+**Architecture:** Functions are composed in layers, each building on the previous:
+
+```
+Layer 1: Base (authentication only)
+└── authenticatedQuery / authenticatedMutation
+
+Layer 2: Project-scoped (adds project loading + RBAC)
+└── projectQuery, viewerMutation, editorMutation, adminMutation
+
+Layer 3: Entity-scoped (adds entity loading, derives project)
+└── issueMutation, issueViewerMutation, sprintQuery, sprintMutation
+```
+
 **Pre-built authentication & permission wrappers:**
 
-| Function                | Auth | RBAC    | Use For                      |
-| ----------------------- | ---- | ------- | ---------------------------- |
-| `authenticatedQuery`    | ✅   | ❌      | Any query requiring login    |
-| `authenticatedMutation` | ✅   | ❌      | Any mutation requiring login |
-| `projectQuery`          | ✅   | Viewer+ | Reading project data         |
-| `viewerMutation`        | ✅   | Viewer+ | Commenting, watching         |
-| `editorMutation`        | ✅   | Editor+ | Creating/editing issues      |
-| `issueMutation`         | ✅   | Editor+ | Issue-specific operations    |
+| Function                | Auth | RBAC    | Use For                        |
+| ----------------------- | ---- | ------- | ------------------------------ |
+| `authenticatedQuery`    | ✅   | ❌      | Any query requiring login      |
+| `authenticatedMutation` | ✅   | ❌      | Any mutation requiring login   |
+| `projectQuery`          | ✅   | Viewer+ | Reading project data           |
+| `viewerMutation`        | ✅   | Viewer+ | Commenting, watching           |
+| `editorMutation`        | ✅   | Editor+ | Creating/editing issues        |
+| `adminMutation`         | ✅   | Admin   | Settings, members, deletion    |
+| `issueMutation`         | ✅   | Editor+ | Issue-specific operations      |
+| `issueViewerMutation`   | ✅   | Viewer+ | Commenting on issues           |
+| `sprintQuery`           | ✅   | Viewer+ | Reading sprint data            |
+| `sprintMutation`        | ✅   | Editor+ | Sprint-specific operations     |
 
 **Context injected automatically:**
 
 - `ctx.userId` - Current user ID
-- `ctx.projectId` - Project ID (project mutations)
+- `ctx.projectId` - Project ID (project/entity mutations)
 - `ctx.role` - User's role in project
 - `ctx.project` - Full project object
-- `ctx.issue` - Full issue object (issueMutation only)
+- `ctx.issue` - Full issue object (issueMutation/issueViewerMutation)
+- `ctx.sprint` - Full sprint object (sprintQuery/sprintMutation)
 
 ### 2. **Rate Limiting**
 
@@ -169,7 +187,24 @@ export const createIssue = editorMutation({
 });
 ```
 
-### Example 3: Rate-Limited Mutation
+### Example 3: Admin-Only Mutation
+
+```typescript
+import { adminMutation } from "./customFunctions";
+
+export const deleteProject = adminMutation({
+  args: {},
+  handler: async (ctx) => {
+    // ctx.role is guaranteed to be "admin"
+    // Only admins can reach this code
+
+    // Delete all project data...
+    await ctx.db.delete(ctx.projectId);
+  },
+});
+```
+
+### Example 4: Rate-Limited Mutation
 
 ```typescript
 import { strictRateLimitedMutation } from "./rateLimiting";
@@ -187,7 +222,7 @@ export const sendInvite = strictRateLimitedMutation({
 });
 ```
 
-### Example 4: Issue-Specific Mutation
+### Example 5: Issue-Specific Mutation
 
 ```typescript
 import { issueMutation } from "./customFunctions";
@@ -238,28 +273,52 @@ export const heavyOperation = customRateLimiter({
 });
 ```
 
-### Combining Custom Functions
+### Composing Custom Functions
+
+All custom functions are composed by wrapping parent functions:
 
 ```typescript
-// You can compose custom functions for complex scenarios
-import { customMutation } from "convex-helpers/server/customFunctions";
+// authenticatedMutation is the base
+export const authenticatedMutation = customMutation(mutation, { ... });
 
-export const complexMutation = customMutation(mutation, {
+// editorMutation wraps authenticatedMutation (ctx.userId already available)
+export const editorMutation = customMutation(authenticatedMutation, {
   args: { projectId: v.id("projects") },
   input: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
-
+    // ctx.userId is available from authenticatedMutation!
     const project = await ctx.db.get(args.projectId);
-    if (!project) throw new Error("Project not found");
+    const role = await getProjectRole(ctx, args.projectId, ctx.userId);
+    // ...
+  },
+});
 
-    const role = await getUserRole(ctx, args.projectId, userId);
+// issueMutation also wraps authenticatedMutation
+export const issueMutation = customMutation(authenticatedMutation, {
+  args: { issueId: v.id("issues") },
+  input: async (ctx, args) => {
+    // ctx.userId available, load issue, derive projectId from issue
+    const issue = await ctx.db.get(args.issueId);
+    const project = await ctx.db.get(issue.projectId);
+    // ...
+  },
+});
+```
 
-    // Custom business logic here
-    const specialData = await loadSpecialData(ctx);
+To create a new custom function, wrap an existing one:
+
+```typescript
+import { customMutation } from "convex-helpers/server/customFunctions";
+import { editorMutation } from "./customFunctions";
+
+// Custom wrapper that adds extra context
+export const myCustomMutation = customMutation(editorMutation, {
+  args: { extraArg: v.string() },
+  input: async (ctx, args) => {
+    // ctx.userId, ctx.project, ctx.role all available from editorMutation!
+    const specialData = await loadSpecialData(ctx, args.extraArg);
 
     return {
-      ctx: { ...ctx, userId, project, role, specialData },
+      ctx: { ...ctx, specialData },
       args: {},
     };
   },
@@ -348,9 +407,12 @@ export const myMutation = projectQuery({
 
 **Step 1:** Identify the pattern
 
-- Does it need auth? → `authenticatedMutation`
-- Does it need project permissions? → `editorMutation`
-- Does it work on specific issue? → `issueMutation`
+- Does it need auth only? → `authenticatedMutation`
+- Does it need viewer access? → `viewerMutation`
+- Does it need editor access? → `editorMutation`
+- Does it need admin access? → `adminMutation`
+- Does it work on a specific issue? → `issueMutation` or `issueViewerMutation`
+- Does it work on a specific sprint? → `sprintMutation`
 
 **Step 2:** Update the function signature
 
