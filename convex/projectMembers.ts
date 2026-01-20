@@ -1,3 +1,4 @@
+import { pruneNull } from "convex-helpers";
 import { v } from "convex/values";
 import { authenticatedQuery } from "./customFunctions";
 import { batchFetchUsers } from "./lib/batchHelpers";
@@ -23,8 +24,8 @@ export const list = authenticatedQuery({
     const userMap = await batchFetchUsers(ctx, userIds);
 
     // Enrich with pre-fetched user data, filter out deleted users
-    return members
-      .map((member) => {
+    return pruneNull(
+      members.map((member) => {
         const user = userMap.get(member.userId);
         if (!user) return null; // User was deleted
 
@@ -34,7 +35,7 @@ export const list = authenticatedQuery({
           userEmail: user.email,
           userImage: user.image,
         };
-      })
-      .filter((m) => m !== null);
+      }),
+    );
   },
 });

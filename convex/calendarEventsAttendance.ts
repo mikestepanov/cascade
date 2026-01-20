@@ -1,3 +1,4 @@
+import { pruneNull } from "convex-helpers";
 import { v } from "convex/values";
 import type { Doc, Id } from "./_generated/dataModel";
 import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
@@ -191,8 +192,8 @@ export const getUserAttendanceHistory = authenticatedQuery({
     const organizerMap = await batchFetchUsers(ctx, organizerIds);
 
     // Enrich with pre-fetched data (no N+1!)
-    const enriched = attendanceRecords
-      .map((record) => {
+    const enriched = pruneNull(
+      attendanceRecords.map((record) => {
         const event = eventMap.get(record.eventId);
         if (!event) return null;
 
@@ -209,8 +210,8 @@ export const getUserAttendanceHistory = authenticatedQuery({
           eventEndTime: event.endTime,
           organizerName: organizer?.name,
         };
-      })
-      .filter((record): record is NonNullable<typeof record> => record !== null);
+      }),
+    );
 
     // Sort by date
     return enriched.sort((a, b) => b.eventStartTime - a.eventStartTime);

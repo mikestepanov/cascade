@@ -1,3 +1,4 @@
+import { pruneNull } from "convex-helpers";
 import { v } from "convex/values";
 import { internalQuery, query } from "./_generated/server";
 import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
@@ -233,8 +234,6 @@ export const listWithDigestPreference = internalQuery({
     const userMap = await batchFetchUsers(ctx, userIds);
 
     // Return users that exist (filter out deleted users)
-    return filtered
-      .map((pref) => userMap.get(pref.userId))
-      .filter((user): user is NonNullable<typeof user> => user !== null);
+    return pruneNull(filtered.map((pref) => userMap.get(pref.userId)));
   },
 });

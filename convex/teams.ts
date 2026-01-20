@@ -1,4 +1,5 @@
 import { type PaginationResult, paginationOptsValidator } from "convex/server";
+import { pruneNull } from "convex-helpers";
 import { v } from "convex/values";
 import { internal } from "./_generated/api";
 import type { Doc, Id } from "./_generated/dataModel";
@@ -650,7 +651,7 @@ export const getTeams = authenticatedQuery({
 
     return {
       ...results,
-      page: pageWithMetadata.filter((t): t is NonNullable<typeof t> => t !== null),
+      page: pruneNull(pageWithMetadata),
     };
   },
 });
@@ -794,8 +795,8 @@ export const getUserTeams = authenticatedQuery({
     });
 
     // Enrich with pre-fetched data (no N+1)
-    const teams = memberships
-      .map((membership) => {
+    const teams = pruneNull(
+      memberships.map((membership) => {
         const team = teamMap.get(membership.teamId);
         if (!team) return null;
 
@@ -806,8 +807,8 @@ export const getUserTeams = authenticatedQuery({
           memberCount: memberCountByTeam.get(teamIdStr) ?? 0,
           projectCount: projectCountByTeam.get(teamIdStr) ?? 0,
         };
-      })
-      .filter((t): t is NonNullable<typeof t> => t !== null);
+      }),
+    );
 
     return teams;
   },

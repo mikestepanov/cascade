@@ -1,3 +1,4 @@
+import { pruneNull } from "convex-helpers";
 import { v } from "convex/values";
 import type { Doc, Id } from "./_generated/dataModel";
 import type { MutationCtx, QueryCtx } from "./_generated/server";
@@ -591,8 +592,8 @@ export const getUserOrganizations = authenticatedQuery({
     const roleMap = new Map(memberships.map((m) => [m.organizationId.toString(), m.role]));
 
     // Enrich with pre-fetched data (no N+1)
-    const organizations = memberships
-      .map((membership) => {
+    const organizations = pruneNull(
+      memberships.map((membership) => {
         const organization = organizationMap.get(membership.organizationId);
         if (!organization) return null;
 
@@ -603,8 +604,8 @@ export const getUserOrganizations = authenticatedQuery({
           memberCount: memberCountMap.get(organizationIdStr) ?? 0,
           projectCount: projectCountMap.get(organizationIdStr) ?? 0,
         };
-      })
-      .filter((c): c is NonNullable<typeof c> => c !== null);
+      }),
+    );
 
     return organizations;
   },

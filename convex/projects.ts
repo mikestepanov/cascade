@@ -1,4 +1,5 @@
 import { paginationOptsValidator } from "convex/server";
+import { pruneNull } from "convex-helpers";
 import { v } from "convex/values";
 import { internal } from "./_generated/api";
 import type { Doc } from "./_generated/dataModel";
@@ -151,8 +152,8 @@ export const getCurrentUserProjects = authenticatedQuery({
     );
 
     // Build result
-    const page = results.page
-      .map((membership) => {
+    const page = pruneNull(
+      results.page.map((membership) => {
         const project = projectMap.get(membership.projectId);
         if (!project) return null;
 
@@ -171,8 +172,8 @@ export const getCurrentUserProjects = authenticatedQuery({
           isOwner: project.ownerId === ctx.userId || project.createdBy === ctx.userId,
           userRole: roleMap.get(projId) ?? null,
         };
-      })
-      .filter((w): w is NonNullable<typeof w> => w !== null);
+      }),
+    );
 
     return {
       ...results,

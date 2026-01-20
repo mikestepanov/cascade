@@ -1,4 +1,5 @@
 import { paginationOptsValidator } from "convex/server"; // Added
+import { pruneNull } from "convex-helpers";
 import { v } from "convex/values";
 import type { Doc, Id } from "./_generated/dataModel";
 import { authenticatedQuery } from "./customFunctions";
@@ -155,8 +156,8 @@ export const getMyProjects = authenticatedQuery({
     // If total counts are needed, they should be pre-aggregated in a stats table.
 
     // Enrich memberships with project data and counts
-    const projects = memberships
-      .map((membership) => {
+    const projects = pruneNull(
+      memberships.map((membership) => {
         const project = projectMap.get(membership.projectId);
         if (!project) return null;
 
@@ -168,8 +169,8 @@ export const getMyProjects = authenticatedQuery({
           totalIssues: 0, // Disabled for performance
           myIssues: myIssuesByProject.get(projId) ?? 0,
         };
-      })
-      .filter((p) => p !== null);
+      }),
+    );
 
     return projects;
   },
@@ -216,8 +217,8 @@ export const getMyRecentActivity = authenticatedQuery({
     ]);
 
     // Enrich activities
-    const enrichedActivity = accessibleActivity
-      .map((activity) => {
+    const enrichedActivity = pruneNull(
+      accessibleActivity.map((activity) => {
         const issue = issueMap.get(activity.issueId);
         if (!issue?.projectId) return null;
         const project = projectMap.get(issue.projectId);
@@ -230,8 +231,8 @@ export const getMyRecentActivity = authenticatedQuery({
           projectName: project?.name || "Unknown",
           userName: getUserName(user),
         };
-      })
-      .filter((a): a is NonNullable<typeof a> => a !== null);
+      }),
+    );
 
     return enrichedActivity.slice(0, limit);
   },

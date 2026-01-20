@@ -1,3 +1,4 @@
+import { pruneNull } from "convex-helpers";
 import { v } from "convex/values";
 import { query } from "./_generated/server";
 import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
@@ -153,8 +154,8 @@ export const getWatchedIssues = authenticatedQuery({
     ]);
 
     // Build result with pre-fetched data (no N+1)
-    const issues = watchers
-      .map((watcher) => {
+    const issues = pruneNull(
+      watchers.map((watcher) => {
         const issue = issueMap.get(watcher.issueId);
         if (!(issue && issue.projectId)) return null;
 
@@ -172,8 +173,8 @@ export const getWatchedIssues = authenticatedQuery({
           assignee: assignee ? { name: assignee.name } : null,
           watchedAt: watcher.createdAt,
         };
-      })
-      .filter((issue) => issue !== null);
+      }),
+    );
 
     return issues;
   },

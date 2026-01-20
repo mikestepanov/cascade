@@ -1,3 +1,4 @@
+import { pruneNull } from "convex-helpers";
 import { v } from "convex/values";
 import type { Doc, Id } from "../_generated/dataModel";
 import {
@@ -61,7 +62,7 @@ export const create = editorMutation({
     let labelNames: string[] = [];
     if (args.labels && args.labels.length > 0) {
       const labels = await Promise.all(args.labels.map((id) => ctx.db.get(id)));
-      labelNames = labels.filter((l): l is Doc<"labels"> => l !== null).map((l) => l.name);
+      labelNames = pruneNull(labels).map((l) => l.name);
     }
 
     const now = Date.now();
