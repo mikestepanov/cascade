@@ -1,9 +1,9 @@
 import type { Doc, Id } from "./_generated/dataModel";
 import type { MutationCtx, QueryCtx } from "./_generated/server";
 import { forbidden } from "./lib/errors";
+import { isOrganizationAdmin } from "./lib/organizationAccess";
 import { notDeleted } from "./lib/softDeleteHelpers";
-import { isOrganizationAdmin } from "./organizations";
-import { getTeamRole } from "./teams";
+import { getTeamRole } from "./lib/teamAccess";
 
 // ============================================================================
 // Project Access Control Helpers

@@ -1,12 +1,8 @@
-// @ts-nocheck - TODO: Fix component types after running convex dev
 /**
  * AI-Powered Suggestions
  *
  * Generate intelligent suggestions for issues, sprints, and projects
  * Uses Claude Haiku 4.5 for fast, cost-effective suggestions
- *
- * NOTE: This file requires Convex dev server to be running to generate
- * component types. Run `npx convex dev` to generate the required types.
  */
 
 import { anthropic } from "@ai-sdk/anthropic";

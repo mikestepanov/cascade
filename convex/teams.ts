@@ -2,50 +2,23 @@ import { type PaginationResult, paginationOptsValidator } from "convex/server";
 import { v } from "convex/values";
 import { pruneNull } from "convex-helpers";
 import { internal } from "./_generated/api";
-import type { Doc, Id } from "./_generated/dataModel";
+import type { Id } from "./_generated/dataModel";
 import type { MutationCtx, QueryCtx } from "./_generated/server";
 import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
 import { batchFetchTeams, batchFetchUsers, getUserName } from "./lib/batchHelpers";
 import { conflict, forbidden, notFound, validation } from "./lib/errors";
+import { isOrganizationAdmin } from "./lib/organizationAccess";
 import { fetchPaginatedQuery } from "./lib/queryHelpers";
 import { MAX_PROJECTS_PER_TEAM, MAX_TEAM_MEMBERS, MAX_TEAMS_PER_ORG } from "./lib/queryLimits";
 import { cascadeSoftDelete } from "./lib/relationships";
 import { notDeleted, softDeleteFields } from "./lib/softDeleteHelpers";
-import { isOrganizationAdmin } from "./organizations";
+import { getTeamRole, isTeamLead } from "./lib/teamAccess";
 import { isTest } from "./testConfig";
 import { teamRoles } from "./validators";
+
 // ============================================================================
 // Helper Functions
 // ============================================================================
-
-/**
- * Get user's role in a team
- * Returns null if user is not a member
- */
-export async function getTeamRole(
-  ctx: QueryCtx | MutationCtx,
-  teamId: Id<"teams">,
-  userId: Id<"users">,
-): Promise<"lead" | "member" | null> {
-  const membership = await ctx.db
-    .query("teamMembers")
-    .withIndex("by_team_user", (q) => q.eq("teamId", teamId).eq("userId", userId))
-    .first();
-
-  return membership?.role ?? null;
-}
-
-/**
- * Check if user is team lead
- */
-export async function isTeamLead(
-  ctx: QueryCtx | MutationCtx,
-  teamId: Id<"teams">,
-  userId: Id<"users">,
-): Promise<boolean> {
-  const role = await getTeamRole(ctx, teamId, userId);
-  return role === "lead";
-}
 
 /**
  * Check if user can manage team (team lead or organization admin)

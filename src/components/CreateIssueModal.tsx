@@ -63,7 +63,7 @@ export function CreateIssueModal({
 
   // Queries
   const project = useQuery(api.projects.getProject, { id: projectId });
-  const templates = useQuery(api.templates.list, { projectId });
+  const templates = useQuery(api.templates.listByProject, { projectId });
   const labels = useQuery(api.labels.list, { projectId });
 
   // Mutations

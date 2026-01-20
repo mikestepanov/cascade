@@ -32,7 +32,7 @@ export function TemplatesManager({ projectId }: TemplatesManagerProps) {
   const [showModal, setShowModal] = useState(false);
   const [editingTemplate, setEditingTemplate] = useState<IssueTemplate | null>(null);
 
-  const templates = useQuery(api.templates.list, { projectId });
+  const templates = useQuery(api.templates.listByProject, { projectId });
   const deleteTemplateMutation = useMutation(api.templates.remove);
 
   // Delete confirmation

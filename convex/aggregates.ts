@@ -1,12 +1,8 @@
-// @ts-nocheck - Aggregate library API requires component types from npx convex dev
 /**
  * Aggregate Definitions for Fast Analytics
  *
  * O(log n) instead of O(n) for counting and summing
  * Automatically maintained as data changes
- *
- * NOTE: This file requires Convex dev server to be running to generate
- * component types. Run `npx convex dev` to generate the required types.
  */
 
 import { Aggregate } from "@convex-dev/aggregate";

@@ -6,7 +6,7 @@ import { getSearchContent } from "./issues/helpers";
 import { BOUNDED_DELETE_BATCH, BOUNDED_RELATION_LIMIT, safeCollect } from "./lib/boundedQueries";
 import { conflict, forbidden, notFound, validation } from "./lib/errors";
 import { notDeleted } from "./lib/softDeleteHelpers";
-import { getOrganizationRole } from "./organizations";
+import { getOrganizationRole } from "./lib/organizationAccess";
 import { inviteRoles, personas } from "./validators";
 
 /** Check if email is a test email (@inbox.mailtrap.io) */

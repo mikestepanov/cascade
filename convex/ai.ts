@@ -1,4 +1,3 @@
-// @ts-nocheck - Circular type inference through internal wrappers
 /**
  * AI Integration with Anthropic Claude
  *
@@ -6,13 +5,6 @@
  * - Project assistant (chat)
  * - Semantic issue search (vector embeddings)
  * - AI suggestions (descriptions, priorities, labels)
- *
- * Note: Type checking disabled due to Convex framework limitation.
- * Even with internal functions extracted to convex/internal/ai.ts, TypeScript
- * infers circular types through the wrapper functions. This is unavoidable
- * without removing backward-compatible wrappers entirely.
- *
- * The code uses type-safe helpers (extractUsage) to maintain type safety.
  */
 
 import { anthropic } from "@ai-sdk/anthropic";
@@ -84,29 +76,6 @@ export const getIssueForEmbedding = internalAction({
   },
   handler: async (ctx, args) => {
     return await ctx.runQuery(internal.internal.ai.getIssueData, { issueId: args.issueId });
-  },
-});
-
-/**
- * Internal query to fetch issue (kept for backward compatibility)
- */
-export const getIssueData = internalAction({
-  args: { issueId: v.id("issues") },
-  handler: async (ctx, args) => {
-    return await ctx.runQuery(internal.internal.ai.getIssueData, args);
-  },
-});
-
-/**
- * Store embedding in issue document (kept for backward compatibility)
- */
-export const storeIssueEmbedding = internalAction({
-  args: {
-    issueId: v.id("issues"),
-    embedding: v.array(v.float64()),
-  },
-  handler: async (ctx, args) => {
-    await ctx.runMutation(internal.internal.ai.storeIssueEmbedding, args);
   },
 });
 
@@ -211,31 +180,6 @@ Be concise, helpful, and professional.`;
       chatId,
       message: response.text,
     };
-  },
-});
-
-// Re-export internal functions for backward compatibility
-export const createChat = internalAction({
-  args: {
-    userId: v.string(),
-    projectId: v.optional(v.id("projects")),
-    title: v.string(),
-  },
-  handler: async (ctx, args) => {
-    return await ctx.runMutation(internal.internal.ai.createChat, args);
-  },
-});
-
-export const addMessage = internalAction({
-  args: {
-    chatId: v.id("aiChats"),
-    role: chatRoles,
-    content: v.string(),
-    modelUsed: v.optional(v.string()),
-    tokensUsed: v.optional(v.number()),
-  },
-  handler: async (ctx, args) => {
-    await ctx.runMutation(internal.internal.ai.addMessage, args);
   },
 });
 

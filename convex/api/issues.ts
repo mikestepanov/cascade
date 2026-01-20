@@ -1,5 +1,6 @@
 import { MINUTE } from "@convex-dev/rate-limiter";
 import { components, internal } from "../_generated/api";
+import { logger } from "../lib/logger";
 import type { Id } from "../_generated/dataModel";
 import { type ActionCtx, httpAction } from "../_generated/server";
 import {
@@ -63,9 +64,8 @@ export const handler = httpAction(async (ctx, request) => {
 });
 
 function handleError(e: unknown): { response: Response; error: string } {
-  // biome-ignore lint/suspicious/noConsole: Logging critical API errors
-  console.error(e);
   const error = e instanceof Error ? e.message : String(e);
+  logger.error("API error", { error });
   // Explicitly handle unauthorized errors from internal queries
   if (error.includes("Not authorized")) {
     return { response: createErrorResponse(403, "Not authorized"), error };
@@ -104,8 +104,7 @@ async function recordApiUsage(
     });
   } catch (e) {
     // Ignore usage recording errors to not affect response
-    // biome-ignore lint/suspicious/noConsole: Logging failed usage record
-    console.error("Failed to record API usage", e);
+    logger.error("Failed to record API usage", { error: e instanceof Error ? e.message : String(e) });
   }
 }
 

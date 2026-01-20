@@ -1797,22 +1797,6 @@ export const debugVerifyPasswordInternal = internalMutation({
   },
 });
 
-// Legacy exports for backwards compatibility (can be removed later)
-export const resetAllOnboarding = internalMutation({
-  args: {},
-  returns: v.object({
-    deleted: v.number(),
-  }),
-  handler: async (ctx) => {
-    // Delete all userOnboarding records for test users
-    const records = await ctx.db.query("userOnboarding").collect();
-    for (const record of records) {
-      await ctx.db.delete(record._id);
-    }
-    return { deleted: records.length };
-  },
-});
-
 /**
  * Cleanup ALL E2E workspaces for a user (garbage collection)
  * POST /e2e/cleanup-workspaces

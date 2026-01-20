@@ -10,7 +10,7 @@ import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
 import { conflict, forbidden, notFound } from "./lib/errors";
 import { MAX_PAGE_SIZE } from "./lib/queryLimits";
 import { notDeleted } from "./lib/softDeleteHelpers";
-import { isOrganizationAdmin } from "./organizations";
+import { isOrganizationAdmin } from "./lib/organizationAccess";
 
 /**
  * Create a new workspace (department)

@@ -1,7 +1,5 @@
-// @ts-nocheck - TODO: Fix aggregate component types after running convex dev
 /**
- * NOTE: This file uses aggregates which require Convex dev server running.
- * Run `npx convex dev` to generate component types.
+ * Analytics queries using aggregates for fast O(log n) lookups
  */
 
 import { v } from "convex/values";

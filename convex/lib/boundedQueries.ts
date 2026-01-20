@@ -1,3 +1,5 @@
+import { logger } from "./logger";
+
 /**
  * Bounded Query Helpers
  *
@@ -216,9 +218,7 @@ export async function safeCollect<T>(
   const items = await query.take(limit + 1);
 
   if (items.length > limit) {
-    const ctx = context ? ` (${context})` : "";
-    // biome-ignore lint/suspicious/noConsole: Expected warning for bounded queries
-    console.warn(`[boundedQueries] Query exceeded limit of ${limit}${ctx}, results truncated`);
+    logger.warn("Query exceeded limit, results truncated", { limit, context });
     return items.slice(0, limit);
   }
 
@@ -263,11 +263,7 @@ export async function collectInBatches<T>(
   }
 
   if (batchCount >= maxBatches) {
-    // biome-ignore lint/suspicious/noConsole: Expected warning for bounded queries
-    console.warn(
-      `[boundedQueries] collectInBatches hit max batches (${maxBatches}), ` +
-        `collected ${allItems.length} items`,
-    );
+    logger.warn("collectInBatches hit max batches", { maxBatches, itemsCollected: allItems.length });
   }
 
   return allItems;
