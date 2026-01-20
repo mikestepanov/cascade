@@ -47,6 +47,20 @@ interface CreateIssueModalProps {
   onOpenChange: (open: boolean) => void;
 }
 
+/**
+ * Render a modal dialog that lets users create a new issue for a project.
+ *
+ * The modal provides optional template selection, title/description inputs, type/priority selectors,
+ * assignee and story point fields, label selection, and an AI-powered suggestions action. It handles
+ * applying templates, toggling label selection, generating and applying AI suggestions, and creating
+ * the issue via the provided project and sprint context.
+ *
+ * @param projectId - The id of the project the new issue will belong to.
+ * @param sprintId - Optional id of the sprint to associate the new issue with.
+ * @param open - Whether the modal is open.
+ * @param onOpenChange - Callback invoked when the modal open state changes; receives the new open state.
+ * @returns The modal's JSX element, or `null` when required project data is not yet available.
+ */
 export function CreateIssueModal({
   projectId,
   sprintId,

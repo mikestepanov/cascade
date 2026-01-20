@@ -25,8 +25,9 @@ type IssueTemplate = {
 };
 
 /**
- * TemplatesManager - Orchestrates template CRUD operations
- * Form and card logic extracted to separate components
+ * Render and manage issue templates for a specific project, including creation, editing, and deletion flows.
+ *
+ * @param projectId - The project identifier used to scope fetched templates and associated mutations
  */
 export function TemplatesManager({ projectId }: TemplatesManagerProps) {
   const [showModal, setShowModal] = useState(false);

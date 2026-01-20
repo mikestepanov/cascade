@@ -63,6 +63,12 @@ export const handler = httpAction(async (ctx, request) => {
   return response;
 });
 
+/**
+ * Convert a thrown value into an HTTP error response and a normalized error message.
+ *
+ * @param e - The thrown value or Error to normalize
+ * @returns An object with `response` set to a 403 "Not authorized" response when the error message contains "Not authorized", otherwise a 500 "Internal server error" response; `error` is the extracted error message
+ */
 function handleError(e: unknown): { response: Response; error: string } {
   const error = e instanceof Error ? e.message : String(e);
   logger.error("API error", { error });
@@ -73,6 +79,15 @@ function handleError(e: unknown): { response: Response; error: string } {
   return { response: createErrorResponse(500, "Internal server error"), error };
 }
 
+/**
+ * Records API key usage metadata for an incoming request.
+ *
+ * Extracts client metadata (user agent, IP, response time) and persists a usage record keyed to the API key; failures to record are logged and do not affect the request flow.
+ *
+ * @param auth - Authentication context containing `keyId` used to attribute the usage record
+ * @param startTime - Millisecond timestamp (from Date.now()) when request processing began; used to compute response time
+ * @param error - Optional error message to associate with the recorded usage
+ */
 async function recordApiUsage(
   ctx: ActionCtx,
   params: {
