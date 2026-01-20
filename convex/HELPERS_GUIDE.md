@@ -39,7 +39,6 @@ Located in: `convex/customFunctions.ts`
 | `projectQuery`          | ✅   | Viewer+ | Reading project data         |
 | `viewerMutation`        | ✅   | Viewer+ | Commenting, watching         |
 | `editorMutation`        | ✅   | Editor+ | Creating/editing issues      |
-| `adminMutation`         | ✅   | Admin   | Project settings, members    |
 | `issueMutation`         | ✅   | Editor+ | Issue-specific operations    |
 
 **Context injected automatically:**
@@ -170,25 +169,7 @@ export const createIssue = editorMutation({
 });
 ```
 
-### Example 3: Admin-Only Mutation
-
-```typescript
-import { adminMutation } from "./customFunctions";
-
-export const deleteProject = adminMutation({
-  args: {}, // projectId required automatically
-  handler: async (ctx) => {
-    // Only admins can reach this code
-    // ctx.role is guaranteed to be "admin"
-
-    await ctx.db.delete(ctx.projectId);
-
-    return { success: true };
-  },
-});
-```
-
-### Example 4: Rate-Limited Mutation
+### Example 3: Rate-Limited Mutation
 
 ```typescript
 import { strictRateLimitedMutation } from "./rateLimiting";
@@ -206,7 +187,7 @@ export const sendInvite = strictRateLimitedMutation({
 });
 ```
 
-### Example 5: Issue-Specific Mutation
+### Example 4: Issue-Specific Mutation
 
 ```typescript
 import { issueMutation } from "./customFunctions";
@@ -368,7 +349,7 @@ export const myMutation = projectQuery({
 **Step 1:** Identify the pattern
 
 - Does it need auth? → `authenticatedMutation`
-- Does it need project permissions? → `editorMutation` or `adminMutation`
+- Does it need project permissions? → `editorMutation`
 - Does it work on specific issue? → `issueMutation`
 
 **Step 2:** Update the function signature

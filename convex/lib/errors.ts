@@ -163,6 +163,34 @@ export function internal(message: string): ConvexError<ErrorData> {
 }
 
 // =============================================================================
+// Existence Helpers
+// =============================================================================
+
+/**
+ * Require that a resource exists, throwing NOT_FOUND if null.
+ * Type-safe: narrows type from T | null to T.
+ *
+ * @param resource - The fetched resource (or null)
+ * @param resourceName - Name for error messages (e.g., "project", "issue")
+ * @param id - Optional ID for error context
+ * @returns The resource (narrowed from T | null to T)
+ *
+ * @example
+ * // Instead of:
+ * const project = await ctx.db.get(projectId);
+ * if (!project) throw notFound("project", projectId);
+ *
+ * // Use:
+ * const project = requireExists(await ctx.db.get(projectId), "project", projectId);
+ */
+export function requireExists<T>(resource: T | null, resourceName: string, id?: string): T {
+  if (!resource) {
+    throw notFound(resourceName, id);
+  }
+  return resource;
+}
+
+// =============================================================================
 // Ownership Helpers
 // =============================================================================
 

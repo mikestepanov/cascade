@@ -30,6 +30,15 @@ Welcome to the Nixelo documentation. This folder contains all technical document
 | [Integrations Overview](./integrations/README.md) | GitHub, Google Calendar, offline |
 | [Google Calendar Setup](./GOOGLE_CALENDAR_SETUP.md) | Calendar sync configuration |
 
+### Architecture & Research
+
+| Document | Description |
+|----------|-------------|
+| [Architecture Overview](./architecture/README.md) | System design, data model |
+| [Research & Competitors](./research/README.md) | Market analysis, competitor comparison |
+| [Meeting Intelligence](./research/meeting-intelligence.md) | Read AI, Fireflies, open source bots |
+| [PM Tools Comparison](./research/pm-tools.md) | Jira, Linear, ClickUp analysis |
+
 ### Development
 
 | Document | Description |
