@@ -2,7 +2,7 @@ import { v } from "convex/values";
 import type { Doc } from "./_generated/dataModel";
 import { authenticatedMutation, authenticatedQuery, editorMutation, projectQuery } from "./customFunctions";
 import { forbidden, notFound } from "./lib/errors";
-import { assertCanEditProject } from "./projectAccess";
+import { assertCanAccessProject, assertCanEditProject } from "./projectAccess";
 import { issuePriorities, issueTypes } from "./validators";
 
 // Create an issue template
