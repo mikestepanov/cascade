@@ -12,8 +12,8 @@
 import { v } from "convex/values";
 import type { Id } from "../_generated/dataModel";
 import { internalAction, internalMutation, internalQuery } from "../_generated/server";
-import { notFound, validation } from "../lib/errors";
 import { getVoyageApiKey } from "../lib/env";
+import { notFound, validation } from "../lib/errors";
 
 /**
  * Generate embedding for text using Voyage AI (Anthropic recommended)

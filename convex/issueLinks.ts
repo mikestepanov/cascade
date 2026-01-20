@@ -2,6 +2,7 @@ import { v } from "convex/values";
 import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
 import { batchFetchIssues } from "./lib/batchHelpers";
 import { conflict, notFound, validation } from "./lib/errors";
+import { MAX_PAGE_SIZE } from "./lib/queryLimits";
 import { assertCanEditProject } from "./projectAccess";
 
 /**
@@ -115,13 +116,13 @@ export const getForIssue = authenticatedQuery({
     const outgoingLinks = await ctx.db
       .query("issueLinks")
       .withIndex("by_from_issue", (q) => q.eq("fromIssueId", args.issueId))
-      .collect();
+      .take(MAX_PAGE_SIZE);
 
     // Get incoming links (other issues link to this)
     const incomingLinks = await ctx.db
       .query("issueLinks")
       .withIndex("by_to_issue", (q) => q.eq("toIssueId", args.issueId))
-      .collect();
+      .take(MAX_PAGE_SIZE);
 
     // Batch fetch all linked issues to avoid N+1 queries
     const allIssueIds = [

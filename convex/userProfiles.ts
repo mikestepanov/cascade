@@ -4,7 +4,12 @@ import type { MutationCtx, QueryCtx } from "./_generated/server";
 import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
 import { batchFetchUsers } from "./lib/batchHelpers";
 import { forbidden, notFound } from "./lib/errors";
+import { MAX_PAGE_SIZE } from "./lib/queryLimits";
 import { notDeleted } from "./lib/softDeleteHelpers";
+
+// Limits for user profile queries
+const MAX_PROFILES = 500;
+const MAX_TIME_ENTRIES_FOR_STATS = 1000;
 
 // Check if user is admin (has admin role in any project they created)
 async function isAdmin(ctx: QueryCtx | MutationCtx, userId: Id<"users">) {
@@ -98,7 +103,8 @@ export const initializeEmploymentTypes = authenticatedMutation({
 export const getEmploymentTypeConfigs = authenticatedQuery({
   args: {},
   handler: async (ctx) => {
-    const configs = await ctx.db.query("employmentTypeConfigs").collect();
+    // Small lookup table but still add reasonable limit
+    const configs = await ctx.db.query("employmentTypeConfigs").take(MAX_PAGE_SIZE);
     return configs;
   },
 });
@@ -317,23 +323,23 @@ export const listUserProfiles = authenticatedQuery({
           q.eq("employmentType", employmentType).eq("isActive", isActive),
         )
         .filter(notDeleted)
-        .collect();
+        .take(MAX_PROFILES);
     } else if (args.employmentType) {
       const employmentType = args.employmentType;
       profiles = await ctx.db
         .query("userProfiles")
         .withIndex("by_employment_type", (q) => q.eq("employmentType", employmentType))
         .filter(notDeleted)
-        .collect();
+        .take(MAX_PROFILES);
     } else if (args.isActive !== undefined) {
       const isActive = args.isActive;
       profiles = await ctx.db
         .query("userProfiles")
         .withIndex("by_active", (q) => q.eq("isActive", isActive))
-        .collect();
+        .take(MAX_PROFILES);
     } else {
       // Bounded query when no filters provided
-      profiles = await ctx.db.query("userProfiles").take(500);
+      profiles = await ctx.db.query("userProfiles").take(MAX_PROFILES);
     }
 
     // Batch fetch users and managers to avoid N+1 queries
@@ -441,7 +447,7 @@ export const getEquityHoursStats = authenticatedQuery({
           q.eq(q.field("isEquityHour"), true),
         ),
       )
-      .collect();
+      .take(MAX_TIME_ENTRIES_FOR_STATS);
 
     const totalEquitySeconds = allEntries.reduce((sum, entry) => sum + entry.duration, 0);
     const totalEquityHours = totalEquitySeconds / 3600;

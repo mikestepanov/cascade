@@ -347,7 +347,9 @@ export const listExpiringSoon = authenticatedQuery({
       name: key.name,
       keyPrefix: key.keyPrefix,
       expiresAt: key.expiresAt,
-      daysUntilExpiry: key.expiresAt ? Math.ceil((key.expiresAt - now) / (24 * 60 * 60 * 1000)) : null,
+      daysUntilExpiry: key.expiresAt
+        ? Math.ceil((key.expiresAt - now) / (24 * 60 * 60 * 1000))
+        : null,
       wasRotated: !!key.rotatedAt,
     }));
   },

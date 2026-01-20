@@ -153,4 +153,3 @@ export const timeRangeArgs = {
   from: v.optional(v.number()),
   to: v.optional(v.number()),
 };
-

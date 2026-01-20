@@ -1,5 +1,6 @@
 import { v } from "convex/values";
 import { editorMutation, projectQuery, sprintMutation } from "./customFunctions";
+import { MAX_PAGE_SIZE, MAX_SPRINT_ISSUES } from "./lib/queryLimits";
 import { notDeleted } from "./lib/softDeleteHelpers";
 
 /**
@@ -64,7 +65,7 @@ export const listByProject = projectQuery({
         .query("issues")
         .withIndex("by_sprint", (q) => q.eq("sprintId", sprintId))
         .filter(notDeleted)
-        .collect();
+        .take(MAX_SPRINT_ISSUES);
       return { sprintId, count: issues.length };
     });
     const issueCounts = await Promise.all(issueCountsPromises);
@@ -91,13 +92,13 @@ export const startSprint = sprintMutation({
     endDate: v.number(),
   },
   handler: async (ctx, args) => {
-    // End any currently active sprint
+    // End any currently active sprint (normally only 1, but limit for safety)
     const activeSprints = await ctx.db
       .query("sprints")
       .withIndex("by_project", (q) => q.eq("projectId", ctx.projectId))
       .filter((q) => q.eq(q.field("status"), "active"))
       .filter(notDeleted)
-      .collect();
+      .take(MAX_PAGE_SIZE);
 
     for (const activeSprint of activeSprints) {
       await ctx.db.patch(activeSprint._id, {

@@ -32,7 +32,10 @@ export async function validateParentIssue(
 
   // Prevent sub-tasks of sub-tasks (only 1 level deep)
   if (parentIssue.parentId) {
-    throw validation("parentId", "Cannot create sub-task of a sub-task. Sub-tasks can only be one level deep.");
+    throw validation(
+      "parentId",
+      "Cannot create sub-task of a sub-task. Sub-tasks can only be one level deep.",
+    );
   }
 
   // Sub-tasks must be of type "subtask"

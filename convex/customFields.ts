@@ -3,6 +3,7 @@ import type { Doc } from "./_generated/dataModel";
 import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
 import { batchFetchCustomFields } from "./lib/batchHelpers";
 import { conflict, notFound, validation } from "./lib/errors";
+import { MAX_PAGE_SIZE } from "./lib/queryLimits";
 import {
   assertCanAccessProject,
   assertCanEditProject,
@@ -56,16 +57,13 @@ export const list = authenticatedQuery({
     projectId: v.id("projects"),
   },
   handler: async (ctx, args) => {
-    try {
-      await assertCanAccessProject(ctx, args.projectId, ctx.userId);
-    } catch {
-      return [];
-    }
+    // Throws if user doesn't have access (proper error propagation)
+    await assertCanAccessProject(ctx, args.projectId, ctx.userId);
 
     return await ctx.db
       .query("customFields")
       .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
-      .collect();
+      .take(MAX_PAGE_SIZE);
   },
 });
 

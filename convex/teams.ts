@@ -7,6 +7,7 @@ import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
 import { batchFetchTeams, batchFetchUsers, getUserName } from "./lib/batchHelpers";
 import { conflict, forbidden, notFound, validation } from "./lib/errors";
 import { fetchPaginatedQuery } from "./lib/queryHelpers";
+import { MAX_PROJECTS_PER_TEAM, MAX_TEAM_MEMBERS, MAX_TEAMS_PER_ORG } from "./lib/queryLimits";
 import { cascadeSoftDelete } from "./lib/relationships";
 import { notDeleted, softDeleteFields } from "./lib/softDeleteHelpers";
 import { isOrganizationAdmin } from "./organizations";
@@ -590,12 +591,12 @@ export const getTeams = authenticatedQuery({
 
     const teamMap = await batchFetchTeams(ctx, teamIds);
 
-    // Fetch counts
+    // Fetch counts with limits
     const memberCountsPromises = teamIds.map(async (teamId) => {
       return await ctx.db
         .query("teamMembers")
         .withIndex("by_team", (q) => q.eq("teamId", teamId))
-        .collect()
+        .take(MAX_TEAM_MEMBERS)
         .then((m) => m.length);
     });
 
@@ -606,32 +607,46 @@ export const getTeams = authenticatedQuery({
         .query("projects")
         .withIndex("by_team", (q) => q.eq("teamId", teamId))
         .filter(notDeleted)
-        .collect()
+        .take(MAX_PROJECTS_PER_TEAM)
         .then((p) => p.length);
     });
     const projectCounts = await Promise.all(projectCountsPromises);
 
-    // Fetch user role for each team
-    const pageWithMetadata = await Promise.all(
-      teamIds.map(async (teamId, index) => {
-        const team = teamMap.get(teamId);
-        if (!team) return null;
-        if (team.organizationId !== args.organizationId) return null;
-
-        const memberCount = memberCounts[index];
-        const projectCount = projectCounts[index];
-
-        const role = await getTeamRole(ctx, teamId, userId);
-
-        return {
-          ...team,
-          userRole: role,
-          isAdmin,
-          memberCount,
-          projectCount,
-        };
-      }),
+    // Batch fetch user's team memberships to avoid N+1 getTeamRole calls
+    const userMemberships = await Promise.all(
+      teamIds.map((teamId) =>
+        ctx.db
+          .query("teamMembers")
+          .withIndex("by_team_user", (q) => q.eq("teamId", teamId).eq("userId", ctx.userId))
+          .first(),
+      ),
     );
+    const userRoleByTeam = new Map<string, "lead" | "member">();
+    teamIds.forEach((teamId, index) => {
+      const membership = userMemberships[index];
+      if (membership) {
+        userRoleByTeam.set(teamId.toString(), membership.role);
+      }
+    });
+
+    // Build page with metadata (no N+1)
+    const pageWithMetadata = teamIds.map((teamId, index) => {
+      const team = teamMap.get(teamId);
+      if (!team) return null;
+      if (team.organizationId !== args.organizationId) return null;
+
+      const memberCount = memberCounts[index];
+      const projectCount = projectCounts[index];
+      const role = userRoleByTeam.get(teamId.toString()) ?? null;
+
+      return {
+        ...team,
+        userRole: role,
+        isAdmin,
+        memberCount,
+        projectCount,
+      };
+    });
 
     return {
       ...results,
@@ -663,11 +678,11 @@ export const getOrganizationTeams = authenticatedQuery({
       .query("teams")
       .withIndex("by_organization", (q) => q.eq("organizationId", args.organizationId))
       .filter(notDeleted)
-      .collect();
+      .take(MAX_TEAMS_PER_ORG);
 
     const isAdmin = await isOrganizationAdmin(ctx, args.organizationId, ctx.userId);
 
-    // Fetch team members and projects per team using indexes (NOT loading all!)
+    // Fetch team members and projects per team using indexes with limits
     const teamIds = teams.map((t) => t._id);
 
     const [teamMembersArrays, workspacesArrays] = await Promise.all([
@@ -676,7 +691,7 @@ export const getOrganizationTeams = authenticatedQuery({
           ctx.db
             .query("teamMembers")
             .withIndex("by_team", (q) => q.eq("teamId", teamId))
-            .collect(),
+            .take(MAX_TEAM_MEMBERS),
         ),
       ),
       Promise.all(
@@ -685,7 +700,7 @@ export const getOrganizationTeams = authenticatedQuery({
             .query("projects")
             .withIndex("by_team", (q) => q.eq("teamId", teamId))
             .filter(notDeleted)
-            .collect(),
+            .take(MAX_PROJECTS_PER_TEAM),
         ),
       ),
     ]);
@@ -700,7 +715,7 @@ export const getOrganizationTeams = authenticatedQuery({
       memberCountByTeam.set(teamIdStr, members.length);
 
       // Track current user's role
-      const userMembership = members.find((m) => m.userId === userId);
+      const userMembership = members.find((m) => m.userId === ctx.userId);
       if (userMembership) {
         userRoleByTeam.set(teamIdStr, userMembership.role);
       }
@@ -738,7 +753,7 @@ export const getUserTeams = authenticatedQuery({
       .query("teamMembers")
       .withIndex("by_user", (q) => q.eq("userId", ctx.userId))
       .filter(notDeleted)
-      .collect();
+      .take(MAX_TEAMS_PER_ORG);
 
     if (memberships.length === 0) return [];
 
@@ -746,14 +761,14 @@ export const getUserTeams = authenticatedQuery({
     const teamIds = memberships.map((m) => m.teamId);
     const teamMap = await batchFetchTeams(ctx, teamIds);
 
-    // Fetch team members and projects per team using indexes (NOT loading all!)
+    // Fetch team members and projects per team using indexes with limits
     const [teamMembersArrays, workspacesArrays] = await Promise.all([
       Promise.all(
         teamIds.map((teamId) =>
           ctx.db
             .query("teamMembers")
             .withIndex("by_team", (q) => q.eq("teamId", teamId))
-            .collect(),
+            .take(MAX_TEAM_MEMBERS),
         ),
       ),
       Promise.all(
@@ -762,7 +777,7 @@ export const getUserTeams = authenticatedQuery({
             .query("projects")
             .withIndex("by_team", (q) => q.eq("teamId", teamId))
             .filter(notDeleted)
-            .collect(),
+            .take(MAX_PROJECTS_PER_TEAM),
         ),
       ),
     ]);
@@ -820,7 +835,7 @@ export const getTeamMembers = authenticatedQuery({
       .query("teamMembers")
       .withIndex("by_team", (q) => q.eq("teamId", args.teamId))
       .filter(notDeleted)
-      .collect();
+      .take(MAX_TEAM_MEMBERS);
 
     // Batch fetch all users (both members and addedBy) (avoid N+1!)
     // Deduplicate to avoid redundant fetches

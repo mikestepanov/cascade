@@ -6,7 +6,15 @@ import { v } from "convex/values";
 import { authenticatedQuery } from "../customFunctions";
 import { batchFetchUsers, getUserName } from "../lib/batchHelpers";
 import { forbidden, notFound, requireOwned } from "../lib/errors";
+import { MAX_PAGE_SIZE } from "../lib/queryLimits";
 import type { AIProvider } from "./config";
+
+// Reasonable limits for AI-related queries
+const MAX_CHATS = 100;
+const MAX_MESSAGES_PER_CHAT = 500;
+const MAX_SUGGESTIONS = 200;
+const MAX_USAGE_RECORDS = 1000;
+const MAX_PROJECT_ISSUES_FOR_AI = 500;
 
 type AIOperation = "chat" | "suggestion" | "automation" | "analysis";
 
@@ -18,11 +26,10 @@ export const getUserChats = authenticatedQuery({
     projectId: v.optional(v.id("projects")),
   },
   handler: async (ctx, args) => {
-    const chatsQuery = ctx.db
+    const chats = await ctx.db
       .query("aiChats")
-      .withIndex("by_user", (q) => q.eq("userId", ctx.userId));
-
-    const chats = await chatsQuery.collect();
+      .withIndex("by_user", (q) => q.eq("userId", ctx.userId))
+      .take(MAX_CHATS);
 
     // Filter by project if specified
     const filtered = args.projectId
@@ -49,7 +56,7 @@ export const getChatMessages = authenticatedQuery({
     const messages = await ctx.db
       .query("aiMessages")
       .withIndex("by_chat_created", (q) => q.eq("chatId", args.chatId))
-      .collect();
+      .take(MAX_MESSAGES_PER_CHAT);
 
     return messages.sort((a, b) => a.createdAt - b.createdAt);
   },
@@ -86,11 +93,11 @@ export const getProjectContext = authenticatedQuery({
       .filter((q) => q.eq(q.field("status"), "active"))
       .first();
 
-    // Get issues
+    // Get issues (limit for AI context - don't need all issues)
     const issues = await ctx.db
       .query("issues")
       .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
-      .collect();
+      .take(MAX_PROJECT_ISSUES_FOR_AI);
 
     // Calculate stats
     const stats = {
@@ -113,7 +120,7 @@ export const getProjectContext = authenticatedQuery({
     const memberRecords = await ctx.db
       .query("projectMembers")
       .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
-      .collect();
+      .take(MAX_PAGE_SIZE);
 
     // Batch fetch users to avoid N+1 queries
     const userIds = memberRecords.map((m) => m.userId);
@@ -129,7 +136,7 @@ export const getProjectContext = authenticatedQuery({
     const labels = await ctx.db
       .query("labels")
       .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
-      .collect();
+      .take(MAX_PAGE_SIZE);
 
     return {
       project: {
@@ -181,11 +188,10 @@ export const getProjectSuggestions = authenticatedQuery({
     includeResponded: v.optional(v.boolean()),
   },
   handler: async (ctx, args) => {
-    const suggestionsQuery = ctx.db
+    const suggestions = await ctx.db
       .query("aiSuggestions")
-      .withIndex("by_project", (q) => q.eq("projectId", args.projectId));
-
-    const suggestions = await suggestionsQuery.collect();
+      .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
+      .take(MAX_SUGGESTIONS);
 
     // Filter by type if specified
     let filtered = args.suggestionType
@@ -213,11 +219,10 @@ export const getUsageStats = authenticatedQuery({
   },
   handler: async (ctx, args) => {
     // Query usage records
-    const usageQuery = ctx.db
+    const usage = await ctx.db
       .query("aiUsage")
-      .withIndex("by_user", (q) => q.eq("userId", ctx.userId));
-
-    const usage = await usageQuery.collect();
+      .withIndex("by_user", (q) => q.eq("userId", ctx.userId))
+      .take(MAX_USAGE_RECORDS);
 
     // Filter by project and date range
     let filtered = usage;

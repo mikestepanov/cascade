@@ -64,7 +64,10 @@ async function callAnthropic(config: AIConfig, messages: AIMessage[]): Promise<A
  */
 export async function callAI(config: AIConfig, messages: AIMessage[]): Promise<AIResponse> {
   if (config.provider !== "anthropic") {
-    throw validation("provider", `Unsupported AI provider: ${config.provider}. Only Anthropic is supported.`);
+    throw validation(
+      "provider",
+      `Unsupported AI provider: ${config.provider}. Only Anthropic is supported.`,
+    );
   }
   return await callAnthropic(config, messages);
 }

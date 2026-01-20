@@ -2,6 +2,7 @@ import { v } from "convex/values";
 import { internalMutation } from "./_generated/server";
 import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
 import { notFound, validation } from "./lib/errors";
+import { MAX_PAGE_SIZE } from "./lib/queryLimits";
 import { assertCanAccessProject, assertIsProjectAdmin } from "./projectAccess";
 
 export const list = authenticatedQuery({
@@ -9,16 +10,13 @@ export const list = authenticatedQuery({
     projectId: v.id("projects"),
   },
   handler: async (ctx, args) => {
-    try {
-      await assertCanAccessProject(ctx, args.projectId, ctx.userId);
-    } catch {
-      return [];
-    }
+    // Throws if user doesn't have access (proper error propagation)
+    await assertCanAccessProject(ctx, args.projectId, ctx.userId);
 
     return await ctx.db
       .query("automationRules")
       .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
-      .collect();
+      .take(MAX_PAGE_SIZE);
   },
 });
 
@@ -123,7 +121,7 @@ export const executeRules = internalMutation({
       .query("automationRules")
       .withIndex("by_project_active", (q) => q.eq("projectId", args.projectId).eq("isActive", true))
       .filter((q) => q.eq(q.field("trigger"), args.trigger))
-      .collect();
+      .take(MAX_PAGE_SIZE);
 
     const issue = await ctx.db.get(args.issueId);
     if (!issue) return;

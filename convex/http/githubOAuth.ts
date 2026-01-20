@@ -1,7 +1,7 @@
 import { api } from "../_generated/api";
 import { httpAction } from "../_generated/server";
-import { validation } from "../lib/errors";
 import { getGitHubClientId, getGitHubClientSecret, isGitHubOAuthConfigured } from "../lib/env";
+import { validation } from "../lib/errors";
 
 /**
  * GitHub OAuth Integration
@@ -20,7 +20,10 @@ const getGitHubOAuthConfig = () => {
   const clientSecret = getGitHubClientSecret();
 
   if (!(isGitHubOAuthConfigured() && clientId && clientSecret)) {
-    throw validation("oauth", "GitHub OAuth not configured. Set GITHUB_CLIENT_ID and GITHUB_CLIENT_SECRET.");
+    throw validation(
+      "oauth",
+      "GitHub OAuth not configured. Set GITHUB_CLIENT_ID and GITHUB_CLIENT_SECRET.",
+    );
   }
   return {
     clientId,

@@ -99,10 +99,6 @@ interface TakeableQuery<T> {
 }
 
 /** Minimal query interface for collect (to help migration) */
-interface CollectableQuery<T> {
-  collect(): Promise<T[]>;
-  take(n: number): Promise<T[]>;
-}
 
 // =============================================================================
 // BOUNDED QUERY FUNCTIONS
@@ -221,6 +217,7 @@ export async function safeCollect<T>(
 
   if (items.length > limit) {
     const ctx = context ? ` (${context})` : "";
+    // biome-ignore lint/suspicious/noConsole: Expected warning for bounded queries
     console.warn(`[boundedQueries] Query exceeded limit of ${limit}${ctx}, results truncated`);
     return items.slice(0, limit);
   }
@@ -266,6 +263,7 @@ export async function collectInBatches<T>(
   }
 
   if (batchCount >= maxBatches) {
+    // biome-ignore lint/suspicious/noConsole: Expected warning for bounded queries
     console.warn(
       `[boundedQueries] collectInBatches hit max batches (${maxBatches}), ` +
         `collected ${allItems.length} items`,

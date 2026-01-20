@@ -193,10 +193,10 @@ export class AuthPage extends BasePage {
 
     if (!isFormExpanded) {
       console.log("    👉 AuthPage.expandEmailForm: Clicking 'Continue with email'...");
-      
+
       // Wait for hydration to ensure event handlers are attached
       await this.waitForHydration();
-      
+
       // The button acts as submit, but initially expands the form
       // We need to wait for it to be visible as "Continue with email"
       await this.continueWithEmailButton.waitFor({ state: "visible", timeout: 5000 });
@@ -204,7 +204,7 @@ export class AuthPage extends BasePage {
 
       // Wait for formReady state using data-form-ready attribute
       await this.waitForFormReady();
-      
+
       console.log("    ✅ AuthPage.expandEmailForm: Success");
     }
   }

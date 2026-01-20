@@ -9,7 +9,11 @@ import {
   getUserName,
 } from "./lib/batchHelpers";
 import { conflict, forbidden, notFound, validation } from "./lib/errors";
+import { MAX_PAGE_SIZE } from "./lib/queryLimits";
 import { assertCanAccessProject, assertIsProjectAdmin } from "./projectAccess";
+
+// Time entries can be large - use a reasonable limit
+const MAX_TIME_ENTRIES = 500;
 
 /**
  * Native Time Tracking - Kimai-like Features
@@ -64,14 +68,14 @@ export const startTimer = authenticatedMutation({
     tags: v.optional(v.array(v.string())),
   },
   handler: async (ctx, args) => {
-    // Check if user has any running timers
-    const runningTimers = await ctx.db
+    // Check if user has any running timers - just need to know if one exists
+    const runningTimer = await ctx.db
       .query("timeEntries")
       .withIndex("by_user", (q) => q.eq("userId", ctx.userId))
       .filter((q) => q.eq(q.field("endTime"), undefined))
-      .collect();
+      .first();
 
-    if (runningTimers.length > 0) {
+    if (runningTimer) {
       throw conflict("You already have a running timer. Stop it first.");
     }
 
@@ -449,7 +453,7 @@ export const getCurrentWeekTimesheet = authenticatedQuery({
       .withIndex("by_user_date", (q) =>
         q.eq("userId", ctx.userId).gte("date", startDate).lte("date", endDate),
       )
-      .collect();
+      .take(MAX_TIME_ENTRIES);
 
     // Group by day
 
@@ -528,7 +532,7 @@ export const getBurnRate = authenticatedQuery({
       .withIndex("by_project_date", (q) =>
         q.eq("projectId", args.projectId).gte("date", args.startDate).lte("date", args.endDate),
       )
-      .collect();
+      .take(MAX_TIME_ENTRIES);
 
     // Batch fetch all users upfront (avoid N+1!)
     const userIds = [...new Set(entries.map((e) => e.userId))];
@@ -607,12 +611,12 @@ export const getTeamCosts = authenticatedQuery({
         .withIndex("by_project_date", (q) =>
           q.eq("projectId", args.projectId).gte("date", args.startDate).lte("date", args.endDate),
         )
-        .collect();
+        .take(MAX_TIME_ENTRIES);
     } else {
       entries = await ctx.db
         .query("timeEntries")
         .withIndex("by_date", (q) => q.gte("date", args.startDate).lte("date", args.endDate))
-        .collect();
+        .take(MAX_TIME_ENTRIES);
     }
 
     // Batch fetch all users upfront (avoid N+1!)
@@ -697,7 +701,7 @@ export const setUserRate = authenticatedMutation({
       .withIndex("by_user_project", (q) =>
         q.eq("userId", args.userId).eq("projectId", args.projectId),
       )
-      .collect();
+      .take(MAX_PAGE_SIZE);
 
     const now = Date.now();
 
@@ -750,11 +754,11 @@ export const listUserRates = authenticatedQuery({
           .query("userRates")
           .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
           .filter((q) => q.eq(q.field("effectiveTo"), undefined))
-          .collect()
+          .take(MAX_PAGE_SIZE)
       : await ctx.db
           .query("userRates")
           .filter((q) => q.eq(q.field("effectiveTo"), undefined))
-          .collect();
+          .take(MAX_PAGE_SIZE);
 
     // Batch fetch all users (avoid N+1!)
     const userIds = rates.map((r) => r.userId);
@@ -796,12 +800,12 @@ export const getProjectBilling = authenticatedQuery({
         .withIndex("by_project_date", (q) =>
           q.eq("projectId", args.projectId).gte("date", startDate).lte("date", endDate),
         )
-        .collect();
+        .take(MAX_TIME_ENTRIES);
     } else {
       entries = await ctx.db
         .query("timeEntries")
         .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
-        .collect();
+        .take(MAX_TIME_ENTRIES);
     }
 
     // Batch fetch all users upfront (avoid N+1!)

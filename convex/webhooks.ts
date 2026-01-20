@@ -6,6 +6,7 @@ import { internalAction, internalMutation, internalQuery } from "./_generated/se
 import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
 import { notFound, validation } from "./lib/errors";
 import { fetchPaginatedQuery } from "./lib/queryHelpers";
+import { MAX_PAGE_SIZE } from "./lib/queryLimits";
 import { notDeleted, softDeleteFields } from "./lib/softDeleteHelpers";
 import { assertIsProjectAdmin } from "./projectAccess";
 import { isTest } from "./testConfig";
@@ -65,7 +66,7 @@ export const listByProject = authenticatedQuery({
       .query("webhooks")
       .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
       .filter(notDeleted)
-      .collect();
+      .take(MAX_PAGE_SIZE);
 
     // Don't expose secrets to the client - only show if secret is configured
     return webhooks.map((w) => ({
@@ -223,13 +224,15 @@ export const getActiveWebhooksForEvent = internalQuery({
     event: v.string(),
   },
   handler: async (ctx, args) => {
+    // Use project index (not global active scan) for better performance
     const webhooks = await ctx.db
       .query("webhooks")
-      .withIndex("by_active", (q) => q.eq("isActive", true))
+      .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
       .filter(notDeleted)
-      .collect();
+      .take(MAX_PAGE_SIZE);
 
-    return webhooks.filter((w) => w.projectId === args.projectId && w.events.includes(args.event));
+    // Filter for active webhooks that handle this event
+    return webhooks.filter((w) => w.isActive && w.events.includes(args.event));
   },
 });
 

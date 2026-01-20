@@ -3,6 +3,7 @@ import type { Id } from "./_generated/dataModel";
 import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
 import { batchFetchUsers } from "./lib/batchHelpers";
 import { forbidden, notFound, validation } from "./lib/errors";
+import { MAX_PAGE_SIZE } from "./lib/queryLimits";
 import { DAY, nowArg, WEEK } from "./lib/timeUtils";
 
 /**
@@ -175,7 +176,7 @@ export const listByDateRange = authenticatedQuery({
           q.lte(q.field("startTime"), args.endDate),
         ),
       )
-      .collect();
+      .take(MAX_PAGE_SIZE);
 
     // Filter to events user can see (organizer or attendee)
     const visibleEvents = events.filter(
@@ -228,7 +229,7 @@ export const listMine = authenticatedQuery({
       .filter((q) =>
         q.and(q.gte(q.field("startTime"), startDate), q.lte(q.field("startTime"), endDate)),
       )
-      .collect();
+      .take(MAX_PAGE_SIZE);
 
     // Get events in date range and filter for user as attendee
     // This is bounded by date range, not loading all events
@@ -238,7 +239,7 @@ export const listMine = authenticatedQuery({
       .filter((q) =>
         q.and(q.gte(q.field("startTime"), startDate), q.lte(q.field("startTime"), endDate)),
       )
-      .collect();
+      .take(MAX_PAGE_SIZE);
 
     // Filter for events where user is attendee (not organizer - already got those)
     const attendingEvents = eventsInRange.filter(
@@ -356,7 +357,7 @@ export const getUpcoming = authenticatedQuery({
       .filter((q) =>
         q.and(q.gte(q.field("startTime"), args.now), q.lte(q.field("startTime"), sevenDaysFromNow)),
       )
-      .collect();
+      .take(MAX_PAGE_SIZE);
 
     // Filter to events user can see
     const visibleEvents = events.filter(

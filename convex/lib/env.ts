@@ -144,7 +144,10 @@ export function getMailtrapFromEmail(): string {
 export function getMailtrapMode(): "sandbox" | "production" {
   const mode = requireEnv("MAILTRAP_MODE");
   if (mode !== "sandbox" && mode !== "production") {
-    throw validation("MAILTRAP_MODE", `Invalid MAILTRAP_MODE: ${mode}. Must be "sandbox" or "production"`);
+    throw validation(
+      "MAILTRAP_MODE",
+      `Invalid MAILTRAP_MODE: ${mode}. Must be "sandbox" or "production"`,
+    );
   }
   return mode;
 }

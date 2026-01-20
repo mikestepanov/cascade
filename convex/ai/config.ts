@@ -3,8 +3,8 @@
  * Uses Anthropic Claude exclusively
  */
 
-import { validation } from "../lib/errors";
 import { getAnthropicApiKey, getAnthropicModel, isAnthropicConfigured } from "../lib/env";
+import { validation } from "../lib/errors";
 
 export type AIProvider = "anthropic";
 

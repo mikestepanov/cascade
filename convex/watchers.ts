@@ -1,6 +1,8 @@
 import { v } from "convex/values";
 import { query } from "./_generated/server";
 import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
+import { batchFetchIssues, batchFetchProjects, batchFetchUsers } from "./lib/batchHelpers";
+import { MAX_PAGE_SIZE } from "./lib/queryLimits";
 
 /**
  * Add current user as a watcher to an issue
@@ -82,23 +84,23 @@ export const getWatchers = query({
     const watchers = await ctx.db
       .query("issueWatchers")
       .withIndex("by_issue", (q) => q.eq("issueId", args.issueId))
-      .collect();
+      .take(MAX_PAGE_SIZE);
 
-    // Get user details for each watcher
-    const watchersWithUsers = await Promise.all(
-      watchers.map(async (watcher) => {
-        const user = await ctx.db.get(watcher.userId);
-        return {
-          _id: watcher._id,
-          userId: watcher.userId,
-          userName: user?.name || "Unknown User",
-          userEmail: user?.email,
-          createdAt: watcher.createdAt,
-        };
-      }),
-    );
+    // Batch fetch all users (avoid N+1)
+    const userIds = watchers.map((w) => w.userId);
+    const userMap = await batchFetchUsers(ctx, userIds);
 
-    return watchersWithUsers;
+    // Enrich with pre-fetched user data
+    return watchers.map((watcher) => {
+      const user = userMap.get(watcher.userId);
+      return {
+        _id: watcher._id,
+        userId: watcher.userId,
+        userName: user?.name || "Unknown User",
+        userEmail: user?.email,
+        createdAt: watcher.createdAt,
+      };
+    });
   },
 });
 
@@ -128,17 +130,36 @@ export const getWatchedIssues = authenticatedQuery({
     const watchers = await ctx.db
       .query("issueWatchers")
       .withIndex("by_user", (q) => q.eq("userId", ctx.userId))
-      .collect();
+      .take(MAX_PAGE_SIZE);
 
-    // Get issue details for each watched issue
-    const issues = await Promise.all(
-      watchers.map(async (watcher) => {
-        const issue = await ctx.db.get(watcher.issueId);
-        if (!issue) return null;
+    if (watchers.length === 0) return [];
 
-        if (!issue.projectId) return null;
-        const project = await ctx.db.get(issue.projectId);
-        const assignee = issue.assigneeId ? await ctx.db.get(issue.assigneeId) : null;
+    // Batch fetch all issues (avoid N+1)
+    const issueIds = watchers.map((w) => w.issueId);
+    const issueMap = await batchFetchIssues(ctx, issueIds);
+
+    // Collect project and assignee IDs for batch fetch
+    const projectIds: Set<string> = new Set();
+    const assigneeIds: Set<string> = new Set();
+    for (const issue of issueMap.values()) {
+      if (issue.projectId) projectIds.add(issue.projectId);
+      if (issue.assigneeId) assigneeIds.add(issue.assigneeId);
+    }
+
+    // Batch fetch projects and assignees
+    const [projectMap, assigneeMap] = await Promise.all([
+      batchFetchProjects(ctx, [...projectIds] as any),
+      batchFetchUsers(ctx, [...assigneeIds] as any),
+    ]);
+
+    // Build result with pre-fetched data (no N+1)
+    const issues = watchers
+      .map((watcher) => {
+        const issue = issueMap.get(watcher.issueId);
+        if (!(issue && issue.projectId)) return null;
+
+        const project = projectMap.get(issue.projectId);
+        const assignee = issue.assigneeId ? assigneeMap.get(issue.assigneeId) : null;
 
         return {
           _id: issue._id,
@@ -151,9 +172,9 @@ export const getWatchedIssues = authenticatedQuery({
           assignee: assignee ? { name: assignee.name } : null,
           watchedAt: watcher.createdAt,
         };
-      }),
-    );
+      })
+      .filter((issue) => issue !== null);
 
-    return issues.filter((issue) => issue !== null);
+    return issues;
   },
 });

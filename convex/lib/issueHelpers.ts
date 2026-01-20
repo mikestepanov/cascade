@@ -10,6 +10,7 @@ import type { Doc, Id } from "../_generated/dataModel";
 import type { MutationCtx, QueryCtx } from "../_generated/server";
 import { notFound, validation } from "./errors";
 import { fetchPaginatedQuery } from "./queryHelpers";
+import { MAX_PAGE_SIZE } from "./queryLimits";
 
 /**
  * Get an issue and validate it has a projectId (for migration safety)
@@ -109,7 +110,7 @@ export async function enrichIssue(ctx: QueryCtx, issue: Doc<"issues">): Promise<
     const projectLabels = await ctx.db
       .query("labels")
       .withIndex("by_project", (q) => q.eq("projectId", issue.projectId))
-      .collect();
+      .take(MAX_PAGE_SIZE);
 
     const labelMap = new Map(projectLabels.map((l) => [l.name, l.color]));
     labelInfos = issue.labels.map((name) => ({

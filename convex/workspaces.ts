@@ -8,6 +8,7 @@
 import { v } from "convex/values";
 import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
 import { conflict, forbidden, notFound } from "./lib/errors";
+import { MAX_PAGE_SIZE } from "./lib/queryLimits";
 import { notDeleted } from "./lib/softDeleteHelpers";
 import { isOrganizationAdmin } from "./organizations";
 
@@ -64,7 +65,7 @@ export const list = authenticatedQuery({
     const workspaces = await ctx.db
       .query("workspaces")
       .withIndex("by_organization", (q) => q.eq("organizationId", args.organizationId))
-      .collect();
+      .take(MAX_PAGE_SIZE);
 
     return workspaces;
   },
@@ -194,13 +195,13 @@ export const getStats = authenticatedQuery({
       .query("teams")
       .withIndex("by_workspace", (q) => q.eq("workspaceId", args.workspaceId))
       .filter(notDeleted)
-      .collect();
+      .take(MAX_PAGE_SIZE);
 
     const projects = await ctx.db
       .query("projects")
       .withIndex("by_workspace", (q) => q.eq("workspaceId", args.workspaceId))
       .filter(notDeleted)
-      .collect();
+      .take(MAX_PAGE_SIZE);
 
     return {
       teamsCount: teams.length,

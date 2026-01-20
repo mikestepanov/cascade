@@ -3,7 +3,7 @@ import type { Id } from "./_generated/dataModel";
 import type { MutationCtx } from "./_generated/server";
 import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
 import { getSearchContent } from "./issues/helpers";
-import { safeCollect, BOUNDED_RELATION_LIMIT, BOUNDED_DELETE_BATCH } from "./lib/boundedQueries";
+import { BOUNDED_DELETE_BATCH, BOUNDED_RELATION_LIMIT, safeCollect } from "./lib/boundedQueries";
 import { conflict, forbidden, notFound, validation } from "./lib/errors";
 import { notDeleted } from "./lib/softDeleteHelpers";
 import { getOrganizationRole } from "./organizations";

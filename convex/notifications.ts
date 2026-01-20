@@ -4,7 +4,7 @@ import type { Doc } from "./_generated/dataModel";
 import { internalMutation, internalQuery } from "./_generated/server";
 import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
 import { batchFetchIssues, batchFetchUsers } from "./lib/batchHelpers";
-import { notFound, requireOwned } from "./lib/errors";
+import { requireOwned } from "./lib/errors";
 import { fetchPaginatedQuery } from "./lib/queryHelpers";
 import { notDeleted, softDeleteFields } from "./lib/softDeleteHelpers";
 

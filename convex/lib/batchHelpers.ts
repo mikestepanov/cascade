@@ -19,6 +19,7 @@
  * }));
  */
 
+import { pruneNull } from "convex-helpers";
 import type { Doc, Id } from "../_generated/dataModel";
 import type { QueryCtx } from "../_generated/server";
 
@@ -38,7 +39,7 @@ export async function batchFetchUsers(
   if (uniqueIds.length === 0) return new Map();
 
   const users = await Promise.all(uniqueIds.map((id) => ctx.db.get(id)));
-  return new Map(users.filter((u): u is Doc<"users"> => u !== null).map((u) => [u._id, u]));
+  return new Map(pruneNull(users).map((u) => [u._id, u]));
 }
 
 /**
@@ -52,7 +53,7 @@ export async function batchFetchIssues(
   if (uniqueIds.length === 0) return new Map();
 
   const issues = await Promise.all(uniqueIds.map((id) => ctx.db.get(id)));
-  return new Map(issues.filter((i): i is Doc<"issues"> => i !== null).map((i) => [i._id, i]));
+  return new Map(pruneNull(issues).map((i) => [i._id, i]));
 }
 
 /**
@@ -66,7 +67,7 @@ export async function batchFetchProjects(
   if (uniqueIds.length === 0) return new Map();
 
   const projects = await Promise.all(uniqueIds.map((id) => ctx.db.get(id)));
-  return new Map(projects.filter((w): w is Doc<"projects"> => w !== null).map((w) => [w._id, w]));
+  return new Map(pruneNull(projects).map((p) => [p._id, p]));
 }
 
 /**
@@ -80,9 +81,7 @@ export async function batchFetchCalendarEvents(
   if (uniqueIds.length === 0) return new Map();
 
   const events = await Promise.all(uniqueIds.map((id) => ctx.db.get(id)));
-  return new Map(
-    events.filter((e): e is Doc<"calendarEvents"> => e !== null).map((e) => [e._id, e]),
-  );
+  return new Map(pruneNull(events).map((e) => [e._id, e]));
 }
 
 /**
@@ -96,7 +95,7 @@ export async function batchFetchTeams(
   if (uniqueIds.length === 0) return new Map();
 
   const teams = await Promise.all(uniqueIds.map((id) => ctx.db.get(id)));
-  return new Map(teams.filter((t): t is Doc<"teams"> => t !== null).map((t) => [t._id, t]));
+  return new Map(pruneNull(teams).map((t) => [t._id, t]));
 }
 
 /**
@@ -110,9 +109,7 @@ export async function batchFetchOrganizations(
   if (uniqueIds.length === 0) return new Map();
 
   const organizations = await Promise.all(uniqueIds.map((id) => ctx.db.get(id)));
-  return new Map(
-    organizations.filter((c): c is Doc<"organizations"> => c !== null).map((c) => [c._id, c]),
-  );
+  return new Map(pruneNull(organizations).map((o) => [o._id, o]));
 }
 
 /**
@@ -126,7 +123,7 @@ export async function batchFetchSprints(
   if (uniqueIds.length === 0) return new Map();
 
   const sprints = await Promise.all(uniqueIds.map((id) => ctx.db.get(id)));
-  return new Map(sprints.filter((s): s is Doc<"sprints"> => s !== null).map((s) => [s._id, s]));
+  return new Map(pruneNull(sprints).map((s) => [s._id, s]));
 }
 
 /**
@@ -140,7 +137,7 @@ export async function batchFetchBookingPages(
   if (uniqueIds.length === 0) return new Map();
 
   const pages = await Promise.all(uniqueIds.map((id) => ctx.db.get(id)));
-  return new Map(pages.filter((p): p is Doc<"bookingPages"> => p !== null).map((p) => [p._id, p]));
+  return new Map(pruneNull(pages).map((p) => [p._id, p]));
 }
 
 /**
@@ -154,7 +151,7 @@ export async function batchFetchDocuments(
   if (uniqueIds.length === 0) return new Map();
 
   const docs = await Promise.all(uniqueIds.map((id) => ctx.db.get(id)));
-  return new Map(docs.filter((d): d is Doc<"documents"> => d !== null).map((d) => [d._id, d]));
+  return new Map(pruneNull(docs).map((d) => [d._id, d]));
 }
 
 /**
@@ -168,7 +165,7 @@ export async function batchFetchCustomFields(
   if (uniqueIds.length === 0) return new Map();
 
   const fields = await Promise.all(uniqueIds.map((id) => ctx.db.get(id)));
-  return new Map(fields.filter((f): f is Doc<"customFields"> => f !== null).map((f) => [f._id, f]));
+  return new Map(pruneNull(fields).map((f) => [f._id, f]));
 }
 
 /**
@@ -182,9 +179,7 @@ export async function batchFetchRecordings(
   if (uniqueIds.length === 0) return new Map();
 
   const recordings = await Promise.all(uniqueIds.map((id) => ctx.db.get(id)));
-  return new Map(
-    recordings.filter((r): r is Doc<"meetingRecordings"> => r !== null).map((r) => [r._id, r]),
-  );
+  return new Map(pruneNull(recordings).map((r) => [r._id, r]));
 }
 
 // ============================================================================

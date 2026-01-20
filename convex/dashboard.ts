@@ -9,7 +9,12 @@ import {
   getUserName,
 } from "./lib/batchHelpers";
 import { fetchPaginatedQuery } from "./lib/queryHelpers";
-import { DEFAULT_SEARCH_PAGE_SIZE, MAX_ACTIVITY_ITEMS } from "./lib/queryLimits";
+import {
+  DEFAULT_SEARCH_PAGE_SIZE,
+  MAX_ACTIVITY_ITEMS,
+  MAX_PAGE_SIZE,
+  MAX_USER_ASSIGNED_ISSUES,
+} from "./lib/queryLimits";
 import { notDeleted } from "./lib/softDeleteHelpers";
 import { nowArg, WEEK } from "./lib/timeUtils";
 
@@ -41,17 +46,10 @@ export const getMyIssues = authenticatedQuery({
       ...new Set(results.page.flatMap((i) => [i.reporterId, i.assigneeId]).filter(Boolean)),
     ] as Id<"users">[];
 
-    const [projects, users] = await Promise.all([
-      Promise.all(projectIds.map((id) => ctx.db.get(id))),
-      Promise.all(userIds.map((id) => ctx.db.get(id))),
+    const [projectMap, userMap] = await Promise.all([
+      batchFetchProjects(ctx, projectIds),
+      batchFetchUsers(ctx, userIds),
     ]);
-
-    const projectMap = new Map(
-      projects.filter((p): p is NonNullable<typeof p> => p !== null).map((p) => [p._id, p]),
-    );
-    const userMap = new Map(
-      users.filter((u): u is NonNullable<typeof u> => u !== null).map((u) => [u._id, u]),
-    );
 
     // Enrich with pre-fetched data
     const enrichedIssues = results.page.map((issue) => {
@@ -83,7 +81,7 @@ export const getMyCreatedIssues = authenticatedQuery({
       .query("issues")
       .withIndex("by_reporter", (q) => q.eq("reporterId", ctx.userId))
       .filter(notDeleted)
-      .collect();
+      .take(MAX_USER_ASSIGNED_ISSUES);
 
     // Batch fetch all related data to avoid N+1 queries
     const projectIds = [
@@ -97,17 +95,10 @@ export const getMyCreatedIssues = authenticatedQuery({
       ...new Set(issues.map((i) => i.assigneeId).filter(Boolean)),
     ] as Id<"users">[];
 
-    const [projects, assignees] = await Promise.all([
-      Promise.all(projectIds.map((id) => ctx.db.get(id))),
-      Promise.all(assigneeIds.map((id) => ctx.db.get(id))),
+    const [projectMap, assigneeMap] = await Promise.all([
+      batchFetchProjects(ctx, projectIds),
+      batchFetchUsers(ctx, assigneeIds),
     ]);
-
-    const projectMap = new Map(
-      projects.filter((p): p is NonNullable<typeof p> => p !== null).map((p) => [p._id, p]),
-    );
-    const assigneeMap = new Map(
-      assignees.filter((u): u is NonNullable<typeof u> => u !== null).map((u) => [u._id, u]),
-    );
 
     // Enrich with pre-fetched data
     const enrichedIssues = issues.map((issue) => {
@@ -135,7 +126,7 @@ export const getMyProjects = authenticatedQuery({
       .query("projectMembers")
       .withIndex("by_user", (q) => q.eq("userId", ctx.userId))
       .filter(notDeleted)
-      .collect();
+      .take(MAX_PAGE_SIZE);
 
     if (memberships.length === 0) return [];
 
@@ -149,7 +140,7 @@ export const getMyProjects = authenticatedQuery({
       .query("issues")
       .withIndex("by_assignee", (q) => q.eq("assigneeId", ctx.userId))
       .filter(notDeleted)
-      .collect();
+      .take(MAX_USER_ASSIGNED_ISSUES);
 
     const myIssuesByProject = new Map<string, number>();
     for (const issue of myIssues) {
@@ -195,7 +186,7 @@ export const getMyRecentActivity = authenticatedQuery({
       .query("projectMembers")
       .withIndex("by_user", (q) => q.eq("userId", ctx.userId))
       .filter(notDeleted)
-      .collect();
+      .take(MAX_PAGE_SIZE);
 
     const projectIdSet = new Set(memberships.map((m) => m.projectId.toString()));
 
@@ -257,7 +248,7 @@ export const getMyStats = authenticatedQuery({
       .query("issues")
       .withIndex("by_assignee", (q) => q.eq("assigneeId", ctx.userId))
       .filter(notDeleted)
-      .collect();
+      .take(MAX_USER_ASSIGNED_ISSUES);
 
     // Filter for different stats
     const weekAgo = args.now - WEEK;
@@ -290,7 +281,7 @@ export const getMyStats = authenticatedQuery({
       .query("issues")
       .withIndex("by_reporter", (q) => q.eq("reporterId", ctx.userId))
       .filter(notDeleted)
-      .collect();
+      .take(MAX_USER_ASSIGNED_ISSUES);
 
     return {
       assignedToMe: assignedIssues.length,
@@ -325,12 +316,12 @@ export const getFocusTask = authenticatedQuery({
     }),
   ),
   handler: async (ctx) => {
-    // Fetch tasks assigned to me
+    // Fetch tasks assigned to me (with reasonable limit)
     const issues = await ctx.db
       .query("issues")
       .withIndex("by_assignee", (q) => q.eq("assigneeId", ctx.userId))
       .filter(notDeleted)
-      .collect();
+      .take(MAX_USER_ASSIGNED_ISSUES);
 
     if (issues.length === 0) return null;
 

@@ -14,7 +14,11 @@ import {
 } from "./aggregates";
 import { projectQuery, sprintQuery } from "./customFunctions";
 import { batchFetchIssues, batchFetchUsers, getUserName } from "./lib/batchHelpers";
-import { MAX_ACTIVITY_FOR_ANALYTICS, MAX_VELOCITY_SPRINTS } from "./lib/queryLimits";
+import {
+  MAX_ACTIVITY_FOR_ANALYTICS,
+  MAX_SPRINT_ISSUES,
+  MAX_VELOCITY_SPRINTS,
+} from "./lib/queryLimits";
 import { notDeleted } from "./lib/softDeleteHelpers";
 import { DAY, nowArg } from "./lib/timeUtils";
 
@@ -115,7 +119,7 @@ export const getSprintBurndown = sprintQuery({
       .query("issues")
       .withIndex("by_sprint", (q) => q.eq("sprintId", ctx.sprint._id))
       .filter(notDeleted)
-      .collect();
+      .take(MAX_SPRINT_ISSUES);
 
     // Calculate total points (using storyPoints, fallback to estimatedHours)
     const totalPoints = sprintIssues.reduce(
@@ -204,7 +208,7 @@ export const getTeamVelocity = projectQuery({
           .query("issues")
           .withIndex("by_sprint", (q) => q.eq("sprintId", sprintId))
           .filter(notDeleted)
-          .collect(),
+          .take(MAX_SPRINT_ISSUES),
       ),
     );
 

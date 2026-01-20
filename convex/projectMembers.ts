@@ -1,5 +1,7 @@
 import { v } from "convex/values";
 import { authenticatedQuery } from "./customFunctions";
+import { batchFetchUsers } from "./lib/batchHelpers";
+import { MAX_TEAM_MEMBERS } from "./lib/queryLimits";
 import { notDeleted } from "./lib/softDeleteHelpers";
 import { assertCanAccessProject } from "./projectAccess";
 
@@ -14,12 +16,16 @@ export const list = authenticatedQuery({
       .query("projectMembers")
       .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
       .filter(notDeleted)
-      .collect();
+      .take(MAX_TEAM_MEMBERS);
 
-    // Fetch user details for each member, filter out members with deleted users
-    const membersWithDetails = await Promise.all(
-      members.map(async (member) => {
-        const user = await ctx.db.get(member.userId);
+    // Batch fetch all users (avoid N+1)
+    const userIds = members.map((m) => m.userId);
+    const userMap = await batchFetchUsers(ctx, userIds);
+
+    // Enrich with pre-fetched user data, filter out deleted users
+    return members
+      .map((member) => {
+        const user = userMap.get(member.userId);
         if (!user) return null; // User was deleted
 
         return {
@@ -28,10 +34,7 @@ export const list = authenticatedQuery({
           userEmail: user.email,
           userImage: user.image,
         };
-      }),
-    );
-
-    // Filter out null entries (deleted users)
-    return membersWithDetails.filter((m) => m !== null);
+      })
+      .filter((m) => m !== null);
   },
 });

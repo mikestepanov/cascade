@@ -4,6 +4,7 @@ import type { MutationCtx, QueryCtx } from "./_generated/server";
 import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
 import { batchFetchOrganizations, batchFetchUsers } from "./lib/batchHelpers";
 import { conflict, forbidden, notFound, validation } from "./lib/errors";
+import { MAX_ORG_MEMBERS } from "./lib/queryLimits";
 import { notDeleted } from "./lib/softDeleteHelpers";
 
 // ============================================================================
@@ -257,33 +258,6 @@ export const updateOrganization = authenticatedMutation({
       updates.name = args.name;
       // NOTE: We do NOT regenerate slug when name changes to preserve URL stability.
       // Slugs should only be updated via a dedicated mutation if needed.
-      /*
-      // Regenerate slug if name changes
-      const baseSlug = generateSlug(args.name);
-
-      // Validate slug is not reserved (GitHub-style validation)
-      if (isReservedSlug(baseSlug)) {
-        throw new Error(
-          `The name "${args.name}" cannot be used because "${baseSlug}" is a reserved URL path. Please choose a different name.`,
-        );
-      }
-
-      let slug = baseSlug;
-      let counter = 1;
-
-      while (true) {
-        const existing = await ctx.db
-          .query("organizations")
-          .withIndex("by_slug", (q) => q.eq("slug", slug))
-          .first();
-
-        if (!existing || existing._id === args.organizationId) break;
-
-        slug = `${baseSlug}-${counter}`;
-        counter++;
-      }
-      updates.slug = slug;
-      */
     }
 
     if (args.timezone !== undefined) updates.timezone = args.timezone;
@@ -311,13 +285,17 @@ export const deleteOrganization = authenticatedMutation({
     const members = await ctx.db
       .query("organizationMembers")
       .withIndex("by_organization", (q) => q.eq("organizationId", args.organizationId))
-      .collect();
+      .take(MAX_ORG_MEMBERS);
+
+    // Batch fetch all users to avoid N+1
+    const userIds = members.map((m) => m.userId);
+    const userMap = await batchFetchUsers(ctx, userIds);
 
     for (const member of members) {
       await ctx.db.delete(member._id);
 
       // Clear defaultOrganizationId if this was the user's default
-      const user = await ctx.db.get(member.userId);
+      const user = userMap.get(member.userId);
       if (user?.defaultOrganizationId === args.organizationId) {
         await ctx.db.patch(member.userId, { defaultOrganizationId: undefined });
       }
@@ -575,7 +553,7 @@ export const getUserOrganizations = authenticatedQuery({
     const memberships = await ctx.db
       .query("organizationMembers")
       .withIndex("by_user", (q) => q.eq("userId", ctx.userId))
-      .collect();
+      .take(MAX_ORG_MEMBERS);
 
     // Batch fetch all organizations
     const organizationIds = memberships.map((m) => m.organizationId);
@@ -668,7 +646,7 @@ export const getOrganizationMembers = authenticatedQuery({
       .query("organizationMembers")
       .withIndex("by_organization", (q) => q.eq("organizationId", args.organizationId))
       .filter(notDeleted)
-      .collect();
+      .take(MAX_ORG_MEMBERS);
 
     // Batch fetch all users (members + addedBy)
     const userIds = [...memberships.map((m) => m.userId), ...memberships.map((m) => m.addedBy)];

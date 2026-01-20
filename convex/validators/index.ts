@@ -27,10 +27,14 @@ export const proseMirrorNode = v.object({
   type: v.string(),
   attrs: v.optional(v.record(v.string(), v.any())), // Attributes vary by node type
   content: v.optional(v.array(v.any())), // Recursive - children are also nodes
-  marks: v.optional(v.array(v.object({
-    type: v.string(),
-    attrs: v.optional(v.record(v.string(), v.any())),
-  }))),
+  marks: v.optional(
+    v.array(
+      v.object({
+        type: v.string(),
+        attrs: v.optional(v.record(v.string(), v.any())),
+      }),
+    ),
+  ),
   text: v.optional(v.string()), // Text nodes have text instead of content
 });
 
@@ -49,13 +53,15 @@ export const proseMirrorSnapshot = v.object({
  *
  * @see https://www.blocknotejs.org/docs/editor-basics/document-structure
  */
-export const blockNoteContent = v.array(v.object({
-  id: v.optional(v.string()),
-  type: v.string(), // "paragraph", "heading", "bulletListItem", etc.
-  props: v.optional(v.record(v.string(), v.any())), // Block-specific properties
-  content: v.optional(v.array(v.any())), // Inline content
-  children: v.optional(v.array(v.any())), // Nested blocks
-}));
+export const blockNoteContent = v.array(
+  v.object({
+    id: v.optional(v.string()),
+    type: v.string(), // "paragraph", "heading", "bulletListItem", etc.
+    props: v.optional(v.record(v.string(), v.any())), // Block-specific properties
+    content: v.optional(v.array(v.any())), // Inline content
+    children: v.optional(v.array(v.any())), // Nested blocks
+  }),
+);
 
 // =============================================================================
 // Dashboard Layout
@@ -105,8 +111,8 @@ export const auditMetadata = v.record(
     v.object({
       old: v.optional(v.union(v.string(), v.number(), v.null())),
       new: v.optional(v.union(v.string(), v.number(), v.null())),
-    })
-  )
+    }),
+  ),
 );
 
 // =============================================================================
@@ -121,28 +127,38 @@ export const googleCalendarEvent = v.object({
   id: v.optional(v.string()),
   summary: v.optional(v.string()),
   description: v.optional(v.string()),
-  start: v.optional(v.object({
-    dateTime: v.optional(v.string()),
-    date: v.optional(v.string()),
-    timeZone: v.optional(v.string()),
-  })),
-  end: v.optional(v.object({
-    dateTime: v.optional(v.string()),
-    date: v.optional(v.string()),
-    timeZone: v.optional(v.string()),
-  })),
-  attendees: v.optional(v.array(v.object({
-    email: v.optional(v.string()),
-    displayName: v.optional(v.string()),
-    responseStatus: v.optional(v.string()),
-  }))),
+  start: v.optional(
+    v.object({
+      dateTime: v.optional(v.string()),
+      date: v.optional(v.string()),
+      timeZone: v.optional(v.string()),
+    }),
+  ),
+  end: v.optional(
+    v.object({
+      dateTime: v.optional(v.string()),
+      date: v.optional(v.string()),
+      timeZone: v.optional(v.string()),
+    }),
+  ),
+  attendees: v.optional(
+    v.array(
+      v.object({
+        email: v.optional(v.string()),
+        displayName: v.optional(v.string()),
+        responseStatus: v.optional(v.string()),
+      }),
+    ),
+  ),
   hangoutLink: v.optional(v.string()),
   htmlLink: v.optional(v.string()),
   status: v.optional(v.string()),
-  organizer: v.optional(v.object({
-    email: v.optional(v.string()),
-    displayName: v.optional(v.string()),
-  })),
+  organizer: v.optional(
+    v.object({
+      email: v.optional(v.string()),
+      displayName: v.optional(v.string()),
+    }),
+  ),
 });
 
 // =============================================================================

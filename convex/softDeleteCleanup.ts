@@ -27,8 +27,10 @@ const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
  *
  * Returns detailed stats for monitoring
  */
+
 export const permanentlyDeleteOld = internalMutation({
   args: {},
+  // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: Cron job handler requires complex logic
   handler: async (ctx) => {
     const startTime = Date.now();
     let totalDeleted = 0;
@@ -57,7 +59,9 @@ export const permanentlyDeleteOld = internalMutation({
             totalDeleted++;
             deletedByTable[table]++;
           } catch (error) {
-            errors.push(`${table}/${record._id}: ${error instanceof Error ? error.message : "Unknown error"}`);
+            errors.push(
+              `${table}/${record._id}: ${error instanceof Error ? error.message : "Unknown error"}`,
+            );
           }
         }
       } catch (error) {

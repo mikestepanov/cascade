@@ -5,7 +5,7 @@ import type { Doc, Id } from "../_generated/dataModel";
 import { internalQuery, type QueryCtx, query } from "../_generated/server";
 import { authenticatedQuery, projectQuery } from "../customFunctions";
 import { batchFetchUsers } from "../lib/batchHelpers";
-import { safeCollect, BOUNDED_SEARCH_LIMIT, BOUNDED_LIST_LIMIT } from "../lib/boundedQueries";
+import { BOUNDED_LIST_LIMIT, BOUNDED_SEARCH_LIMIT, safeCollect } from "../lib/boundedQueries";
 import { forbidden, notFound } from "../lib/errors";
 import {
   type EnrichedIssue,
@@ -119,9 +119,7 @@ export const listEpics = authenticatedQuery({
     const epics = await safeCollect(
       ctx.db
         .query("issues")
-        .withIndex("by_project_type", (q) =>
-          q.eq("projectId", args.projectId).eq("type", "epic"),
-        )
+        .withIndex("by_project_type", (q) => q.eq("projectId", args.projectId).eq("type", "epic"))
         .filter(notDeleted),
       200, // Reasonable limit for epics
       "project epics",
@@ -823,7 +821,9 @@ export const getTeamIssueCounts = authenticatedQuery({
           const allIssues = await safeCollect(
             ctx.db
               .query("issues")
-              .withIndex("by_team_status", (q) => q.eq("teamId", args.teamId).eq("status", state.id))
+              .withIndex("by_team_status", (q) =>
+                q.eq("teamId", args.teamId).eq("status", state.id),
+              )
               .filter(notDeleted),
             ISSUE_COUNT_LIMIT,
             "team done issues count",

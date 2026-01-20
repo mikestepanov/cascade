@@ -95,7 +95,10 @@ export function buildPaginatedResult<
     const lastItem = resultItems[resultItems.length - 1];
     const timestamp = lastItem.updatedAt ?? lastItem.createdAt;
     if (timestamp === undefined) {
-      throw validation("cursor", "Cannot build pagination cursor: item missing both updatedAt and createdAt");
+      throw validation(
+        "cursor",
+        "Cannot build pagination cursor: item missing both updatedAt and createdAt",
+      );
     }
     nextCursor = encodeCursor(timestamp, lastItem._id.toString());
   }

@@ -1,7 +1,7 @@
 import { api } from "../_generated/api";
 import { httpAction } from "../_generated/server";
-import { validation } from "../lib/errors";
 import { getGoogleClientId, getGoogleClientSecret, isGoogleOAuthConfigured } from "../lib/env";
+import { validation } from "../lib/errors";
 
 /**
  * Google OAuth Integration
@@ -43,7 +43,10 @@ const getGoogleOAuthConfig = () => {
   const clientSecret = getGoogleClientSecret();
 
   if (!(isGoogleOAuthConfigured() && clientId && clientSecret)) {
-    throw validation("oauth", "Google OAuth not configured. Set AUTH_GOOGLE_ID and AUTH_GOOGLE_SECRET.");
+    throw validation(
+      "oauth",
+      "Google OAuth not configured. Set AUTH_GOOGLE_ID and AUTH_GOOGLE_SECRET.",
+    );
   }
   return {
     clientId,
