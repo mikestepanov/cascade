@@ -4,6 +4,7 @@
  * Provides helpers for cursor-based pagination and smart loading strategies.
  */
 
+import { validation } from "./errors";
 import { DAY } from "./timeUtils";
 
 // Default pagination settings
@@ -27,20 +28,21 @@ export function decodeCursor(cursor: string): { timestamp: number; id: string } 
     const decoded = atob(cursor);
     const colonIndex = decoded.indexOf(":");
     if (colonIndex === -1) {
-      throw new Error("Invalid cursor format");
+      throw validation("cursor", "Invalid cursor format");
     }
     const timestampStr = decoded.slice(0, colonIndex);
     const id = decoded.slice(colonIndex + 1);
     if (!(timestampStr && id)) {
-      throw new Error("Invalid cursor format");
+      throw validation("cursor", "Invalid cursor format");
     }
     const timestamp = Number.parseInt(timestampStr, 10);
     if (Number.isNaN(timestamp)) {
-      throw new Error("Invalid timestamp");
+      throw validation("cursor", "Invalid timestamp in cursor");
     }
     return { timestamp, id };
   } catch (error) {
-    throw new Error(
+    throw validation(
+      "cursor",
       `Invalid pagination cursor: ${error instanceof Error ? error.message : "Unknown error"}`,
     );
   }
@@ -93,7 +95,7 @@ export function buildPaginatedResult<
     const lastItem = resultItems[resultItems.length - 1];
     const timestamp = lastItem.updatedAt ?? lastItem.createdAt;
     if (timestamp === undefined) {
-      throw new Error("Cannot build pagination cursor: item missing both updatedAt and createdAt");
+      throw validation("cursor", "Cannot build pagination cursor: item missing both updatedAt and createdAt");
     }
     nextCursor = encodeCursor(timestamp, lastItem._id.toString());
   }

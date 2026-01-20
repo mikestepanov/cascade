@@ -2,7 +2,7 @@ import { v } from "convex/values";
 import { internalMutation, query } from "./_generated/server";
 import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
 import type { ApiAuthContext } from "./lib/apiAuth";
-import { notFound, requireOwned, validation } from "./lib/errors";
+import { forbidden, notFound, requireOwned, validation } from "./lib/errors";
 import { notDeleted } from "./lib/softDeleteHelpers";
 
 /**
@@ -173,6 +173,9 @@ export const list = authenticatedQuery({
       expiresAt: key.expiresAt,
       createdAt: key.createdAt,
       revokedAt: key.revokedAt,
+      // Rotation info
+      rotatedFromId: key.rotatedFromId,
+      rotatedAt: key.rotatedAt,
     }));
   },
 });
@@ -244,6 +247,109 @@ export const update = authenticatedMutation({
     await ctx.db.patch(args.keyId, updates);
 
     return { success: true };
+  },
+});
+
+/** Default grace period for rotated keys (24 hours) */
+const DEFAULT_ROTATION_GRACE_PERIOD = 24 * 60 * 60 * 1000;
+
+/**
+ * Rotate an API key - creates a new key and sets up grace period for old key
+ *
+ * The old key remains valid for a grace period (default 24h) to allow
+ * systems to transition to the new key without downtime.
+ *
+ * @returns The new API key (must be saved - won't be shown again)
+ */
+export const rotate = authenticatedMutation({
+  args: {
+    keyId: v.id("apiKeys"),
+    gracePeriodMs: v.optional(v.number()), // Custom grace period (default 24h)
+  },
+  handler: async (ctx, args) => {
+    const oldKey = await ctx.db.get(args.keyId);
+    requireOwned(oldKey, ctx.userId, "apiKey");
+
+    if (!oldKey.isActive) {
+      throw validation("keyId", "Cannot rotate an inactive key");
+    }
+
+    if (oldKey.rotatedAt) {
+      throw validation("keyId", "This key has already been rotated");
+    }
+
+    // Generate new API key
+    const newApiKey = generateApiKey();
+    const newKeyHash = await hashApiKey(newApiKey);
+    const newKeyPrefix = newApiKey.substring(0, 16);
+
+    const now = Date.now();
+    const gracePeriod = args.gracePeriodMs ?? DEFAULT_ROTATION_GRACE_PERIOD;
+
+    // Create new key with same settings
+    const newKeyId = await ctx.db.insert("apiKeys", {
+      userId: ctx.userId,
+      name: `${oldKey.name} (rotated)`,
+      keyHash: newKeyHash,
+      keyPrefix: newKeyPrefix,
+      scopes: oldKey.scopes,
+      projectId: oldKey.projectId,
+      rateLimit: oldKey.rateLimit,
+      isActive: true,
+      usageCount: 0,
+      createdAt: now,
+      expiresAt: oldKey.expiresAt, // Inherit expiration
+      rotatedFromId: args.keyId, // Link to old key
+    });
+
+    // Mark old key as rotated with grace period expiration
+    await ctx.db.patch(args.keyId, {
+      rotatedAt: now,
+      expiresAt: now + gracePeriod, // Old key expires after grace period
+    });
+
+    return {
+      id: newKeyId,
+      apiKey: newApiKey, // ⚠️ User must save this - won't be shown again
+      name: `${oldKey.name} (rotated)`,
+      scopes: oldKey.scopes,
+      keyPrefix: newKeyPrefix,
+      oldKeyExpiresAt: now + gracePeriod,
+      gracePeriodMs: gracePeriod,
+    };
+  },
+});
+
+/**
+ * Get keys expiring soon (for notifications/warnings)
+ * Returns keys expiring within the specified window
+ */
+export const listExpiringSoon = authenticatedQuery({
+  args: {
+    withinMs: v.optional(v.number()), // Default: 7 days
+  },
+  handler: async (ctx, args) => {
+    const withinMs = args.withinMs ?? 7 * 24 * 60 * 60 * 1000; // 7 days
+    const now = Date.now();
+    const threshold = now + withinMs;
+
+    // Get all user's active keys
+    const keys = await ctx.db
+      .query("apiKeys")
+      .withIndex("by_user_active", (q) => q.eq("userId", ctx.userId).eq("isActive", true))
+      .collect();
+
+    // Filter to expiring keys
+    const expiring = keys.filter((key) => key.expiresAt && key.expiresAt <= threshold);
+
+    return expiring.map((key) => ({
+      id: key._id,
+      name: key.name,
+      keyPrefix: key.keyPrefix,
+      expiresAt: key.expiresAt,
+      daysUntilExpiry: key.expiresAt ? Math.ceil((key.expiresAt - now) / (24 * 60 * 60 * 1000)) : null,
+      wasRotated: !!key.rotatedAt,
+    }));
   },
 });
 

@@ -3,6 +3,7 @@ import type { Id } from "./_generated/dataModel";
 import type { MutationCtx } from "./_generated/server";
 import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
 import { getSearchContent } from "./issues/helpers";
+import { safeCollect, BOUNDED_RELATION_LIMIT, BOUNDED_DELETE_BATCH } from "./lib/boundedQueries";
 import { conflict, forbidden, notFound, validation } from "./lib/errors";
 import { notDeleted } from "./lib/softDeleteHelpers";
 import { getOrganizationRole } from "./organizations";
@@ -42,6 +43,50 @@ export const getOnboardingStatus = authenticatedQuery({
       .first();
 
     return onboarding;
+  },
+});
+
+/**
+ * Check if user has completed any issue (for onboarding checklist)
+ * More efficient than loading all issues just to check this
+ */
+export const hasCompletedIssue = authenticatedQuery({
+  args: {},
+  returns: v.boolean(),
+  handler: async (ctx) => {
+    // Get user's projects to check their workflow states
+    const memberships = await ctx.db
+      .query("projectMembers")
+      .withIndex("by_user", (q) => q.eq("userId", ctx.userId))
+      .filter(notDeleted)
+      .take(10); // Only check first 10 projects
+
+    for (const membership of memberships) {
+      const project = await ctx.db.get(membership.projectId);
+      if (!project) continue;
+
+      // Get done state IDs for this project
+      const doneStateIds = project.workflowStates
+        .filter((s) => s.category === "done")
+        .map((s) => s.id);
+
+      // Check if user has any issues in done states
+      for (const stateId of doneStateIds) {
+        const doneIssue = await ctx.db
+          .query("issues")
+          .withIndex("by_project_status", (q) =>
+            q.eq("projectId", membership.projectId).eq("status", stateId),
+          )
+          .filter(notDeleted)
+          .first();
+
+        if (doneIssue && doneIssue.assigneeId === ctx.userId) {
+          return true;
+        }
+      }
+    }
+
+    return false;
   },
 });
 
@@ -453,27 +498,36 @@ export const createSampleProject = authenticatedMutation({
 
 /**
  * Helper: Delete all issues and their related data for a project
+ * Bounded to prevent OOM on large projects
  */
 async function deleteProjectIssues(ctx: MutationCtx, projectId: Id<"projects">) {
-  const issues = await ctx.db
-    .query("issues")
-    .withIndex("by_project", (q) => q.eq("projectId", projectId))
-    .filter(notDeleted)
-    .collect();
+  // Bounded: delete in batches to prevent OOM
+  const issues = await safeCollect(
+    ctx.db
+      .query("issues")
+      .withIndex("by_project", (q) => q.eq("projectId", projectId))
+      .filter(notDeleted),
+    BOUNDED_DELETE_BATCH,
+    "delete project issues",
+  );
 
   for (const issue of issues) {
-    const comments = await ctx.db
-      .query("issueComments")
-      .withIndex("by_issue", (q) => q.eq("issueId", issue._id))
-      .collect();
+    // Bounded: comments per issue
+    const comments = await safeCollect(
+      ctx.db.query("issueComments").withIndex("by_issue", (q) => q.eq("issueId", issue._id)),
+      BOUNDED_RELATION_LIMIT,
+      "delete issue comments",
+    );
     for (const comment of comments) {
       await ctx.db.delete(comment._id);
     }
 
-    const activities = await ctx.db
-      .query("issueActivity")
-      .withIndex("by_issue", (q) => q.eq("issueId", issue._id))
-      .collect();
+    // Bounded: activities per issue
+    const activities = await safeCollect(
+      ctx.db.query("issueActivity").withIndex("by_issue", (q) => q.eq("issueId", issue._id)),
+      BOUNDED_RELATION_LIMIT,
+      "delete issue activities",
+    );
     for (const activity of activities) {
       await ctx.db.delete(activity._id);
     }
@@ -484,30 +538,41 @@ async function deleteProjectIssues(ctx: MutationCtx, projectId: Id<"projects">) 
 
 /**
  * Helper: Delete sprints, labels, and members for a project
+ * Bounded to prevent OOM
  */
 async function deleteProjectMetadata(ctx: MutationCtx, projectId: Id<"projects">) {
-  const sprints = await ctx.db
-    .query("sprints")
-    .withIndex("by_project", (q) => q.eq("projectId", projectId))
-    .filter(notDeleted)
-    .collect();
+  // Bounded: sprints per project (typically small)
+  const sprints = await safeCollect(
+    ctx.db
+      .query("sprints")
+      .withIndex("by_project", (q) => q.eq("projectId", projectId))
+      .filter(notDeleted),
+    BOUNDED_RELATION_LIMIT,
+    "delete project sprints",
+  );
   for (const sprint of sprints) {
     await ctx.db.delete(sprint._id);
   }
 
-  const labels = await ctx.db
-    .query("labels")
-    .withIndex("by_project", (q) => q.eq("projectId", projectId))
-    .collect();
+  // Bounded: labels per project (typically small)
+  const labels = await safeCollect(
+    ctx.db.query("labels").withIndex("by_project", (q) => q.eq("projectId", projectId)),
+    BOUNDED_RELATION_LIMIT,
+    "delete project labels",
+  );
   for (const label of labels) {
     await ctx.db.delete(label._id);
   }
 
-  const members = await ctx.db
-    .query("projectMembers")
-    .withIndex("by_project", (q) => q.eq("projectId", projectId))
-    .filter(notDeleted)
-    .collect();
+  // Bounded: members per project (typically small)
+  const members = await safeCollect(
+    ctx.db
+      .query("projectMembers")
+      .withIndex("by_project", (q) => q.eq("projectId", projectId))
+      .filter(notDeleted),
+    BOUNDED_RELATION_LIMIT,
+    "delete project members",
+  );
   for (const member of members) {
     await ctx.db.delete(member._id);
   }
@@ -576,65 +641,9 @@ export const deleteSampleProject = authenticatedMutation({
       throw notFound("project");
     }
 
-    // Delete all related data (issues, comments, sprints, etc.)
-    const issues = await ctx.db
-      .query("issues")
-      .withIndex("by_project", (q) => q.eq("projectId", project._id))
-      .filter(notDeleted)
-      .collect();
-
-    for (const issue of issues) {
-      // Delete comments
-      const comments = await ctx.db
-        .query("issueComments")
-        .withIndex("by_issue", (q) => q.eq("issueId", issue._id))
-        .filter(notDeleted)
-        .collect();
-      for (const comment of comments) {
-        await ctx.db.delete(comment._id);
-      }
-
-      // Delete activity
-      const activities = await ctx.db
-        .query("issueActivity")
-        .withIndex("by_issue", (q) => q.eq("issueId", issue._id))
-        .collect();
-      for (const activity of activities) {
-        await ctx.db.delete(activity._id);
-      }
-
-      // Delete issue
-      await ctx.db.delete(issue._id);
-    }
-
-    // Delete sprints
-    const sprints = await ctx.db
-      .query("sprints")
-      .withIndex("by_project", (q) => q.eq("projectId", project._id))
-      .filter(notDeleted)
-      .collect();
-    for (const sprint of sprints) {
-      await ctx.db.delete(sprint._id);
-    }
-
-    // Delete labels
-    const labels = await ctx.db
-      .query("labels")
-      .withIndex("by_project", (q) => q.eq("projectId", project._id))
-      .collect();
-    for (const label of labels) {
-      await ctx.db.delete(label._id);
-    }
-
-    // Delete project members
-    const members = await ctx.db
-      .query("projectMembers")
-      .withIndex("by_project", (q) => q.eq("projectId", project._id))
-      .filter(notDeleted)
-      .collect();
-    for (const member of members) {
-      await ctx.db.delete(member._id);
-    }
+    // Delete all related data using helper functions (bounded)
+    await deleteProjectIssues(ctx, project._id);
+    await deleteProjectMetadata(ctx, project._id);
 
     // Delete project
     await ctx.db.delete(project._id);

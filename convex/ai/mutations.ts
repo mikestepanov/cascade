@@ -5,6 +5,7 @@
 import { v } from "convex/values";
 import { type MutationCtx, mutation } from "../_generated/server";
 import { authenticatedMutation } from "../customFunctions";
+import { notFound, requireOwned } from "../lib/errors";
 
 /**
  * Create a new AI chat
@@ -39,9 +40,7 @@ export const updateChatTitle = authenticatedMutation({
   },
   handler: async (ctx, args) => {
     const chat = await ctx.db.get(args.chatId);
-    if (!chat || chat.userId !== ctx.userId) {
-      throw new Error("Chat not found or unauthorized");
-    }
+    requireOwned(chat, ctx.userId, "chat");
 
     await ctx.db.patch(args.chatId, {
       title: args.title,
@@ -59,9 +58,7 @@ export const deleteChat = authenticatedMutation({
   },
   handler: async (ctx, args) => {
     const chat = await ctx.db.get(args.chatId);
-    if (!chat || chat.userId !== ctx.userId) {
-      throw new Error("Chat not found or unauthorized");
-    }
+    requireOwned(chat, ctx.userId, "chat");
 
     // Delete all messages
     const messages = await ctx.db
@@ -93,9 +90,7 @@ export const addMessage = authenticatedMutation({
   handler: async (ctx, args) => {
     // Verify chat ownership
     const chat = await ctx.db.get(args.chatId);
-    if (!chat || chat.userId !== ctx.userId) {
-      throw new Error("Chat not found or unauthorized");
-    }
+    requireOwned(chat, ctx.userId, "chat");
 
     const messageId = await ctx.db.insert("aiMessages", {
       chatId: args.chatId,
@@ -172,7 +167,7 @@ export const acceptSuggestion = authenticatedMutation({
   },
   handler: async (ctx, args) => {
     const suggestion = await ctx.db.get(args.suggestionId);
-    if (!suggestion) throw new Error("Suggestion not found");
+    if (!suggestion) throw notFound("suggestion", args.suggestionId);
 
     await ctx.db.patch(args.suggestionId, {
       accepted: true,
@@ -191,7 +186,7 @@ export const dismissSuggestion = authenticatedMutation({
   },
   handler: async (ctx, args) => {
     const suggestion = await ctx.db.get(args.suggestionId);
-    if (!suggestion) throw new Error("Suggestion not found");
+    if (!suggestion) throw notFound("suggestion", args.suggestionId);
 
     await ctx.db.patch(args.suggestionId, {
       accepted: false,

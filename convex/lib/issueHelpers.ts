@@ -8,6 +8,7 @@
 import type { PaginationOptions, PaginationResult } from "convex/server";
 import type { Doc, Id } from "../_generated/dataModel";
 import type { MutationCtx, QueryCtx } from "../_generated/server";
+import { notFound, validation } from "./errors";
 import { fetchPaginatedQuery } from "./queryHelpers";
 
 /**
@@ -19,10 +20,11 @@ export async function getIssueWithProject(
 ): Promise<Doc<"issues"> & { projectId: Id<"projects"> }> {
   const issue = await ctx.db.get(issueId);
   if (!issue) {
-    throw new Error("Issue not found");
+    throw notFound("issue", issueId);
   }
   if (!issue.projectId) {
-    throw new Error(
+    throw validation(
+      "projectId",
       "Issue missing projectId - please run migration: pnpm convex run migrations/migrateProjectToWorkspace:migrate",
     );
   }

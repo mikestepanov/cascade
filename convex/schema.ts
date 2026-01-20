@@ -978,6 +978,9 @@ const applicationTables = {
     usageCount: v.number(), // Total API calls made with this key
     // Expiration
     expiresAt: v.optional(v.number()), // Optional expiration timestamp
+    // Rotation tracking
+    rotatedFromId: v.optional(v.id("apiKeys")), // Previous key this was rotated from
+    rotatedAt: v.optional(v.number()), // When old key was rotated (grace period start)
     // Metadata
     createdAt: v.number(),
     revokedAt: v.optional(v.number()),
@@ -985,7 +988,9 @@ const applicationTables = {
     .index("by_user", ["userId"])
     .index("by_key_hash", ["keyHash"])
     .index("by_active", ["isActive"])
-    .index("by_user_active", ["userId", "isActive"]),
+    .index("by_user_active", ["userId", "isActive"])
+    .index("by_rotated_from", ["rotatedFromId"])
+    .index("by_expires", ["expiresAt"]),
 
   // API usage logs (for monitoring and rate limiting)
   apiUsageLogs: defineTable({

@@ -1,6 +1,7 @@
 import { v } from "convex/values";
 import type { Doc } from "./_generated/dataModel";
 import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
+import { forbidden, notFound } from "./lib/errors";
 import { assertCanAccessProject, assertCanEditProject } from "./projectAccess";
 
 // Create an issue template
@@ -111,13 +112,13 @@ export const update = authenticatedMutation({
   },
   handler: async (ctx, args) => {
     const template = await ctx.db.get(args.id);
-    if (!template) throw new Error("Template not found");
+    if (!template) throw notFound("template", args.id);
 
     // Check if user can edit project
     if (template.projectId) {
       await assertCanEditProject(ctx, template.projectId, ctx.userId);
     } else {
-      throw new Error("Cannot edit global templates");
+      throw forbidden("edit global templates");
     }
 
     const updates: Partial<typeof template> = {};
@@ -137,13 +138,13 @@ export const remove = authenticatedMutation({
   args: { id: v.id("issueTemplates") },
   handler: async (ctx, args) => {
     const template = await ctx.db.get(args.id);
-    if (!template) throw new Error("Template not found");
+    if (!template) throw notFound("template", args.id);
 
     // Check if user can edit project
     if (template.projectId) {
       await assertCanEditProject(ctx, template.projectId, ctx.userId);
     } else {
-      throw new Error("Cannot delete global templates");
+      throw forbidden("delete global templates");
     }
 
     await ctx.db.delete(args.id);

@@ -21,43 +21,37 @@ export function RoadmapView({ projectId }: RoadmapViewProps) {
   // Calculate date range based on time scale
   const { startDate, endDate, columns } = getDateRange(currentDate, timeScale);
 
-  // Fetch issues and sprints
-  const issues = useQuery(api.issues.listRoadmapIssues, { projectId });
-  const sprints = useQuery(api.sprints.listByProject, { projectId });
+  // Fetch issues and sprints with backend filters (avoids client-side filtering)
+  const issues = useQuery(api.issues.listRoadmapIssues, {
+    projectId,
+    hasDueDate: true, // Only issues with due dates
+  });
+  const sprints = useQuery(api.sprints.listByProject, {
+    projectId,
+    hasDates: true, // Only sprints with start and end dates
+  });
 
-  // Filter to items with dates
+  // Map to roadmap items (no filtering needed - backend already filtered)
   const roadmapItems = [
-    ...(sprints
-      ?.filter(
-        (
-          sprint: Doc<"sprints">,
-        ): sprint is typeof sprint & { startDate: number; endDate: number } =>
-          sprint.startDate !== undefined && sprint.endDate !== undefined,
-      )
-      .map((sprint: Doc<"sprints">) => ({
-        type: "sprint" as const,
-        id: sprint._id,
-        title: sprint.name,
-        startDate: sprint.startDate,
-        endDate: sprint.endDate,
-        status: sprint.status,
-      })) || []),
-    ...(issues
-      ?.filter(
-        (issue: Doc<"issues">): issue is typeof issue & { dueDate: number } =>
-          issue.dueDate !== undefined,
-      )
-      .map((issue: Doc<"issues">) => ({
-        type: "issue" as const,
-        id: issue._id,
-        title: `${issue.key}: ${issue.title}`,
-        dueDate: issue.dueDate,
-        startDate: issue.createdAt,
-        endDate: issue.dueDate,
-        issueType: issue.type,
-        priority: issue.priority,
-        status: issue.status,
-      })) || []),
+    ...(sprints?.map((sprint) => ({
+      type: "sprint" as const,
+      id: sprint._id,
+      title: sprint.name,
+      startDate: sprint.startDate as number,
+      endDate: sprint.endDate as number,
+      status: sprint.status,
+    })) || []),
+    ...(issues?.map((issue) => ({
+      type: "issue" as const,
+      id: issue._id,
+      title: `${issue.key}: ${issue.title}`,
+      dueDate: issue.dueDate as number,
+      startDate: issue.createdAt,
+      endDate: issue.dueDate as number,
+      issueType: issue.type,
+      priority: issue.priority,
+      status: issue.status,
+    })) || []),
   ];
 
   // Sort by start date

@@ -5,6 +5,7 @@
 import { v } from "convex/values";
 import { authenticatedQuery } from "../customFunctions";
 import { batchFetchUsers, getUserName } from "../lib/batchHelpers";
+import { forbidden, notFound, requireOwned } from "../lib/errors";
 import type { AIProvider } from "./config";
 
 type AIOperation = "chat" | "suggestion" | "automation" | "analysis";
@@ -43,9 +44,7 @@ export const getChatMessages = authenticatedQuery({
   handler: async (ctx, args) => {
     // Verify user owns this chat
     const chat = await ctx.db.get(args.chatId);
-    if (!chat || chat.userId !== ctx.userId) {
-      throw new Error("Chat not found or unauthorized");
-    }
+    requireOwned(chat, ctx.userId, "chat");
 
     const messages = await ctx.db
       .query("aiMessages")
@@ -66,7 +65,7 @@ export const getProjectContext = authenticatedQuery({
   handler: async (ctx, args) => {
     // Get project
     const project = await ctx.db.get(args.projectId);
-    if (!project) throw new Error("Project not found");
+    if (!project) throw notFound("project", args.projectId);
 
     // Check access
     const member = await ctx.db
@@ -77,7 +76,7 @@ export const getProjectContext = authenticatedQuery({
       .first();
 
     if (!member && project.createdBy !== ctx.userId && !project.isPublic) {
-      throw new Error("Access denied");
+      throw forbidden();
     }
 
     // Get active sprint

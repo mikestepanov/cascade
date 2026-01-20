@@ -3,6 +3,7 @@ import type { Id } from "./_generated/dataModel";
 import type { MutationCtx } from "./_generated/server";
 import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
 import { batchFetchSprints, batchFetchUsers } from "./lib/batchHelpers";
+import { notFound, validation } from "./lib/errors";
 import { notDeleted } from "./lib/softDeleteHelpers";
 import { assertCanAccessProject, assertCanEditProject } from "./projectAccess";
 
@@ -35,12 +36,12 @@ function validateJSONImportData(jsonData: string): { issues: unknown[] } {
   try {
     data = JSON.parse(jsonData);
   } catch {
-    throw new Error("Invalid JSON format");
+    throw validation("jsonData", "Invalid JSON format");
   }
 
   // Type guard and validation
   if (!data || typeof data !== "object" || !("issues" in data) || !Array.isArray(data.issues)) {
-    throw new Error("JSON must contain an 'issues' array");
+    throw validation("jsonData", "JSON must contain an 'issues' array");
   }
 
   return { issues: data.issues };
@@ -75,7 +76,7 @@ async function processJSONIssue(
 
   // Validate required fields
   if (!issueData.title) {
-    throw new Error("Missing required field: title");
+    throw validation("title", "Missing required field: title");
   }
 
   // Generate next issue key
@@ -129,7 +130,7 @@ function parseCSVHeaders(headerLine: string): {
   const titleIndex = headers.indexOf("title");
 
   if (titleIndex === -1) {
-    throw new Error("CSV must contain a 'title' column");
+    throw validation("csvData", "CSV must contain a 'title' column");
   }
 
   return {
@@ -171,7 +172,7 @@ function parseCSVRow(
   order: number;
 } {
   if (!values[indices.titleIndex]) {
-    throw new Error("Title is required");
+    throw validation("title", "Title is required");
   }
 
   return {
@@ -268,7 +269,7 @@ export const exportIssuesCSV = authenticatedQuery({
 
     // Get project to access workflow states
     const project = await ctx.db.get(args.projectId);
-    if (!project) throw new Error("Project not found");
+    if (!project) throw notFound("project", args.projectId);
 
     // Get issues
     const issuesQuery = ctx.db
@@ -372,7 +373,7 @@ export const exportAnalytics = authenticatedQuery({
     await assertCanAccessProject(ctx, args.projectId, ctx.userId);
 
     const project = await ctx.db.get(args.projectId);
-    if (!project) throw new Error("Project not found");
+    if (!project) throw notFound("project", args.projectId);
 
     // Get all issues
     const issues = await ctx.db
@@ -442,7 +443,7 @@ export const exportIssuesJSON = authenticatedQuery({
     await assertCanAccessProject(ctx, args.projectId, ctx.userId);
 
     const project = await ctx.db.get(args.projectId);
-    if (!project) throw new Error("Project not found");
+    if (!project) throw notFound("project", args.projectId);
 
     // Get issues with same filtering as CSV export
     const issuesQuery = ctx.db
@@ -530,7 +531,7 @@ export const importIssuesJSON = authenticatedMutation({
     await assertCanEditProject(ctx, args.projectId, ctx.userId);
 
     const project = await ctx.db.get(args.projectId);
-    if (!project) throw new Error("Project not found");
+    if (!project) throw notFound("project", args.projectId);
 
     // Validate and parse JSON data
     const { issues } = validateJSONImportData(args.jsonData);
@@ -577,12 +578,12 @@ export const importIssuesCSV = authenticatedMutation({
     await assertCanEditProject(ctx, args.projectId, ctx.userId);
 
     const project = await ctx.db.get(args.projectId);
-    if (!project) throw new Error("Project not found");
+    if (!project) throw notFound("project", args.projectId);
 
     // Parse CSV
     const lines = args.csvData.trim().split("\n");
     if (lines.length < 2) {
-      throw new Error("CSV must have at least a header row and one data row");
+      throw validation("csvData", "CSV must have at least a header row and one data row");
     }
 
     // Parse headers to get column indices

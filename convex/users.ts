@@ -2,6 +2,7 @@ import { v } from "convex/values";
 import { internalQuery, query } from "./_generated/server";
 import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
 import { batchFetchUsers } from "./lib/batchHelpers";
+import { conflict, validation } from "./lib/errors";
 import { notDeleted } from "./lib/softDeleteHelpers";
 import { sanitizeUserForAuth } from "./lib/userUtils";
 
@@ -91,7 +92,7 @@ export const updateProfile = authenticatedMutation({
 
     if (args.email !== undefined) {
       if (!isValidEmail(args.email)) {
-        throw new Error("Invalid email address");
+        throw validation("email", "Invalid email address");
       }
 
       // Check if email is already in use by another user
@@ -101,7 +102,7 @@ export const updateProfile = authenticatedMutation({
         .first();
 
       if (existingUser && existingUser._id !== ctx.userId) {
-        throw new Error("Email already in use");
+        throw conflict("Email already in use");
       }
 
       updates.email = args.email;

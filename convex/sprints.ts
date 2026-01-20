@@ -34,16 +34,24 @@ export const create = editorMutation({
  * Requires viewer access to project
  */
 export const listByProject = projectQuery({
-  args: {},
-  handler: async (ctx) => {
+  args: {
+    // Optional filter: only return sprints with both start and end dates
+    hasDates: v.optional(v.boolean()),
+  },
+  handler: async (ctx, args) => {
     // Sprints per project are typically few (10-50), add reasonable limit
     const MAX_SPRINTS = 100;
-    const sprints = await ctx.db
+    let sprints = await ctx.db
       .query("sprints")
       .withIndex("by_project", (q) => q.eq("projectId", ctx.projectId))
       .order("desc")
       .filter(notDeleted)
       .take(MAX_SPRINTS);
+
+    // Filter to sprints with dates if requested
+    if (args.hasDates) {
+      sprints = sprints.filter((s) => s.startDate !== undefined && s.endDate !== undefined);
+    }
 
     if (sprints.length === 0) {
       return [];

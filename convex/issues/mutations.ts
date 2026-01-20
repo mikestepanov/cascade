@@ -6,6 +6,7 @@ import {
   issueMutation,
   issueViewerMutation,
 } from "../customFunctions";
+import { validation } from "../lib/errors";
 import { cascadeDelete } from "../lib/relationships";
 import { assertCanEditProject, assertIsProjectAdmin } from "../projectAccess";
 import {
@@ -145,7 +146,8 @@ export const updateStatusByCategory = issueMutation({
       .find((s) => s.category === args.category);
 
     if (!targetState) {
-      throw new Error(
+      throw validation(
+        "category",
         `No workflow state found for category ${args.category}${ctx.project ? ` in project ${ctx.project.name}` : ""}`,
       );
     }

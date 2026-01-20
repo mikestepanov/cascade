@@ -6,7 +6,7 @@ import { internalAction, internalMutation, query } from "./_generated/server";
 import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
 import { batchFetchCalendarEvents, batchFetchRecordings } from "./lib/batchHelpers";
 import { getBotServiceApiKey, getBotServiceUrl } from "./lib/env";
-import { conflict, forbidden, notFound, unauthenticated } from "./lib/errors";
+import { conflict, forbidden, notFound, unauthenticated, validation } from "./lib/errors";
 import { notDeleted } from "./lib/softDeleteHelpers";
 
 // ===========================================
@@ -866,7 +866,7 @@ export const notifyBotService = internalAction({
       });
 
       if (!response.ok) {
-        throw new Error(`Bot service responded with ${response.status}`);
+        throw validation("botService", `Bot service responded with ${response.status}`);
       }
 
       const data = await response.json();

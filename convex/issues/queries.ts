@@ -5,6 +5,7 @@ import type { Doc, Id } from "../_generated/dataModel";
 import { internalQuery, type QueryCtx, query } from "../_generated/server";
 import { authenticatedQuery, projectQuery } from "../customFunctions";
 import { batchFetchUsers } from "../lib/batchHelpers";
+import { safeCollect, BOUNDED_SEARCH_LIMIT, BOUNDED_LIST_LIMIT } from "../lib/boundedQueries";
 import { forbidden, notFound } from "../lib/errors";
 import {
   type EnrichedIssue,
@@ -53,6 +54,24 @@ export const listIssuesInternal = internalQuery({
  * Used by onboarding checklist to track user progress
  * Returns paginated results to handle users with many issues
  */
+/**
+ * Get count of issues assigned to current user (for onboarding)
+ * More efficient than loading all issues
+ */
+export const getUserIssueCount = authenticatedQuery({
+  args: {},
+  returns: v.number(),
+  handler: async (ctx) => {
+    const issues = await ctx.db
+      .query("issues")
+      .withIndex("by_assignee", (q) => q.eq("assigneeId", ctx.userId))
+      .filter(notDeleted)
+      .take(1); // Just need to know if there's at least one
+
+    return issues.length;
+  },
+});
+
 export const listByUser = authenticatedQuery({
   args: {
     paginationOpts: paginationOptsValidator,
@@ -83,10 +102,47 @@ export const listByUser = authenticatedQuery({
   },
 });
 
+/**
+ * List epics for a project (for dropdowns/filters)
+ * Optimized to only return epics, avoiding loading all issues
+ */
+export const listEpics = authenticatedQuery({
+  args: {
+    projectId: v.id("projects"),
+  },
+  handler: async (ctx, args) => {
+    const hasAccess = await canAccessProject(ctx, args.projectId, ctx.userId);
+    if (!hasAccess) {
+      return [];
+    }
+
+    const epics = await safeCollect(
+      ctx.db
+        .query("issues")
+        .withIndex("by_project_type", (q) =>
+          q.eq("projectId", args.projectId).eq("type", "epic"),
+        )
+        .filter(notDeleted),
+      200, // Reasonable limit for epics
+      "project epics",
+    );
+
+    return epics.map((e) => ({
+      _id: e._id,
+      key: e.key,
+      title: e.title,
+    }));
+  },
+});
+
 export const listRoadmapIssues = authenticatedQuery({
   args: {
     projectId: v.id("projects"),
     sprintId: v.optional(v.id("sprints")),
+    // Backend filters to avoid client-side filtering
+    epicId: v.optional(v.id("issues")), // Filter by epic
+    excludeEpics: v.optional(v.boolean()), // Exclude epic type issues
+    hasDueDate: v.optional(v.boolean()), // Only issues with due dates
   },
   handler: async (ctx, args) => {
     const project = await ctx.db.get(args.projectId);
@@ -101,30 +157,49 @@ export const listRoadmapIssues = authenticatedQuery({
 
     let issues: Doc<"issues">[] = [];
     if (args.sprintId) {
-      const allSprintIssues = await ctx.db
-        .query("issues")
-        .withIndex("by_project_sprint_created", (q) =>
-          q.eq("projectId", args.projectId).eq("sprintId", args.sprintId),
-        )
-        .filter(notDeleted)
-        .collect();
+      // Bounded: sprint issues are typically limited (<500 per sprint)
+      const allSprintIssues = await safeCollect(
+        ctx.db
+          .query("issues")
+          .withIndex("by_project_sprint_created", (q) =>
+            q.eq("projectId", args.projectId).eq("sprintId", args.sprintId),
+          )
+          .filter(notDeleted),
+        BOUNDED_LIST_LIMIT,
+        "roadmap sprint issues",
+      );
 
       issues = allSprintIssues.filter((i) =>
         (ROOT_ISSUE_TYPES as readonly string[]).includes(i.type),
       );
     } else {
+      // Bounded: fetch by type with limits
       const outcomes = await Promise.all(
         ROOT_ISSUE_TYPES.map((type) =>
-          ctx.db
-            .query("issues")
-            .withIndex("by_project_type", (q) =>
-              q.eq("projectId", args.projectId).eq("type", type as Doc<"issues">["type"]),
-            )
-            .filter(notDeleted)
-            .collect(),
+          safeCollect(
+            ctx.db
+              .query("issues")
+              .withIndex("by_project_type", (q) =>
+                q.eq("projectId", args.projectId).eq("type", type as Doc<"issues">["type"]),
+              )
+              .filter(notDeleted),
+            BOUNDED_LIST_LIMIT,
+            `roadmap issues type=${type}`,
+          ),
         ),
       );
       issues = outcomes.flat();
+    }
+
+    // Apply backend filters
+    if (args.excludeEpics) {
+      issues = issues.filter((i) => i.type !== "epic");
+    }
+    if (args.epicId) {
+      issues = issues.filter((i) => i.epicId === args.epicId);
+    }
+    if (args.hasDueDate) {
+      issues = issues.filter((i) => i.dueDate !== undefined);
     }
 
     return await enrichIssues(ctx, issues);
@@ -487,11 +562,15 @@ export const listSubtasks = authenticatedQuery({
       return [];
     }
 
-    const subtasks = await ctx.db
-      .query("issues")
-      .withIndex("by_parent", (q) => q.eq("parentId", args.parentId))
-      .filter(notDeleted)
-      .collect();
+    // Bounded: subtasks per issue are typically limited (<100)
+    const subtasks = await safeCollect(
+      ctx.db
+        .query("issues")
+        .withIndex("by_parent", (q) => q.eq("parentId", args.parentId))
+        .filter(notDeleted),
+      100, // Issues rarely have >100 subtasks
+      "subtasks",
+    );
 
     if (subtasks.length === 0) {
       return [];
@@ -534,39 +613,58 @@ export const search = authenticatedQuery({
     epicId: v.optional(v.union(v.id("issues"), v.literal("none"))),
     dateFrom: v.optional(v.number()),
     dateTo: v.optional(v.number()),
+    // Exclude a specific issue from results (useful for dependencies)
+    excludeIssueId: v.optional(v.id("issues")),
   },
   handler: async (ctx, args) => {
     const limit = args.limit ?? 50;
     const offset = args.offset ?? 0;
 
+    // Calculate fetch limit: need enough to filter and still get requested results
+    // Fetch 3x the needed amount to account for filtering, capped at search limit
+    const fetchLimit = Math.min((offset + limit) * 3, BOUNDED_SEARCH_LIMIT);
+
     let issues: Doc<"issues">[] = [];
 
     // If query is provided, use search index
     if (args.query) {
-      issues = await ctx.db
-        .query("issues")
-        .withSearchIndex("search_title", (q) => q.search("searchContent", args.query as string))
-        .filter(notDeleted)
-        .collect();
+      // Bounded: search results limited to prevent huge result sets
+      issues = await safeCollect(
+        ctx.db
+          .query("issues")
+          .withSearchIndex("search_title", (q) => q.search("searchContent", args.query as string))
+          .filter(notDeleted),
+        fetchLimit,
+        "issue search",
+      );
     } else if (args.projectId) {
-      // If no query but projectId, use by_project index
-      issues = await ctx.db
-        .query("issues")
-        .withIndex("by_project", (q) => q.eq("projectId", args.projectId as Id<"projects">))
-        .filter(notDeleted)
-        .order("desc")
-        .collect();
+      // Bounded: project issues limited
+      issues = await safeCollect(
+        ctx.db
+          .query("issues")
+          .withIndex("by_project", (q) => q.eq("projectId", args.projectId as Id<"projects">))
+          .filter(notDeleted)
+          .order("desc"),
+        fetchLimit,
+        "issue search by project",
+      );
     } else {
       // Return empty if no filter is provided to prevent scanning the entire table
       return { page: [], total: 0 };
     }
 
     // Apply advanced filters in memory
-    const filteredIssues = issues.filter((issue: Doc<"issues">) =>
+    let filteredIssues = issues.filter((issue: Doc<"issues">) =>
       matchesSearchFilters(issue, args, ctx.userId),
     );
 
+    // Exclude specific issue if requested (for dependencies)
+    if (args.excludeIssueId) {
+      filteredIssues = filteredIssues.filter((i) => i._id !== args.excludeIssueId);
+    }
+
     // Return paginated slice
+    // Note: total may be approximate if results were truncated
     return {
       page: filteredIssues.slice(offset, offset + limit),
       total: filteredIssues.length,
@@ -721,12 +819,15 @@ export const getTeamIssueCounts = authenticatedQuery({
 
         if (state.category === "done") {
           // Cannot optimize without by_team_status_updated index.
-          // Fetch all to ensure we find recently updated issues that might be old.
-          const allIssues = await ctx.db
-            .query("issues")
-            .withIndex("by_team_status", (q) => q.eq("teamId", args.teamId).eq("status", state.id))
-            .filter(notDeleted)
-            .collect();
+          // Bounded: limit to ISSUE_COUNT_LIMIT to prevent OOM on large teams
+          const allIssues = await safeCollect(
+            ctx.db
+              .query("issues")
+              .withIndex("by_team_status", (q) => q.eq("teamId", args.teamId).eq("status", state.id))
+              .filter(notDeleted),
+            ISSUE_COUNT_LIMIT,
+            "team done issues count",
+          );
 
           totalCount = allIssues.length;
           const visible = allIssues.filter((i) => i.updatedAt >= doneThreshold);
@@ -902,14 +1003,17 @@ async function getSprintIssueCounts(
 
       if (state.category === "done") {
         // Cannot optimize without by_project_sprint_status_updated index.
-        // Fetch all to ensure we find recently updated issues that might be old.
-        const allIssues = await ctx.db
-          .query("issues")
-          .withIndex("by_project_sprint_status", (q) =>
-            q.eq("projectId", projectId).eq("sprintId", sprintId).eq("status", state.id),
-          )
-          .filter(notDeleted)
-          .collect();
+        // Bounded: limit to ISSUE_COUNT_LIMIT to prevent OOM
+        const allIssues = await safeCollect(
+          ctx.db
+            .query("issues")
+            .withIndex("by_project_sprint_status", (q) =>
+              q.eq("projectId", projectId).eq("sprintId", sprintId).eq("status", state.id),
+            )
+            .filter(notDeleted),
+          ISSUE_COUNT_LIMIT,
+          "sprint done issues count",
+        );
 
         totalCount = allIssues.length;
         const visible = allIssues.filter((i: Doc<"issues">) => i.updatedAt >= doneThreshold);
@@ -951,13 +1055,17 @@ export const listIssuesByDateRange = authenticatedQuery({
       return [];
     }
 
-    const issues = await ctx.db
-      .query("issues")
-      .withIndex("by_project_due_date", (q) =>
-        q.eq("projectId", args.projectId).gte("dueDate", args.from).lte("dueDate", args.to),
-      )
-      .filter(notDeleted)
-      .collect();
+    // Bounded: calendar date range queries limited to prevent large result sets
+    const issues = await safeCollect(
+      ctx.db
+        .query("issues")
+        .withIndex("by_project_due_date", (q) =>
+          q.eq("projectId", args.projectId).gte("dueDate", args.from).lte("dueDate", args.to),
+        )
+        .filter(notDeleted),
+      BOUNDED_LIST_LIMIT,
+      "issues by date range",
+    );
 
     // If sprintId is provided, filter in memory
     const filteredIssues = args.sprintId

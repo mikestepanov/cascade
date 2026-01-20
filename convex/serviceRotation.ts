@@ -7,6 +7,7 @@
 
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
+import { notFound } from "./lib/errors";
 
 // Service types
 export type ServiceType = "transcription" | "email" | "sms" | "ai";
@@ -255,7 +256,7 @@ export const recordUsage = mutation({
       .first();
 
     if (!providerConfig) {
-      throw new Error(`Unknown provider: ${args.provider}`);
+      throw notFound("provider", args.provider);
     }
 
     // Get or create usage record for this month
@@ -531,7 +532,7 @@ export const setProviderConfigured = mutation({
       .first();
 
     if (!existing) {
-      throw new Error(`Unknown provider: ${args.provider}`);
+      throw notFound("provider", args.provider);
     }
 
     await ctx.db.patch(existing._id, {

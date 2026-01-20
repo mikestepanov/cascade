@@ -6,6 +6,36 @@
  * - Check RBAC permissions
  * - Add rate limiting
  * - Improve code reusability
+ *
+ * @module customFunctions
+ * @see {@link https://www.npmjs.com/package/convex-helpers} convex-helpers documentation
+ *
+ * ## Usage
+ *
+ * Import the appropriate custom function based on your needs:
+ *
+ * ```typescript
+ * // For queries/mutations that just need authentication
+ * import { authenticatedQuery, authenticatedMutation } from "./customFunctions";
+ *
+ * // For project-scoped operations with RBAC
+ * import { projectQuery, viewerMutation, editorMutation, adminMutation } from "./customFunctions";
+ *
+ * // For issue-scoped operations
+ * import { issueMutation, issueViewerMutation } from "./customFunctions";
+ *
+ * // For sprint-scoped operations
+ * import { sprintQuery, sprintMutation } from "./customFunctions";
+ *
+ * // For team-scoped operations
+ * import { teamQuery } from "./customFunctions";
+ * ```
+ *
+ * ## Role Hierarchy
+ *
+ * - `viewer` (1): Read-only access, can comment
+ * - `editor` (2): Can create/edit/delete issues, sprints, documents
+ * - `admin` (3): Full control including settings, members, workflow
  */
 
 import { getAuthUserId } from "@convex-dev/auth/server";
@@ -17,8 +47,22 @@ import { forbidden, notFound, unauthenticated } from "./lib/errors";
 import { getProjectRole } from "./projectAccess";
 
 /**
- * Authenticated Query
- * Requires user to be logged in, automatically injects userId into context
+ * Authenticated Query - requires user to be logged in.
+ *
+ * Automatically injects `userId` into the context for use in the handler.
+ *
+ * @throws {ConvexError} UNAUTHENTICATED - If user is not logged in
+ *
+ * @example
+ * ```typescript
+ * export const getMyProfile = authenticatedQuery({
+ *   args: {},
+ *   handler: async (ctx) => {
+ *     // ctx.userId is guaranteed to exist
+ *     return await ctx.db.get(ctx.userId);
+ *   },
+ * });
+ * ```
  */
 export const authenticatedQuery = customQuery(query, {
   args: {},
@@ -36,8 +80,21 @@ export const authenticatedQuery = customQuery(query, {
 });
 
 /**
- * Authenticated Mutation
- * Requires user to be logged in, automatically injects userId into context
+ * Authenticated Mutation - requires user to be logged in.
+ *
+ * Automatically injects `userId` into the context for use in the handler.
+ *
+ * @throws {ConvexError} UNAUTHENTICATED - If user is not logged in
+ *
+ * @example
+ * ```typescript
+ * export const updateProfile = authenticatedMutation({
+ *   args: { name: v.string() },
+ *   handler: async (ctx, args) => {
+ *     await ctx.db.patch(ctx.userId, { name: args.name });
+ *   },
+ * });
+ * ```
  */
 export const authenticatedMutation = customMutation(mutation, {
   args: {},
@@ -55,8 +112,32 @@ export const authenticatedMutation = customMutation(mutation, {
 });
 
 /**
- * Project Query with automatic permission checking
- * Requires viewer role or higher
+ * Project Query - requires viewer role or public project access.
+ *
+ * Automatically loads the project and checks permissions. Injects into context:
+ * - `userId`: The authenticated user's ID
+ * - `projectId`: The project ID from args
+ * - `role`: The user's role in the project (viewer/editor/admin or null)
+ * - `project`: The full project document
+ *
+ * @throws {ConvexError} UNAUTHENTICATED - If user is not logged in
+ * @throws {ConvexError} NOT_FOUND - If project doesn't exist
+ * @throws {ConvexError} FORBIDDEN - If user lacks access and project is not public
+ *
+ * @example
+ * ```typescript
+ * export const getProjectStats = projectQuery({
+ *   args: {},
+ *   handler: async (ctx) => {
+ *     // ctx.project and ctx.role are available
+ *     const issues = await ctx.db
+ *       .query("issues")
+ *       .withIndex("by_project", q => q.eq("projectId", ctx.projectId))
+ *       .collect();
+ *     return { issueCount: issues.length, role: ctx.role };
+ *   },
+ * });
+ * ```
  */
 export const projectQuery = customQuery(query, {
   args: { projectId: v.id("projects") },
@@ -86,8 +167,28 @@ export const projectQuery = customQuery(query, {
 });
 
 /**
- * Project Mutation with viewer role requirement
- * User must be at least a viewer
+ * Viewer Mutation - requires viewer role or higher.
+ *
+ * Use for operations where any project member should have access.
+ * Injects same context as `projectQuery`.
+ *
+ * @throws {ConvexError} UNAUTHENTICATED - If user is not logged in
+ * @throws {ConvexError} NOT_FOUND - If project doesn't exist
+ * @throws {ConvexError} FORBIDDEN - If user is not a project member
+ *
+ * @example
+ * ```typescript
+ * export const addBookmark = viewerMutation({
+ *   args: { issueId: v.id("issues") },
+ *   handler: async (ctx, args) => {
+ *     await ctx.db.insert("bookmarks", {
+ *       userId: ctx.userId,
+ *       projectId: ctx.projectId,
+ *       issueId: args.issueId,
+ *     });
+ *   },
+ * });
+ * ```
  */
 export const viewerMutation = customMutation(mutation, {
   args: { projectId: v.id("projects") },
@@ -115,8 +216,28 @@ export const viewerMutation = customMutation(mutation, {
 });
 
 /**
- * Project Mutation with editor role requirement
- * User must be at least an editor
+ * Editor Mutation - requires editor role or higher.
+ *
+ * Use for operations that modify project content (issues, sprints, documents).
+ * Injects same context as `projectQuery`.
+ *
+ * @throws {ConvexError} UNAUTHENTICATED - If user is not logged in
+ * @throws {ConvexError} NOT_FOUND - If project doesn't exist
+ * @throws {ConvexError} FORBIDDEN - If user role is below editor
+ *
+ * @example
+ * ```typescript
+ * export const createIssue = editorMutation({
+ *   args: { title: v.string() },
+ *   handler: async (ctx, args) => {
+ *     return await ctx.db.insert("issues", {
+ *       projectId: ctx.projectId,
+ *       title: args.title,
+ *       createdBy: ctx.userId,
+ *     });
+ *   },
+ * });
+ * ```
  */
 export const editorMutation = customMutation(mutation, {
   args: { projectId: v.id("projects") },
@@ -150,8 +271,24 @@ export const editorMutation = customMutation(mutation, {
 });
 
 /**
- * Project Mutation with admin role requirement
- * User must be an admin
+ * Admin Mutation - requires admin role.
+ *
+ * Use for operations that manage project settings, members, or workflow.
+ * Injects same context as `projectQuery`.
+ *
+ * @throws {ConvexError} UNAUTHENTICATED - If user is not logged in
+ * @throws {ConvexError} NOT_FOUND - If project doesn't exist
+ * @throws {ConvexError} FORBIDDEN - If user is not an admin
+ *
+ * @example
+ * ```typescript
+ * export const updateProjectSettings = adminMutation({
+ *   args: { isPublic: v.boolean() },
+ *   handler: async (ctx, args) => {
+ *     await ctx.db.patch(ctx.projectId, { isPublic: args.isPublic });
+ *   },
+ * });
+ * ```
  */
 export const adminMutation = customMutation(mutation, {
   args: { projectId: v.id("projects") },
@@ -180,8 +317,29 @@ export const adminMutation = customMutation(mutation, {
 });
 
 /**
- * Issue Mutation - automatically loads issue and checks project permissions
- * Requires editor role or higher
+ * Issue Mutation - requires editor role to modify issues.
+ *
+ * Automatically loads the issue and its parent project, checks permissions.
+ * Injects into context:
+ * - `userId`, `projectId`, `role`, `project` (same as projectQuery)
+ * - `issue`: The full issue document
+ *
+ * @throws {ConvexError} UNAUTHENTICATED - If user is not logged in
+ * @throws {ConvexError} NOT_FOUND - If issue or project doesn't exist
+ * @throws {ConvexError} FORBIDDEN - If user role is below editor
+ *
+ * @example
+ * ```typescript
+ * export const updateIssue = issueMutation({
+ *   args: { title: v.optional(v.string()) },
+ *   handler: async (ctx, args) => {
+ *     // ctx.issue is the loaded issue
+ *     if (args.title) {
+ *       await ctx.db.patch(ctx.issue._id, { title: args.title });
+ *     }
+ *   },
+ * });
+ * ```
  */
 export const issueMutation = customMutation(mutation, {
   args: { issueId: v.id("issues") },
@@ -229,9 +387,28 @@ export const issueMutation = customMutation(mutation, {
 });
 
 /**
- * Issue Viewer Mutation - automatically loads issue and checks viewer access
- * Requires viewer role or higher (any project member can use this)
- * Use for operations like commenting where viewers should have access
+ * Issue Viewer Mutation - requires viewer role for issue access.
+ *
+ * Use for operations where any project member should have access (e.g., commenting).
+ * Injects same context as `issueMutation`.
+ *
+ * @throws {ConvexError} UNAUTHENTICATED - If user is not logged in
+ * @throws {ConvexError} NOT_FOUND - If issue or project doesn't exist
+ * @throws {ConvexError} FORBIDDEN - If user is not a project member
+ *
+ * @example
+ * ```typescript
+ * export const addComment = issueViewerMutation({
+ *   args: { content: v.string() },
+ *   handler: async (ctx, args) => {
+ *     return await ctx.db.insert("issueComments", {
+ *       issueId: ctx.issue._id,
+ *       authorId: ctx.userId,
+ *       content: args.content,
+ *     });
+ *   },
+ * });
+ * ```
  */
 export const issueViewerMutation = customMutation(mutation, {
   args: { issueId: v.id("issues") },
@@ -275,8 +452,31 @@ export const issueViewerMutation = customMutation(mutation, {
 });
 
 /**
- * Team Query - automatically checks team membership
- * Requires user to be a member of the team
+ * Team Query - requires team membership.
+ *
+ * Automatically loads the team and checks membership. Injects into context:
+ * - `userId`: The authenticated user's ID
+ * - `teamId`: The team ID from args
+ * - `team`: The full team document
+ * - `membership`: The user's team membership document
+ *
+ * @throws {ConvexError} UNAUTHENTICATED - If user is not logged in
+ * @throws {ConvexError} NOT_FOUND - If team doesn't exist
+ * @throws {ConvexError} FORBIDDEN - If user is not a team member
+ *
+ * @example
+ * ```typescript
+ * export const getTeamMembers = teamQuery({
+ *   args: {},
+ *   handler: async (ctx) => {
+ *     const members = await ctx.db
+ *       .query("teamMembers")
+ *       .withIndex("by_team", q => q.eq("teamId", ctx.teamId))
+ *       .collect();
+ *     return members;
+ *   },
+ * });
+ * ```
  */
 export const teamQuery = customQuery(query, {
   args: { teamId: v.id("teams") },
@@ -315,8 +515,29 @@ export const teamQuery = customQuery(query, {
 });
 
 /**
- * Sprint Query - automatically loads sprint and checks project access
- * Requires viewer role or higher (or public project)
+ * Sprint Query - requires viewer role or public project access.
+ *
+ * Automatically loads the sprint and its parent project. Injects into context:
+ * - `userId`, `projectId`, `role`, `project` (same as projectQuery)
+ * - `sprint`: The full sprint document
+ *
+ * @throws {ConvexError} UNAUTHENTICATED - If user is not logged in
+ * @throws {ConvexError} NOT_FOUND - If sprint or project doesn't exist
+ * @throws {ConvexError} FORBIDDEN - If user lacks access and project is not public
+ *
+ * @example
+ * ```typescript
+ * export const getSprintIssues = sprintQuery({
+ *   args: {},
+ *   handler: async (ctx) => {
+ *     const issues = await ctx.db
+ *       .query("issues")
+ *       .withIndex("by_sprint", q => q.eq("sprintId", ctx.sprint._id))
+ *       .collect();
+ *     return issues;
+ *   },
+ * });
+ * ```
  */
 export const sprintQuery = customQuery(query, {
   args: { sprintId: v.id("sprints") },
@@ -358,8 +579,24 @@ export const sprintQuery = customQuery(query, {
 });
 
 /**
- * Sprint Mutation - automatically loads sprint and checks project permissions
- * Requires editor role or higher
+ * Sprint Mutation - requires editor role to modify sprints.
+ *
+ * Automatically loads the sprint and its parent project, checks permissions.
+ * Injects same context as `sprintQuery`.
+ *
+ * @throws {ConvexError} UNAUTHENTICATED - If user is not logged in
+ * @throws {ConvexError} NOT_FOUND - If sprint or project doesn't exist
+ * @throws {ConvexError} FORBIDDEN - If user role is below editor
+ *
+ * @example
+ * ```typescript
+ * export const updateSprintGoal = sprintMutation({
+ *   args: { goal: v.string() },
+ *   handler: async (ctx, args) => {
+ *     await ctx.db.patch(ctx.sprint._id, { goal: args.goal });
+ *   },
+ * });
+ * ```
  */
 export const sprintMutation = customMutation(mutation, {
   args: { sprintId: v.id("sprints") },
@@ -406,13 +643,24 @@ export const sprintMutation = customMutation(mutation, {
   },
 });
 
+// =============================================================================
+// Context Types
+// =============================================================================
+// These types represent the enhanced context provided by each custom function.
+// Use them to type your handler functions for better IDE support.
+
 /**
- * Helper type to extract custom context from custom functions
+ * Base context type for authenticated queries/mutations.
+ * Contains the authenticated user's ID.
  */
 export type AuthenticatedQueryCtx = {
   userId: Id<"users">;
 };
 
+/**
+ * Context type for `projectQuery` and role-based project mutations.
+ * Includes project data and the user's role.
+ */
 export type ProjectQueryCtx = QueryCtx &
   AuthenticatedQueryCtx & {
     projectId: Id<"projects">;
@@ -420,6 +668,10 @@ export type ProjectQueryCtx = QueryCtx &
     project: Doc<"projects">;
   };
 
+/**
+ * Context type for `issueMutation` and `issueViewerMutation`.
+ * Includes issue data in addition to project context.
+ */
 export type IssueMutationCtx = MutationCtx &
   AuthenticatedQueryCtx & {
     projectId: Id<"projects">;
@@ -428,6 +680,10 @@ export type IssueMutationCtx = MutationCtx &
     issue: Doc<"issues">;
   };
 
+/**
+ * Context type for `teamQuery`.
+ * Includes team data and membership info.
+ */
 export type TeamQueryCtx = QueryCtx &
   AuthenticatedQueryCtx & {
     teamId: Id<"teams">;
@@ -435,6 +691,10 @@ export type TeamQueryCtx = QueryCtx &
     membership: Doc<"teamMembers">;
   };
 
+/**
+ * Context type for `sprintQuery`.
+ * Includes sprint data in addition to project context.
+ */
 export type SprintQueryCtx = QueryCtx &
   AuthenticatedQueryCtx & {
     projectId: Id<"projects">;
@@ -443,6 +703,10 @@ export type SprintQueryCtx = QueryCtx &
     sprint: Doc<"sprints">;
   };
 
+/**
+ * Context type for `sprintMutation`.
+ * Includes sprint data in addition to project context.
+ */
 export type SprintMutationCtx = MutationCtx &
   AuthenticatedQueryCtx & {
     projectId: Id<"projects">;

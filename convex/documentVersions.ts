@@ -91,7 +91,7 @@ export const restoreVersion = authenticatedMutation({
     // Get the version to restore
     const version = await ctx.db.get(args.versionId);
     if (!version || version.documentId !== args.documentId) {
-      throw new Error("Version not found");
+      throw notFound("version", args.versionId);
     }
 
     // Return the version snapshot and version number

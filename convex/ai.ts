@@ -21,6 +21,7 @@ import { v } from "convex/values";
 import { internal } from "./_generated/api";
 import { action, internalAction } from "./_generated/server";
 import { extractUsage } from "./lib/aiHelpers";
+import { notFound, unauthenticated } from "./lib/errors";
 import { rateLimit } from "./rateLimits";
 
 // Claude models (using aliases - auto-point to latest snapshot)
@@ -53,7 +54,7 @@ export const generateIssueEmbedding = internalAction({
     });
 
     if (!issue) {
-      throw new Error("Issue not found");
+      throw notFound("issue", args.issueId);
     }
 
     // Combine title and description for embedding
@@ -122,7 +123,7 @@ export const chat = action({
   handler: async (ctx, args) => {
     const userId = await ctx.auth.getUserIdentity();
     if (!userId) {
-      throw new Error("Not authenticated");
+      throw unauthenticated();
     }
 
     // Rate limit: 10 messages per minute per user

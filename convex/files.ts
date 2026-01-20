@@ -1,5 +1,6 @@
 import { v } from "convex/values";
 import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
+import { notFound } from "./lib/errors";
 
 // Generate upload URL for files
 export const generateUploadUrl = authenticatedMutation({
@@ -21,7 +22,7 @@ export const addAttachment = authenticatedMutation({
   handler: async (ctx, args) => {
     const issue = await ctx.db.get(args.issueId);
     if (!issue) {
-      throw new Error("Issue not found");
+      throw notFound("issue", args.issueId);
     }
 
     // Add to issue attachments array
@@ -54,7 +55,7 @@ export const removeAttachment = authenticatedMutation({
   handler: async (ctx, args) => {
     const issue = await ctx.db.get(args.issueId);
     if (!issue) {
-      throw new Error("Issue not found");
+      throw notFound("issue", args.issueId);
     }
 
     // Remove from issue attachments array

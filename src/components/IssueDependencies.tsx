@@ -29,9 +29,12 @@ export function IssueDependencies({ issueId, projectId: _workspaceId }: IssueDep
   const [searchQuery, setSearchQuery] = useState("");
 
   const links = useQuery(api.issueLinks.getForIssue, { issueId });
+  // Backend excludes current issue - no client-side filtering needed
   const searchResults = useQuery(
     api.issues.search,
-    searchQuery.length >= 2 ? { query: searchQuery, limit: 20 } : "skip",
+    searchQuery.length >= 2
+      ? { query: searchQuery, limit: 20, excludeIssueId: issueId }
+      : "skip",
   );
   const createLink = useMutation(api.issueLinks.create);
   const removeLink = useMutation(api.issueLinks.remove);
@@ -255,12 +258,10 @@ export function IssueDependencies({ issueId, projectId: _workspaceId }: IssueDep
               placeholder="Type to search..."
             />
 
-            {/* Search Results */}
+            {/* Search Results - already filtered by backend (excludeIssueId) */}
             {searchResults?.page && searchResults.page.length > 0 && (
               <div className="max-h-48 overflow-y-auto border border-ui-border-primary rounded-lg">
-                {searchResults.page
-                  .filter((issue: Issue) => issue._id !== issueId)
-                  .map((issue: Issue) => (
+                {searchResults.page.map((issue: Issue) => (
                     <button
                       type="button"
                       key={issue._id}

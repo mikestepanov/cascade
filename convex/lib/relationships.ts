@@ -12,6 +12,7 @@
 import type { GenericDatabaseWriter, GenericDataModel } from "convex/server";
 import type { Id, TableNames } from "../_generated/dataModel";
 import type { MutationCtx } from "../_generated/server";
+import { conflict } from "./errors";
 
 // Loose type for dynamic table access
 type AnyDataModel = GenericDataModel;
@@ -271,7 +272,7 @@ async function handleDeleteRelation(ctx: MutationCtx, rel: Relationship, recordI
   } else if (rel.onDelete === "restrict") {
     // Don't allow delete if children exist
     if (children.length > 0) {
-      throw new Error(
+      throw conflict(
         `Cannot delete ${rel.parent} ${recordId}: ${children.length} ` +
           `${rel.child} record(s) still reference it`,
       );

@@ -7,6 +7,7 @@
 
 import { v } from "convex/values";
 import { action } from "../_generated/server";
+import { unauthenticated } from "../lib/errors";
 import { rateLimit } from "../rateLimits";
 
 /**
@@ -21,7 +22,7 @@ export const chatWithRateLimit = action({
   handler: async (ctx, _args) => {
     const userId = await ctx.auth.getUserIdentity();
     if (!userId) {
-      throw new Error("Not authenticated");
+      throw unauthenticated();
     }
 
     // Rate limit: 10 messages per minute

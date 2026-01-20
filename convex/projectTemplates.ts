@@ -1,6 +1,7 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 import { authenticatedMutation } from "./customFunctions";
+import { conflict, forbidden, notFound } from "./lib/errors";
 import { notDeleted } from "./lib/softDeleteHelpers";
 
 export const list = query({
@@ -40,7 +41,7 @@ export const createFromTemplate = authenticatedMutation({
   handler: async (ctx, args) => {
     const template = await ctx.db.get(args.templateId);
     if (!template) {
-      throw new Error("Template not found");
+      throw notFound("template", args.templateId);
     }
 
     // Verify user is a member of the organization
@@ -52,7 +53,7 @@ export const createFromTemplate = authenticatedMutation({
       .first();
 
     if (!organizationMembership) {
-      throw new Error("You must be a member of this organization to create projects");
+      throw forbidden("organization member");
     }
 
     // Check if project key already exists
@@ -63,7 +64,7 @@ export const createFromTemplate = authenticatedMutation({
       .first();
 
     if (existing) {
-      throw new Error("Project key already exists");
+      throw conflict("Project key already exists");
     }
 
     const now = Date.now();

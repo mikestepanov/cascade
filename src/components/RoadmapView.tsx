@@ -28,27 +28,21 @@ export function RoadmapView({ projectId, sprintId, canEdit = true }: RoadmapView
   const [viewMode, setViewMode] = useState<"months" | "weeks">("months");
   const [filterEpic, setFilterEpic] = useState<Id<"issues"> | "all">("all");
 
-  const issues = useQuery(api.issues.listRoadmapIssues, { projectId, sprintId });
+  // Fetch epics for the dropdown (separate optimized query)
+  const epics = useQuery(api.issues.listEpics, { projectId });
+
+  // Fetch filtered issues - backend applies all filters
+  const filteredIssues = useQuery(api.issues.listRoadmapIssues, {
+    projectId,
+    sprintId,
+    excludeEpics: true, // Don't include epics in main list
+    epicId: filterEpic !== "all" ? filterEpic : undefined, // Filter by selected epic
+    hasDueDate: true, // Only show issues with due dates
+  });
+
   const project = useQuery(api.projects.getProject, { id: projectId });
 
   type RoadmapIssue = FunctionReturnType<typeof api.issues.listRoadmapIssues>[number];
-
-  // Filter epics and regular issues
-  const epics = issues?.filter((issue: RoadmapIssue) => issue.type === "epic") || [];
-  const filteredIssues = useMemo(() => {
-    if (!issues) return [];
-
-    let filtered = issues.filter((issue: RoadmapIssue) => issue.type !== "epic");
-
-    if (filterEpic !== "all") {
-      filtered = filtered.filter((issue: RoadmapIssue) => issue.epicId === filterEpic);
-    }
-
-    // Only show issues with due dates
-    filtered = filtered.filter((issue: RoadmapIssue) => issue.dueDate);
-
-    return filtered;
-  }, [issues, filterEpic]);
 
   // Memoize date range calculations - only recalculate when component mounts
   const { startOfMonth, endDate, timelineMonths } = useMemo(() => {
@@ -181,7 +175,7 @@ export function RoadmapView({ projectId, sprintId, canEdit = true }: RoadmapView
   );
 
   // Loading State
-  if (!(project && issues)) {
+  if (!(project && filteredIssues && epics)) {
     return (
       <Flex direction="column" className="flex-1 overflow-hidden p-6 h-full">
         {/* Skeleton Header */}
@@ -271,7 +265,7 @@ export function RoadmapView({ projectId, sprintId, canEdit = true }: RoadmapView
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Epics</SelectItem>
-              {epics.map((epic: RoadmapIssue) => (
+              {epics?.map((epic) => (
                 <SelectItem key={epic._id} value={epic._id}>
                   {epic.title}
                 </SelectItem>

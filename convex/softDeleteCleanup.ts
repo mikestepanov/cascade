@@ -24,32 +24,67 @@ const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
 /**
  * Permanently delete soft-deleted records older than 30 days
  * Called by cron job daily at 2 AM UTC
+ *
+ * Returns detailed stats for monitoring
  */
 export const permanentlyDeleteOld = internalMutation({
   args: {},
   handler: async (ctx) => {
+    const startTime = Date.now();
     let totalDeleted = 0;
+    const deletedByTable: Record<string, number> = {};
+    const errors: string[] = [];
 
     for (const table of TABLES_WITH_SOFT_DELETE) {
-      // Query all soft-deleted records
-      const deleted = await ctx.db
-        .query(table)
-        .withIndex("by_deleted", (q) => q.eq("isDeleted", true))
-        .collect();
+      deletedByTable[table] = 0;
 
-      // Filter to only those older than 30 days
-      const toDelete = deleted.filter((record) =>
-        isEligibleForPermanentDeletion(record, THIRTY_DAYS_MS),
-      );
+      try {
+        // Query all soft-deleted records (bounded to prevent OOM)
+        const deleted = await ctx.db
+          .query(table)
+          .withIndex("by_deleted", (q) => q.eq("isDeleted", true))
+          .take(1000); // Limit per run to prevent timeout
 
-      // Permanently delete each one with cascading
-      for (const record of toDelete) {
-        await cascadeDelete(ctx, table, record._id);
-        totalDeleted++;
+        // Filter to only those older than 30 days
+        const toDelete = deleted.filter((record) =>
+          isEligibleForPermanentDeletion(record, THIRTY_DAYS_MS),
+        );
+
+        // Permanently delete each one with cascading
+        for (const record of toDelete) {
+          try {
+            await cascadeDelete(ctx, table, record._id);
+            totalDeleted++;
+            deletedByTable[table]++;
+          } catch (error) {
+            errors.push(`${table}/${record._id}: ${error instanceof Error ? error.message : "Unknown error"}`);
+          }
+        }
+      } catch (error) {
+        errors.push(`${table}: ${error instanceof Error ? error.message : "Unknown error"}`);
       }
     }
 
-    return { deleted: totalDeleted };
+    const durationMs = Date.now() - startTime;
+
+    // Log summary for monitoring
+    console.log(`[softDeleteCleanup] Completed in ${durationMs}ms`, {
+      totalDeleted,
+      deletedByTable,
+      errorCount: errors.length,
+    });
+
+    if (errors.length > 0) {
+      console.warn(`[softDeleteCleanup] Errors:`, errors.slice(0, 10)); // Log first 10 errors
+    }
+
+    return {
+      deleted: totalDeleted,
+      deletedByTable,
+      durationMs,
+      errorCount: errors.length,
+      errors: errors.slice(0, 10), // Return first 10 errors
+    };
   },
 });
 

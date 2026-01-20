@@ -1,5 +1,6 @@
 import { api } from "../_generated/api";
 import { httpAction } from "../_generated/server";
+import { validation } from "../lib/errors";
 import { getGitHubClientId, getGitHubClientSecret, isGitHubOAuthConfigured } from "../lib/env";
 
 /**
@@ -19,7 +20,7 @@ const getGitHubOAuthConfig = () => {
   const clientSecret = getGitHubClientSecret();
 
   if (!(isGitHubOAuthConfigured() && clientId && clientSecret)) {
-    throw new Error("GitHub OAuth not configured. Set GITHUB_CLIENT_ID and GITHUB_CLIENT_SECRET.");
+    throw validation("oauth", "GitHub OAuth not configured. Set GITHUB_CLIENT_ID and GITHUB_CLIENT_SECRET.");
   }
   return {
     clientId,
@@ -135,13 +136,13 @@ export const handleCallback = httpAction(async (_ctx, request) => {
     });
 
     if (!tokenResponse.ok) {
-      throw new Error("Failed to exchange authorization code");
+      throw validation("oauth", "Failed to exchange GitHub authorization code");
     }
 
     const tokens = await tokenResponse.json();
 
     if (tokens.error) {
-      throw new Error(tokens.error_description || tokens.error);
+      throw validation("oauth", tokens.error_description || tokens.error);
     }
 
     const { access_token } = tokens;
@@ -156,7 +157,7 @@ export const handleCallback = httpAction(async (_ctx, request) => {
     });
 
     if (!userResponse.ok) {
-      throw new Error("Failed to get GitHub user info");
+      throw validation("github", "Failed to get GitHub user info");
     }
 
     const userInfo = await userResponse.json();
@@ -283,7 +284,7 @@ export const listRepos = httpAction(async (ctx, _request) => {
     );
 
     if (!reposResponse.ok) {
-      throw new Error("Failed to fetch repositories");
+      throw validation("github", "Failed to fetch repositories");
     }
 
     const repos = await reposResponse.json();

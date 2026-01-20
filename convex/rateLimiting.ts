@@ -1,12 +1,25 @@
 /**
- * Rate Limiting Utilities
+ * Rate Limiting Utilities (DEPRECATED)
  *
- * Provides rate limiting for mutations and actions to prevent abuse
+ * @deprecated Use `convex/rateLimits.ts` instead which uses the persistent
+ * `@convex-dev/rate-limiter` component. This file uses an in-memory Map
+ * that resets on cold start.
+ *
+ * Migration:
+ * ```typescript
+ * // Old (in-memory, resets on cold start):
+ * import { strictRateLimitedMutation } from "./rateLimiting";
+ *
+ * // New (persistent, survives restarts):
+ * import { rateLimit } from "./rateLimits";
+ * await rateLimit(ctx, { name: "myOperation", key: userId });
+ * ```
  */
 
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { customMutation } from "convex-helpers/server/customFunctions";
 import { mutation } from "./_generated/server";
+import { unauthenticated, validation } from "./lib/errors";
 
 /**
  * Rate limit configuration
@@ -96,7 +109,7 @@ export function rateLimitedMutation(config: RateLimitConfig) {
     input: async (ctx, _args) => {
       const userId = await getAuthUserId(ctx);
       if (!userId) {
-        throw new Error("Authentication required");
+        throw unauthenticated();
       }
 
       // Check rate limit
@@ -104,7 +117,8 @@ export function rateLimitedMutation(config: RateLimitConfig) {
       const allowed = checkRateLimit(rateLimitKey, config);
 
       if (!allowed) {
-        throw new Error(
+        throw validation(
+          "rateLimit",
           `Rate limit exceeded. Maximum ${config.maxRequests} requests per ${config.windowMs / 1000} seconds.`,
         );
       }

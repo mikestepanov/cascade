@@ -1,5 +1,6 @@
 import { api } from "../_generated/api";
 import { httpAction } from "../_generated/server";
+import { validation } from "../lib/errors";
 import { getGoogleClientId, getGoogleClientSecret, isGoogleOAuthConfigured } from "../lib/env";
 
 /**
@@ -42,7 +43,7 @@ const getGoogleOAuthConfig = () => {
   const clientSecret = getGoogleClientSecret();
 
   if (!(isGoogleOAuthConfigured() && clientId && clientSecret)) {
-    throw new Error("Google OAuth not configured. Set AUTH_GOOGLE_ID and AUTH_GOOGLE_SECRET.");
+    throw validation("oauth", "Google OAuth not configured. Set AUTH_GOOGLE_ID and AUTH_GOOGLE_SECRET.");
   }
   return {
     clientId,
@@ -161,7 +162,7 @@ export const handleCallback = httpAction(async (_ctx, request) => {
 
     if (!tokenResponse.ok) {
       const _errorData = await tokenResponse.text();
-      throw new Error("Failed to exchange authorization code");
+      throw validation("oauth", "Failed to exchange Google authorization code");
     }
 
     const tokens = await tokenResponse.json();
@@ -299,7 +300,7 @@ export const triggerSync = httpAction(async (ctx, _request) => {
     );
 
     if (!eventsResponse.ok) {
-      throw new Error("Failed to fetch Google Calendar events");
+      throw validation("googleCalendar", "Failed to fetch Google Calendar events");
     }
 
     const data = await eventsResponse.json();

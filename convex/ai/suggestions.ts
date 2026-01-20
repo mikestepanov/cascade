@@ -17,6 +17,7 @@ import { components, internal } from "../_generated/api";
 import type { Id } from "../_generated/dataModel";
 import { action, internalAction, mutation, query } from "../_generated/server";
 import { extractUsage } from "../lib/aiHelpers";
+import { notFound, unauthenticated } from "../lib/errors";
 import { rateLimit } from "../rateLimits";
 
 // Claude Haiku 4.5 for fast, cheap suggestions (alias auto-points to latest)
@@ -101,7 +102,7 @@ export const suggestIssueDescription = action({
   handler: async (ctx, args) => {
     const userId = await ctx.auth.getUserIdentity();
     if (!userId) {
-      throw new Error("Not authenticated");
+      throw unauthenticated();
     }
 
     // Rate limit: 20 suggestions per hour per user
@@ -189,7 +190,7 @@ export const suggestPriority = action({
   handler: async (ctx, args) => {
     const userId = await ctx.auth.getUserIdentity();
     if (!userId) {
-      throw new Error("Not authenticated");
+      throw unauthenticated();
     }
 
     // Rate limit: 20 suggestions per hour per user
@@ -279,7 +280,7 @@ export const suggestLabels = action({
   handler: async (ctx, args) => {
     const userId = await ctx.auth.getUserIdentity();
     if (!userId) {
-      throw new Error("Not authenticated");
+      throw unauthenticated();
     }
 
     // Rate limit: 20 suggestions per hour per user
@@ -409,7 +410,7 @@ export const storeSuggestion = mutation({
       .first();
 
     if (!user) {
-      throw new Error("User not found");
+      throw notFound("user", args.userId);
     }
 
     await ctx.db.insert("aiSuggestions", {

@@ -1,6 +1,7 @@
 import { v } from "convex/values";
 import type { Id } from "./_generated/dataModel";
 import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
+import { conflict, forbidden, notFound, validation } from "./lib/errors";
 import { notDeleted } from "./lib/softDeleteHelpers";
 
 // Connect GitHub account (OAuth callback)
@@ -88,7 +89,7 @@ export const linkRepository = authenticatedMutation({
   handler: async (ctx, args) => {
     // Verify user has access to project
     const project = await ctx.db.get(args.projectId);
-    if (!project) throw new Error("Project not found");
+    if (!project) throw notFound("project", args.projectId);
 
     // Check permission (at least editor)
     const member = await ctx.db
@@ -100,11 +101,11 @@ export const linkRepository = authenticatedMutation({
       .first();
 
     if (!member && project.createdBy !== ctx.userId) {
-      throw new Error("You don't have permission to link repositories to this project");
+      throw forbidden("project member");
     }
 
     if (member && member.role === "viewer") {
-      throw new Error("Viewers cannot link repositories");
+      throw forbidden("editor");
     }
 
     // Check if repo already linked
@@ -115,7 +116,7 @@ export const linkRepository = authenticatedMutation({
       .first();
 
     if (existing) {
-      throw new Error("This repository is already linked to a project");
+      throw conflict("This repository is already linked to a project");
     }
 
     const now = Date.now();
@@ -143,10 +144,10 @@ export const unlinkRepository = authenticatedMutation({
   },
   handler: async (ctx, args) => {
     const repo = await ctx.db.get(args.repositoryId);
-    if (!repo) throw new Error("Repository not found");
+    if (!repo) throw notFound("repository", args.repositoryId);
 
     const project = await ctx.db.get(repo.projectId);
-    if (!project) throw new Error("Project not found");
+    if (!project) throw notFound("project", repo.projectId);
 
     // Check permission (admin only)
     const member = await ctx.db
@@ -159,7 +160,7 @@ export const unlinkRepository = authenticatedMutation({
 
     const isAdmin = project.createdBy === ctx.userId || member?.role === "admin";
     if (!isAdmin) {
-      throw new Error("Only admins can unlink repositories");
+      throw forbidden("admin");
     }
 
     await ctx.db.delete(args.repositoryId);
@@ -219,7 +220,7 @@ export const upsertPullRequest = mutation({
   },
   handler: async (ctx, args) => {
     const repo = await ctx.db.get(args.repositoryId);
-    if (!repo) throw new Error("Repository not found");
+    if (!repo) throw notFound("repository", args.repositoryId);
 
     const now = Date.now();
 
@@ -291,15 +292,15 @@ export const linkPRToIssue = authenticatedMutation({
   },
   handler: async (ctx, args) => {
     const pr = await ctx.db.get(args.prId);
-    if (!pr) throw new Error("Pull request not found");
+    if (!pr) throw notFound("pull request", args.prId);
 
     const issue = await ctx.db.get(args.issueId);
-    if (!issue) throw new Error("Issue not found");
+    if (!issue) throw notFound("issue", args.issueId);
 
     // Verify project match
-    if (!issue.projectId) throw new Error("Issue has no project");
+    if (!issue.projectId) throw validation("issue", "Issue has no project");
     if (pr.projectId !== issue.projectId) {
-      throw new Error("PR and issue must be in the same project");
+      throw validation("project", "PR and issue must be in the same project");
     }
 
     await ctx.db.patch(args.prId, {
@@ -359,7 +360,7 @@ export const upsertCommit = mutation({
   },
   handler: async (ctx, args) => {
     const repo = await ctx.db.get(args.repositoryId);
-    if (!repo) throw new Error("Repository not found");
+    if (!repo) throw notFound("repository", args.repositoryId);
 
     const now = Date.now();
 

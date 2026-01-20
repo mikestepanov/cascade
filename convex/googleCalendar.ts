@@ -1,6 +1,7 @@
 import { v } from "convex/values";
 import { internalMutation, mutation } from "./_generated/server";
 import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
+import { notFound } from "./lib/errors";
 
 // Internal mutation for connecting Google Calendar (called from HTTP action)
 export const connectGoogleInternal = internalMutation({
@@ -145,7 +146,7 @@ export const updateSyncSettings = authenticatedMutation({
       .first();
 
     if (!connection) {
-      throw new Error("Google Calendar not connected");
+      throw notFound("calendarConnection");
     }
 
     const updates: Record<string, unknown> = { updatedAt: Date.now() };
@@ -166,7 +167,7 @@ export const refreshToken = mutation({
   },
   handler: async (ctx, args) => {
     const connection = await ctx.db.get(args.connectionId);
-    if (!connection) throw new Error("Connection not found");
+    if (!connection) throw notFound("calendarConnection", args.connectionId);
 
     await ctx.db.patch(args.connectionId, {
       accessToken: args.newAccessToken,
@@ -221,7 +222,7 @@ export const syncFromGoogle = mutation({
   },
   handler: async (ctx, args) => {
     const connection = await ctx.db.get(args.connectionId);
-    if (!connection) throw new Error("Connection not found");
+    if (!connection) throw notFound("calendarConnection", args.connectionId);
 
     if (!connection.syncEnabled || connection.syncDirection === "export") {
       return { imported: 0 };

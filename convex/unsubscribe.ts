@@ -8,6 +8,7 @@ import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import type { Id } from "./_generated/dataModel";
 import { internalMutation, mutation, query } from "./_generated/server";
+import { unauthenticated, validation } from "./lib/errors";
 
 /**
  * Generate a unique unsubscribe token for a user
@@ -16,7 +17,7 @@ export const generateToken = mutation({
   args: {},
   handler: async (ctx): Promise<string> => {
     const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
+    if (!userId) throw unauthenticated();
 
     // Generate a random token
     const token = generateRandomToken();
@@ -69,13 +70,13 @@ export const unsubscribe = mutation({
       .first();
 
     if (!tokenRecord) {
-      throw new Error("Invalid unsubscribe token");
+      throw validation("token", "Invalid unsubscribe token");
     }
 
     // Check if token is expired (30 days)
     const thirtyDaysAgo = Date.now() - 30 * 24 * 60 * 60 * 1000;
     if (tokenRecord.createdAt < thirtyDaysAgo) {
-      throw new Error("Unsubscribe link has expired");
+      throw validation("token", "Unsubscribe link has expired");
     }
 
     // Mark token as used
