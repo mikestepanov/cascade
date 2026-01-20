@@ -6,6 +6,7 @@ import { v } from "convex/values";
 import { type MutationCtx, mutation } from "../_generated/server";
 import { authenticatedMutation } from "../customFunctions";
 import { notFound, requireOwned } from "../lib/errors";
+import { chatRoles } from "../validators";
 
 /**
  * Create a new AI chat
@@ -81,7 +82,7 @@ export const deleteChat = authenticatedMutation({
 export const addMessage = authenticatedMutation({
   args: {
     chatId: v.id("aiChats"),
-    role: v.union(v.literal("user"), v.literal("assistant"), v.literal("system")),
+    role: chatRoles,
     content: v.string(),
     modelUsed: v.optional(v.string()),
     tokensUsed: v.optional(v.number()),

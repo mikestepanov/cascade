@@ -6,6 +6,7 @@ import { batchFetchUsers } from "./lib/batchHelpers";
 import { forbidden, notFound } from "./lib/errors";
 import { MAX_PAGE_SIZE } from "./lib/queryLimits";
 import { notDeleted } from "./lib/softDeleteHelpers";
+import { employmentTypes } from "./validators";
 
 // Limits for user profile queries
 const MAX_PROFILES = 500;
@@ -112,7 +113,7 @@ export const getEmploymentTypeConfigs = authenticatedQuery({
 // Get a specific employment type configuration
 export const getEmploymentTypeConfig = authenticatedQuery({
   args: {
-    type: v.union(v.literal("employee"), v.literal("contractor"), v.literal("intern")),
+    type: employmentTypes,
   },
   handler: async (ctx, args) => {
     const config = await ctx.db
@@ -127,7 +128,7 @@ export const getEmploymentTypeConfig = authenticatedQuery({
 // Update employment type configuration (admin only)
 export const updateEmploymentTypeConfig = authenticatedMutation({
   args: {
-    type: v.union(v.literal("employee"), v.literal("contractor"), v.literal("intern")),
+    type: employmentTypes,
     name: v.optional(v.string()),
     description: v.optional(v.string()),
     defaultMaxHoursPerWeek: v.optional(v.number()),
@@ -186,7 +187,7 @@ export const updateEmploymentTypeConfig = authenticatedMutation({
 export const upsertUserProfile = authenticatedMutation({
   args: {
     userId: v.id("users"),
-    employmentType: v.union(v.literal("employee"), v.literal("contractor"), v.literal("intern")),
+    employmentType: employmentTypes,
     maxHoursPerWeek: v.optional(v.number()),
     maxHoursPerDay: v.optional(v.number()),
     requiresApproval: v.optional(v.boolean()),
@@ -302,9 +303,7 @@ export const getUserProfileWithDefaults = authenticatedQuery({
 // List all user profiles (admin only)
 export const listUserProfiles = authenticatedQuery({
   args: {
-    employmentType: v.optional(
-      v.union(v.literal("employee"), v.literal("contractor"), v.literal("intern")),
-    ),
+    employmentType: v.optional(employmentTypes),
     isActive: v.optional(v.boolean()),
   },
   handler: async (ctx, args) => {

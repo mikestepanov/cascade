@@ -10,6 +10,7 @@ import { MAX_PAGE_SIZE } from "./lib/queryLimits";
 import { notDeleted, softDeleteFields } from "./lib/softDeleteHelpers";
 import { assertIsProjectAdmin } from "./projectAccess";
 import { isTest } from "./testConfig";
+import { webhookResultStatuses } from "./validators";
 
 // Create a webhook
 export const createWebhook = authenticatedMutation({
@@ -385,7 +386,7 @@ export const createExecution = internalMutation({
 export const updateExecution = internalMutation({
   args: {
     id: v.id("webhookExecutions"),
-    status: v.union(v.literal("success"), v.literal("failed")),
+    status: webhookResultStatuses,
     responseStatus: v.optional(v.number()),
     responseBody: v.optional(v.string()),
     error: v.optional(v.string()),
@@ -493,7 +494,7 @@ export const getExecutionById = internalQuery({
 export const incrementExecutionAttempt = internalMutation({
   args: {
     id: v.id("webhookExecutions"),
-    status: v.union(v.literal("success"), v.literal("failed")),
+    status: webhookResultStatuses,
     responseStatus: v.optional(v.number()),
     responseBody: v.optional(v.string()),
     error: v.optional(v.string()),

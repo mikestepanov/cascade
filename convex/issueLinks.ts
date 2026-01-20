@@ -4,6 +4,7 @@ import { batchFetchIssues } from "./lib/batchHelpers";
 import { conflict, notFound, validation } from "./lib/errors";
 import { MAX_PAGE_SIZE } from "./lib/queryLimits";
 import { assertCanEditProject } from "./projectAccess";
+import { linkTypes } from "./validators";
 
 /**
  * Create a link between two issues
@@ -13,7 +14,7 @@ export const create = authenticatedMutation({
   args: {
     fromIssueId: v.id("issues"),
     toIssueId: v.id("issues"),
-    linkType: v.union(v.literal("blocks"), v.literal("relates"), v.literal("duplicates")),
+    linkType: linkTypes,
   },
   handler: async (ctx, args) => {
     const fromIssue = await ctx.db.get(args.fromIssueId);

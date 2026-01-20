@@ -1,6 +1,6 @@
-import { pruneNull } from "convex-helpers";
 import { v } from "convex/values";
-import type { Doc, Id } from "../_generated/dataModel";
+import { asyncMap, pruneNull } from "convex-helpers";
+import type { Id } from "../_generated/dataModel";
 import {
   authenticatedMutation,
   editorMutation,
@@ -10,6 +10,7 @@ import {
 import { validation } from "../lib/errors";
 import { cascadeDelete } from "../lib/relationships";
 import { assertCanEditProject, assertIsProjectAdmin } from "../projectAccess";
+import { workflowCategories } from "../validators";
 import {
   generateIssueKey,
   getMaxOrderForStatus,
@@ -61,7 +62,7 @@ export const create = editorMutation({
     // Get label names from IDs
     let labelNames: string[] = [];
     if (args.labels && args.labels.length > 0) {
-      const labels = await Promise.all(args.labels.map((id) => ctx.db.get(id)));
+      const labels = await asyncMap(args.labels, (id) => ctx.db.get(id));
       labelNames = pruneNull(labels).map((l) => l.name);
     }
 
@@ -137,7 +138,7 @@ export const updateStatus = issueMutation({
 
 export const updateStatusByCategory = issueMutation({
   args: {
-    category: v.union(v.literal("todo"), v.literal("inprogress"), v.literal("done")),
+    category: workflowCategories,
     newOrder: v.number(),
   },
   handler: async (ctx, args) => {
@@ -322,7 +323,7 @@ export const bulkUpdateStatus = authenticatedMutation({
     newStatus: v.string(),
   },
   handler: async (ctx, args) => {
-    const issues = await Promise.all(args.issueIds.map((id) => ctx.db.get(id)));
+    const issues = await asyncMap(args.issueIds, (id) => ctx.db.get(id));
 
     const now = Date.now();
     const results = [];
@@ -376,7 +377,7 @@ export const bulkUpdatePriority = authenticatedMutation({
     ),
   },
   handler: async (ctx, args) => {
-    const issues = await Promise.all(args.issueIds.map((id) => ctx.db.get(id)));
+    const issues = await asyncMap(args.issueIds, (id) => ctx.db.get(id));
 
     const now = Date.now();
     const results = [];
@@ -422,7 +423,7 @@ export const bulkAssign = authenticatedMutation({
     assigneeId: v.union(v.id("users"), v.null()),
   },
   handler: async (ctx, args) => {
-    const issues = await Promise.all(args.issueIds.map((id) => ctx.db.get(id)));
+    const issues = await asyncMap(args.issueIds, (id) => ctx.db.get(id));
 
     const now = Date.now();
     const results = [];
@@ -468,7 +469,7 @@ export const bulkAddLabels = authenticatedMutation({
     labels: v.array(v.string()),
   },
   handler: async (ctx, args) => {
-    const issues = await Promise.all(args.issueIds.map((id) => ctx.db.get(id)));
+    const issues = await asyncMap(args.issueIds, (id) => ctx.db.get(id));
 
     const now = Date.now();
     const results = [];
@@ -514,7 +515,7 @@ export const bulkMoveToSprint = authenticatedMutation({
     sprintId: v.union(v.id("sprints"), v.null()),
   },
   handler: async (ctx, args) => {
-    const issues = await Promise.all(args.issueIds.map((id) => ctx.db.get(id)));
+    const issues = await asyncMap(args.issueIds, (id) => ctx.db.get(id));
 
     const now = Date.now();
     const results = [];
@@ -559,7 +560,7 @@ export const bulkDelete = authenticatedMutation({
     issueIds: v.array(v.id("issues")),
   },
   handler: async (ctx, args) => {
-    const issues = await Promise.all(args.issueIds.map((id) => ctx.db.get(id)));
+    const issues = await asyncMap(args.issueIds, (id) => ctx.db.get(id));
 
     const results = [];
 

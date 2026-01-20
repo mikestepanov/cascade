@@ -4,8 +4,30 @@ import { v } from "convex/values";
 import {
   auditMetadata,
   blockNoteContent,
+  boardTypes,
+  bookingFieldTypes,
+  calendarProviders,
+  calendarStatuses,
+  cancelledByOptions,
+  chatRoles,
+  ciStatuses,
   dashboardLayout,
+  emailDigests,
+  employmentTypes,
+  inviteRoles,
+  issuePriorities,
+  issueTypes,
+  issueTypesWithSubtask,
+  linkTypes,
+  periodTypes,
+  personas,
+  projectRoles,
   proseMirrorSnapshot,
+  prStates,
+  simplePriorities,
+  sprintStatuses,
+  webhookStatuses,
+  workflowCategories,
 } from "./validators";
 
 const applicationTables = {
@@ -134,12 +156,12 @@ const applicationTables = {
     createdAt: v.number(),
     updatedAt: v.number(),
     // Board configuration
-    boardType: v.union(v.literal("kanban"), v.literal("scrum")),
+    boardType: boardTypes,
     workflowStates: v.array(
       v.object({
         id: v.string(),
         name: v.string(),
-        category: v.union(v.literal("todo"), v.literal("inprogress"), v.literal("done")),
+        category: workflowCategories,
         order: v.number(),
       }),
     ),
@@ -169,7 +191,7 @@ const applicationTables = {
   projectMembers: defineTable({
     projectId: v.id("projects"),
     userId: v.id("users"),
-    role: v.union(v.literal("admin"), v.literal("editor"), v.literal("viewer")),
+    role: projectRoles,
     addedBy: v.id("users"),
     addedAt: v.number(),
     // Soft Delete
@@ -189,21 +211,9 @@ const applicationTables = {
     key: v.string(), // Issue key like "PROJ-123"
     title: v.string(),
     description: v.optional(v.string()),
-    type: v.union(
-      v.literal("task"),
-      v.literal("bug"),
-      v.literal("story"),
-      v.literal("epic"),
-      v.literal("subtask"),
-    ),
+    type: issueTypesWithSubtask,
     status: v.string(), // References workflow state id
-    priority: v.union(
-      v.literal("lowest"),
-      v.literal("low"),
-      v.literal("medium"),
-      v.literal("high"),
-      v.literal("highest"),
-    ),
+    priority: issuePriorities,
     assigneeId: v.optional(v.id("users")),
     reporterId: v.id("users"),
     createdAt: v.number(),
@@ -277,7 +287,7 @@ const applicationTables = {
   issueLinks: defineTable({
     fromIssueId: v.id("issues"),
     toIssueId: v.id("issues"),
-    linkType: v.union(v.literal("blocks"), v.literal("relates"), v.literal("duplicates")),
+    linkType: linkTypes,
     createdBy: v.id("users"),
     createdAt: v.number(),
   })
@@ -290,7 +300,7 @@ const applicationTables = {
     goal: v.optional(v.string()),
     startDate: v.optional(v.number()),
     endDate: v.optional(v.number()),
-    status: v.union(v.literal("future"), v.literal("active"), v.literal("completed")),
+    status: sprintStatuses,
     createdBy: v.id("users"),
     createdAt: v.number(),
     updatedAt: v.number(),
@@ -337,16 +347,10 @@ const applicationTables = {
   issueTemplates: defineTable({
     projectId: v.id("projects"), // Template belongs to project
     name: v.string(),
-    type: v.union(v.literal("task"), v.literal("bug"), v.literal("story"), v.literal("epic")),
+    type: issueTypes,
     titleTemplate: v.string(),
     descriptionTemplate: v.string(),
-    defaultPriority: v.union(
-      v.literal("lowest"),
-      v.literal("low"),
-      v.literal("medium"),
-      v.literal("high"),
-      v.literal("highest"),
-    ),
+    defaultPriority: issuePriorities,
     defaultLabels: v.array(v.string()),
     createdBy: v.id("users"),
     createdAt: v.number(),
@@ -376,7 +380,7 @@ const applicationTables = {
   webhookExecutions: defineTable({
     webhookId: v.id("webhooks"),
     event: v.string(), // Event that triggered: "issue.created", etc.
-    status: v.union(v.literal("success"), v.literal("failed"), v.literal("retrying")),
+    status: webhookStatuses,
     requestPayload: v.string(), // JSON string of the request body
     responseStatus: v.optional(v.number()), // HTTP status code
     responseBody: v.optional(v.string()), // Response from webhook endpoint
@@ -394,11 +398,7 @@ const applicationTables = {
     userId: v.id("users"),
     name: v.string(),
     filters: v.object({
-      type: v.optional(
-        v.array(
-          v.union(v.literal("task"), v.literal("bug"), v.literal("story"), v.literal("epic")),
-        ),
-      ),
+      type: v.optional(v.array(issueTypes)),
       status: v.optional(v.array(v.string())),
       priority: v.optional(
         v.array(
@@ -429,12 +429,12 @@ const applicationTables = {
     description: v.string(),
     category: v.string(), // "software", "marketing", "design", etc.
     icon: v.string(), // Emoji or icon identifier
-    boardType: v.union(v.literal("kanban"), v.literal("scrum")),
+    boardType: boardTypes,
     workflowStates: v.array(
       v.object({
         id: v.string(),
         name: v.string(),
-        category: v.union(v.literal("todo"), v.literal("inprogress"), v.literal("done")),
+        category: workflowCategories,
         order: v.number(),
       }),
     ),
@@ -532,7 +532,7 @@ const applicationTables = {
     emailComments: v.boolean(), // Send email for comments on my issues
     emailStatusChanges: v.boolean(), // Send email for status changes on watched issues
     // Digest preferences
-    emailDigest: v.union(v.literal("none"), v.literal("daily"), v.literal("weekly")),
+    emailDigest: emailDigests,
     digestDay: v.optional(v.string()), // "monday", "tuesday", etc. (for weekly digest)
     digestTime: v.optional(v.string()), // "09:00", "17:00", etc. (24h format)
     // Metadata
@@ -559,7 +559,7 @@ const applicationTables = {
     wizardCompleted: v.boolean(), // Whether project wizard was completed
     checklistDismissed: v.boolean(), // Whether checklist was dismissed
     // Persona-based onboarding fields
-    onboardingPersona: v.optional(v.union(v.literal("team_lead"), v.literal("team_member"))), // User's self-selected persona
+    onboardingPersona: v.optional(personas), // User's self-selected persona
     wasInvited: v.optional(v.boolean()), // Whether user was invited (denormalized)
     invitedByName: v.optional(v.string()), // Name of person who invited them
     createdAt: v.number(),
@@ -588,7 +588,7 @@ const applicationTables = {
     projectId: v.optional(v.id("projects")), // Link to project
     issueId: v.optional(v.id("issues")), // Link to issue
     // Status
-    status: v.union(v.literal("confirmed"), v.literal("tentative"), v.literal("cancelled")),
+    status: calendarStatuses,
     // Recurrence
     isRecurring: v.boolean(),
     recurrenceRule: v.optional(v.string()), // RRULE format (e.g., "FREQ=WEEKLY;BYDAY=MO,WE,FR")
@@ -678,7 +678,7 @@ const applicationTables = {
       v.array(
         v.object({
           label: v.string(),
-          type: v.union(v.literal("text"), v.literal("email"), v.literal("phone")),
+          type: bookingFieldTypes,
           required: v.boolean(),
         }),
       ),
@@ -717,7 +717,7 @@ const applicationTables = {
       v.literal("cancelled"),
       v.literal("completed"),
     ),
-    cancelledBy: v.optional(v.union(v.literal("host"), v.literal("booker"))),
+    cancelledBy: v.optional(cancelledByOptions),
     cancellationReason: v.optional(v.string()),
     // Links to created event
     calendarEventId: v.optional(v.id("calendarEvents")),
@@ -737,7 +737,7 @@ const applicationTables = {
   // External calendar connections (Google, Outlook)
   calendarConnections: defineTable({
     userId: v.id("users"),
-    provider: v.union(v.literal("google"), v.literal("outlook")),
+    provider: calendarProviders,
     providerAccountId: v.string(), // Email/account ID from provider
     // OAuth tokens (encrypted in production)
     accessToken: v.string(),
@@ -803,7 +803,7 @@ const applicationTables = {
     prId: v.string(), // GitHub PR ID
     title: v.string(),
     body: v.optional(v.string()),
-    state: v.union(v.literal("open"), v.literal("closed"), v.literal("merged")),
+    state: prStates,
     mergedAt: v.optional(v.number()),
     closedAt: v.optional(v.number()),
     // Author
@@ -812,9 +812,7 @@ const applicationTables = {
     // Links
     htmlUrl: v.string(), // GitHub PR URL
     // Status checks
-    checksStatus: v.optional(
-      v.union(v.literal("pending"), v.literal("success"), v.literal("failure")),
-    ),
+    checksStatus: v.optional(ciStatuses),
     // Metadata
     createdAt: v.number(),
     updatedAt: v.number(),
@@ -880,7 +878,7 @@ const applicationTables = {
 
   aiMessages: defineTable({
     chatId: v.id("aiChats"),
-    role: v.union(v.literal("user"), v.literal("assistant"), v.literal("system")),
+    role: chatRoles,
     content: v.string(),
     // Context provided to AI (for debugging and transparency)
     contextData: v.optional(
@@ -1152,7 +1150,7 @@ const applicationTables = {
 
   // Employment Type Default Configurations
   employmentTypeConfigs: defineTable({
-    type: v.union(v.literal("employee"), v.literal("contractor"), v.literal("intern")),
+    type: employmentTypes,
     name: v.string(), // Display name: "Full-time Employee", "Contractor", "Intern"
     description: v.optional(v.string()),
     // Default work hour limits
@@ -1172,7 +1170,7 @@ const applicationTables = {
   // Hour Compliance Tracking (for monitoring required hours)
   hourComplianceRecords: defineTable({
     userId: v.id("users"),
-    periodType: v.union(v.literal("week"), v.literal("month")), // Weekly or monthly tracking
+    periodType: periodTypes, // Weekly or monthly tracking
     periodStart: v.number(), // Start of period (Unix timestamp)
     periodEnd: v.number(), // End of period (Unix timestamp)
     // Hours tracked
@@ -1216,10 +1214,10 @@ const applicationTables = {
   // User Invitations
   invites: defineTable({
     email: v.string(), // Email address to invite
-    role: v.union(v.literal("user"), v.literal("superAdmin")), // Platform role: superAdmin = full system access
+    role: inviteRoles, // Platform role: superAdmin = full system access
     organizationId: v.id("organizations"), // organization to invite user to
     projectId: v.optional(v.id("projects")), // Project to add user to (optional, for project-level invites)
-    projectRole: v.optional(v.union(v.literal("admin"), v.literal("editor"), v.literal("viewer"))), // Role in project if projectId is set
+    projectRole: v.optional(projectRoles), // Role in project if projectId is set
     invitedBy: v.id("users"), // Admin who sent the invite
     token: v.string(), // Unique invitation token
     expiresAt: v.number(), // Expiration timestamp
@@ -1452,7 +1450,7 @@ const applicationTables = {
         assignee: v.optional(v.string()), // Name mentioned in meeting
         assigneeUserId: v.optional(v.id("users")), // Matched Nixelo user
         dueDate: v.optional(v.string()), // Due date if mentioned
-        priority: v.optional(v.union(v.literal("low"), v.literal("medium"), v.literal("high"))),
+        priority: v.optional(simplePriorities),
         issueCreated: v.optional(v.id("issues")), // If converted to Nixelo issue
       }),
     ),

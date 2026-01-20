@@ -10,6 +10,7 @@ import { api, internal } from "../_generated/api";
 import type { Doc } from "../_generated/dataModel";
 import { internalAction } from "../_generated/server";
 import { getSiteUrl } from "../lib/env";
+import { digestFrequencies } from "../validators";
 import { sendEmail } from "./index";
 
 /**
@@ -269,7 +270,7 @@ export const sendNotificationEmail = internalAction({
 export const sendDigestEmail = internalAction({
   args: {
     userId: v.id("users"),
-    frequency: v.union(v.literal("daily"), v.literal("weekly")),
+    frequency: digestFrequencies,
   },
   handler: async (ctx, args) => {
     const { userId, frequency } = args;

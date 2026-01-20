@@ -19,6 +19,7 @@ import { action, internalAction, mutation, query } from "../_generated/server";
 import { extractUsage } from "../lib/aiHelpers";
 import { notFound, unauthenticated } from "../lib/errors";
 import { rateLimit } from "../rateLimits";
+import { issueTypes } from "../validators";
 
 // Claude Haiku 4.5 for fast, cheap suggestions (alias auto-points to latest)
 const CLAUDE_HAIKU = "claude-haiku-4-5";
@@ -96,7 +97,7 @@ const labelsCache = new ActionCache(components.actionCache, {
 export const suggestIssueDescription = action({
   args: {
     title: v.string(),
-    type: v.union(v.literal("task"), v.literal("bug"), v.literal("story"), v.literal("epic")),
+    type: issueTypes,
     projectId: v.id("projects"),
   },
   handler: async (ctx, args) => {
@@ -184,7 +185,7 @@ export const suggestPriority = action({
   args: {
     title: v.string(),
     description: v.optional(v.string()),
-    type: v.union(v.literal("task"), v.literal("bug"), v.literal("story"), v.literal("epic")),
+    type: issueTypes,
     projectId: v.id("projects"),
   },
   handler: async (ctx, args) => {
@@ -274,7 +275,7 @@ export const suggestLabels = action({
   args: {
     title: v.string(),
     description: v.optional(v.string()),
-    type: v.union(v.literal("task"), v.literal("bug"), v.literal("story"), v.literal("epic")),
+    type: issueTypes,
     projectId: v.id("projects"),
   },
   handler: async (ctx, args) => {

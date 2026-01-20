@@ -1,4 +1,5 @@
 import { v } from "convex/values";
+import { asyncMap } from "convex-helpers";
 import type { Doc, Id } from "./_generated/dataModel";
 import { type MutationCtx, type QueryCtx, query } from "./_generated/server";
 import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
@@ -7,6 +8,7 @@ import { batchFetchProjects, batchFetchUsers } from "./lib/batchHelpers";
 import { getSiteUrl } from "./lib/env";
 import { conflict, forbidden, notFound, validation } from "./lib/errors";
 import { notDeleted } from "./lib/softDeleteHelpers";
+import { inviteRoles, projectRoles } from "./validators";
 
 // Helper: Check if user is a organization admin
 async function isOrganizationAdmin(
@@ -163,11 +165,11 @@ function buildInviteEmail(
 export const sendInvite = authenticatedMutation({
   args: {
     email: v.string(),
-    role: v.union(v.literal("user"), v.literal("superAdmin")),
+    role: inviteRoles,
     organizationId: v.id("organizations"),
     // Optional project-level invite fields
     projectId: v.optional(v.id("projects")),
-    projectRole: v.optional(v.union(v.literal("admin"), v.literal("editor"), v.literal("viewer"))),
+    projectRole: v.optional(projectRoles),
   },
   returns: v.union(
     v.object({
@@ -377,12 +379,10 @@ export const getInviteByToken = query({
       _id: v.id("invites"),
       _creationTime: v.number(),
       email: v.string(),
-      role: v.union(v.literal("user"), v.literal("superAdmin")),
+      role: inviteRoles,
       organizationId: v.id("organizations"),
       projectId: v.optional(v.id("projects")),
-      projectRole: v.optional(
-        v.union(v.literal("admin"), v.literal("editor"), v.literal("viewer")),
-      ),
+      projectRole: v.optional(projectRoles),
       invitedBy: v.id("users"),
       token: v.string(),
       expiresAt: v.number(),
@@ -445,9 +445,9 @@ export const acceptInvite = authenticatedMutation({
   },
   returns: v.object({
     success: v.boolean(),
-    role: v.union(v.literal("user"), v.literal("superAdmin")),
+    role: inviteRoles,
     projectId: v.optional(v.id("projects")),
-    projectRole: v.optional(v.union(v.literal("admin"), v.literal("editor"), v.literal("viewer"))),
+    projectRole: v.optional(projectRoles),
   }),
   handler: async (ctx, args) => {
     const invite = await ctx.db
@@ -540,12 +540,10 @@ export const listInvites = authenticatedQuery({
       _id: v.id("invites"),
       _creationTime: v.number(),
       email: v.string(),
-      role: v.union(v.literal("user"), v.literal("superAdmin")),
+      role: inviteRoles,
       organizationId: v.id("organizations"),
       projectId: v.optional(v.id("projects")),
-      projectRole: v.optional(
-        v.union(v.literal("admin"), v.literal("editor"), v.literal("viewer")),
-      ),
+      projectRole: v.optional(projectRoles),
       invitedBy: v.id("users"),
       token: v.string(),
       expiresAt: v.number(),
@@ -659,29 +657,25 @@ export const listUsers = authenticatedQuery({
     const userIds = organizationMembers.map((m) => m.userId);
 
     // Fetch users in batch
-    const users = (await Promise.all(userIds.map((uid) => ctx.db.get(uid)))).filter(
+    const users = (await asyncMap(userIds, (uid) => ctx.db.get(uid))).filter(
       (u): u is Doc<"users"> => u !== null,
     );
 
     // Parallel queries for all users at once
     const [allProjectCreations, allMemberships] = await Promise.all([
-      Promise.all(
-        userIds.map((uid) =>
-          ctx.db
-            .query("projects")
-            .withIndex("by_creator", (q) => q.eq("createdBy", uid))
-            .filter(notDeleted)
-            .collect(),
-        ),
+      asyncMap(userIds, (uid) =>
+        ctx.db
+          .query("projects")
+          .withIndex("by_creator", (q) => q.eq("createdBy", uid))
+          .filter(notDeleted)
+          .collect(),
       ),
-      Promise.all(
-        userIds.map((uid) =>
-          ctx.db
-            .query("projectMembers")
-            .withIndex("by_user", (q) => q.eq("userId", uid))
-            .filter(notDeleted)
-            .collect(),
-        ),
+      asyncMap(userIds, (uid) =>
+        ctx.db
+          .query("projectMembers")
+          .withIndex("by_user", (q) => q.eq("userId", uid))
+          .filter(notDeleted)
+          .collect(),
       ),
     ]);
 

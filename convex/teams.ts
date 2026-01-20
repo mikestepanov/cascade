@@ -1,6 +1,6 @@
 import { type PaginationResult, paginationOptsValidator } from "convex/server";
-import { pruneNull } from "convex-helpers";
 import { v } from "convex/values";
+import { pruneNull } from "convex-helpers";
 import { internal } from "./_generated/api";
 import type { Doc, Id } from "./_generated/dataModel";
 import type { MutationCtx, QueryCtx } from "./_generated/server";
@@ -13,6 +13,7 @@ import { cascadeSoftDelete } from "./lib/relationships";
 import { notDeleted, softDeleteFields } from "./lib/softDeleteHelpers";
 import { isOrganizationAdmin } from "./organizations";
 import { isTest } from "./testConfig";
+import { teamRoles } from "./validators";
 // ============================================================================
 // Helper Functions
 // ============================================================================
@@ -341,7 +342,7 @@ export const addTeamMember = authenticatedMutation({
   args: {
     teamId: v.id("teams"),
     userId: v.id("users"),
-    role: v.union(v.literal("lead"), v.literal("member")),
+    role: teamRoles,
   },
   handler: async (ctx, args) => {
     await assertCanManageTeam(ctx, args.teamId, ctx.userId);
@@ -402,7 +403,7 @@ export const updateTeamMemberRole = authenticatedMutation({
   args: {
     teamId: v.id("teams"),
     userId: v.id("users"),
-    role: v.union(v.literal("lead"), v.literal("member")),
+    role: teamRoles,
   },
   handler: async (ctx, args) => {
     await assertCanManageTeam(ctx, args.teamId, ctx.userId);

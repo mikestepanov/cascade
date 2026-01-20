@@ -2,12 +2,13 @@ import { v } from "convex/values";
 import { internal } from "./_generated/api";
 import type { Doc, Id } from "./_generated/dataModel";
 import type { MutationCtx, QueryCtx } from "./_generated/server";
-import { internalAction, internalMutation, query } from "./_generated/server";
+import { internalAction, internalMutation, mutation, query } from "./_generated/server";
 import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
 import { batchFetchCalendarEvents, batchFetchRecordings } from "./lib/batchHelpers";
 import { getBotServiceApiKey, getBotServiceUrl } from "./lib/env";
 import { conflict, forbidden, notFound, unauthenticated, validation } from "./lib/errors";
 import { notDeleted } from "./lib/softDeleteHelpers";
+import { simplePriorities } from "./validators";
 
 // ===========================================
 // Bot Service Authentication
@@ -583,7 +584,7 @@ export const saveSummary = mutation({
         assignee: v.optional(v.string()),
         assigneeUserId: v.optional(v.id("users")),
         dueDate: v.optional(v.string()),
-        priority: v.optional(v.union(v.literal("low"), v.literal("medium"), v.literal("high"))),
+        priority: v.optional(simplePriorities),
         issueCreated: v.optional(v.id("issues")),
       }),
     ),

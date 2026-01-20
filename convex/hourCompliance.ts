@@ -5,6 +5,7 @@ import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
 import { batchFetchUsers } from "./lib/batchHelpers";
 import { forbidden, notFound } from "./lib/errors";
 import { notDeleted } from "./lib/softDeleteHelpers";
+import { periodTypes } from "./validators";
 
 // Check if user is admin (copied from userProfiles.ts)
 async function isAdmin(ctx: QueryCtx | MutationCtx, userId: Id<"users">) {
@@ -341,7 +342,7 @@ async function sendComplianceNotifications(
 export const checkUserCompliance = authenticatedMutation({
   args: {
     userId: v.id("users"),
-    periodType: v.union(v.literal("week"), v.literal("month")),
+    periodType: periodTypes,
     periodStart: v.number(),
     periodEnd: v.number(),
   },
@@ -358,7 +359,7 @@ export const checkUserCompliance = authenticatedMutation({
 // Check compliance for all active users for a period
 export const checkAllUsersCompliance = authenticatedMutation({
   args: {
-    periodType: v.union(v.literal("week"), v.literal("month")),
+    periodType: periodTypes,
     periodStart: v.number(),
     periodEnd: v.number(),
   },

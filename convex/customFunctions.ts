@@ -19,16 +19,13 @@
  * import { authenticatedQuery, authenticatedMutation } from "./customFunctions";
  *
  * // For project-scoped operations with RBAC
- * import { projectQuery, viewerMutation, editorMutation, adminMutation } from "./customFunctions";
+ * import { projectQuery, viewerMutation, editorMutation } from "./customFunctions";
  *
  * // For issue-scoped operations
  * import { issueMutation, issueViewerMutation } from "./customFunctions";
  *
  * // For sprint-scoped operations
  * import { sprintQuery, sprintMutation } from "./customFunctions";
- *
- * // For team-scoped operations
- * import { teamQuery } from "./customFunctions";
  * ```
  *
  * ## Role Hierarchy
@@ -271,52 +268,6 @@ export const editorMutation = customMutation(mutation, {
 });
 
 /**
- * Admin Mutation - requires admin role.
- *
- * Use for operations that manage project settings, members, or workflow.
- * Injects same context as `projectQuery`.
- *
- * @throws {ConvexError} UNAUTHENTICATED - If user is not logged in
- * @throws {ConvexError} NOT_FOUND - If project doesn't exist
- * @throws {ConvexError} FORBIDDEN - If user is not an admin
- *
- * @example
- * ```typescript
- * export const updateProjectSettings = adminMutation({
- *   args: { isPublic: v.boolean() },
- *   handler: async (ctx, args) => {
- *     await ctx.db.patch(ctx.projectId, { isPublic: args.isPublic });
- *   },
- * });
- * ```
- */
-export const adminMutation = customMutation(mutation, {
-  args: { projectId: v.id("projects") },
-  input: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      throw unauthenticated();
-    }
-
-    const project = await ctx.db.get(args.projectId);
-    if (!project) {
-      throw notFound("project", args.projectId);
-    }
-
-    const role = await getProjectRole(ctx, args.projectId, userId);
-
-    if (role !== "admin") {
-      throw forbidden("admin");
-    }
-
-    return {
-      ctx: { ...ctx, userId, projectId: args.projectId, role, project },
-      args: {},
-    };
-  },
-});
-
-/**
  * Issue Mutation - requires editor role to modify issues.
  *
  * Automatically loads the issue and its parent project, checks permissions.
@@ -445,69 +396,6 @@ export const issueViewerMutation = customMutation(mutation, {
         role,
         project,
         issue,
-      },
-      args: {},
-    };
-  },
-});
-
-/**
- * Team Query - requires team membership.
- *
- * Automatically loads the team and checks membership. Injects into context:
- * - `userId`: The authenticated user's ID
- * - `teamId`: The team ID from args
- * - `team`: The full team document
- * - `membership`: The user's team membership document
- *
- * @throws {ConvexError} UNAUTHENTICATED - If user is not logged in
- * @throws {ConvexError} NOT_FOUND - If team doesn't exist
- * @throws {ConvexError} FORBIDDEN - If user is not a team member
- *
- * @example
- * ```typescript
- * export const getTeamMembers = teamQuery({
- *   args: {},
- *   handler: async (ctx) => {
- *     const members = await ctx.db
- *       .query("teamMembers")
- *       .withIndex("by_team", q => q.eq("teamId", ctx.teamId))
- *       .collect();
- *     return members;
- *   },
- * });
- * ```
- */
-export const teamQuery = customQuery(query, {
-  args: { teamId: v.id("teams") },
-  input: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      throw unauthenticated();
-    }
-
-    const team = await ctx.db.get(args.teamId);
-    if (!team) {
-      throw notFound("team", args.teamId);
-    }
-
-    // Check team membership
-    const membership = await ctx.db
-      .query("teamMembers")
-      .withIndex("by_team_user", (q) => q.eq("teamId", args.teamId).eq("userId", userId))
-      .first();
-
-    if (!membership || membership.isDeleted) {
-      throw forbidden("team member");
-    }
-
-    return {
-      ctx: {
-        ...ctx,
-        userId,
-        teamId: args.teamId,
-        team,
-        membership,
       },
       args: {},
     };
@@ -678,17 +566,6 @@ export type IssueMutationCtx = MutationCtx &
     role: "viewer" | "editor" | "admin" | null;
     project: Doc<"projects">;
     issue: Doc<"issues">;
-  };
-
-/**
- * Context type for `teamQuery`.
- * Includes team data and membership info.
- */
-export type TeamQueryCtx = QueryCtx &
-  AuthenticatedQueryCtx & {
-    teamId: Id<"teams">;
-    team: Doc<"teams">;
-    membership: Doc<"teamMembers">;
   };
 
 /**

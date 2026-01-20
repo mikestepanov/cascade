@@ -11,6 +11,59 @@
  */
 
 import { v } from "convex/values";
+import { literals, nullable } from "convex-helpers/validators";
+
+// =============================================================================
+// Enum Validators (using literals() for cleaner syntax)
+// =============================================================================
+
+// Issue & Project Types
+export const issueTypes = literals("task", "bug", "story", "epic");
+export const issueTypesWithSubtask = literals("task", "bug", "story", "epic", "subtask");
+export const issuePriorities = literals("lowest", "low", "medium", "high", "highest");
+export const simplePriorities = literals("low", "medium", "high");
+export const boardTypes = literals("kanban", "scrum");
+export const workflowCategories = literals("todo", "inprogress", "done");
+
+// Roles
+export const projectRoles = literals("admin", "editor", "viewer");
+export const organizationRoles = literals("owner", "admin", "member");
+export const organizationMemberRoles = literals("admin", "member"); // For adding members (can't add as owner)
+export const nullableOrganizationRoles = nullable(organizationRoles); // For return types
+export const teamRoles = literals("lead", "member");
+export const inviteRoles = literals("user", "superAdmin");
+export const chatRoles = literals("user", "assistant", "system");
+
+// Statuses
+export const sprintStatuses = literals("future", "active", "completed");
+export const webhookStatuses = literals("success", "failed", "retrying");
+export const webhookResultStatuses = literals("success", "failed"); // For execution results
+export const calendarStatuses = literals("confirmed", "tentative", "cancelled");
+export const attendanceStatuses = literals("present", "tardy", "absent");
+export const prStates = literals("open", "closed", "merged");
+export const ciStatuses = literals("pending", "success", "failure");
+
+// Link & Relationship Types
+export const linkTypes = literals("blocks", "relates", "duplicates");
+
+// Time & Billing
+export const employmentTypes = literals("employee", "contractor", "intern");
+export const periodTypes = literals("week", "month");
+export const rateTypes = literals("internal", "billable");
+export const freeUnitTypes = literals("monthly", "one_time", "yearly");
+
+// Calendar & Sync
+export const syncDirections = literals("import", "export", "bidirectional");
+export const calendarProviders = literals("google", "outlook");
+export const cancelledByOptions = literals("host", "booker");
+
+// User Preferences
+export const emailDigests = literals("none", "daily", "weekly");
+export const digestFrequencies = literals("daily", "weekly"); // Without "none"
+export const personas = literals("team_lead", "team_member");
+
+// Booking
+export const bookingFieldTypes = literals("text", "email", "phone");
 
 // =============================================================================
 // ProseMirror / BlockNote Content

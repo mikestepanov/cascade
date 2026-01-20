@@ -1,5 +1,5 @@
-import { pruneNull } from "convex-helpers";
 import { v } from "convex/values";
+import { pruneNull } from "convex-helpers";
 import type { Doc, Id } from "./_generated/dataModel";
 import type { MutationCtx, QueryCtx } from "./_generated/server";
 import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
@@ -7,6 +7,11 @@ import { batchFetchOrganizations, batchFetchUsers } from "./lib/batchHelpers";
 import { conflict, forbidden, notFound, validation } from "./lib/errors";
 import { MAX_ORG_MEMBERS } from "./lib/queryLimits";
 import { notDeleted } from "./lib/softDeleteHelpers";
+import {
+  nullableOrganizationRoles,
+  organizationMemberRoles,
+  organizationRoles,
+} from "./validators";
 
 // ============================================================================
 // Helper Functions
@@ -317,7 +322,7 @@ export const addMember = authenticatedMutation({
   args: {
     organizationId: v.id("organizations"),
     userId: v.id("users"),
-    role: v.union(v.literal("admin"), v.literal("member")), // Can't directly add as owner
+    role: organizationMemberRoles, // Can't directly add as owner
   },
   returns: v.object({ success: v.boolean() }),
   handler: async (ctx, args) => {
@@ -363,7 +368,7 @@ export const updateMemberRole = authenticatedMutation({
   args: {
     organizationId: v.id("organizations"),
     userId: v.id("users"),
-    role: v.union(v.literal("owner"), v.literal("admin"), v.literal("member")),
+    role: organizationRoles,
   },
   returns: v.object({ success: v.boolean() }),
   handler: async (ctx, args) => {
@@ -460,7 +465,7 @@ export const getOrganization = authenticatedQuery({
       createdBy: v.id("users"),
       createdAt: v.number(),
       updatedAt: v.number(),
-      userRole: v.union(v.literal("owner"), v.literal("admin"), v.literal("member"), v.null()),
+      userRole: nullableOrganizationRoles,
     }),
   ),
   handler: async (ctx, args) => {
@@ -502,7 +507,7 @@ export const getOrganizationBySlug = authenticatedQuery({
       createdBy: v.id("users"),
       createdAt: v.number(),
       updatedAt: v.number(),
-      userRole: v.union(v.literal("owner"), v.literal("admin"), v.literal("member"), v.null()),
+      userRole: nullableOrganizationRoles,
     }),
   ),
   handler: async (ctx, args) => {
@@ -545,7 +550,7 @@ export const getUserOrganizations = authenticatedQuery({
       createdBy: v.id("users"),
       createdAt: v.number(),
       updatedAt: v.number(),
-      userRole: v.union(v.literal("owner"), v.literal("admin"), v.literal("member"), v.null()),
+      userRole: nullableOrganizationRoles,
       memberCount: v.number(),
       projectCount: v.number(),
     }),
@@ -625,7 +630,7 @@ export const getOrganizationMembers = authenticatedQuery({
       _creationTime: v.number(),
       organizationId: v.id("organizations"),
       userId: v.id("users"),
-      role: v.union(v.literal("owner"), v.literal("admin"), v.literal("member")),
+      role: organizationRoles,
       addedBy: v.id("users"),
       addedAt: v.number(),
       user: v.union(
@@ -683,7 +688,7 @@ export const getUserRole = authenticatedQuery({
   args: {
     organizationId: v.id("organizations"),
   },
-  returns: v.union(v.literal("owner"), v.literal("admin"), v.literal("member"), v.null()),
+  returns: nullableOrganizationRoles,
   handler: async (ctx, args) => {
     return await getOrganizationRole(ctx, args.organizationId, ctx.userId);
   },

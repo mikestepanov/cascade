@@ -2,6 +2,7 @@ import { v } from "convex/values";
 import { internalMutation, mutation } from "./_generated/server";
 import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
 import { notFound } from "./lib/errors";
+import { syncDirections } from "./validators";
 
 // Internal mutation for connecting Google Calendar (called from HTTP action)
 export const connectGoogleInternal = internalMutation({
@@ -11,9 +12,7 @@ export const connectGoogleInternal = internalMutation({
     accessToken: v.string(),
     refreshToken: v.optional(v.string()),
     expiresAt: v.optional(v.number()),
-    syncDirection: v.optional(
-      v.union(v.literal("import"), v.literal("export"), v.literal("bidirectional")),
-    ),
+    syncDirection: v.optional(syncDirections),
   },
   handler: async (ctx, args) => {
     const { userId, ...connectionArgs } = args;
@@ -63,9 +62,7 @@ export const connectGoogle = authenticatedMutation({
     accessToken: v.string(),
     refreshToken: v.optional(v.string()),
     expiresAt: v.optional(v.number()),
-    syncDirection: v.optional(
-      v.union(v.literal("import"), v.literal("export"), v.literal("bidirectional")),
-    ),
+    syncDirection: v.optional(syncDirections),
   },
   handler: async (ctx, args) => {
     // Check if connection already exists for this provider
@@ -135,9 +132,7 @@ export const disconnectGoogle = authenticatedMutation({
 export const updateSyncSettings = authenticatedMutation({
   args: {
     syncEnabled: v.optional(v.boolean()),
-    syncDirection: v.optional(
-      v.union(v.literal("import"), v.literal("export"), v.literal("bidirectional")),
-    ),
+    syncDirection: v.optional(syncDirections),
   },
   handler: async (ctx, args) => {
     const connection = await ctx.db

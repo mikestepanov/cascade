@@ -5,6 +5,7 @@ import { batchFetchUsers } from "./lib/batchHelpers";
 import { forbidden, notFound, validation } from "./lib/errors";
 import { MAX_PAGE_SIZE } from "./lib/queryLimits";
 import { DAY, nowArg, WEEK } from "./lib/timeUtils";
+import { calendarStatuses } from "./validators";
 
 /**
  * Calendar Events - CRUD operations for internal calendar
@@ -88,9 +89,7 @@ export const create = authenticatedMutation({
     externalAttendees: v.optional(v.array(v.string())),
     projectId: v.optional(v.id("projects")),
     issueId: v.optional(v.id("issues")),
-    status: v.optional(
-      v.union(v.literal("confirmed"), v.literal("tentative"), v.literal("cancelled")),
-    ),
+    status: v.optional(calendarStatuses),
     isRecurring: v.optional(v.boolean()),
     recurrenceRule: v.optional(v.string()),
     meetingUrl: v.optional(v.string()),
@@ -294,9 +293,7 @@ export const update = authenticatedMutation({
     externalAttendees: v.optional(v.array(v.string())),
     projectId: v.optional(v.id("projects")),
     issueId: v.optional(v.id("issues")),
-    status: v.optional(
-      v.union(v.literal("confirmed"), v.literal("tentative"), v.literal("cancelled")),
-    ),
+    status: v.optional(calendarStatuses),
     isRecurring: v.optional(v.boolean()),
     recurrenceRule: v.optional(v.string()),
     meetingUrl: v.optional(v.string()),

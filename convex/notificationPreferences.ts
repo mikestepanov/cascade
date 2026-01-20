@@ -7,6 +7,7 @@
 import { v } from "convex/values";
 import { internalMutation, internalQuery } from "./_generated/server";
 import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
+import { emailDigests } from "./validators";
 
 // Default preferences for new users
 export const DEFAULT_PREFERENCES = {
@@ -75,7 +76,7 @@ export const update = authenticatedMutation({
     emailAssignments: v.optional(v.boolean()),
     emailComments: v.optional(v.boolean()),
     emailStatusChanges: v.optional(v.boolean()),
-    emailDigest: v.optional(v.union(v.literal("none"), v.literal("daily"), v.literal("weekly"))),
+    emailDigest: v.optional(emailDigests),
     digestDay: v.optional(v.string()),
     digestTime: v.optional(v.string()),
   },

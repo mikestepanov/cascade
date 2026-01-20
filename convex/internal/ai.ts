@@ -14,6 +14,7 @@ import type { Id } from "../_generated/dataModel";
 import { internalAction, internalMutation, internalQuery } from "../_generated/server";
 import { getVoyageApiKey } from "../lib/env";
 import { notFound, validation } from "../lib/errors";
+import { chatRoles } from "../validators";
 
 /**
  * Generate embedding for text using Voyage AI (Anthropic recommended)
@@ -116,7 +117,7 @@ export const createChat = internalMutation({
 export const addMessage = internalMutation({
   args: {
     chatId: v.id("aiChats"),
-    role: v.union(v.literal("user"), v.literal("assistant"), v.literal("system")),
+    role: chatRoles,
     content: v.string(),
     modelUsed: v.optional(v.string()),
     tokensUsed: v.optional(v.number()),

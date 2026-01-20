@@ -1,8 +1,10 @@
 import { v } from "convex/values";
 import type { Id } from "./_generated/dataModel";
+import { mutation } from "./_generated/server";
 import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
 import { conflict, forbidden, notFound, validation } from "./lib/errors";
 import { notDeleted } from "./lib/softDeleteHelpers";
+import { ciStatuses, prStates } from "./validators";
 
 // Connect GitHub account (OAuth callback)
 export const connectGitHub = authenticatedMutation({
@@ -207,15 +209,13 @@ export const upsertPullRequest = mutation({
     prId: v.string(),
     title: v.string(),
     body: v.optional(v.string()),
-    state: v.union(v.literal("open"), v.literal("closed"), v.literal("merged")),
+    state: prStates,
     mergedAt: v.optional(v.number()),
     closedAt: v.optional(v.number()),
     authorUsername: v.string(),
     authorAvatarUrl: v.optional(v.string()),
     htmlUrl: v.string(),
-    checksStatus: v.optional(
-      v.union(v.literal("pending"), v.literal("success"), v.literal("failure")),
-    ),
+    checksStatus: v.optional(ciStatuses),
     issueKey: v.optional(v.string()), // e.g., "PROJ-123"
   },
   handler: async (ctx, args) => {

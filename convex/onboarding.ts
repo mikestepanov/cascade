@@ -7,6 +7,7 @@ import { BOUNDED_DELETE_BATCH, BOUNDED_RELATION_LIMIT, safeCollect } from "./lib
 import { conflict, forbidden, notFound, validation } from "./lib/errors";
 import { notDeleted } from "./lib/softDeleteHelpers";
 import { getOrganizationRole } from "./organizations";
+import { inviteRoles, personas } from "./validators";
 
 /** Check if email is a test email (@inbox.mailtrap.io) */
 const isTestEmail = (email?: string) => email?.endsWith("@inbox.mailtrap.io") ?? false;
@@ -29,7 +30,7 @@ export const getOnboardingStatus = authenticatedQuery({
       tourShown: v.boolean(),
       wizardCompleted: v.boolean(),
       checklistDismissed: v.boolean(),
-      onboardingPersona: v.optional(v.union(v.literal("team_lead"), v.literal("team_member"))),
+      onboardingPersona: v.optional(personas),
       wasInvited: v.optional(v.boolean()),
       invitedByName: v.optional(v.string()),
       createdAt: v.number(),
@@ -675,7 +676,7 @@ export const checkInviteStatus = authenticatedQuery({
     v.object({
       wasInvited: v.boolean(),
       inviterName: v.union(v.string(), v.null()),
-      inviteRole: v.optional(v.union(v.literal("user"), v.literal("superAdmin"))),
+      inviteRole: v.optional(inviteRoles),
       organizationId: v.optional(v.id("organizations")),
     }),
   ),
@@ -710,7 +711,7 @@ export const checkInviteStatus = authenticatedQuery({
  */
 export const setOnboardingPersona = authenticatedMutation({
   args: {
-    persona: v.union(v.literal("team_lead"), v.literal("team_member")),
+    persona: personas,
   },
   returns: v.object({ success: v.boolean() }),
   handler: async (ctx, args) => {

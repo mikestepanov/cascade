@@ -23,10 +23,10 @@ import { action, internalAction } from "./_generated/server";
 import { extractUsage } from "./lib/aiHelpers";
 import { notFound, unauthenticated } from "./lib/errors";
 import { rateLimit } from "./rateLimits";
+import { chatRoles } from "./validators";
 
-// Claude models (using aliases - auto-point to latest snapshot)
+// Claude model (using alias - auto-points to latest snapshot)
 const CLAUDE_OPUS = "claude-opus-4-5";
-const _CLAUDE_HAIKU = "claude-haiku-4-5";
 
 /**
  * Generate embedding for text using Voyage AI (Anthropic recommended)
@@ -229,7 +229,7 @@ export const createChat = internalAction({
 export const addMessage = internalAction({
   args: {
     chatId: v.id("aiChats"),
-    role: v.union(v.literal("user"), v.literal("assistant"), v.literal("system")),
+    role: chatRoles,
     content: v.string(),
     modelUsed: v.optional(v.string()),
     tokensUsed: v.optional(v.number()),

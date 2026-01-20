@@ -1,6 +1,6 @@
 import { paginationOptsValidator } from "convex/server";
-import { pruneNull } from "convex-helpers";
 import { v } from "convex/values";
+import { pruneNull } from "convex-helpers";
 import { internal } from "./_generated/api";
 import type { Doc } from "./_generated/dataModel";
 import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
@@ -11,13 +11,14 @@ import { cascadeSoftDelete } from "./lib/relationships";
 import { notDeleted, softDeleteFields } from "./lib/softDeleteHelpers";
 import { assertIsProjectAdmin, canAccessProject, getProjectRole } from "./projectAccess";
 import { isTest } from "./testConfig";
+import { boardTypes, projectRoles, workflowCategories } from "./validators";
 
 export const createProject = authenticatedMutation({
   args: {
     name: v.string(),
     key: v.string(),
     description: v.optional(v.string()),
-    boardType: v.union(v.literal("kanban"), v.literal("scrum")),
+    boardType: boardTypes,
     // Ownership (required)
     organizationId: v.id("organizations"), // organization this project belongs to
     workspaceId: v.id("workspaces"), // Workspace this project belongs to
@@ -475,7 +476,7 @@ export const updateWorkflow = authenticatedMutation({
       v.object({
         id: v.string(),
         name: v.string(),
-        category: v.union(v.literal("todo"), v.literal("inprogress"), v.literal("done")),
+        category: workflowCategories,
         order: v.number(),
       }),
     ),
@@ -508,7 +509,7 @@ export const addProjectMember = authenticatedMutation({
   args: {
     projectId: v.id("projects"),
     userEmail: v.string(),
-    role: v.union(v.literal("admin"), v.literal("editor"), v.literal("viewer")),
+    role: projectRoles,
   },
   handler: async (ctx, args) => {
     const project = await ctx.db.get(args.projectId);
@@ -563,7 +564,7 @@ export const updateProjectMemberRole = authenticatedMutation({
   args: {
     projectId: v.id("projects"),
     memberId: v.id("users"),
-    newRole: v.union(v.literal("admin"), v.literal("editor"), v.literal("viewer")),
+    newRole: projectRoles,
   },
   handler: async (ctx, args) => {
     const project = await ctx.db.get(args.projectId);

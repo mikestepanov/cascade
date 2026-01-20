@@ -1,9 +1,10 @@
-import { pruneNull } from "convex-helpers";
 import { v } from "convex/values";
+import { pruneNull } from "convex-helpers";
 import type { Doc, Id } from "./_generated/dataModel";
 import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
 import { batchFetchCalendarEvents, batchFetchUsers, getUserName } from "./lib/batchHelpers";
 import { forbidden, notFound } from "./lib/errors";
+import { attendanceStatuses } from "./validators";
 
 /**
  * Meeting Attendance Tracking
@@ -79,7 +80,7 @@ export const markAttendance = authenticatedMutation({
   args: {
     eventId: v.id("calendarEvents"),
     userId: v.id("users"),
-    status: v.union(v.literal("present"), v.literal("tardy"), v.literal("absent")),
+    status: attendanceStatuses,
     notes: v.optional(v.string()),
   },
   handler: async (ctx, args) => {

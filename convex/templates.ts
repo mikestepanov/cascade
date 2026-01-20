@@ -3,22 +3,17 @@ import type { Doc } from "./_generated/dataModel";
 import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
 import { forbidden, notFound } from "./lib/errors";
 import { assertCanAccessProject, assertCanEditProject } from "./projectAccess";
+import { issuePriorities, issueTypes } from "./validators";
 
 // Create an issue template
 export const create = authenticatedMutation({
   args: {
     projectId: v.id("projects"),
     name: v.string(),
-    type: v.union(v.literal("task"), v.literal("bug"), v.literal("story"), v.literal("epic")),
+    type: issueTypes,
     titleTemplate: v.string(),
     descriptionTemplate: v.string(),
-    defaultPriority: v.union(
-      v.literal("lowest"),
-      v.literal("low"),
-      v.literal("medium"),
-      v.literal("high"),
-      v.literal("highest"),
-    ),
+    defaultPriority: issuePriorities,
     defaultLabels: v.array(v.string()),
   },
   handler: async (ctx, args) => {
@@ -45,9 +40,7 @@ export const create = authenticatedMutation({
 export const listByProject = authenticatedQuery({
   args: {
     projectId: v.id("projects"),
-    type: v.optional(
-      v.union(v.literal("task"), v.literal("bug"), v.literal("story"), v.literal("epic")),
-    ),
+    type: v.optional(issueTypes),
   },
   handler: async (ctx, args) => {
     // Check if user has access to project

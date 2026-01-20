@@ -2,6 +2,7 @@ import { v } from "convex/values";
 import { query } from "./_generated/server";
 import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
 import { conflict, requireOwned, validation } from "./lib/errors";
+import { bookingFieldTypes } from "./validators";
 
 /**
  * Booking Pages - Cal.com-style booking page management
@@ -73,7 +74,7 @@ export const create = authenticatedMutation({
       v.array(
         v.object({
           label: v.string(),
-          type: v.union(v.literal("text"), v.literal("email"), v.literal("phone")),
+          type: bookingFieldTypes,
           required: v.boolean(),
         }),
       ),
@@ -183,7 +184,7 @@ export const update = authenticatedMutation({
       v.array(
         v.object({
           label: v.string(),
-          type: v.union(v.literal("text"), v.literal("email"), v.literal("phone")),
+          type: bookingFieldTypes,
           required: v.boolean(),
         }),
       ),

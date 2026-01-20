@@ -1,5 +1,6 @@
 import { paginationOptsValidator } from "convex/server";
 import { v } from "convex/values";
+import { asyncMap } from "convex-helpers";
 import type { Doc } from "./_generated/dataModel";
 import { internalMutation, internalQuery } from "./_generated/server";
 import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
@@ -94,7 +95,7 @@ export const markAllAsRead = authenticatedMutation({
       .take(MAX_TO_MARK);
 
     // Batch update all notifications in parallel
-    await Promise.all(unread.map((n) => ctx.db.patch(n._id, { isRead: true })));
+    await asyncMap(unread, (n) => ctx.db.patch(n._id, { isRead: true }));
 
     // Return count so client knows if more remain
     return { marked: unread.length, hasMore: unread.length === MAX_TO_MARK };

@@ -11,6 +11,7 @@ import {
 import { conflict, forbidden, notFound, validation } from "./lib/errors";
 import { MAX_PAGE_SIZE } from "./lib/queryLimits";
 import { assertCanAccessProject, assertIsProjectAdmin } from "./projectAccess";
+import { rateTypes } from "./validators";
 
 // Time entries can be large - use a reasonable limit
 const MAX_TIME_ENTRIES = 500;
@@ -684,7 +685,7 @@ export const setUserRate = authenticatedMutation({
     projectId: v.optional(v.id("projects")),
     hourlyRate: v.number(),
     currency: v.string(),
-    rateType: v.union(v.literal("internal"), v.literal("billable")),
+    rateType: rateTypes,
     notes: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
@@ -732,7 +733,7 @@ export const getUserRate = authenticatedQuery({
   args: {
     userId: v.id("users"),
     projectId: v.optional(v.id("projects")),
-    rateType: v.optional(v.union(v.literal("internal"), v.literal("billable"))),
+    rateType: v.optional(rateTypes),
   },
   handler: async (ctx, args) => {
     return await getUserCurrentRate(ctx, args.userId, args.projectId, args.rateType);

@@ -2,23 +2,12 @@ import { v } from "convex/values";
 import { authenticatedMutation, projectQuery, viewerMutation } from "./customFunctions";
 import { batchFetchUsers, getUserName } from "./lib/batchHelpers";
 import { forbidden, notFound } from "./lib/errors";
+import { issuePriorities, issueTypes } from "./validators";
 
 const filtersValidator = v.object({
-  type: v.optional(
-    v.array(v.union(v.literal("task"), v.literal("bug"), v.literal("story"), v.literal("epic"))),
-  ),
+  type: v.optional(v.array(issueTypes)),
   status: v.optional(v.array(v.string())),
-  priority: v.optional(
-    v.array(
-      v.union(
-        v.literal("lowest"),
-        v.literal("low"),
-        v.literal("medium"),
-        v.literal("high"),
-        v.literal("highest"),
-      ),
-    ),
-  ),
+  priority: v.optional(v.array(issuePriorities)),
   assigneeId: v.optional(v.array(v.id("users"))),
   labels: v.optional(v.array(v.string())),
   sprintId: v.optional(v.id("sprints")),

@@ -1,5 +1,5 @@
-import { pruneNull } from "convex-helpers";
 import { v } from "convex/values";
+import { pruneNull } from "convex-helpers";
 import { internalQuery, query } from "./_generated/server";
 import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
 import { batchFetchUsers } from "./lib/batchHelpers";
@@ -7,6 +7,7 @@ import { conflict, validation } from "./lib/errors";
 import { MAX_PAGE_SIZE } from "./lib/queryLimits";
 import { notDeleted } from "./lib/softDeleteHelpers";
 import { sanitizeUserForAuth } from "./lib/userUtils";
+import { digestFrequencies } from "./validators";
 
 // Limits for user stats queries
 const MAX_ISSUES_FOR_STATS = 1000;
@@ -210,7 +211,7 @@ export const getUserStats = query({
  */
 export const listWithDigestPreference = internalQuery({
   args: {
-    frequency: v.union(v.literal("daily"), v.literal("weekly")),
+    frequency: digestFrequencies,
   },
   returns: v.array(
     v.object({
