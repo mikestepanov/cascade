@@ -12,7 +12,7 @@ import {
 // Helper: Validate number field value
 function validateNumberField(value: string): void {
   if (Number.isNaN(Number(value))) {
-    throw new Error("Value must be a valid number");
+    throw validation("value", "Must be a valid number");
   }
 }
 
@@ -21,7 +21,7 @@ function validateUrlField(value: string): void {
   try {
     new URL(value);
   } catch {
-    throw new Error("Value must be a valid URL");
+    throw validation("value", "Must be a valid URL");
   }
 }
 
@@ -34,7 +34,7 @@ function validateSelectField(
   const values = fieldType === "multiselect" ? value.split(",") : [value];
   for (const val of values) {
     if (!options.includes(val.trim())) {
-      throw new Error(`Invalid option: ${val}`);
+      throw validation("value", `Invalid option: ${val}`);
     }
   }
 }

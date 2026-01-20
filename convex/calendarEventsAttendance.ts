@@ -2,6 +2,7 @@ import { v } from "convex/values";
 import type { Doc, Id } from "./_generated/dataModel";
 import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
 import { batchFetchCalendarEvents, batchFetchUsers, getUserName } from "./lib/batchHelpers";
+import { forbidden, notFound } from "./lib/errors";
 
 /**
  * Meeting Attendance Tracking
@@ -83,11 +84,11 @@ export const markAttendance = authenticatedMutation({
   handler: async (ctx, args) => {
     // Get event
     const event = await ctx.db.get(args.eventId);
-    if (!event) throw new Error("Event not found");
+    if (!event) throw notFound("event", args.eventId);
 
     // Only organizer can mark attendance
     if (event.organizerId !== ctx.userId) {
-      throw new Error("Only the event organizer can mark attendance");
+      throw forbidden("organizer");
     }
 
     // Check if attendance already exists

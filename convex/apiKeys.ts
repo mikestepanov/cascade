@@ -2,7 +2,7 @@ import { v } from "convex/values";
 import { internalMutation, query } from "./_generated/server";
 import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
 import type { ApiAuthContext } from "./lib/apiAuth";
-import { forbidden, notFound, validation } from "./lib/errors";
+import { notFound, requireOwned, validation } from "./lib/errors";
 import { notDeleted } from "./lib/softDeleteHelpers";
 
 /**
@@ -186,8 +186,7 @@ export const revoke = authenticatedMutation({
   },
   handler: async (ctx, args) => {
     const key = await ctx.db.get(args.keyId);
-    if (!key) throw new Error("API key not found");
-    if (key.userId !== ctx.userId) throw new Error("Not authorized");
+    requireOwned(key, ctx.userId, "apiKey");
 
     await ctx.db.patch(args.keyId, {
       isActive: false,
@@ -207,8 +206,7 @@ export const remove = authenticatedMutation({
   },
   handler: async (ctx, args) => {
     const key = await ctx.db.get(args.keyId);
-    if (!key) throw new Error("API key not found");
-    if (key.userId !== ctx.userId) throw new Error("Not authorized");
+    requireOwned(key, ctx.userId, "apiKey");
 
     await ctx.db.delete(args.keyId);
 
@@ -229,8 +227,7 @@ export const update = authenticatedMutation({
   },
   handler: async (ctx, args) => {
     const key = await ctx.db.get(args.keyId);
-    if (!key) throw new Error("API key not found");
-    if (key.userId !== ctx.userId) throw new Error("Not authorized");
+    requireOwned(key, ctx.userId, "apiKey");
 
     const updates: Partial<{
       name: string;
@@ -342,8 +339,7 @@ export const getUsageStats = authenticatedQuery({
   },
   handler: async (ctx, args) => {
     const key = await ctx.db.get(args.keyId);
-    if (!key) throw new Error("API key not found");
-    if (key.userId !== ctx.userId) throw new Error("Not authorized");
+    requireOwned(key, ctx.userId, "apiKey");
 
     // Get recent usage logs
     const logs = await ctx.db

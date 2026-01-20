@@ -1,6 +1,7 @@
 import { v } from "convex/values";
 import { internalMutation } from "./_generated/server";
 import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
+import { notFound, validation } from "./lib/errors";
 import { assertCanAccessProject, assertIsProjectAdmin } from "./projectAccess";
 
 export const list = authenticatedQuery({
@@ -66,11 +67,11 @@ export const update = authenticatedMutation({
   handler: async (ctx, args) => {
     const rule = await ctx.db.get(args.id);
     if (!rule) {
-      throw new Error("Rule not found");
+      throw notFound("automationRule", args.id);
     }
 
     if (!rule.projectId) {
-      throw new Error("Rule has no project");
+      throw validation("projectId", "Rule has no project");
     }
 
     await assertIsProjectAdmin(ctx, rule.projectId, ctx.userId);
@@ -95,11 +96,11 @@ export const remove = authenticatedMutation({
   handler: async (ctx, args) => {
     const rule = await ctx.db.get(args.id);
     if (!rule) {
-      throw new Error("Rule not found");
+      throw notFound("automationRule", args.id);
     }
 
     if (!rule.projectId) {
-      throw new Error("Rule has no project");
+      throw validation("projectId", "Rule has no project");
     }
 
     await assertIsProjectAdmin(ctx, rule.projectId, ctx.userId);

@@ -1,6 +1,7 @@
 import { v } from "convex/values";
 import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
 import { batchFetchUsers } from "./lib/batchHelpers";
+import { forbidden, notFound } from "./lib/errors";
 
 // List all versions for a document
 export const listVersions = authenticatedQuery({
@@ -9,11 +10,11 @@ export const listVersions = authenticatedQuery({
     // Check if user can access this document
     const document = await ctx.db.get(args.documentId);
     if (!document) {
-      throw new Error("Document not found");
+      throw notFound("document", args.documentId);
     }
 
     if (!document.isPublic && document.createdBy !== ctx.userId) {
-      throw new Error("Not authorized to access this document");
+      throw forbidden();
     }
 
     // Get all versions for this document
@@ -48,17 +49,17 @@ export const getVersion = authenticatedQuery({
     // Check if user can access this document
     const document = await ctx.db.get(args.documentId);
     if (!document) {
-      throw new Error("Document not found");
+      throw notFound("document", args.documentId);
     }
 
     if (!document.isPublic && document.createdBy !== ctx.userId) {
-      throw new Error("Not authorized to access this document");
+      throw forbidden();
     }
 
     // Get the version
     const version = await ctx.db.get(args.versionId);
     if (!version || version.documentId !== args.documentId) {
-      throw new Error("Version not found");
+      throw notFound("version", args.versionId);
     }
 
     const user = await ctx.db.get(version.createdBy);
@@ -79,12 +80,12 @@ export const restoreVersion = authenticatedMutation({
     // Check if user can edit this document
     const document = await ctx.db.get(args.documentId);
     if (!document) {
-      throw new Error("Document not found");
+      throw notFound("document", args.documentId);
     }
 
     // Only owner can restore versions
     if (document.createdBy !== ctx.userId) {
-      throw new Error("Only the document owner can restore versions");
+      throw forbidden();
     }
 
     // Get the version to restore
@@ -109,13 +110,13 @@ export const deleteVersion = authenticatedMutation({
   handler: async (ctx, args) => {
     const version = await ctx.db.get(args.versionId);
     if (!version) {
-      throw new Error("Version not found");
+      throw notFound("version", args.versionId);
     }
 
     // Check if user owns the document
     const document = await ctx.db.get(version.documentId);
     if (!document || document.createdBy !== ctx.userId) {
-      throw new Error("Not authorized to delete this version");
+      throw forbidden();
     }
 
     await ctx.db.delete(args.versionId);

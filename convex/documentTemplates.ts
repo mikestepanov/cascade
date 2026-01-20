@@ -2,6 +2,7 @@ import { v } from "convex/values";
 import type { Doc } from "./_generated/dataModel";
 import { mutation } from "./_generated/server";
 import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
+import { forbidden, notFound } from "./lib/errors";
 import { blockNoteContent } from "./validators";
 
 // Create a document template
@@ -83,7 +84,7 @@ export const get = authenticatedQuery({
       template.createdBy !== ctx.userId &&
       !template.projectId
     ) {
-      throw new Error("No access to this template");
+      throw forbidden();
     }
 
     return template;
@@ -103,14 +104,14 @@ export const update = authenticatedMutation({
   },
   handler: async (ctx, args) => {
     const template = await ctx.db.get(args.id);
-    if (!template) throw new Error("Template not found");
+    if (!template) throw notFound("template", args.id);
 
     // Only creator can update their templates (built-in templates can't be updated)
     if (template.isBuiltIn) {
-      throw new Error("Cannot update built-in templates");
+      throw forbidden();
     }
     if (template.createdBy !== ctx.userId) {
-      throw new Error("Not authorized to update this template");
+      throw forbidden();
     }
 
     const updates: Partial<typeof template> = {
@@ -132,14 +133,14 @@ export const remove = authenticatedMutation({
   args: { id: v.id("documentTemplates") },
   handler: async (ctx, args) => {
     const template = await ctx.db.get(args.id);
-    if (!template) throw new Error("Template not found");
+    if (!template) throw notFound("template", args.id);
 
     // Only creator can delete their templates (built-in templates can't be deleted)
     if (template.isBuiltIn) {
-      throw new Error("Cannot delete built-in templates");
+      throw forbidden();
     }
     if (template.createdBy !== ctx.userId) {
-      throw new Error("Not authorized to delete this template");
+      throw forbidden();
     }
 
     await ctx.db.delete(args.id);
@@ -156,7 +157,7 @@ export const createDocumentFromTemplate = authenticatedMutation({
   },
   handler: async (ctx, args) => {
     const template = await ctx.db.get(args.templateId);
-    if (!template) throw new Error("Template not found");
+    if (!template) throw notFound("template", args.templateId);
 
     // Check if user has access to this template
     if (
@@ -164,7 +165,7 @@ export const createDocumentFromTemplate = authenticatedMutation({
       template.createdBy !== ctx.userId &&
       !template.projectId
     ) {
-      throw new Error("No access to this template");
+      throw forbidden();
     }
 
     // Create document

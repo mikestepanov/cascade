@@ -4,6 +4,7 @@ import type { Doc } from "./_generated/dataModel";
 import { internalMutation, internalQuery } from "./_generated/server";
 import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
 import { batchFetchIssues, batchFetchUsers } from "./lib/batchHelpers";
+import { notFound, requireOwned } from "./lib/errors";
 import { fetchPaginatedQuery } from "./lib/queryHelpers";
 import { notDeleted, softDeleteFields } from "./lib/softDeleteHelpers";
 
@@ -73,11 +74,7 @@ export const markAsRead = authenticatedMutation({
   args: { id: v.id("notifications") },
   handler: async (ctx, args) => {
     const notification = await ctx.db.get(args.id);
-    if (!notification) throw new Error("Notification not found");
-
-    if (notification.userId !== ctx.userId) {
-      throw new Error("Not authorized");
-    }
+    requireOwned(notification, ctx.userId, "notification");
 
     await ctx.db.patch(args.id, { isRead: true });
   },
@@ -109,11 +106,7 @@ export const softDeleteNotification = authenticatedMutation({
   args: { id: v.id("notifications") },
   handler: async (ctx, args) => {
     const notification = await ctx.db.get(args.id);
-    if (!notification) throw new Error("Notification not found");
-
-    if (notification.userId !== ctx.userId) {
-      throw new Error("Not authorized");
-    }
+    requireOwned(notification, ctx.userId, "notification");
 
     await ctx.db.patch(args.id, softDeleteFields(ctx.userId));
   },

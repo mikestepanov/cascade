@@ -7,6 +7,7 @@
 
 import { v } from "convex/values";
 import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
+import { conflict, forbidden, notFound } from "./lib/errors";
 import { notDeleted } from "./lib/softDeleteHelpers";
 import { isOrganizationAdmin } from "./organizations";
 
@@ -25,7 +26,7 @@ export const create = authenticatedMutation({
   handler: async (ctx, args) => {
     // Check if user is organization admin
     const isAdmin = await isOrganizationAdmin(ctx, args.organizationId, ctx.userId);
-    if (!isAdmin) throw new Error("Only organization admins can create workspaces");
+    if (!isAdmin) throw forbidden("admin");
 
     // Check if slug is unique within organization
     const existing = await ctx.db
@@ -36,7 +37,7 @@ export const create = authenticatedMutation({
       .first();
 
     if (existing) {
-      throw new Error("A workspace with this slug already exists");
+      throw conflict("A workspace with this slug already exists");
     }
 
     const workspaceId = await ctx.db.insert("workspaces", {
@@ -76,7 +77,7 @@ export const get = authenticatedQuery({
   args: { id: v.id("workspaces") },
   handler: async (ctx, args) => {
     const workspace = await ctx.db.get(args.id);
-    if (!workspace) throw new Error("Workspace not found");
+    if (!workspace) throw notFound("workspace", args.id);
 
     return workspace;
   },
@@ -98,7 +99,7 @@ export const getBySlug = authenticatedQuery({
       )
       .first();
 
-    if (!workspace) throw new Error("Workspace not found");
+    if (!workspace) throw notFound("workspace");
 
     return workspace;
   },
@@ -122,12 +123,12 @@ export const update = authenticatedMutation({
   },
   handler: async (ctx, args) => {
     const workspace = await ctx.db.get(args.id);
-    if (!workspace) throw new Error("Workspace not found");
+    if (!workspace) throw notFound("workspace", args.id);
 
     // Check permissions: Only organization admins can update workspaces
     const isAdmin = await isOrganizationAdmin(ctx, workspace.organizationId, ctx.userId);
     if (!isAdmin) {
-      throw new Error("Only organization admins can perform this action");
+      throw forbidden("admin");
     }
 
     await ctx.db.patch(args.id, {
@@ -149,14 +150,14 @@ export const remove = authenticatedMutation({
   args: { id: v.id("workspaces") },
   handler: async (ctx, args) => {
     const workspace = await ctx.db.get(args.id);
-    if (!workspace) throw new Error("Workspace not found");
+    if (!workspace) throw notFound("workspace", args.id);
 
     // Check permissions (workspace admin or organization admin)
     const isCreator = workspace.createdBy === ctx.userId;
     const isOrgAdmin = await isOrganizationAdmin(ctx, workspace.organizationId, ctx.userId);
 
     if (!(isCreator || isOrgAdmin)) {
-      throw new Error("Only workspace admins or organization admins can delete workspaces");
+      throw forbidden("admin");
     }
 
     // Check if workspace has teams or projects
@@ -166,7 +167,7 @@ export const remove = authenticatedMutation({
       .first();
 
     if (teams) {
-      throw new Error("Cannot delete workspace with teams. Please delete or move teams first.");
+      throw conflict("Cannot delete workspace with teams");
     }
 
     const projects = await ctx.db
@@ -176,9 +177,7 @@ export const remove = authenticatedMutation({
       .first();
 
     if (projects) {
-      throw new Error(
-        "Cannot delete workspace with projects. Please delete or move projects first.",
-      );
+      throw conflict("Cannot delete workspace with projects");
     }
 
     await ctx.db.delete(args.id);

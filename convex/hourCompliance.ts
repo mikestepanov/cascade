@@ -3,6 +3,7 @@ import type { Doc, Id } from "./_generated/dataModel";
 import type { MutationCtx, QueryCtx } from "./_generated/server";
 import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
 import { batchFetchUsers } from "./lib/batchHelpers";
+import { forbidden, notFound } from "./lib/errors";
 import { notDeleted } from "./lib/softDeleteHelpers";
 
 // Check if user is admin (copied from userProfiles.ts)
@@ -161,7 +162,7 @@ async function checkUserComplianceInternal(
     .first();
 
   if (!profile) {
-    throw new Error("User profile not found");
+    throw notFound("userProfile");
   }
 
   // Get all time entries for the period
@@ -347,7 +348,7 @@ export const checkUserCompliance = authenticatedMutation({
   handler: async (ctx, args) => {
     // Only admins can check compliance
     if (!(await isAdmin(ctx, ctx.userId))) {
-      throw new Error("Admin access required");
+      throw forbidden("admin");
     }
 
     return await checkUserComplianceInternal(ctx, args);
@@ -363,7 +364,7 @@ export const checkAllUsersCompliance = authenticatedMutation({
   },
   handler: async (ctx, args) => {
     if (!(await isAdmin(ctx, ctx.userId))) {
-      throw new Error("Admin access required");
+      throw forbidden("admin");
     }
 
     // Get all active user profiles
@@ -526,7 +527,7 @@ export const reviewComplianceRecord = authenticatedMutation({
   },
   handler: async (ctx, args) => {
     if (!(await isAdmin(ctx, ctx.userId))) {
-      throw new Error("Admin access required");
+      throw forbidden("admin");
     }
 
     await ctx.db.patch(args.recordId, {

@@ -5,6 +5,7 @@ import type { Doc, Id } from "../_generated/dataModel";
 import { internalQuery, type QueryCtx, query } from "../_generated/server";
 import { authenticatedQuery, projectQuery } from "../customFunctions";
 import { batchFetchUsers } from "../lib/batchHelpers";
+import { forbidden, notFound } from "../lib/errors";
 import {
   type EnrichedIssue,
   enrichIssue,
@@ -31,7 +32,7 @@ export const listIssuesInternal = internalQuery({
     // 1. Verify access for the specific user
     const hasAccess = await canAccessProject(ctx, args.projectId, args.userId);
     if (!hasAccess) {
-      throw new Error("Not authorized for this project");
+      throw forbidden();
     }
 
     // 2. Fetch issues
@@ -317,11 +318,11 @@ export const get = query({
     if (userId) {
       const hasAccess = await canAccessProject(ctx, issue.projectId as Id<"projects">, userId);
       if (!hasAccess) {
-        throw new Error("Not authorized to access this issue");
+        throw forbidden();
       }
     } else {
       if (!project.isPublic) {
-        throw new Error("Not authorized to access this issue");
+        throw forbidden();
       }
     }
 
@@ -390,22 +391,22 @@ export const listComments = query({
     const issue = await ctx.db.get(args.issueId);
 
     if (!issue) {
-      throw new Error("Issue not found");
+      throw notFound("issue", args.issueId);
     }
 
     const project = await ctx.db.get(issue.projectId as Id<"projects">);
     if (!project) {
-      throw new Error("Project not found");
+      throw notFound("project");
     }
 
     if (userId) {
       const hasAccess = await canAccessProject(ctx, issue.projectId as Id<"projects">, userId);
       if (!hasAccess) {
-        throw new Error("Not authorized to access this issue");
+        throw forbidden();
       }
     } else {
       if (!project.isPublic) {
-        throw new Error("Not authorized to access this issue");
+        throw forbidden();
       }
     }
 

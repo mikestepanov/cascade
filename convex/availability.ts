@@ -1,5 +1,6 @@
 import { v } from "convex/values";
 import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
+import { requireOwned, validation } from "./lib/errors";
 
 /**
  * Availability Slots - Manage when users are available for bookings
@@ -29,7 +30,7 @@ export const setDayAvailability = authenticatedMutation({
     // Validate time format (HH:MM)
     const timeRegex = /^([01]\d|2[0-3]):([0-5]\d)$/;
     if (!(timeRegex.test(args.startTime) && timeRegex.test(args.endTime))) {
-      throw new Error("Invalid time format. Use HH:MM (24-hour)");
+      throw validation("time", "Invalid time format. Use HH:MM (24-hour)");
     }
 
     // Check if slot already exists for this day
@@ -165,8 +166,7 @@ export const toggleSlot = authenticatedMutation({
   },
   handler: async (ctx, args) => {
     const slot = await ctx.db.get(args.slotId);
-    if (!slot) throw new Error("Slot not found");
-    if (slot.userId !== ctx.userId) throw new Error("Not authorized");
+    requireOwned(slot, ctx.userId, "availabilitySlot");
 
     await ctx.db.patch(args.slotId, { isActive: args.isActive });
   },
@@ -177,8 +177,7 @@ export const removeSlot = authenticatedMutation({
   args: { slotId: v.id("availabilitySlots") },
   handler: async (ctx, args) => {
     const slot = await ctx.db.get(args.slotId);
-    if (!slot) throw new Error("Slot not found");
-    if (slot.userId !== ctx.userId) throw new Error("Not authorized");
+    requireOwned(slot, ctx.userId, "availabilitySlot");
 
     await ctx.db.delete(args.slotId);
   },

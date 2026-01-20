@@ -163,6 +163,43 @@ export function internal(message: string): ConvexError<ErrorData> {
 }
 
 // =============================================================================
+// Ownership Helpers
+// =============================================================================
+
+/**
+ * Verify resource exists and is owned by the current user.
+ * Throws notFound if resource is null, forbidden if not owned.
+ *
+ * @param resource - The fetched resource (or null)
+ * @param userId - The current user's ID
+ * @param resourceName - Name for error messages (e.g., "apiKey", "booking")
+ * @param ownerField - Field containing owner ID (default: "userId")
+ * @returns The resource (for chaining)
+ *
+ * @example
+ * const key = await ctx.db.get(args.keyId);
+ * requireOwned(key, ctx.userId, "apiKey");
+ *
+ * // With custom owner field
+ * const booking = await ctx.db.get(args.id);
+ * requireOwned(booking, ctx.userId, "booking", "hostId");
+ */
+export function requireOwned<T extends Record<string, unknown>>(
+  resource: T | null,
+  userId: string,
+  resourceName: string,
+  ownerField: keyof T = "userId" as keyof T,
+): T {
+  if (!resource) {
+    throw notFound(resourceName);
+  }
+  if (resource[ownerField] !== userId) {
+    throw forbidden();
+  }
+  return resource;
+}
+
+// =============================================================================
 // Type Guards (for client-side handling)
 // =============================================================================
 

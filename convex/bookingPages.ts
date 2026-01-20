@@ -1,6 +1,7 @@
 import { v } from "convex/values";
 import { query } from "./_generated/server";
-import { authenticatedMutation } from "./customFunctions";
+import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
+import { conflict, requireOwned, validation } from "./lib/errors";
 
 /**
  * Booking Pages - Cal.com-style booking page management
@@ -88,13 +89,13 @@ export const create = authenticatedMutation({
       .first();
 
     if (existing) {
-      throw new Error("This booking URL is already taken");
+      throw conflict("This booking URL is already taken");
     }
 
     // Validate slug format (lowercase, alphanumeric, hyphens)
     const slugRegex = /^[a-z0-9-]+$/;
     if (!slugRegex.test(args.slug)) {
-      throw new Error("Slug must contain only lowercase letters, numbers, and hyphens");
+      throw validation("slug", "Must contain only lowercase letters, numbers, and hyphens");
     }
 
     const now = Date.now();
@@ -193,8 +194,7 @@ export const update = authenticatedMutation({
   },
   handler: async (ctx, args) => {
     const page = await ctx.db.get(args.id);
-    if (!page) throw new Error("Booking page not found");
-    if (page.userId !== ctx.userId) throw new Error("Not authorized");
+    requireOwned(page, ctx.userId, "bookingPage");
 
     // Build update object using helper
     const updates = buildBookingPageUpdates(args);
@@ -207,8 +207,7 @@ export const remove = authenticatedMutation({
   args: { id: v.id("bookingPages") },
   handler: async (ctx, args) => {
     const page = await ctx.db.get(args.id);
-    if (!page) throw new Error("Booking page not found");
-    if (page.userId !== ctx.userId) throw new Error("Not authorized");
+    requireOwned(page, ctx.userId, "bookingPage");
 
     // Check for active bookings
     const activeBookings = await ctx.db
@@ -218,9 +217,7 @@ export const remove = authenticatedMutation({
       .collect();
 
     if (activeBookings.length > 0) {
-      throw new Error(
-        "Cannot delete booking page with active bookings. Cancel or complete them first.",
-      );
+      throw conflict("Cannot delete booking page with active bookings");
     }
 
     await ctx.db.delete(args.id);
@@ -235,8 +232,7 @@ export const toggleActive = authenticatedMutation({
   },
   handler: async (ctx, args) => {
     const page = await ctx.db.get(args.id);
-    if (!page) throw new Error("Booking page not found");
-    if (page.userId !== ctx.userId) throw new Error("Not authorized");
+    requireOwned(page, ctx.userId, "bookingPage");
 
     await ctx.db.patch(args.id, {
       isActive: args.isActive,
