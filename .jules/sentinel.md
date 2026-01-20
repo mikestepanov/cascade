@@ -22,3 +22,8 @@
 **Vulnerability:** Attempted to call a mutation (`rateLimit`) from within another mutation (`validateAndRateLimit`) which causes a runtime error in Convex.
 **Learning:** Convex Mutations are atomic and cannot call other mutations via `ctx.runMutation`. Orchestration of multiple mutations or query+mutation flows must happen in an Action.
 **Prevention:** Moved orchestration logic to the HTTP Action handler.
+
+## 2026-01-19 - Exposed API Key Validation
+**Vulnerability:** `validateApiKey` and `validate` queries in `convex/apiKeys.ts` were public `query`, exposing API keys in function arguments logs and potentially allowing public validation.
+**Learning:** Validation queries that accept secrets as arguments must be `internalQuery` to avoid logging secrets in the dashboard and prevent public access to validation logic.
+**Prevention:** Converted `validateApiKey` and `validate` to `internalQuery` and updated call sites to use `internal.apiKeys`.

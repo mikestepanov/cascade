@@ -1,6 +1,6 @@
 import { convexTest } from "convex-test";
 import { describe, expect, it } from "vitest";
-import { api } from "./_generated/api";
+import { api, internal } from "./_generated/api";
 import schema from "./schema";
 import { modules } from "./testSetup.test-helper";
 import { asAuthenticatedUser, createTestProject, createTestUser } from "./testUtils";
@@ -103,7 +103,7 @@ describe("API Keys", () => {
         scopes: ["issues:read"],
       });
 
-      const validation = await t.query(api.apiKeys.validate, { apiKey });
+      const validation = await t.query(internal.apiKeys.validate, { apiKey });
       expect(validation.valid).toBe(true);
       expect(validation.userId).toBe(userId);
       expect(validation.scopes).toEqual(["issues:read"]);
@@ -111,7 +111,7 @@ describe("API Keys", () => {
 
     it("should reject an invalid API key", async () => {
       const t = convexTest(schema, modules);
-      const validation = await t.query(api.apiKeys.validate, { apiKey: "invalid_key" });
+      const validation = await t.query(internal.apiKeys.validate, { apiKey: "invalid_key" });
       expect(validation.valid).toBe(false);
       expect(validation.error).toBe("Invalid API key");
     });
@@ -128,7 +128,7 @@ describe("API Keys", () => {
 
       await asUser.mutation(api.apiKeys.revoke, { keyId: id });
 
-      const validation = await t.query(api.apiKeys.validate, { apiKey });
+      const validation = await t.query(internal.apiKeys.validate, { apiKey });
       expect(validation.valid).toBe(false);
       expect(validation.error).toBe("API key has been revoked");
     });
@@ -145,7 +145,7 @@ describe("API Keys", () => {
         expiresAt: expiredTime,
       });
 
-      const validation = await t.query(api.apiKeys.validate, { apiKey });
+      const validation = await t.query(internal.apiKeys.validate, { apiKey });
       expect(validation.valid).toBe(false);
       expect(validation.error).toBe("API key has expired");
     });
