@@ -169,7 +169,7 @@ export const getWatchedIssues = authenticatedQuery({
           priority: issue.priority,
           projectName: project?.name || "Unknown Project",
           assignee: assignee ? { name: assignee.name } : null,
-          watchedAt: watcher.createdAt,
+          watchedAt: watcher._creationTime,
         };
       }),
     );

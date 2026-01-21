@@ -58,7 +58,7 @@ export const getChatMessages = authenticatedQuery({
       .withIndex("by_chat_created", (q) => q.eq("chatId", args.chatId))
       .take(MAX_MESSAGES_PER_CHAT);
 
-    return messages.sort((a, b) => a.createdAt - b.createdAt);
+    return messages.sort((a, b) => a._creationTime - b._creationTime);
   },
 });
 
@@ -204,7 +204,7 @@ export const getProjectSuggestions = authenticatedQuery({
     }
 
     // Sort by most recent
-    return filtered.sort((a, b) => b.createdAt - a.createdAt);
+    return filtered.sort((a, b) => b._creationTime - a._creationTime);
   },
 });
 
@@ -231,11 +231,11 @@ export const getUsageStats = authenticatedQuery({
     }
     if (args.startDate !== undefined) {
       const startDate = args.startDate;
-      filtered = filtered.filter((u) => u.createdAt >= startDate);
+      filtered = filtered.filter((u) => u._creationTime >= startDate);
     }
     if (args.endDate !== undefined) {
       const endDate = args.endDate;
-      filtered = filtered.filter((u) => u.createdAt <= endDate);
+      filtered = filtered.filter((u) => u._creationTime <= endDate);
     }
 
     // Calculate aggregates
