@@ -359,7 +359,7 @@ export const upsertCommit = mutation({
     const repo = await ctx.db.get(args.repositoryId);
     if (!repo) throw notFound("repository", args.repositoryId);
 
-    const now = Date.now();
+    const _now = Date.now();
 
     // Try to link to issue if issueKey provided
     let issueId: Id<"issues"> | undefined;

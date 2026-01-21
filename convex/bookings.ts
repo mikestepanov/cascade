@@ -101,7 +101,7 @@ export const createBooking = mutation({
         status: "confirmed",
         isRecurring: false,
         meetingUrl: page.location === "zoom" ? page.locationDetails : undefined,
-          updatedAt: now,
+        updatedAt: now,
       });
 
       // Link booking to calendar event

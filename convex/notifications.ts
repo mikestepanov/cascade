@@ -175,7 +175,7 @@ export const createBulk = internalMutation({
           documentId: args.documentId,
           actorId: args.actorId,
           isRead: false,
-            });
+        });
       }),
     );
   },

@@ -101,7 +101,7 @@ export const setDefaultWorkingHours = authenticatedMutation({
           endTime,
           timezone: args.timezone,
           isActive: true,
-          });
+        });
       }
     }
   },

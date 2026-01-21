@@ -16,9 +16,9 @@ import {
 } from "./customFunctions";
 import { conflict, forbidden, notFound } from "./lib/errors";
 import { isOrganizationAdmin } from "./lib/organizationAccess";
-import { workspaceRoles } from "./validators";
 import { MAX_PAGE_SIZE } from "./lib/queryLimits";
 import { notDeleted } from "./lib/softDeleteHelpers";
+import { workspaceRoles } from "./validators";
 
 /**
  * Create a new workspace (department)
@@ -150,7 +150,10 @@ export const remove = authenticatedMutation({
     const isOrgAdmin = await isOrganizationAdmin(ctx, workspace.organizationId, ctx.userId);
 
     if (!(isCreator || isOrgAdmin)) {
-      throw forbidden("admin", "Only organization admins or the workspace creator can delete workspaces");
+      throw forbidden(
+        "admin",
+        "Only organization admins or the workspace creator can delete workspaces",
+      );
     }
 
     // Check if workspace has teams or projects

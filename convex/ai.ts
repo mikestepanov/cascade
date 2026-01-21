@@ -15,7 +15,6 @@ import { action, internalAction } from "./_generated/server";
 import { extractUsage } from "./lib/aiHelpers";
 import { notFound, unauthenticated } from "./lib/errors";
 import { rateLimit } from "./rateLimits";
-import { chatRoles } from "./validators";
 
 // Claude model (using alias - auto-points to latest snapshot)
 const CLAUDE_OPUS = "claude-opus-4-5";

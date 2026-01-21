@@ -293,7 +293,7 @@ export const addTeamMember = teamLeadMutation({
       throw forbidden(undefined, "User must be an organization member to join this team");
     }
 
-    const now = Date.now();
+    const _now = Date.now();
 
     await ctx.db.insert("teamMembers", {
       teamId: ctx.teamId,

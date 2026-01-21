@@ -274,7 +274,7 @@ async function sendComplianceNotifications(
   requiredEquityHours: number,
   maxHours: number,
   managerId: Id<"users"> | undefined,
-  now: number,
+  _now: number,
 ) {
   if (status === "compliant" || existingRecord?.notificationSent) {
     return;

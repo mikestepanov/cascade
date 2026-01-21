@@ -508,7 +508,7 @@ export const acceptInvite = authenticatedMutation({
           userId: ctx.userId,
           role: invite.projectRole || "editor",
           addedBy: invite.invitedBy,
-              });
+        });
       }
       projectId = inviteProjectId;
     }

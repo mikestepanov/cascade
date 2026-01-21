@@ -5,10 +5,7 @@ import type { MutationCtx, QueryCtx } from "./_generated/server";
 import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
 import { batchFetchOrganizations, batchFetchUsers } from "./lib/batchHelpers";
 import { conflict, forbidden, notFound, validation } from "./lib/errors";
-import {
-  getOrganizationRole,
-  isOrganizationAdmin,
-} from "./lib/organizationAccess";
+import { getOrganizationRole, isOrganizationAdmin } from "./lib/organizationAccess";
 import { MAX_ORG_MEMBERS } from "./lib/queryLimits";
 import { notDeleted } from "./lib/softDeleteHelpers";
 import {
@@ -311,7 +308,7 @@ export const addMember = authenticatedMutation({
       throw conflict("User is already a member of this organization");
     }
 
-    const now = Date.now();
+    const _now = Date.now();
 
     await ctx.db.insert("organizationMembers", {
       organizationId: args.organizationId,

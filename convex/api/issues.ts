@@ -2,7 +2,6 @@ import { MINUTE } from "@convex-dev/rate-limiter";
 import { components, internal } from "../_generated/api";
 import type { Id } from "../_generated/dataModel";
 import { type ActionCtx, httpAction } from "../_generated/server";
-import { logger } from "../lib/logger";
 import {
   type ApiAuthContext,
   createErrorResponse,
@@ -11,6 +10,7 @@ import {
   hasScope,
   verifyProjectAccess,
 } from "../lib/apiAuth";
+import { logger } from "../lib/logger";
 
 /**
  * REST API for Issues

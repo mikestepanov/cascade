@@ -284,7 +284,7 @@ export const createTestUserInternal = internalMutation({
                 billingEnabled: true,
               },
               createdBy: existingUser._id,
-                updatedAt: now,
+              updatedAt: now,
             });
           }
 
@@ -364,7 +364,7 @@ export const createTestUserInternal = internalMutation({
             billingEnabled: true,
           },
           createdBy: userId,
-            updatedAt: now,
+          updatedAt: now,
         });
       }
 
@@ -938,7 +938,7 @@ export const setupRbacProjectInternal = internalMutation({
             billingEnabled: true,
           },
           createdBy: adminUser._id,
-            updatedAt: now,
+          updatedAt: now,
         });
         organization = await ctx.db.get(orgId);
       }

@@ -73,7 +73,7 @@ import { type MutationCtx, mutation, type QueryCtx, query } from "./_generated/s
 import { forbidden, notFound, unauthenticated } from "./lib/errors";
 import { getOrganizationRole, isOrganizationAdmin } from "./lib/organizationAccess";
 import { getTeamRole } from "./lib/teamAccess";
-import { getWorkspaceRole, isWorkspaceEditor } from "./lib/workspaceAccess";
+import { getWorkspaceRole } from "./lib/workspaceAccess";
 import { getProjectRole } from "./projectAccess";
 
 // =============================================================================
@@ -378,7 +378,7 @@ export const workspaceQuery = customQuery(authenticatedQuery, {
     const workspaceRole = await getWorkspaceRole(ctx, args.workspaceId, ctx.userId);
 
     // User must be org admin OR workspace member
-    if (!isOrgAdmin && !workspaceRole) {
+    if (!(isOrgAdmin || workspaceRole)) {
       throw forbidden("member", "You must be a workspace member to access this workspace");
     }
 
@@ -435,7 +435,10 @@ export const workspaceAdminMutation = customMutation(authenticatedMutation, {
 
     // Require org admin OR workspace admin
     if (!isOrgAdmin && workspaceRole !== "admin") {
-      throw forbidden("admin", "Only workspace admins or organization admins can perform this action");
+      throw forbidden(
+        "admin",
+        "Only workspace admins or organization admins can perform this action",
+      );
     }
 
     return {
@@ -491,7 +494,7 @@ export const workspaceEditorMutation = customMutation(authenticatedMutation, {
 
     // Require org admin OR workspace admin/editor
     const hasEditorAccess = workspaceRole === "admin" || workspaceRole === "editor";
-    if (!isOrgAdmin && !hasEditorAccess) {
+    if (!(isOrgAdmin || hasEditorAccess)) {
       throw forbidden("editor", "Only workspace editors can perform this action");
     }
 
@@ -547,7 +550,7 @@ export const workspaceMemberMutation = customMutation(authenticatedMutation, {
     const workspaceRole = await getWorkspaceRole(ctx, args.workspaceId, ctx.userId);
 
     // Require org admin OR workspace member (any role)
-    if (!isOrgAdmin && !workspaceRole) {
+    if (!(isOrgAdmin || workspaceRole)) {
       throw forbidden("member", "You must be a workspace member to perform this action");
     }
 
@@ -569,8 +572,6 @@ export const workspaceMemberMutation = customMutation(authenticatedMutation, {
 // =============================================================================
 // Layer 4: Team-Scoped
 // =============================================================================
-
-type TeamRole = "admin" | "member";
 
 /**
  * Team Query - requires team membership or organization admin.
@@ -613,8 +614,11 @@ export const teamQuery = customQuery(authenticatedQuery, {
     const teamRole = await getTeamRole(ctx, args.teamId, ctx.userId);
     const isOrgAdmin = await isOrganizationAdmin(ctx, team.organizationId, ctx.userId);
 
-    if (!teamRole && !isOrgAdmin) {
-      throw forbidden("member", "You must be a team member or organization admin to access this team");
+    if (!(teamRole || isOrgAdmin)) {
+      throw forbidden(
+        "member",
+        "You must be a team member or organization admin to access this team",
+      );
     }
 
     return {
@@ -665,7 +669,7 @@ export const teamMemberMutation = customMutation(authenticatedMutation, {
     const teamRole = await getTeamRole(ctx, args.teamId, ctx.userId);
     const isOrgAdmin = await isOrganizationAdmin(ctx, team.organizationId, ctx.userId);
 
-    if (!teamRole && !isOrgAdmin) {
+    if (!(teamRole || isOrgAdmin)) {
       throw forbidden("member", "You must be a team member to perform this action");
     }
 

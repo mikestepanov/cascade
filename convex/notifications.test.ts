@@ -47,7 +47,7 @@ describe("Notifications", () => {
             title: `Notification ${i}`,
             message: "Test notification",
             isRead: false,
-            });
+          });
         }
       });
 
@@ -198,7 +198,7 @@ describe("Notifications", () => {
             title: `Unread ${i}`,
             message: "Test",
             isRead: false,
-            });
+          });
         }
         // Create read notification
         await ctx.db.insert("notifications", {
@@ -343,7 +343,7 @@ describe("Notifications", () => {
             title: `Test ${i}`,
             message: "Test",
             isRead: false,
-            });
+          });
         }
       });
 

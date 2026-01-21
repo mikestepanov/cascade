@@ -219,9 +219,9 @@ describe("Sprints", () => {
       // Other user tries to list sprints
       const asOther = asAuthenticatedUser(t, other);
 
-      await expect(
-        asOther.query(api.sprints.listByProject, { projectId }),
-      ).rejects.toThrow("Not authorized");
+      await expect(asOther.query(api.sprints.listByProject, { projectId })).rejects.toThrow(
+        "Not authorized",
+      );
     });
 
     it("should return sprints for organization-visible projects to organization members", async () => {
@@ -293,9 +293,9 @@ describe("Sprints", () => {
 
       const asUser = asAuthenticatedUser(t, userId);
 
-      await expect(
-        asUser.query(api.sprints.listByProject, { projectId }),
-      ).rejects.toThrow("Project not found");
+      await expect(asUser.query(api.sprints.listByProject, { projectId })).rejects.toThrow(
+        "Project not found",
+      );
     });
   });
 

@@ -481,7 +481,7 @@ export const seedProviders = mutation({
       if (!existing) {
         await ctx.db.insert("serviceProviders", {
           ...provider,
-            updatedAt: now,
+          updatedAt: now,
         });
       }
     }

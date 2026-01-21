@@ -1,5 +1,6 @@
-import { pruneNull } from "convex-helpers";
 import { v } from "convex/values";
+import { pruneNull } from "convex-helpers";
+import type { Id } from "./_generated/dataModel";
 import { query } from "./_generated/server";
 import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
 import { batchFetchIssues, batchFetchProjects, batchFetchUsers } from "./lib/batchHelpers";
@@ -137,24 +138,24 @@ export const getWatchedIssues = authenticatedQuery({
     const issueMap = await batchFetchIssues(ctx, issueIds);
 
     // Collect project and assignee IDs for batch fetch
-    const projectIds: Set<string> = new Set();
-    const assigneeIds: Set<string> = new Set();
+    const projectIds: Id<"projects">[] = [];
+    const assigneeIds: Id<"users">[] = [];
     for (const issue of issueMap.values()) {
-      if (issue.projectId) projectIds.add(issue.projectId);
-      if (issue.assigneeId) assigneeIds.add(issue.assigneeId);
+      if (issue.projectId) projectIds.push(issue.projectId);
+      if (issue.assigneeId) assigneeIds.push(issue.assigneeId);
     }
 
     // Batch fetch projects and assignees
     const [projectMap, assigneeMap] = await Promise.all([
-      batchFetchProjects(ctx, [...projectIds] as any),
-      batchFetchUsers(ctx, [...assigneeIds] as any),
+      batchFetchProjects(ctx, projectIds),
+      batchFetchUsers(ctx, assigneeIds),
     ]);
 
     // Build result with pre-fetched data (no N+1)
     const issues = pruneNull(
       watchers.map((watcher) => {
         const issue = issueMap.get(watcher.issueId);
-        if (!(issue && issue.projectId)) return null;
+        if (!issue?.projectId) return null;
 
         const project = projectMap.get(issue.projectId);
         const assignee = issue.assigneeId ? assigneeMap.get(issue.assigneeId) : null;

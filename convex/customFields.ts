@@ -1,10 +1,19 @@
 import { v } from "convex/values";
 import type { Doc } from "./_generated/dataModel";
-import { projectAdminMutation, authenticatedMutation, authenticatedQuery, projectQuery } from "./customFunctions";
+import {
+  authenticatedMutation,
+  authenticatedQuery,
+  projectAdminMutation,
+  projectQuery,
+} from "./customFunctions";
 import { batchFetchCustomFields } from "./lib/batchHelpers";
 import { conflict, notFound, validation } from "./lib/errors";
 import { MAX_PAGE_SIZE } from "./lib/queryLimits";
-import { assertCanAccessProject, assertCanEditProject, assertIsProjectAdmin } from "./projectAccess";
+import {
+  assertCanAccessProject,
+  assertCanEditProject,
+  assertIsProjectAdmin,
+} from "./projectAccess";
 
 /**
  * Validate that a string represents a valid number.
@@ -306,7 +315,7 @@ export const removeValue = authenticatedMutation({
           field: `custom_${field.fieldKey}`,
           oldValue: existing.value,
           newValue: "",
-            });
+        });
       }
     }
   },

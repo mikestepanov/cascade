@@ -100,7 +100,7 @@ export const createFromTemplate = authenticatedMutation({
         name: labelTemplate.name,
         color: labelTemplate.color,
         createdBy: ctx.userId,
-        });
+      });
     }
 
     return projectId;
@@ -112,7 +112,7 @@ export const initializeBuiltInTemplates = mutation({
   args: {},
   returns: v.null(),
   handler: async (ctx) => {
-    const now = Date.now();
+    const _now = Date.now();
 
     // Check if templates already exist
     const existing = await ctx.db

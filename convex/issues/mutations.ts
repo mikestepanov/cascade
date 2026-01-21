@@ -3,9 +3,9 @@ import { asyncMap, pruneNull } from "convex-helpers";
 import type { Id } from "../_generated/dataModel";
 import {
   authenticatedMutation,
-  projectEditorMutation,
   issueMutation,
   issueViewerMutation,
+  projectEditorMutation,
 } from "../customFunctions";
 import { validation } from "../lib/errors";
 import { cascadeDelete } from "../lib/relationships";
@@ -128,7 +128,7 @@ export const updateStatus = issueMutation({
         field: "status",
         oldValue: oldStatus,
         newValue: args.newStatus,
-        });
+      });
     }
   },
 });
@@ -168,7 +168,7 @@ export const updateStatusByCategory = issueMutation({
         field: "status",
         oldValue: oldStatus,
         newValue: targetState.id,
-        });
+      });
     }
   },
 });
@@ -193,7 +193,7 @@ export const update = issueMutation({
     storyPoints: v.optional(v.union(v.number(), v.null())),
   },
   handler: async (ctx, args) => {
-    const now = Date.now();
+    const _now = Date.now();
     const changes: Array<{
       field: string;
       oldValue: string | number | null | undefined;
@@ -229,7 +229,7 @@ export const update = issueMutation({
           field: change.field,
           oldValue: String(change.oldValue || ""),
           newValue: String(change.newValue || ""),
-            });
+        });
       }
     }
   },
@@ -272,7 +272,7 @@ export const addComment = issueViewerMutation({
           issueId: ctx.issue._id,
           projectId: ctx.projectId,
           isRead: false,
-            });
+        });
 
         await sendEmailNotification(ctx, {
           userId: mentionedUserId,
@@ -293,7 +293,7 @@ export const addComment = issueViewerMutation({
         issueId: ctx.issue._id,
         projectId: ctx.projectId,
         isRead: false,
-        });
+      });
 
       await sendEmailNotification(ctx, {
         userId: ctx.issue.reporterId,
@@ -345,7 +345,7 @@ export const bulkUpdateStatus = authenticatedMutation({
           field: "status",
           oldValue: oldStatus,
           newValue: args.newStatus,
-            });
+        });
       }
 
       results.push(issueId);
@@ -397,7 +397,7 @@ export const bulkUpdatePriority = authenticatedMutation({
         field: "priority",
         oldValue: oldPriority,
         newValue: args.priority,
-        });
+      });
 
       results.push(issueId);
     }
@@ -442,7 +442,7 @@ export const bulkAssign = authenticatedMutation({
         field: "assignee",
         oldValue: oldAssignee ? String(oldAssignee) : "",
         newValue: args.assigneeId ? String(args.assigneeId) : "",
-        });
+      });
 
       results.push(issueId);
     }
@@ -487,7 +487,7 @@ export const bulkAddLabels = authenticatedMutation({
         field: "labels",
         oldValue: issue.labels.join(", "),
         newValue: updatedLabels.join(", "),
-        });
+      });
 
       results.push(issueId);
     }
@@ -532,7 +532,7 @@ export const bulkMoveToSprint = authenticatedMutation({
         field: "sprint",
         oldValue: oldSprint ? String(oldSprint) : "",
         newValue: args.sprintId ? String(args.sprintId) : "",
-        });
+      });
 
       results.push(issueId);
     }

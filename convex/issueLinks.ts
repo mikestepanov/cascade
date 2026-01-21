@@ -41,7 +41,7 @@ export const create = authenticatedMutation({
       throw conflict("Link already exists");
     }
 
-    const now = Date.now();
+    const _now = Date.now();
     const linkId = await ctx.db.insert("issueLinks", {
       fromIssueId: args.fromIssueId,
       toIssueId: args.toIssueId,

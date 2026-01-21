@@ -3,7 +3,7 @@ import { v } from "convex/values";
 import { pruneNull } from "convex-helpers";
 import { internal } from "./_generated/api";
 import type { Doc } from "./_generated/dataModel";
-import { projectAdminMutation, authenticatedMutation, authenticatedQuery } from "./customFunctions";
+import { authenticatedMutation, authenticatedQuery, projectAdminMutation } from "./customFunctions";
 import { batchFetchProjects, batchFetchUsers, getUserName } from "./lib/batchHelpers";
 import { conflict, forbidden, notFound, validation } from "./lib/errors";
 import { fetchPaginatedQuery } from "./lib/queryHelpers";
@@ -517,7 +517,7 @@ export const addProjectMember = projectAdminMutation({
 
     if (existingMembership) throw conflict("User is already a member");
 
-    const now = Date.now();
+    const _now = Date.now();
 
     // Add to projectMembers table
     await ctx.db.insert("projectMembers", {
