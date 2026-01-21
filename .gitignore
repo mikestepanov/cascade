@@ -65,4 +65,7 @@ docs/research/library/*/*.webp
 docs/research/library/*/*_manifest.json
 docs/research/library/*/*_network.json
 docs/research/library/*/*_deep.json
+docs/research/library/*/manifest.json
+docs/research/library/*/network.json
+docs/research/library/*/deep_data.json
 # Keep: *_tech.json (summaries), *.png (screenshots)
