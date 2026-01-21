@@ -2,6 +2,18 @@
 
 A comprehensive visual and technical reference of competitor sites, captured via automated browser agents.
 
+## Quick Start
+
+```bash
+# Capture a single page
+pnpm run mirror https://linear.app/features linear features
+
+# Capture all defined targets (10 pages)
+pnpm run mirror:batch
+```
+
+**Output:** Each page generates `<page>.html`, `<page>_deep.json`, and shared `assets/`.
+
 ## 1. Linear (Best-in-Class UI/UX)
 
 | Page         | Visual                      | Tech Stack                        |
@@ -9,6 +21,19 @@ A comprehensive visual and technical reference of competitor sites, captured via
 | **Home**     | [View](linear/home.png)     | [View](linear/home_tech.json)     |
 | **Features** | [View](linear/features.png) | [View](linear/features_tech.json) |
 | **Docs**     | [View](linear/docs.png)     | [View](linear/docs_tech.json)     |
+
+**V2 Max-Fidelity Capture (Home):**
+
+| Device     | Visual                          |
+| ---------- | ------------------------------- |
+| 🖥️ Desktop | [View](linear/home_desktop.png) |
+| 📱 Tablet  | [View](linear/home_tablet.png)  |
+| 📲 Mobile  | [View](linear/home_mobile.png)  |
+
+| Data Type | File                                    | Size   |
+| --------- | --------------------------------------- | ------ |
+| Full DOM  | [home.html](linear/home.html)           | 2.5 MB |
+| Deep Data | [home_deep.json](linear/home_deep.json) | 50 KB  |
 
 **Key Findings:**
 

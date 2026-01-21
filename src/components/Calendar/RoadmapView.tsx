@@ -1,6 +1,7 @@
 import { api } from "@convex/_generated/api";
 import type { Id } from "@convex/_generated/dataModel";
 import { useQuery } from "convex/react";
+import type { FunctionReturnType } from "convex/server";
 import { useState } from "react";
 import { Typography } from "@/components/ui/Typography";
 import { ChevronLeft, ChevronRight } from "@/lib/icons";
@@ -31,9 +32,12 @@ export function RoadmapView({ projectId }: RoadmapViewProps) {
     hasDates: true, // Only sprints with start and end dates
   });
 
+  type Sprint = NonNullable<FunctionReturnType<typeof api.sprints.listByProject>>[number];
+  type Issue = NonNullable<FunctionReturnType<typeof api.issues.listRoadmapIssues>>[number];
+
   // Map to roadmap items (no filtering needed - backend already filtered)
   const roadmapItems = [
-    ...(sprints?.map((sprint) => ({
+    ...(sprints?.map((sprint: Sprint) => ({
       type: "sprint" as const,
       id: sprint._id,
       title: sprint.name,
@@ -41,12 +45,12 @@ export function RoadmapView({ projectId }: RoadmapViewProps) {
       endDate: sprint.endDate as number,
       status: sprint.status,
     })) || []),
-    ...(issues?.map((issue) => ({
+    ...(issues?.map((issue: Issue) => ({
       type: "issue" as const,
       id: issue._id,
       title: `${issue.key}: ${issue.title}`,
       dueDate: issue.dueDate as number,
-      startDate: issue.createdAt,
+      startDate: issue._creationTime,
       endDate: issue.dueDate as number,
       issueType: issue.type,
       priority: issue.priority,

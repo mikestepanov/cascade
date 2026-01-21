@@ -43,6 +43,7 @@ export function RoadmapView({ projectId, sprintId, canEdit = true }: RoadmapView
   const project = useQuery(api.projects.getProject, { id: projectId });
 
   type RoadmapIssue = FunctionReturnType<typeof api.issues.listRoadmapIssues>[number];
+  type Epic = NonNullable<FunctionReturnType<typeof api.issues.listEpics>>[number];
 
   // Memoize date range calculations - only recalculate when component mounts
   const { startOfMonth, endDate, timelineMonths } = useMemo(() => {
@@ -265,7 +266,7 @@ export function RoadmapView({ projectId, sprintId, canEdit = true }: RoadmapView
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Epics</SelectItem>
-              {epics?.map((epic) => (
+              {epics?.map((epic: Epic) => (
                 <SelectItem key={epic._id} value={epic._id}>
                   {epic.title}
                 </SelectItem>

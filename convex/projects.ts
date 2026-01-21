@@ -193,8 +193,8 @@ export const getTeamProjects = authenticatedQuery({
       return { page: [], isDone: true, continueCursor: "" };
     }
 
-    const { getTeamRole } = await import("./teams");
-    const { isOrganizationAdmin } = await import("./organizations");
+    const { getTeamRole } = await import("./lib/teamAccess");
+    const { isOrganizationAdmin } = await import("./lib/organizationAccess");
 
     const role = await getTeamRole(ctx, args.teamId, ctx.userId);
     const isAdmin = await isOrganizationAdmin(ctx, team.organizationId, ctx.userId);

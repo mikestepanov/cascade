@@ -164,6 +164,21 @@ const { page, continueCursor } = await ctx.db
 | `research/comparisons/pm-architecture.md`   | Jira vs Linear vs ClickUp architecture |
 | `research/comparisons/meeting-landscape.md` | Overview of the Meeting AI market      |
 | `research/comparisons/feature-matrix.md`    | Detailed comparison matrix             |
+| `research/competitor-tech-stack.md`         | **NEW:** Linear tech stack deep dive   |
+
+**Omega Comparison Library (`research/library/`):**
+
+Automated visual and technical captures of competitor sites. See [library/README.md](research/library/README.md) for the full index.
+
+- **Linear:** Home (Desktop/Tablet/Mobile), Features, Docs + `home.html` (2.5MB DOM) + `home_deep.json` (CSS vars, fonts, network)
+- **ClickUp:** Home, Pricing screenshots + tech summaries
+- **Notion:** Product screenshots + tech summaries
+
+**Protocols (`research/protocols/`):**
+
+| File                          | Description                                        |
+| ----------------------------- | -------------------------------------------------- |
+| `protocols/omega-scraping.md` | **NEW:** Multi-device scraping protocol for agents |
 
 **Competitor Deep Dives:**
 

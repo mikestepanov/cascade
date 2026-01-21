@@ -55,7 +55,7 @@ export const getChatMessages = authenticatedQuery({
 
     const messages = await ctx.db
       .query("aiMessages")
-      .withIndex("by_chat_created", (q) => q.eq("chatId", args.chatId))
+      .withIndex("by_chat", (q) => q.eq("chatId", args.chatId))
       .take(MAX_MESSAGES_PER_CHAT);
 
     return messages.sort((a, b) => a._creationTime - b._creationTime);

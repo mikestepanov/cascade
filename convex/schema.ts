@@ -47,7 +47,6 @@ const applicationTables = {
   })
     .index("by_creator", ["createdBy"])
     .index("by_public", ["isPublic"])
-    .index("by_created_at", ["createdAt"])
     .index("by_organization", ["organizationId"])
     .index("by_workspace", ["workspaceId"])
     .index("by_project", ["projectId"])
@@ -68,8 +67,7 @@ const applicationTables = {
     changeDescription: v.optional(v.string()), // Optional description of changes
   })
     .index("by_document", ["documentId"])
-    .index("by_document_version", ["documentId", "version"])
-    .index("by_document_created", ["documentId", "createdAt"]),
+    .index("by_document_version", ["documentId", "version"]),
 
   documentTemplates: defineTable({
     name: v.string(), // Template name: "Meeting Notes", "RFC", "Project Brief"
@@ -248,7 +246,6 @@ const applicationTables = {
     .index("by_parent", ["parentId"])
     .index("by_project_status", ["projectId", "status"])
     .index("by_project_status_updated", ["projectId", "status", "updatedAt"])
-    .index("by_project_sprint_created", ["projectId", "sprintId", "createdAt"])
     .index("by_project_sprint_status", ["projectId", "sprintId", "status"]) // Optimized for sprint board counts
     .index("by_project_sprint_status_updated", ["projectId", "sprintId", "status", "updatedAt"]) // NEW OPTIMIZATION
     .index("by_project_updated", ["projectId", "updatedAt"])
@@ -382,7 +379,6 @@ const applicationTables = {
     completedAt: v.optional(v.number()),
   })
     .index("by_webhook", ["webhookId"])
-    .index("by_webhook_created", ["webhookId", "createdAt"])
     .index("by_status", ["status"]),
 
   savedFilters: defineTable({
@@ -506,7 +502,6 @@ const applicationTables = {
   })
     .index("by_user", ["userId"])
     .index("by_user_read", ["userId", "isRead"])
-    .index("by_user_created", ["userId", "createdAt"])
     .index("by_deleted", ["isDeleted"]),
 
   notificationPreferences: defineTable({
@@ -846,8 +841,7 @@ const applicationTables = {
     updatedAt: v.number(),
   })
     .index("by_user", ["userId"])
-    .index("by_project", ["projectId"])
-    .index("by_user_created", ["userId", "createdAt"]),
+    .index("by_project", ["projectId"]),
 
   aiMessages: defineTable({
     chatId: v.id("aiChats"),
@@ -866,8 +860,7 @@ const applicationTables = {
     tokensUsed: v.optional(v.number()),
     responseTime: v.optional(v.number()), // Milliseconds
   })
-    .index("by_chat", ["chatId"])
-    .index("by_chat_created", ["chatId", "createdAt"]),
+    .index("by_chat", ["chatId"]),
 
   aiSuggestions: defineTable({
     userId: v.id("users"),
@@ -924,9 +917,7 @@ const applicationTables = {
     .index("by_user", ["userId"])
     .index("by_project", ["projectId"])
     .index("by_provider", ["provider"])
-    .index("by_operation", ["operation"])
-    .index("by_created_at", ["createdAt"])
-    .index("by_user_created", ["userId", "createdAt"]),
+    .index("by_operation", ["operation"]),
 
   // REST API Keys (for CLI and external integrations)
   apiKeys: defineTable({
@@ -976,9 +967,7 @@ const applicationTables = {
     // Timestamp
   })
     .index("by_api_key", ["apiKeyId"])
-    .index("by_user", ["userId"])
-    .index("by_created_at", ["createdAt"])
-    .index("by_api_key_created", ["apiKeyId", "createdAt"]),
+    .index("by_user", ["userId"]),
 
   // Pumble Integration (Team Chat)
   pumbleWebhooks: defineTable({

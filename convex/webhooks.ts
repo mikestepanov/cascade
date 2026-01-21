@@ -265,7 +265,7 @@ export const listExecutions = authenticatedQuery({
       query: (db) =>
         db
           .query("webhookExecutions")
-          .withIndex("by_webhook_created", (q) => q.eq("webhookId", args.webhookId))
+          .withIndex("by_webhook", (q) => q.eq("webhookId", args.webhookId))
           .order("desc"),
     });
   },

@@ -1,7 +1,7 @@
 /**
  * Custom Convex Functions with convex-helpers
  *
- * Provides authenticated query/mutation/action builders that:
+ * Provides authenticated query/mutation builders that:
  * - Automatically inject user context
  * - Check RBAC permissions
  * - Improve code reusability
@@ -11,27 +11,8 @@
  *
  * ## Architecture
  *
- * Functions are composed in layers, each building on the previous:
- *
- * ```
- * Layer 1: Base (authentication only)
- * └── authenticatedQuery / authenticatedMutation
- *
- * Layer 2: Organization-scoped (adds organization loading + role checks)
- * └── organizationQuery, organizationMemberMutation, organizationAdminMutation
- *
- * Layer 3: Workspace-scoped (adds workspace loading, checks workspace membership)
- * └── workspaceQuery, workspaceMemberMutation, workspaceEditorMutation, workspaceAdminMutation
- *
- * Layer 4: Team-scoped (adds team loading, checks team/org roles)
- * └── teamQuery, teamMemberMutation, teamLeadMutation
- *
- * Layer 5: Project-scoped (adds project loading + RBAC)
- * └── projectQuery, projectViewerMutation, projectEditorMutation, projectAdminMutation
- *
- * Layer 6: Entity-scoped (adds entity loading, derives project)
- * └── issueQuery, issueMutation, issueViewerMutation, sprintQuery, sprintMutation
- * ```
+ * All functions use a FLAT architecture (single level) for proper TypeScript inference.
+ * Each function extends `query` or `mutation` directly and uses shared helpers.
  *
  * ## Usage
  *
@@ -77,28 +58,47 @@ import { getWorkspaceRole } from "./lib/workspaceAccess";
 import { getProjectRole } from "./projectAccess";
 
 // =============================================================================
+// Shared Auth Helper
+// =============================================================================
+
+/**
+ * Require authentication and return the user ID.
+ * Use this in all custom functions to avoid chaining.
+ */
+async function requireAuth(ctx: QueryCtx | MutationCtx): Promise<Id<"users">> {
+  const userId = await getAuthUserId(ctx);
+  if (!userId) {
+    throw unauthenticated();
+  }
+  return userId;
+}
+
+// =============================================================================
 // Role Checking Helpers
 // =============================================================================
 
 const ROLE_HIERARCHY = { viewer: 1, editor: 2, admin: 3 } as const;
 type Role = "viewer" | "editor" | "admin";
 
-/**
- * Check if a role meets the minimum required role level.
- */
 function hasMinimumRole(role: Role | null, requiredRole: Role): boolean {
   const userLevel = role ? ROLE_HIERARCHY[role] : 0;
   const requiredLevel = ROLE_HIERARCHY[requiredRole];
   return userLevel >= requiredLevel;
 }
 
-/**
- * Require a minimum role, throwing FORBIDDEN if not met.
- */
 function requireMinimumRole(role: Role | null, requiredRole: Role): void {
   if (!hasMinimumRole(role, requiredRole)) {
     throw forbidden(requiredRole);
   }
+}
+
+type OrganizationRole = "owner" | "admin" | "member";
+
+function hasMinimumOrgRole(role: OrganizationRole | null, requiredRole: OrganizationRole): boolean {
+  const ORG_ROLE_HIERARCHY = { member: 1, admin: 2, owner: 3 } as const;
+  const userLevel = role ? ORG_ROLE_HIERARCHY[role] : 0;
+  const requiredLevel = ORG_ROLE_HIERARCHY[requiredRole];
+  return userLevel >= requiredLevel;
 }
 
 // =============================================================================
@@ -107,130 +107,53 @@ function requireMinimumRole(role: Role | null, requiredRole: Role): void {
 
 /**
  * Authenticated Query - requires user to be logged in.
- *
- * Automatically injects `userId` into the context for use in the handler.
- *
- * @throws {ConvexError} UNAUTHENTICATED - If user is not logged in
- *
- * @example
- * ```typescript
- * export const getMyProfile = authenticatedQuery({
- *   args: {},
- *   handler: async (ctx) => {
- *     // ctx.userId is guaranteed to exist
- *     return await ctx.db.get(ctx.userId);
- *   },
- * });
- * ```
+ * Injects `userId` into context.
  */
 export const authenticatedQuery = customQuery(query, {
   args: {},
-  input: async (ctx, _args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      throw unauthenticated();
-    }
-
-    return {
-      ctx: { ...ctx, userId },
-      args: {},
-    };
+  input: async (ctx) => {
+    const userId = await requireAuth(ctx);
+    return { ctx: { ...ctx, userId }, args: {} };
   },
 });
 
 /**
  * Authenticated Mutation - requires user to be logged in.
- *
- * Automatically injects `userId` into the context for use in the handler.
- *
- * @throws {ConvexError} UNAUTHENTICATED - If user is not logged in
- *
- * @example
- * ```typescript
- * export const updateProfile = authenticatedMutation({
- *   args: { name: v.string() },
- *   handler: async (ctx, args) => {
- *     await ctx.db.patch(ctx.userId, { name: args.name });
- *   },
- * });
- * ```
+ * Injects `userId` into context.
  */
 export const authenticatedMutation = customMutation(mutation, {
   args: {},
-  input: async (ctx, _args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      throw unauthenticated();
-    }
-
-    return {
-      ctx: { ...ctx, userId },
-      args: {},
-    };
+  input: async (ctx) => {
+    const userId = await requireAuth(ctx);
+    return { ctx: { ...ctx, userId }, args: {} };
   },
 });
 
 // =============================================================================
-// Layer 2: Organization-Scoped
+// Organization-Scoped (flat - extends query/mutation directly)
 // =============================================================================
-
-type OrganizationRole = "owner" | "admin" | "member";
-
-/**
- * Check if a role meets the minimum required organization role level.
- */
-function hasMinimumOrgRole(role: OrganizationRole | null, requiredRole: OrganizationRole): boolean {
-  const ORG_ROLE_HIERARCHY = { member: 1, admin: 2, owner: 3 } as const;
-  const userLevel = role ? ORG_ROLE_HIERARCHY[role] : 0;
-  const requiredLevel = ORG_ROLE_HIERARCHY[requiredRole];
-  return userLevel >= requiredLevel;
-}
 
 /**
  * Organization Query - requires membership in the organization.
- *
- * Builds on `authenticatedQuery`. Automatically loads the organization and checks
- * that the user is a member.
- *
- * Injects into context:
- * - `userId`: The authenticated user's ID
- * - `organizationId`: The organization ID from args
- * - `organizationRole`: The user's role in the organization (owner/admin/member)
- * - `organization`: The full organization document
- *
- * @throws {ConvexError} UNAUTHENTICATED - If user is not logged in
- * @throws {ConvexError} NOT_FOUND - If organization doesn't exist
- * @throws {ConvexError} FORBIDDEN - If user is not an organization member
- *
- * @example
- * ```typescript
- * export const getOrgStats = organizationQuery({
- *   args: {},
- *   handler: async (ctx) => {
- *     const workspaces = await ctx.db
- *       .query("workspaces")
- *       .withIndex("by_organization", q => q.eq("organizationId", ctx.organizationId))
- *       .collect();
- *     return { workspaceCount: workspaces.length };
- *   },
- * });
- * ```
+ * Injects: userId, organizationId, organizationRole, organization
  */
-export const organizationQuery = customQuery(authenticatedQuery, {
+export const organizationQuery = customQuery(query, {
   args: { organizationId: v.id("organizations") },
   input: async (ctx, args) => {
+    const userId = await requireAuth(ctx);
+
     const organization = await ctx.db.get(args.organizationId);
     if (!organization) {
       throw notFound("organization", args.organizationId);
     }
 
-    const organizationRole = await getOrganizationRole(ctx, args.organizationId, ctx.userId);
+    const organizationRole = await getOrganizationRole(ctx, args.organizationId, userId);
     if (!organizationRole) {
       throw forbidden("member", "You must be an organization member to access this resource");
     }
 
     return {
-      ctx: { ...ctx, organizationId: args.organizationId, organizationRole, organization },
+      ctx: { ...ctx, userId, organizationId: args.organizationId, organizationRole, organization },
       args: {},
     };
   },
@@ -238,276 +161,142 @@ export const organizationQuery = customQuery(authenticatedQuery, {
 
 /**
  * Organization Member Mutation - requires membership in the organization.
- *
- * Builds on `authenticatedMutation`. Use for operations where any organization
- * member should have access.
- *
- * @throws {ConvexError} UNAUTHENTICATED - If user is not logged in
- * @throws {ConvexError} NOT_FOUND - If organization doesn't exist
- * @throws {ConvexError} FORBIDDEN - If user is not an organization member
- *
- * @example
- * ```typescript
- * export const createTeam = organizationMemberMutation({
- *   args: { name: v.string() },
- *   handler: async (ctx, args) => {
- *     return await ctx.db.insert("teams", {
- *       organizationId: ctx.organizationId,
- *       name: args.name,
- *       createdBy: ctx.userId,
- *     });
- *   },
- * });
- * ```
  */
-export const organizationMemberMutation = customMutation(authenticatedMutation, {
+export const organizationMemberMutation = customMutation(mutation, {
   args: { organizationId: v.id("organizations") },
   input: async (ctx, args) => {
+    const userId = await requireAuth(ctx);
+
     const organization = await ctx.db.get(args.organizationId);
     if (!organization) {
       throw notFound("organization", args.organizationId);
     }
 
-    const organizationRole = await getOrganizationRole(ctx, args.organizationId, ctx.userId);
+    const organizationRole = await getOrganizationRole(ctx, args.organizationId, userId);
     if (!organizationRole) {
       throw forbidden("member", "You must be an organization member to perform this action");
     }
 
     return {
-      ctx: { ...ctx, organizationId: args.organizationId, organizationRole, organization },
+      ctx: { ...ctx, userId, organizationId: args.organizationId, organizationRole, organization },
       args: {},
     };
   },
 });
 
 /**
- * Organization Admin Mutation - requires admin role (owner or admin) in the organization.
- *
- * Builds on `authenticatedMutation`. Use for operations that require administrative
- * control (managing workspaces, members, settings).
- *
- * @throws {ConvexError} UNAUTHENTICATED - If user is not logged in
- * @throws {ConvexError} NOT_FOUND - If organization doesn't exist
- * @throws {ConvexError} FORBIDDEN - If user is not an organization admin
- *
- * @example
- * ```typescript
- * export const createWorkspace = organizationAdminMutation({
- *   args: { name: v.string(), slug: v.string() },
- *   handler: async (ctx, args) => {
- *     return await ctx.db.insert("workspaces", {
- *       organizationId: ctx.organizationId,
- *       name: args.name,
- *       slug: args.slug,
- *       createdBy: ctx.userId,
- *     });
- *   },
- * });
- * ```
+ * Organization Admin Mutation - requires admin role in the organization.
  */
-export const organizationAdminMutation = customMutation(authenticatedMutation, {
+export const organizationAdminMutation = customMutation(mutation, {
   args: { organizationId: v.id("organizations") },
   input: async (ctx, args) => {
+    const userId = await requireAuth(ctx);
+
     const organization = await ctx.db.get(args.organizationId);
     if (!organization) {
       throw notFound("organization", args.organizationId);
     }
 
-    const organizationRole = await getOrganizationRole(ctx, args.organizationId, ctx.userId);
+    const organizationRole = await getOrganizationRole(ctx, args.organizationId, userId);
     if (!hasMinimumOrgRole(organizationRole, "admin")) {
       throw forbidden("admin", "Only organization admins can perform this action");
     }
 
     return {
-      ctx: { ...ctx, organizationId: args.organizationId, organizationRole, organization },
+      ctx: { ...ctx, userId, organizationId: args.organizationId, organizationRole, organization },
       args: {},
     };
   },
 });
 
 // =============================================================================
-// Layer 3: Workspace-Scoped
+// Workspace-Scoped (flat - extends query/mutation directly)
 // =============================================================================
 
 /**
  * Workspace Query - requires membership in the parent organization.
- *
- * Builds on `authenticatedQuery`. Automatically loads the workspace and its
- * parent organization, checks that the user is an organization member.
- *
- * Injects into context:
- * - `userId`: The authenticated user's ID
- * - `workspaceId`: The workspace ID from args
- * - `workspace`: The full workspace document
- * - `organizationId`: The parent organization ID
- *
- * @throws {ConvexError} UNAUTHENTICATED - If user is not logged in
- * @throws {ConvexError} NOT_FOUND - If workspace doesn't exist
- * @throws {ConvexError} FORBIDDEN - If user is not an organization member
- *
- * @example
- * ```typescript
- * export const getWorkspaceTeams = workspaceQuery({
- *   args: {},
- *   handler: async (ctx) => {
- *     return await ctx.db
- *       .query("teams")
- *       .withIndex("by_workspace", q => q.eq("workspaceId", ctx.workspaceId))
- *       .collect();
- *   },
- * });
- * ```
+ * Injects: userId, workspaceId, workspace, organizationId
  */
-export const workspaceQuery = customQuery(authenticatedQuery, {
+export const workspaceQuery = customQuery(query, {
   args: { workspaceId: v.id("workspaces") },
   input: async (ctx, args) => {
+    const userId = await requireAuth(ctx);
+
     const workspace = await ctx.db.get(args.workspaceId);
     if (!workspace) {
       throw notFound("workspace", args.workspaceId);
     }
 
-    const organizationRole = await getOrganizationRole(ctx, workspace.organizationId, ctx.userId);
+    const organizationRole = await getOrganizationRole(ctx, workspace.organizationId, userId);
     if (!organizationRole) {
       throw forbidden("member", "You must be an organization member to access this workspace");
     }
 
-    // Organization admins/owners can access any workspace in the org
     const isOrgAdmin = organizationRole === "owner" || organizationRole === "admin";
+    const workspaceRole = await getWorkspaceRole(ctx, args.workspaceId, userId);
 
-    // Get workspace membership
-    const workspaceRole = await getWorkspaceRole(ctx, args.workspaceId, ctx.userId);
-
-    // User must be org admin OR workspace member
     if (!(isOrgAdmin || workspaceRole)) {
       throw forbidden("member", "You must be a workspace member to access this workspace");
     }
 
     return {
-      ctx: {
-        ...ctx,
-        workspaceId: args.workspaceId,
-        workspace,
-        organizationId: workspace.organizationId,
-        organizationRole,
-        workspaceRole,
-        isOrgAdmin,
-      },
+      ctx: { ...ctx, userId, workspaceId: args.workspaceId, workspace, organizationId: workspace.organizationId },
       args: {},
     };
   },
 });
 
 /**
- * Workspace Admin Mutation - requires workspace admin or organization admin.
- *
- * Builds on `authenticatedMutation`. Use for operations that require admin
- * access to the workspace (managing settings, members, etc.).
- *
- * @throws {ConvexError} UNAUTHENTICATED - If user is not logged in
- * @throws {ConvexError} NOT_FOUND - If workspace doesn't exist
- * @throws {ConvexError} FORBIDDEN - If user is not a workspace admin or org admin
- *
- * @example
- * ```typescript
- * export const updateWorkspace = workspaceAdminMutation({
- *   args: { name: v.string() },
- *   handler: async (ctx, args) => {
- *     await ctx.db.patch(ctx.workspaceId, { name: args.name });
- *   },
- * });
- * ```
+ * Workspace Admin Mutation - requires admin role in the workspace.
  */
-export const workspaceAdminMutation = customMutation(authenticatedMutation, {
+export const workspaceAdminMutation = customMutation(mutation, {
   args: { workspaceId: v.id("workspaces") },
   input: async (ctx, args) => {
+    const userId = await requireAuth(ctx);
+
     const workspace = await ctx.db.get(args.workspaceId);
     if (!workspace) {
       throw notFound("workspace", args.workspaceId);
     }
 
-    const organizationRole = await getOrganizationRole(ctx, workspace.organizationId, ctx.userId);
-    if (!organizationRole) {
-      throw forbidden("member", "You must be an organization member");
-    }
+    const organizationRole = await getOrganizationRole(ctx, workspace.organizationId, userId);
+    const isOrgAdmin = organizationRole === "owner" || organizationRole === "admin";
+    const workspaceRole = await getWorkspaceRole(ctx, args.workspaceId, userId);
 
-    const isOrgAdmin = hasMinimumOrgRole(organizationRole, "admin");
-    const workspaceRole = await getWorkspaceRole(ctx, args.workspaceId, ctx.userId);
-
-    // Require org admin OR workspace admin
-    if (!isOrgAdmin && workspaceRole !== "admin") {
-      throw forbidden(
-        "admin",
-        "Only workspace admins or organization admins can perform this action",
-      );
+    if (!(isOrgAdmin || workspaceRole === "admin")) {
+      throw forbidden("admin", "Only workspace admins can perform this action");
     }
 
     return {
-      ctx: {
-        ...ctx,
-        workspaceId: args.workspaceId,
-        workspace,
-        organizationId: workspace.organizationId,
-        organizationRole,
-        workspaceRole,
-        isOrgAdmin,
-      },
+      ctx: { ...ctx, userId, workspaceId: args.workspaceId, workspace, organizationId: workspace.organizationId },
       args: {},
     };
   },
 });
 
 /**
- * Workspace Editor Mutation - requires editor access to the workspace.
- *
- * Builds on `authenticatedMutation`. Use for operations that create/edit
- * workspace-level content (documents, etc.).
- *
- * @throws {ConvexError} UNAUTHENTICATED - If user is not logged in
- * @throws {ConvexError} NOT_FOUND - If workspace doesn't exist
- * @throws {ConvexError} FORBIDDEN - If user doesn't have editor access
- *
- * @example
- * ```typescript
- * export const createDocument = workspaceEditorMutation({
- *   args: { title: v.string() },
- *   handler: async (ctx, args) => {
- *     return await ctx.db.insert("documents", { ... });
- *   },
- * });
- * ```
+ * Workspace Editor Mutation - requires editor role in the workspace.
  */
-export const workspaceEditorMutation = customMutation(authenticatedMutation, {
+export const workspaceEditorMutation = customMutation(mutation, {
   args: { workspaceId: v.id("workspaces") },
   input: async (ctx, args) => {
+    const userId = await requireAuth(ctx);
+
     const workspace = await ctx.db.get(args.workspaceId);
     if (!workspace) {
       throw notFound("workspace", args.workspaceId);
     }
 
-    const organizationRole = await getOrganizationRole(ctx, workspace.organizationId, ctx.userId);
-    if (!organizationRole) {
-      throw forbidden("member", "You must be an organization member");
-    }
+    const organizationRole = await getOrganizationRole(ctx, workspace.organizationId, userId);
+    const isOrgAdmin = organizationRole === "owner" || organizationRole === "admin";
+    const workspaceRole = await getWorkspaceRole(ctx, args.workspaceId, userId);
 
-    const isOrgAdmin = hasMinimumOrgRole(organizationRole, "admin");
-    const workspaceRole = await getWorkspaceRole(ctx, args.workspaceId, ctx.userId);
-
-    // Require org admin OR workspace admin/editor
-    const hasEditorAccess = workspaceRole === "admin" || workspaceRole === "editor";
-    if (!(isOrgAdmin || hasEditorAccess)) {
-      throw forbidden("editor", "Only workspace editors can perform this action");
+    if (!(isOrgAdmin || workspaceRole === "admin" || workspaceRole === "editor")) {
+      throw forbidden("editor", "You need editor access to perform this action");
     }
 
     return {
-      ctx: {
-        ...ctx,
-        workspaceId: args.workspaceId,
-        workspace,
-        organizationId: workspace.organizationId,
-        organizationRole,
-        workspaceRole,
-        isOrgAdmin,
-      },
+      ctx: { ...ctx, userId, workspaceId: args.workspaceId, workspace, organizationId: workspace.organizationId },
       args: {},
     };
   },
@@ -515,440 +304,230 @@ export const workspaceEditorMutation = customMutation(authenticatedMutation, {
 
 /**
  * Workspace Member Mutation - requires membership in the workspace.
- *
- * Builds on `authenticatedMutation`. Use for operations that any workspace
- * member can perform.
- *
- * @throws {ConvexError} UNAUTHENTICATED - If user is not logged in
- * @throws {ConvexError} NOT_FOUND - If workspace doesn't exist
- * @throws {ConvexError} FORBIDDEN - If user is not a workspace member
- *
- * @example
- * ```typescript
- * export const viewDocument = workspaceMemberMutation({
- *   args: { documentId: v.id("documents") },
- *   handler: async (ctx, args) => {
- *     // Track view, etc.
- *   },
- * });
- * ```
  */
-export const workspaceMemberMutation = customMutation(authenticatedMutation, {
+export const workspaceMemberMutation = customMutation(mutation, {
   args: { workspaceId: v.id("workspaces") },
   input: async (ctx, args) => {
+    const userId = await requireAuth(ctx);
+
     const workspace = await ctx.db.get(args.workspaceId);
     if (!workspace) {
       throw notFound("workspace", args.workspaceId);
     }
 
-    const organizationRole = await getOrganizationRole(ctx, workspace.organizationId, ctx.userId);
-    if (!organizationRole) {
-      throw forbidden("member", "You must be an organization member");
-    }
+    const organizationRole = await getOrganizationRole(ctx, workspace.organizationId, userId);
+    const isOrgAdmin = organizationRole === "owner" || organizationRole === "admin";
+    const workspaceRole = await getWorkspaceRole(ctx, args.workspaceId, userId);
 
-    const isOrgAdmin = hasMinimumOrgRole(organizationRole, "admin");
-    const workspaceRole = await getWorkspaceRole(ctx, args.workspaceId, ctx.userId);
-
-    // Require org admin OR workspace member (any role)
     if (!(isOrgAdmin || workspaceRole)) {
       throw forbidden("member", "You must be a workspace member to perform this action");
     }
 
     return {
-      ctx: {
-        ...ctx,
-        workspaceId: args.workspaceId,
-        workspace,
-        organizationId: workspace.organizationId,
-        organizationRole,
-        workspaceRole,
-        isOrgAdmin,
-      },
+      ctx: { ...ctx, userId, workspaceId: args.workspaceId, workspace, organizationId: workspace.organizationId },
       args: {},
     };
   },
 });
 
 // =============================================================================
-// Layer 4: Team-Scoped
+// Team-Scoped (flat - extends query/mutation directly)
 // =============================================================================
 
 /**
- * Team Query - requires team membership or organization admin.
- *
- * Builds on `authenticatedQuery`. Automatically loads the team and checks
- * that the user is either a team member or an organization admin.
- *
- * Injects into context:
- * - `userId`: The authenticated user's ID
- * - `teamId`: The team ID from args
- * - `team`: The full team document
- * - `teamRole`: The user's role in the team (admin/member or null if org admin)
- * - `organizationId`: The parent organization ID
- *
- * @throws {ConvexError} UNAUTHENTICATED - If user is not logged in
- * @throws {ConvexError} NOT_FOUND - If team doesn't exist
- * @throws {ConvexError} FORBIDDEN - If user is not a team member or org admin
- *
- * @example
- * ```typescript
- * export const getTeamProjects = teamQuery({
- *   args: {},
- *   handler: async (ctx) => {
- *     return await ctx.db
- *       .query("projects")
- *       .withIndex("by_team", q => q.eq("teamId", ctx.teamId))
- *       .collect();
- *   },
- * });
- * ```
+ * Team Query - requires team membership or org admin.
+ * Injects: userId, teamId, team, teamRole, organizationId
  */
-export const teamQuery = customQuery(authenticatedQuery, {
+export const teamQuery = customQuery(query, {
   args: { teamId: v.id("teams") },
   input: async (ctx, args) => {
+    const userId = await requireAuth(ctx);
+
     const team = await ctx.db.get(args.teamId);
     if (!team) {
       throw notFound("team", args.teamId);
     }
 
-    const teamRole = await getTeamRole(ctx, args.teamId, ctx.userId);
-    const isOrgAdmin = await isOrganizationAdmin(ctx, team.organizationId, ctx.userId);
+    const teamRole = await getTeamRole(ctx, args.teamId, userId);
+    const isOrgAdmin = await isOrganizationAdmin(ctx, team.organizationId, userId);
 
     if (!(teamRole || isOrgAdmin)) {
-      throw forbidden(
-        "member",
-        "You must be a team member or organization admin to access this team",
-      );
+      throw forbidden("member", "You must be a team member or organization admin to access this team");
     }
 
     return {
-      ctx: {
-        ...ctx,
-        teamId: args.teamId,
-        team,
-        teamRole,
-        organizationId: team.organizationId,
-        isOrgAdmin,
-      },
+      ctx: { ...ctx, userId, teamId: args.teamId, team, teamRole, organizationId: team.organizationId },
       args: {},
     };
   },
 });
 
 /**
- * Team Member Mutation - requires team membership.
- *
- * Builds on `authenticatedMutation`. Use for operations where any team member
- * should have access.
- *
- * @throws {ConvexError} UNAUTHENTICATED - If user is not logged in
- * @throws {ConvexError} NOT_FOUND - If team doesn't exist
- * @throws {ConvexError} FORBIDDEN - If user is not a team member
- *
- * @example
- * ```typescript
- * export const createProject = teamMemberMutation({
- *   args: { name: v.string() },
- *   handler: async (ctx, args) => {
- *     return await ctx.db.insert("projects", {
- *       teamId: ctx.teamId,
- *       name: args.name,
- *     });
- *   },
- * });
- * ```
+ * Team Member Mutation - requires team membership or org admin.
  */
-export const teamMemberMutation = customMutation(authenticatedMutation, {
+export const teamMemberMutation = customMutation(mutation, {
   args: { teamId: v.id("teams") },
   input: async (ctx, args) => {
+    const userId = await requireAuth(ctx);
+
     const team = await ctx.db.get(args.teamId);
     if (!team) {
       throw notFound("team", args.teamId);
     }
 
-    const teamRole = await getTeamRole(ctx, args.teamId, ctx.userId);
-    const isOrgAdmin = await isOrganizationAdmin(ctx, team.organizationId, ctx.userId);
+    const teamRole = await getTeamRole(ctx, args.teamId, userId);
+    const isOrgAdmin = await isOrganizationAdmin(ctx, team.organizationId, userId);
 
     if (!(teamRole || isOrgAdmin)) {
-      throw forbidden("member", "You must be a team member to perform this action");
+      throw forbidden("member", "You must be a team member or organization admin to perform this action");
     }
 
     return {
-      ctx: {
-        ...ctx,
-        teamId: args.teamId,
-        team,
-        teamRole,
-        organizationId: team.organizationId,
-        isOrgAdmin,
-      },
+      ctx: { ...ctx, userId, teamId: args.teamId, team, teamRole, organizationId: team.organizationId },
       args: {},
     };
   },
 });
 
 /**
- * Team Admin Mutation - requires team admin role or organization admin.
- *
- * Builds on `authenticatedMutation`. Use for operations that require team
- * management permissions (adding/removing members, updating team settings).
- *
- * @throws {ConvexError} UNAUTHENTICATED - If user is not logged in
- * @throws {ConvexError} NOT_FOUND - If team doesn't exist
- * @throws {ConvexError} FORBIDDEN - If user is not a team admin or org admin
- *
- * @example
- * ```typescript
- * export const updateTeamSettings = teamLeadMutation({
- *   args: { isPrivate: v.boolean() },
- *   handler: async (ctx, args) => {
- *     await ctx.db.patch(ctx.teamId, { isPrivate: args.isPrivate });
- *   },
- * });
- * ```
+ * Team Lead Mutation - requires team admin role or org admin.
  */
-export const teamLeadMutation = customMutation(authenticatedMutation, {
+export const teamLeadMutation = customMutation(mutation, {
   args: { teamId: v.id("teams") },
   input: async (ctx, args) => {
+    const userId = await requireAuth(ctx);
+
     const team = await ctx.db.get(args.teamId);
     if (!team) {
       throw notFound("team", args.teamId);
     }
 
-    const teamRole = await getTeamRole(ctx, args.teamId, ctx.userId);
-    const isOrgAdmin = await isOrganizationAdmin(ctx, team.organizationId, ctx.userId);
+    const teamRole = await getTeamRole(ctx, args.teamId, userId);
+    const isOrgAdmin = await isOrganizationAdmin(ctx, team.organizationId, userId);
 
-    if (teamRole !== "admin" && !isOrgAdmin) {
-      throw forbidden("admin", "Only team admins or organization admins can perform this action");
+    if (!(teamRole === "admin" || isOrgAdmin)) {
+      throw forbidden("admin", "Only team leads or organization admins can perform this action");
     }
 
     return {
-      ctx: {
-        ...ctx,
-        teamId: args.teamId,
-        team,
-        teamRole,
-        organizationId: team.organizationId,
-        isOrgAdmin,
-      },
+      ctx: { ...ctx, userId, teamId: args.teamId, team, teamRole, organizationId: team.organizationId },
       args: {},
     };
   },
 });
 
 // =============================================================================
-// Layer 5: Project-Scoped with RBAC
+// Project-Scoped (flat - extends query/mutation directly)
 // =============================================================================
 
 /**
- * Project Query - requires viewer role or public project access.
- *
- * Builds on `authenticatedQuery`. Automatically loads the project and checks permissions.
- * Injects into context:
- * - `userId`: The authenticated user's ID (from authenticatedQuery)
- * - `projectId`: The project ID from args
- * - `role`: The user's role in the project (viewer/editor/admin or null)
- * - `project`: The full project document
- *
- * @throws {ConvexError} UNAUTHENTICATED - If user is not logged in
- * @throws {ConvexError} NOT_FOUND - If project doesn't exist
- * @throws {ConvexError} FORBIDDEN - If user lacks access and project is not public
- *
- * @example
- * ```typescript
- * export const getProjectStats = projectQuery({
- *   args: {},
- *   handler: async (ctx) => {
- *     // ctx.project and ctx.role are available
- *     const issues = await ctx.db
- *       .query("issues")
- *       .withIndex("by_project", q => q.eq("projectId", ctx.projectId))
- *       .collect();
- *     return { issueCount: issues.length, role: ctx.role };
- *   },
- * });
- * ```
+ * Project Query - requires project access or public project.
+ * Injects: userId, projectId, role, project
  */
-export const projectQuery = customQuery(authenticatedQuery, {
+export const projectQuery = customQuery(query, {
   args: { projectId: v.id("projects") },
   input: async (ctx, args) => {
-    // ctx.userId available from authenticatedQuery
+    const userId = await requireAuth(ctx);
+
     const project = await ctx.db.get(args.projectId);
     if (!project) {
       throw notFound("project", args.projectId);
     }
 
-    const role = await getProjectRole(ctx, args.projectId, ctx.userId);
+    const role = await getProjectRole(ctx, args.projectId, userId);
     if (!(role || project.isPublic)) {
       throw forbidden();
     }
 
     return {
-      ctx: { ...ctx, projectId: args.projectId, role, project },
+      ctx: { ...ctx, userId, projectId: args.projectId, role, project },
       args: {},
     };
   },
 });
 
 /**
- * Project Viewer Mutation - requires viewer role or higher on a project.
- *
- * Builds on `authenticatedMutation`. Use for operations where any project member
- * should have access.
- *
- * @throws {ConvexError} UNAUTHENTICATED - If user is not logged in
- * @throws {ConvexError} NOT_FOUND - If project doesn't exist
- * @throws {ConvexError} FORBIDDEN - If user is not a project member
- *
- * @example
- * ```typescript
- * export const addBookmark = projectViewerMutation({
- *   args: { issueId: v.id("issues") },
- *   handler: async (ctx, args) => {
- *     await ctx.db.insert("bookmarks", {
- *       userId: ctx.userId,
- *       projectId: ctx.projectId,
- *       issueId: args.issueId,
- *     });
- *   },
- * });
- * ```
+ * Project Viewer Mutation - requires at least viewer role.
  */
-export const projectViewerMutation = customMutation(authenticatedMutation, {
+export const projectViewerMutation = customMutation(mutation, {
   args: { projectId: v.id("projects") },
   input: async (ctx, args) => {
+    const userId = await requireAuth(ctx);
+
     const project = await ctx.db.get(args.projectId);
     if (!project) {
       throw notFound("project", args.projectId);
     }
 
-    const role = await getProjectRole(ctx, args.projectId, ctx.userId);
+    const role = await getProjectRole(ctx, args.projectId, userId);
     requireMinimumRole(role, "viewer");
 
     return {
-      ctx: { ...ctx, projectId: args.projectId, role, project },
+      ctx: { ...ctx, userId, projectId: args.projectId, role, project },
       args: {},
     };
   },
 });
 
 /**
- * Project Editor Mutation - requires editor role or higher on a project.
- *
- * Builds on `authenticatedMutation`. Use for operations that modify project content
- * (issues, sprints, documents).
- *
- * @throws {ConvexError} UNAUTHENTICATED - If user is not logged in
- * @throws {ConvexError} NOT_FOUND - If project doesn't exist
- * @throws {ConvexError} FORBIDDEN - If user role is below editor
- *
- * @example
- * ```typescript
- * export const createIssue = projectEditorMutation({
- *   args: { title: v.string() },
- *   handler: async (ctx, args) => {
- *     return await ctx.db.insert("issues", {
- *       projectId: ctx.projectId,
- *       title: args.title,
- *       createdBy: ctx.userId,
- *     });
- *   },
- * });
- * ```
+ * Project Editor Mutation - requires at least editor role.
  */
-export const projectEditorMutation = customMutation(authenticatedMutation, {
+export const projectEditorMutation = customMutation(mutation, {
   args: { projectId: v.id("projects") },
   input: async (ctx, args) => {
+    const userId = await requireAuth(ctx);
+
     const project = await ctx.db.get(args.projectId);
     if (!project) {
       throw notFound("project", args.projectId);
     }
 
-    const role = await getProjectRole(ctx, args.projectId, ctx.userId);
+    const role = await getProjectRole(ctx, args.projectId, userId);
     requireMinimumRole(role, "editor");
 
     return {
-      ctx: { ...ctx, projectId: args.projectId, role, project },
+      ctx: { ...ctx, userId, projectId: args.projectId, role, project },
       args: {},
     };
   },
 });
 
 /**
- * Project Admin Mutation - requires admin role on a project.
- *
- * Builds on `authenticatedMutation`. Use for operations that require full project
- * control (settings, members, workflow, deletion).
- *
- * @throws {ConvexError} UNAUTHENTICATED - If user is not logged in
- * @throws {ConvexError} NOT_FOUND - If project doesn't exist
- * @throws {ConvexError} FORBIDDEN - If user role is below admin
- *
- * @example
- * ```typescript
- * export const updateProjectSettings = projectAdminMutation({
- *   args: { settings: v.object({ ... }) },
- *   handler: async (ctx, args) => {
- *     await ctx.db.patch(ctx.projectId, { settings: args.settings });
- *   },
- * });
- * ```
+ * Project Admin Mutation - requires admin role.
  */
-export const projectAdminMutation = customMutation(authenticatedMutation, {
+export const projectAdminMutation = customMutation(mutation, {
   args: { projectId: v.id("projects") },
   input: async (ctx, args) => {
+    const userId = await requireAuth(ctx);
+
     const project = await ctx.db.get(args.projectId);
     if (!project) {
       throw notFound("project", args.projectId);
     }
 
-    const role = await getProjectRole(ctx, args.projectId, ctx.userId);
+    const role = await getProjectRole(ctx, args.projectId, userId);
     requireMinimumRole(role, "admin");
 
     return {
-      ctx: { ...ctx, projectId: args.projectId, role, project },
+      ctx: { ...ctx, userId, projectId: args.projectId, role, project },
       args: {},
     };
   },
 });
 
 // =============================================================================
-// Layer 6: Entity-Scoped (Issue, Sprint)
+// Issue-Scoped (flat - extends query/mutation directly)
 // =============================================================================
 
 /**
- * Issue Mutation - requires editor role to modify issues.
- *
- * Builds on `authenticatedMutation`. Automatically loads the issue and its parent
- * project, checks permissions. Use for operations that modify a specific issue.
- *
- * Injects into context:
- * - `userId`: The authenticated user's ID
- * - `projectId`: The issue's project ID (derived from issue)
- * - `role`: The user's role in the project
- * - `project`: The full project document
- * - `issue`: The full issue document
- *
- * @throws {ConvexError} UNAUTHENTICATED - If user is not logged in
- * @throws {ConvexError} NOT_FOUND - If issue or project doesn't exist
- * @throws {ConvexError} FORBIDDEN - If user role is below editor
- *
- * @example
- * ```typescript
- * export const updateIssue = issueMutation({
- *   args: { title: v.optional(v.string()) },
- *   handler: async (ctx, args) => {
- *     // ctx.issue is the loaded issue
- *     if (args.title) {
- *       await ctx.db.patch(ctx.issue._id, { title: args.title });
- *     }
- *   },
- * });
- * ```
+ * Issue Mutation - requires editor role on the parent project.
+ * Injects: userId, projectId, role, project, issue
  */
-export const issueMutation = customMutation(authenticatedMutation, {
+export const issueMutation = customMutation(mutation, {
   args: { issueId: v.id("issues") },
   input: async (ctx, args) => {
+    const userId = await requireAuth(ctx);
+
     const issue = await ctx.db.get(args.issueId);
     if (!issue) {
       throw notFound("issue", args.issueId);
@@ -959,43 +538,24 @@ export const issueMutation = customMutation(authenticatedMutation, {
       throw notFound("project", issue.projectId);
     }
 
-    const role = await getProjectRole(ctx, issue.projectId, ctx.userId);
+    const role = await getProjectRole(ctx, issue.projectId, userId);
     requireMinimumRole(role, "editor");
 
     return {
-      ctx: { ...ctx, projectId: issue.projectId, role, project, issue },
+      ctx: { ...ctx, userId, projectId: issue.projectId, role, project, issue },
       args: {},
     };
   },
 });
 
 /**
- * Issue Viewer Mutation - requires viewer role for issue access.
- *
- * Builds on `authenticatedMutation`. Use for operations where any project member
- * should have access (e.g., commenting, watching).
- *
- * @throws {ConvexError} UNAUTHENTICATED - If user is not logged in
- * @throws {ConvexError} NOT_FOUND - If issue or project doesn't exist
- * @throws {ConvexError} FORBIDDEN - If user is not a project member
- *
- * @example
- * ```typescript
- * export const addComment = issueViewerMutation({
- *   args: { content: v.string() },
- *   handler: async (ctx, args) => {
- *     return await ctx.db.insert("issueComments", {
- *       issueId: ctx.issue._id,
- *       authorId: ctx.userId,
- *       content: args.content,
- *     });
- *   },
- * });
- * ```
+ * Issue Viewer Mutation - requires viewer role (for comments, watches).
  */
-export const issueViewerMutation = customMutation(authenticatedMutation, {
+export const issueViewerMutation = customMutation(mutation, {
   args: { issueId: v.id("issues") },
   input: async (ctx, args) => {
+    const userId = await requireAuth(ctx);
+
     const issue = await ctx.db.get(args.issueId);
     if (!issue) {
       throw notFound("issue", args.issueId);
@@ -1006,100 +566,61 @@ export const issueViewerMutation = customMutation(authenticatedMutation, {
       throw notFound("project", issue.projectId);
     }
 
-    const role = await getProjectRole(ctx, issue.projectId, ctx.userId);
-    requireMinimumRole(role, "viewer");
-
-    return {
-      ctx: { ...ctx, projectId: issue.projectId, role, project, issue },
-      args: {},
-    };
-  },
-});
-
-/**
- * Issue Query - requires viewer role or public project access.
- *
- * Builds on `authenticatedQuery`. Automatically loads the issue and its parent project.
- *
- * Injects into context:
- * - `userId`: The authenticated user's ID
- * - `projectId`: The issue's project ID (derived from issue)
- * - `role`: The user's role in the project
- * - `project`: The full project document
- * - `issue`: The full issue document
- *
- * @throws {ConvexError} UNAUTHENTICATED - If user is not logged in
- * @throws {ConvexError} NOT_FOUND - If issue or project doesn't exist
- * @throws {ConvexError} FORBIDDEN - If user lacks access and project is not public
- *
- * @example
- * ```typescript
- * export const getIssueAttachments = issueQuery({
- *   args: {},
- *   handler: async (ctx) => {
- *     return ctx.issue.attachments ?? [];
- *   },
- * });
- * ```
- */
-export const issueQuery = customQuery(authenticatedQuery, {
-  args: { issueId: v.id("issues") },
-  input: async (ctx, args) => {
-    const issue = await ctx.db.get(args.issueId);
-    if (!issue) {
-      throw notFound("issue", args.issueId);
-    }
-
-    const project = await ctx.db.get(issue.projectId);
-    if (!project) {
-      throw notFound("project", issue.projectId);
-    }
-
-    const role = await getProjectRole(ctx, issue.projectId, ctx.userId);
+    const role = await getProjectRole(ctx, issue.projectId, userId);
     if (!(role || project.isPublic)) {
       throw forbidden();
     }
 
     return {
-      ctx: { ...ctx, projectId: issue.projectId, role, project, issue },
+      ctx: { ...ctx, userId, projectId: issue.projectId, role, project, issue },
       args: {},
     };
   },
 });
 
 /**
- * Sprint Query - requires viewer role or public project access.
- *
- * Builds on `authenticatedQuery`. Automatically loads the sprint and its parent project.
- *
- * Injects into context:
- * - `userId`: The authenticated user's ID
- * - `projectId`: The sprint's project ID (derived from sprint)
- * - `role`: The user's role in the project
- * - `project`: The full project document
- * - `sprint`: The full sprint document
- *
- * @throws {ConvexError} UNAUTHENTICATED - If user is not logged in
- * @throws {ConvexError} NOT_FOUND - If sprint or project doesn't exist
- * @throws {ConvexError} FORBIDDEN - If user lacks access and project is not public
- *
- * @example
- * ```typescript
- * export const getSprintIssues = sprintQuery({
- *   args: {},
- *   handler: async (ctx) => {
- *     const issues = await ctx.db
- *       .query("issues")
- *       .withIndex("by_sprint", q => q.eq("sprintId", ctx.sprint._id))
- *       .collect();
- *     return issues;
- *   },
- * });
- * ```
+ * Issue Query - requires project access or public project.
  */
-export const sprintQuery = customQuery(authenticatedQuery, {
+export const issueQuery = customQuery(query, {
+  args: { issueId: v.id("issues") },
+  input: async (ctx, args) => {
+    const userId = await requireAuth(ctx);
+
+    const issue = await ctx.db.get(args.issueId);
+    if (!issue) {
+      throw notFound("issue", args.issueId);
+    }
+
+    const project = await ctx.db.get(issue.projectId);
+    if (!project) {
+      throw notFound("project", issue.projectId);
+    }
+
+    const role = await getProjectRole(ctx, issue.projectId, userId);
+    if (!(role || project.isPublic)) {
+      throw forbidden();
+    }
+
+    return {
+      ctx: { ...ctx, userId, projectId: issue.projectId, role, project, issue },
+      args: {},
+    };
+  },
+});
+
+// =============================================================================
+// Sprint-Scoped (flat - extends query/mutation directly)
+// =============================================================================
+
+/**
+ * Sprint Query - requires project access or public project.
+ * Injects: userId, projectId, role, project, sprint
+ */
+export const sprintQuery = customQuery(query, {
   args: { sprintId: v.id("sprints") },
   input: async (ctx, args) => {
+    const userId = await requireAuth(ctx);
+
     const sprint = await ctx.db.get(args.sprintId);
     if (!sprint) {
       throw notFound("sprint", args.sprintId);
@@ -1110,41 +631,26 @@ export const sprintQuery = customQuery(authenticatedQuery, {
       throw notFound("project", sprint.projectId);
     }
 
-    const role = await getProjectRole(ctx, sprint.projectId, ctx.userId);
+    const role = await getProjectRole(ctx, sprint.projectId, userId);
     if (!(role || project.isPublic)) {
       throw forbidden();
     }
 
     return {
-      ctx: { ...ctx, projectId: sprint.projectId, role, project, sprint },
+      ctx: { ...ctx, userId, projectId: sprint.projectId, role, project, sprint },
       args: {},
     };
   },
 });
 
 /**
- * Sprint Mutation - requires editor role to modify sprints.
- *
- * Builds on `authenticatedMutation`. Automatically loads the sprint and its parent
- * project, checks permissions.
- *
- * @throws {ConvexError} UNAUTHENTICATED - If user is not logged in
- * @throws {ConvexError} NOT_FOUND - If sprint or project doesn't exist
- * @throws {ConvexError} FORBIDDEN - If user role is below editor
- *
- * @example
- * ```typescript
- * export const updateSprintGoal = sprintMutation({
- *   args: { goal: v.string() },
- *   handler: async (ctx, args) => {
- *     await ctx.db.patch(ctx.sprint._id, { goal: args.goal });
- *   },
- * });
- * ```
+ * Sprint Mutation - requires editor role on the parent project.
  */
-export const sprintMutation = customMutation(authenticatedMutation, {
+export const sprintMutation = customMutation(mutation, {
   args: { sprintId: v.id("sprints") },
   input: async (ctx, args) => {
+    const userId = await requireAuth(ctx);
+
     const sprint = await ctx.db.get(args.sprintId);
     if (!sprint) {
       throw notFound("sprint", args.sprintId);
@@ -1155,172 +661,12 @@ export const sprintMutation = customMutation(authenticatedMutation, {
       throw notFound("project", sprint.projectId);
     }
 
-    const role = await getProjectRole(ctx, sprint.projectId, ctx.userId);
+    const role = await getProjectRole(ctx, sprint.projectId, userId);
     requireMinimumRole(role, "editor");
 
     return {
-      ctx: { ...ctx, projectId: sprint.projectId, role, project, sprint },
+      ctx: { ...ctx, userId, projectId: sprint.projectId, role, project, sprint },
       args: {},
     };
   },
 });
-
-// =============================================================================
-// Context Types
-// =============================================================================
-// These types represent the enhanced context provided by each custom function.
-// Use them to type your handler functions for better IDE support.
-
-/**
- * Base context type for authenticated queries/mutations.
- * Contains the authenticated user's ID.
- */
-export type AuthenticatedQueryCtx = {
-  userId: Id<"users">;
-};
-
-/**
- * Context type for `organizationQuery`.
- * Includes organization data and the user's role.
- */
-export type OrganizationQueryCtx = QueryCtx &
-  AuthenticatedQueryCtx & {
-    organizationId: Id<"organizations">;
-    organizationRole: "owner" | "admin" | "member";
-    organization: Doc<"organizations">;
-  };
-
-/**
- * Context type for organization mutations (member/admin).
- * Same as OrganizationQueryCtx but with MutationCtx.
- */
-export type OrganizationMutationCtx = MutationCtx &
-  AuthenticatedQueryCtx & {
-    organizationId: Id<"organizations">;
-    organizationRole: "owner" | "admin" | "member";
-    organization: Doc<"organizations">;
-  };
-
-/**
- * Context type for `workspaceQuery`.
- * Includes workspace data, roles, and the parent organization ID.
- */
-export type WorkspaceQueryCtx = QueryCtx &
-  AuthenticatedQueryCtx & {
-    workspaceId: Id<"workspaces">;
-    workspace: Doc<"workspaces">;
-    organizationId: Id<"organizations">;
-    organizationRole: "owner" | "admin" | "member";
-    workspaceRole: "admin" | "editor" | "member" | null;
-    isOrgAdmin: boolean;
-  };
-
-/**
- * Context type for workspace mutations.
- * Same as WorkspaceQueryCtx but with MutationCtx.
- */
-export type WorkspaceMutationCtx = MutationCtx &
-  AuthenticatedQueryCtx & {
-    workspaceId: Id<"workspaces">;
-    workspace: Doc<"workspaces">;
-    organizationId: Id<"organizations">;
-    organizationRole: "owner" | "admin" | "member";
-    workspaceRole: "admin" | "editor" | "member" | null;
-    isOrgAdmin: boolean;
-  };
-
-/**
- * Context type for `teamQuery`.
- * Includes team data and roles.
- */
-export type TeamQueryCtx = QueryCtx &
-  AuthenticatedQueryCtx & {
-    teamId: Id<"teams">;
-    team: Doc<"teams">;
-    teamRole: "admin" | "member" | null;
-    organizationId: Id<"organizations">;
-    isOrgAdmin: boolean;
-  };
-
-/**
- * Context type for team mutations (member/admin).
- * Same as TeamQueryCtx but with MutationCtx.
- */
-export type TeamMutationCtx = MutationCtx &
-  AuthenticatedQueryCtx & {
-    teamId: Id<"teams">;
-    team: Doc<"teams">;
-    teamRole: "admin" | "member" | null;
-    organizationId: Id<"organizations">;
-    isOrgAdmin: boolean;
-  };
-
-/**
- * Context type for `projectQuery` and role-based project mutations.
- * Includes project data and the user's role.
- */
-export type ProjectQueryCtx = QueryCtx &
-  AuthenticatedQueryCtx & {
-    projectId: Id<"projects">;
-    role: "viewer" | "editor" | "admin" | null;
-    project: Doc<"projects">;
-  };
-
-/**
- * Context type for project mutations (viewer/editor/admin).
- * Same as ProjectQueryCtx but with MutationCtx.
- */
-export type ProjectMutationCtx = MutationCtx &
-  AuthenticatedQueryCtx & {
-    projectId: Id<"projects">;
-    role: "viewer" | "editor" | "admin" | null;
-    project: Doc<"projects">;
-  };
-
-/**
- * Context type for `issueQuery`.
- * Includes issue data in addition to project context.
- */
-export type IssueQueryCtx = QueryCtx &
-  AuthenticatedQueryCtx & {
-    projectId: Id<"projects">;
-    role: "viewer" | "editor" | "admin" | null;
-    project: Doc<"projects">;
-    issue: Doc<"issues">;
-  };
-
-/**
- * Context type for `issueMutation` and `issueViewerMutation`.
- * Includes issue data in addition to project context.
- */
-export type IssueMutationCtx = MutationCtx &
-  AuthenticatedQueryCtx & {
-    projectId: Id<"projects">;
-    role: "viewer" | "editor" | "admin" | null;
-    project: Doc<"projects">;
-    issue: Doc<"issues">;
-  };
-
-/**
- * Context type for `sprintQuery`.
- * Includes sprint data in addition to project context.
- */
-export type SprintQueryCtx = QueryCtx &
-  AuthenticatedQueryCtx & {
-    projectId: Id<"projects">;
-    role: "viewer" | "editor" | "admin" | null;
-    project: Doc<"projects">;
-    sprint: Doc<"sprints">;
-  };
-
-/**
- * Context type for `sprintMutation`.
- * Includes sprint data in addition to project context.
- */
-export type SprintMutationCtx = MutationCtx &
-  AuthenticatedQueryCtx & {
-    projectId: Id<"projects">;
-    role: "viewer" | "editor" | "admin" | null;
-    project: Doc<"projects">;
-    sprint: Doc<"sprints">;
-  };

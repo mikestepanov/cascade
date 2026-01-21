@@ -11,6 +11,7 @@ import { anthropic } from "@ai-sdk/anthropic";
 import { generateText } from "ai";
 import { v } from "convex/values";
 import { internal } from "./_generated/api";
+import type { Id } from "./_generated/dataModel";
 import { action, internalAction } from "./_generated/server";
 import { extractUsage } from "./lib/aiHelpers";
 import { notFound, unauthenticated } from "./lib/errors";
@@ -26,7 +27,8 @@ export const generateEmbedding = internalAction({
   args: {
     text: v.string(),
   },
-  handler: async (ctx, args) => {
+  returns: v.array(v.float64()),
+  handler: async (ctx, args): Promise<number[]> => {
     return await ctx.runAction(internal.internal.ai.generateEmbedding, args);
   },
 });
@@ -39,7 +41,8 @@ export const generateIssueEmbedding = internalAction({
   args: {
     issueId: v.id("issues"),
   },
-  handler: async (ctx, args) => {
+  returns: v.array(v.float64()),
+  handler: async (ctx, args): Promise<number[]> => {
     const issue = await ctx.runQuery(internal.internal.ai.getIssueData, {
       issueId: args.issueId,
     });
@@ -73,7 +76,7 @@ export const getIssueForEmbedding = internalAction({
   args: {
     issueId: v.id("issues"),
   },
-  handler: async (ctx, args) => {
+  handler: async (ctx, args): Promise<{ _id: string; title: string; description?: string } | null> => {
     return await ctx.runQuery(internal.internal.ai.getIssueData, { issueId: args.issueId });
   },
 });
@@ -88,7 +91,7 @@ export const chat = action({
     projectId: v.optional(v.id("projects")),
     message: v.string(),
   },
-  handler: async (ctx, args) => {
+  handler: async (ctx, args): Promise<{ chatId: Id<"aiChats">; message: string }> => {
     const userId = await ctx.auth.getUserIdentity();
     if (!userId) {
       throw unauthenticated();
@@ -101,14 +104,13 @@ export const chat = action({
     });
 
     // Create or get chat
-    let chatId = args.chatId;
-    if (!chatId) {
-      chatId = await ctx.runMutation(internal.internal.ai.createChat, {
+    const chatId: Id<"aiChats"> =
+      args.chatId ??
+      (await ctx.runMutation(internal.internal.ai.createChat, {
         userId: userId.subject,
         projectId: args.projectId,
         title: args.message.slice(0, 100), // First 100 chars as title
-      });
-    }
+      }));
 
     // Store user message
     await ctx.runMutation(internal.internal.ai.addMessage, {
@@ -186,7 +188,7 @@ export const getProjectContext = internalAction({
   args: {
     projectId: v.id("projects"),
   },
-  handler: async (ctx, args) => {
+  handler: async (ctx, args): Promise<string> => {
     return await ctx.runQuery(internal.internal.ai.getProjectContext, args);
   },
 });
@@ -209,7 +211,7 @@ export const trackUsage = internalAction({
     responseTime: v.number(),
     success: v.boolean(),
   },
-  handler: async (ctx, args) => {
+  handler: async (ctx, args): Promise<void> => {
     await ctx.runMutation(internal.internal.ai.trackUsage, args);
   },
 });

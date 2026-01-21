@@ -153,7 +153,7 @@ export const listMine = authenticatedQuery({
       .withIndex("by_user", (q) => q.eq("userId", ctx.userId))
       .collect();
 
-    return pages.sort((a, b) => b.createdAt - a.createdAt);
+    return pages.sort((a, b) => b._creationTime - a._creationTime);
   },
 });
 

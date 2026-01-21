@@ -90,3 +90,26 @@ Agents with Antigravity capabilities have access to a powerful **Browser Subagen
   }
   ```
 - **Policy:** If `secrets.json` exists, load it and use the credentials automatically. If valid credentials fail, `notify_user` immediately.
+
+### 4. Total Mirror Capture System
+
+For comprehensive competitor research, use the **Total Mirror** scripts:
+
+```bash
+# Single page capture
+pnpm run mirror <url> <competitor> <page>
+# Example: pnpm run mirror https://linear.app/features linear features
+
+# Batch capture (all defined pages)
+pnpm run mirror:batch
+```
+
+**Scripts:**
+
+- `scripts/scrape_full_mirror.js` — Single page capture (HTML, JS, CSS, fonts, images, CSS vars)
+- `scripts/mirror_batch.js` — Runs all defined targets (Linear, ClickUp, Notion)
+
+**Output:** `docs/research/library/<competitor>/`
+
+**Gitignored (regenerable):** `assets/`, `*.html`, `*_manifest.json`, `*_network.json`
+**Tracked (intelligence):** `*_deep.json` (CSS vars, keyframes, fonts)

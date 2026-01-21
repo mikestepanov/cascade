@@ -449,7 +449,7 @@ export const getUsageStats = authenticatedQuery({
     // Get recent usage logs
     const logs = await ctx.db
       .query("apiUsageLogs")
-      .withIndex("by_api_key_created", (q) => q.eq("apiKeyId", args.keyId))
+      .withIndex("by_api_key", (q) => q.eq("apiKeyId", args.keyId))
       .order("desc")
       .take(100);
 

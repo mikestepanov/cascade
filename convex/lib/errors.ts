@@ -33,8 +33,9 @@ export type ErrorCode =
 /**
  * Error data structure sent to client.
  * All fields except `code` are optional.
+ * Index signature required for Convex Value compatibility.
  */
-export interface ErrorData {
+export type ErrorData = {
   code: ErrorCode;
   message?: string;
   resource?: string;
@@ -42,7 +43,7 @@ export interface ErrorData {
   field?: string;
   requiredRole?: string;
   retryAfter?: number;
-}
+} & Record<string, string | number | undefined>;
 
 // =============================================================================
 // Factory Functions

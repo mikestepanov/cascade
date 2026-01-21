@@ -1,6 +1,6 @@
 import { v } from "convex/values";
 import { pruneNull } from "convex-helpers";
-import type { Id } from "./_generated/dataModel";
+import type { Doc, Id } from "./_generated/dataModel";
 import type { MutationCtx, QueryCtx } from "./_generated/server";
 import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
 import { batchFetchOrganizations, batchFetchUsers } from "./lib/batchHelpers";
