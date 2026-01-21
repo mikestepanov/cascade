@@ -147,6 +147,69 @@ await page.waitForLoadState('networkidle');
 
 ---
 
+## 🚨 CRITICAL: Output Verification & Silent Failures
+
+### The Problem
+
+Shell shims (`pnpm`, `npm`, `npx`, `.bin/*`) use `exec` which breaks stdout capture in Windows/Git Bash environments. Commands appear to succeed (exit code 0) but produce NO OUTPUT.
+
+### HARD RULES
+
+1. **Empty output is NEVER success** - If a command that should produce output returns nothing, this is a CRITICAL FAILURE. Stop and investigate immediately.
+
+2. **Truncated output is a RED FLAG** - If output appears cut off, re-run with different approach before proceeding.
+
+3. **MUST see actual verification** - Before claiming tests/lint passed:
+   - Tests: Must see "X passed, Y failed" or equivalent
+   - Lint: Must see error count or "no issues"
+   - TypeScript: Must see "Found 0 errors" or actual error list
+   - If you can't see this output, YOU DON'T KNOW IF IT PASSED
+
+4. **When output fails, use direct node**:
+   ```bash
+   # Instead of: pnpm test
+   node node_modules/jest/bin/jest.js
+
+   # Instead of: pnpm biome check
+   node node_modules/@biomejs/biome/bin/biome check
+
+   # Instead of: pnpm tsc
+   node node_modules/typescript/bin/tsc
+   ```
+
+5. **NEVER push without verified output** - If you cannot get command output working, STOP and tell the user. Do not assume success.
+
+### Response Protocol
+
+When output is empty or cut:
+```
+⚠️ CRITICAL: Command produced no output. This is NOT success.
+- Command: [what you ran]
+- Expected: [what output should look like]
+- Action: Investigating with direct node invocation...
+```
+
+---
+
+## "Make it WORK" not "Make it PASS"
+
+### FORBIDDEN Shortcuts
+
+- ❌ Deleting tests to make CI pass
+- ❌ Adding `@ts-ignore` to hide type errors
+- ❌ Using `any` to bypass type checking
+- ❌ Suppressing lint rules without fixing underlying issue
+- ❌ Assuming empty output means success
+
+### Required Approach
+
+- ✅ Understand WHY an error occurs before fixing
+- ✅ Fix the root cause, not the symptom
+- ✅ If a test is truly obsolete, explain WHY before deleting
+- ✅ If you can't fix it, tell the user - don't hide it
+
+---
+
 ## Code Quality
 
 ### Before Writing Code
