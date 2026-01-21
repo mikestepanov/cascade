@@ -76,3 +76,17 @@ Agents with Antigravity capabilities have access to a powerful **Browser Subagen
 4.  **Artifacts**: Agent generates reports (`tech-stack.md`) and visual proofs (recordings).
 
 **Note:** This bypasses standard "bot" limitations by using a full headless browser environment.
+
+### 3. Credential Management
+
+**Before asking the user for credentials**, always check `secrets.json` in the root directory.
+
+- **File Path:** `./secrets.json` (Gitignored)
+- **Structure:**
+  ```json
+  {
+    "google": { "email": "...", "password": "..." },
+    "linear": { ... }
+  }
+  ```
+- **Policy:** If `secrets.json` exists, load it and use the credentials automatically. If valid credentials fail, `notify_user` immediately.

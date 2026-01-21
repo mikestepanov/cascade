@@ -53,3 +53,7 @@ nul
 NUL
 
 build-output/
+
+# Secrets (Local only)
+secrets.json
+.secrets.*
