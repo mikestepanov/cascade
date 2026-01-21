@@ -1,44 +1,64 @@
-# Nixelo vs. Major Open Source Projects - Competitive Analysis
+# Nixelo vs. Competitors - Comprehensive Feature Matrix
 
-> **Date:** 2025-01-17
+> **Date:** 2026-01-20
 > **Nixelo Version:** 1.1 (Active Development)
-> **Comparison Against:** Canvas LMS, Cal.com, AppFlowy, Kimai
+> **Comparison Against:**
+>
+> - **PM:** Linear, ClickUp, Asana, Notion
+> - **Meeting AI:** Read AI, Otter, Fireflies
+> - **Open Source:** AppFlowy, Cal.com
 
 ---
 
-## 📊 Quick Comparison Matrix
+## 🏢 Market Benchmark: Proprietary Leaders
 
-| Metric | Nixelo | Canvas LMS | Cal.com | AppFlowy | Kimai |
-|--------|---------|------------|---------|----------|-------|
-| **GitHub Stars** | ~New | 5,000+ | 36,000+ | 58,000+ | 3,500+ |
-| **Contributors** | ~New | 415+ | 772+ | 400+ | 100+ |
-| **Tech Stack** | Convex/React | Rails/React | Next.js/tRPC | Flutter/Rust | Symfony/PHP |
-| **Primary Use** | Project Mgmt | LMS | Scheduling | Project | Time Tracking |
-| **License** | TBD | AGPLv3 | AGPLv3 + Comm | AGPLv3 + Core | AGPL-3.0 |
-| **Market Maturity** | Pre-launch | Mature | Growing Fast | Growing | Established |
-| **Target Market** | Teams/Projects | Education | Everyone | Knowledge Work | Agencies/Time |
-| **Self-hosting** | Yes (Convex) | Yes | Yes | Yes | Yes |
-| **Mobile Apps** | ❌ No | ✅ Yes | Community | ✅ Native | Community |
-| **Real-time Collab** | ✅ Yes | ❌ Limited | ❌ No | ✅ Yes (CRDT) | ❌ No |
+| Metric          | Nixelo           | Linear         | ClickUp     | Asana       | Notion      |
+| --------------- | ---------------- | -------------- | ----------- | ----------- | ----------- |
+| **Type**        | Open Source      | Proprietary    | Proprietary | Proprietary | Proprietary |
+| **Primary Use** | PM + Docs        | Issue Tracking | All-in-One  | Work Mgmt   | Knowledge   |
+| **Pricing**     | Free (Self-host) | $8+/user       | $7+/user    | $11+/user   | $8+/user    |
+| **Real-time**   | ✅✅ Excellent   | ✅✅ Excellent | ⚠️ Good     | ❌ Limited  | ⚠️ Good     |
+| **Docs**        | ✅ Built-in      | ❌ No          | ✅ Built-in | ❌ No       | ✅ Core     |
+| **Meetings**    | ✅ Native AI     | ❌ No          | ❌ No       | ❌ No       | ❌ No       |
 
 ---
 
-## 🎯 Project Category Analysis
+## 🌐 Open Source Benchmarks
+
+> Detailed comparison against leading open-source projects to benchmark technical maturity and community.
+
+### Open Source Matrix
+
+| Metric               | Nixelo         | Canvas LMS  | Cal.com       | AppFlowy       | Kimai         |
+| -------------------- | -------------- | ----------- | ------------- | -------------- | ------------- |
+| **GitHub Stars**     | ~New           | 5,000+      | 36,000+       | 58,000+        | 3,500+        |
+| **Contributors**     | ~New           | 415+        | 772+          | 400+           | 100+          |
+| **Tech Stack**       | Convex/React   | Rails/React | Next.js/tRPC  | Flutter/Rust   | Symfony/PHP   |
+| **Primary Use**      | Project Mgmt   | LMS         | Scheduling    | Project        | Time Tracking |
+| **License**          | TBD            | AGPLv3      | AGPLv3 + Comm | AGPLv3 + Core  | AGPL-3.0      |
+| **Market Maturity**  | Pre-launch     | Mature      | Growing Fast  | Growing        | Established   |
+| **Target Market**    | Teams/Projects | Education   | Everyone      | Knowledge Work | Agencies/Time |
+| **Self-hosting**     | Yes (Convex)   | Yes         | Yes           | Yes            | Yes           |
+| **Mobile Apps**      | ❌ No          | ✅ Yes      | Community     | ✅ Native      | Community     |
+| **Real-time Collab** | ✅ Yes         | ❌ Limited  | ❌ No         | ✅ Yes (CRDT)  | ❌ No         |
+
+### Project Category Analysis
 
 ### Nixelo's Position
+
 **Category:** Collaborative Project Management (Confluence + Jira hybrid)
 **Closest Competitor in Study:** AppFlowy (project/collaboration)
 **Market Niche:** Real-time team collaboration with documents + issues
 
 ### How Projects Differ in Purpose
 
-| Project | Primary Purpose | Secondary Purpose | Tertiary Purpose |
-|---------|----------------|-------------------|------------------|
-| **Nixelo** | Project Management | Document Collaboration | Team Communication |
-| **Canvas LMS** | Education/Learning | Course Management | Student Assessment |
-| **Cal.com** | Meeting Scheduling | Calendar Management | Team Coordination |
-| **AppFlowy** | Knowledge Management | Personal Organization | Team Collaboration |
-| **Kimai** | Time Tracking | Invoicing | Project Budgeting |
+| Project        | Primary Purpose      | Secondary Purpose      | Tertiary Purpose   |
+| -------------- | -------------------- | ---------------------- | ------------------ |
+| **Nixelo**     | Project Management   | Document Collaboration | Team Communication |
+| **Canvas LMS** | Education/Learning   | Course Management      | Student Assessment |
+| **Cal.com**    | Meeting Scheduling   | Calendar Management    | Team Coordination  |
+| **AppFlowy**   | Knowledge Management | Personal Organization  | Team Collaboration |
+| **Kimai**      | Time Tracking        | Invoicing              | Project Budgeting  |
 
 **Insight:** Nixelo has **no direct competitor** in this comparison set. Each project serves a different primary use case, though there's overlap with AppFlowy in collaboration.
 
@@ -48,35 +68,35 @@
 
 ### Architecture Patterns
 
-| Project | Architecture | Frontend | Backend | Database | Unique Tech |
-|---------|-------------|----------|---------|----------|-------------|
-| **Nixelo** | Serverless | React 19 | Convex | Convex DB | Convex (all-in-one) |
-| **Canvas** | Monolithic | React | Ruby on Rails | PostgreSQL | GraphQL + REST |
-| **Cal.com** | Monorepo | Next.js 14 | Next.js (tRPC) | PostgreSQL | tRPC (type-safe) |
-| **AppFlowy** | Cross-platform | Flutter | Rust | SQLite/Postgres | CRDT sync |
-| **Kimai** | Traditional MVC | Bootstrap/Tabler | Symfony (PHP) | MySQL/MariaDB | Plugin system |
+| Project      | Architecture    | Frontend         | Backend        | Database        | Unique Tech         |
+| ------------ | --------------- | ---------------- | -------------- | --------------- | ------------------- |
+| **Nixelo**   | Serverless      | React 19         | Convex         | Convex DB       | Convex (all-in-one) |
+| **Canvas**   | Monolithic      | React            | Ruby on Rails  | PostgreSQL      | GraphQL + REST      |
+| **Cal.com**  | Monorepo        | Next.js 14       | Next.js (tRPC) | PostgreSQL      | tRPC (type-safe)    |
+| **AppFlowy** | Cross-platform  | Flutter          | Rust           | SQLite/Postgres | CRDT sync           |
+| **Kimai**    | Traditional MVC | Bootstrap/Tabler | Symfony (PHP)  | MySQL/MariaDB   | Plugin system       |
 
 ### Tech Stack Modernity Score (1-10)
 
-| Project | Score | Reasoning |
-|---------|-------|-----------|
-| **Nixelo** | 10/10 | Cutting-edge: React 19, Convex serverless, real-time by default |
-| **Cal.com** | 9/10 | Modern: Next.js 14, tRPC, Prisma, full TypeScript |
-| **AppFlowy** | 9/10 | Modern: Flutter + Rust, CRDT, cross-platform |
-| **Canvas** | 6/10 | Mature but older: Rails (battle-tested but not cutting-edge) |
-| **Kimai** | 5/10 | Traditional: Symfony 6 (solid but PHP/MVC is dated) |
+| Project      | Score | Reasoning                                                       |
+| ------------ | ----- | --------------------------------------------------------------- |
+| **Nixelo**   | 10/10 | Cutting-edge: React 19, Convex serverless, real-time by default |
+| **Cal.com**  | 9/10  | Modern: Next.js 14, tRPC, Prisma, full TypeScript               |
+| **AppFlowy** | 9/10  | Modern: Flutter + Rust, CRDT, cross-platform                    |
+| **Canvas**   | 6/10  | Mature but older: Rails (battle-tested but not cutting-edge)    |
+| **Kimai**    | 5/10  | Traditional: Symfony 6 (solid but PHP/MVC is dated)             |
 
 **Winner: Nixelo** - Most modern tech stack, leveraging latest React and serverless architecture
 
 ### Developer Experience Score (1-10)
 
-| Project | Score | Reasoning |
-|---------|-------|-----------|
-| **Nixelo** | 9/10 | Convex = zero backend boilerplate, React 19, TypeScript, instant DB |
-| **Cal.com** | 9/10 | tRPC type safety, monorepo, great DX with Prisma |
-| **AppFlowy** | 7/10 | Flutter + Rust has learning curve, but powerful |
-| **Canvas** | 6/10 | Rails conventions help, but large codebase, slower iteration |
-| **Kimai** | 6/10 | Symfony is solid, but PHP ecosystem less modern |
+| Project      | Score | Reasoning                                                           |
+| ------------ | ----- | ------------------------------------------------------------------- |
+| **Nixelo**   | 9/10  | Convex = zero backend boilerplate, React 19, TypeScript, instant DB |
+| **Cal.com**  | 9/10  | tRPC type safety, monorepo, great DX with Prisma                    |
+| **AppFlowy** | 7/10  | Flutter + Rust has learning curve, but powerful                     |
+| **Canvas**   | 6/10  | Rails conventions help, but large codebase, slower iteration        |
+| **Kimai**    | 6/10  | Symfony is solid, but PHP ecosystem less modern                     |
 
 **Winner: Tie between Nixelo and Cal.com** - Both prioritize DX
 
@@ -86,25 +106,26 @@
 
 ### Core Features Matrix
 
-| Feature Category | Nixelo | Canvas | Cal.com | AppFlowy | Kimai |
-|-----------------|---------|--------|---------|----------|-------|
-| **Documents** | ✅ Rich text + BlockNote | ✅ Pages/content | ❌ No | ✅ Rich text + blocks | ❌ No |
-| **Tasks/Issues** | ✅ Full issue tracking | ✅ Assignments | ❌ No | ✅ Databases (Kanban) | ❌ No |
-| **Kanban Boards** | ✅ Drag & drop | ❌ No | ❌ No | ✅ Board view | ❌ No |
-| **Time Tracking** | ✅ Basic | ❌ No | ❌ No | ❌ No | ✅✅✅ Advanced |
-| **Real-time Collab** | ✅✅ Yes | ❌ Limited | ❌ No | ✅✅ Yes (CRDT) | ❌ No |
-| **Calendar/Schedule** | ❌ No | ✅ Course calendar | ✅✅✅ Full scheduling | ✅ Calendar view | ❌ No |
-| **Analytics** | ✅ Dashboard | ✅ Learning analytics | ✅ Booking analytics | ❌ No | ✅✅ Reports |
-| **Invoicing** | ❌ No | ❌ No | ❌ No | ❌ No | ✅✅✅ Full invoicing |
-| **Mobile Apps** | ❌ No | ✅ Native | ❌ Community | ✅ Native | ❌ Community |
-| **API** | ✅ Convex API | ✅ REST + GraphQL | ✅✅ REST | ❌ Limited | ✅ REST |
-| **SSO/SAML** | ❌ No | ✅ Yes | ✅ Yes (paid) | ❌ No | ✅ Yes |
-| **Webhooks** | ✅ Yes | ✅ Yes | ✅ Yes | ❌ No | ✅ Yes |
-| **Email Notifs** | ✅✅ Just completed! | ✅ Yes | ✅ Yes | ❌ No | ✅ Yes |
+| Feature Category      | Nixelo                   | Canvas                | Cal.com                | AppFlowy              | Kimai                 |
+| --------------------- | ------------------------ | --------------------- | ---------------------- | --------------------- | --------------------- |
+| **Documents**         | ✅ Rich text + BlockNote | ✅ Pages/content      | ❌ No                  | ✅ Rich text + blocks | ❌ No                 |
+| **Tasks/Issues**      | ✅ Full issue tracking   | ✅ Assignments        | ❌ No                  | ✅ Databases (Kanban) | ❌ No                 |
+| **Kanban Boards**     | ✅ Drag & drop           | ❌ No                 | ❌ No                  | ✅ Board view         | ❌ No                 |
+| **Time Tracking**     | ✅ Basic                 | ❌ No                 | ❌ No                  | ❌ No                 | ✅✅✅ Advanced       |
+| **Real-time Collab**  | ✅✅ Yes                 | ❌ Limited            | ❌ No                  | ✅✅ Yes (CRDT)       | ❌ No                 |
+| **Calendar/Schedule** | ❌ No                    | ✅ Course calendar    | ✅✅✅ Full scheduling | ✅ Calendar view      | ❌ No                 |
+| **Analytics**         | ✅ Dashboard             | ✅ Learning analytics | ✅ Booking analytics   | ❌ No                 | ✅✅ Reports          |
+| **Invoicing**         | ❌ No                    | ❌ No                 | ❌ No                  | ❌ No                 | ✅✅✅ Full invoicing |
+| **Mobile Apps**       | ❌ No                    | ✅ Native             | ❌ Community           | ✅ Native             | ❌ Community          |
+| **API**               | ✅ Convex API            | ✅ REST + GraphQL     | ✅✅ REST              | ❌ Limited            | ✅ REST               |
+| **SSO/SAML**          | ❌ No                    | ✅ Yes                | ✅ Yes (paid)          | ❌ No                 | ✅ Yes                |
+| **Webhooks**          | ✅ Yes                   | ✅ Yes                | ✅ Yes                 | ❌ No                 | ✅ Yes                |
+| **Email Notifs**      | ✅✅ Just completed!     | ✅ Yes                | ✅ Yes                 | ❌ No                 | ✅ Yes                |
 
 ### Feature Depth Analysis
 
 **Nixelo's Strengths:**
+
 - ✅ Real-time collaboration (best-in-class with Convex)
 - ✅ Combined documents + issues (unique in comparison set)
 - ✅ Kanban boards with drag-and-drop
@@ -117,6 +138,7 @@
 - ✅ Email notifications (just completed!)
 
 **Nixelo's Gaps (compared to competitors):**
+
 - ❌ Mobile apps (Canvas, AppFlowy have native apps)
 - ❌ Calendar integration (Cal.com dominates this)
 - ❌ Offline mode (AppFlowy has this)
@@ -131,16 +153,17 @@
 
 ### GitHub Metrics
 
-| Metric | Nixelo | Canvas | Cal.com | AppFlowy | Kimai |
-|--------|---------|--------|---------|----------|-------|
-| **Stars** | ~New project | 5,000+ | 36,000+ | 58,000+ | 3,500+ |
-| **Forks** | ~New | 2,000+ | 8,000+ | 3,800+ | 800+ |
-| **Contributors** | 1 (you!) | 415+ | 772+ | 400+ | 100+ |
-| **Commits** | ~100-200? | 74,704+ | 14,000+ | 7,208+ | 5,000+ |
-| **Age** | ~2024-2025 | 10+ years | 3-4 years | 2-3 years | 10+ years |
-| **Weekly Commits** | Active dev | 50-100 | 100-200 | 50-100 | 20-50 |
+| Metric             | Nixelo       | Canvas    | Cal.com   | AppFlowy  | Kimai     |
+| ------------------ | ------------ | --------- | --------- | --------- | --------- |
+| **Stars**          | ~New project | 5,000+    | 36,000+   | 58,000+   | 3,500+    |
+| **Forks**          | ~New         | 2,000+    | 8,000+    | 3,800+    | 800+      |
+| **Contributors**   | 1 (you!)     | 415+      | 772+      | 400+      | 100+      |
+| **Commits**        | ~100-200?    | 74,704+   | 14,000+   | 7,208+    | 5,000+    |
+| **Age**            | ~2024-2025   | 10+ years | 3-4 years | 2-3 years | 10+ years |
+| **Weekly Commits** | Active dev   | 50-100    | 100-200   | 50-100    | 20-50     |
 
 **Analysis:**
+
 - **Nixelo is brand new** - Just getting started
 - **Canvas & Kimai are mature** (10+ years, stable)
 - **Cal.com & AppFlowy are fast-growing** (viral growth, 3-4 years old)
@@ -149,6 +172,7 @@
 ### Growth Trajectory Comparison
 
 **Fast Growers (learn from these):**
+
 - **Cal.com:** 0 → 36k stars in ~3 years
   - Strategy: Developer-first, API-first, white-label, open-core
   - Marketing: "Open-source Calendly" positioning
@@ -158,10 +182,12 @@
   - Marketing: Data ownership narrative
 
 **Slow & Steady:**
+
 - **Canvas:** Established player, institutional adoption
 - **Kimai:** Niche market (time tracking), steady growth
 
 **Nixelo's Growth Strategy Should:**
+
 1. **Position clearly:** "Open-source Confluence + Jira alternative"
 2. **Emphasize real-time:** "True real-time collaboration"
 3. **Developer-first:** Great DX with Convex
@@ -173,37 +199,37 @@
 
 ### Scalability
 
-| Project | Scalability | Max Users Seen | Bottlenecks |
-|---------|-------------|----------------|-------------|
-| **Nixelo** | ⭐⭐⭐⭐⭐ Excellent | Unknown (new) | None (serverless Convex scales) |
-| **Canvas** | ⭐⭐⭐⭐ Very Good | Millions | Monolithic Rails can be slow |
-| **Cal.com** | ⭐⭐⭐⭐ Very Good | Thousands | Database queries (Prisma N+1) |
-| **AppFlowy** | ⭐⭐⭐⭐ Very Good | Thousands | CRDT sync with many users |
-| **Kimai** | ⭐⭐⭐ Good | Hundreds | PHP/MySQL traditional limits |
+| Project      | Scalability          | Max Users Seen | Bottlenecks                     |
+| ------------ | -------------------- | -------------- | ------------------------------- |
+| **Nixelo**   | ⭐⭐⭐⭐⭐ Excellent | Unknown (new)  | None (serverless Convex scales) |
+| **Canvas**   | ⭐⭐⭐⭐ Very Good   | Millions       | Monolithic Rails can be slow    |
+| **Cal.com**  | ⭐⭐⭐⭐ Very Good   | Thousands      | Database queries (Prisma N+1)   |
+| **AppFlowy** | ⭐⭐⭐⭐ Very Good   | Thousands      | CRDT sync with many users       |
+| **Kimai**    | ⭐⭐⭐ Good          | Hundreds       | PHP/MySQL traditional limits    |
 
 **Winner: Nixelo** - Serverless Convex architecture scales automatically
 
 ### Real-time Capabilities
 
-| Project | Real-time Sync | Technology | Latency |
-|---------|----------------|------------|---------|
-| **Nixelo** | ✅✅✅ Excellent | Convex (built-in) | <100ms |
-| **AppFlowy** | ✅✅✅ Excellent | CRDT (Yjs) | <100ms |
-| **Canvas** | ⭐ Limited | Polling/ActionCable | 1-5s |
-| **Cal.com** | ❌ None | No real-time | N/A |
-| **Kimai** | ❌ None | Traditional request/response | N/A |
+| Project      | Real-time Sync   | Technology                   | Latency |
+| ------------ | ---------------- | ---------------------------- | ------- |
+| **Nixelo**   | ✅✅✅ Excellent | Convex (built-in)            | <100ms  |
+| **AppFlowy** | ✅✅✅ Excellent | CRDT (Yjs)                   | <100ms  |
+| **Canvas**   | ⭐ Limited       | Polling/ActionCable          | 1-5s    |
+| **Cal.com**  | ❌ None          | No real-time                 | N/A     |
+| **Kimai**    | ❌ None          | Traditional request/response | N/A     |
 
 **Winner: Tie between Nixelo and AppFlowy** - Both have true real-time
 
 ### Deployment Complexity
 
-| Project | Complexity (1=easy, 10=hard) | Reasoning |
-|---------|------------------------------|-----------|
-| **Nixelo** | 2/10 | Deploy to Convex + Vercel (minutes) |
-| **Cal.com** | 3/10 | Docker or Vercel (straightforward) |
-| **AppFlowy** | 5/10 | Mobile builds required, cloud optional |
-| **Kimai** | 6/10 | PHP + MySQL + web server config |
-| **Canvas** | 8/10 | Complex Rails stack, many dependencies |
+| Project      | Complexity (1=easy, 10=hard) | Reasoning                              |
+| ------------ | ---------------------------- | -------------------------------------- |
+| **Nixelo**   | 2/10                         | Deploy to Convex + Vercel (minutes)    |
+| **Cal.com**  | 3/10                         | Docker or Vercel (straightforward)     |
+| **AppFlowy** | 5/10                         | Mobile builds required, cloud optional |
+| **Kimai**    | 6/10                         | PHP + MySQL + web server config        |
+| **Canvas**   | 8/10                         | Complex Rails stack, many dependencies |
 
 **Winner: Nixelo** - Easiest deployment (Convex handles everything)
 
@@ -213,37 +239,42 @@
 
 ### Monetization Strategy
 
-| Project | Open Core? | Free Tier | Paid Offering | Price Point |
-|---------|-----------|-----------|---------------|-------------|
-| **Nixelo** | TBD | TBD | TBD | TBD |
-| **Canvas** | ❌ Pure open-source | 100% free (self-host) | Instructure Cloud | Enterprise ($$$) |
-| **Cal.com** | ✅ Yes | 99% free | Cal.com Cloud + Enterprise | $12-29/user/mo |
-| **AppFlowy** | ✅ Yes (cloud) | 100% free (app) | AppFlowy Cloud | TBD |
-| **Kimai** | ✅ Yes (plugins) | 100% free (self-host) | Kimai Cloud + Plugins | €5/user/mo + plugins |
+| Project      | Open Core?          | Free Tier             | Paid Offering              | Price Point          |
+| ------------ | ------------------- | --------------------- | -------------------------- | -------------------- |
+| **Nixelo**   | TBD                 | TBD                   | TBD                        | TBD                  |
+| **Canvas**   | ❌ Pure open-source | 100% free (self-host) | Instructure Cloud          | Enterprise ($$$)     |
+| **Cal.com**  | ✅ Yes              | 99% free              | Cal.com Cloud + Enterprise | $12-29/user/mo       |
+| **AppFlowy** | ✅ Yes (cloud)      | 100% free (app)       | AppFlowy Cloud             | TBD                  |
+| **Kimai**    | ✅ Yes (plugins)    | 100% free (self-host) | Kimai Cloud + Plugins      | €5/user/mo + plugins |
 
 ### Revenue Streams
 
 **Canvas LMS:**
+
 - Hosted SaaS (Instructure)
 - Professional services
 - Enterprise support
 
 **Cal.com:**
+
 - Hosted SaaS ($12-29/user/month)
 - Enterprise features (SAML, SCIM)
 - White-label hosting
 
 **AppFlowy:**
+
 - Future: Cloud hosting subscription
 - Future: Enterprise features
 - Currently: Donation/sponsorship
 
 **Kimai:**
+
 - Hosted SaaS (€5/user/month)
 - Paid plugins (€10-50 each)
 - Professional support
 
 **Recommended for Nixelo:**
+
 1. **Open Core Model** (like Cal.com/Kimai)
    - Free: Core features, unlimited self-hosting
    - Paid: Hosted cloud, enterprise features (SSO, SCIM, SLA)
@@ -265,6 +296,7 @@
 ### Competitive Positioning
 
 **Direct Competitors (not in comparison):**
+
 - Notion (proprietary, $8-15/user/month)
 - Jira (proprietary, $7.75-15/user/month)
 - Confluence (proprietary, $6.05-11.55/user/month)
@@ -273,6 +305,7 @@
 - Asana (freemium, $10.99-24.99/user/month)
 
 **Nixelo's Unique Value Proposition:**
+
 1. **Only open-source Jira + Confluence hybrid**
 2. **Real-time collaboration** (better than Jira/Confluence)
 3. **Modern tech stack** (Convex/React 19)
@@ -282,12 +315,12 @@
 
 ### Market Gaps Nixelo Fills
 
-| Gap | Current Solutions | Nixelo Advantage |
-|-----|-------------------|-------------------|
-| Open-source project management | Taiga, Plane | Better real-time, modern stack |
-| Real-time Jira alternative | None | Instant updates, live presence |
-| Self-hosted team project | Outline, BookStack | Issues + documents together |
-| Developer-friendly PM tool | Linear (paid) | Open-source, API-first |
+| Gap                            | Current Solutions  | Nixelo Advantage               |
+| ------------------------------ | ------------------ | ------------------------------ |
+| Open-source project management | Taiga, Plane       | Better real-time, modern stack |
+| Real-time Jira alternative     | None               | Instant updates, live presence |
+| Self-hosted team project       | Outline, BookStack | Issues + documents together    |
+| Developer-friendly PM tool     | Linear (paid)      | Open-source, API-first         |
 
 ---
 
@@ -391,19 +424,19 @@
 
 ### Overall Completeness (vs. mature competitors)
 
-| Category | Nixelo % | Notes |
-|----------|-----------|-------|
-| **Core PM Features** | 85% | Missing: Resource management, timelines, dependencies |
-| **Collaboration** | 90% | Missing: Video calls, screen sharing |
-| **Documents** | 80% | Missing: Version history, templates, permissions |
-| **Boards** | 95% | Strong! Just added undo/redo |
-| **Analytics** | 70% | Basic dashboards, missing: Custom reports, forecasting |
-| **Mobile** | 0% | No mobile apps yet |
-| **Integrations** | 60% | Missing: Calendar, Slack, GitHub, etc. |
-| **Enterprise** | 40% | Missing: SSO, SAML, SCIM, audit logs |
-| **Email** | 100% | Just completed! Digests, unsubscribe, etc. |
-| **API** | 90% | Convex API is comprehensive |
-| **Self-hosting** | 70% | Convex required (not 100% independent) |
+| Category             | Nixelo % | Notes                                                  |
+| -------------------- | -------- | ------------------------------------------------------ |
+| **Core PM Features** | 85%      | Missing: Resource management, timelines, dependencies  |
+| **Collaboration**    | 90%      | Missing: Video calls, screen sharing                   |
+| **Documents**        | 80%      | Missing: Version history, templates, permissions       |
+| **Boards**           | 95%      | Strong! Just added undo/redo                           |
+| **Analytics**        | 70%      | Basic dashboards, missing: Custom reports, forecasting |
+| **Mobile**           | 0%       | No mobile apps yet                                     |
+| **Integrations**     | 60%      | Missing: Calendar, Slack, GitHub, etc.                 |
+| **Enterprise**       | 40%      | Missing: SSO, SAML, SCIM, audit logs                   |
+| **Email**            | 100%     | Just completed! Digests, unsubscribe, etc.             |
+| **API**              | 90%      | Convex API is comprehensive                            |
+| **Self-hosting**     | 70%      | Convex required (not 100% independent)                 |
 
 **Overall Score: 73%** - Solid MVP, but gaps for enterprise
 
@@ -557,24 +590,25 @@
 
 ### Overall Ranking (1-5, 5=best)
 
-| Dimension | Nixelo Score | vs. Avg Competitor |
-|-----------|---------------|-------------------|
-| **Tech Stack Modernity** | 5/5 ⭐⭐⭐⭐⭐ | +2 (Best in class) |
+| Dimension                  | Nixelo Score   | vs. Avg Competitor |
+| -------------------------- | -------------- | ------------------ |
+| **Tech Stack Modernity**   | 5/5 ⭐⭐⭐⭐⭐ | +2 (Best in class) |
 | **Real-time Capabilities** | 5/5 ⭐⭐⭐⭐⭐ | +2 (Best in class) |
-| **Developer Experience** | 5/5 ⭐⭐⭐⭐⭐ | +2 (Best in class) |
-| **Feature Completeness** | 3/5 ⭐⭐⭐ | -1 (MVP, gaps) |
-| **Community & Adoption** | 1/5 ⭐ | -3 (New, no users) |
-| **Mobile Support** | 1/5 ⭐ | -3 (None yet) |
-| **Enterprise Features** | 2/5 ⭐⭐ | -2 (No SSO/SAML) |
-| **Documentation** | 4/5 ⭐⭐⭐⭐ | +1 (Great docs) |
-| **Deployment Ease** | 5/5 ⭐⭐⭐⭐⭐ | +2 (Easiest) |
-| **Market Positioning** | 4/5 ⭐⭐⭐⭐ | +1 (Clear niche) |
+| **Developer Experience**   | 5/5 ⭐⭐⭐⭐⭐ | +2 (Best in class) |
+| **Feature Completeness**   | 3/5 ⭐⭐⭐     | -1 (MVP, gaps)     |
+| **Community & Adoption**   | 1/5 ⭐         | -3 (New, no users) |
+| **Mobile Support**         | 1/5 ⭐         | -3 (None yet)      |
+| **Enterprise Features**    | 2/5 ⭐⭐       | -2 (No SSO/SAML)   |
+| **Documentation**          | 4/5 ⭐⭐⭐⭐   | +1 (Great docs)    |
+| **Deployment Ease**        | 5/5 ⭐⭐⭐⭐⭐ | +2 (Easiest)       |
+| **Market Positioning**     | 4/5 ⭐⭐⭐⭐   | +1 (Clear niche)   |
 
 **Overall: 35/50 = 70%**
 
 ### Interpretation
 
 **Nixelo is a strong MVP with best-in-class technology, but needs:**
+
 1. ✅ **Technical Foundation** - EXCELLENT (5/5)
 2. ⚠️ **Features** - GOOD but incomplete (3/5)
 3. ❌ **Community** - NON-EXISTENT (1/5)
@@ -582,11 +616,13 @@
 5. ⚠️ **Enterprise** - BASIC (2/5)
 
 **Bottom Line:**
+
 - **Technology: A+** - You nailed the tech stack
 - **Product: B** - Solid feature set, some gaps
 - **Go-to-Market: F** - Zero users, no presence
 
 **Next Steps:**
+
 1. **LAUNCH NOW** - Don't wait for perfection
 2. **Get 100 users** - Learn what they need
 3. **Build in public** - Twitter, blog, demos
@@ -628,3 +664,17 @@
 **Last Updated:** 2025-01-17
 **Analysis by:** Claude Code
 **Next Review:** After first 100 GitHub stars
+
+## 🎙️ Meeting Intelligence Comparison
+
+| Feature                   | Nixelo         | Read AI      | Otter.ai  | Fireflies       | Gong         |
+| ------------------------- | -------------- | ------------ | --------- | --------------- | ------------ |
+| **Native to PM**          | ✅ Yes         | ❌ No        | ❌ No     | ❌ No           | ❌ No        |
+| **Action Items → Issues** | ✅ Auto-create | ❌ Manual    | ❌ Manual | ⚠️ Integrations | ❌ No        |
+| **Real-time Transcript**  | ✅ Yes         | ❌ Post-call | ✅ Yes    | ❌ Post-call    | ❌ Post-call |
+| **Audio Upload**          | ✅ Yes         | ✅ Yes       | ✅ Yes    | ✅ Yes          | ✅ Yes       |
+| **Bot Joining**           | ✅ Agent       | ✅ Agent     | ✅ Agent  | ✅ Agent        | ✅ Agent     |
+| **Price**                 | Included       | ~$20/mo      | ~$20/mo   | ~$19/mo         | ~$100+/mo    |
+
+**Insight:**
+Nixelo is the **only tool** that natively bridges the gap between _meeting data_ and _project execution_. Competitors create "data islands" where meeting notes live separately from the work.
