@@ -1,4 +1,3 @@
-// @ts-nocheck - Example file with outdated rate limiter API signature
 /**
  * Example: Using Rate Limiter with AI Chat
  *
@@ -25,11 +24,10 @@ export const chatWithRateLimit = action({
       throw unauthenticated();
     }
 
-    // Rate limit: 10 messages per minute
-    await rateLimit(ctx, {
-      name: "aiChat",
-      key: userId.subject, // Rate limit per user
-      throws: true, // Throw error if limit exceeded
+    // Rate limit: 10 messages per minute per user
+    await rateLimit(ctx, "aiChat", {
+      key: userId.subject,
+      throws: true,
     });
 
     // Now call the actual AI chat function

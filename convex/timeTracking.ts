@@ -114,7 +114,6 @@ export const startTimer = authenticatedMutation({
       isApproved: false,
       approvedBy: undefined,
       approvedAt: undefined,
-      createdAt: now,
       updatedAt: now,
     });
   },
@@ -210,7 +209,6 @@ export const createTimeEntry = authenticatedMutation({
       isApproved: false,
       approvedBy: undefined,
       approvedAt: undefined,
-      createdAt: now,
       updatedAt: now,
     });
   },
@@ -723,7 +721,6 @@ export const setUserRate = authenticatedMutation({
       rateType: args.rateType,
       setBy: ctx.userId,
       notes: args.notes,
-      createdAt: now,
       updatedAt: now,
     });
   },

@@ -1,17 +1,9 @@
-// @ts-nocheck - TODO: Fix aggregate component types after running convex dev
 /**
- * NOTE: This file uses aggregates which require Convex dev server running.
- * Run `npx convex dev` to generate component types.
+ * Analytics queries for project insights
  */
 
 import { v } from "convex/values";
 import type { Id } from "./_generated/dataModel";
-import {
-  issueCountByAssignee,
-  issueCountByPriority,
-  issueCountByStatus,
-  issueCountByType,
-} from "./aggregates";
 import { projectQuery, sprintQuery } from "./customFunctions";
 import { batchFetchIssues, batchFetchUsers, getUserName } from "./lib/batchHelpers";
 import {
@@ -20,7 +12,7 @@ import {
   MAX_VELOCITY_SPRINTS,
 } from "./lib/queryLimits";
 import { notDeleted } from "./lib/softDeleteHelpers";
-import { DAY, nowArg } from "./lib/timeUtils";
+import { DAY } from "./lib/timeUtils";
 
 // Helper: Build issues by status from workflow states and counts
 function buildIssuesByStatus(
@@ -63,39 +55,63 @@ function buildIssuesByPriority(priorityCounts: Record<string, number>) {
 export const getProjectAnalytics = projectQuery({
   args: {},
   handler: async (ctx) => {
-    // Use aggregates for fast O(log n) counting instead of O(n)
-    const [statusCounts, typeCounts, priorityCounts, assigneeCounts] = await Promise.all([
-      issueCountByStatus.lookup(ctx, { projectId: ctx.projectId }),
-      issueCountByType.lookup(ctx, { projectId: ctx.projectId }),
-      issueCountByPriority.lookup(ctx, { projectId: ctx.projectId }),
-      issueCountByAssignee.lookup(ctx, { projectId: ctx.projectId }),
-    ]);
+    // Fetch all project issues (bounded query)
+    const issues = await ctx.db
+      .query("issues")
+      .withIndex("by_project", (q) => q.eq("projectId", ctx.projectId))
+      .filter(notDeleted)
+      .take(MAX_SPRINT_ISSUES);
+
+    // Count by status
+    const statusCounts: Record<string, number> = {};
+    for (const issue of issues) {
+      statusCounts[issue.status] = (statusCounts[issue.status] || 0) + 1;
+    }
+
+    // Count by type
+    const typeCounts: Record<string, number> = {};
+    for (const issue of issues) {
+      typeCounts[issue.type] = (typeCounts[issue.type] || 0) + 1;
+    }
+
+    // Count by priority
+    const priorityCounts: Record<string, number> = {};
+    for (const issue of issues) {
+      if (issue.priority) {
+        priorityCounts[issue.priority] = (priorityCounts[issue.priority] || 0) + 1;
+      }
+    }
+
+    // Count by assignee
+    const assigneeCounts: Record<string, number> = {};
+    let unassignedCount = 0;
+    for (const issue of issues) {
+      if (issue.assigneeId) {
+        assigneeCounts[issue.assigneeId] = (assigneeCounts[issue.assigneeId] || 0) + 1;
+      } else {
+        unassignedCount++;
+      }
+    }
 
     // Build structured data using helpers
     const issuesByStatus = buildIssuesByStatus(ctx.project.workflowStates, statusCounts);
     const issuesByType = buildIssuesByType(typeCounts);
     const issuesByPriority = buildIssuesByPriority(priorityCounts);
-    const unassignedCount = assigneeCounts.unassigned || 0;
 
     // Batch fetch assignee users and build assignee map
-    const assigneeIds = Object.keys(assigneeCounts)
-      .filter((id) => id !== "unassigned")
-      .map((id) => id as Id<"users">);
+    const assigneeIds = Object.keys(assigneeCounts).map((id) => id as Id<"users">);
     const userMap = await batchFetchUsers(ctx, assigneeIds);
 
     const issuesByAssignee: Record<string, { count: number; name: string }> = {};
     for (const [assigneeId, count] of Object.entries(assigneeCounts)) {
-      if (assigneeId === "unassigned") continue;
       issuesByAssignee[assigneeId] = {
         count,
         name: getUserName(userMap.get(assigneeId as Id<"users">)),
       };
     }
 
-    const totalIssues = Object.values(typeCounts).reduce((sum, count) => sum + count, 0);
-
     return {
-      totalIssues,
+      totalIssues: issues.length,
       issuesByStatus,
       issuesByType,
       issuesByPriority,
@@ -110,10 +126,9 @@ export const getProjectAnalytics = projectQuery({
  * Requires viewer access to project
  */
 export const getSprintBurndown = sprintQuery({
-  args: {
-    now: nowArg, // Required - pass rounded timestamp from client
-  },
-  handler: async (ctx, args) => {
+  args: {},
+  handler: async (ctx) => {
+    const now = Date.now();
     // Get all issues in the sprint
     const sprintIssues = await ctx.db
       .query("issues")
@@ -146,7 +161,7 @@ export const getSprintBurndown = sprintQuery({
     const idealBurndown: Array<{ day: number; points: number }> = [];
     if (ctx.sprint.startDate && ctx.sprint.endDate) {
       const totalDays = Math.ceil((ctx.sprint.endDate - ctx.sprint.startDate) / DAY);
-      const daysElapsed = Math.ceil((args.now - ctx.sprint.startDate) / DAY);
+      const daysElapsed = Math.ceil((now - ctx.sprint.startDate) / DAY);
 
       for (let day = 0; day <= totalDays; day++) {
         const remainingIdeal = totalPoints * (1 - day / totalDays);

@@ -335,7 +335,6 @@ export const upsertProvider = mutation({
     } else {
       return await ctx.db.insert("serviceProviders", {
         ...args,
-        createdAt: now,
         updatedAt: now,
       });
     }
@@ -482,7 +481,6 @@ export const seedProviders = mutation({
       if (!existing) {
         await ctx.db.insert("serviceProviders", {
           ...provider,
-          createdAt: now,
           updatedAt: now,
         });
       }

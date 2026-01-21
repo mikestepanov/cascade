@@ -3,7 +3,7 @@ import { v } from "convex/values";
 import { pruneNull } from "convex-helpers";
 import { internal } from "./_generated/api";
 import type { Doc } from "./_generated/dataModel";
-import { adminMutation, authenticatedMutation, authenticatedQuery } from "./customFunctions";
+import { authenticatedMutation, authenticatedQuery, projectAdminMutation } from "./customFunctions";
 import { batchFetchProjects, batchFetchUsers, getUserName } from "./lib/batchHelpers";
 import { conflict, forbidden, notFound, validation } from "./lib/errors";
 import { fetchPaginatedQuery } from "./lib/queryHelpers";
@@ -64,7 +64,6 @@ export const createProject = authenticatedMutation({
       key: args.key.toUpperCase(),
       description: args.description,
       createdBy: ctx.userId,
-      createdAt: now,
       updatedAt: now,
       boardType: args.boardType,
       workflowStates: defaultWorkflowStates,
@@ -84,7 +83,6 @@ export const createProject = authenticatedMutation({
       userId: ctx.userId,
       role: "admin",
       addedBy: ctx.userId,
-      addedAt: now,
     });
 
     if (!isTest) {
@@ -195,8 +193,8 @@ export const getTeamProjects = authenticatedQuery({
       return { page: [], isDone: true, continueCursor: "" };
     }
 
-    const { getTeamRole } = await import("./teams");
-    const { isOrganizationAdmin } = await import("./organizations");
+    const { getTeamRole } = await import("./lib/teamAccess");
+    const { isOrganizationAdmin } = await import("./lib/organizationAccess");
 
     const role = await getTeamRole(ctx, args.teamId, ctx.userId);
     const isAdmin = await isOrganizationAdmin(ctx, team.organizationId, ctx.userId);
@@ -278,7 +276,7 @@ export const getProject = authenticatedQuery({
         email: member?.email,
         image: member?.image,
         role: membership.role,
-        addedAt: membership.addedAt,
+        addedAt: membership._creationTime,
       };
     });
 
@@ -336,7 +334,7 @@ export const getByKey = authenticatedQuery({
         email: member?.email,
         image: member?.image,
         role: membership.role,
-        addedAt: membership.addedAt,
+        addedAt: membership._creationTime,
       };
     });
 
@@ -353,7 +351,7 @@ export const getByKey = authenticatedQuery({
   },
 });
 
-export const updateProject = adminMutation({
+export const updateProject = projectAdminMutation({
   args: {
     name: v.optional(v.string()),
     description: v.optional(v.string()),
@@ -464,7 +462,7 @@ export const restoreProject = authenticatedMutation({
   },
 });
 
-export const updateWorkflow = adminMutation({
+export const updateWorkflow = projectAdminMutation({
   args: {
     workflowStates: v.array(
       v.object({
@@ -495,7 +493,7 @@ export const updateWorkflow = adminMutation({
   },
 });
 
-export const addProjectMember = adminMutation({
+export const addProjectMember = projectAdminMutation({
   args: {
     userEmail: v.string(),
     role: projectRoles,
@@ -519,7 +517,7 @@ export const addProjectMember = adminMutation({
 
     if (existingMembership) throw conflict("User is already a member");
 
-    const now = Date.now();
+    const _now = Date.now();
 
     // Add to projectMembers table
     await ctx.db.insert("projectMembers", {
@@ -527,7 +525,6 @@ export const addProjectMember = adminMutation({
       userId: user._id,
       role: args.role,
       addedBy: ctx.userId,
-      addedAt: now,
     });
 
     if (!isTest) {
@@ -545,7 +542,7 @@ export const addProjectMember = adminMutation({
   },
 });
 
-export const updateProjectMemberRole = adminMutation({
+export const updateProjectMemberRole = projectAdminMutation({
   args: {
     memberId: v.id("users"),
     newRole: projectRoles,
@@ -587,7 +584,7 @@ export const updateProjectMemberRole = adminMutation({
   },
 });
 
-export const removeProjectMember = adminMutation({
+export const removeProjectMember = projectAdminMutation({
   args: {
     memberId: v.id("users"),
   },

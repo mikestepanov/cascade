@@ -1,5 +1,3 @@
-// @ts-nocheck - Test file with complex union type assertions
-
 import { convexTest } from "convex-test";
 import { describe, expect, it } from "vitest";
 import { api, internal } from "./_generated/api";
@@ -23,7 +21,6 @@ describe("Notifications", () => {
           message: "You have been assigned to a new issue",
           isRead: false,
           actorId,
-          createdAt: Date.now(),
         });
       });
 
@@ -50,7 +47,6 @@ describe("Notifications", () => {
             title: `Notification ${i}`,
             message: "Test notification",
             isRead: false,
-            createdAt: Date.now(),
           });
         }
       });
@@ -75,7 +71,6 @@ describe("Notifications", () => {
           title: "Unread 1",
           message: "Test",
           isRead: false,
-          createdAt: Date.now(),
         });
         await ctx.db.insert("notifications", {
           userId,
@@ -83,7 +78,6 @@ describe("Notifications", () => {
           title: "Read 1",
           message: "Test",
           isRead: true,
-          createdAt: Date.now(),
         });
         await ctx.db.insert("notifications", {
           userId,
@@ -91,7 +85,6 @@ describe("Notifications", () => {
           title: "Unread 2",
           message: "Test",
           isRead: false,
-          createdAt: Date.now(),
         });
       });
 
@@ -116,7 +109,6 @@ describe("Notifications", () => {
           title: "Unread",
           message: "Test",
           isRead: false,
-          createdAt: Date.now(),
         });
         await ctx.db.insert("notifications", {
           userId,
@@ -124,7 +116,6 @@ describe("Notifications", () => {
           title: "Read",
           message: "Test",
           isRead: true,
-          createdAt: Date.now(),
         });
       });
 
@@ -162,7 +153,6 @@ describe("Notifications", () => {
           title: "For User 1",
           message: "Test",
           isRead: false,
-          createdAt: Date.now(),
         });
         await ctx.db.insert("notifications", {
           userId: user2,
@@ -170,7 +160,6 @@ describe("Notifications", () => {
           title: "For User 2",
           message: "Test",
           isRead: false,
-          createdAt: Date.now(),
         });
       });
 
@@ -209,7 +198,6 @@ describe("Notifications", () => {
             title: `Unread ${i}`,
             message: "Test",
             isRead: false,
-            createdAt: Date.now(),
           });
         }
         // Create read notification
@@ -219,7 +207,6 @@ describe("Notifications", () => {
           title: "Read",
           message: "Test",
           isRead: true,
-          createdAt: Date.now(),
         });
       });
 
@@ -239,12 +226,12 @@ describe("Notifications", () => {
       expect(count).toBe(0);
     });
 
-    it("should return zero for unauthenticated users", async () => {
+    it("should deny unauthenticated users", async () => {
       const t = convexTest(schema, modules);
 
-      const count = await t.query(api.notifications.getUnreadCount, {});
-
-      expect(count).toBe(0);
+      await expect(t.query(api.notifications.getUnreadCount, {})).rejects.toThrow(
+        "Not authenticated",
+      );
     });
   });
 
@@ -261,7 +248,6 @@ describe("Notifications", () => {
           title: "Test",
           message: "Test notification",
           isRead: false,
-          createdAt: Date.now(),
         });
       });
 
@@ -288,7 +274,6 @@ describe("Notifications", () => {
           title: "Test",
           message: "Test",
           isRead: false,
-          createdAt: Date.now(),
         });
       });
 
@@ -310,7 +295,6 @@ describe("Notifications", () => {
           title: "Test",
           message: "Test",
           isRead: false,
-          createdAt: Date.now(),
         });
       });
 
@@ -333,7 +317,6 @@ describe("Notifications", () => {
           title: "Test",
           message: "Test",
           isRead: false,
-          createdAt: Date.now(),
         });
       });
       await t.run(async (ctx) => {
@@ -360,7 +343,6 @@ describe("Notifications", () => {
             title: `Test ${i}`,
             message: "Test",
             isRead: false,
-            createdAt: Date.now(),
           });
         }
       });
@@ -385,7 +367,6 @@ describe("Notifications", () => {
           title: "Read",
           message: "Test",
           isRead: true,
-          createdAt: Date.now(),
         });
         await ctx.db.insert("notifications", {
           userId,
@@ -393,7 +374,6 @@ describe("Notifications", () => {
           title: "Unread",
           message: "Test",
           isRead: false,
-          createdAt: Date.now(),
         });
       });
 
@@ -421,7 +401,6 @@ describe("Notifications", () => {
           title: "User 1 notification",
           message: "Test",
           isRead: false,
-          createdAt: Date.now(),
         });
         await ctx.db.insert("notifications", {
           userId: user2,
@@ -429,7 +408,6 @@ describe("Notifications", () => {
           title: "User 2 notification",
           message: "Test",
           isRead: false,
-          createdAt: Date.now(),
         });
       });
 
@@ -466,7 +444,6 @@ describe("Notifications", () => {
           title: "Test",
           message: "Test notification",
           isRead: false,
-          createdAt: Date.now(),
         });
       });
 
@@ -493,7 +470,6 @@ describe("Notifications", () => {
           title: "Test",
           message: "Test",
           isRead: false,
-          createdAt: Date.now(),
         });
       });
 
@@ -515,7 +491,6 @@ describe("Notifications", () => {
           title: "Test",
           message: "Test",
           isRead: false,
-          createdAt: Date.now(),
         });
       });
 
@@ -538,7 +513,6 @@ describe("Notifications", () => {
           title: "Test",
           message: "Test",
           isRead: false,
-          createdAt: Date.now(),
         });
       });
       await t.run(async (ctx) => {

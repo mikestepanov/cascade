@@ -1,0 +1,527 @@
+{
+  "js": [
+    {
+      "url": "https://linear.app/_next/static/chunks/4e393b2500a484e1.js",
+      "local": "assets/js/4e393b2500a484e1.js"
+    },
+    {
+      "url": "https://linear.app/_next/static/chunks/4a7d3a6da4e23763.js",
+      "local": "assets/js/4a7d3a6da4e23763.js"
+    },
+    {
+      "url": "https://linear.app/_next/static/chunks/8913bb7e9c561ad4.js",
+      "local": "assets/js/8913bb7e9c561ad4.js"
+    },
+    {
+      "url": "https://linear.app/_next/static/chunks/turbopack-34853041fb4b72bd.js",
+      "local": "assets/js/turbopack-34853041fb4b72bd.js"
+    },
+    {
+      "url": "https://linear.app/_next/static/chunks/e43019c8393ceffe.js",
+      "local": "assets/js/e43019c8393ceffe.js"
+    },
+    {
+      "url": "https://linear.app/_next/static/chunks/16a253e831957a75.js",
+      "local": "assets/js/16a253e831957a75.js"
+    },
+    {
+      "url": "https://linear.app/_next/static/chunks/3187aac8354b467d.js",
+      "local": "assets/js/3187aac8354b467d.js"
+    },
+    {
+      "url": "https://linear.app/_next/static/chunks/21250b150e2e1a97.js",
+      "local": "assets/js/21250b150e2e1a97.js"
+    },
+    {
+      "url": "https://linear.app/_next/static/chunks/750f781fad1e9184.js",
+      "local": "assets/js/750f781fad1e9184.js"
+    },
+    {
+      "url": "https://linear.app/_next/static/chunks/b120fb8db22eccee.js",
+      "local": "assets/js/b120fb8db22eccee.js"
+    },
+    {
+      "url": "https://linear.app/_next/static/chunks/db6de221d28eb72c.js",
+      "local": "assets/js/db6de221d28eb72c.js"
+    },
+    {
+      "url": "https://linear.app/_next/static/chunks/5a30a32ed9d15241.js",
+      "local": "assets/js/5a30a32ed9d15241.js"
+    },
+    {
+      "url": "https://linear.app/_next/static/chunks/d1456de91ffd475f.js",
+      "local": "assets/js/d1456de91ffd475f.js"
+    },
+    {
+      "url": "https://linear.app/_next/static/chunks/9c450e45978f9e59.js",
+      "local": "assets/js/9c450e45978f9e59.js"
+    },
+    {
+      "url": "https://linear.app/_next/static/chunks/25543c57908fe823.js",
+      "local": "assets/js/25543c57908fe823.js"
+    },
+    {
+      "url": "https://linear.app/_next/static/chunks/2ee6f22da7f75417.js",
+      "local": "assets/js/2ee6f22da7f75417.js"
+    },
+    {
+      "url": "https://linear.app/_next/static/chunks/24322db5d343f3a7.js",
+      "local": "assets/js/24322db5d343f3a7.js"
+    },
+    {
+      "url": "https://linear.app/_next/static/chunks/6a0d5335c4710674.js",
+      "local": "assets/js/6a0d5335c4710674.js"
+    },
+    {
+      "url": "https://linear.app/_next/static/chunks/28703523769c80e6.js",
+      "local": "assets/js/28703523769c80e6.js"
+    },
+    {
+      "url": "https://linear.app/_next/static/chunks/3eb6f8473cd14231.js",
+      "local": "assets/js/3eb6f8473cd14231.js"
+    },
+    {
+      "url": "https://linear.app/_next/static/chunks/aa3635b0aef5ba0e.js",
+      "local": "assets/js/aa3635b0aef5ba0e.js"
+    },
+    {
+      "url": "https://linear.app/_next/static/chunks/fed341be0a97d4da.js",
+      "local": "assets/js/fed341be0a97d4da.js"
+    },
+    {
+      "url": "https://linear.app/_next/static/chunks/c4d858a5320e5f03.js",
+      "local": "assets/js/c4d858a5320e5f03.js"
+    },
+    {
+      "url": "https://linear.app/_next/static/chunks/4095f8599af5bbca.js",
+      "local": "assets/js/4095f8599af5bbca.js"
+    },
+    {
+      "url": "https://linear.app/_next/static/chunks/7c159d6ed3286051.js",
+      "local": "assets/js/7c159d6ed3286051.js"
+    },
+    {
+      "url": "https://linear.app/_next/static/chunks/db02f397f7133df0.js",
+      "local": "assets/js/db02f397f7133df0.js"
+    },
+    {
+      "url": "https://linear.app/_next/static/chunks/30c5ab202807f1fc.js",
+      "local": "assets/js/30c5ab202807f1fc.js"
+    },
+    {
+      "url": "https://linear.app/_next/static/chunks/de15ee2f77dde025.js",
+      "local": "assets/js/de15ee2f77dde025.js"
+    },
+    {
+      "url": "https://linear.app/_next/static/chunks/6f3a24b36e0c65e5.js",
+      "local": "assets/js/6f3a24b36e0c65e5.js"
+    },
+    {
+      "url": "https://linear.app/_next/static/chunks/005eb81a48027e89.js",
+      "local": "assets/js/005eb81a48027e89.js"
+    },
+    {
+      "url": "https://linear.app/_next/static/chunks/a568c688329e4aba.js",
+      "local": "assets/js/a568c688329e4aba.js"
+    },
+    {
+      "url": "https://linear.app/_next/static/chunks/0a655e71dcde2c6a.js",
+      "local": "assets/js/0a655e71dcde2c6a.js"
+    },
+    {
+      "url": "https://linear.app/_next/static/chunks/7b29306bd21689f7.js",
+      "local": "assets/js/7b29306bd21689f7.js"
+    },
+    {
+      "url": "https://linear.app/_next/static/chunks/8c47b06a757ca7a9.js",
+      "local": "assets/js/8c47b06a757ca7a9.js"
+    },
+    {
+      "url": "https://linear.app/_next/static/chunks/f2403305cab11a2b.js",
+      "local": "assets/js/f2403305cab11a2b.js"
+    },
+    {
+      "url": "https://linear.app/_next/static/chunks/c215e609a660b860.js",
+      "local": "assets/js/c215e609a660b860.js"
+    },
+    {
+      "url": "https://linear.app/_next/static/chunks/f19c16f40ca00840.js",
+      "local": "assets/js/f19c16f40ca00840.js"
+    },
+    {
+      "url": "https://e.linear.app/array/phc_PaCjzqaetuAlYgXjb0uftDOw8QzOmXfWIbD7nkaYrjr/config.js",
+      "local": "assets/js/config.js"
+    },
+    {
+      "url": "https://e.linear.app/static/surveys.js?v=1.257.1",
+      "local": "assets/js/surveys.js"
+    },
+    {
+      "url": "https://linear.app/_next/static/chunks/7e676d1addf29506.js",
+      "local": "assets/js/7e676d1addf29506.js"
+    },
+    {
+      "url": "https://linear.app/_next/static/chunks/87d9f9ed1b960c1d.js",
+      "local": "assets/js/87d9f9ed1b960c1d.js"
+    },
+    {
+      "url": "https://linear.app/_next/static/chunks/ed3539b90041766a.js",
+      "local": "assets/js/ed3539b90041766a.js"
+    },
+    {
+      "url": "https://linear.app/_next/static/chunks/e197dd19bdbf4234.js",
+      "local": "assets/js/e197dd19bdbf4234.js"
+    },
+    {
+      "url": "https://linear.app/_next/static/chunks/b48160361b045d5d.js",
+      "local": "assets/js/b48160361b045d5d.js"
+    },
+    {
+      "url": "https://linear.app/_next/static/chunks/407f2091d0bd08a9.js",
+      "local": "assets/js/407f2091d0bd08a9.js"
+    },
+    {
+      "url": "https://linear.app/_next/static/chunks/6ec0caa1fb9abef3.js",
+      "local": "assets/js/6ec0caa1fb9abef3.js"
+    },
+    {
+      "url": "https://linear.app/_next/static/chunks/6fc2ddea439947f1.js",
+      "local": "assets/js/6fc2ddea439947f1.js"
+    },
+    {
+      "url": "https://linear.app/_next/static/chunks/92feab60761935f7.js",
+      "local": "assets/js/92feab60761935f7.js"
+    },
+    {
+      "url": "https://linear.app/_next/static/chunks/f4d20b0c3def28a2.js",
+      "local": "assets/js/f4d20b0c3def28a2.js"
+    },
+    {
+      "url": "https://linear.app/_next/static/chunks/e4bf51a208bcd12e.js",
+      "local": "assets/js/e4bf51a208bcd12e.js"
+    },
+    {
+      "url": "https://linear.app/_next/static/chunks/5fdf00643d18d521.js",
+      "local": "assets/js/5fdf00643d18d521.js"
+    },
+    {
+      "url": "https://linear.app/_next/static/chunks/e39da7fd151a998c.js",
+      "local": "assets/js/e39da7fd151a998c.js"
+    },
+    {
+      "url": "https://linear.app/_next/static/chunks/34cb26ca58434530.js",
+      "local": "assets/js/34cb26ca58434530.js"
+    },
+    {
+      "url": "https://linear.app/_next/static/chunks/bb85b52a25ce8ee6.js",
+      "local": "assets/js/bb85b52a25ce8ee6.js"
+    },
+    {
+      "url": "https://linear.app/_next/static/chunks/319e87c21af5fc26.js",
+      "local": "assets/js/319e87c21af5fc26.js"
+    },
+    {
+      "url": "https://linear.app/_next/static/chunks/66f19a666c4d8656.js",
+      "local": "assets/js/66f19a666c4d8656.js"
+    },
+    {
+      "url": "https://linear.app/_next/static/chunks/10154c19aee4c81f.js",
+      "local": "assets/js/10154c19aee4c81f.js"
+    },
+    {
+      "url": "https://linear.app/_next/static/chunks/8cdb598eb1fcb2c6.js",
+      "local": "assets/js/8cdb598eb1fcb2c6.js"
+    },
+    {
+      "url": "https://linear.app/_next/static/chunks/855c0ec56485ffa0.js",
+      "local": "assets/js/855c0ec56485ffa0.js"
+    },
+    {
+      "url": "https://linear.app/_next/static/chunks/0ac2f5fd264a6896.js",
+      "local": "assets/js/0ac2f5fd264a6896.js"
+    },
+    {
+      "url": "https://linear.app/_next/static/chunks/6a81e21ace064f8b.js",
+      "local": "assets/js/6a81e21ace064f8b.js"
+    },
+    {
+      "url": "https://linear.app/_next/static/chunks/9fd5a51fbe0a3255.js",
+      "local": "assets/js/9fd5a51fbe0a3255.js"
+    },
+    {
+      "url": "https://linear.app/_next/static/chunks/29a1f08154c991cc.js",
+      "local": "assets/js/29a1f08154c991cc.js"
+    },
+    {
+      "url": "https://linear.app/_next/static/chunks/e94e4d8c33b7816e.js",
+      "local": "assets/js/e94e4d8c33b7816e.js"
+    },
+    {
+      "url": "https://linear.app/_next/static/chunks/24e387b1399e18e8.js",
+      "local": "assets/js/24e387b1399e18e8.js"
+    },
+    {
+      "url": "https://linear.app/_next/static/chunks/8d7a46ce9f835ddc.js",
+      "local": "assets/js/8d7a46ce9f835ddc.js"
+    },
+    {
+      "url": "https://linear.app/_next/static/chunks/ec8dcca2e988de86.js",
+      "local": "assets/js/ec8dcca2e988de86.js"
+    },
+    {
+      "url": "https://linear.app/_next/static/chunks/c99c52b21244ea07.js",
+      "local": "assets/js/c99c52b21244ea07.js"
+    },
+    {
+      "url": "https://linear.app/_next/static/chunks/4ebfe770ef284542.js",
+      "local": "assets/js/4ebfe770ef284542.js"
+    },
+    {
+      "url": "https://linear.app/_next/static/chunks/4d13b9cb0b75731b.js",
+      "local": "assets/js/4d13b9cb0b75731b.js"
+    },
+    {
+      "url": "https://linear.app/_next/static/chunks/abbec87d1d19a09c.js",
+      "local": "assets/js/abbec87d1d19a09c.js"
+    },
+    {
+      "url": "https://linear.app/_next/static/chunks/ceefeb19d47e3ecc.js",
+      "local": "assets/js/ceefeb19d47e3ecc.js"
+    },
+    {
+      "url": "https://linear.app/_next/static/chunks/61fc8f1f592ee33d.js",
+      "local": "assets/js/61fc8f1f592ee33d.js"
+    },
+    {
+      "url": "https://linear.app/_next/static/chunks/98169068d45a99c6.js",
+      "local": "assets/js/98169068d45a99c6.js"
+    },
+    {
+      "url": "https://linear.app/_next/static/chunks/3f07bc8967a85539.js",
+      "local": "assets/js/3f07bc8967a85539.js"
+    },
+    {
+      "url": "https://linear.app/_next/static/chunks/b7a22f5f12c33fca.js",
+      "local": "assets/js/b7a22f5f12c33fca.js"
+    },
+    {
+      "url": "https://linear.app/_next/static/chunks/7a5c423fc2156e82.js",
+      "local": "assets/js/7a5c423fc2156e82.js"
+    },
+    {
+      "url": "https://linear.app/_next/static/chunks/3b7a47a52a26b7ce.js",
+      "local": "assets/js/3b7a47a52a26b7ce.js"
+    },
+    {
+      "url": "https://linear.app/_next/static/chunks/0d1b3b6a3f76691b.js",
+      "local": "assets/js/0d1b3b6a3f76691b.js"
+    },
+    {
+      "url": "https://linear.app/_next/static/chunks/47ef0c93fe4b63a6.js",
+      "local": "assets/js/47ef0c93fe4b63a6.js"
+    },
+    {
+      "url": "https://linear.app/_next/static/chunks/81e90be8d6eeae3f.js",
+      "local": "assets/js/81e90be8d6eeae3f.js"
+    },
+    {
+      "url": "https://linear.app/_next/static/chunks/c2018d6bb891d328.js",
+      "local": "assets/js/c2018d6bb891d328.js"
+    },
+    {
+      "url": "https://linear.app/_next/static/chunks/62b25aec456ba210.js",
+      "local": "assets/js/62b25aec456ba210.js"
+    },
+    {
+      "url": "https://linear.app/_next/static/chunks/4cbab67b83c6bda2.js",
+      "local": "assets/js/4cbab67b83c6bda2.js"
+    },
+    {
+      "url": "https://linear.app/_next/static/chunks/e15a469a21e3a946.js",
+      "local": "assets/js/e15a469a21e3a946.js"
+    },
+    {
+      "url": "https://linear.app/_next/static/chunks/9a098a164a2acd57.js",
+      "local": "assets/js/9a098a164a2acd57.js"
+    },
+    {
+      "url": "https://linear.app/_next/static/chunks/1b5f6a86390ea50a.js",
+      "local": "assets/js/1b5f6a86390ea50a.js"
+    },
+    {
+      "url": "https://linear.app/_next/static/chunks/2be2f393dd5658b9.js",
+      "local": "assets/js/2be2f393dd5658b9.js"
+    },
+    {
+      "url": "https://linear.app/_next/static/chunks/6e86aac9603df0c5.js",
+      "local": "assets/js/6e86aac9603df0c5.js"
+    },
+    {
+      "url": "https://linear.app/_next/static/chunks/4ab1b1bb0bc3065e.js",
+      "local": "assets/js/4ab1b1bb0bc3065e.js"
+    }
+  ],
+  "css": [
+    {
+      "url": "https://linear.app/_next/static/chunks/a4b6c6e9fb568f9c.css",
+      "local": "assets/css/a4b6c6e9fb568f9c.css"
+    },
+    {
+      "url": "https://linear.app/_next/static/chunks/dcf1dd31fdc81c28.css",
+      "local": "assets/css/dcf1dd31fdc81c28.css"
+    },
+    {
+      "url": "https://linear.app/_next/static/chunks/b2bd723f512249a5.css",
+      "local": "assets/css/b2bd723f512249a5.css"
+    },
+    {
+      "url": "https://linear.app/_next/static/chunks/3cb296fd121d0ffd.css",
+      "local": "assets/css/3cb296fd121d0ffd.css"
+    },
+    {
+      "url": "https://linear.app/_next/static/chunks/970054797df685ce.css",
+      "local": "assets/css/970054797df685ce.css"
+    },
+    {
+      "url": "https://linear.app/_next/static/chunks/79076a17c0f5a913.css",
+      "local": "assets/css/79076a17c0f5a913.css"
+    },
+    {
+      "url": "https://linear.app/_next/static/chunks/32e47112845c5dda.css",
+      "local": "assets/css/32e47112845c5dda.css"
+    },
+    {
+      "url": "https://linear.app/_next/static/chunks/eb0fa79f98cac589.css",
+      "local": "assets/css/eb0fa79f98cac589.css"
+    },
+    {
+      "url": "https://linear.app/_next/static/chunks/964d2211d21aaf70.css",
+      "local": "assets/css/964d2211d21aaf70.css"
+    },
+    {
+      "url": "https://linear.app/_next/static/chunks/ce1df73e05bf8914.css",
+      "local": "assets/css/ce1df73e05bf8914.css"
+    },
+    {
+      "url": "https://linear.app/_next/static/chunks/e8a9b60b31bc4f28.css",
+      "local": "assets/css/e8a9b60b31bc4f28.css"
+    },
+    {
+      "url": "https://linear.app/_next/static/chunks/29ad0efc57c8f2f3.css",
+      "local": "assets/css/29ad0efc57c8f2f3.css"
+    },
+    {
+      "url": "https://linear.app/_next/static/chunks/b06cd90b187fba1b.css",
+      "local": "assets/css/b06cd90b187fba1b.css"
+    },
+    {
+      "url": "https://linear.app/_next/static/chunks/1a4a12e283a229da.css",
+      "local": "assets/css/1a4a12e283a229da.css"
+    },
+    {
+      "url": "https://linear.app/_next/static/chunks/d593b84a352e8053.css",
+      "local": "assets/css/d593b84a352e8053.css"
+    },
+    {
+      "url": "https://linear.app/_next/static/chunks/9e3fd7b8ee1f6f80.css",
+      "local": "assets/css/9e3fd7b8ee1f6f80.css"
+    },
+    {
+      "url": "https://linear.app/_next/static/chunks/a6d37f77c3de7be2.css",
+      "local": "assets/css/a6d37f77c3de7be2.css"
+    },
+    {
+      "url": "https://linear.app/_next/static/chunks/343f45811d484638.css",
+      "local": "assets/css/343f45811d484638.css"
+    },
+    {
+      "url": "https://linear.app/_next/static/chunks/7bc13ca65b74d8b2.css",
+      "local": "assets/css/7bc13ca65b74d8b2.css"
+    },
+    {
+      "url": "https://linear.app/_next/static/chunks/3e44427aa544d7a2.css",
+      "local": "assets/css/3e44427aa544d7a2.css"
+    },
+    {
+      "url": "https://linear.app/_next/static/chunks/45cf37fc44328971.css",
+      "local": "assets/css/45cf37fc44328971.css"
+    },
+    {
+      "url": "https://linear.app/_next/static/chunks/b59e7dacb559e518.css",
+      "local": "assets/css/b59e7dacb559e518.css"
+    },
+    {
+      "url": "https://linear.app/_next/static/chunks/34e4e8a44b61998f.css",
+      "local": "assets/css/34e4e8a44b61998f.css"
+    }
+  ],
+  "fonts": [
+    {
+      "url": "https://static.linear.app/fonts/InterVariable.woff2?v=4.1",
+      "local": "assets/fonts/InterVariable.woff2"
+    },
+    {
+      "url": "https://static.linear.app/fonts/Berkeley-Mono-Variable.woff2?v=3.2",
+      "local": "assets/fonts/Berkeley-Mono-Variable.woff2"
+    },
+    {
+      "url": "https://static.linear.app/fonts/Tiempos/tiempos-headline-regular.woff2",
+      "local": "assets/fonts/tiempos-headline-regular.woff2"
+    },
+    {
+      "url": "https://static.linear.app/fonts/EBGaramond-Italic-subset.woff2",
+      "local": "assets/fonts/EBGaramond-Italic-subset.woff2"
+    },
+    {
+      "url": "https://static.linear.app/fonts/EBGaramond-Regular-subset.woff2",
+      "local": "assets/fonts/EBGaramond-Regular-subset.woff2"
+    }
+  ],
+  "images": [
+    {
+      "url": "https://webassets.linear.app/images/ornj730p/production/e522be49c136f6b81a1c5cb3aa7b2075f78404c0-1305x1444.jpg?w=72&q=95&auto=format&dpr=2",
+      "local": "assets/images/e522be49c136f6b81a1c5cb3aa7b2075f78404c0-1305x1444.jpg"
+    },
+    {
+      "url": "https://webassets.linear.app/images/ornj730p/production/f45112e8aeed10023708772eb88872fa97b4291c-200x200.jpg?w=72&q=95&auto=format&dpr=2",
+      "local": "assets/images/f45112e8aeed10023708772eb88872fa97b4291c-200x200.jpg"
+    },
+    {
+      "url": "https://webassets.linear.app/images/ornj730p/production/4472d232811671536455f5768bf0a6584d39c755-2186x2186.png?w=72&q=95&auto=format&dpr=2",
+      "local": "assets/images/4472d232811671536455f5768bf0a6584d39c755-2186x2186.png"
+    },
+    {
+      "url": "https://webassets.linear.app/images/ornj730p/production/835fa19a98f9cd22cfb8da73cc921aa1027edeb6-2048x2048.png?w=72&q=95&auto=format&dpr=2",
+      "local": "assets/images/835fa19a98f9cd22cfb8da73cc921aa1027edeb6-2048x2048.png"
+    },
+    {
+      "url": "https://webassets.linear.app/images/ornj730p/production/e71a8d13b2d26a3a53303810550d00b23cb87ce5-200x200.jpg?w=72&q=95&auto=format&dpr=2",
+      "local": "assets/images/e71a8d13b2d26a3a53303810550d00b23cb87ce5-200x200.jpg"
+    },
+    {
+      "url": "https://webassets.linear.app/images/ornj730p/production/74717706c51f3c14ebe2851e0076def007ebafdd-1000x1000.png?w=72&q=95&auto=format&dpr=2",
+      "local": "assets/images/74717706c51f3c14ebe2851e0076def007ebafdd-1000x1000.png"
+    },
+    {
+      "url": "https://webassets.linear.app/images/ornj730p/production/62175a4eea5abef20b7338bcc6565876ce937416-467x492.jpg?w=72&q=95&auto=format&dpr=2",
+      "local": "assets/images/62175a4eea5abef20b7338bcc6565876ce937416-467x492.jpg"
+    },
+    {
+      "url": "https://webassets.linear.app/images/ornj730p/production/4d081a7a9ee2575014ab150f2d74cc3e2266a937-300x300.jpg?w=72&q=95&auto=format&dpr=2",
+      "local": "assets/images/4d081a7a9ee2575014ab150f2d74cc3e2266a937-300x300.jpg"
+    },
+    {
+      "url": "https://webassets.linear.app/images/ornj730p/production/265a1c61a0335e4df0248ea38bf642ebb3693bda-2264x2256.jpg?w=72&q=95&auto=format&dpr=2",
+      "local": "assets/images/265a1c61a0335e4df0248ea38bf642ebb3693bda-2264x2256.jpg"
+    },
+    {
+      "url": "https://webassets.linear.app/images/ornj730p/production/181a9d8a02fe6df34865175bc0097db476952862-512x512.jpg?w=72&q=95&auto=format&dpr=2",
+      "local": "assets/images/181a9d8a02fe6df34865175bc0097db476952862-512x512.jpg"
+    },
+    {
+      "url": "https://static.linear.app/assets/web/mobile/hero@2x.AEB6F0F0-AEE7-4B23-927B-DCD35EB3E984.jpg",
+      "local": "assets/images/hero@2x.AEB6F0F0-AEE7-4B23-927B-DCD35EB3E984.jpg"
+    }
+  ],
+  "animations": []
+}

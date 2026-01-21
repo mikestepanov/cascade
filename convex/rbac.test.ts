@@ -1,5 +1,3 @@
-// @ts-nocheck - Test file with complex union type assertions
-
 import { convexTest } from "convex-test";
 import { describe, expect, it } from "vitest";
 import type { Id } from "./_generated/dataModel";
@@ -139,7 +137,6 @@ describe("RBAC Utilities", () => {
           userId: organizationMemberId,
           role: "member",
           addedBy: creatorId,
-          addedAt: now,
         });
       });
 
@@ -152,7 +149,6 @@ describe("RBAC Utilities", () => {
           workspaceId,
           ownerId: creatorId,
           createdBy: creatorId,
-          createdAt: now,
           updatedAt: now,
           isPublic: true, // organization-visible
           boardType: "kanban",
@@ -315,7 +311,7 @@ describe("RBAC Utilities", () => {
           const { assertCanEditProject } = await import("./projectAccess");
           await assertCanEditProject(ctx, projectId, viewerId);
         });
-      }).rejects.toThrow("You don't have permission to edit this project");
+      }).rejects.toThrow("Not authorized");
     });
 
     it("should pass for sufficient permissions", async () => {

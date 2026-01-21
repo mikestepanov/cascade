@@ -141,7 +141,6 @@ export const createNotification = internalMutation({
       documentId: args.documentId,
       actorId: args.actorId,
       isRead: false,
-      createdAt: Date.now(),
     });
   },
 });
@@ -176,7 +175,6 @@ export const createBulk = internalMutation({
           documentId: args.documentId,
           actorId: args.actorId,
           isRead: false,
-          createdAt: Date.now(),
         });
       }),
     );
@@ -194,9 +192,8 @@ export const listForDigest = internalQuery({
     const MAX_DIGEST_NOTIFICATIONS = 100;
     const notifications = await ctx.db
       .query("notifications")
-      .withIndex("by_user_created", (q) =>
-        q.eq("userId", args.userId).gte("createdAt", args.startTime),
-      )
+      .withIndex("by_user", (q) => q.eq("userId", args.userId))
+      .filter((q) => q.gte(q.field("_creationTime"), args.startTime))
       .order("desc")
       .take(MAX_DIGEST_NOTIFICATIONS);
 

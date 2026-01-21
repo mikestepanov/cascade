@@ -3,82 +3,28 @@ import { v } from "convex/values";
 import { pruneNull } from "convex-helpers";
 import { internal } from "./_generated/api";
 import type { Doc, Id } from "./_generated/dataModel";
-import type { MutationCtx, QueryCtx } from "./_generated/server";
-import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
+import {
+  authenticatedMutation,
+  authenticatedQuery,
+  organizationMemberMutation,
+  organizationQuery,
+  teamLeadMutation,
+  teamQuery,
+} from "./customFunctions";
 import { batchFetchTeams, batchFetchUsers, getUserName } from "./lib/batchHelpers";
 import { conflict, forbidden, notFound, validation } from "./lib/errors";
+import { isOrganizationAdmin } from "./lib/organizationAccess";
 import { fetchPaginatedQuery } from "./lib/queryHelpers";
 import { MAX_PROJECTS_PER_TEAM, MAX_TEAM_MEMBERS, MAX_TEAMS_PER_ORG } from "./lib/queryLimits";
 import { cascadeSoftDelete } from "./lib/relationships";
 import { notDeleted, softDeleteFields } from "./lib/softDeleteHelpers";
-import { isOrganizationAdmin } from "./organizations";
+import { getTeamRole } from "./lib/teamAccess";
 import { isTest } from "./testConfig";
 import { teamRoles } from "./validators";
+
 // ============================================================================
 // Helper Functions
 // ============================================================================
-
-/**
- * Get user's role in a team
- * Returns null if user is not a member
- */
-export async function getTeamRole(
-  ctx: QueryCtx | MutationCtx,
-  teamId: Id<"teams">,
-  userId: Id<"users">,
-): Promise<"lead" | "member" | null> {
-  const membership = await ctx.db
-    .query("teamMembers")
-    .withIndex("by_team_user", (q) => q.eq("teamId", teamId).eq("userId", userId))
-    .first();
-
-  return membership?.role ?? null;
-}
-
-/**
- * Check if user is team lead
- */
-export async function isTeamLead(
-  ctx: QueryCtx | MutationCtx,
-  teamId: Id<"teams">,
-  userId: Id<"users">,
-): Promise<boolean> {
-  const role = await getTeamRole(ctx, teamId, userId);
-  return role === "lead";
-}
-
-/**
- * Check if user can manage team (team lead or organization admin)
- */
-async function canManageTeam(
-  ctx: QueryCtx | MutationCtx,
-  teamId: Id<"teams">,
-  userId: Id<"users">,
-): Promise<boolean> {
-  const team = await ctx.db.get(teamId);
-  if (!team) return false;
-
-  // Team lead can manage
-  const isLead = await isTeamLead(ctx, teamId, userId);
-  if (isLead) return true;
-
-  // organization admin can manage
-  return await isOrganizationAdmin(ctx, team.organizationId, userId);
-}
-
-/**
- * Assert user can manage team
- */
-async function assertCanManageTeam(
-  ctx: QueryCtx | MutationCtx,
-  teamId: Id<"teams">,
-  userId: Id<"users">,
-): Promise<void> {
-  const canManage = await canManageTeam(ctx, teamId, userId);
-  if (!canManage) {
-    throw forbidden("lead", "Only team leads or organization admins can perform this action");
-  }
-}
 
 /**
  * Generate URL-friendly slug from team name
@@ -98,9 +44,8 @@ function generateSlug(name: string): string {
  * Create a new team
  * organization admin or member can create
  */
-export const createTeam = authenticatedMutation({
+export const createTeam = organizationMemberMutation({
   args: {
-    organizationId: v.id("organizations"),
     workspaceId: v.id("workspaces"),
     name: v.string(),
     description: v.optional(v.string()),
@@ -108,17 +53,7 @@ export const createTeam = authenticatedMutation({
   },
 
   handler: async (ctx, args) => {
-    // Must be organization member to create team
-    const organizationMembership = await ctx.db
-      .query("organizationMembers")
-      .withIndex("by_organization_user", (q) =>
-        q.eq("organizationId", args.organizationId).eq("userId", ctx.userId),
-      )
-      .first();
-
-    if (!organizationMembership) {
-      throw forbidden(undefined, "You must be an organization member to create a team");
-    }
+    // organizationMemberMutation handles auth + org membership check
 
     // Generate unique slug
     const baseSlug = generateSlug(args.name);
@@ -129,7 +64,7 @@ export const createTeam = authenticatedMutation({
       const existing = await ctx.db
         .query("teams")
         .withIndex("by_organization_slug", (q) =>
-          q.eq("organizationId", args.organizationId).eq("slug", slug),
+          q.eq("organizationId", ctx.organizationId).eq("slug", slug),
         )
         .first();
 
@@ -143,24 +78,22 @@ export const createTeam = authenticatedMutation({
 
     // Create team
     const teamId = await ctx.db.insert("teams", {
-      organizationId: args.organizationId,
+      organizationId: ctx.organizationId,
       workspaceId: args.workspaceId,
       name: args.name,
       slug,
       description: args.description,
       isPrivate: args.isPrivate,
       createdBy: ctx.userId,
-      createdAt: now,
       updatedAt: now,
     });
 
-    // Add creator as team lead
+    // Add creator as team admin
     await ctx.db.insert("teamMembers", {
       teamId,
       userId: ctx.userId,
-      role: "lead",
+      role: "admin",
       addedBy: ctx.userId,
-      addedAt: now,
     });
 
     // Audit Log
@@ -170,7 +103,7 @@ export const createTeam = authenticatedMutation({
         actorId: ctx.userId,
         targetId: teamId,
         targetType: "team",
-        metadata: { name: args.name, organizationId: args.organizationId },
+        metadata: { name: args.name, organizationId: ctx.organizationId },
       });
     }
 
@@ -182,18 +115,14 @@ export const createTeam = authenticatedMutation({
  * Update team details
  * Team lead or organization admin only
  */
-export const updateTeam = authenticatedMutation({
+export const updateTeam = teamLeadMutation({
   args: {
-    teamId: v.id("teams"),
     name: v.optional(v.string()),
     description: v.optional(v.string()),
     isPrivate: v.optional(v.boolean()),
   },
   handler: async (ctx, args) => {
-    await assertCanManageTeam(ctx, args.teamId, ctx.userId);
-
-    const team = await ctx.db.get(args.teamId);
-    if (!team) throw notFound("team", args.teamId);
+    // teamLeadMutation handles auth + team admin/org admin check
 
     const updates: {
       name?: string;
@@ -216,11 +145,11 @@ export const updateTeam = authenticatedMutation({
         const existing = await ctx.db
           .query("teams")
           .withIndex("by_organization_slug", (q) =>
-            q.eq("organizationId", team.organizationId).eq("slug", slug),
+            q.eq("organizationId", ctx.organizationId).eq("slug", slug),
           )
           .first();
 
-        if (!existing || existing._id === args.teamId) break;
+        if (!existing || existing._id === ctx.teamId) break;
 
         slug = `${baseSlug}-${counter}`;
         counter++;
@@ -231,14 +160,14 @@ export const updateTeam = authenticatedMutation({
     if (args.description !== undefined) updates.description = args.description;
     if (args.isPrivate !== undefined) updates.isPrivate = args.isPrivate;
 
-    await ctx.db.patch(args.teamId, updates);
+    await ctx.db.patch(ctx.teamId, updates);
 
     // Audit Log
     if (!isTest) {
       await ctx.scheduler.runAfter(0, internal.auditLogs.log, {
         action: "team.update",
         actorId: ctx.userId,
-        targetId: args.teamId,
+        targetId: ctx.teamId,
         targetType: "team",
         metadata: updates,
       });
@@ -253,24 +182,22 @@ export const updateTeam = authenticatedMutation({
  * Team lead or organization admin only
  * Will also delete all team members
  */
-export const softDeleteTeam = authenticatedMutation({
-  args: {
-    teamId: v.id("teams"),
-  },
-  handler: async (ctx, args) => {
-    await assertCanManageTeam(ctx, args.teamId, ctx.userId);
+export const softDeleteTeam = teamLeadMutation({
+  args: {},
+  handler: async (ctx) => {
+    // teamLeadMutation handles auth + team admin/org admin check
 
     // Soft delete team and cascade to members
     const deletedAt = Date.now();
-    await ctx.db.patch(args.teamId, softDeleteFields(ctx.userId));
-    await cascadeSoftDelete(ctx, "teams", args.teamId, ctx.userId, deletedAt);
+    await ctx.db.patch(ctx.teamId, softDeleteFields(ctx.userId));
+    await cascadeSoftDelete(ctx, "teams", ctx.teamId, ctx.userId, deletedAt);
 
     // Audit Log
     if (!isTest) {
       await ctx.scheduler.runAfter(0, internal.auditLogs.log, {
         action: "team.softDelete",
         actorId: ctx.userId,
-        targetId: args.teamId,
+        targetId: ctx.teamId,
         targetType: "team",
         metadata: { deletedAt },
       });
@@ -338,31 +265,27 @@ export const restoreTeam = authenticatedMutation({
  * Add member to team
  * Team lead or organization admin only
  */
-export const addTeamMember = authenticatedMutation({
+export const addTeamMember = teamLeadMutation({
   args: {
-    teamId: v.id("teams"),
     userId: v.id("users"),
     role: teamRoles,
   },
   handler: async (ctx, args) => {
-    await assertCanManageTeam(ctx, args.teamId, ctx.userId);
+    // teamLeadMutation handles auth + team admin/org admin check
 
     // Check if user is already a member
     const existing = await ctx.db
       .query("teamMembers")
-      .withIndex("by_team_user", (q) => q.eq("teamId", args.teamId).eq("userId", args.userId))
+      .withIndex("by_team_user", (q) => q.eq("teamId", ctx.teamId).eq("userId", args.userId))
       .first();
 
     if (existing) throw conflict("User is already a member of this team");
 
     // Verify user is organization member
-    const team = await ctx.db.get(args.teamId);
-    if (!team) throw notFound("team", args.teamId);
-
     const organizationMembership = await ctx.db
       .query("organizationMembers")
       .withIndex("by_organization_user", (q) =>
-        q.eq("organizationId", team.organizationId).eq("userId", args.userId),
+        q.eq("organizationId", ctx.organizationId).eq("userId", args.userId),
       )
       .first();
 
@@ -370,14 +293,13 @@ export const addTeamMember = authenticatedMutation({
       throw forbidden(undefined, "User must be an organization member to join this team");
     }
 
-    const now = Date.now();
+    const _now = Date.now();
 
     await ctx.db.insert("teamMembers", {
-      teamId: args.teamId,
+      teamId: ctx.teamId,
       userId: args.userId,
       role: args.role,
       addedBy: ctx.userId,
-      addedAt: now,
     });
 
     // Audit Log
@@ -387,7 +309,7 @@ export const addTeamMember = authenticatedMutation({
         actorId: ctx.userId,
         targetId: args.userId,
         targetType: "user",
-        metadata: { teamId: args.teamId, role: args.role },
+        metadata: { teamId: ctx.teamId, role: args.role },
       });
     }
 
@@ -399,18 +321,17 @@ export const addTeamMember = authenticatedMutation({
  * Update team member role
  * Team lead or organization admin only
  */
-export const updateTeamMemberRole = authenticatedMutation({
+export const updateTeamMemberRole = teamLeadMutation({
   args: {
-    teamId: v.id("teams"),
     userId: v.id("users"),
     role: teamRoles,
   },
   handler: async (ctx, args) => {
-    await assertCanManageTeam(ctx, args.teamId, ctx.userId);
+    // teamLeadMutation handles auth + team admin/org admin check
 
     const membership = await ctx.db
       .query("teamMembers")
-      .withIndex("by_team_user", (q) => q.eq("teamId", args.teamId).eq("userId", args.userId))
+      .withIndex("by_team_user", (q) => q.eq("teamId", ctx.teamId).eq("userId", args.userId))
       .first();
 
     if (!membership) throw notFound("membership");
@@ -426,7 +347,7 @@ export const updateTeamMemberRole = authenticatedMutation({
         actorId: ctx.userId,
         targetId: args.userId,
         targetType: "user",
-        metadata: { teamId: args.teamId, role: args.role },
+        metadata: { teamId: ctx.teamId, role: args.role },
       });
     }
 
@@ -438,17 +359,16 @@ export const updateTeamMemberRole = authenticatedMutation({
  * Remove member from team
  * Team lead or organization admin only
  */
-export const removeTeamMember = authenticatedMutation({
+export const removeTeamMember = teamLeadMutation({
   args: {
-    teamId: v.id("teams"),
     userId: v.id("users"),
   },
   handler: async (ctx, args) => {
-    await assertCanManageTeam(ctx, args.teamId, ctx.userId);
+    // teamLeadMutation handles auth + team admin/org admin check
 
     const membership = await ctx.db
       .query("teamMembers")
-      .withIndex("by_team_user", (q) => q.eq("teamId", args.teamId).eq("userId", args.userId))
+      .withIndex("by_team_user", (q) => q.eq("teamId", ctx.teamId).eq("userId", args.userId))
       .first();
 
     if (!membership) throw notFound("membership");
@@ -462,7 +382,7 @@ export const removeTeamMember = authenticatedMutation({
         actorId: ctx.userId,
         targetId: args.userId,
         targetType: "user",
-        metadata: { teamId: args.teamId },
+        metadata: { teamId: ctx.teamId },
       });
     }
 
@@ -623,7 +543,7 @@ export const getTeams = authenticatedQuery({
           .first(),
       ),
     );
-    const userRoleByTeam = new Map<string, "lead" | "member">();
+    const userRoleByTeam = new Map<string, "admin" | "member">();
     teamIds.forEach((teamId, index) => {
       const membership = userMemberships[index];
       if (membership) {
@@ -660,29 +580,18 @@ export const getTeams = authenticatedQuery({
 /**
  * Get all teams in an organization
  */
-export const getOrganizationTeams = authenticatedQuery({
-  args: {
-    organizationId: v.id("organizations"),
-  },
-  handler: async (ctx, args) => {
-    // Must be organization member
-    const organizationMembership = await ctx.db
-      .query("organizationMembers")
-      .withIndex("by_organization_user", (q) =>
-        q.eq("organizationId", args.organizationId).eq("userId", ctx.userId),
-      )
-      .filter(notDeleted)
-      .first();
-
-    if (!organizationMembership) return [];
+export const getOrganizationTeams = organizationQuery({
+  args: {},
+  handler: async (ctx) => {
+    // organizationQuery handles auth + org membership check
 
     const teams = await ctx.db
       .query("teams")
-      .withIndex("by_organization", (q) => q.eq("organizationId", args.organizationId))
+      .withIndex("by_organization", (q) => q.eq("organizationId", ctx.organizationId))
       .filter(notDeleted)
       .take(MAX_TEAMS_PER_ORG);
 
-    const isAdmin = await isOrganizationAdmin(ctx, args.organizationId, ctx.userId);
+    const isAdmin = ctx.organizationRole === "admin" || ctx.organizationRole === "owner";
 
     // Fetch team members and projects per team using indexes with limits
     const teamIds = teams.map((t) => t._id);
@@ -709,7 +618,7 @@ export const getOrganizationTeams = authenticatedQuery({
 
     // Build count maps
     const memberCountByTeam = new Map<string, number>();
-    const userRoleByTeam = new Map<string, "lead" | "member">();
+    const userRoleByTeam = new Map<string, "admin" | "member">();
 
     teamIds.forEach((teamId, index) => {
       const members = teamMembersArrays[index];
@@ -819,23 +728,14 @@ export const getUserTeams = authenticatedQuery({
  * Get all members of a team
  * Team member or organization admin only
  */
-export const getTeamMembers = authenticatedQuery({
-  args: {
-    teamId: v.id("teams"),
-  },
-  handler: async (ctx, args) => {
-    const team = await ctx.db.get(args.teamId);
-    if (!team) throw notFound("team", args.teamId);
-
-    // Check access
-    const role = await getTeamRole(ctx, args.teamId, ctx.userId);
-    const isAdmin = await isOrganizationAdmin(ctx, team.organizationId, ctx.userId);
-
-    if (!(role || isAdmin)) throw forbidden();
+export const getTeamMembers = teamQuery({
+  args: {},
+  handler: async (ctx) => {
+    // teamQuery handles auth + team member/org admin check
 
     const memberships = await ctx.db
       .query("teamMembers")
-      .withIndex("by_team", (q) => q.eq("teamId", args.teamId))
+      .withIndex("by_team", (q) => q.eq("teamId", ctx.teamId))
       .filter(notDeleted)
       .take(MAX_TEAM_MEMBERS);
 

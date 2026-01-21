@@ -170,7 +170,7 @@ export function NotificationBell() {
                           </Typography>
                           <Flex align="center" gap="sm" className="mt-2">
                             <span className="text-xs text-ui-text-tertiary">
-                              {formatTime(notification.createdAt)}
+                              {formatTime(notification._creationTime)}
                             </span>
                             {notification.actorName && (
                               <>

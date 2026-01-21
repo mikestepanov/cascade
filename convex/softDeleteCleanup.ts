@@ -8,6 +8,7 @@
 import { v } from "convex/values";
 import { internalMutation } from "./_generated/server";
 import { authenticatedQuery } from "./customFunctions";
+import { logger } from "./lib/logger";
 import { cascadeDelete } from "./lib/relationships";
 import { isEligibleForPermanentDeletion, onlyDeleted } from "./lib/softDeleteHelpers";
 
@@ -30,7 +31,6 @@ const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
 
 export const permanentlyDeleteOld = internalMutation({
   args: {},
-  // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: Cron job handler requires complex logic
   handler: async (ctx) => {
     const startTime = Date.now();
     let totalDeleted = 0;
@@ -72,14 +72,15 @@ export const permanentlyDeleteOld = internalMutation({
     const durationMs = Date.now() - startTime;
 
     // Log summary for monitoring
-    console.log(`[softDeleteCleanup] Completed in ${durationMs}ms`, {
+    logger.info("Soft delete cleanup completed", {
+      durationMs,
       totalDeleted,
       deletedByTable,
       errorCount: errors.length,
     });
 
     if (errors.length > 0) {
-      console.warn(`[softDeleteCleanup] Errors:`, errors.slice(0, 10)); // Log first 10 errors
+      logger.warn("Soft delete cleanup errors", { errors: errors.slice(0, 10) });
     }
 
     return {

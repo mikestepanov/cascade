@@ -23,7 +23,6 @@ export const createChat = authenticatedMutation({
       userId: ctx.userId,
       projectId: args.projectId,
       title: args.title || "New Chat",
-      createdAt: now,
       updatedAt: now,
     });
 
@@ -100,7 +99,6 @@ export const addMessage = authenticatedMutation({
       modelUsed: args.modelUsed,
       tokensUsed: args.tokensUsed,
       responseTime: args.responseTime,
-      createdAt: Date.now(),
     });
 
     // Update chat's updatedAt
@@ -152,7 +150,6 @@ export const createSuggestion = mutation({
       reasoning: args.reasoning,
       modelUsed: args.modelUsed,
       confidence: args.confidence,
-      createdAt: Date.now(),
     });
 
     return suggestionId;
@@ -234,7 +231,6 @@ export const trackUsage = mutation({
       responseTime: args.responseTime,
       success: args.success,
       errorMessage: args.errorMessage,
-      createdAt: Date.now(),
     });
 
     return usageId;

@@ -1,6 +1,7 @@
 import { authTables } from "@convex-dev/auth/server";
 import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
+import { issueActivityFields, issuesFields, projectsFields } from "./schemaFields";
 import {
   auditMetadata,
   blockNoteContent,
@@ -35,9 +36,11 @@ const applicationTables = {
     title: v.string(),
     isPublic: v.boolean(),
     createdBy: v.id("users"),
-    createdAt: v.number(),
     updatedAt: v.number(),
-    projectId: v.optional(v.id("projects")), // Link documents to projects - stored as string to avoid table mismatch
+    // Hierarchy - every doc belongs to an org, optionally scoped to workspace/project
+    organizationId: v.id("organizations"), // Required - all docs belong to an org
+    workspaceId: v.optional(v.id("workspaces")), // Optional - workspace-level docs
+    projectId: v.optional(v.id("projects")), // Optional - project-level docs
     // Soft Delete
     isDeleted: v.optional(v.boolean()),
     deletedAt: v.optional(v.number()),
@@ -45,13 +48,15 @@ const applicationTables = {
   })
     .index("by_creator", ["createdBy"])
     .index("by_public", ["isPublic"])
-    .index("by_created_at", ["createdAt"])
+    .index("by_organization", ["organizationId"])
+    .index("by_workspace", ["workspaceId"])
     .index("by_project", ["projectId"])
     .index("by_creator_updated", ["createdBy", "updatedAt"])
     .index("by_deleted", ["isDeleted"])
+    .index("by_organization_deleted", ["organizationId", "isDeleted"])
     .searchIndex("search_title", {
       searchField: "title",
-      filterFields: ["isPublic", "createdBy", "projectId"],
+      filterFields: ["isPublic", "createdBy", "organizationId", "workspaceId", "projectId"],
     }),
 
   documentVersions: defineTable({
@@ -60,12 +65,10 @@ const applicationTables = {
     snapshot: proseMirrorSnapshot, // ProseMirror snapshot data
     title: v.string(), // Document title at this version
     createdBy: v.id("users"), // User who created this version
-    createdAt: v.number(), // Timestamp when version was created
     changeDescription: v.optional(v.string()), // Optional description of changes
   })
     .index("by_document", ["documentId"])
-    .index("by_document_version", ["documentId", "version"])
-    .index("by_document_created", ["documentId", "createdAt"]),
+    .index("by_document_version", ["documentId", "version"]),
 
   documentTemplates: defineTable({
     name: v.string(), // Template name: "Meeting Notes", "RFC", "Project Brief"
@@ -77,7 +80,6 @@ const applicationTables = {
     isPublic: v.boolean(), // Public templates visible to all users
     createdBy: v.optional(v.id("users")), // Creator (null for built-in)
     projectId: v.optional(v.id("projects")), // Project-specific template (optional)
-    createdAt: v.number(),
     updatedAt: v.number(),
   })
     .index("by_category", ["category"])
@@ -98,7 +100,6 @@ const applicationTables = {
     icon: v.optional(v.string()), // Emoji like 🏗️, 📱, 🎨
     organizationId: v.id("organizations"),
     createdBy: v.id("users"),
-    createdAt: v.number(),
     updatedAt: v.number(),
     // Settings
     settings: v.optional(
@@ -120,11 +121,11 @@ const applicationTables = {
     workspaceId: v.id("workspaces"),
     userId: v.id("users"),
     role: v.union(
-      v.literal("admin"), // Can manage workspace settings, teams, and members
-      v.literal("member"), // Can access workspace resources
+      v.literal("admin"), // Can manage workspace settings and members
+      v.literal("editor"), // Can create/edit workspace-level content (docs)
+      v.literal("member"), // Can view workspace resources
     ),
     addedBy: v.id("users"),
-    addedAt: v.number(),
     // Soft Delete
     isDeleted: v.optional(v.boolean()),
     deletedAt: v.optional(v.number()),
@@ -137,43 +138,7 @@ const applicationTables = {
     .index("by_workspace_role", ["workspaceId", "role"])
     .index("by_deleted", ["isDeleted"]),
 
-  projects: defineTable({
-    name: v.string(),
-    key: v.string(), // Project key like "PROJ"
-    description: v.optional(v.string()),
-    // NEW: Hierarchy
-    workspaceId: v.id("workspaces"), // Project belongs to workspace (department)
-    teamId: v.optional(v.id("teams")), // Project belongs to team (optional - null for workspace projects)
-    // Ownership
-    organizationId: v.id("organizations"), // organization this project belongs to
-    ownerId: v.id("users"), // User that owns this project
-    // Sharing settings
-    isPublic: v.optional(v.boolean()), // Visible to all organization members (organization-public)
-    // isOrganizationPublic removed (legacy)
-    sharedWithTeamIds: v.optional(v.array(v.id("teams"))), // Specific teams with access
-    // Audit
-    createdBy: v.id("users"), // Who created it (for audit trail)
-    createdAt: v.number(),
-    updatedAt: v.number(),
-    // Board configuration
-    boardType: boardTypes,
-    workflowStates: v.array(
-      v.object({
-        id: v.string(),
-        name: v.string(),
-        category: workflowCategories,
-        order: v.number(),
-      }),
-    ),
-    // Agency features
-    defaultHourlyRate: v.optional(v.number()), // Default billing rate for this project
-    clientName: v.optional(v.string()), // Client name for agency work
-    budget: v.optional(v.number()), // Project budget in currency
-    // Soft Delete
-    isDeleted: v.optional(v.boolean()),
-    deletedAt: v.optional(v.number()),
-    deletedBy: v.optional(v.id("users")),
-  })
+  projects: defineTable(projectsFields)
     .index("by_creator", ["createdBy"])
     .index("by_key", ["key"])
     .index("by_public", ["isPublic"])
@@ -193,7 +158,6 @@ const applicationTables = {
     userId: v.id("users"),
     role: projectRoles,
     addedBy: v.id("users"),
-    addedAt: v.number(),
     // Soft Delete
     isDeleted: v.optional(v.boolean()),
     deletedAt: v.optional(v.number()),
@@ -204,39 +168,7 @@ const applicationTables = {
     .index("by_project_user", ["projectId", "userId"])
     .index("by_deleted", ["isDeleted"]),
 
-  issues: defineTable({
-    projectId: v.id("projects"), // Issue belongs to project (required)
-    workspaceId: v.id("workspaces"), // Cached from project.workspaceId
-    teamId: v.optional(v.id("teams")), // Cached from project.teamId (optional, for performance)
-    key: v.string(), // Issue key like "PROJ-123"
-    title: v.string(),
-    description: v.optional(v.string()),
-    type: issueTypesWithSubtask,
-    status: v.string(), // References workflow state id
-    priority: issuePriorities,
-    assigneeId: v.optional(v.id("users")),
-    reporterId: v.id("users"),
-    createdAt: v.number(),
-    updatedAt: v.number(),
-    dueDate: v.optional(v.number()),
-    estimatedHours: v.optional(v.number()),
-    loggedHours: v.optional(v.number()),
-    storyPoints: v.optional(v.number()),
-    labels: v.array(v.string()),
-    sprintId: v.optional(v.id("sprints")),
-    epicId: v.optional(v.id("issues")),
-    parentId: v.optional(v.id("issues")), // For sub-tasks
-    linkedDocuments: v.array(v.id("documents")),
-    attachments: v.array(v.id("_storage")),
-    order: v.number(), // For ordering within status columns
-    // AI/Semantic Search
-    embedding: v.optional(v.array(v.float64())), // Vector embedding for semantic search
-    searchContent: v.optional(v.string()), // Combined title and description for search
-    // Soft Delete
-    isDeleted: v.optional(v.boolean()), // Soft delete flag (undefined = not deleted)
-    deletedAt: v.optional(v.number()), // Timestamp when deleted
-    deletedBy: v.optional(v.id("users")), // User who deleted this issue
-  })
+  issues: defineTable(issuesFields)
     .index("by_project", ["projectId"])
     .index("by_workspace", ["workspaceId"]) // Standardized
     .index("by_team", ["teamId"]) // NEW
@@ -249,7 +181,6 @@ const applicationTables = {
     .index("by_parent", ["parentId"])
     .index("by_project_status", ["projectId", "status"])
     .index("by_project_status_updated", ["projectId", "status", "updatedAt"])
-    .index("by_project_sprint_created", ["projectId", "sprintId", "createdAt"])
     .index("by_project_sprint_status", ["projectId", "sprintId", "status"]) // Optimized for sprint board counts
     .index("by_project_sprint_status_updated", ["projectId", "sprintId", "status", "updatedAt"]) // NEW OPTIMIZATION
     .index("by_project_updated", ["projectId", "updatedAt"])
@@ -275,7 +206,6 @@ const applicationTables = {
     authorId: v.id("users"),
     content: v.string(),
     mentions: v.array(v.id("users")), // User IDs mentioned in comment
-    createdAt: v.number(),
     updatedAt: v.number(),
     // Soft Delete
     isDeleted: v.optional(v.boolean()),
@@ -291,7 +221,6 @@ const applicationTables = {
     toIssueId: v.id("issues"),
     linkType: linkTypes,
     createdBy: v.id("users"),
-    createdAt: v.number(),
   })
     .index("by_from_issue", ["fromIssueId"])
     .index("by_to_issue", ["toIssueId"]),
@@ -304,7 +233,6 @@ const applicationTables = {
     endDate: v.optional(v.number()),
     status: sprintStatuses,
     createdBy: v.id("users"),
-    createdAt: v.number(),
     updatedAt: v.number(),
     // Soft Delete
     isDeleted: v.optional(v.boolean()),
@@ -315,22 +243,13 @@ const applicationTables = {
     .index("by_status", ["status"])
     .index("by_deleted", ["isDeleted"]),
 
-  issueActivity: defineTable({
-    issueId: v.id("issues"),
-    userId: v.id("users"),
-    action: v.string(), // "created", "updated", "commented", "assigned", etc.
-    field: v.optional(v.string()), // Field that was changed
-    oldValue: v.optional(v.string()),
-    newValue: v.optional(v.string()),
-    createdAt: v.number(),
-  })
+  issueActivity: defineTable(issueActivityFields)
     .index("by_issue", ["issueId"])
     .index("by_user", ["userId"]),
 
   issueWatchers: defineTable({
     issueId: v.id("issues"),
     userId: v.id("users"),
-    createdAt: v.number(),
   })
     .index("by_issue", ["issueId"])
     .index("by_user", ["userId"])
@@ -341,7 +260,6 @@ const applicationTables = {
     name: v.string(),
     color: v.string(), // Hex color code like "#3B82F6"
     createdBy: v.id("users"),
-    createdAt: v.number(),
   })
     .index("by_project", ["projectId"])
     .index("by_project_name", ["projectId", "name"]),
@@ -355,7 +273,6 @@ const applicationTables = {
     defaultPriority: issuePriorities,
     defaultLabels: v.array(v.string()),
     createdBy: v.id("users"),
-    createdAt: v.number(),
   })
     .index("by_project", ["projectId"])
     .index("by_project_type", ["projectId", "type"]),
@@ -368,7 +285,6 @@ const applicationTables = {
     secret: v.optional(v.string()), // For HMAC signature
     isActive: v.boolean(),
     createdBy: v.id("users"),
-    createdAt: v.number(),
     lastTriggered: v.optional(v.number()),
     // Soft Delete
     isDeleted: v.optional(v.boolean()),
@@ -388,11 +304,9 @@ const applicationTables = {
     responseBody: v.optional(v.string()), // Response from webhook endpoint
     error: v.optional(v.string()), // Error message if failed
     attempts: v.number(), // Number of delivery attempts
-    createdAt: v.number(),
     completedAt: v.optional(v.number()),
   })
     .index("by_webhook", ["webhookId"])
-    .index("by_webhook_created", ["webhookId", "createdAt"])
     .index("by_status", ["status"]),
 
   savedFilters: defineTable({
@@ -419,7 +333,6 @@ const applicationTables = {
       epicId: v.optional(v.id("issues")),
     }),
     isPublic: v.boolean(), // Whether other team members can use this filter
-    createdAt: v.number(),
     updatedAt: v.number(),
   })
     .index("by_project", ["projectId"])
@@ -448,7 +361,6 @@ const applicationTables = {
     ),
     isBuiltIn: v.boolean(), // Built-in templates vs user-created
     createdBy: v.optional(v.id("users")),
-    createdAt: v.number(),
   })
     .index("by_category", ["category"])
     .index("by_built_in", ["isBuiltIn"]),
@@ -463,7 +375,6 @@ const applicationTables = {
     actionType: v.string(), // Action: "set_assignee", "add_label", "send_notification", etc.
     actionValue: v.string(), // Action value/params as JSON string
     createdBy: v.id("users"),
-    createdAt: v.number(),
     updatedAt: v.number(),
     executionCount: v.number(),
   })
@@ -488,7 +399,6 @@ const applicationTables = {
     isRequired: v.boolean(),
     description: v.optional(v.string()),
     createdBy: v.id("users"),
-    createdAt: v.number(),
   })
     .index("by_project", ["projectId"])
     .index("by_project_key", ["projectId", "fieldKey"]),
@@ -513,7 +423,6 @@ const applicationTables = {
     documentId: v.optional(v.id("documents")),
     actorId: v.optional(v.id("users")), // Who triggered the notification
     isRead: v.boolean(),
-    createdAt: v.number(),
     // Soft Delete
     isDeleted: v.optional(v.boolean()),
     deletedAt: v.optional(v.number()),
@@ -521,7 +430,6 @@ const applicationTables = {
   })
     .index("by_user", ["userId"])
     .index("by_user_read", ["userId", "isRead"])
-    .index("by_user_created", ["userId", "createdAt"])
     .index("by_deleted", ["isDeleted"]),
 
   notificationPreferences: defineTable({
@@ -538,14 +446,12 @@ const applicationTables = {
     digestDay: v.optional(v.string()), // "monday", "tuesday", etc. (for weekly digest)
     digestTime: v.optional(v.string()), // "09:00", "17:00", etc. (24h format)
     // Metadata
-    createdAt: v.number(),
     updatedAt: v.number(),
   }).index("by_user", ["userId"]),
 
   unsubscribeTokens: defineTable({
     userId: v.id("users"),
     token: v.string(),
-    createdAt: v.number(),
     usedAt: v.optional(v.number()),
   })
     .index("by_token", ["token"])
@@ -564,7 +470,6 @@ const applicationTables = {
     onboardingPersona: v.optional(personas), // User's self-selected persona
     wasInvited: v.optional(v.boolean()), // Whether user was invited (denormalized)
     invitedByName: v.optional(v.string()), // Name of person who invited them
-    createdAt: v.number(),
     updatedAt: v.number(),
   }).index("by_user", ["userId"]),
 
@@ -600,7 +505,6 @@ const applicationTables = {
     // Attendance tracking
     isRequired: v.optional(v.boolean()), // Required attendance (for tracking who missed)
     // Metadata
-    createdAt: v.number(),
     updatedAt: v.number(),
   })
     .index("by_organizer", ["organizerId"])
@@ -647,7 +551,6 @@ const applicationTables = {
     endTime: v.string(), // 24h format like "17:00"
     isActive: v.boolean(),
     timezone: v.string(), // IANA timezone like "America/New_York"
-    createdAt: v.number(),
   })
     .index("by_user", ["userId"])
     .index("by_user_day", ["userId", "dayOfWeek"])
@@ -690,7 +593,6 @@ const applicationTables = {
     requiresConfirmation: v.boolean(), // Manual approval
     color: v.string(), // Calendar color hex
     // Metadata
-    createdAt: v.number(),
     updatedAt: v.number(),
   })
     .index("by_user", ["userId"])
@@ -726,7 +628,6 @@ const applicationTables = {
     // Reminders
     reminderSent: v.boolean(),
     // Metadata
-    createdAt: v.number(),
     updatedAt: v.number(),
   })
     .index("by_booking_page", ["bookingPageId"])
@@ -754,7 +655,6 @@ const applicationTables = {
     ),
     lastSyncAt: v.optional(v.number()),
     // Metadata
-    createdAt: v.number(),
     updatedAt: v.number(),
   })
     .index("by_user", ["userId"])
@@ -771,7 +671,6 @@ const applicationTables = {
     refreshToken: v.optional(v.string()),
     expiresAt: v.optional(v.number()),
     // Metadata
-    createdAt: v.number(),
     updatedAt: v.number(),
   })
     .index("by_user", ["userId"])
@@ -789,7 +688,6 @@ const applicationTables = {
     autoLinkCommits: v.boolean(), // Auto-link commits that mention issue keys
     // Metadata
     linkedBy: v.id("users"),
-    createdAt: v.number(),
     updatedAt: v.number(),
   })
     .index("by_project", ["projectId"])
@@ -816,7 +714,6 @@ const applicationTables = {
     // Status checks
     checksStatus: v.optional(ciStatuses),
     // Metadata
-    createdAt: v.number(),
     updatedAt: v.number(),
   })
     .index("by_issue", ["issueId"])
@@ -837,7 +734,6 @@ const applicationTables = {
     htmlUrl: v.string(), // GitHub commit URL
     committedAt: v.number(),
     // Metadata
-    createdAt: v.number(),
   })
     .index("by_issue", ["issueId"])
     .index("by_project", ["projectId"])
@@ -859,7 +755,6 @@ const applicationTables = {
     lastAttempt: v.optional(v.number()),
     error: v.optional(v.string()), // Error message if failed
     // Metadata
-    createdAt: v.number(),
     updatedAt: v.number(),
   })
     .index("by_user", ["userId"])
@@ -871,12 +766,10 @@ const applicationTables = {
     userId: v.id("users"),
     projectId: v.optional(v.id("projects")), // Link chat to specific project for context
     title: v.string(), // Auto-generated from first message or user-provided
-    createdAt: v.number(),
     updatedAt: v.number(),
   })
     .index("by_user", ["userId"])
-    .index("by_project", ["projectId"])
-    .index("by_user_created", ["userId", "createdAt"]),
+    .index("by_project", ["projectId"]),
 
   aiMessages: defineTable({
     chatId: v.id("aiChats"),
@@ -894,10 +787,7 @@ const applicationTables = {
     modelUsed: v.optional(v.string()), // e.g., "claude-3-5-sonnet-20241022"
     tokensUsed: v.optional(v.number()),
     responseTime: v.optional(v.number()), // Milliseconds
-    createdAt: v.number(),
-  })
-    .index("by_chat", ["chatId"])
-    .index("by_chat_created", ["chatId", "createdAt"]),
+  }).index("by_chat", ["chatId"]),
 
   aiSuggestions: defineTable({
     userId: v.id("users"),
@@ -920,7 +810,6 @@ const applicationTables = {
     // Metadata
     modelUsed: v.string(),
     confidence: v.optional(v.number()), // 0-1 confidence score
-    createdAt: v.number(),
     respondedAt: v.optional(v.number()),
   })
     .index("by_user", ["userId"])
@@ -951,14 +840,11 @@ const applicationTables = {
     success: v.boolean(),
     errorMessage: v.optional(v.string()),
     // Metadata
-    createdAt: v.number(),
   })
     .index("by_user", ["userId"])
     .index("by_project", ["projectId"])
     .index("by_provider", ["provider"])
-    .index("by_operation", ["operation"])
-    .index("by_created_at", ["createdAt"])
-    .index("by_user_created", ["userId", "createdAt"]),
+    .index("by_operation", ["operation"]),
 
   // REST API Keys (for CLI and external integrations)
   apiKeys: defineTable({
@@ -982,7 +868,6 @@ const applicationTables = {
     rotatedFromId: v.optional(v.id("apiKeys")), // Previous key this was rotated from
     rotatedAt: v.optional(v.number()), // When old key was rotated (grace period start)
     // Metadata
-    createdAt: v.number(),
     revokedAt: v.optional(v.number()),
   })
     .index("by_user", ["userId"])
@@ -1007,12 +892,9 @@ const applicationTables = {
     // Errors
     error: v.optional(v.string()),
     // Timestamp
-    createdAt: v.number(),
   })
     .index("by_api_key", ["apiKeyId"])
-    .index("by_user", ["userId"])
-    .index("by_created_at", ["createdAt"])
-    .index("by_api_key_created", ["apiKeyId", "createdAt"]),
+    .index("by_user", ["userId"]),
 
   // Pumble Integration (Team Chat)
   pumbleWebhooks: defineTable({
@@ -1032,7 +914,6 @@ const applicationTables = {
     lastMessageAt: v.optional(v.number()),
     lastError: v.optional(v.string()),
     // Metadata
-    createdAt: v.number(),
     updatedAt: v.number(),
   })
     .index("by_user", ["userId"])
@@ -1070,7 +951,6 @@ const applicationTables = {
     approvedBy: v.optional(v.id("users")),
     approvedAt: v.optional(v.number()),
     // Metadata
-    createdAt: v.number(),
     updatedAt: v.number(),
   })
     .index("by_user", ["userId"])
@@ -1101,7 +981,6 @@ const applicationTables = {
     // Metadata
     setBy: v.id("users"), // Who set this rate
     notes: v.optional(v.string()),
-    createdAt: v.number(),
     updatedAt: v.number(),
   })
     .index("by_user", ["userId"])
@@ -1141,7 +1020,6 @@ const applicationTables = {
     isActive: v.boolean(), // Is user currently active?
     // Metadata
     createdBy: v.id("users"), // Admin who created profile
-    createdAt: v.number(),
     updatedAt: v.number(),
   })
     .index("by_user", ["userId"])
@@ -1165,7 +1043,6 @@ const applicationTables = {
     canManageProjects: v.boolean(), // Can create/manage projects
     // Metadata
     isActive: v.boolean(), // Is this type currently in use?
-    createdAt: v.number(),
     updatedAt: v.number(),
   }).index("by_type", ["type"]),
 
@@ -1203,7 +1080,6 @@ const applicationTables = {
     reviewedAt: v.optional(v.number()),
     reviewNotes: v.optional(v.string()),
     // Metadata
-    createdAt: v.number(),
     updatedAt: v.number(),
   })
     .index("by_user", ["userId"])
@@ -1233,7 +1109,6 @@ const applicationTables = {
     acceptedAt: v.optional(v.number()), // When accepted
     revokedBy: v.optional(v.id("users")), // Admin who revoked (if revoked)
     revokedAt: v.optional(v.number()), // When revoked
-    createdAt: v.number(),
     updatedAt: v.number(),
   })
     .index("by_email", ["email"])
@@ -1259,7 +1134,6 @@ const applicationTables = {
     }),
     // Metadata
     createdBy: v.id("users"), // organization creator (becomes owner)
-    createdAt: v.number(),
     updatedAt: v.number(),
   })
     .index("by_slug", ["slug"])
@@ -1278,7 +1152,6 @@ const applicationTables = {
       v.literal("member"), // Regular member (can use organization resources)
     ),
     addedBy: v.id("users"), // Who added this member
-    addedAt: v.number(), // When the membership was created/invited
     joinedAt: v.optional(v.number()), // When the user actually joined (accepted invite)
   })
     .index("by_organization", ["organizationId"])
@@ -1310,7 +1183,6 @@ const applicationTables = {
     ),
     // Metadata
     createdBy: v.id("users"),
-    createdAt: v.number(),
     updatedAt: v.number(),
     // Soft Delete
     isDeleted: v.optional(v.boolean()),
@@ -1334,11 +1206,10 @@ const applicationTables = {
     teamId: v.id("teams"),
     userId: v.id("users"),
     role: v.union(
-      v.literal("lead"), // Team lead (can manage team members and settings)
+      v.literal("admin"), // Team admin (can manage team members and settings)
       v.literal("member"), // Regular team member
     ),
     addedBy: v.id("users"),
-    addedAt: v.number(),
     // Soft Delete
     isDeleted: v.optional(v.boolean()),
     deletedAt: v.optional(v.number()),
@@ -1397,7 +1268,6 @@ const applicationTables = {
     projectId: v.optional(v.id("projects")), // Link to project for context
     isPublic: v.boolean(), // Can all project members see this?
     // Metadata
-    createdAt: v.number(),
     updatedAt: v.number(),
   })
     .index("by_calendar_event", ["calendarEventId"])
@@ -1431,7 +1301,6 @@ const applicationTables = {
     wordCount: v.number(),
     speakerCount: v.optional(v.number()), // Number of distinct speakers
     // Metadata
-    createdAt: v.number(),
   })
     .index("by_recording", ["recordingId"])
     .searchIndex("search_transcript", {
@@ -1484,7 +1353,6 @@ const applicationTables = {
     completionTokens: v.optional(v.number()),
     processingTime: v.optional(v.number()), // How long summarization took (ms)
     // Metadata
-    createdAt: v.number(),
     regeneratedAt: v.optional(v.number()), // If user requested regeneration
   })
     .index("by_recording", ["recordingId"])
@@ -1566,7 +1434,6 @@ const applicationTables = {
     // Metadata
     displayName: v.string(),
     notes: v.optional(v.string()),
-    createdAt: v.number(),
     updatedAt: v.number(),
   })
     .index("by_service_type", ["serviceType"])
@@ -1598,7 +1465,6 @@ const applicationTables = {
     // Bot service reference
     botServiceJobId: v.optional(v.string()), // ID from Railway bot service
     // Metadata
-    createdAt: v.number(),
     updatedAt: v.number(),
   })
     .index("by_recording", ["recordingId"])
@@ -1615,7 +1481,6 @@ const applicationTables = {
     emailNotifications: v.optional(v.boolean()),
     desktopNotifications: v.optional(v.boolean()),
     timezone: v.optional(v.string()), // IANA timezone
-    createdAt: v.number(),
     updatedAt: v.number(),
   }).index("by_user", ["userId"]),
 

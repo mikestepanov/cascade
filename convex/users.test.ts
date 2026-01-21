@@ -119,7 +119,6 @@ describe("Users", () => {
           type: "task",
           reporterId: userId,
           assigneeId: userId,
-          createdAt: Date.now(),
           updatedAt: Date.now(),
           labels: [],
           order: 1,
@@ -135,7 +134,6 @@ describe("Users", () => {
           authorId: userId,
           content: "Comment",
           mentions: [],
-          createdAt: Date.now(),
           updatedAt: Date.now(),
         });
       });

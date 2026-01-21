@@ -1,12 +1,7 @@
-// @ts-nocheck
 /**
  * Internal AI Functions
  *
- * Extracted to separate file to avoid circular type references.
  * These internal functions are called by public actions in convex/ai.ts
- *
- * Note: Type checking disabled due to TypeScript limitation with deep type instantiation
- * when using Convex with AI SDK packages.
  */
 
 import { v } from "convex/values";
@@ -105,7 +100,6 @@ export const createChat = internalMutation({
       userId: user._id as Id<"users">,
       projectId: args.projectId,
       title: args.title,
-      createdAt: Date.now(),
       updatedAt: Date.now(),
     });
   },
@@ -129,7 +123,6 @@ export const addMessage = internalMutation({
       content: args.content,
       modelUsed: args.modelUsed,
       tokensUsed: args.tokensUsed,
-      createdAt: Date.now(),
     });
 
     // Update chat timestamp
@@ -226,7 +219,6 @@ export const trackUsage = internalMutation({
       totalTokens: args.totalTokens,
       responseTime: args.responseTime,
       success: args.success,
-      createdAt: Date.now(),
     });
   },
 });

@@ -65,7 +65,7 @@ describe("API Keys", () => {
           scopes: ["issues:read"],
           projectId,
         });
-      }).rejects.toThrow("You don't have access to this project");
+      }).rejects.toThrow("Not authorized");
     });
 
     it("should allow project access for members", async () => {

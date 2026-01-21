@@ -1,4 +1,3 @@
-// @ts-nocheck - Circular type inference through internal wrappers
 /**
  * AI Integration with Anthropic Claude
  *
@@ -6,24 +5,17 @@
  * - Project assistant (chat)
  * - Semantic issue search (vector embeddings)
  * - AI suggestions (descriptions, priorities, labels)
- *
- * Note: Type checking disabled due to Convex framework limitation.
- * Even with internal functions extracted to convex/internal/ai.ts, TypeScript
- * infers circular types through the wrapper functions. This is unavoidable
- * without removing backward-compatible wrappers entirely.
- *
- * The code uses type-safe helpers (extractUsage) to maintain type safety.
  */
 
 import { anthropic } from "@ai-sdk/anthropic";
 import { generateText } from "ai";
 import { v } from "convex/values";
 import { internal } from "./_generated/api";
+import type { Id } from "./_generated/dataModel";
 import { action, internalAction } from "./_generated/server";
 import { extractUsage } from "./lib/aiHelpers";
 import { notFound, unauthenticated } from "./lib/errors";
 import { rateLimit } from "./rateLimits";
-import { chatRoles } from "./validators";
 
 // Claude model (using alias - auto-points to latest snapshot)
 const CLAUDE_OPUS = "claude-opus-4-5";
@@ -35,7 +27,8 @@ export const generateEmbedding = internalAction({
   args: {
     text: v.string(),
   },
-  handler: async (ctx, args) => {
+  returns: v.array(v.float64()),
+  handler: async (ctx, args): Promise<number[]> => {
     return await ctx.runAction(internal.internal.ai.generateEmbedding, args);
   },
 });
@@ -48,7 +41,8 @@ export const generateIssueEmbedding = internalAction({
   args: {
     issueId: v.id("issues"),
   },
-  handler: async (ctx, args) => {
+  returns: v.array(v.float64()),
+  handler: async (ctx, args): Promise<number[]> => {
     const issue = await ctx.runQuery(internal.internal.ai.getIssueData, {
       issueId: args.issueId,
     });
@@ -82,31 +76,11 @@ export const getIssueForEmbedding = internalAction({
   args: {
     issueId: v.id("issues"),
   },
-  handler: async (ctx, args) => {
+  handler: async (
+    ctx,
+    args,
+  ): Promise<{ _id: string; title: string; description?: string } | null> => {
     return await ctx.runQuery(internal.internal.ai.getIssueData, { issueId: args.issueId });
-  },
-});
-
-/**
- * Internal query to fetch issue (kept for backward compatibility)
- */
-export const getIssueData = internalAction({
-  args: { issueId: v.id("issues") },
-  handler: async (ctx, args) => {
-    return await ctx.runQuery(internal.internal.ai.getIssueData, args);
-  },
-});
-
-/**
- * Store embedding in issue document (kept for backward compatibility)
- */
-export const storeIssueEmbedding = internalAction({
-  args: {
-    issueId: v.id("issues"),
-    embedding: v.array(v.float64()),
-  },
-  handler: async (ctx, args) => {
-    await ctx.runMutation(internal.internal.ai.storeIssueEmbedding, args);
   },
 });
 
@@ -120,7 +94,7 @@ export const chat = action({
     projectId: v.optional(v.id("projects")),
     message: v.string(),
   },
-  handler: async (ctx, args) => {
+  handler: async (ctx, args): Promise<{ chatId: Id<"aiChats">; message: string }> => {
     const userId = await ctx.auth.getUserIdentity();
     if (!userId) {
       throw unauthenticated();
@@ -133,14 +107,13 @@ export const chat = action({
     });
 
     // Create or get chat
-    let chatId = args.chatId;
-    if (!chatId) {
-      chatId = await ctx.runMutation(internal.internal.ai.createChat, {
+    const chatId: Id<"aiChats"> =
+      args.chatId ??
+      (await ctx.runMutation(internal.internal.ai.createChat, {
         userId: userId.subject,
         projectId: args.projectId,
         title: args.message.slice(0, 100), // First 100 chars as title
-      });
-    }
+      }));
 
     // Store user message
     await ctx.runMutation(internal.internal.ai.addMessage, {
@@ -214,36 +187,11 @@ Be concise, helpful, and professional.`;
   },
 });
 
-// Re-export internal functions for backward compatibility
-export const createChat = internalAction({
-  args: {
-    userId: v.string(),
-    projectId: v.optional(v.id("projects")),
-    title: v.string(),
-  },
-  handler: async (ctx, args) => {
-    return await ctx.runMutation(internal.internal.ai.createChat, args);
-  },
-});
-
-export const addMessage = internalAction({
-  args: {
-    chatId: v.id("aiChats"),
-    role: chatRoles,
-    content: v.string(),
-    modelUsed: v.optional(v.string()),
-    tokensUsed: v.optional(v.number()),
-  },
-  handler: async (ctx, args) => {
-    await ctx.runMutation(internal.internal.ai.addMessage, args);
-  },
-});
-
 export const getProjectContext = internalAction({
   args: {
     projectId: v.id("projects"),
   },
-  handler: async (ctx, args) => {
+  handler: async (ctx, args): Promise<string> => {
     return await ctx.runQuery(internal.internal.ai.getProjectContext, args);
   },
 });
@@ -266,7 +214,7 @@ export const trackUsage = internalAction({
     responseTime: v.number(),
     success: v.boolean(),
   },
-  handler: async (ctx, args) => {
+  handler: async (ctx, args): Promise<void> => {
     await ctx.runMutation(internal.internal.ai.trackUsage, args);
   },
 });

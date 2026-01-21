@@ -52,3 +52,64 @@ Before submitting PRs, run the following commands. These are also enforced by CI
 ### Run Tests
 
 Verify changes with `pnpm test` or specific test files.
+
+## Agent Capabilities: Browser Automation
+
+> **⚠️ Capability Critical:** This section applies to **Antigravity** agents with access to the `browser_subagent` tool. If you are running via a standard CLI or an agent without this specific toolset, you likely **cannot** perform these actions autonomously.
+
+Agents with Antigravity capabilities have access to a powerful **Browser Subagent** capable of advanced research:
+
+### 1. Supported Capabilities
+
+- **Authenticated Sessions**: Can log in to external services (Linear, Google, etc.) using user-provided credentials.
+- **Visual Inspection**: Can take screenshots, record session videos (WebP), and analyze UI density/layout.
+- **Deep Technical Extraction**:
+  - **CSS**: Extract all CSS variables (`--bg-color`), font stacks, and animation curves.
+  - **Network**: Traffic analysis (GraphQL vs REST), capturing WebSocket events.
+  - **Framework Detection**: Identify React, Next.js, MobX, etc. via global hooks.
+
+### 2. Workflow for Authenticated Tasks
+
+1.  **Plan**: Agent proposes the task (e.g., "Analyze Linear's Dashboard").
+2.  **Auth**: User provides credentials in chat. Agent automates the login flow.
+3.  **Execute**: Agent navigates deep into the app to extract "secret sauce" data.
+4.  **Artifacts**: Agent generates reports (`tech-stack.md`) and visual proofs (recordings).
+
+**Note:** This bypasses standard "bot" limitations by using a full headless browser environment.
+
+### 3. Credential Management
+
+**Before asking the user for credentials**, always check `secrets.json` in the root directory.
+
+- **File Path:** `./secrets.json` (Gitignored)
+- **Structure:**
+  ```json
+  {
+    "google": { "email": "...", "password": "..." },
+    "linear": { ... }
+  }
+  ```
+- **Policy:** If `secrets.json` exists, load it and use the credentials automatically. If valid credentials fail, `notify_user` immediately.
+
+### 4. Total Mirror Capture System
+
+For comprehensive competitor research, use the **Total Mirror** scripts:
+
+```bash
+# Single page capture
+pnpm run mirror <url> <competitor> <page>
+# Example: pnpm run mirror https://linear.app/features linear features
+
+# Batch capture (all defined pages)
+pnpm run mirror:batch
+```
+
+**Scripts:**
+
+- `scripts/scrape_full_mirror.js` — Single page capture (HTML, JS, CSS, fonts, images, CSS vars)
+- `scripts/mirror_batch.js` — Runs all defined targets (Linear, ClickUp, Notion)
+
+**Output:** `docs/research/library/<competitor>/`
+
+**Gitignored (regenerable):** `assets/`, `*.html`, `*_manifest.json`, `*_network.json`
+**Tracked (intelligence):** `*_deep.json` (CSS vars, keyframes, fonts)

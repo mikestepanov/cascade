@@ -53,3 +53,16 @@ nul
 NUL
 
 build-output/
+
+# Secrets (Local only)
+secrets.json
+.secrets.*
+
+# Competitor Mirror Assets (Large, regenerable)
+docs/research/library/*/assets/
+docs/research/library/*/*.html
+docs/research/library/*/*.webp
+docs/research/library/*/*_manifest.json
+docs/research/library/*/*_network.json
+docs/research/library/*/*_deep.json
+# Keep: *_tech.json (summaries), *.png (screenshots)

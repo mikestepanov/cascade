@@ -45,7 +45,6 @@ export const connectGitHub = authenticatedMutation({
       accessToken: args.accessToken,
       refreshToken: args.refreshToken,
       expiresAt: args.expiresAt,
-      createdAt: now,
       updatedAt: now,
     });
   },
@@ -132,8 +131,7 @@ export const linkRepository = authenticatedMutation({
       syncPRs: args.syncPRs ?? true,
       syncIssues: args.syncIssues ?? false,
       autoLinkCommits: args.autoLinkCommits ?? true,
-      linkedBy: userId,
-      createdAt: now,
+      linkedBy: ctx.userId,
       updatedAt: now,
     });
   },
@@ -278,7 +276,6 @@ export const upsertPullRequest = mutation({
       authorAvatarUrl: args.authorAvatarUrl,
       htmlUrl: args.htmlUrl,
       checksStatus: args.checksStatus,
-      createdAt: now,
       updatedAt: now,
     });
   },
@@ -362,7 +359,7 @@ export const upsertCommit = mutation({
     const repo = await ctx.db.get(args.repositoryId);
     if (!repo) throw notFound("repository", args.repositoryId);
 
-    const now = Date.now();
+    const _now = Date.now();
 
     // Try to link to issue if issueKey provided
     let issueId: Id<"issues"> | undefined;
@@ -404,7 +401,6 @@ export const upsertCommit = mutation({
       authorAvatarUrl: args.authorAvatarUrl,
       htmlUrl: args.htmlUrl,
       committedAt: args.committedAt,
-      createdAt: now,
     });
   },
 });

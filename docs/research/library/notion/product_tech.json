@@ -1,0 +1,12 @@
+{
+  "techStack": {
+    "isNext": true,
+    "isReact": true,
+    "hasBlockClasses": true,
+    "cssModules": true
+  },
+  "scripts": [
+    "notion.com/_next/static/chunks/polyfills...",
+    "notion.com/_next/static/chunks/webpack..."
+  ]
+}

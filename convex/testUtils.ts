@@ -111,7 +111,6 @@ export async function createProjectInOrganization(
       name: `Workspace for ${name}`,
       slug: `ws-${key.toLowerCase()}`,
       createdBy: creatorId,
-      createdAt: now,
       updatedAt: now,
     });
 
@@ -122,7 +121,6 @@ export async function createProjectInOrganization(
       slug: `team-${key.toLowerCase()}`,
       isPrivate: false,
       createdBy: creatorId,
-      createdAt: now,
       updatedAt: now,
     });
 
@@ -135,7 +133,6 @@ export async function createProjectInOrganization(
       teamId,
       ownerId: creatorId,
       createdBy: creatorId,
-      createdAt: now,
       updatedAt: now,
       isPublic: projectData?.isPublic ?? false,
       boardType: projectData?.boardType || "kanban",
@@ -167,7 +164,6 @@ export async function createProjectInOrganization(
       userId: creatorId,
       role: "admin",
       addedBy: creatorId,
-      addedAt: now,
     });
 
     return projectId;
@@ -216,7 +212,6 @@ export async function addProjectMember(
       userId,
       role,
       addedBy,
-      addedAt: Date.now(),
     });
   });
 }
@@ -271,7 +266,6 @@ export async function createTestIssue(
       priority: issueData?.priority || "medium",
       assigneeId: issueData?.assigneeId,
       reporterId,
-      createdAt: now,
       updatedAt: now,
       labels: [],
       linkedDocuments: [],
@@ -349,8 +343,6 @@ export async function createOrganizationAdmin(
       },
       name,
       slug,
-
-      createdAt: now,
       updatedAt: now,
     });
 
@@ -360,7 +352,6 @@ export async function createOrganizationAdmin(
       userId,
       role: "owner",
       addedBy: userId,
-      addedAt: now,
     });
 
     // Create default workspace for tests
@@ -369,7 +360,6 @@ export async function createOrganizationAdmin(
       name: `Default Workspace`,
       slug: `default-ws-${now}`,
       createdBy: userId,
-      createdAt: now,
       updatedAt: now,
     });
 
@@ -380,7 +370,6 @@ export async function createOrganizationAdmin(
       name: `Default Team`,
       slug: `default-team-${now}`,
       createdBy: userId,
-      createdAt: now,
       updatedAt: now,
       isPrivate: false,
     });
@@ -389,9 +378,8 @@ export async function createOrganizationAdmin(
     await ctx.db.insert("teamMembers", {
       teamId,
       userId,
-      role: "lead",
+      role: "admin",
       addedBy: userId,
-      addedAt: now,
     });
 
     return { organizationId, workspaceId, teamId };

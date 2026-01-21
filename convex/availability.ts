@@ -1,4 +1,5 @@
 import { v } from "convex/values";
+import { query } from "./_generated/server";
 import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
 import { requireOwned, validation } from "./lib/errors";
 
@@ -57,7 +58,6 @@ export const setDayAvailability = authenticatedMutation({
         endTime: args.endTime,
         timezone: args.timezone,
         isActive: args.isActive ?? true,
-        createdAt: Date.now(),
       });
     }
   },
@@ -102,7 +102,6 @@ export const setDefaultWorkingHours = authenticatedMutation({
           endTime,
           timezone: args.timezone,
           isActive: true,
-          createdAt: Date.now(),
         });
       }
     }
