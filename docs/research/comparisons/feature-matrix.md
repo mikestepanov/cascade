@@ -12,14 +12,14 @@
 
 ## 🏢 Market Benchmark: Proprietary Leaders
 
-| Metric          | Nixelo           | Linear         | ClickUp     | Asana       | Notion      |
-| --------------- | ---------------- | -------------- | ----------- | ----------- | ----------- |
-| **Type**        | Open Source      | Proprietary    | Proprietary | Proprietary | Proprietary |
-| **Primary Use** | PM + Docs        | Issue Tracking | All-in-One  | Work Mgmt   | Knowledge   |
-| **Pricing**     | Free (Self-host) | $8+/user       | $7+/user    | $11+/user   | $8+/user    |
-| **Real-time**   | ✅✅ Excellent   | ✅✅ Excellent | ⚠️ Good     | ❌ Limited  | ⚠️ Good     |
-| **Docs**        | ✅ Built-in      | ❌ No          | ✅ Built-in | ❌ No       | ✅ Core     |
-| **Meetings**    | ✅ Native AI     | ❌ No          | ❌ No       | ❌ No       | ❌ No       |
+| Metric          | Nixelo           | Linear                   | ClickUp     | Asana       | Notion      |
+| --------------- | ---------------- | ------------------------ | ----------- | ----------- | ----------- |
+| **Type**        | Open Source      | Proprietary              | Proprietary | Proprietary | Proprietary |
+| **Primary Use** | PM + Docs        | Issue Tracking           | All-in-One  | Work Mgmt   | Knowledge   |
+| **Pricing**     | Free (Self-host) | $8+/user                 | $7+/user    | $11+/user   | $8+/user    |
+| **Real-time**   | ✅✅ Excellent   | ✅✅ Excellent (MobX/WS) | ⚠️ Good     | ❌ Limited  | ⚠️ Good     |
+| **Docs**        | ✅ Built-in      | ❌ No                    | ✅ Built-in | ❌ No       | ✅ Core     |
+| **Meetings**    | ✅ Native AI     | ❌ No                    | ❌ No       | ❌ No       | ❌ No       |
 
 ---
 
