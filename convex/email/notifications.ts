@@ -6,7 +6,7 @@
 
 import { render } from "@react-email/render";
 import { v } from "convex/values";
-import { api, internal } from "../_generated/api";
+import { internal } from "../_generated/api";
 import type { Doc } from "../_generated/dataModel";
 import { internalAction } from "../_generated/server";
 import { getSiteUrl } from "../lib/env";
@@ -276,7 +276,7 @@ export const sendDigestEmail = internalAction({
     const { userId, frequency } = args;
 
     // Get user details
-    const user = await ctx.runQuery(api.users.get, { id: userId });
+    const user = await ctx.runQuery(internal.users.getInternal, { id: userId });
     if (!user?.email) {
       return { success: false, error: "No email found" }; // User has no email address
     }

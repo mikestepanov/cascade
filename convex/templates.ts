@@ -1,6 +1,11 @@
 import { v } from "convex/values";
 import type { Doc } from "./_generated/dataModel";
-import { authenticatedMutation, authenticatedQuery, editorMutation, projectQuery } from "./customFunctions";
+import {
+  authenticatedMutation,
+  authenticatedQuery,
+  editorMutation,
+  projectQuery,
+} from "./customFunctions";
 import { forbidden, notFound } from "./lib/errors";
 import { assertCanAccessProject, assertCanEditProject } from "./projectAccess";
 import { issuePriorities, issueTypes } from "./validators";

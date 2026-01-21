@@ -53,7 +53,6 @@ import { customMutation, customQuery } from "convex-helpers/server/customFunctio
 import type { Doc, Id } from "./_generated/dataModel";
 import { type MutationCtx, mutation, type QueryCtx, query } from "./_generated/server";
 import { forbidden, notFound, unauthenticated } from "./lib/errors";
-import { getProjectRole } from "./projectAccess";
 
 // =============================================================================
 // Role Checking Helpers
@@ -191,6 +190,7 @@ export const projectQuery = customQuery(authenticatedQuery, {
       throw notFound("project", args.projectId);
     }
 
+    const { getProjectRole } = await import("./projectAccess");
     const role = await getProjectRole(ctx, args.projectId, ctx.userId);
     if (!(role || project.isPublic)) {
       throw forbidden();
@@ -235,6 +235,7 @@ export const viewerMutation = customMutation(authenticatedMutation, {
       throw notFound("project", args.projectId);
     }
 
+    const { getProjectRole } = await import("./projectAccess");
     const role = await getProjectRole(ctx, args.projectId, ctx.userId);
     requireMinimumRole(role, "viewer");
 
@@ -277,6 +278,7 @@ export const editorMutation = customMutation(authenticatedMutation, {
       throw notFound("project", args.projectId);
     }
 
+    const { getProjectRole } = await import("./projectAccess");
     const role = await getProjectRole(ctx, args.projectId, ctx.userId);
     requireMinimumRole(role, "editor");
 
@@ -315,6 +317,7 @@ export const adminMutation = customMutation(authenticatedMutation, {
       throw notFound("project", args.projectId);
     }
 
+    const { getProjectRole } = await import("./projectAccess");
     const role = await getProjectRole(ctx, args.projectId, ctx.userId);
     requireMinimumRole(role, "admin");
 
@@ -372,6 +375,7 @@ export const issueMutation = customMutation(authenticatedMutation, {
       throw notFound("project", issue.projectId);
     }
 
+    const { getProjectRole } = await import("./projectAccess");
     const role = await getProjectRole(ctx, issue.projectId, ctx.userId);
     requireMinimumRole(role, "editor");
 
@@ -419,6 +423,7 @@ export const issueViewerMutation = customMutation(authenticatedMutation, {
       throw notFound("project", issue.projectId);
     }
 
+    const { getProjectRole } = await import("./projectAccess");
     const role = await getProjectRole(ctx, issue.projectId, ctx.userId);
     requireMinimumRole(role, "viewer");
 
@@ -472,6 +477,7 @@ export const sprintQuery = customQuery(authenticatedQuery, {
       throw notFound("project", sprint.projectId);
     }
 
+    const { getProjectRole } = await import("./projectAccess");
     const role = await getProjectRole(ctx, sprint.projectId, ctx.userId);
     if (!(role || project.isPublic)) {
       throw forbidden();
@@ -517,6 +523,7 @@ export const sprintMutation = customMutation(authenticatedMutation, {
       throw notFound("project", sprint.projectId);
     }
 
+    const { getProjectRole } = await import("./projectAccess");
     const role = await getProjectRole(ctx, sprint.projectId, ctx.userId);
     requireMinimumRole(role, "editor");
 

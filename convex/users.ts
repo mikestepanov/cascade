@@ -1,6 +1,6 @@
 import { v } from "convex/values";
 import { pruneNull } from "convex-helpers";
-import { internalQuery, query } from "./_generated/server";
+import { internalQuery } from "./_generated/server";
 import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
 import { batchFetchUsers } from "./lib/batchHelpers";
 import { conflict, validation } from "./lib/errors";
@@ -20,11 +20,21 @@ function isValidEmail(email: string): boolean {
 }
 
 /**
+ * Internal query to get user by ID (system use only)
+ */
+export const getInternal = internalQuery({
+  args: { id: v.id("users") },
+  handler: async (ctx, args) => {
+    return await ctx.db.get(args.id);
+  },
+});
+
+/**
  * Get a user by ID (sanitized for authenticated users)
  * Note: Does not check if requester should see this user.
  * For team contexts, ensure proper access checks.
  */
-export const get = query({
+export const get = authenticatedQuery({
   args: { id: v.id("users") },
   returns: v.union(
     v.null(),
@@ -154,7 +164,7 @@ export const isOrganizationAdmin = authenticatedQuery({
   },
 });
 
-export const getUserStats = query({
+export const getUserStats = authenticatedQuery({
   args: { userId: v.id("users") },
   returns: v.object({
     issuesCreated: v.number(),
@@ -164,21 +174,42 @@ export const getUserStats = query({
     projects: v.number(),
   }),
   handler: async (ctx, args) => {
+    // If viewing another user, only count data from shared projects
+    let allowedProjectIds: Set<string> | null = null;
+    if (ctx.userId !== args.userId) {
+      const myMemberships = await ctx.db
+        .query("projectMembers")
+        .withIndex("by_user", (q) => q.eq("userId", ctx.userId))
+        .filter(notDeleted)
+        .take(MAX_PAGE_SIZE);
+      allowedProjectIds = new Set(myMemberships.map((m) => m.projectId));
+    }
+
     // Get issues created
-    const issuesCreated = await ctx.db
+    const issuesCreatedAll = await ctx.db
       .query("issues")
       .withIndex("by_reporter", (q) => q.eq("reporterId", args.userId))
       .filter(notDeleted)
       .take(MAX_ISSUES_FOR_STATS);
 
+    const issuesCreated = allowedProjectIds
+      ? issuesCreatedAll.filter((i) => allowedProjectIds.has(i.projectId))
+      : issuesCreatedAll;
+
     // Get issues assigned
-    const issuesAssigned = await ctx.db
+    const issuesAssignedAll = await ctx.db
       .query("issues")
       .withIndex("by_assignee", (q) => q.eq("assigneeId", args.userId))
       .filter(notDeleted)
       .take(MAX_ISSUES_FOR_STATS);
 
+    const issuesAssigned = allowedProjectIds
+      ? issuesAssignedAll.filter((i) => allowedProjectIds.has(i.projectId))
+      : issuesAssignedAll;
+
     // Get comments
+    // Note: Filtering comments by project would require fetching issues for each comment
+    // which is expensive. We count all comments for now.
     const comments = await ctx.db
       .query("issueComments")
       .withIndex("by_author", (q) => q.eq("authorId", args.userId))
@@ -186,11 +217,15 @@ export const getUserStats = query({
       .take(MAX_COMMENTS_FOR_STATS);
 
     // Get projects (as member)
-    const projectMemberships = await ctx.db
+    const projectMembershipsAll = await ctx.db
       .query("projectMembers")
       .withIndex("by_user", (q) => q.eq("userId", args.userId))
       .filter(notDeleted)
       .take(MAX_PAGE_SIZE);
+
+    const projectMemberships = allowedProjectIds
+      ? projectMembershipsAll.filter((m) => allowedProjectIds.has(m.projectId))
+      : projectMembershipsAll;
 
     return {
       issuesCreated: issuesCreated.length,
