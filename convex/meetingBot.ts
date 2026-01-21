@@ -354,7 +354,6 @@ export const scheduleRecording = authenticatedMutation({
       createdBy: ctx.userId,
       projectId: args.projectId,
       isPublic: args.isPublic ?? false,
-      createdAt: now,
       updatedAt: now,
     });
 
@@ -366,7 +365,6 @@ export const scheduleRecording = authenticatedMutation({
       status: "pending",
       attempts: 0,
       maxAttempts: 3,
-      createdAt: now,
       updatedAt: now,
     });
 
@@ -408,7 +406,6 @@ export const startRecordingNow = authenticatedMutation({
       createdBy: ctx.userId,
       projectId: args.projectId,
       isPublic: false,
-      createdAt: now,
       updatedAt: now,
     });
 
@@ -419,7 +416,6 @@ export const startRecordingNow = authenticatedMutation({
       status: "pending",
       attempts: 0,
       maxAttempts: 3,
-      createdAt: now,
       updatedAt: now,
     });
 
@@ -556,7 +552,6 @@ export const saveTranscript = mutation({
       processingTime: args.processingTime,
       wordCount: args.wordCount,
       speakerCount: args.speakerCount,
-      createdAt: Date.now(),
     });
 
     // Update recording status
@@ -633,7 +628,6 @@ export const saveSummary = mutation({
       promptTokens: args.promptTokens,
       completionTokens: args.completionTokens,
       processingTime: args.processingTime,
-      createdAt: Date.now(),
     });
 
     // Update recording status to completed
@@ -755,7 +749,6 @@ export const createIssueFromActionItem = authenticatedMutation({
       priority: actionItem.priority ?? "medium",
       assigneeId: actionItem.assigneeUserId,
       reporterId: ctx.userId,
-      createdAt: now,
       updatedAt: now,
       labels: ["from-meeting"],
       linkedDocuments: [],

@@ -72,14 +72,14 @@ export const { getSnapshot, submitSnapshot, latestVersion, getSteps, submitSteps
         // Save version history (throttle: only save if >1 minute since last version)
         const lastVersion = await ctx.db
           .query("documentVersions")
-          .withIndex("by_document_created", (q) => q.eq("documentId", id as Id<"documents">))
+          .withIndex("by_document", (q) => q.eq("documentId", id as Id<"documents">))
           .order("desc")
           .first();
 
         // Save version if:
         // 1. No previous version exists, OR
         // 2. More than 1 minute has passed since last version
-        const shouldSaveVersion = !lastVersion || now - lastVersion.createdAt > 60 * 1000; // 1 minute
+        const shouldSaveVersion = !lastVersion || now - lastVersion._creationTime > 60 * 1000; // 1 minute
 
         if (shouldSaveVersion) {
           await ctx.db.insert("documentVersions", {
@@ -88,13 +88,12 @@ export const { getSnapshot, submitSnapshot, latestVersion, getSteps, submitSteps
             snapshot,
             title: document.title,
             createdBy: userId,
-            createdAt: now,
           });
 
           // Keep only last 50 versions per document (optional cleanup)
           const versions = await ctx.db
             .query("documentVersions")
-            .withIndex("by_document_created", (q) => q.eq("documentId", id as Id<"documents">))
+            .withIndex("by_document", (q) => q.eq("documentId", id as Id<"documents">))
             .order("desc")
             .collect();
 

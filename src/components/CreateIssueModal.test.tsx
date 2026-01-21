@@ -67,7 +67,7 @@ describe("CreateIssueModal", () => {
     (useAction as any).mockReturnValue(vi.fn());
     // Mock useQuery to return values in order:
     // 1st call: api.projects.getProject -> mockProject
-    // 2nd call: api.templates.list -> mockTemplates
+    // 2nd call: api.templates.listByProject -> mockTemplates
     // 3rd call: api.labels.list -> mockLabels
     (useQuery as any)
       .mockReturnValueOnce(mockProject)

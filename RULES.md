@@ -140,7 +140,9 @@ await page.waitForLoadState('networkidle');
 
 - Use **pnpm** for all package management (unless project specifies otherwise)
 - Use `pnpm` instead of `npm`
-- Use `pnpx` instead of `npx`
+- **NEVER** use `npx` directly - stdout is swallowed in nvm4w + Git Bash
+- **NOTE**: `pnpm run` also swallows stdout in Claude Code's Git Bash environment
+- For typecheck/biome, use direct node commands: `node node_modules/<pkg>/bin/<cli>`
 - Always check package.json for available scripts before guessing
 
 ---

@@ -238,7 +238,6 @@ export const createTestUserInternal = internalMutation({
             tourShown: true,
             wizardCompleted: true,
             checklistDismissed: true,
-            createdAt: now,
             updatedAt: now,
           });
         } else if (!existingOnboarding.onboardingCompleted) {
@@ -285,7 +284,6 @@ export const createTestUserInternal = internalMutation({
                 billingEnabled: true,
               },
               createdBy: existingUser._id,
-              createdAt: now,
               updatedAt: now,
             });
           }
@@ -295,7 +293,6 @@ export const createTestUserInternal = internalMutation({
             userId: existingUser._id,
             role: "admin",
             addedBy: existingUser._id,
-            addedAt: now,
           });
 
           await ctx.db.patch(existingUser._id, { defaultOrganizationId: organizationId });
@@ -335,7 +332,6 @@ export const createTestUserInternal = internalMutation({
         tourShown: true,
         wizardCompleted: true,
         checklistDismissed: true,
-        createdAt: now,
         updatedAt: now,
       });
 
@@ -368,7 +364,6 @@ export const createTestUserInternal = internalMutation({
             billingEnabled: true,
           },
           createdBy: userId,
-          createdAt: now,
           updatedAt: now,
         });
       }
@@ -387,7 +382,6 @@ export const createTestUserInternal = internalMutation({
           userId,
           role: "admin",
           addedBy: userId,
-          addedAt: now,
         });
       }
 
@@ -944,7 +938,6 @@ export const setupRbacProjectInternal = internalMutation({
             billingEnabled: true,
           },
           createdBy: adminUser._id,
-          createdAt: now,
           updatedAt: now,
         });
         organization = await ctx.db.get(orgId);
@@ -956,7 +949,6 @@ export const setupRbacProjectInternal = internalMutation({
           userId: adminUser._id,
           role: "admin",
           addedBy: adminUser._id, // Self-add
-          addedAt: now,
         });
 
         // Refresh membership query
@@ -1003,7 +995,6 @@ export const setupRbacProjectInternal = internalMutation({
           userId: config.userId,
           role: config.role,
           addedBy: adminUser._id,
-          addedAt: now,
         });
       } else if (existingMember.role !== config.role) {
         // Enforce the correct role (downgrade from admin if necessary)
@@ -1026,7 +1017,6 @@ export const setupRbacProjectInternal = internalMutation({
       icon: "🧪",
       organizationId: organization._id,
       createdBy: adminUser._id,
-      createdAt: now,
       updatedAt: now,
     });
 
@@ -1038,7 +1028,6 @@ export const setupRbacProjectInternal = internalMutation({
       workspaceId,
       organizationId: organization._id,
       createdBy: adminUser._id,
-      createdAt: now,
       updatedAt: now,
       isPrivate: false, // Public team for testing
     });
@@ -1047,23 +1036,20 @@ export const setupRbacProjectInternal = internalMutation({
     await ctx.db.insert("teamMembers", {
       teamId,
       userId: adminUser._id,
-      role: "lead",
+      role: "admin",
       addedBy: adminUser._id,
-      addedAt: now,
     });
     await ctx.db.insert("teamMembers", {
       teamId,
       userId: editorUser._id,
       role: "member",
       addedBy: adminUser._id,
-      addedAt: now,
     });
     await ctx.db.insert("teamMembers", {
       teamId,
       userId: viewerUser._id,
       role: "member",
       addedBy: adminUser._id,
-      addedAt: now,
     });
 
     // =========================================================================
@@ -1085,7 +1071,6 @@ export const setupRbacProjectInternal = internalMutation({
         name: "Organization Workspace",
         slug: "org-workspace",
         createdBy: adminUser._id,
-        createdAt: now,
         updatedAt: now,
       });
 
@@ -1097,7 +1082,6 @@ export const setupRbacProjectInternal = internalMutation({
         workspaceId,
         ownerId: adminUser._id,
         createdBy: adminUser._id,
-        createdAt: now,
         updatedAt: now,
         boardType: "kanban",
         workflowStates: [
@@ -1142,7 +1126,6 @@ export const setupRbacProjectInternal = internalMutation({
         teamId, // Workspace level
         ownerId: adminUser._id,
         createdBy: adminUser._id,
-        createdAt: now,
         updatedAt: now,
         boardType: "kanban",
         workflowStates: [
@@ -1181,7 +1164,6 @@ export const setupRbacProjectInternal = internalMutation({
         teamId,
         ownerId: adminUser._id,
         createdBy: adminUser._id,
-        createdAt: now,
         updatedAt: now,
         boardType: "kanban",
         workflowStates: [
@@ -1239,7 +1221,6 @@ export const setupRbacProjectInternal = internalMutation({
             userId: config.userId,
             role: config.role,
             addedBy: adminUser._id,
-            addedAt: now,
           });
         }
       }
@@ -1794,22 +1775,6 @@ export const debugVerifyPasswordInternal = internalMutation({
       hasStoredHash: true,
       passwordMatches,
     };
-  },
-});
-
-// Legacy exports for backwards compatibility (can be removed later)
-export const resetAllOnboarding = internalMutation({
-  args: {},
-  returns: v.object({
-    deleted: v.number(),
-  }),
-  handler: async (ctx) => {
-    // Delete all userOnboarding records for test users
-    const records = await ctx.db.query("userOnboarding").collect();
-    for (const record of records) {
-      await ctx.db.delete(record._id);
-    }
-    return { deleted: records.length };
   },
 });
 

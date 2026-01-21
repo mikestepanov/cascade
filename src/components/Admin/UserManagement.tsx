@@ -372,7 +372,7 @@ export function UserManagement() {
                             {invite.inviterName}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-ui-text-secondary">
-                            {formatDate(invite.createdAt)}
+                            {formatDate(invite._creationTime)}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-ui-text-secondary">
                             {invite.status === "pending" ? formatDate(invite.expiresAt) : "-"}

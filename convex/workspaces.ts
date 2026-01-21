@@ -6,34 +6,37 @@
  */
 
 import { v } from "convex/values";
-import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
+import {
+  authenticatedMutation,
+  authenticatedQuery,
+  organizationAdminMutation,
+  organizationQuery,
+  workspaceAdminMutation,
+  workspaceQuery,
+} from "./customFunctions";
 import { conflict, forbidden, notFound } from "./lib/errors";
+import { isOrganizationAdmin } from "./lib/organizationAccess";
 import { MAX_PAGE_SIZE } from "./lib/queryLimits";
 import { notDeleted } from "./lib/softDeleteHelpers";
-import { isOrganizationAdmin } from "./organizations";
+import { workspaceRoles } from "./validators";
 
 /**
  * Create a new workspace (department)
  * Only organization admins can create workspaces
  */
-export const create = authenticatedMutation({
+export const create = organizationAdminMutation({
   args: {
     name: v.string(),
     slug: v.string(),
     description: v.optional(v.string()),
     icon: v.optional(v.string()),
-    organizationId: v.id("organizations"),
   },
   handler: async (ctx, args) => {
-    // Check if user is organization admin
-    const isAdmin = await isOrganizationAdmin(ctx, args.organizationId, ctx.userId);
-    if (!isAdmin) throw forbidden("admin");
-
     // Check if slug is unique within organization
     const existing = await ctx.db
       .query("workspaces")
       .withIndex("by_organization_slug", (q) =>
-        q.eq("organizationId", args.organizationId).eq("slug", args.slug),
+        q.eq("organizationId", ctx.organizationId).eq("slug", args.slug),
       )
       .first();
 
@@ -46,9 +49,8 @@ export const create = authenticatedMutation({
       slug: args.slug,
       description: args.description,
       icon: args.icon,
-      organizationId: args.organizationId,
+      organizationId: ctx.organizationId,
       createdBy: ctx.userId,
-      createdAt: Date.now(),
       updatedAt: Date.now(),
     });
 
@@ -59,12 +61,12 @@ export const create = authenticatedMutation({
 /**
  * List all workspaces for a organization
  */
-export const list = authenticatedQuery({
-  args: { organizationId: v.id("organizations") },
-  handler: async (ctx, args) => {
+export const list = organizationQuery({
+  args: {},
+  handler: async (ctx) => {
     const workspaces = await ctx.db
       .query("workspaces")
-      .withIndex("by_organization", (q) => q.eq("organizationId", args.organizationId))
+      .withIndex("by_organization", (q) => q.eq("organizationId", ctx.organizationId))
       .take(MAX_PAGE_SIZE);
 
     return workspaces;
@@ -87,16 +89,15 @@ export const get = authenticatedQuery({
 /**
  * Get workspace by slug
  */
-export const getBySlug = authenticatedQuery({
+export const getBySlug = organizationQuery({
   args: {
-    organizationId: v.id("organizations"),
     slug: v.string(),
   },
   handler: async (ctx, args) => {
     const workspace = await ctx.db
       .query("workspaces")
       .withIndex("by_organization_slug", (q) =>
-        q.eq("organizationId", args.organizationId).eq("slug", args.slug),
+        q.eq("organizationId", ctx.organizationId).eq("slug", args.slug),
       )
       .first();
 
@@ -108,10 +109,10 @@ export const getBySlug = authenticatedQuery({
 
 /**
  * Update workspace
+ * Only organization admins can update workspaces
  */
-export const update = authenticatedMutation({
+export const update = workspaceAdminMutation({
   args: {
-    id: v.id("workspaces"),
     name: v.optional(v.string()),
     description: v.optional(v.string()),
     icon: v.optional(v.string()),
@@ -123,28 +124,19 @@ export const update = authenticatedMutation({
     ),
   },
   handler: async (ctx, args) => {
-    const workspace = await ctx.db.get(args.id);
-    if (!workspace) throw notFound("workspace", args.id);
-
-    // Check permissions: Only organization admins can update workspaces
-    const isAdmin = await isOrganizationAdmin(ctx, workspace.organizationId, ctx.userId);
-    if (!isAdmin) {
-      throw forbidden("admin");
-    }
-
-    await ctx.db.patch(args.id, {
-      ...Object.fromEntries(
-        Object.entries(args).filter(([key, value]) => key !== "id" && value !== undefined),
-      ),
+    // workspaceAdminMutation handles auth + org admin check
+    await ctx.db.patch(ctx.workspaceId, {
+      ...Object.fromEntries(Object.entries(args).filter(([_, value]) => value !== undefined)),
       updatedAt: Date.now(),
     });
 
-    return args.id;
+    return ctx.workspaceId;
   },
 });
 
 /**
  * Delete workspace
+ * Only organization admins or the workspace creator can delete workspaces
  * WARNING: This will orphan all teams and projects in this workspace
  */
 export const remove = authenticatedMutation({
@@ -153,12 +145,15 @@ export const remove = authenticatedMutation({
     const workspace = await ctx.db.get(args.id);
     if (!workspace) throw notFound("workspace", args.id);
 
-    // Check permissions (workspace admin or organization admin)
+    // Check permissions (workspace creator or organization admin)
     const isCreator = workspace.createdBy === ctx.userId;
     const isOrgAdmin = await isOrganizationAdmin(ctx, workspace.organizationId, ctx.userId);
 
     if (!(isCreator || isOrgAdmin)) {
-      throw forbidden("admin");
+      throw forbidden(
+        "admin",
+        "Only organization admins or the workspace creator can delete workspaces",
+      );
     }
 
     // Check if workspace has teams or projects
@@ -188,18 +183,19 @@ export const remove = authenticatedMutation({
 /**
  * Get workspace stats (teams, projects count)
  */
-export const getStats = authenticatedQuery({
-  args: { workspaceId: v.id("workspaces") },
-  handler: async (ctx, args) => {
+export const getStats = workspaceQuery({
+  args: {},
+  handler: async (ctx) => {
+    // workspaceQuery handles auth + org membership check
     const teams = await ctx.db
       .query("teams")
-      .withIndex("by_workspace", (q) => q.eq("workspaceId", args.workspaceId))
+      .withIndex("by_workspace", (q) => q.eq("workspaceId", ctx.workspaceId))
       .filter(notDeleted)
       .take(MAX_PAGE_SIZE);
 
     const projects = await ctx.db
       .query("projects")
-      .withIndex("by_workspace", (q) => q.eq("workspaceId", args.workspaceId))
+      .withIndex("by_workspace", (q) => q.eq("workspaceId", ctx.workspaceId))
       .filter(notDeleted)
       .take(MAX_PAGE_SIZE);
 
@@ -207,5 +203,149 @@ export const getStats = authenticatedQuery({
       teamsCount: teams.length,
       projectsCount: projects.length,
     };
+  },
+});
+
+// =============================================================================
+// Workspace Members
+// =============================================================================
+
+/**
+ * Add member to workspace
+ * Workspace admin or organization admin only
+ */
+export const addMember = workspaceAdminMutation({
+  args: {
+    userId: v.id("users"),
+    role: workspaceRoles,
+  },
+  handler: async (ctx, args) => {
+    // Check if user is already a member
+    const existing = await ctx.db
+      .query("workspaceMembers")
+      .withIndex("by_workspace_user", (q) =>
+        q.eq("workspaceId", ctx.workspaceId).eq("userId", args.userId),
+      )
+      .first();
+
+    if (existing) {
+      throw conflict("User is already a member of this workspace");
+    }
+
+    // Verify user is organization member
+    const orgMembership = await ctx.db
+      .query("organizationMembers")
+      .withIndex("by_organization_user", (q) =>
+        q.eq("organizationId", ctx.organizationId).eq("userId", args.userId),
+      )
+      .first();
+
+    if (!orgMembership) {
+      throw forbidden(undefined, "User must be an organization member to join this workspace");
+    }
+
+    const memberId = await ctx.db.insert("workspaceMembers", {
+      workspaceId: ctx.workspaceId,
+      userId: args.userId,
+      role: args.role,
+      addedBy: ctx.userId,
+    });
+
+    return memberId;
+  },
+});
+
+/**
+ * Update workspace member role
+ * Workspace admin or organization admin only
+ */
+export const updateMemberRole = workspaceAdminMutation({
+  args: {
+    userId: v.id("users"),
+    role: workspaceRoles,
+  },
+  handler: async (ctx, args) => {
+    const membership = await ctx.db
+      .query("workspaceMembers")
+      .withIndex("by_workspace_user", (q) =>
+        q.eq("workspaceId", ctx.workspaceId).eq("userId", args.userId),
+      )
+      .first();
+
+    if (!membership) {
+      throw notFound("membership");
+    }
+
+    await ctx.db.patch(membership._id, {
+      role: args.role,
+    });
+
+    return { success: true };
+  },
+});
+
+/**
+ * Remove member from workspace
+ * Workspace admin or organization admin only
+ */
+export const removeMember = workspaceAdminMutation({
+  args: {
+    userId: v.id("users"),
+  },
+  handler: async (ctx, args) => {
+    const membership = await ctx.db
+      .query("workspaceMembers")
+      .withIndex("by_workspace_user", (q) =>
+        q.eq("workspaceId", ctx.workspaceId).eq("userId", args.userId),
+      )
+      .first();
+
+    if (!membership) {
+      throw notFound("membership");
+    }
+
+    // Soft delete the membership
+    await ctx.db.patch(membership._id, {
+      isDeleted: true,
+      deletedAt: Date.now(),
+      deletedBy: ctx.userId,
+    });
+
+    return { success: true };
+  },
+});
+
+/**
+ * Get workspace members
+ * Any workspace member can view
+ */
+export const getMembers = workspaceQuery({
+  args: {},
+  handler: async (ctx) => {
+    const memberships = await ctx.db
+      .query("workspaceMembers")
+      .withIndex("by_workspace", (q) => q.eq("workspaceId", ctx.workspaceId))
+      .filter(notDeleted)
+      .take(MAX_PAGE_SIZE);
+
+    // Fetch user details for each membership
+    const members = await Promise.all(
+      memberships.map(async (membership) => {
+        const user = await ctx.db.get(membership.userId);
+        return {
+          ...membership,
+          user: user
+            ? {
+                _id: user._id,
+                name: user.name,
+                email: user.email,
+                image: user.image,
+              }
+            : null,
+        };
+      }),
+    );
+
+    return members;
   },
 });

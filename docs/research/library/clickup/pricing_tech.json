@@ -1,0 +1,15 @@
+{
+  "techStack": {
+    "react": true,
+    "nextjs": true,
+    "vue": false,
+    "angular": false,
+    "tailwind": false
+  },
+  "counts": {
+    "table": 1,
+    "divTable": 1,
+    "grid": 1
+  },
+  "componentName": "PricingV4CompleteFeatureList"
+}

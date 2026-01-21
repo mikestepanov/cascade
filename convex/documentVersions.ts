@@ -20,7 +20,7 @@ export const listVersions = authenticatedQuery({
     // Get all versions for this document
     const versions = await ctx.db
       .query("documentVersions")
-      .withIndex("by_document_created", (q) => q.eq("documentId", args.documentId))
+      .withIndex("by_document", (q) => q.eq("documentId", args.documentId))
       .order("desc")
       .collect();
 

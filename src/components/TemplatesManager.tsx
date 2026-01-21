@@ -25,14 +25,15 @@ type IssueTemplate = {
 };
 
 /**
- * TemplatesManager - Orchestrates template CRUD operations
- * Form and card logic extracted to separate components
+ * Render and manage issue templates for a specific project, including creation, editing, and deletion flows.
+ *
+ * @param projectId - The project identifier used to scope fetched templates and associated mutations
  */
 export function TemplatesManager({ projectId }: TemplatesManagerProps) {
   const [showModal, setShowModal] = useState(false);
   const [editingTemplate, setEditingTemplate] = useState<IssueTemplate | null>(null);
 
-  const templates = useQuery(api.templates.list, { projectId });
+  const templates = useQuery(api.templates.listByProject, { projectId });
   const deleteTemplateMutation = useMutation(api.templates.remove);
 
   // Delete confirmation

@@ -233,7 +233,6 @@ async function checkUserComplianceInternal(
   } else {
     recordId = await ctx.db.insert("hourComplianceRecords", {
       ...recordData,
-      createdAt: now,
     });
   }
 
@@ -275,7 +274,7 @@ async function sendComplianceNotifications(
   requiredEquityHours: number,
   maxHours: number,
   managerId: Id<"users"> | undefined,
-  now: number,
+  _now: number,
 ) {
   if (status === "compliant" || existingRecord?.notificationSent) {
     return;
@@ -324,7 +323,6 @@ async function sendComplianceNotifications(
       title,
       message,
       isRead: false,
-      createdAt: now,
     });
     notifications.push(notificationId);
   }

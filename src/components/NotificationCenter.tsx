@@ -193,7 +193,7 @@ export function NotificationCenter() {
                           </Typography>
                           <Flex align="center" gap="sm" className="mt-1">
                             <Typography className="text-xs text-ui-text-tertiary">
-                              {formatTime(notification.createdAt)}
+                              {formatTime(notification._creationTime)}
                             </Typography>
                             {notification.actorName && (
                               <>

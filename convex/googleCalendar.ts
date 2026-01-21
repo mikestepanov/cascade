@@ -49,7 +49,6 @@ export const connectGoogleInternal = internalMutation({
       syncDirection: connectionArgs.syncDirection || "bidirectional",
       syncEnabled: true,
       lastSyncAt: undefined,
-      createdAt: now,
       updatedAt: now,
     });
   },
@@ -96,7 +95,6 @@ export const connectGoogle = authenticatedMutation({
       syncEnabled: true,
       syncDirection: args.syncDirection ?? "bidirectional",
       lastSyncAt: undefined,
-      createdAt: now,
       updatedAt: now,
     });
   },
@@ -242,7 +240,6 @@ export const syncFromGoogle = mutation({
         externalAttendees: event.attendees,
         status: "confirmed",
         isRecurring: false,
-        createdAt: Date.now(),
         updatedAt: Date.now(),
       });
       imported++;

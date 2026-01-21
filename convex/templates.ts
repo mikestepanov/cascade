@@ -3,7 +3,7 @@ import type { Doc } from "./_generated/dataModel";
 import {
   authenticatedMutation,
   authenticatedQuery,
-  editorMutation,
+  projectEditorMutation,
   projectQuery,
 } from "./customFunctions";
 import { forbidden, notFound } from "./lib/errors";
@@ -11,7 +11,7 @@ import { assertCanAccessProject, assertCanEditProject } from "./projectAccess";
 import { issuePriorities, issueTypes } from "./validators";
 
 // Create an issue template
-export const create = editorMutation({
+export const create = projectEditorMutation({
   args: {
     name: v.string(),
     type: issueTypes,
@@ -31,7 +31,6 @@ export const create = editorMutation({
       defaultPriority: args.defaultPriority,
       defaultLabels: args.defaultLabels,
       createdBy: ctx.userId,
-      createdAt: Date.now(),
     });
 
     return templateId;
@@ -64,9 +63,6 @@ export const listByProject = projectQuery({
     return templates;
   },
 });
-
-// Alias for backwards compatibility
-export const list = listByProject;
 
 // Get a single template
 export const get = authenticatedQuery({

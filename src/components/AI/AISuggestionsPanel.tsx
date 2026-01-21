@@ -159,7 +159,7 @@ const SuggestionCard = React.memo(function SuggestionCard({
               {metadata?.label || suggestion.suggestionType}
             </span>
             <span className="text-xs text-ui-text-tertiary">
-              {new Date(suggestion.createdAt).toLocaleDateString()}
+              {new Date(suggestion._creationTime).toLocaleDateString()}
             </span>
           </Flex>
           <Typography variant="p" className="whitespace-pre-wrap break-words">

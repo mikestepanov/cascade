@@ -199,7 +199,7 @@ describe("Teams", () => {
         name: "Team 1",
         isPrivate: false,
       });
-      // Auto joined as lead
+      // Auto joined as admin
 
       const teams = await asUser.query(api.teams.getUserTeams, {});
       expect(teams).toHaveLength(2); // Engineering (default) + Team 1

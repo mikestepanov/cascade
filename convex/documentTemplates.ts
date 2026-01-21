@@ -27,7 +27,6 @@ export const create = authenticatedMutation({
       isPublic: args.isPublic,
       createdBy: ctx.userId,
       projectId: args.projectId,
-      createdAt: Date.now(),
       updatedAt: Date.now(),
     });
 
@@ -174,7 +173,6 @@ export const createDocumentFromTemplate = authenticatedMutation({
       isPublic: args.isPublic,
       createdBy: ctx.userId,
       projectId: args.projectId,
-      createdAt: Date.now(),
       updatedAt: Date.now(),
     });
 
@@ -277,7 +275,6 @@ export const initializeBuiltInTemplates = mutation({
         },
         isBuiltIn: true,
         isPublic: true,
-        createdAt: now,
         updatedAt: now,
       },
       {
@@ -383,7 +380,6 @@ export const initializeBuiltInTemplates = mutation({
         },
         isBuiltIn: true,
         isPublic: true,
-        createdAt: now,
         updatedAt: now,
       },
       {
@@ -499,7 +495,6 @@ export const initializeBuiltInTemplates = mutation({
         },
         isBuiltIn: true,
         isPublic: true,
-        createdAt: now,
         updatedAt: now,
       },
       {
@@ -635,7 +630,6 @@ export const initializeBuiltInTemplates = mutation({
         },
         isBuiltIn: true,
         isPublic: true,
-        createdAt: now,
         updatedAt: now,
       },
       {
@@ -703,7 +697,6 @@ export const initializeBuiltInTemplates = mutation({
         },
         isBuiltIn: true,
         isPublic: true,
-        createdAt: now,
         updatedAt: now,
       },
     ];

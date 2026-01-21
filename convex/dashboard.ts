@@ -17,11 +17,28 @@ import {
   MAX_USER_ASSIGNED_ISSUES,
 } from "./lib/queryLimits";
 import { notDeleted } from "./lib/softDeleteHelpers";
-import { nowArg, WEEK } from "./lib/timeUtils";
+import { WEEK } from "./lib/timeUtils";
+import { issueActivityFields, issuesFields, projectsFields } from "./schemaFields";
+import { projectRoles } from "./validators";
 
 // Get all issues assigned to the current user across all projects
 export const getMyIssues = authenticatedQuery({
   args: { paginationOpts: v.optional(paginationOptsValidator) }, // Pagination args
+  returns: v.object({
+    page: v.array(
+      v.object({
+        ...issuesFields,
+        _id: v.id("issues"),
+        _creationTime: v.number(),
+        projectName: v.string(),
+        projectKey: v.string(),
+        reporterName: v.string(),
+        assigneeName: v.string(),
+      }),
+    ),
+    isDone: v.boolean(),
+    continueCursor: v.string(),
+  }),
   handler: async (ctx, args) => {
     const paginationOpts = args.paginationOpts || { numItems: 20, cursor: null };
 
@@ -77,6 +94,13 @@ export const getMyIssues = authenticatedQuery({
 // Get issues created by the current user
 export const getMyCreatedIssues = authenticatedQuery({
   args: {},
+  returns: v.array(
+    v.object({
+      ...issuesFields,
+      _id: v.id("issues"),
+      _creationTime: v.number(),
+    }),
+  ),
   handler: async (ctx) => {
     const issues = await ctx.db
       .query("issues")
@@ -114,13 +138,23 @@ export const getMyCreatedIssues = authenticatedQuery({
       };
     });
 
-    return enrichedIssues.sort((a, b) => b.createdAt - a.createdAt);
+    return enrichedIssues.sort((a, b) => b._creationTime - a._creationTime);
   },
 });
 
 // Get projects the user is a member of
 export const getMyProjects = authenticatedQuery({
   args: {},
+  returns: v.array(
+    v.object({
+      ...projectsFields,
+      _id: v.id("projects"),
+      _creationTime: v.number(),
+      role: projectRoles,
+      totalIssues: v.number(),
+      myIssues: v.number(),
+    }),
+  ),
   handler: async (ctx) => {
     // Get projects where user is a member
     const memberships = await ctx.db
@@ -179,6 +213,17 @@ export const getMyProjects = authenticatedQuery({
 // Get recent activity across all projects the user has access to
 export const getMyRecentActivity = authenticatedQuery({
   args: { limit: v.optional(v.number()) },
+  returns: v.array(
+    v.object({
+      ...issueActivityFields,
+      _id: v.id("issueActivity"),
+      _creationTime: v.number(),
+      issueKey: v.string(),
+      issueTitle: v.string(),
+      projectName: v.string(),
+      userName: v.string(),
+    }),
+  ),
   handler: async (ctx, args) => {
     const limit = args.limit || DEFAULT_SEARCH_PAGE_SIZE;
 
@@ -240,10 +285,15 @@ export const getMyRecentActivity = authenticatedQuery({
 
 // Get dashboard stats
 export const getMyStats = authenticatedQuery({
-  args: {
-    now: nowArg, // Required - pass rounded timestamp from client
-  },
-  handler: async (ctx, args) => {
+  args: {},
+  returns: v.object({
+    assignedToMe: v.number(),
+    createdByMe: v.number(),
+    completedThisWeek: v.number(),
+    highPriority: v.number(),
+  }),
+  handler: async (ctx) => {
+    const now = Date.now();
     // Issues assigned to me
     const assignedIssues = await ctx.db
       .query("issues")
@@ -252,7 +302,7 @@ export const getMyStats = authenticatedQuery({
       .take(MAX_USER_ASSIGNED_ISSUES);
 
     // Filter for different stats
-    const weekAgo = args.now - WEEK;
+    const weekAgo = now - WEEK;
 
     // Batch fetch all projects to check workflow states (avoid N+1)
     const projectIds = [...new Set(assignedIssues.map((i) => i.projectId))];
@@ -309,7 +359,6 @@ export const getFocusTask = authenticatedQuery({
       assigneeId: v.optional(v.id("users")),
       reporterId: v.optional(v.id("users")),
       description: v.optional(v.string()),
-      createdAt: v.number(),
       updatedAt: v.number(),
       isDeleted: v.optional(v.boolean()),
       projectName: v.string(),

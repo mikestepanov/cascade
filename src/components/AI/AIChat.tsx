@@ -32,7 +32,7 @@ function MessageItem({
   message: {
     role: "user" | "assistant" | "system";
     content: string;
-    createdAt: number;
+    _creationTime: number;
     modelUsed?: string;
     responseTime?: number;
   };
@@ -46,7 +46,7 @@ function MessageItem({
 
   return (
     <div
-      key={`${chatId}-${message.createdAt}-${index}`}
+      key={`${chatId}-${message._creationTime}-${index}`}
       className={cn("flex group", message.role === "user" ? "justify-end" : "justify-start")}
     >
       <div
@@ -112,7 +112,7 @@ function MessageItem({
         {/* Message metadata */}
         <Flex align="center" gap="sm" className="mt-2 text-xs opacity-70">
           <span>
-            {new Date(message.createdAt).toLocaleTimeString([], {
+            {new Date(message._creationTime).toLocaleTimeString([], {
               hour: "2-digit",
               minute: "2-digit",
             })}
@@ -191,7 +191,7 @@ export const AIChat = React.memo(function AIChat({
               .filter((m) => m.role !== "system")
               .map((message, index) => (
                 <MessageItem
-                  key={`${message.chatId}-${message.createdAt}-${index}`}
+                  key={`${message.chatId}-${message._creationTime}-${index}`}
                   message={message}
                   index={index}
                   chatId={message.chatId}

@@ -582,7 +582,7 @@ function UsageStatsModal({
                       <Flex gap="lg" align="center" className="text-xs text-ui-text-tertiary">
                         <span>{log.responseTime}ms</span>
                         <span>•</span>
-                        <span>{new Date(log.createdAt).toLocaleString()}</span>
+                        <span>{new Date(log._creationTime).toLocaleString()}</span>
                         {log.error && (
                           <>
                             <span>•</span>

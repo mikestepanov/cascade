@@ -5,8 +5,8 @@ import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
 import { getSearchContent } from "./issues/helpers";
 import { BOUNDED_DELETE_BATCH, BOUNDED_RELATION_LIMIT, safeCollect } from "./lib/boundedQueries";
 import { conflict, forbidden, notFound, validation } from "./lib/errors";
+import { getOrganizationRole } from "./lib/organizationAccess";
 import { notDeleted } from "./lib/softDeleteHelpers";
-import { getOrganizationRole } from "./organizations";
 import { inviteRoles, personas } from "./validators";
 
 /** Check if email is a test email (@inbox.mailtrap.io) */
@@ -138,7 +138,6 @@ export const updateOnboardingStatus = authenticatedMutation({
           tourShown: args.tourShown ?? false,
           wizardCompleted: args.wizardCompleted ?? false,
           checklistDismissed: args.checklistDismissed ?? false,
-          createdAt: Date.now(),
           updatedAt: Date.now(),
         });
       }
@@ -208,7 +207,6 @@ export const createSampleProject = authenticatedMutation({
       name: "Sample Workspace",
       slug: `sample-workspace-${ctx.userId}`, // Make unique per user to avoid conflicts
       createdBy: ctx.userId,
-      createdAt: now,
       updatedAt: now,
     });
 
@@ -218,7 +216,6 @@ export const createSampleProject = authenticatedMutation({
       name: "Engineering",
       slug: "engineering",
       createdBy: ctx.userId,
-      createdAt: now,
       updatedAt: now,
       isPrivate: false,
     });
@@ -234,7 +231,6 @@ export const createSampleProject = authenticatedMutation({
       teamId,
       ownerId: ctx.userId,
       createdBy: ctx.userId,
-      createdAt: now,
       updatedAt: now,
       isPublic: false,
       boardType: "kanban",
@@ -251,7 +247,6 @@ export const createSampleProject = authenticatedMutation({
       userId: ctx.userId,
       role: "admin",
       addedBy: ctx.userId,
-      addedAt: Date.now(),
     });
 
     // Create labels
@@ -260,7 +255,6 @@ export const createSampleProject = authenticatedMutation({
       name: "urgent",
       color: "#EF4444", // Red
       createdBy: ctx.userId,
-      createdAt: Date.now(),
     });
 
     await ctx.db.insert("labels", {
@@ -268,7 +262,6 @@ export const createSampleProject = authenticatedMutation({
       name: "needs-review",
       color: "#F59E0B", // Orange
       createdBy: ctx.userId,
-      createdAt: Date.now(),
     });
 
     // Create active sprint
@@ -280,7 +273,6 @@ export const createSampleProject = authenticatedMutation({
       endDate: Date.now() + 14 * 24 * 60 * 60 * 1000, // 2 weeks from now
       status: "active",
       createdBy: ctx.userId,
-      createdAt: Date.now(),
       updatedAt: Date.now(),
     });
 
@@ -416,7 +408,6 @@ export const createSampleProject = authenticatedMutation({
         priority: issue.priority,
         assigneeId: ctx.userId, // Assign first few to user
         reporterId: ctx.userId,
-        createdAt: Date.now() - (issues.length - createdIssues.length) * 60 * 60 * 1000, // Stagger creation times
         updatedAt: Date.now(),
         labels: issue.labels,
         sprintId: issue.type !== "epic" ? sprintId : undefined, // Don't add epic to sprint
@@ -433,7 +424,6 @@ export const createSampleProject = authenticatedMutation({
         issueId,
         userId: ctx.userId,
         action: "created",
-        createdAt: Date.now() - (issues.length - createdIssues.length) * 60 * 60 * 1000,
       });
     }
 
@@ -473,9 +463,6 @@ export const createSampleProject = authenticatedMutation({
         authorId: ctx.userId,
         content,
         mentions,
-        createdAt:
-          Date.now() -
-          (5 - commentsData.indexOf({ issueIndex, content, mentions })) * 30 * 60 * 1000, // 30 min intervals
         updatedAt: Date.now(),
       });
     }
@@ -489,7 +476,6 @@ export const createSampleProject = authenticatedMutation({
       tourShown: false,
       wizardCompleted: false,
       checklistDismissed: false,
-      createdAt: Date.now(),
       updatedAt: Date.now(),
     });
 
@@ -770,7 +756,6 @@ export const setOnboardingPersona = authenticatedMutation({
           onboardingPersona: args.persona,
           wasInvited,
           invitedByName,
-          createdAt: Date.now(),
           updatedAt: Date.now(),
         });
       }
@@ -822,7 +807,6 @@ export const completeOnboardingFlow = authenticatedMutation({
           tourShown: true,
           wizardCompleted: false,
           checklistDismissed: false,
-          createdAt: Date.now(),
           updatedAt: Date.now(),
         });
       }

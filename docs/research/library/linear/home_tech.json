@@ -1,0 +1,13 @@
+{
+  "tech": {
+    "react": true,
+    "next": true,
+    "mobx": false,
+    "tailwind": false
+  },
+  "networkCategories": {
+    "fonts": ["InterVariable", "tiempos-headline-regular"],
+    "analytics": ["Sentry", "Google Analytics"],
+    "cdn": ["webassets.linear.app"]
+  }
+}

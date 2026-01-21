@@ -5,6 +5,7 @@ import type { MutationCtx, QueryCtx } from "./_generated/server";
 import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
 import { batchFetchOrganizations, batchFetchUsers } from "./lib/batchHelpers";
 import { conflict, forbidden, notFound, validation } from "./lib/errors";
+import { getOrganizationRole, isOrganizationAdmin } from "./lib/organizationAccess";
 import { MAX_ORG_MEMBERS } from "./lib/queryLimits";
 import { notDeleted } from "./lib/softDeleteHelpers";
 import {
@@ -16,37 +17,6 @@ import {
 // ============================================================================
 // Helper Functions
 // ============================================================================
-
-/**
- * Get user's role in an organization
- * Returns null if user is not a member
- */
-export async function getOrganizationRole(
-  ctx: QueryCtx | MutationCtx,
-  organizationId: Id<"organizations">,
-  userId: Id<"users">,
-): Promise<"owner" | "admin" | "member" | null> {
-  const membership = await ctx.db
-    .query("organizationMembers")
-    .withIndex("by_organization_user", (q) =>
-      q.eq("organizationId", organizationId).eq("userId", userId),
-    )
-    .first();
-
-  return membership?.role ?? null;
-}
-
-/**
- * Check if user is organization admin (owner or admin role)
- */
-export async function isOrganizationAdmin(
-  ctx: QueryCtx | MutationCtx,
-  organizationId: Id<"organizations">,
-  userId: Id<"users">,
-): Promise<boolean> {
-  const role = await getOrganizationRole(ctx, organizationId, userId);
-  return role === "owner" || role === "admin";
-}
 
 /**
  * Assert user is organization admin - throws if not
@@ -211,7 +181,6 @@ export const createOrganization = authenticatedMutation({
       timezone: args.timezone,
       settings: args.settings ?? DEFAULT_ORGANIZATION_SETTINGS,
       createdBy: ctx.userId,
-      createdAt: now,
       updatedAt: now,
     });
 
@@ -221,7 +190,6 @@ export const createOrganization = authenticatedMutation({
       userId: ctx.userId,
       role: "owner",
       addedBy: ctx.userId,
-      addedAt: now,
     });
 
     // Set as user's default organization if they don't have one
@@ -340,14 +308,13 @@ export const addMember = authenticatedMutation({
       throw conflict("User is already a member of this organization");
     }
 
-    const now = Date.now();
+    const _now = Date.now();
 
     await ctx.db.insert("organizationMembers", {
       organizationId: args.organizationId,
       userId: args.userId,
       role: args.role,
       addedBy: ctx.userId,
-      addedAt: now,
     });
 
     // Set as user's default organization if they don't have one
@@ -632,7 +599,6 @@ export const getOrganizationMembers = authenticatedQuery({
       userId: v.id("users"),
       role: organizationRoles,
       addedBy: v.id("users"),
-      addedAt: v.number(),
       user: v.union(
         v.null(),
         v.object({
@@ -769,7 +735,6 @@ export const initializeDefaultOrganization = authenticatedMutation({
       timezone,
       settings: DEFAULT_ORGANIZATION_SETTINGS,
       createdBy: ctx.userId,
-      createdAt: now,
       updatedAt: now,
     });
 
@@ -779,7 +744,6 @@ export const initializeDefaultOrganization = authenticatedMutation({
       userId: ctx.userId,
       role: "owner",
       addedBy: ctx.userId,
-      addedAt: now,
     });
 
     // Set as user's default organization

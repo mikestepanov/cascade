@@ -1,5 +1,3 @@
-// @ts-nocheck - Test file with complex union type assertions
-
 import { convexTest } from "convex-test";
 import { describe, expect, it } from "vitest";
 import { api, internal } from "./_generated/api";
@@ -46,17 +44,17 @@ describe("Automation Rules", () => {
       expect(rules).toEqual([]);
     });
 
-    it("should return empty array for unauthenticated users", async () => {
+    it("should deny unauthenticated users", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
       const projectId = await createTestProject(t, userId);
 
-      const rules = await t.query(api.automationRules.list, { projectId });
-
-      expect(rules).toEqual([]);
+      await expect(t.query(api.automationRules.list, { projectId })).rejects.toThrow(
+        "Not authenticated",
+      );
     });
 
-    it("should return empty array for non-members", async () => {
+    it("should deny non-members", async () => {
       const t = convexTest(schema, modules);
       const owner = await createTestUser(t, { name: "Owner" });
       const other = await createTestUser(t, { name: "Other" });
@@ -64,9 +62,9 @@ describe("Automation Rules", () => {
 
       const asOther = asAuthenticatedUser(t, other);
 
-      const rules = await asOther.query(api.automationRules.list, { projectId });
-
-      expect(rules).toEqual([]);
+      await expect(asOther.query(api.automationRules.list, { projectId })).rejects.toThrow(
+        "Not authorized",
+      );
     });
 
     it("should return rules for project members", async () => {

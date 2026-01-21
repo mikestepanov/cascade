@@ -1,0 +1,12 @@
+{
+  "techStack": {
+    "frameworks": ["React", "Next.js"],
+    "libraries": ["MobX"],
+    "styles": ["Styled Components", "Custom Theme System"],
+    "analytics": []
+  },
+  "info": {
+    "webSockets": true,
+    "hasMobX": true
+  }
+}

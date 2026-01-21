@@ -38,7 +38,6 @@ export const get = authenticatedQuery({
         ...DEFAULT_PREFERENCES,
         userId: ctx.userId,
         _id: undefined,
-        createdAt: Date.now(),
         updatedAt: Date.now(),
       };
     }
@@ -107,7 +106,6 @@ export const update = authenticatedMutation({
         emailDigest: args.emailDigest ?? DEFAULT_PREFERENCES.emailDigest,
         digestDay: args.digestDay,
         digestTime: args.digestTime,
-        createdAt: Date.now(),
         updatedAt: Date.now(),
       });
     }
@@ -134,7 +132,6 @@ export const createDefault = internalMutation({
     return await ctx.db.insert("notificationPreferences", {
       userId: args.userId,
       ...DEFAULT_PREFERENCES,
-      createdAt: Date.now(),
       updatedAt: Date.now(),
     });
   },

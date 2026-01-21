@@ -1,5 +1,3 @@
-// @ts-nocheck - Test file with complex union type assertions
-
 import { convexTest } from "convex-test";
 import { describe, expect, it } from "vitest";
 import { api } from "./_generated/api";
@@ -44,7 +42,7 @@ describe("Sprints", () => {
       expect(sprint?.endDate).toBe(endDate);
       expect(sprint?.status).toBe("future");
       expect(sprint?.createdBy).toBe(userId);
-      expect(sprint?.createdAt).toBeDefined();
+      expect(sprint?._creationTime).toBeDefined();
       expect(sprint?.updatedAt).toBeDefined();
     });
 
@@ -206,7 +204,7 @@ describe("Sprints", () => {
       expect(sprints[0]?.issueCount).toBe(2);
     });
 
-    it("should return empty array for non-members of private project", async () => {
+    it("should deny non-members of private project", async () => {
       const t = convexTest(schema, modules);
       const owner = await createTestUser(t, { name: "Owner" });
       const other = await createTestUser(t, { name: "Other" });
@@ -220,9 +218,10 @@ describe("Sprints", () => {
 
       // Other user tries to list sprints
       const asOther = asAuthenticatedUser(t, other);
-      const sprints = await asOther.query(api.sprints.listByProject, { projectId });
 
-      expect(sprints).toEqual([]);
+      await expect(asOther.query(api.sprints.listByProject, { projectId })).rejects.toThrow(
+        "Not authorized",
+      );
     });
 
     it("should return sprints for organization-visible projects to organization members", async () => {
@@ -239,7 +238,6 @@ describe("Sprints", () => {
           userId: organizationMember,
           role: "member",
           addedBy: owner,
-          addedAt: now,
         });
       });
 
@@ -252,7 +250,6 @@ describe("Sprints", () => {
           workspaceId,
           ownerId: owner,
           createdBy: owner,
-          createdAt: now,
           updatedAt: now,
           isPublic: true, // organization-visible
           boardType: "kanban",
@@ -274,16 +271,17 @@ describe("Sprints", () => {
       expect(sprints[0]?.name).toBe("organization Sprint");
     });
 
-    it("should return empty array for unauthenticated users", async () => {
+    it("should deny unauthenticated users", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
       const projectId = await createTestProject(t, userId);
 
-      const sprints = await t.query(api.sprints.listByProject, { projectId });
-      expect(sprints).toEqual([]);
+      await expect(t.query(api.sprints.listByProject, { projectId })).rejects.toThrow(
+        "Not authenticated",
+      );
     });
 
-    it("should return empty array for non-existent project", async () => {
+    it("should throw error for non-existent project", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
       const projectId = await createTestProject(t, userId);
@@ -294,11 +292,10 @@ describe("Sprints", () => {
       });
 
       const asUser = asAuthenticatedUser(t, userId);
-      const sprints = await asUser.query(api.sprints.listByProject, {
-        projectId,
-      });
 
-      expect(sprints).toEqual([]);
+      await expect(asUser.query(api.sprints.listByProject, { projectId })).rejects.toThrow(
+        "Project not found",
+      );
     });
   });
 
