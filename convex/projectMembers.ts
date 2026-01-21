@@ -1,5 +1,5 @@
-import { pruneNull } from "convex-helpers";
 import { v } from "convex/values";
+import { pruneNull } from "convex-helpers";
 import { authenticatedQuery } from "./customFunctions";
 import { batchFetchUsers } from "./lib/batchHelpers";
 import { MAX_TEAM_MEMBERS } from "./lib/queryLimits";
