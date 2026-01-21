@@ -109,7 +109,7 @@ describe("GitHub Integration", () => {
           repoName: "repo",
           repoId: "123",
         });
-      }).rejects.toThrow("This repository is already linked");
+      }).rejects.toThrow("This repository is already linked to a project");
     });
   });
 

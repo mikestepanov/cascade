@@ -1,7 +1,7 @@
 import { v } from "convex/values";
 import type { Id } from "./_generated/dataModel";
 import type { MutationCtx } from "./_generated/server";
-import { editorMutation, projectQuery } from "./customFunctions";
+import { projectEditorMutation, projectQuery } from "./customFunctions";
 import { batchFetchSprints, batchFetchUsers } from "./lib/batchHelpers";
 import { validation } from "./lib/errors";
 import { notDeleted } from "./lib/softDeleteHelpers";
@@ -522,7 +522,7 @@ export const exportIssuesJSON = projectQuery({
 });
 
 // Import issues from JSON
-export const importIssuesJSON = editorMutation({
+export const importIssuesJSON = projectEditorMutation({
   args: {
     jsonData: v.string(),
   },
@@ -565,7 +565,7 @@ export const importIssuesJSON = editorMutation({
 });
 
 // Import issues from CSV
-export const importIssuesCSV = editorMutation({
+export const importIssuesCSV = projectEditorMutation({
   args: {
     csvData: v.string(),
   },

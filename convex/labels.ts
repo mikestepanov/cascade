@@ -1,5 +1,5 @@
 import { v } from "convex/values";
-import { authenticatedMutation, editorMutation, projectQuery } from "./customFunctions";
+import { authenticatedMutation, projectEditorMutation, projectQuery } from "./customFunctions";
 import { conflict, notFound, validation } from "./lib/errors";
 import { assertCanEditProject } from "./projectAccess";
 
@@ -7,7 +7,7 @@ import { assertCanEditProject } from "./projectAccess";
  * Create a new label
  * Requires editor role on project
  */
-export const create = editorMutation({
+export const create = projectEditorMutation({
   args: {
     name: v.string(),
     color: v.string(),

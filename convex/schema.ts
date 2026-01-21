@@ -37,7 +37,10 @@ const applicationTables = {
     createdBy: v.id("users"),
     createdAt: v.number(),
     updatedAt: v.number(),
-    projectId: v.optional(v.id("projects")), // Link documents to projects - stored as string to avoid table mismatch
+    // Hierarchy - every doc belongs to an org, optionally scoped to workspace/project
+    organizationId: v.id("organizations"), // Required - all docs belong to an org
+    workspaceId: v.optional(v.id("workspaces")), // Optional - workspace-level docs
+    projectId: v.optional(v.id("projects")), // Optional - project-level docs
     // Soft Delete
     isDeleted: v.optional(v.boolean()),
     deletedAt: v.optional(v.number()),
@@ -46,12 +49,15 @@ const applicationTables = {
     .index("by_creator", ["createdBy"])
     .index("by_public", ["isPublic"])
     .index("by_created_at", ["createdAt"])
+    .index("by_organization", ["organizationId"])
+    .index("by_workspace", ["workspaceId"])
     .index("by_project", ["projectId"])
     .index("by_creator_updated", ["createdBy", "updatedAt"])
     .index("by_deleted", ["isDeleted"])
+    .index("by_organization_deleted", ["organizationId", "isDeleted"])
     .searchIndex("search_title", {
       searchField: "title",
-      filterFields: ["isPublic", "createdBy", "projectId"],
+      filterFields: ["isPublic", "createdBy", "organizationId", "workspaceId", "projectId"],
     }),
 
   documentVersions: defineTable({
@@ -120,8 +126,9 @@ const applicationTables = {
     workspaceId: v.id("workspaces"),
     userId: v.id("users"),
     role: v.union(
-      v.literal("admin"), // Can manage workspace settings, teams, and members
-      v.literal("member"), // Can access workspace resources
+      v.literal("admin"), // Can manage workspace settings and members
+      v.literal("editor"), // Can create/edit workspace-level content (docs)
+      v.literal("member"), // Can view workspace resources
     ),
     addedBy: v.id("users"),
     addedAt: v.number(),
@@ -1334,7 +1341,7 @@ const applicationTables = {
     teamId: v.id("teams"),
     userId: v.id("users"),
     role: v.union(
-      v.literal("lead"), // Team lead (can manage team members and settings)
+      v.literal("admin"), // Team admin (can manage team members and settings)
       v.literal("member"), // Regular team member
     ),
     addedBy: v.id("users"),

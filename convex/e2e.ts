@@ -1047,7 +1047,7 @@ export const setupRbacProjectInternal = internalMutation({
     await ctx.db.insert("teamMembers", {
       teamId,
       userId: adminUser._id,
-      role: "lead",
+      role: "admin",
       addedBy: adminUser._id,
       addedAt: now,
     });

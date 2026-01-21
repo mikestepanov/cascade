@@ -1,5 +1,5 @@
 import { v } from "convex/values";
-import { authenticatedMutation, projectQuery, viewerMutation } from "./customFunctions";
+import { authenticatedMutation, projectQuery, projectViewerMutation } from "./customFunctions";
 import { batchFetchUsers, getUserName } from "./lib/batchHelpers";
 import { forbidden, notFound } from "./lib/errors";
 import { issuePriorities, issueTypes } from "./validators";
@@ -18,7 +18,7 @@ const filtersValidator = v.object({
  * Create a saved filter
  * Requires viewer access to project
  */
-export const create = viewerMutation({
+export const create = projectViewerMutation({
   args: {
     name: v.string(),
     filters: filtersValidator,

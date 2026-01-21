@@ -191,7 +191,7 @@ describe("Workspaces", () => {
       // Attempt delete
       await expect(async () => {
         await asMember.mutation(api.workspaces.remove, { id: workspaceId });
-      }).rejects.toThrow("Only workspace admins or organization admins can delete workspaces");
+      }).rejects.toThrow("Only organization admins or the workspace creator can delete workspaces");
     });
 
     it("should deny deleting workspace with teams", async () => {
@@ -228,7 +228,7 @@ describe("Workspaces", () => {
 
       await expect(async () => {
         await asUser.mutation(api.workspaces.remove, { id: workspaceId });
-      }).rejects.toThrow("Cannot delete workspace with teams. Please delete or move teams first.");
+      }).rejects.toThrow("Cannot delete workspace with teams");
     });
 
     it("should deny deleting workspace with projects", async () => {
@@ -265,9 +265,7 @@ describe("Workspaces", () => {
 
       await expect(async () => {
         await asUser.mutation(api.workspaces.remove, { id: workspaceId });
-      }).rejects.toThrow(
-        "Cannot delete workspace with projects. Please delete or move projects first.",
-      );
+      }).rejects.toThrow("Cannot delete workspace with projects");
     });
   });
 });

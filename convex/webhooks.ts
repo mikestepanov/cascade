@@ -3,7 +3,7 @@ import { v } from "convex/values";
 import { internal } from "./_generated/api";
 import type { Id } from "./_generated/dataModel";
 import { internalAction, internalMutation, internalQuery } from "./_generated/server";
-import { adminMutation, authenticatedMutation, authenticatedQuery } from "./customFunctions";
+import { projectAdminMutation, authenticatedMutation, authenticatedQuery } from "./customFunctions";
 import { notFound, validation } from "./lib/errors";
 import { fetchPaginatedQuery } from "./lib/queryHelpers";
 import { MAX_PAGE_SIZE } from "./lib/queryLimits";
@@ -13,7 +13,7 @@ import { isTest } from "./testConfig";
 import { webhookResultStatuses } from "./validators";
 
 // Create a webhook
-export const createWebhook = adminMutation({
+export const createWebhook = projectAdminMutation({
   args: {
     name: v.string(),
     url: v.string(),

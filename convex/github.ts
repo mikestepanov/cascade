@@ -132,7 +132,7 @@ export const linkRepository = authenticatedMutation({
       syncPRs: args.syncPRs ?? true,
       syncIssues: args.syncIssues ?? false,
       autoLinkCommits: args.autoLinkCommits ?? true,
-      linkedBy: userId,
+      linkedBy: ctx.userId,
       createdAt: now,
       updatedAt: now,
     });

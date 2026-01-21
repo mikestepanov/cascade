@@ -30,7 +30,8 @@ export const projectRoles = literals("admin", "editor", "viewer");
 export const organizationRoles = literals("owner", "admin", "member");
 export const organizationMemberRoles = literals("admin", "member"); // For adding members (can't add as owner)
 export const nullableOrganizationRoles = nullable(organizationRoles); // For return types
-export const teamRoles = literals("lead", "member");
+export const workspaceRoles = literals("admin", "editor", "member");
+export const teamRoles = literals("admin", "member");
 export const inviteRoles = literals("user", "superAdmin");
 export const chatRoles = literals("user", "assistant", "system");
 

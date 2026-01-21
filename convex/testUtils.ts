@@ -389,7 +389,7 @@ export async function createOrganizationAdmin(
     await ctx.db.insert("teamMembers", {
       teamId,
       userId,
-      role: "lead",
+      role: "admin",
       addedBy: userId,
       addedAt: now,
     });

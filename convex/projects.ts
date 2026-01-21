@@ -3,7 +3,7 @@ import { v } from "convex/values";
 import { pruneNull } from "convex-helpers";
 import { internal } from "./_generated/api";
 import type { Doc } from "./_generated/dataModel";
-import { adminMutation, authenticatedMutation, authenticatedQuery } from "./customFunctions";
+import { projectAdminMutation, authenticatedMutation, authenticatedQuery } from "./customFunctions";
 import { batchFetchProjects, batchFetchUsers, getUserName } from "./lib/batchHelpers";
 import { conflict, forbidden, notFound, validation } from "./lib/errors";
 import { fetchPaginatedQuery } from "./lib/queryHelpers";
@@ -353,7 +353,7 @@ export const getByKey = authenticatedQuery({
   },
 });
 
-export const updateProject = adminMutation({
+export const updateProject = projectAdminMutation({
   args: {
     name: v.optional(v.string()),
     description: v.optional(v.string()),
@@ -464,7 +464,7 @@ export const restoreProject = authenticatedMutation({
   },
 });
 
-export const updateWorkflow = adminMutation({
+export const updateWorkflow = projectAdminMutation({
   args: {
     workflowStates: v.array(
       v.object({
@@ -495,7 +495,7 @@ export const updateWorkflow = adminMutation({
   },
 });
 
-export const addProjectMember = adminMutation({
+export const addProjectMember = projectAdminMutation({
   args: {
     userEmail: v.string(),
     role: projectRoles,
@@ -545,7 +545,7 @@ export const addProjectMember = adminMutation({
   },
 });
 
-export const updateProjectMemberRole = adminMutation({
+export const updateProjectMemberRole = projectAdminMutation({
   args: {
     memberId: v.id("users"),
     newRole: projectRoles,
@@ -587,7 +587,7 @@ export const updateProjectMemberRole = adminMutation({
   },
 });
 
-export const removeProjectMember = adminMutation({
+export const removeProjectMember = projectAdminMutation({
   args: {
     memberId: v.id("users"),
   },

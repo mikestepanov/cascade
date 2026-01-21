@@ -3,7 +3,7 @@ import { asyncMap, pruneNull } from "convex-helpers";
 import type { Id } from "../_generated/dataModel";
 import {
   authenticatedMutation,
-  editorMutation,
+  projectEditorMutation,
   issueMutation,
   issueViewerMutation,
 } from "../customFunctions";
@@ -19,7 +19,7 @@ import {
   validateParentIssue,
 } from "./helpers";
 
-export const create = editorMutation({
+export const create = projectEditorMutation({
   args: {
     title: v.string(),
     description: v.optional(v.string()),

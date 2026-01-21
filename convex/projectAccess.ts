@@ -181,7 +181,7 @@ export async function canEditProject(
  * Admin access is granted if ANY of the following are true:
  * 1. User is organization admin
  * 2. User owns the project (ownerId)
- * 3. User is team lead of owning team (teamId)
+ * 3. User is team admin of owning team (teamId)
  * 4. User is admin in projectMembers
  */
 export async function isProjectAdmin(
@@ -204,10 +204,10 @@ export async function isProjectAdmin(
   // 3. Legacy: creator has admin access (backward compatibility)
   if (project.createdBy === userId) return true;
 
-  // 4. User is team lead of owning team
+  // 4. User is team admin of owning team
   if (project.teamId) {
     const teamRole = await getTeamRole(ctx, project.teamId, userId);
-    if (teamRole === "lead") return true;
+    if (teamRole === "admin") return true;
   }
 
   // 5. User is admin in projectMembers

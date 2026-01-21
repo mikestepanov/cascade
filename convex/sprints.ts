@@ -1,5 +1,5 @@
 import { v } from "convex/values";
-import { editorMutation, projectQuery, sprintMutation } from "./customFunctions";
+import { projectEditorMutation, projectQuery, sprintMutation } from "./customFunctions";
 import { MAX_PAGE_SIZE, MAX_SPRINT_ISSUES } from "./lib/queryLimits";
 import { notDeleted } from "./lib/softDeleteHelpers";
 
@@ -7,7 +7,7 @@ import { notDeleted } from "./lib/softDeleteHelpers";
  * Create a new sprint
  * Requires editor role on project
  */
-export const create = editorMutation({
+export const create = projectEditorMutation({
   args: {
     name: v.string(),
     goal: v.optional(v.string()),

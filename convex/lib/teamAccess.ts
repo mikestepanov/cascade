@@ -16,7 +16,7 @@ export async function getTeamRole(
   ctx: QueryCtx | MutationCtx,
   teamId: Id<"teams">,
   userId: Id<"users">,
-): Promise<"lead" | "member" | null> {
+): Promise<"admin" | "member" | null> {
   const membership = await ctx.db
     .query("teamMembers")
     .withIndex("by_team_user", (q) => q.eq("teamId", teamId).eq("userId", userId))
@@ -26,15 +26,15 @@ export async function getTeamRole(
 }
 
 /**
- * Check if user is team lead
+ * Check if user is team admin
  */
-export async function isTeamLead(
+export async function isTeamAdmin(
   ctx: QueryCtx | MutationCtx,
   teamId: Id<"teams">,
   userId: Id<"users">,
 ): Promise<boolean> {
   const role = await getTeamRole(ctx, teamId, userId);
-  return role === "lead";
+  return role === "admin";
 }
 
 /**

@@ -1,6 +1,6 @@
 import { v } from "convex/values";
 import type { Doc } from "./_generated/dataModel";
-import { adminMutation, authenticatedMutation, authenticatedQuery, projectQuery } from "./customFunctions";
+import { projectAdminMutation, authenticatedMutation, authenticatedQuery, projectQuery } from "./customFunctions";
 import { batchFetchCustomFields } from "./lib/batchHelpers";
 import { conflict, notFound, validation } from "./lib/errors";
 import { MAX_PAGE_SIZE } from "./lib/queryLimits";
@@ -71,7 +71,7 @@ export const list = projectQuery({
 });
 
 // Create a new custom field
-export const create = adminMutation({
+export const create = projectAdminMutation({
   args: {
     name: v.string(),
     fieldKey: v.string(),

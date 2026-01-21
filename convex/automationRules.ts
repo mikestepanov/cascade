@@ -1,6 +1,6 @@
 import { v } from "convex/values";
 import { internalMutation } from "./_generated/server";
-import { adminMutation, authenticatedMutation, projectQuery } from "./customFunctions";
+import { projectAdminMutation, authenticatedMutation, projectQuery } from "./customFunctions";
 import { notFound, validation } from "./lib/errors";
 import { MAX_PAGE_SIZE } from "./lib/queryLimits";
 import { assertIsProjectAdmin } from "./projectAccess";
@@ -16,7 +16,7 @@ export const list = projectQuery({
   },
 });
 
-export const create = adminMutation({
+export const create = projectAdminMutation({
   args: {
     name: v.string(),
     description: v.optional(v.string()),
