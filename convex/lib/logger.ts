@@ -12,9 +12,18 @@
 
 type LogData = Record<string, unknown>;
 
+function safeStringify(data: LogData): string {
+  try {
+    return JSON.stringify(data);
+  } catch {
+    // Handle circular references or other stringify errors
+    return "[Unable to serialize data]";
+  }
+}
+
 function formatMessage(prefix: string, message: string, data?: LogData): string {
   if (data && Object.keys(data).length > 0) {
-    return `[${prefix}] ${message} ${JSON.stringify(data)}`;
+    return `[${prefix}] ${message} ${safeStringify(data)}`;
   }
   return `[${prefix}] ${message}`;
 }

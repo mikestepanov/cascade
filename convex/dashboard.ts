@@ -114,7 +114,7 @@ export const getMyCreatedIssues = authenticatedQuery({
       };
     });
 
-    return enrichedIssues.sort((a, b) => b.createdAt - a.createdAt);
+    return enrichedIssues.sort((a, b) => b._creationTime - a._creationTime);
   },
 });
 
@@ -241,6 +241,12 @@ export const getMyRecentActivity = authenticatedQuery({
 // Get dashboard stats
 export const getMyStats = authenticatedQuery({
   args: {},
+  returns: v.object({
+    assignedToMe: v.number(),
+    createdByMe: v.number(),
+    completedThisWeek: v.number(),
+    highPriority: v.number(),
+  }),
   handler: async (ctx) => {
     const now = Date.now();
     // Issues assigned to me
@@ -308,7 +314,6 @@ export const getFocusTask = authenticatedQuery({
       assigneeId: v.optional(v.id("users")),
       reporterId: v.optional(v.id("users")),
       description: v.optional(v.string()),
-      createdAt: v.number(),
       updatedAt: v.number(),
       isDeleted: v.optional(v.boolean()),
       projectName: v.string(),

@@ -263,7 +263,10 @@ export async function collectInBatches<T>(
   }
 
   if (batchCount >= maxBatches) {
-    logger.warn("collectInBatches hit max batches", { maxBatches, itemsCollected: allItems.length });
+    logger.warn("collectInBatches hit max batches", {
+      maxBatches,
+      itemsCollected: allItems.length,
+    });
   }
 
   return allItems;

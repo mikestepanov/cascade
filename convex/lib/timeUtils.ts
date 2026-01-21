@@ -28,14 +28,14 @@ export function roundToInterval(timestamp: number, interval: number): number {
 }
 
 /**
- * Round to the nearest minute.
+ * Round down to the start of the minute.
  */
 export function roundToMinute(timestamp: number): number {
   return roundToInterval(timestamp, MINUTE);
 }
 
 /**
- * Round to the nearest hour.
+ * Round down to the start of the hour.
  */
 export function roundToHour(timestamp: number): number {
   return roundToInterval(timestamp, HOUR);

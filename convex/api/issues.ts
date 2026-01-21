@@ -1,8 +1,8 @@
 import { MINUTE } from "@convex-dev/rate-limiter";
 import { components, internal } from "../_generated/api";
-import { logger } from "../lib/logger";
 import type { Id } from "../_generated/dataModel";
 import { type ActionCtx, httpAction } from "../_generated/server";
+import { logger } from "../lib/logger";
 import {
   type ApiAuthContext,
   createErrorResponse,
@@ -104,7 +104,9 @@ async function recordApiUsage(
     });
   } catch (e) {
     // Ignore usage recording errors to not affect response
-    logger.error("Failed to record API usage", { error: e instanceof Error ? e.message : String(e) });
+    logger.error("Failed to record API usage", {
+      error: e instanceof Error ? e.message : String(e),
+    });
   }
 }
 
