@@ -1,6 +1,7 @@
 import { authTables } from "@convex-dev/auth/server";
 import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
+import { issueActivityFields, issuesFields, projectsFields } from "./schemaFields";
 import {
   auditMetadata,
   blockNoteContent,
@@ -137,42 +138,7 @@ const applicationTables = {
     .index("by_workspace_role", ["workspaceId", "role"])
     .index("by_deleted", ["isDeleted"]),
 
-  projects: defineTable({
-    name: v.string(),
-    key: v.string(), // Project key like "PROJ"
-    description: v.optional(v.string()),
-    // NEW: Hierarchy
-    workspaceId: v.id("workspaces"), // Project belongs to workspace (department)
-    teamId: v.optional(v.id("teams")), // Project belongs to team (optional - null for workspace projects)
-    // Ownership
-    organizationId: v.id("organizations"), // organization this project belongs to
-    ownerId: v.id("users"), // User that owns this project
-    // Sharing settings
-    isPublic: v.optional(v.boolean()), // Visible to all organization members (organization-public)
-    // isOrganizationPublic removed (legacy)
-    sharedWithTeamIds: v.optional(v.array(v.id("teams"))), // Specific teams with access
-    // Audit
-    createdBy: v.id("users"), // Who created it (for audit trail)
-    updatedAt: v.number(),
-    // Board configuration
-    boardType: boardTypes,
-    workflowStates: v.array(
-      v.object({
-        id: v.string(),
-        name: v.string(),
-        category: workflowCategories,
-        order: v.number(),
-      }),
-    ),
-    // Agency features
-    defaultHourlyRate: v.optional(v.number()), // Default billing rate for this project
-    clientName: v.optional(v.string()), // Client name for agency work
-    budget: v.optional(v.number()), // Project budget in currency
-    // Soft Delete
-    isDeleted: v.optional(v.boolean()),
-    deletedAt: v.optional(v.number()),
-    deletedBy: v.optional(v.id("users")),
-  })
+  projects: defineTable(projectsFields)
     .index("by_creator", ["createdBy"])
     .index("by_key", ["key"])
     .index("by_public", ["isPublic"])
@@ -202,38 +168,7 @@ const applicationTables = {
     .index("by_project_user", ["projectId", "userId"])
     .index("by_deleted", ["isDeleted"]),
 
-  issues: defineTable({
-    projectId: v.id("projects"), // Issue belongs to project (required)
-    workspaceId: v.id("workspaces"), // Cached from project.workspaceId
-    teamId: v.optional(v.id("teams")), // Cached from project.teamId (optional, for performance)
-    key: v.string(), // Issue key like "PROJ-123"
-    title: v.string(),
-    description: v.optional(v.string()),
-    type: issueTypesWithSubtask,
-    status: v.string(), // References workflow state id
-    priority: issuePriorities,
-    assigneeId: v.optional(v.id("users")),
-    reporterId: v.id("users"),
-    updatedAt: v.number(),
-    dueDate: v.optional(v.number()),
-    estimatedHours: v.optional(v.number()),
-    loggedHours: v.optional(v.number()),
-    storyPoints: v.optional(v.number()),
-    labels: v.array(v.string()),
-    sprintId: v.optional(v.id("sprints")),
-    epicId: v.optional(v.id("issues")),
-    parentId: v.optional(v.id("issues")), // For sub-tasks
-    linkedDocuments: v.array(v.id("documents")),
-    attachments: v.array(v.id("_storage")),
-    order: v.number(), // For ordering within status columns
-    // AI/Semantic Search
-    embedding: v.optional(v.array(v.float64())), // Vector embedding for semantic search
-    searchContent: v.optional(v.string()), // Combined title and description for search
-    // Soft Delete
-    isDeleted: v.optional(v.boolean()), // Soft delete flag (undefined = not deleted)
-    deletedAt: v.optional(v.number()), // Timestamp when deleted
-    deletedBy: v.optional(v.id("users")), // User who deleted this issue
-  })
+  issues: defineTable(issuesFields)
     .index("by_project", ["projectId"])
     .index("by_workspace", ["workspaceId"]) // Standardized
     .index("by_team", ["teamId"]) // NEW
@@ -308,14 +243,7 @@ const applicationTables = {
     .index("by_status", ["status"])
     .index("by_deleted", ["isDeleted"]),
 
-  issueActivity: defineTable({
-    issueId: v.id("issues"),
-    userId: v.id("users"),
-    action: v.string(), // "created", "updated", "commented", "assigned", etc.
-    field: v.optional(v.string()), // Field that was changed
-    oldValue: v.optional(v.string()),
-    newValue: v.optional(v.string()),
-  })
+  issueActivity: defineTable(issueActivityFields)
     .index("by_issue", ["issueId"])
     .index("by_user", ["userId"]),
 
@@ -859,8 +787,7 @@ const applicationTables = {
     modelUsed: v.optional(v.string()), // e.g., "claude-3-5-sonnet-20241022"
     tokensUsed: v.optional(v.number()),
     responseTime: v.optional(v.number()), // Milliseconds
-  })
-    .index("by_chat", ["chatId"]),
+  }).index("by_chat", ["chatId"]),
 
   aiSuggestions: defineTable({
     userId: v.id("users"),

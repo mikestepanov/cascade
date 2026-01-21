@@ -49,7 +49,7 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import { customMutation, customQuery } from "convex-helpers/server/customFunctions";
-import type { Doc, Id } from "./_generated/dataModel";
+import type { Id } from "./_generated/dataModel";
 import { type MutationCtx, mutation, type QueryCtx, query } from "./_generated/server";
 import { forbidden, notFound, unauthenticated } from "./lib/errors";
 import { getOrganizationRole, isOrganizationAdmin } from "./lib/organizationAccess";
@@ -240,7 +240,13 @@ export const workspaceQuery = customQuery(query, {
     }
 
     return {
-      ctx: { ...ctx, userId, workspaceId: args.workspaceId, workspace, organizationId: workspace.organizationId },
+      ctx: {
+        ...ctx,
+        userId,
+        workspaceId: args.workspaceId,
+        workspace,
+        organizationId: workspace.organizationId,
+      },
       args: {},
     };
   },
@@ -268,7 +274,13 @@ export const workspaceAdminMutation = customMutation(mutation, {
     }
 
     return {
-      ctx: { ...ctx, userId, workspaceId: args.workspaceId, workspace, organizationId: workspace.organizationId },
+      ctx: {
+        ...ctx,
+        userId,
+        workspaceId: args.workspaceId,
+        workspace,
+        organizationId: workspace.organizationId,
+      },
       args: {},
     };
   },
@@ -296,7 +308,13 @@ export const workspaceEditorMutation = customMutation(mutation, {
     }
 
     return {
-      ctx: { ...ctx, userId, workspaceId: args.workspaceId, workspace, organizationId: workspace.organizationId },
+      ctx: {
+        ...ctx,
+        userId,
+        workspaceId: args.workspaceId,
+        workspace,
+        organizationId: workspace.organizationId,
+      },
       args: {},
     };
   },
@@ -324,7 +342,13 @@ export const workspaceMemberMutation = customMutation(mutation, {
     }
 
     return {
-      ctx: { ...ctx, userId, workspaceId: args.workspaceId, workspace, organizationId: workspace.organizationId },
+      ctx: {
+        ...ctx,
+        userId,
+        workspaceId: args.workspaceId,
+        workspace,
+        organizationId: workspace.organizationId,
+      },
       args: {},
     };
   },
@@ -352,11 +376,21 @@ export const teamQuery = customQuery(query, {
     const isOrgAdmin = await isOrganizationAdmin(ctx, team.organizationId, userId);
 
     if (!(teamRole || isOrgAdmin)) {
-      throw forbidden("member", "You must be a team member or organization admin to access this team");
+      throw forbidden(
+        "member",
+        "You must be a team member or organization admin to access this team",
+      );
     }
 
     return {
-      ctx: { ...ctx, userId, teamId: args.teamId, team, teamRole, organizationId: team.organizationId },
+      ctx: {
+        ...ctx,
+        userId,
+        teamId: args.teamId,
+        team,
+        teamRole,
+        organizationId: team.organizationId,
+      },
       args: {},
     };
   },
@@ -379,11 +413,21 @@ export const teamMemberMutation = customMutation(mutation, {
     const isOrgAdmin = await isOrganizationAdmin(ctx, team.organizationId, userId);
 
     if (!(teamRole || isOrgAdmin)) {
-      throw forbidden("member", "You must be a team member or organization admin to perform this action");
+      throw forbidden(
+        "member",
+        "You must be a team member or organization admin to perform this action",
+      );
     }
 
     return {
-      ctx: { ...ctx, userId, teamId: args.teamId, team, teamRole, organizationId: team.organizationId },
+      ctx: {
+        ...ctx,
+        userId,
+        teamId: args.teamId,
+        team,
+        teamRole,
+        organizationId: team.organizationId,
+      },
       args: {},
     };
   },
@@ -410,7 +454,14 @@ export const teamLeadMutation = customMutation(mutation, {
     }
 
     return {
-      ctx: { ...ctx, userId, teamId: args.teamId, team, teamRole, organizationId: team.organizationId },
+      ctx: {
+        ...ctx,
+        userId,
+        teamId: args.teamId,
+        team,
+        teamRole,
+        organizationId: team.organizationId,
+      },
       args: {},
     };
   },

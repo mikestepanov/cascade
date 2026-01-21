@@ -76,7 +76,10 @@ export const getIssueForEmbedding = internalAction({
   args: {
     issueId: v.id("issues"),
   },
-  handler: async (ctx, args): Promise<{ _id: string; title: string; description?: string } | null> => {
+  handler: async (
+    ctx,
+    args,
+  ): Promise<{ _id: string; title: string; description?: string } | null> => {
     return await ctx.runQuery(internal.internal.ai.getIssueData, { issueId: args.issueId });
   },
 });

@@ -2,8 +2,5 @@
   "domNodes": 3007,
   "frameworks": ["React"],
   "analytics": ["Google Analytics/Tag Manager", "Facebook Pixel", "Amplitude"],
-  "detectedScripts": [
-    "/_next/static/chunks/main-...", 
-    "/_next/static/chunks/webpack-..."
-  ]
+  "detectedScripts": ["/_next/static/chunks/main-...", "/_next/static/chunks/webpack-..."]
 }
