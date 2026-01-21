@@ -11,7 +11,7 @@ import { anthropic } from "@ai-sdk/anthropic";
 import { generateText } from "ai";
 import { v } from "convex/values";
 import { internal } from "./_generated/api";
-import type { Id } from "./_generated/dataModel";
+import type { Doc, Id } from "./_generated/dataModel";
 import { action, internalAction } from "./_generated/server";
 import { extractUsage } from "./lib/aiHelpers";
 import { notFound, unauthenticated } from "./lib/errors";
@@ -76,10 +76,7 @@ export const getIssueForEmbedding = internalAction({
   args: {
     issueId: v.id("issues"),
   },
-  handler: async (
-    ctx,
-    args,
-  ): Promise<{ _id: string; title: string; description?: string } | null> => {
+  handler: async (ctx, args): Promise<Doc<"issues"> | null> => {
     return await ctx.runQuery(internal.internal.ai.getIssueData, { issueId: args.issueId });
   },
 });

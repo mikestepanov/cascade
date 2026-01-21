@@ -187,8 +187,7 @@ export const revoke = authenticatedMutation({
     keyId: v.id("apiKeys"),
   },
   handler: async (ctx, args) => {
-    const key = await ctx.db.get(args.keyId);
-    requireOwned(key, ctx.userId, "apiKey");
+    const _key = requireOwned(await ctx.db.get(args.keyId), ctx.userId, "apiKey");
 
     await ctx.db.patch(args.keyId, {
       isActive: false,
@@ -207,8 +206,7 @@ export const remove = authenticatedMutation({
     keyId: v.id("apiKeys"),
   },
   handler: async (ctx, args) => {
-    const key = await ctx.db.get(args.keyId);
-    requireOwned(key, ctx.userId, "apiKey");
+    const _key = requireOwned(await ctx.db.get(args.keyId), ctx.userId, "apiKey");
 
     await ctx.db.delete(args.keyId);
 
@@ -228,8 +226,7 @@ export const update = authenticatedMutation({
     expiresAt: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
-    const key = await ctx.db.get(args.keyId);
-    requireOwned(key, ctx.userId, "apiKey");
+    const _key = requireOwned(await ctx.db.get(args.keyId), ctx.userId, "apiKey");
 
     const updates: Partial<{
       name: string;
@@ -266,8 +263,7 @@ export const rotate = authenticatedMutation({
     gracePeriodMs: v.optional(v.number()), // Custom grace period (default 24h)
   },
   handler: async (ctx, args) => {
-    const oldKey = await ctx.db.get(args.keyId);
-    requireOwned(oldKey, ctx.userId, "apiKey");
+    const oldKey = requireOwned(await ctx.db.get(args.keyId), ctx.userId, "apiKey");
 
     if (!oldKey.isActive) {
       throw validation("keyId", "Cannot rotate an inactive key");
@@ -443,8 +439,7 @@ export const getUsageStats = authenticatedQuery({
     keyId: v.id("apiKeys"),
   },
   handler: async (ctx, args) => {
-    const key = await ctx.db.get(args.keyId);
-    requireOwned(key, ctx.userId, "apiKey");
+    const key = requireOwned(await ctx.db.get(args.keyId), ctx.userId, "apiKey");
 
     // Get recent usage logs
     const logs = await ctx.db
@@ -458,8 +453,8 @@ export const getUsageStats = authenticatedQuery({
     const oneHourAgo = now - 60 * 60 * 1000;
     const oneDayAgo = now - 24 * 60 * 60 * 1000;
 
-    const recentLogs = logs.filter((log) => log.createdAt > oneDayAgo);
-    const lastHourLogs = logs.filter((log) => log.createdAt > oneHourAgo);
+    const recentLogs = logs.filter((log) => log._creationTime > oneDayAgo);
+    const lastHourLogs = logs.filter((log) => log._creationTime > oneHourAgo);
 
     const successCount = recentLogs.filter((log) => log.statusCode < 400).length;
     const errorCount = recentLogs.filter((log) => log.statusCode >= 400).length;

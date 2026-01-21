@@ -6,6 +6,7 @@
 
 import { v } from "convex/values";
 import { internal } from "../_generated/api";
+import type { Doc } from "../_generated/dataModel";
 import { action } from "../_generated/server";
 import { unauthenticated } from "../lib/errors";
 import { asVectorResults } from "../lib/vectorSearchHelpers";
@@ -20,7 +21,7 @@ export const searchSimilarIssues = action({
     projectId: v.id("projects"),
     limit: v.optional(v.number()),
   },
-  handler: async (ctx, args) => {
+  handler: async (ctx, args): Promise<(Doc<"issues"> & { similarity: number })[]> => {
     const userId = await ctx.auth.getUserIdentity();
     if (!userId) {
       throw unauthenticated();
@@ -53,6 +54,7 @@ export const searchSimilarIssues = action({
         const issue = await ctx.runQuery(internal.ai.getIssueForEmbedding, {
           issueId: result._id,
         });
+        if (!issue) return null;
         return {
           ...issue,
           similarity: result._score,
@@ -60,7 +62,7 @@ export const searchSimilarIssues = action({
       }),
     );
 
-    return issues.filter(Boolean);
+    return issues.filter((i): i is Doc<"issues"> & { similarity: number } => i !== null);
   },
 });
 
@@ -72,7 +74,7 @@ export const getRelatedIssues = action({
     issueId: v.id("issues"),
     limit: v.optional(v.number()),
   },
-  handler: async (ctx, args) => {
+  handler: async (ctx, args): Promise<(Doc<"issues"> & { similarity: number })[]> => {
     // Get the issue
     const issue = await ctx.runQuery(internal.ai.getIssueForEmbedding, {
       issueId: args.issueId,
@@ -101,6 +103,7 @@ export const getRelatedIssues = action({
           const relatedIssue = await ctx.runQuery(internal.ai.getIssueForEmbedding, {
             issueId: result._id,
           });
+          if (!relatedIssue) return null;
           return {
             ...relatedIssue,
             similarity: result._score,
@@ -108,7 +111,7 @@ export const getRelatedIssues = action({
         }),
     );
 
-    return relatedIssues.filter(Boolean);
+    return relatedIssues.filter((i): i is Doc<"issues"> & { similarity: number } => i !== null);
   },
 });
 
@@ -122,7 +125,7 @@ export const findPotentialDuplicates = action({
     projectId: v.id("projects"),
     threshold: v.optional(v.number()), // Similarity threshold (0-1)
   },
-  handler: async (ctx, args) => {
+  handler: async (ctx, args): Promise<(Doc<"issues"> & { similarity: number })[]> => {
     // Combine title and description
     const text = `${args.title}\n\n${args.description || ""}`.trim();
 
@@ -151,6 +154,7 @@ export const findPotentialDuplicates = action({
           const issue = await ctx.runQuery(internal.ai.getIssueData, {
             issueId: result._id,
           });
+          if (!issue) return null;
           return {
             ...issue,
             similarity: result._score,
@@ -158,6 +162,6 @@ export const findPotentialDuplicates = action({
         }),
     );
 
-    return duplicates.filter(Boolean);
+    return duplicates.filter((i): i is Doc<"issues"> & { similarity: number } => i !== null);
   },
 });

@@ -96,15 +96,14 @@ export const suggestIssueDescription = action({
     type: issueTypes,
     projectId: v.id("projects"),
   },
-  handler: async (ctx, args) => {
+  handler: async (ctx, args): Promise<string> => {
     const userId = await ctx.auth.getUserIdentity();
     if (!userId) {
       throw unauthenticated();
     }
 
     // Rate limit: 20 suggestions per hour per user
-    await rateLimit(ctx, {
-      name: "aiSuggestion",
+    await rateLimit(ctx, "aiSuggestion", {
       key: userId.subject,
       throws: true,
     });
@@ -184,15 +183,14 @@ export const suggestPriority = action({
     type: issueTypes,
     projectId: v.id("projects"),
   },
-  handler: async (ctx, args) => {
+  handler: async (ctx, args): Promise<"highest" | "high" | "medium" | "low" | "lowest"> => {
     const userId = await ctx.auth.getUserIdentity();
     if (!userId) {
       throw unauthenticated();
     }
 
     // Rate limit: 20 suggestions per hour per user
-    await rateLimit(ctx, {
-      name: "aiSuggestion",
+    await rateLimit(ctx, "aiSuggestion", {
       key: userId.subject,
       throws: true,
     });
@@ -274,15 +272,14 @@ export const suggestLabels = action({
     type: issueTypes,
     projectId: v.id("projects"),
   },
-  handler: async (ctx, args) => {
+  handler: async (ctx, args): Promise<string[]> => {
     const userId = await ctx.auth.getUserIdentity();
     if (!userId) {
       throw unauthenticated();
     }
 
     // Rate limit: 20 suggestions per hour per user
-    await rateLimit(ctx, {
-      name: "aiSuggestion",
+    await rateLimit(ctx, "aiSuggestion", {
       key: userId.subject,
       throws: true,
     });
@@ -321,7 +318,7 @@ Labels:`;
     const responseTime = Date.now() - startTime;
 
     // Handle backward compatibility
-    const responseText = typeof result === "string" ? result : result.text;
+    const responseText = (typeof result === "string" ? result : result.text) as string;
     const usage =
       typeof result === "string"
         ? { promptTokens: 0, completionTokens: 0, totalTokens: 0 }

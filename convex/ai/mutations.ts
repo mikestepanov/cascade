@@ -90,6 +90,9 @@ export const addMessage = authenticatedMutation({
   handler: async (ctx, args) => {
     // Verify chat ownership
     const chat = await ctx.db.get(args.chatId);
+    if (!chat) {
+      throw new Error("Chat not found");
+    }
     requireOwned(chat, ctx.userId, "chat");
 
     const messageId = await ctx.db.insert("aiMessages", {
