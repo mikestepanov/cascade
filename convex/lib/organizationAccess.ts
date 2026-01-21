@@ -9,8 +9,9 @@ import type { Id } from "../_generated/dataModel";
 import type { MutationCtx, QueryCtx } from "../_generated/server";
 
 /**
- * Get user's role in an organization
- * Returns null if user is not a member
+ * Retrieve a user's role within an organization.
+ *
+ * @returns The user's role — `owner`, `admin`, or `member` — if they belong to the organization, `null` otherwise.
  */
 export async function getOrganizationRole(
   ctx: QueryCtx | MutationCtx,
@@ -28,7 +29,9 @@ export async function getOrganizationRole(
 }
 
 /**
- * Check if user is organization admin (owner or admin role)
+ * Determine whether a user has an owner or admin role within an organization.
+ *
+ * @returns `true` if the user has role `"owner"` or `"admin"` in the organization, `false` otherwise.
  */
 export async function isOrganizationAdmin(
   ctx: QueryCtx | MutationCtx,
@@ -40,7 +43,9 @@ export async function isOrganizationAdmin(
 }
 
 /**
- * Check if user is organization member (any role)
+ * Determines whether a user is a member of the specified organization.
+ *
+ * @returns `true` if the user has any role in the organization, `false` otherwise.
  */
 export async function isOrganizationMember(
   ctx: QueryCtx | MutationCtx,

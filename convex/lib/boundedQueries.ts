@@ -200,15 +200,15 @@ export async function boundedCollectWithFilter<T>(
 }
 
 /**
- * Safe collect - a drop-in replacement for .collect() that adds a limit
+ * Collects up to `limit` items from a takeable query and truncates results if more exist.
  *
- * Use this when migrating existing code - it maintains the same return type
- * but prevents unbounded queries. Logs a warning if limit is hit.
+ * Logs a warning when the query returns more than `limit` items; the optional `context`
+ * string is included in that warning to help locate the source of the query.
  *
- * @example
- * // Migration: Just wrap the query
- * // Before: const items = await query.collect();
- * // After:  const items = await safeCollect(query, 1000, "issues by project");
+ * @param query - Query implementing `take(n)` used to fetch items
+ * @param limit - Maximum number of items to return; defaults to BOUNDED_LIST_LIMIT
+ * @param context - Optional context string included in the warning when results are truncated
+ * @returns An array of at most `limit` items; truncated to `limit` if more items existed
  */
 export async function safeCollect<T>(
   query: TakeableQuery<T>,

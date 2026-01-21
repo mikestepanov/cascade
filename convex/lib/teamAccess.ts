@@ -9,8 +9,9 @@ import type { Id } from "../_generated/dataModel";
 import type { MutationCtx, QueryCtx } from "../_generated/server";
 
 /**
- * Get user's role in a team
- * Returns null if user is not a member
+ * Retrieve the role of a user within a team.
+ *
+ * @returns `'lead'` if the user is a team lead, `'member'` if the user is a team member, `null` if the user is not a member of the team
  */
 export async function getTeamRole(
   ctx: QueryCtx | MutationCtx,
@@ -26,7 +27,9 @@ export async function getTeamRole(
 }
 
 /**
- * Check if user is team admin
+ * Check if user is team admin.
+ *
+ * @returns `true` if the user is an admin of the specified team, `false` otherwise.
  */
 export async function isTeamAdmin(
   ctx: QueryCtx | MutationCtx,
@@ -38,7 +41,9 @@ export async function isTeamAdmin(
 }
 
 /**
- * Check if user is a team member (any role)
+ * Determines whether a user is a member of a specified team.
+ *
+ * @returns `true` if the user is a member of the team, `false` otherwise.
  */
 export async function isTeamMember(
   ctx: QueryCtx | MutationCtx,
