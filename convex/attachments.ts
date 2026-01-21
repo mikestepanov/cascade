@@ -37,7 +37,6 @@ export const attachToIssue = issueMutation({
       action: "attached",
       field: "attachment",
       newValue: args.filename,
-      createdAt: Date.now(),
     });
 
     return { success: true };
@@ -68,7 +67,6 @@ export const removeAttachment = issueMutation({
       userId: ctx.userId,
       action: "removed",
       field: "attachment",
-      createdAt: Date.now(),
     });
 
     return { success: true };

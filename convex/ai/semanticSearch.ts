@@ -1,14 +1,7 @@
-// @ts-nocheck
 /**
  * Semantic Search using Vector Embeddings
  *
  * Find similar issues based on meaning, not just keywords
- *
- * Note: Type checking disabled due to Convex circular type inference.
- * Calls to internal.ai.* create circular type dependencies even though
- * the implementation is in convex/internal/ai.ts.
- *
- * Uses type-safe helpers (asVectorResults) to maintain type safety.
  */
 
 import { v } from "convex/values";
@@ -57,7 +50,7 @@ export const searchSimilarIssues = action({
     // Fetch full issue details
     const issues = await Promise.all(
       typedResults.map(async (result) => {
-        const issue = await ctx.runQuery(internal.ai.getIssueData, {
+        const issue = await ctx.runQuery(internal.ai.getIssueForEmbedding, {
           issueId: result._id,
         });
         return {
@@ -81,7 +74,7 @@ export const getRelatedIssues = action({
   },
   handler: async (ctx, args) => {
     // Get the issue
-    const issue = await ctx.runQuery(internal.ai.getIssueData, {
+    const issue = await ctx.runQuery(internal.ai.getIssueForEmbedding, {
       issueId: args.issueId,
     });
 
@@ -105,7 +98,7 @@ export const getRelatedIssues = action({
         .filter((result) => result._id !== args.issueId)
         .slice(0, args.limit || 5)
         .map(async (result) => {
-          const relatedIssue = await ctx.runQuery(internal.ai.getIssueData, {
+          const relatedIssue = await ctx.runQuery(internal.ai.getIssueForEmbedding, {
             issueId: result._id,
           });
           return {

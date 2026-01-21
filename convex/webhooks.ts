@@ -3,7 +3,7 @@ import { v } from "convex/values";
 import { internal } from "./_generated/api";
 import type { Id } from "./_generated/dataModel";
 import { internalAction, internalMutation, internalQuery } from "./_generated/server";
-import { adminMutation, authenticatedMutation, authenticatedQuery } from "./customFunctions";
+import { authenticatedMutation, authenticatedQuery, projectAdminMutation } from "./customFunctions";
 import { notFound, validation } from "./lib/errors";
 import { fetchPaginatedQuery } from "./lib/queryHelpers";
 import { MAX_PAGE_SIZE } from "./lib/queryLimits";
@@ -13,7 +13,7 @@ import { isTest } from "./testConfig";
 import { webhookResultStatuses } from "./validators";
 
 // Create a webhook
-export const createWebhook = adminMutation({
+export const createWebhook = projectAdminMutation({
   args: {
     name: v.string(),
     url: v.string(),
@@ -32,7 +32,6 @@ export const createWebhook = adminMutation({
       secret: args.secret,
       isActive: true,
       createdBy: ctx.userId,
-      createdAt: Date.now(),
     });
 
     if (!isTest) {
@@ -266,7 +265,7 @@ export const listExecutions = authenticatedQuery({
       query: (db) =>
         db
           .query("webhookExecutions")
-          .withIndex("by_webhook_created", (q) => q.eq("webhookId", args.webhookId))
+          .withIndex("by_webhook", (q) => q.eq("webhookId", args.webhookId))
           .order("desc"),
     });
   },
@@ -374,7 +373,6 @@ export const createExecution = internalMutation({
       requestPayload: args.requestPayload,
       status: "retrying",
       attempts: 1,
-      createdAt: Date.now(),
     });
   },
 });

@@ -18,7 +18,6 @@ export const queueMutation = authenticatedMutation({
       mutationArgs: args.mutationArgs,
       status: "pending",
       attempts: 0,
-      createdAt: now,
       updatedAt: now,
     });
   },

@@ -1,10 +1,19 @@
 import { v } from "convex/values";
 import type { Doc } from "./_generated/dataModel";
-import { adminMutation, authenticatedMutation, authenticatedQuery, projectQuery } from "./customFunctions";
+import {
+  authenticatedMutation,
+  authenticatedQuery,
+  projectAdminMutation,
+  projectQuery,
+} from "./customFunctions";
 import { batchFetchCustomFields } from "./lib/batchHelpers";
 import { conflict, notFound, validation } from "./lib/errors";
 import { MAX_PAGE_SIZE } from "./lib/queryLimits";
-import { assertCanAccessProject, assertCanEditProject, assertIsProjectAdmin } from "./projectAccess";
+import {
+  assertCanAccessProject,
+  assertCanEditProject,
+  assertIsProjectAdmin,
+} from "./projectAccess";
 
 /**
  * Validate that a string represents a valid number.
@@ -71,7 +80,7 @@ export const list = projectQuery({
 });
 
 // Create a new custom field
-export const create = adminMutation({
+export const create = projectAdminMutation({
   args: {
     name: v.string(),
     fieldKey: v.string(),
@@ -112,7 +121,6 @@ export const create = adminMutation({
       isRequired: args.isRequired,
       description: args.description,
       createdBy: ctx.userId,
-      createdAt: Date.now(),
     });
   },
 });
@@ -268,7 +276,6 @@ export const setValue = authenticatedMutation({
       action: "updated",
       field: `custom_${field.fieldKey}`,
       newValue: args.value,
-      createdAt: Date.now(),
     });
   },
 });
@@ -308,7 +315,6 @@ export const removeValue = authenticatedMutation({
           field: `custom_${field.fieldKey}`,
           oldValue: existing.value,
           newValue: "",
-          createdAt: Date.now(),
         });
       }
     }

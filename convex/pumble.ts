@@ -61,7 +61,6 @@ export const addWebhook = authenticatedMutation({
       sendAssignments: args.sendAssignments ?? true,
       sendStatusChanges: args.sendStatusChanges ?? true,
       messagesSent: 0,
-      createdAt: Date.now(),
       updatedAt: Date.now(),
     });
 

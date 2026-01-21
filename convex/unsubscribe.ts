@@ -26,7 +26,6 @@ export const generateToken = mutation({
     await ctx.db.insert("unsubscribeTokens", {
       userId,
       token,
-      createdAt: Date.now(),
       usedAt: undefined,
     });
 
@@ -49,7 +48,7 @@ export const getUserFromToken = query({
 
     // Check if token is expired (30 days)
     const thirtyDaysAgo = Date.now() - 30 * 24 * 60 * 60 * 1000;
-    if (tokenRecord.createdAt < thirtyDaysAgo) {
+    if (tokenRecord._creationTime < thirtyDaysAgo) {
       return null;
     }
 
@@ -75,7 +74,7 @@ export const unsubscribe = mutation({
 
     // Check if token is expired (30 days)
     const thirtyDaysAgo = Date.now() - 30 * 24 * 60 * 60 * 1000;
-    if (tokenRecord.createdAt < thirtyDaysAgo) {
+    if (tokenRecord._creationTime < thirtyDaysAgo) {
       throw validation("token", "Unsubscribe link has expired");
     }
 
@@ -105,7 +104,6 @@ export const unsubscribe = mutation({
         emailComments: false,
         emailStatusChanges: false,
         emailDigest: "none",
-        createdAt: Date.now(),
         updatedAt: Date.now(),
       });
     }
@@ -137,7 +135,6 @@ export const generateTokenInternal = internalMutation({
     await ctx.db.insert("unsubscribeTokens", {
       userId: args.userId,
       token,
-      createdAt: Date.now(),
       usedAt: undefined,
     });
 

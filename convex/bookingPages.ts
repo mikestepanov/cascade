@@ -117,7 +117,6 @@ export const create = authenticatedMutation({
       isActive: true,
       requiresConfirmation: args.requiresConfirmation ?? false,
       color: args.color || "#3B82F6",
-      createdAt: now,
       updatedAt: now,
     });
   },
@@ -154,7 +153,7 @@ export const listMine = authenticatedQuery({
       .withIndex("by_user", (q) => q.eq("userId", ctx.userId))
       .collect();
 
-    return pages.sort((a, b) => b.createdAt - a.createdAt);
+    return pages.sort((a, b) => b._creationTime - a._creationTime);
   },
 });
 

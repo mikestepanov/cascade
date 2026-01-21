@@ -11,6 +11,14 @@
   },
   "overrides": [
     {
+      "includes": ["convex/lib/logger.ts", "src/components/ErrorBoundary.tsx"],
+      "linter": {
+        "rules": {
+          "suspicious": { "noConsole": "off" }
+        }
+      }
+    },
+    {
       "includes": ["src/routeTree.gen.ts"],
       "linter": { "enabled": false },
       "formatter": { "enabled": false },

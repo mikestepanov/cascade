@@ -59,7 +59,6 @@ export const initializeEmploymentTypes = authenticatedMutation({
         canAccessBilling: true,
         canManageProjects: true,
         isActive: true,
-        createdAt: now,
         updatedAt: now,
       },
       {
@@ -73,7 +72,6 @@ export const initializeEmploymentTypes = authenticatedMutation({
         canAccessBilling: false,
         canManageProjects: false,
         isActive: true,
-        createdAt: now,
         updatedAt: now,
       },
       {
@@ -87,7 +85,6 @@ export const initializeEmploymentTypes = authenticatedMutation({
         canAccessBilling: false,
         canManageProjects: false,
         isActive: true,
-        createdAt: now,
         updatedAt: now,
       },
     ];
@@ -251,7 +248,6 @@ export const upsertUserProfile = authenticatedMutation({
     return await ctx.db.insert("userProfiles", {
       ...profileData,
       createdBy: ctx.userId,
-      createdAt: now,
     });
   },
 });

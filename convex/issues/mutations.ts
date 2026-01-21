@@ -3,9 +3,9 @@ import { asyncMap, pruneNull } from "convex-helpers";
 import type { Id } from "../_generated/dataModel";
 import {
   authenticatedMutation,
-  editorMutation,
   issueMutation,
   issueViewerMutation,
+  projectEditorMutation,
 } from "../customFunctions";
 import { validation } from "../lib/errors";
 import { cascadeDelete } from "../lib/relationships";
@@ -19,7 +19,7 @@ import {
   validateParentIssue,
 } from "./helpers";
 
-export const create = editorMutation({
+export const create = projectEditorMutation({
   args: {
     title: v.string(),
     description: v.optional(v.string()),
@@ -79,7 +79,6 @@ export const create = editorMutation({
       priority: args.priority,
       assigneeId: args.assigneeId,
       reporterId: ctx.userId,
-      createdAt: now,
       updatedAt: now,
       labels: labelNames,
       sprintId: args.sprintId,
@@ -100,7 +99,6 @@ export const create = editorMutation({
       issueId,
       userId: ctx.userId,
       action: "created",
-      createdAt: now,
     });
 
     return issueId;
@@ -130,7 +128,6 @@ export const updateStatus = issueMutation({
         field: "status",
         oldValue: oldStatus,
         newValue: args.newStatus,
-        createdAt: now,
       });
     }
   },
@@ -171,7 +168,6 @@ export const updateStatusByCategory = issueMutation({
         field: "status",
         oldValue: oldStatus,
         newValue: targetState.id,
-        createdAt: now,
       });
     }
   },
@@ -197,7 +193,7 @@ export const update = issueMutation({
     storyPoints: v.optional(v.union(v.number(), v.null())),
   },
   handler: async (ctx, args) => {
-    const now = Date.now();
+    const _now = Date.now();
     const changes: Array<{
       field: string;
       oldValue: string | number | null | undefined;
@@ -233,7 +229,6 @@ export const update = issueMutation({
           field: change.field,
           oldValue: String(change.oldValue || ""),
           newValue: String(change.newValue || ""),
-          createdAt: now,
         });
       }
     }
@@ -254,7 +249,6 @@ export const addComment = issueViewerMutation({
       authorId: ctx.userId,
       content: args.content,
       mentions,
-      createdAt: now,
       updatedAt: now,
     });
 
@@ -262,7 +256,6 @@ export const addComment = issueViewerMutation({
       issueId: ctx.issue._id,
       userId: ctx.userId,
       action: "commented",
-      createdAt: now,
     });
 
     const author = await ctx.db.get(ctx.userId);
@@ -279,7 +272,6 @@ export const addComment = issueViewerMutation({
           issueId: ctx.issue._id,
           projectId: ctx.projectId,
           isRead: false,
-          createdAt: now,
         });
 
         await sendEmailNotification(ctx, {
@@ -301,7 +293,6 @@ export const addComment = issueViewerMutation({
         issueId: ctx.issue._id,
         projectId: ctx.projectId,
         isRead: false,
-        createdAt: now,
       });
 
       await sendEmailNotification(ctx, {
@@ -354,7 +345,6 @@ export const bulkUpdateStatus = authenticatedMutation({
           field: "status",
           oldValue: oldStatus,
           newValue: args.newStatus,
-          createdAt: now,
         });
       }
 
@@ -407,7 +397,6 @@ export const bulkUpdatePriority = authenticatedMutation({
         field: "priority",
         oldValue: oldPriority,
         newValue: args.priority,
-        createdAt: now,
       });
 
       results.push(issueId);
@@ -453,7 +442,6 @@ export const bulkAssign = authenticatedMutation({
         field: "assignee",
         oldValue: oldAssignee ? String(oldAssignee) : "",
         newValue: args.assigneeId ? String(args.assigneeId) : "",
-        createdAt: now,
       });
 
       results.push(issueId);
@@ -499,7 +487,6 @@ export const bulkAddLabels = authenticatedMutation({
         field: "labels",
         oldValue: issue.labels.join(", "),
         newValue: updatedLabels.join(", "),
-        createdAt: now,
       });
 
       results.push(issueId);
@@ -545,7 +532,6 @@ export const bulkMoveToSprint = authenticatedMutation({
         field: "sprint",
         oldValue: oldSprint ? String(oldSprint) : "",
         newValue: args.sprintId ? String(args.sprintId) : "",
-        createdAt: now,
       });
 
       results.push(issueId);

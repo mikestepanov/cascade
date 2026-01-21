@@ -10,7 +10,7 @@
  * @see https://docs.convex.dev/database/schemas
  */
 
-import { v } from "convex/values";
+import { type Infer, v } from "convex/values";
 import { literals, nullable } from "convex-helpers/validators";
 
 // =============================================================================
@@ -30,7 +30,8 @@ export const projectRoles = literals("admin", "editor", "viewer");
 export const organizationRoles = literals("owner", "admin", "member");
 export const organizationMemberRoles = literals("admin", "member"); // For adding members (can't add as owner)
 export const nullableOrganizationRoles = nullable(organizationRoles); // For return types
-export const teamRoles = literals("lead", "member");
+export const workspaceRoles = literals("admin", "editor", "member");
+export const teamRoles = literals("admin", "member");
 export const inviteRoles = literals("user", "superAdmin");
 export const chatRoles = literals("user", "assistant", "system");
 
@@ -51,6 +52,7 @@ export const employmentTypes = literals("employee", "contractor", "intern");
 export const periodTypes = literals("week", "month");
 export const rateTypes = literals("internal", "billable");
 export const freeUnitTypes = literals("monthly", "one_time", "yearly");
+export const serviceTypes = literals("transcription", "email", "sms", "ai");
 
 // Calendar & Sync
 export const syncDirections = literals("import", "export", "bidirectional");
@@ -234,10 +236,10 @@ export const webhookPayload = v.any();
 // Type Exports (for TypeScript usage)
 // =============================================================================
 
-export type ProseMirrorNode = typeof proseMirrorNode._type;
-export type ProseMirrorSnapshot = typeof proseMirrorSnapshot._type;
-export type BlockNoteContent = typeof blockNoteContent._type;
-export type DashboardWidget = typeof dashboardWidget._type;
-export type DashboardLayout = typeof dashboardLayout._type;
-export type AuditMetadata = typeof auditMetadata._type;
-export type GoogleCalendarEvent = typeof googleCalendarEvent._type;
+export type ProseMirrorNode = Infer<typeof proseMirrorNode>;
+export type ProseMirrorSnapshot = Infer<typeof proseMirrorSnapshot>;
+export type BlockNoteContent = Infer<typeof blockNoteContent>;
+export type DashboardWidget = Infer<typeof dashboardWidget>;
+export type DashboardLayout = Infer<typeof dashboardLayout>;
+export type AuditMetadata = Infer<typeof auditMetadata>;
+export type GoogleCalendarEvent = Infer<typeof googleCalendarEvent>;
