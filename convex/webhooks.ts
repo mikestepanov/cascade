@@ -32,7 +32,6 @@ export const createWebhook = projectAdminMutation({
       secret: args.secret,
       isActive: true,
       createdBy: ctx.userId,
-      createdAt: Date.now(),
     });
 
     if (!isTest) {
@@ -374,7 +373,6 @@ export const createExecution = internalMutation({
       requestPayload: args.requestPayload,
       status: "retrying",
       attempts: 1,
-      createdAt: Date.now(),
     });
   },
 });

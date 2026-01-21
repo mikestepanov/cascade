@@ -85,7 +85,6 @@ export const createTeam = organizationMemberMutation({
       description: args.description,
       isPrivate: args.isPrivate,
       createdBy: ctx.userId,
-      createdAt: now,
       updatedAt: now,
     });
 
@@ -95,7 +94,6 @@ export const createTeam = organizationMemberMutation({
       userId: ctx.userId,
       role: "admin",
       addedBy: ctx.userId,
-      addedAt: now,
     });
 
     // Audit Log
@@ -302,7 +300,6 @@ export const addTeamMember = teamLeadMutation({
       userId: args.userId,
       role: args.role,
       addedBy: ctx.userId,
-      addedAt: now,
     });
 
     // Audit Log

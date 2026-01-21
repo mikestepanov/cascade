@@ -64,7 +64,6 @@ export const createProject = authenticatedMutation({
       key: args.key.toUpperCase(),
       description: args.description,
       createdBy: ctx.userId,
-      createdAt: now,
       updatedAt: now,
       boardType: args.boardType,
       workflowStates: defaultWorkflowStates,
@@ -84,7 +83,6 @@ export const createProject = authenticatedMutation({
       userId: ctx.userId,
       role: "admin",
       addedBy: ctx.userId,
-      addedAt: now,
     });
 
     if (!isTest) {
@@ -278,7 +276,7 @@ export const getProject = authenticatedQuery({
         email: member?.email,
         image: member?.image,
         role: membership.role,
-        addedAt: membership.addedAt,
+        addedAt: membership._creationTime,
       };
     });
 
@@ -336,7 +334,7 @@ export const getByKey = authenticatedQuery({
         email: member?.email,
         image: member?.image,
         role: membership.role,
-        addedAt: membership.addedAt,
+        addedAt: membership._creationTime,
       };
     });
 
@@ -527,7 +525,6 @@ export const addProjectMember = projectAdminMutation({
       userId: user._id,
       role: args.role,
       addedBy: ctx.userId,
-      addedAt: now,
     });
 
     if (!isTest) {

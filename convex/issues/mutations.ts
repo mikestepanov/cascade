@@ -79,7 +79,6 @@ export const create = projectEditorMutation({
       priority: args.priority,
       assigneeId: args.assigneeId,
       reporterId: ctx.userId,
-      createdAt: now,
       updatedAt: now,
       labels: labelNames,
       sprintId: args.sprintId,
@@ -100,7 +99,6 @@ export const create = projectEditorMutation({
       issueId,
       userId: ctx.userId,
       action: "created",
-      createdAt: now,
     });
 
     return issueId;
@@ -130,8 +128,7 @@ export const updateStatus = issueMutation({
         field: "status",
         oldValue: oldStatus,
         newValue: args.newStatus,
-        createdAt: now,
-      });
+        });
     }
   },
 });
@@ -171,8 +168,7 @@ export const updateStatusByCategory = issueMutation({
         field: "status",
         oldValue: oldStatus,
         newValue: targetState.id,
-        createdAt: now,
-      });
+        });
     }
   },
 });
@@ -233,8 +229,7 @@ export const update = issueMutation({
           field: change.field,
           oldValue: String(change.oldValue || ""),
           newValue: String(change.newValue || ""),
-          createdAt: now,
-        });
+            });
       }
     }
   },
@@ -254,7 +249,6 @@ export const addComment = issueViewerMutation({
       authorId: ctx.userId,
       content: args.content,
       mentions,
-      createdAt: now,
       updatedAt: now,
     });
 
@@ -262,7 +256,6 @@ export const addComment = issueViewerMutation({
       issueId: ctx.issue._id,
       userId: ctx.userId,
       action: "commented",
-      createdAt: now,
     });
 
     const author = await ctx.db.get(ctx.userId);
@@ -279,8 +272,7 @@ export const addComment = issueViewerMutation({
           issueId: ctx.issue._id,
           projectId: ctx.projectId,
           isRead: false,
-          createdAt: now,
-        });
+            });
 
         await sendEmailNotification(ctx, {
           userId: mentionedUserId,
@@ -301,8 +293,7 @@ export const addComment = issueViewerMutation({
         issueId: ctx.issue._id,
         projectId: ctx.projectId,
         isRead: false,
-        createdAt: now,
-      });
+        });
 
       await sendEmailNotification(ctx, {
         userId: ctx.issue.reporterId,
@@ -354,8 +345,7 @@ export const bulkUpdateStatus = authenticatedMutation({
           field: "status",
           oldValue: oldStatus,
           newValue: args.newStatus,
-          createdAt: now,
-        });
+            });
       }
 
       results.push(issueId);
@@ -407,8 +397,7 @@ export const bulkUpdatePriority = authenticatedMutation({
         field: "priority",
         oldValue: oldPriority,
         newValue: args.priority,
-        createdAt: now,
-      });
+        });
 
       results.push(issueId);
     }
@@ -453,8 +442,7 @@ export const bulkAssign = authenticatedMutation({
         field: "assignee",
         oldValue: oldAssignee ? String(oldAssignee) : "",
         newValue: args.assigneeId ? String(args.assigneeId) : "",
-        createdAt: now,
-      });
+        });
 
       results.push(issueId);
     }
@@ -499,8 +487,7 @@ export const bulkAddLabels = authenticatedMutation({
         field: "labels",
         oldValue: issue.labels.join(", "),
         newValue: updatedLabels.join(", "),
-        createdAt: now,
-      });
+        });
 
       results.push(issueId);
     }
@@ -545,8 +532,7 @@ export const bulkMoveToSprint = authenticatedMutation({
         field: "sprint",
         oldValue: oldSprint ? String(oldSprint) : "",
         newValue: args.sprintId ? String(args.sprintId) : "",
-        createdAt: now,
-      });
+        });
 
       results.push(issueId);
     }

@@ -88,7 +88,6 @@ async function addExistingUserToProject(
     userId: existingUserId,
     role,
     addedBy,
-    addedAt: Date.now(),
   });
 
   return { success: true, addedDirectly: true, userId: existingUserId };
@@ -244,7 +243,6 @@ export const sendInvite = authenticatedMutation({
       token,
       expiresAt: now + 7 * 24 * 60 * 60 * 1000, // 7 days
       status: "pending",
-      createdAt: now,
       updatedAt: now,
     });
 
@@ -510,8 +508,7 @@ export const acceptInvite = authenticatedMutation({
           userId: ctx.userId,
           role: invite.projectRole || "editor",
           addedBy: invite.invitedBy,
-          addedAt: Date.now(),
-        });
+              });
       }
       projectId = inviteProjectId;
     }

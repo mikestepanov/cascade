@@ -26,7 +26,6 @@ export const create = projectEditorMutation({
       defaultPriority: args.defaultPriority,
       defaultLabels: args.defaultLabels,
       createdBy: ctx.userId,
-      createdAt: Date.now(),
     });
 
     return templateId;

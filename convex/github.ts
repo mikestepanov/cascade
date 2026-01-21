@@ -45,7 +45,6 @@ export const connectGitHub = authenticatedMutation({
       accessToken: args.accessToken,
       refreshToken: args.refreshToken,
       expiresAt: args.expiresAt,
-      createdAt: now,
       updatedAt: now,
     });
   },
@@ -133,7 +132,6 @@ export const linkRepository = authenticatedMutation({
       syncIssues: args.syncIssues ?? false,
       autoLinkCommits: args.autoLinkCommits ?? true,
       linkedBy: ctx.userId,
-      createdAt: now,
       updatedAt: now,
     });
   },
@@ -278,7 +276,6 @@ export const upsertPullRequest = mutation({
       authorAvatarUrl: args.authorAvatarUrl,
       htmlUrl: args.htmlUrl,
       checksStatus: args.checksStatus,
-      createdAt: now,
       updatedAt: now,
     });
   },
@@ -404,7 +401,6 @@ export const upsertCommit = mutation({
       authorAvatarUrl: args.authorAvatarUrl,
       htmlUrl: args.htmlUrl,
       committedAt: args.committedAt,
-      createdAt: now,
     });
   },
 });

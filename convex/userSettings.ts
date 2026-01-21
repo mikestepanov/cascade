@@ -38,7 +38,6 @@ export const update = authenticatedMutation({
       await ctx.db.insert("userSettings", {
         userId: ctx.userId,
         ...args,
-        createdAt: Date.now(),
         updatedAt: Date.now(),
       });
     }

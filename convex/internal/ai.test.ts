@@ -94,7 +94,6 @@ describe("Internal AI", () => {
           name: "Active Sprint",
           status: "active",
           createdBy: userId,
-          createdAt: Date.now(),
           updatedAt: Date.now(),
         });
       });
@@ -117,7 +116,6 @@ describe("Internal AI", () => {
           type: "task",
           priority: "medium",
           reporterId: userId,
-          createdAt: Date.now(),
           updatedAt: Date.now(),
           labels: [],
           linkedDocuments: [],
@@ -134,7 +132,6 @@ describe("Internal AI", () => {
           type: "task",
           priority: "medium",
           reporterId: userId,
-          createdAt: Date.now(),
           updatedAt: Date.now(),
           labels: [],
           linkedDocuments: [],

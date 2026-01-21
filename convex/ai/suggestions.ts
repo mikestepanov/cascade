@@ -418,7 +418,6 @@ export const storeSuggestion = mutation({
       suggestion: args.suggestion,
       reasoning: args.reasoning,
       modelUsed: args.modelUsed,
-      createdAt: Date.now(),
     });
   },
 });

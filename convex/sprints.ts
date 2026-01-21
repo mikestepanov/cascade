@@ -24,7 +24,6 @@ export const create = projectEditorMutation({
       endDate: args.endDate,
       status: "future",
       createdBy: ctx.userId,
-      createdAt: now,
       updatedAt: now,
     });
   },

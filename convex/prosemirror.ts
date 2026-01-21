@@ -88,7 +88,6 @@ export const { getSnapshot, submitSnapshot, latestVersion, getSteps, submitSteps
             snapshot,
             title: document.title,
             createdBy: userId,
-            createdAt: now,
           });
 
           // Keep only last 50 versions per document (optional cleanup)

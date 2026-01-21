@@ -220,7 +220,6 @@ describe("Workspaces", () => {
           name: "Test Team",
           slug: "test-team",
           createdBy: userId,
-          createdAt: Date.now(),
           updatedAt: Date.now(),
           isPrivate: false,
         });
@@ -256,7 +255,6 @@ describe("Workspaces", () => {
           workspaceId,
           ownerId: userId,
           createdBy: userId,
-          createdAt: Date.now(),
           updatedAt: Date.now(),
           boardType: "kanban",
           workflowStates: [],

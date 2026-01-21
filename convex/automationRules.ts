@@ -38,7 +38,6 @@ export const create = projectAdminMutation({
       actionType: args.actionType,
       actionValue: args.actionValue,
       createdBy: ctx.userId,
-      createdAt: now,
       updatedAt: now,
       executionCount: 0,
     });
@@ -162,7 +161,6 @@ export const executeRules = internalMutation({
               authorId: rule.createdBy,
               content: actionParams.comment,
               mentions: [],
-              createdAt: Date.now(),
               updatedAt: Date.now(),
             });
             break;

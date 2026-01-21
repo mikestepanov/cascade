@@ -123,7 +123,6 @@ export const create = authenticatedMutation({
       meetingUrl: args.meetingUrl,
       notes: args.notes,
       isRequired: args.isRequired ?? false,
-      createdAt: now,
       updatedAt: now,
     });
 

@@ -173,7 +173,6 @@ describe("Projects", () => {
           userId: organizationMember,
           role: "member",
           addedBy: owner,
-          addedAt: Date.now(),
         });
       });
 

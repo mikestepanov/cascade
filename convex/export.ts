@@ -254,7 +254,6 @@ async function createIssueWithActivity(
   const issueId = await ctx.db.insert("issues", {
     ...issueData,
     loggedHours: 0,
-    createdAt: Date.now(),
     updatedAt: Date.now(),
     linkedDocuments: [],
     attachments: [],
@@ -264,7 +263,6 @@ async function createIssueWithActivity(
     issueId,
     userId,
     action: "created",
-    createdAt: Date.now(),
   });
 
   return issueId;
@@ -330,7 +328,7 @@ export const exportIssuesCSV = projectQuery({
         loggedHours: issue.loggedHours ?? 0,
         labels: issue.labels.join(", "),
         dueDate: issue.dueDate ? new Date(issue.dueDate).toISOString().split("T")[0] : "",
-        createdAt: new Date(issue.createdAt).toISOString().split("T")[0],
+        createdAt: new Date(issue._creationTime).toISOString().split("T")[0],
       };
     });
 

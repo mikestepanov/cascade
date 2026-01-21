@@ -137,7 +137,6 @@ describe("RBAC Utilities", () => {
           userId: organizationMemberId,
           role: "member",
           addedBy: creatorId,
-          addedAt: now,
         });
       });
 
@@ -150,7 +149,6 @@ describe("RBAC Utilities", () => {
           workspaceId,
           ownerId: creatorId,
           createdBy: creatorId,
-          createdAt: now,
           updatedAt: now,
           isPublic: true, // organization-visible
           boardType: "kanban",

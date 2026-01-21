@@ -132,7 +132,6 @@ export const generate = authenticatedMutation({
       rateLimit: args.rateLimit ?? 100, // Default 100 req/min
       isActive: true,
       usageCount: 0,
-      createdAt: Date.now(),
       expiresAt: args.expiresAt,
     });
 
@@ -171,7 +170,7 @@ export const list = authenticatedQuery({
       lastUsedAt: key.lastUsedAt,
       usageCount: key.usageCount,
       expiresAt: key.expiresAt,
-      createdAt: key.createdAt,
+      createdAt: key._creationTime,
       revokedAt: key.revokedAt,
       // Rotation info
       rotatedFromId: key.rotatedFromId,
@@ -297,7 +296,6 @@ export const rotate = authenticatedMutation({
       rateLimit: oldKey.rateLimit,
       isActive: true,
       usageCount: 0,
-      createdAt: now,
       expiresAt: oldKey.expiresAt, // Inherit expiration
       rotatedFromId: args.keyId, // Link to old key
     });
@@ -433,7 +431,6 @@ export const recordUsage = internalMutation({
       userAgent: args.userAgent,
       ipAddress: args.ipAddress,
       error: args.error,
-      createdAt: Date.now(),
     });
   },
 });
@@ -484,7 +481,7 @@ export const getUsageStats = authenticatedQuery({
         statusCode: log.statusCode,
         responseTime: log.responseTime,
         error: log.error,
-        createdAt: log.createdAt,
+        createdAt: log._creationTime,
       })),
     };
   },

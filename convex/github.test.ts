@@ -187,7 +187,6 @@ describe("GitHub Integration", () => {
           type: "task",
           priority: "medium",
           reporterId: userId,
-          createdAt: Date.now(),
           updatedAt: Date.now(),
           labels: [],
           linkedDocuments: [],

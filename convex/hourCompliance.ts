@@ -233,7 +233,6 @@ async function checkUserComplianceInternal(
   } else {
     recordId = await ctx.db.insert("hourComplianceRecords", {
       ...recordData,
-      createdAt: now,
     });
   }
 
@@ -324,7 +323,6 @@ async function sendComplianceNotifications(
       title,
       message,
       isRead: false,
-      createdAt: now,
     });
     notifications.push(notificationId);
   }

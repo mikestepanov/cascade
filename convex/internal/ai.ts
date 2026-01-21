@@ -100,7 +100,6 @@ export const createChat = internalMutation({
       userId: user._id as Id<"users">,
       projectId: args.projectId,
       title: args.title,
-      createdAt: Date.now(),
       updatedAt: Date.now(),
     });
   },
@@ -124,7 +123,6 @@ export const addMessage = internalMutation({
       content: args.content,
       modelUsed: args.modelUsed,
       tokensUsed: args.tokensUsed,
-      createdAt: Date.now(),
     });
 
     // Update chat timestamp
@@ -221,7 +219,6 @@ export const trackUsage = internalMutation({
       totalTokens: args.totalTokens,
       responseTime: args.responseTime,
       success: args.success,
-      createdAt: Date.now(),
     });
   },
 });

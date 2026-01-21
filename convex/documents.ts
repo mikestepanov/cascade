@@ -25,7 +25,6 @@ export const create = authenticatedMutation({
       title: args.title,
       isPublic: args.isPublic,
       createdBy: ctx.userId,
-      createdAt: now,
       updatedAt: now,
     });
   },

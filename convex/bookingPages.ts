@@ -117,7 +117,6 @@ export const create = authenticatedMutation({
       isActive: true,
       requiresConfirmation: args.requiresConfirmation ?? false,
       color: args.color || "#3B82F6",
-      createdAt: now,
       updatedAt: now,
     });
   },

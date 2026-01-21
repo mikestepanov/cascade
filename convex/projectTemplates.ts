@@ -79,7 +79,6 @@ export const createFromTemplate = authenticatedMutation({
       teamId: args.teamId,
       ownerId: ctx.userId,
       createdBy: ctx.userId,
-      createdAt: now,
       updatedAt: now,
       isPublic: false,
       boardType: template.boardType,
@@ -92,7 +91,6 @@ export const createFromTemplate = authenticatedMutation({
       userId: ctx.userId,
       role: "admin",
       addedBy: ctx.userId,
-      addedAt: now,
     });
 
     // Create default labels from template
@@ -102,8 +100,7 @@ export const createFromTemplate = authenticatedMutation({
         name: labelTemplate.name,
         color: labelTemplate.color,
         createdBy: ctx.userId,
-        createdAt: now,
-      });
+        });
     }
 
     return projectId;
@@ -150,7 +147,6 @@ export const initializeBuiltInTemplates = mutation({
         { name: "urgent", color: "#F59E0B" },
       ],
       isBuiltIn: true,
-      createdAt: now,
     });
 
     // Kanban Template
@@ -171,7 +167,6 @@ export const initializeBuiltInTemplates = mutation({
         { name: "design", color: "#8B5CF6" },
       ],
       isBuiltIn: true,
-      createdAt: now,
     });
 
     // Marketing Campaign Template
@@ -195,7 +190,6 @@ export const initializeBuiltInTemplates = mutation({
         { name: "urgent", color: "#EF4444" },
       ],
       isBuiltIn: true,
-      createdAt: now,
     });
 
     // Design Project Template
@@ -220,7 +214,6 @@ export const initializeBuiltInTemplates = mutation({
         { name: "illustration", color: "#8B5CF6" },
       ],
       isBuiltIn: true,
-      createdAt: now,
     });
   },
 });

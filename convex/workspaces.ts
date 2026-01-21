@@ -51,7 +51,6 @@ export const create = organizationAdminMutation({
       icon: args.icon,
       organizationId: ctx.organizationId,
       createdBy: ctx.userId,
-      createdAt: Date.now(),
       updatedAt: Date.now(),
     });
 
@@ -242,14 +241,11 @@ export const addMember = workspaceAdminMutation({
       throw forbidden(undefined, "User must be an organization member to join this workspace");
     }
 
-    const now = Date.now();
-
     const memberId = await ctx.db.insert("workspaceMembers", {
       workspaceId: ctx.workspaceId,
       userId: args.userId,
       role: args.role,
       addedBy: ctx.userId,
-      addedAt: now,
     });
 
     return memberId;

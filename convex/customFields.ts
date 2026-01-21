@@ -112,7 +112,6 @@ export const create = projectAdminMutation({
       isRequired: args.isRequired,
       description: args.description,
       createdBy: ctx.userId,
-      createdAt: Date.now(),
     });
   },
 });
@@ -268,7 +267,6 @@ export const setValue = authenticatedMutation({
       action: "updated",
       field: `custom_${field.fieldKey}`,
       newValue: args.value,
-      createdAt: Date.now(),
     });
   },
 });
@@ -308,8 +306,7 @@ export const removeValue = authenticatedMutation({
           field: `custom_${field.fieldKey}`,
           oldValue: existing.value,
           newValue: "",
-          createdAt: Date.now(),
-        });
+            });
       }
     }
   },

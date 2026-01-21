@@ -28,7 +28,6 @@ export const create = projectEditorMutation({
       name: args.name,
       color: args.color,
       createdBy: ctx.userId,
-      createdAt: Date.now(),
     });
 
     return labelId;

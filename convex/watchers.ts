@@ -27,7 +27,6 @@ export const watch = authenticatedMutation({
     const watcherId = await ctx.db.insert("issueWatchers", {
       issueId: args.issueId,
       userId: ctx.userId,
-      createdAt: Date.now(),
     });
 
     // Log activity
@@ -35,7 +34,6 @@ export const watch = authenticatedMutation({
       issueId: args.issueId,
       userId: ctx.userId,
       action: "started_watching",
-      createdAt: Date.now(),
     });
 
     return watcherId;
@@ -68,7 +66,6 @@ export const unwatch = authenticatedMutation({
       issueId: args.issueId,
       userId: ctx.userId,
       action: "stopped_watching",
-      createdAt: Date.now(),
     });
   },
 });
@@ -99,7 +96,7 @@ export const getWatchers = query({
         userId: watcher.userId,
         userName: user?.name || "Unknown User",
         userEmail: user?.email,
-        createdAt: watcher.createdAt,
+        createdAt: watcher._creationTime,
       };
     });
   },

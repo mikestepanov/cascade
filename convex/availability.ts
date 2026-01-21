@@ -57,7 +57,6 @@ export const setDayAvailability = authenticatedMutation({
         endTime: args.endTime,
         timezone: args.timezone,
         isActive: args.isActive ?? true,
-        createdAt: Date.now(),
       });
     }
   },
@@ -102,8 +101,7 @@ export const setDefaultWorkingHours = authenticatedMutation({
           endTime,
           timezone: args.timezone,
           isActive: true,
-          createdAt: Date.now(),
-        });
+          });
       }
     }
   },

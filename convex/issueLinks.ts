@@ -47,7 +47,6 @@ export const create = authenticatedMutation({
       toIssueId: args.toIssueId,
       linkType: args.linkType,
       createdBy: ctx.userId,
-      createdAt: now,
     });
 
     // Log activity
@@ -58,7 +57,6 @@ export const create = authenticatedMutation({
       action: "linked",
       field: args.linkType,
       newValue: toIssue?.key || args.toIssueId,
-      createdAt: now,
     });
 
     return linkId;
@@ -100,7 +98,6 @@ export const remove = authenticatedMutation({
       action: "unlinked",
       field: link.linkType,
       oldValue: toIssue?.key || link.toIssueId,
-      createdAt: Date.now(),
     });
   },
 });

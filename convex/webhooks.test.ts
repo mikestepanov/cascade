@@ -501,7 +501,6 @@ describe("Webhooks", () => {
           status: "success",
           responseStatus: 200,
           attempts: 1,
-          createdAt: Date.now(),
           completedAt: Date.now(),
         });
         await ctx.db.insert("webhookExecutions", {
@@ -511,7 +510,6 @@ describe("Webhooks", () => {
           status: "failed",
           error: "Connection timeout",
           attempts: 1,
-          createdAt: Date.now(),
           completedAt: Date.now(),
         });
       });
@@ -548,7 +546,6 @@ describe("Webhooks", () => {
             requestPayload: `{"index": ${i}}`,
             status: "success",
             attempts: 1,
-            createdAt: Date.now(),
             completedAt: Date.now(),
           });
         }
@@ -788,7 +785,6 @@ describe("Webhooks", () => {
           status: "failed",
           error: "Connection timeout",
           attempts: 1,
-          createdAt: Date.now(),
           completedAt: Date.now(),
         });
       });
@@ -834,7 +830,6 @@ describe("Webhooks", () => {
           requestPayload: '{"test": true}',
           status: "failed",
           attempts: 1,
-          createdAt: Date.now(),
         });
       });
 
@@ -866,7 +861,6 @@ describe("Webhooks", () => {
           requestPayload: '{"test": true}',
           status: "failed",
           attempts: 1,
-          createdAt: Date.now(),
         });
       });
 
@@ -898,7 +892,6 @@ describe("Webhooks", () => {
           requestPayload: '{"test": true}',
           status: "failed",
           attempts: 1,
-          createdAt: Date.now(),
         });
       });
       await t.run(async (ctx) => {

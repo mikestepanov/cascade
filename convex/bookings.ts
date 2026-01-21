@@ -82,7 +82,6 @@ export const createBooking = mutation({
       locationDetails: page.locationDetails,
       status: page.requiresConfirmation ? "pending" : "confirmed",
       reminderSent: false,
-      createdAt: now,
       updatedAt: now,
     });
 
@@ -102,8 +101,7 @@ export const createBooking = mutation({
         status: "confirmed",
         isRecurring: false,
         meetingUrl: page.location === "zoom" ? page.locationDetails : undefined,
-        createdAt: now,
-        updatedAt: now,
+          updatedAt: now,
       });
 
       // Link booking to calendar event
@@ -284,7 +282,6 @@ export const confirmBooking = authenticatedMutation({
       status: "confirmed",
       isRecurring: false,
       meetingUrl: page.location === "zoom" ? page.locationDetails : undefined,
-      createdAt: now,
       updatedAt: now,
     });
 

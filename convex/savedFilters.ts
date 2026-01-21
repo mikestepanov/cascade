@@ -32,7 +32,6 @@ export const create = projectViewerMutation({
       name: args.name,
       filters: args.filters,
       isPublic: args.isPublic,
-      createdAt: now,
       updatedAt: now,
     });
   },

@@ -39,7 +39,6 @@ export const addAttachment = authenticatedMutation({
       field: "attachment",
       oldValue: args.storageId, // Store storageId for direct lookup
       newValue: args.filename,
-      createdAt: Date.now(),
     });
 
     return args.storageId;
@@ -73,7 +72,6 @@ export const removeAttachment = authenticatedMutation({
       userId: ctx.userId,
       action: "removed",
       field: "attachment",
-      createdAt: Date.now(),
     });
 
     return true;

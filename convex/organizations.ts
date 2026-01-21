@@ -184,7 +184,6 @@ export const createOrganization = authenticatedMutation({
       timezone: args.timezone,
       settings: args.settings ?? DEFAULT_ORGANIZATION_SETTINGS,
       createdBy: ctx.userId,
-      createdAt: now,
       updatedAt: now,
     });
 
@@ -194,7 +193,6 @@ export const createOrganization = authenticatedMutation({
       userId: ctx.userId,
       role: "owner",
       addedBy: ctx.userId,
-      addedAt: now,
     });
 
     // Set as user's default organization if they don't have one
@@ -320,7 +318,6 @@ export const addMember = authenticatedMutation({
       userId: args.userId,
       role: args.role,
       addedBy: ctx.userId,
-      addedAt: now,
     });
 
     // Set as user's default organization if they don't have one
@@ -605,7 +602,6 @@ export const getOrganizationMembers = authenticatedQuery({
       userId: v.id("users"),
       role: organizationRoles,
       addedBy: v.id("users"),
-      addedAt: v.number(),
       user: v.union(
         v.null(),
         v.object({
@@ -742,7 +738,6 @@ export const initializeDefaultOrganization = authenticatedMutation({
       timezone,
       settings: DEFAULT_ORGANIZATION_SETTINGS,
       createdBy: ctx.userId,
-      createdAt: now,
       updatedAt: now,
     });
 
@@ -752,7 +747,6 @@ export const initializeDefaultOrganization = authenticatedMutation({
       userId: ctx.userId,
       role: "owner",
       addedBy: ctx.userId,
-      addedAt: now,
     });
 
     // Set as user's default organization

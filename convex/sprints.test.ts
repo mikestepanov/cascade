@@ -42,7 +42,7 @@ describe("Sprints", () => {
       expect(sprint?.endDate).toBe(endDate);
       expect(sprint?.status).toBe("future");
       expect(sprint?.createdBy).toBe(userId);
-      expect(sprint?.createdAt).toBeDefined();
+      expect(sprint?._creationTime).toBeDefined();
       expect(sprint?.updatedAt).toBeDefined();
     });
 
@@ -238,7 +238,6 @@ describe("Sprints", () => {
           userId: organizationMember,
           role: "member",
           addedBy: owner,
-          addedAt: now,
         });
       });
 
@@ -251,7 +250,6 @@ describe("Sprints", () => {
           workspaceId,
           ownerId: owner,
           createdBy: owner,
-          createdAt: now,
           updatedAt: now,
           isPublic: true, // organization-visible
           boardType: "kanban",
