@@ -64,4 +64,5 @@ docs/research/library/*/*.html
 docs/research/library/*/*.webp
 docs/research/library/*/*_manifest.json
 docs/research/library/*/*_network.json
-# Keep: *_deep.json (design tokens), *_tech.json (summaries), *.png (screenshots)
+docs/research/library/*/*_deep.json
+# Keep: *_tech.json (summaries), *.png (screenshots)
