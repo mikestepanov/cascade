@@ -40,7 +40,9 @@ async function downloadFile(url, destPath) {
         });
       })
       .on("error", (err) => {
-        fs.unlink(destPath, () => {});
+        fs.unlink(destPath, () => {
+          // ignore error
+        });
         reject(err);
       });
   });
@@ -122,6 +124,7 @@ function categorizeAsset(url, initiatorType) {
   console.log(`✅ Saved ${pageName}.html`);
 
   // Extract deep data
+  // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: Script needs to handle many data types
   const deepData = await page.evaluate(() => {
     // CSS Variables
     const cssVars = {};

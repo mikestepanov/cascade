@@ -159,7 +159,7 @@ export const listRoadmapIssues = authenticatedQuery({
       const allSprintIssues = await safeCollect(
         ctx.db
           .query("issues")
-          .withIndex("by_project_sprint_created", (q) =>
+          .withIndex("by_project_sprint_status", (q) =>
             q.eq("projectId", args.projectId).eq("sprintId", args.sprintId),
           )
           .filter(notDeleted),
@@ -232,7 +232,7 @@ export const listRoadmapIssuesPaginated = authenticatedQuery({
     if (args.sprintId) {
       const result = await ctx.db
         .query("issues")
-        .withIndex("by_project_sprint_created", (q) =>
+        .withIndex("by_project_sprint_status", (q) =>
           q.eq("projectId", args.projectId).eq("sprintId", args.sprintId),
         )
         .filter(notDeleted)
@@ -314,7 +314,7 @@ export const listProjectIssues = authenticatedQuery({
         if (args.sprintId) {
           return db
             .query("issues")
-            .withIndex("by_project_sprint_created", (q) =>
+            .withIndex("by_project_sprint_status", (q) =>
               q.eq("projectId", args.projectId).eq("sprintId", args.sprintId),
             )
             .order("desc");
@@ -636,11 +636,12 @@ export const search = authenticatedQuery({
         "issue search",
       );
     } else if (args.projectId) {
+      const projectId = args.projectId;
       // Bounded: project issues limited
       issues = await safeCollect(
         ctx.db
           .query("issues")
-          .withIndex("by_project", (q) => q.eq("projectId", args.projectId as Id<"projects">))
+          .withIndex("by_project", (q) => q.eq("projectId", projectId))
           .filter(notDeleted)
           .order("desc"),
         fetchLimit,
@@ -727,7 +728,7 @@ export const listByProjectSmart = projectQuery({
 
           return ctx.db
             .query("issues")
-            .withIndex("by_project_status_updated", (q) =>
+            .withIndex("by_project_status", (q) =>
               q.eq("projectId", ctx.project._id).eq("status", state.id),
             )
             .filter(notDeleted);

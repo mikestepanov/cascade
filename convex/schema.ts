@@ -18,7 +18,6 @@ import {
   inviteRoles,
   issuePriorities,
   issueTypes,
-  issueTypesWithSubtask,
   linkTypes,
   periodTypes,
   personas,

@@ -326,7 +326,7 @@ export const sendDigestEmail = internalAction({
       issueUrl: `${appUrl}/issues/${n.issueId}`,
       actorName: n.actorName || "Someone",
       message: n.message,
-      time: new Date(n.createdAt).toLocaleString(),
+      time: new Date(n._creationTime).toLocaleString(),
     }));
 
     // Render email

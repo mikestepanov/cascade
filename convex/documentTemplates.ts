@@ -151,6 +151,7 @@ export const createDocumentFromTemplate = authenticatedMutation({
   args: {
     templateId: v.id("documentTemplates"),
     title: v.string(),
+    organizationId: v.id("organizations"),
     projectId: v.optional(v.id("projects")),
     isPublic: v.boolean(),
   },
@@ -172,6 +173,7 @@ export const createDocumentFromTemplate = authenticatedMutation({
       title: args.title,
       isPublic: args.isPublic,
       createdBy: ctx.userId,
+      organizationId: args.organizationId,
       projectId: args.projectId,
       updatedAt: Date.now(),
     });
@@ -704,7 +706,8 @@ export const initializeBuiltInTemplates = mutation({
     // Insert all built-in templates
     for (const template of builtInTemplates) {
       await ctx.db.insert("documentTemplates", {
-        ...template,
+        // biome-ignore lint/suspicious/noExplicitAny: Casting to any to avoid complex validation error with blockNoteContent
+        ...(template as any),
         createdBy: undefined,
         projectId: undefined,
       });

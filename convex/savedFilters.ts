@@ -67,6 +67,7 @@ export const list = projectQuery({
     // Enrich with pre-fetched data (no N+1)
     return all.map((filter) => ({
       ...filter,
+      createdAt: filter._creationTime,
       creatorName: getUserName(creatorMap.get(filter.userId)),
       isOwner: filter.userId === ctx.userId,
     }));

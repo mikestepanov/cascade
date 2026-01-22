@@ -12,12 +12,11 @@ export const Route = createFileRoute(
 });
 
 function TeamHome() {
-  const { organizationId, orgSlug } = useOrganization();
+  const { orgSlug } = useOrganization();
   const { workspaceSlug, teamSlug } = Route.useParams();
   const navigate = useNavigate();
 
   const team = useQuery(api.teams.getBySlug, {
-    organizationId: organizationId,
     slug: teamSlug,
   });
 

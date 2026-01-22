@@ -254,7 +254,7 @@ export const listWithDigestPreference = internalQuery({
       name: v.optional(v.string()),
       email: v.optional(v.string()),
       image: v.optional(v.string()),
-      // sanitizeUserForAuth fields
+      createdAt: v.number(),
     }),
   ),
   handler: async (ctx, args) => {
@@ -270,6 +270,18 @@ export const listWithDigestPreference = internalQuery({
     const userMap = await batchFetchUsers(ctx, userIds);
 
     // Return users that exist (filter out deleted users)
-    return pruneNull(filtered.map((pref) => userMap.get(pref.userId)));
+    return pruneNull(
+      filtered.map((pref) => {
+        const user = userMap.get(pref.userId);
+        if (!user) return null;
+        return {
+          _id: user._id,
+          name: user.name ?? user.email ?? "Unknown",
+          email: user.email,
+          image: user.image,
+          createdAt: user._creationTime,
+        };
+      }),
+    );
   },
 });

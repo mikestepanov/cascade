@@ -29,7 +29,11 @@ export const generateEmbedding = internalAction({
   },
   returns: v.array(v.float64()),
   handler: async (ctx, args): Promise<number[]> => {
-    return await ctx.runAction(internal.internal.ai.generateEmbedding, args);
+    return await ctx.runAction(
+      // biome-ignore lint/suspicious/noExplicitAny: API type workaround
+      (internal as any)["internal/ai"].generateEmbedding,
+      args,
+    );
   },
 });
 
@@ -43,9 +47,13 @@ export const generateIssueEmbedding = internalAction({
   },
   returns: v.array(v.float64()),
   handler: async (ctx, args): Promise<number[]> => {
-    const issue = await ctx.runQuery(internal.internal.ai.getIssueData, {
-      issueId: args.issueId,
-    });
+    const issue = await ctx.runQuery(
+      // biome-ignore lint/suspicious/noExplicitAny: API type workaround
+      (internal as any)["internal/ai"].getIssueData,
+      {
+        issueId: args.issueId,
+      },
+    );
 
     if (!issue) {
       throw notFound("issue", args.issueId);
@@ -55,15 +63,23 @@ export const generateIssueEmbedding = internalAction({
     const text = `${issue.title}\n\n${issue.description || ""}`.trim();
 
     // Generate embedding
-    const embedding = await ctx.runAction(internal.internal.ai.generateEmbedding, {
-      text,
-    });
+    const embedding = await ctx.runAction(
+      // biome-ignore lint/suspicious/noExplicitAny: API type workaround
+      (internal as any)["internal/ai"].generateEmbedding,
+      {
+        text,
+      },
+    );
 
     // Store embedding
-    await ctx.runMutation(internal.internal.ai.storeIssueEmbedding, {
-      issueId: args.issueId,
-      embedding,
-    });
+    await ctx.runMutation(
+      // biome-ignore lint/suspicious/noExplicitAny: API type workaround
+      (internal as any)["internal/ai"].storeIssueEmbedding,
+      {
+        issueId: args.issueId,
+        embedding,
+      },
+    );
 
     return embedding;
   },
@@ -77,7 +93,11 @@ export const getIssueForEmbedding = internalAction({
     issueId: v.id("issues"),
   },
   handler: async (ctx, args): Promise<Doc<"issues"> | null> => {
-    return await ctx.runQuery(internal.internal.ai.getIssueData, { issueId: args.issueId });
+    return await ctx.runQuery(
+      // biome-ignore lint/suspicious/noExplicitAny: API type workaround
+      (internal as any)["internal/ai"].getIssueData,
+      { issueId: args.issueId },
+    );
   },
 });
 
@@ -106,25 +126,37 @@ export const chat = action({
     // Create or get chat
     const chatId: Id<"aiChats"> =
       args.chatId ??
-      (await ctx.runMutation(internal.internal.ai.createChat, {
-        userId: userId.subject,
-        projectId: args.projectId,
-        title: args.message.slice(0, 100), // First 100 chars as title
-      }));
+      (await ctx.runMutation(
+        // biome-ignore lint/suspicious/noExplicitAny: API type workaround
+        (internal as any)["internal/ai"].createChat,
+        {
+          userId: userId.subject,
+          projectId: args.projectId,
+          title: args.message.slice(0, 100), // First 100 chars as title
+        },
+      ));
 
     // Store user message
-    await ctx.runMutation(internal.internal.ai.addMessage, {
-      chatId,
-      role: "user",
-      content: args.message,
-    });
+    await ctx.runMutation(
+      // biome-ignore lint/suspicious/noExplicitAny: API type workaround
+      (internal as any)["internal/ai"].addMessage,
+      {
+        chatId,
+        role: "user",
+        content: args.message,
+      },
+    );
 
     // Get project context if available
     let context = "";
     if (args.projectId) {
-      context = await ctx.runQuery(internal.internal.ai.getProjectContext, {
-        projectId: args.projectId,
-      });
+      context = await ctx.runQuery(
+        // biome-ignore lint/suspicious/noExplicitAny: API type workaround
+        (internal as any)["internal/ai"].getProjectContext,
+        {
+          projectId: args.projectId,
+        },
+      );
     }
 
     // Generate AI response using Claude Opus 4.5
@@ -155,27 +187,35 @@ Be concise, helpful, and professional.`;
     const usage = extractUsage(response.usage);
 
     // Store AI response
-    await ctx.runMutation(internal.internal.ai.addMessage, {
-      chatId,
-      role: "assistant",
-      content: response.text,
-      modelUsed: CLAUDE_OPUS,
-      tokensUsed: usage.totalTokens,
-    });
+    await ctx.runMutation(
+      // biome-ignore lint/suspicious/noExplicitAny: API type workaround
+      (internal as any)["internal/ai"].addMessage,
+      {
+        chatId,
+        role: "assistant",
+        content: response.text,
+        modelUsed: CLAUDE_OPUS,
+        tokensUsed: usage.totalTokens,
+      },
+    );
 
     // Track usage
-    await ctx.runMutation(internal.internal.ai.trackUsage, {
-      userId: userId.subject,
-      projectId: args.projectId,
-      provider: "anthropic",
-      model: CLAUDE_OPUS,
-      operation: "chat",
-      promptTokens: usage.promptTokens,
-      completionTokens: usage.completionTokens,
-      totalTokens: usage.totalTokens,
-      responseTime,
-      success: true,
-    });
+    await ctx.runMutation(
+      // biome-ignore lint/suspicious/noExplicitAny: API type workaround
+      (internal as any)["internal/ai"].trackUsage,
+      {
+        userId: userId.subject,
+        projectId: args.projectId,
+        provider: "anthropic",
+        model: CLAUDE_OPUS,
+        operation: "chat",
+        promptTokens: usage.promptTokens,
+        completionTokens: usage.completionTokens,
+        totalTokens: usage.totalTokens,
+        responseTime,
+        success: true,
+      },
+    );
 
     return {
       chatId,
@@ -189,7 +229,11 @@ export const getProjectContext = internalAction({
     projectId: v.id("projects"),
   },
   handler: async (ctx, args): Promise<string> => {
-    return await ctx.runQuery(internal.internal.ai.getProjectContext, args);
+    return await ctx.runQuery(
+      // biome-ignore lint/suspicious/noExplicitAny: API type workaround
+      (internal as any)["internal/ai"].getProjectContext,
+      args,
+    );
   },
 });
 
@@ -212,6 +256,10 @@ export const trackUsage = internalAction({
     success: v.boolean(),
   },
   handler: async (ctx, args): Promise<void> => {
-    await ctx.runMutation(internal.internal.ai.trackUsage, args);
+    await ctx.runMutation(
+      // biome-ignore lint/suspicious/noExplicitAny: API type workaround
+      (internal as any)["internal/ai"].trackUsage,
+      args,
+    );
   },
 });

@@ -223,7 +223,7 @@ function matchesDocumentFilters(
     isPublic: boolean;
     createdBy: Id<"users">;
     projectId?: Id<"projects">;
-    createdAt: number;
+    _creationTime: number;
   },
   filters: {
     projectId?: Id<"projects">;
@@ -255,10 +255,10 @@ function matchesDocumentFilters(
   }
 
   // Apply date range filter
-  if (filters.dateFrom && doc.createdAt < filters.dateFrom) {
+  if (filters.dateFrom && doc._creationTime < filters.dateFrom) {
     return false;
   }
-  if (filters.dateTo && doc.createdAt > filters.dateTo) {
+  if (filters.dateTo && doc._creationTime > filters.dateTo) {
     return false;
   }
 

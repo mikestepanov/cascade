@@ -426,6 +426,7 @@ export const getInviteByToken = query({
 
     return {
       ...invite,
+      createdAt: invite._creationTime,
       isExpired,
       inviterName: inviter?.name || inviter?.email || "Unknown",
       projectName,
@@ -607,6 +608,7 @@ export const listInvites = authenticatedQuery({
 
       return {
         ...invite,
+        createdAt: invite._creationTime,
         inviterName: inviter?.name || inviter?.email || "Unknown",
         acceptedByName: acceptedUser
           ? acceptedUser.name || acceptedUser.email || "Unknown"

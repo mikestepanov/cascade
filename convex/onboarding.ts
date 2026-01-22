@@ -43,7 +43,12 @@ export const getOnboardingStatus = authenticatedQuery({
       .withIndex("by_user", (q) => q.eq("userId", ctx.userId))
       .first();
 
-    return onboarding;
+    return onboarding
+      ? {
+          ...onboarding,
+          createdAt: onboarding._creationTime,
+        }
+      : null;
   },
 });
 

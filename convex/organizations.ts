@@ -445,6 +445,7 @@ export const getOrganization = authenticatedQuery({
 
     return {
       ...organization,
+      createdAt: organization._creationTime,
       userRole: role,
     };
   },
@@ -491,6 +492,7 @@ export const getOrganizationBySlug = authenticatedQuery({
 
     return {
       ...organization,
+      createdAt: organization._creationTime,
       userRole: role,
     };
   },
@@ -572,6 +574,7 @@ export const getUserOrganizations = authenticatedQuery({
         const organizationIdStr = membership.organizationId.toString();
         return {
           ...organization,
+          createdAt: organization._creationTime,
           userRole: roleMap.get(organizationIdStr) ?? null,
           memberCount: memberCountMap.get(organizationIdStr) ?? 0,
           projectCount: projectCountMap.get(organizationIdStr) ?? 0,

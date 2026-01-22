@@ -265,9 +265,13 @@ export function matchesArrayFilter<T>(value: T, filterArray: T[] | undefined): b
 }
 
 // Helper: Check if issue matches date range
-export function matchesDateRange(createdAt: number, dateFrom?: number, dateTo?: number): boolean {
-  if (dateFrom && createdAt < dateFrom) return false;
-  if (dateTo && createdAt > dateTo) return false;
+export function matchesDateRange(
+  creationTime: number,
+  dateFrom?: number,
+  dateTo?: number,
+): boolean {
+  if (dateFrom && creationTime < dateFrom) return false;
+  if (dateTo && creationTime > dateTo) return false;
   return true;
 }
 
@@ -289,7 +293,7 @@ export function matchesSearchFilters(
     labels: string[];
     sprintId?: Id<"sprints">;
     epicId?: Id<"issues">;
-    createdAt: number;
+    _creationTime: number;
   },
   filters: {
     projectId?: Id<"projects">;
@@ -318,7 +322,7 @@ export function matchesSearchFilters(
   if (!matchesLabelsFilter(issue.labels, filters.labels)) return false;
   if (!matchesSprintFilter(issue, filters.sprintId)) return false;
   if (!matchesEpicFilter(issue, filters.epicId)) return false;
-  if (!matchesDateRange(issue.createdAt, filters.dateFrom, filters.dateTo)) return false;
+  if (!matchesDateRange(issue._creationTime, filters.dateFrom, filters.dateTo)) return false;
 
   return true;
 }

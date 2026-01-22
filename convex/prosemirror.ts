@@ -4,6 +4,7 @@ import type { GenericMutationCtx, GenericQueryCtx } from "convex/server";
 import { components } from "./_generated/api";
 import type { DataModel, Id } from "./_generated/dataModel";
 import { forbidden, notFound, unauthenticated, validation } from "./lib/errors";
+import type { ProseMirrorSnapshot } from "./validators";
 
 const prosemirrorSync = new ProsemirrorSync(components.prosemirrorSync);
 
@@ -58,6 +59,10 @@ export const { getSnapshot, submitSnapshot, latestVersion, getSteps, submitSteps
     checkRead: checkPermissions,
     checkWrite: checkWritePermissions,
     onSnapshot: async (ctx, id, snapshot, version) => {
+      const parsedSnapshot =
+        typeof snapshot === "string"
+          ? (JSON.parse(snapshot) as ProseMirrorSnapshot)
+          : (snapshot as ProseMirrorSnapshot);
       // Update the document's updatedAt timestamp when content changes
       const document = await ctx.db.get(id as Id<"documents">);
       const userId = await getAuthUserId(ctx);
@@ -85,7 +90,7 @@ export const { getSnapshot, submitSnapshot, latestVersion, getSteps, submitSteps
           await ctx.db.insert("documentVersions", {
             documentId: id as Id<"documents">,
             version,
-            snapshot,
+            snapshot: parsedSnapshot,
             title: document.title,
             createdBy: userId,
           });

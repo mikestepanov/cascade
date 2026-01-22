@@ -14,16 +14,14 @@ export const Route = createFileRoute(
 });
 
 function TeamLayout() {
-  const { organizationId, orgSlug } = useOrganization();
+  const { orgSlug } = useOrganization();
   const { workspaceSlug, teamSlug } = Route.useParams();
 
   const workspace = useQuery(api.workspaces.getBySlug, {
-    organizationId: organizationId,
     slug: workspaceSlug,
   });
 
   const team = useQuery(api.teams.getBySlug, {
-    organizationId: organizationId,
     slug: teamSlug,
   });
 

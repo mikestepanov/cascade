@@ -67,17 +67,20 @@ export async function sendEmailNotification(
   }
 
   // Schedule email to be sent (using action)
-  await ctx.scheduler.runAfter(0, internal.email.notifications.sendNotificationEmail, {
-    to: user.email as string,
-    type,
-    actorName,
-    issueId: issue._id,
-    issueKey: issue.key,
-    issueTitle: issue.title,
-    issueType: issue.type,
-    issuePriority: issue.priority,
-    projectName: project.name,
-    dueDate: issue.dueDate,
-    commentText,
-  });
+  if (type === "mention" || type === "assigned" || type === "comment") {
+    await ctx.scheduler.runAfter(0, internal.email.notifications.sendNotificationEmail, {
+      to: user.email as string,
+      userId: user._id,
+      type,
+      actorName,
+      issueId: issue._id,
+      issueKey: issue.key,
+      issueTitle: issue.title,
+      issueType: issue.type,
+      issuePriority: issue.priority,
+      projectName: project.name,
+      dueDate: issue.dueDate,
+      commentText,
+    });
+  }
 }

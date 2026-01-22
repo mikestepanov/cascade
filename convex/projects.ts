@@ -382,7 +382,7 @@ export const updateProject = projectAdminMutation({
         actorId: ctx.userId,
         targetId: ctx.projectId,
         targetType: "projects",
-        metadata: updates,
+        metadata: updates as Record<string, string | number | boolean>,
       });
     }
 
@@ -487,7 +487,7 @@ export const updateWorkflow = projectAdminMutation({
         actorId: ctx.userId,
         targetId: ctx.projectId,
         targetType: "projects",
-        metadata: { workflowStates: args.workflowStates },
+        metadata: { workflowStates: JSON.stringify(args.workflowStates) },
       });
     }
   },
