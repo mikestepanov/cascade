@@ -273,11 +273,11 @@ export function GlobalSearch() {
     query.length >= 2 ? { query, limit, offset: documentOffset } : "skip",
   );
 
-  const issueResults = issueSearchResult?.results ?? [];
+  const issueResults = issueSearchResult?.page ?? [];
   const documentResults = documentSearchResult?.results ?? [];
   const issueTotal = issueSearchResult?.total ?? 0;
   const documentTotal = documentSearchResult?.total ?? 0;
-  const issueHasMore = issueSearchResult?.hasMore ?? false;
+  const issueHasMore = (issueSearchResult?.page?.length ?? 0) === limit;
   const documentHasMore = documentSearchResult?.hasMore ?? false;
 
   // Get filtered results based on active tab

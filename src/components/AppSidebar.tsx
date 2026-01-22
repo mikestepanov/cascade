@@ -88,6 +88,7 @@ export function AppSidebar() {
       const docId = await createDocument({
         title: "Untitled Document",
         isPublic: false,
+        organizationId,
       });
       navigate({
         to: ROUTES.documents.detail.path,

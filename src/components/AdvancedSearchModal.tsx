@@ -49,9 +49,9 @@ export function AdvancedSearchModal({
       : "skip",
   );
 
-  const results = searchResult?.results ?? [];
+  const results = searchResult?.page ?? [];
   const total = searchResult?.total ?? 0;
-  const hasMore = searchResult?.hasMore ?? false;
+  const hasMore = (searchResult?.page?.length ?? 0) === LIMIT;
 
   const handleSelectIssue = useCallback(
     (issueId: Id<"issues">) => {

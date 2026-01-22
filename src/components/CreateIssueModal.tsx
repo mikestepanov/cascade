@@ -171,9 +171,9 @@ export function CreateIssueModal({
         form.setFieldValue("priority", suggestions.priority as (typeof priorities)[number]);
       }
 
-      if (suggestions.labels && suggestions.labels.length > 0 && labels) {
+      if (suggestions.labels && (suggestions.labels as string[]).length > 0 && labels) {
         const suggestedLabelIds = labels
-          .filter((label: Doc<"labels">) => suggestions.labels.includes(label.name))
+          .filter((label: Doc<"labels">) => (suggestions.labels as string[]).includes(label.name))
           .map((label: Doc<"labels">) => label._id);
         setSelectedLabels((prev) => [...new Set([...prev, ...suggestedLabelIds])]);
       }

@@ -272,7 +272,10 @@ export function UserTypeManager() {
         profileIsActive,
       });
 
-      await upsertProfile(profileData);
+      await upsertProfile({
+        ...profileData,
+        hasEquity: profileData.hasEquity ?? false,
+      });
       showSuccess("User profile saved");
       setShowAssignModal(false);
       setSelectedUserId(null);

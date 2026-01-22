@@ -11,7 +11,7 @@ interface Activity {
   action: string;
   issueKey: string;
   projectName: string;
-  createdAt: number;
+  _creationTime: number;
 }
 
 interface RecentActivityProps {
@@ -105,7 +105,7 @@ export function RecentActivity({ activities }: RecentActivityProps) {
                     >
                       <span>{activity.projectName}</span>
                       <span>•</span>
-                      <span>{new Date(activity.createdAt).toLocaleDateString()}</span>
+                      <span>{new Date(activity._creationTime).toLocaleDateString()}</span>
                     </Flex>
                   </div>
                 </Flex>
