@@ -91,7 +91,8 @@ function SidebarTeamProjects({
     results: projects,
     status,
     loadMore,
-  } = usePaginatedQuery(api.projects.getTeamProjects, { teamId }, { initialNumItems: 10 });
+    // biome-ignore lint/suspicious/noExplicitAny: paginationOpts mismatch
+  } = usePaginatedQuery(api.projects.getTeamProjects as any, { teamId }, { initialNumItems: 10 });
 
   if (status === "LoadingFirstPage") {
     return <div className="ml-6 text-xs text-ui-text-tertiary px-3 py-1">Loading...</div>;

@@ -1,4 +1,5 @@
 import { api } from "@convex/_generated/api";
+import type { Id } from "@convex/_generated/dataModel";
 import { useMutation } from "convex/react";
 import { useState } from "react";
 import { showError, showSuccess } from "@/lib/toast";
@@ -14,9 +15,17 @@ interface ProjectWizardProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onComplete: (projectId: string) => void;
+  organizationId: Id<"organizations">;
+  workspaceId: Id<"workspaces">;
 }
 
-export function ProjectWizard({ open, onOpenChange, onComplete }: ProjectWizardProps) {
+export function ProjectWizard({
+  open,
+  onOpenChange,
+  onComplete,
+  organizationId,
+  workspaceId,
+}: ProjectWizardProps) {
   const [step, setStep] = useState(1);
   const [projectName, setProjectName] = useState("");
   const [projectKey, setProjectKey] = useState("");
@@ -66,6 +75,8 @@ export function ProjectWizard({ open, onOpenChange, onComplete }: ProjectWizardP
         isPublic: false,
         boardType,
         workflowStates,
+        organizationId,
+        workspaceId,
       });
 
       // Update onboarding status

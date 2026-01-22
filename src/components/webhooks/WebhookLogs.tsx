@@ -18,7 +18,8 @@ export function WebhookLogs({ webhookId, open, onOpenChange }: WebhookLogsProps)
   const [selectedExecution, setSelectedExecution] = useState<string | null>(null);
 
   const { results: executions } = usePaginatedQuery(
-    api.webhooks.listExecutions,
+    // biome-ignore lint/suspicious/noExplicitAny: paginationOpts mismatch
+    api.webhooks.listExecutions as any,
     { webhookId },
     { initialNumItems: 50 },
   );
@@ -100,17 +101,18 @@ export function WebhookLogs({ webhookId, open, onOpenChange }: WebhookLogsProps)
                   {/* Header */}
                   <Flex justify="between" align="center" className="mb-3">
                     <Flex gap="md" align="center">
-                      {getStatusBadge(execution.status)}
-                      <Typography variant="small">{execution.event}</Typography>
+                      {getStatusBadge(execution.status as string)}
+                      {/* biome-ignore lint/suspicious/noExplicitAny: missing property on Value type */}
+                      <Typography variant="small">{String((execution as any).event)}</Typography>
                       {execution.responseStatus && (
                         <Typography variant="muted" size="xs" color="secondary">
-                          HTTP {execution.responseStatus}
+                          HTTP {String(execution.responseStatus)}
                         </Typography>
                       )}
                     </Flex>
                     <Flex gap="md" align="center">
                       <Typography variant="muted" size="xs">
-                        {formatDate(execution.createdAt)}
+                        {formatDate(execution._creationTime)}
                       </Typography>
                       {execution.status === "failed" && (
                         <Button
@@ -139,15 +141,16 @@ export function WebhookLogs({ webhookId, open, onOpenChange }: WebhookLogsProps)
                   <div className="grid grid-cols-3 gap-4 mb-2">
                     <Typography variant="muted" size="xs">
                       <span className="font-medium text-ui-text-primary">Attempts:</span>{" "}
-                      {execution.attempts}
+                      {/* biome-ignore lint/suspicious/noExplicitAny: missing property on Value type */}
+                      {String((execution as any).attempts)}
                     </Typography>
                     <Typography variant="muted" size="xs">
                       <span className="font-medium text-ui-text-primary">Duration:</span>{" "}
-                      {formatDuration(execution.createdAt, execution.completedAt)}
+                      {formatDuration(execution._creationTime, execution.completedAt)}
                     </Typography>
                     <Typography variant="muted" size="xs">
                       <span className="font-medium text-ui-text-primary">Status:</span>{" "}
-                      {execution.status}
+                      {String(execution.status)}
                     </Typography>
                   </div>
 
@@ -156,7 +159,7 @@ export function WebhookLogs({ webhookId, open, onOpenChange }: WebhookLogsProps)
                     <div className="bg-status-error-bg border border-status-error/30 rounded p-3 mt-3">
                       <div className="text-xs font-medium text-status-error-text mb-1">Error:</div>
                       <div className="text-xs text-status-error-text/90 font-mono">
-                        {execution.error}
+                        {String(execution.error)}
                       </div>
                     </div>
                   )}
@@ -181,7 +184,8 @@ export function WebhookLogs({ webhookId, open, onOpenChange }: WebhookLogsProps)
                             Response Body:
                           </Typography>
                           <pre className="bg-ui-bg-secondary border border-ui-border-primary rounded p-3 text-xs overflow-x-auto max-h-48">
-                            {execution.responseBody}
+                            {/* biome-ignore lint/suspicious/noExplicitAny: missing property on Value type */}
+                            {String((execution as any).responseBody)}
                           </pre>
                         </div>
                       )}

@@ -14,7 +14,8 @@ interface Subtask {
   key: string;
   title: string;
   status: string;
-  assignee?: { name: string } | null;
+  assignee?: { name?: string | null; email?: string } | null;
+  [key: string]: unknown;
 }
 
 interface SubtasksListProps {

@@ -18,7 +18,7 @@ import { Typography } from "../ui/Typography";
 interface AttendanceParticipant {
   userId: string;
   userName?: string;
-  status: "present" | "tardy" | "absent";
+  status?: "present" | "tardy" | "absent";
 }
 
 interface EventDetailsModalProps {

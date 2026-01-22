@@ -24,7 +24,7 @@ export function SampleProjectModal({
 
   const handleCreateSample = async () => {
     try {
-      const projectId = await createSampleProject();
+      const projectId = await createSampleProject({});
       showSuccess("Sample project created! Let's take a quick tour.");
       onCreateSampleProject(projectId as Id<"projects">);
     } catch (error) {

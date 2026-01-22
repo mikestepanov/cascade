@@ -31,7 +31,7 @@ export function TimeTrackingPage({ projectId, userRole, isGlobalAdmin }: TimeTra
   const { billingEnabled } = useOrganization();
 
   // Only fetch projects list if no projectId is locked
-  const projects = useQuery(api.projects.getCurrentUserProjects, projectId ? "skip" : undefined);
+  const projects = useQuery(api.projects.getCurrentUserProjects, projectId ? "skip" : {});
 
   // Determine if user can see sensitive tabs (burn rate, hourly rates)
   const canSeeSensitiveTabs = isGlobalAdmin || userRole === "admin";

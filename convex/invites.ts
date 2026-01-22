@@ -630,6 +630,7 @@ export const listUsers = authenticatedQuery({
   returns: v.array(
     v.object({
       _id: v.id("users"),
+      _creationTime: v.number(),
       name: v.string(),
       email: v.optional(v.string()),
       image: v.optional(v.string()),
@@ -689,6 +690,7 @@ export const listUsers = authenticatedQuery({
     // Enrich with pre-fetched data (no N+1 - all fetches are parallel)
     const usersWithInfo = users.map((user) => ({
       _id: user._id,
+      _creationTime: user._creationTime,
       name: user.name ?? user.email ?? "Unknown User",
       email: user.email,
       image: user.image,

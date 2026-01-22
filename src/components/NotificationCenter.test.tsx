@@ -156,7 +156,7 @@ describe("NotificationCenter", () => {
         title: "Issue assigned",
         message: "You were assigned to TEST-123",
         isRead: false,
-        createdAt: Date.now(),
+        _creationTime: Date.now(),
       },
       {
         _id: "2",
@@ -164,7 +164,7 @@ describe("NotificationCenter", () => {
         title: "New comment",
         message: "Someone commented on your issue",
         isRead: true,
-        createdAt: Date.now() - 3600000,
+        _creationTime: Date.now() - 3600000,
       },
     ];
 
@@ -196,7 +196,7 @@ describe("NotificationCenter", () => {
         title: "Unread",
         message: "Test",
         isRead: false,
-        createdAt: Date.now(),
+        _creationTime: Date.now(),
       },
     ];
 
@@ -229,7 +229,7 @@ describe("NotificationCenter", () => {
         title: "Test",
         message: "Message",
         isRead: false,
-        createdAt: Date.now(),
+        _creationTime: Date.now(),
       },
     ];
 
@@ -264,7 +264,7 @@ describe("NotificationCenter", () => {
         title: "Test",
         message: "Message",
         isRead: false,
-        createdAt: Date.now(),
+        _creationTime: Date.now(),
       },
     ];
 
@@ -299,7 +299,7 @@ describe("NotificationCenter", () => {
         title: "Test",
         message: "Message",
         isRead: true,
-        createdAt: Date.now(),
+        _creationTime: Date.now(),
       },
     ];
 
@@ -335,7 +335,7 @@ describe("NotificationCenter", () => {
         title: "Notification 1",
         message: "Test",
         isRead: false,
-        createdAt: now,
+        _creationTime: now,
       },
       {
         _id: "2",
@@ -343,7 +343,7 @@ describe("NotificationCenter", () => {
         title: "Notification 2",
         message: "Test",
         isRead: false,
-        createdAt: now - 5 * 60 * 1000, // 5 minutes
+        _creationTime: now - 5 * 60 * 1000, // 5 minutes
       },
       {
         _id: "3",
@@ -351,7 +351,7 @@ describe("NotificationCenter", () => {
         title: "Notification 3",
         message: "Test",
         isRead: false,
-        createdAt: now - 2 * 60 * 60 * 1000, // 2 hours
+        _creationTime: now - 2 * 60 * 60 * 1000, // 2 hours
       },
     ];
 
@@ -386,7 +386,7 @@ describe("NotificationCenter", () => {
         title: "Assigned",
         message: "Test",
         isRead: false,
-        createdAt: Date.now(),
+        _creationTime: Date.now(),
       },
       {
         _id: "2",
@@ -394,7 +394,7 @@ describe("NotificationCenter", () => {
         title: "Sprint",
         message: "Test",
         isRead: false,
-        createdAt: Date.now(),
+        _creationTime: Date.now(),
       },
     ];
 

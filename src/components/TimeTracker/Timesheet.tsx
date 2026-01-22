@@ -60,7 +60,7 @@ export function Timesheet() {
     if (!confirm("Delete this time entry?")) return;
 
     try {
-      await deleteEntry({ id: entryId });
+      await deleteEntry({ entryId });
       toast.success("Time entry deleted");
     } catch (_error) {
       toast.error("Failed to delete entry");
@@ -68,7 +68,8 @@ export function Timesheet() {
   };
 
   const weekDays = getDaysOfWeek();
-  const billableRevenue = timesheet.entries
+  const billableRevenue = Object.values(timesheet.byDay)
+    .flat()
     .filter((e: TimeEntryWithHours) => e.billable && e.hourlyRate)
     .reduce((sum: number, e: TimeEntryWithHours) => sum + e.hours * (e.hourlyRate ?? 0), 0);
 

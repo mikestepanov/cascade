@@ -119,7 +119,7 @@ export function ManualTimeEntryModal({
   issueId: initialIssueId,
 }: ManualTimeEntryModalProps) {
   const createTimeEntry = useMutation(api.timeTracking.createTimeEntry);
-  const projects = useQuery(api.projects.getCurrentUserProjects);
+  const projects = useQuery(api.projects.getCurrentUserProjects, {});
 
   // Mode and derived state (kept outside form due to complexity)
   const [entryMode, setEntryMode] = useState<EntryMode>("duration");

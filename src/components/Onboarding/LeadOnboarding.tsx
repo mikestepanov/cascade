@@ -64,7 +64,7 @@ export function LeadOnboarding({
   const handleCreateSample = async () => {
     setIsCreating(true);
     try {
-      const projectId = await createSampleProject();
+      const projectId = await createSampleProject({});
       await completeOnboarding();
       showSuccess("Sample project created! Explore and customize it.");
 

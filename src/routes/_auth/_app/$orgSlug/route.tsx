@@ -30,101 +30,91 @@ export const Route = createFileRoute("/_auth/_app/$orgSlug")({
   ssr: false, // Disable SSR to prevent hydration issues with OrgContext
 });
 
-function OrganizationLayout() {
-  const { orgSlug } = Route.useParams();
-  const { isLoading: isAuthLoading, isAuthenticated } = useConvexAuth();
+function OrgLoading() {
+  return (
+    <Flex align="center" justify="center" className="min-h-screen bg-ui-bg-secondary">
+      <LoadingSpinner size="lg" />
+    </Flex>
+  );
+}
 
-  // Skip queries until auth is ready - this prevents queries from running during auth hydration
+function OrgError({ title, message }: { title: string; message: string }) {
+  return (
+    <Flex align="center" justify="center" className="min-h-screen bg-ui-bg-secondary p-4">
+      <div className="text-center">
+        <Typography variant="h2" className="text-xl font-medium mb-2">
+          {title}
+        </Typography>
+        <Typography variant="p" color="secondary">
+          {message}
+        </Typography>
+      </div>
+    </Flex>
+  );
+}
+
+function useStableOrgData(isAuthenticated: boolean, orgSlug: string) {
   const userOrganizations = useQuery(
     api.organizations.getUserOrganizations,
     isAuthenticated ? undefined : "skip",
   ) as UserOrganization[] | undefined;
 
-  // Cache strict userOrganizations data
-  const [stableUserOrganizations, setStableUserOrganizations] = useState(userOrganizations);
-  if (userOrganizations !== undefined && userOrganizations !== stableUserOrganizations) {
-    setStableUserOrganizations(userOrganizations);
+  const [stableUserOrgs, setStableUserOrgs] = useState(userOrganizations);
+  if (userOrganizations !== undefined && userOrganizations !== stableUserOrgs) {
+    setStableUserOrgs(userOrganizations);
   }
 
-  // Fetch organization by slug - also skip until authenticated
   const organization = useQuery(
     api.organizations.getOrganizationBySlug,
     isAuthenticated ? { slug: orgSlug } : "skip",
   );
 
-  // Cache strict organization data to prevent unmounting during auth refreshes
-  const [stableOrganization, setStableOrganization] = useState(organization);
-  if (organization !== undefined && organization !== stableOrganization) {
-    setStableOrganization(organization);
+  const [stableOrg, setStableOrg] = useState(organization);
+  if (organization !== undefined && organization !== stableOrg) {
+    setStableOrg(organization);
   }
 
-  // Loading state - wait for auth AND queries
-  // But if we have stable data, keep rendering to avoid UI flicker/input loss
-  const effectiveOrg = organization ?? stableOrganization;
-  const effectiveUserOrgs = userOrganizations ?? stableUserOrganizations;
+  return {
+    organization: organization ?? stableOrg,
+    userOrgs: userOrganizations ?? stableUserOrgs,
+  };
+}
 
-  if (
-    (isAuthLoading && !effectiveOrg) ||
-    effectiveOrg === undefined ||
-    effectiveUserOrgs === undefined
-  ) {
+function OrganizationLayout() {
+  const { orgSlug } = Route.useParams();
+  const { isLoading: isAuthLoading, isAuthenticated } = useConvexAuth();
+
+  const { organization, userOrgs } = useStableOrgData(isAuthenticated, orgSlug);
+
+  if ((isAuthLoading && !organization) || organization === undefined || userOrgs === undefined) {
+    return <OrgLoading />;
+  }
+
+  if (!(isAuthenticated || organization)) {
+    return <OrgLoading />;
+  }
+
+  if (organization === null) {
     return (
-      <Flex align="center" justify="center" className="min-h-screen bg-ui-bg-secondary">
-        <LoadingSpinner size="lg" />
-      </Flex>
+      <OrgError
+        title="organization not found"
+        message={`The organization "${orgSlug}" does not exist.`}
+      />
     );
   }
 
-  // Not authenticated - parent _auth route should handle this, but just in case
-  // If we have stable data (effectiveOrg), keep rendering to prevent flicker/unmount
-  if (!(isAuthenticated || effectiveOrg)) {
-    return (
-      <Flex align="center" justify="center" className="min-h-screen bg-ui-bg-secondary">
-        <LoadingSpinner size="lg" />
-      </Flex>
-    );
-  }
-
-  // organization not found
-  if (effectiveOrg === null) {
-    return (
-      <Flex align="center" justify="center" className="min-h-screen bg-ui-bg-secondary p-4">
-        <div className="text-center">
-          <Typography variant="h2" className="text-xl font-medium mb-2">
-            organization not found
-          </Typography>
-          <Typography variant="p" color="secondary">
-            The organization "{orgSlug}" does not exist.
-          </Typography>
-        </div>
-      </Flex>
-    );
-  }
-
-  // Check if user has access to this organization
-  const userOrganization = effectiveUserOrgs?.find((c) => c._id === effectiveOrg._id);
+  const userOrganization = userOrgs?.find((c) => c._id === organization._id);
 
   if (!userOrganization) {
-    return (
-      <Flex align="center" justify="center" className="min-h-screen bg-ui-bg-secondary p-4">
-        <div className="text-center">
-          <Typography variant="h2" className="text-xl font-medium mb-2">
-            Access denied
-          </Typography>
-          <Typography variant="p" color="secondary">
-            You don't have access to this organization.
-          </Typography>
-        </div>
-      </Flex>
-    );
+    return <OrgError title="Access denied" message="You don't have access to this organization." />;
   }
 
   const orgContextValue: OrgContextType = {
-    organizationId: effectiveOrg._id,
-    orgSlug: effectiveOrg.slug,
-    organizationName: effectiveOrg.name,
-    userRole: userOrganization.userRole,
-    billingEnabled: effectiveOrg.settings.billingEnabled,
+    organizationId: organization._id,
+    orgSlug: organization.slug,
+    organizationName: organization.name,
+    userRole: userOrganization.userRole ?? "member",
+    billingEnabled: organization.settings.billingEnabled,
   };
 
   return (

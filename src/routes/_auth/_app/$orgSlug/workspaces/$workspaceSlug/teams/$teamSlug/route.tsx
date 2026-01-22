@@ -14,16 +14,23 @@ export const Route = createFileRoute(
 });
 
 function TeamLayout() {
-  const { orgSlug } = useOrganization();
+  const { organizationId, orgSlug } = useOrganization();
   const { workspaceSlug, teamSlug } = Route.useParams();
 
   const workspace = useQuery(api.workspaces.getBySlug, {
+    organizationId,
     slug: workspaceSlug,
   });
 
-  const team = useQuery(api.teams.getBySlug, {
-    slug: teamSlug,
-  });
+  const team = useQuery(
+    api.teams.getBySlug,
+    workspace?._id
+      ? {
+          workspaceId: workspace._id,
+          slug: teamSlug,
+        }
+      : "skip",
+  );
 
   if (workspace === undefined || team === undefined) {
     return (

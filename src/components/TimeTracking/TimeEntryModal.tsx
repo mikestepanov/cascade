@@ -317,7 +317,7 @@ export function TimeEntryModal({
 }: TimeEntryModalProps) {
   const createTimeEntry = useMutation(api.timeTracking.createTimeEntry);
   const startTimerMutation = useMutation(api.timeTracking.startTimer);
-  const projects = useQuery(api.projects.getCurrentUserProjects);
+  const projects = useQuery(api.projects.getCurrentUserProjects, {});
 
   const { state, actions, computed } = useTimeEntryForm({
     initialProjectId,

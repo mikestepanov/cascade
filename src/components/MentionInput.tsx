@@ -1,5 +1,5 @@
 import { api } from "@convex/_generated/api";
-import type { Doc, Id } from "@convex/_generated/dataModel";
+import type { Id } from "@convex/_generated/dataModel";
 import { useQuery } from "convex/react";
 import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
@@ -33,8 +33,8 @@ export function MentionInput({
 
   // Filter members based on mention search
   const filteredMembers =
-    members?.filter((member: Doc<"users">) =>
-      (member.name || "").toLowerCase().includes(mentionSearch.toLowerCase()),
+    members?.filter((member) =>
+      (member.userName || "").toLowerCase().includes(mentionSearch.toLowerCase()),
     ) || [];
 
   useEffect(() => {
@@ -125,7 +125,7 @@ export function MentionInput({
         e.preventDefault();
         const selectedMember = filteredMembers[selectedIndex];
         if (selectedMember) {
-          insertMention(selectedMember.name || "Unknown", selectedMember._id);
+          insertMention(selectedMember.userName || "Unknown", selectedMember.userId);
         }
         break;
       }
@@ -183,23 +183,23 @@ export function MentionInput({
       {/* Mention Suggestions Dropdown */}
       {showSuggestions && filteredMembers.length > 0 && (
         <div className="absolute bottom-full left-0 mb-2 w-64 bg-ui-bg-primary border border-ui-border-primary rounded-lg shadow-lg max-h-48 overflow-y-auto z-50">
-          {filteredMembers.map((member: Doc<"users"> & { userName: string }, index: number) => (
+          {filteredMembers.map((member, index: number) => (
             <button
               type="button"
               key={member._id}
-              onClick={() => insertMention(member.name || "Unknown", member._id)}
+              onClick={() => insertMention(member.userName || "Unknown", member.userId)}
               className={cn(
                 "w-full px-4 py-2 text-left hover:bg-ui-bg-tertiary flex items-center gap-3",
                 index === selectedIndex && "bg-ui-bg-tertiary",
               )}
             >
               {/* Avatar */}
-              <Avatar name={member.name} size="md" />
+              <Avatar name={member.userName} size="md" />
 
               {/* User Info */}
               <div className="flex-1 min-w-0">
                 <Typography variant="p" className="font-medium truncate">
-                  {member.name}
+                  {member.userName}
                 </Typography>
                 <Typography variant="muted" size="xs" className="capitalize">
                   User

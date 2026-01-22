@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Example: Assignee Search Dropdown with Fuzzy Matching
  *

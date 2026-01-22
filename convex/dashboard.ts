@@ -23,7 +23,7 @@ import { projectRoles } from "./validators";
 
 // Get all issues assigned to the current user across all projects
 export const getMyIssues = authenticatedQuery({
-  args: { paginationOpts: v.optional(paginationOptsValidator) }, // Pagination args
+  args: { paginationOpts: paginationOptsValidator }, // Pagination args
   returns: v.object({
     page: v.array(
       v.object({

@@ -28,7 +28,8 @@ export function useBoardDragAndDrop({
   const [draggedIssue, setDraggedIssue] = useState<Id<"issues"> | null>(null);
 
   const updateIssueStatus = useMutation(api.issues.updateStatus).withOptimisticUpdate(
-    optimisticBoardUpdate(boardOptions, isTeamMode),
+    // biome-ignore lint/suspicious/noExplicitAny: hook return type mismatch
+    optimisticBoardUpdate(boardOptions, isTeamMode) as any,
   );
 
   const updateStatusByCategory = useMutation(api.issues.updateStatusByCategory);

@@ -87,9 +87,14 @@ export const optimisticBoardUpdate =
       doneColumnDays?: number;
     },
     isTeamMode = false,
-  ): OptimisticUpdate<typeof api.issues.updateStatus> =>
+    // biome-ignore lint/suspicious/noExplicitAny: OptimisticUpdate type is overly restrictive for complex state
+  ): OptimisticUpdate<any> =>
   (localStore, args) => {
-    const { issueId, newStatus, newOrder } = args;
+    const { issueId, newStatus, newOrder } = args as unknown as {
+      issueId: Id<"issues">;
+      newStatus: string;
+      newOrder: number;
+    };
     const now = Date.now();
 
     updateSingleIssue(localStore, issueId, newStatus, newOrder, now);

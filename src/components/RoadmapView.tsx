@@ -77,7 +77,7 @@ export function RoadmapView({ projectId, sprintId, canEdit = true }: RoadmapView
   // Keyboard navigation
   const listRef = useRef<ListImperativeAPI>(null);
   const { selectedIndex } = useListNavigation({
-    items: filteredIssues,
+    items: filteredIssues ?? [],
     onSelect: (issue: RoadmapIssue) => setSelectedIssue(issue._id),
   });
 
@@ -104,6 +104,7 @@ export function RoadmapView({ projectId, sprintId, canEdit = true }: RoadmapView
       index: number;
       style: React.CSSProperties;
     }) => {
+      if (!issues) return null;
       const issue = issues[index];
       const isSelected = index === selectedIndex;
 

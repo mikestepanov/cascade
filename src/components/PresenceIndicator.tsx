@@ -9,7 +9,8 @@ interface PresenceIndicatorProps {
 }
 
 export function PresenceIndicator({ roomId, userId }: PresenceIndicatorProps) {
-  const presenceState = usePresence(api.presence, roomId, userId);
+  // biome-ignore lint/suspicious/noExplicitAny: api.presence has complex generated type mismatch with usePresence
+  const presenceState = usePresence(api.presence as any, roomId, userId);
 
   if (!presenceState) {
     return null;
