@@ -680,7 +680,7 @@ export const listByProjectSmart = projectQuery({
   },
   handler: async (ctx, args) => {
     // ctx.userId provided by projectQuery wrapper
-    const doneThreshold = getDoneColumnThreshold(args.doneColumnDays);
+    const doneThreshold = getDoneColumnThreshold(Date.now(), args.doneColumnDays);
 
     const workflowStates = ctx.project.workflowStates;
     const issuesByColumn: Record<string, Doc<"issues">[]> = {};
@@ -737,10 +737,23 @@ export const listByProjectSmart = projectQuery({
       }),
     );
 
-    // Enrich all issues by status
+    // Optimize: Batch enrichment for all issues at once
+    const allIssues: Doc<"issues">[] = [];
+    const meta: { statusId: string; count: number }[] = [];
+
+    for (const state of workflowStates) {
+      const issues = issuesByColumn[state.id] || [];
+      allIssues.push(...issues);
+      meta.push({ statusId: state.id, count: issues.length });
+    }
+
+    const enrichedAll = await enrichIssues(ctx, allIssues);
+
     const enrichedIssuesByStatus: Record<string, EnrichedIssue[]> = {};
-    for (const [statusId, issues] of Object.entries(issuesByColumn)) {
-      enrichedIssuesByStatus[statusId] = await enrichIssues(ctx, issues);
+    let offset = 0;
+    for (const { statusId, count } of meta) {
+      enrichedIssuesByStatus[statusId] = enrichedAll.slice(offset, offset + count);
+      offset += count;
     }
 
     return {
@@ -890,7 +903,7 @@ export const getIssueCounts = authenticatedQuery({
     const hasAccess = await canAccessProject(ctx, args.projectId, ctx.userId);
     if (!hasAccess) return null;
 
-    const doneThreshold = getDoneColumnThreshold(args.doneColumnDays);
+    const doneThreshold = getDoneColumnThreshold(Date.now(), args.doneColumnDays);
     const counts: Record<string, { total: number; visible: number; hidden: number }> = {};
 
     const addCounts = (
