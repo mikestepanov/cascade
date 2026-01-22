@@ -47,7 +47,7 @@ describe("Teams", () => {
           name: "Hacker Team",
           isPrivate: false,
         });
-      }).rejects.toThrow("You must be an organization member to create a team");
+      }).rejects.toThrow("You must be an organization member to perform this action");
 
       await t.finishInProgressScheduledFunctions();
     });

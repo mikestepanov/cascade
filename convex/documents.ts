@@ -18,6 +18,9 @@ export const create = authenticatedMutation({
   args: {
     title: v.string(),
     isPublic: v.boolean(),
+    organizationId: v.id("organizations"),
+    workspaceId: v.optional(v.id("workspaces")),
+    projectId: v.optional(v.id("projects")),
   },
   handler: async (ctx, args) => {
     const now = Date.now();
@@ -26,6 +29,9 @@ export const create = authenticatedMutation({
       isPublic: args.isPublic,
       createdBy: ctx.userId,
       updatedAt: now,
+      organizationId: args.organizationId,
+      workspaceId: args.workspaceId,
+      projectId: args.projectId,
     });
   },
 });

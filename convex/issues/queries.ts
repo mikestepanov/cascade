@@ -680,7 +680,7 @@ export const listByProjectSmart = projectQuery({
   },
   handler: async (ctx, args) => {
     // ctx.userId provided by projectQuery wrapper
-    const doneThreshold = getDoneColumnThreshold(args.doneColumnDays);
+    const doneThreshold = getDoneColumnThreshold(Date.now(), args.doneColumnDays);
 
     const workflowStates = ctx.project.workflowStates;
     const issuesByColumn: Record<string, Doc<"issues">[]> = {};
@@ -779,7 +779,7 @@ export const listByTeamSmart = authenticatedQuery({
       { id: "done", name: "Done", category: "done", order: 2 },
     ];
 
-    const doneThreshold = getDoneColumnThreshold(args.doneColumnDays);
+    const doneThreshold = getDoneColumnThreshold(Date.now(), args.doneColumnDays);
     const issuesByColumn: Record<string, Doc<"issues">[]> = {};
 
     await Promise.all(
@@ -824,7 +824,7 @@ export const getTeamIssueCounts = authenticatedQuery({
       { id: "done", name: "Done", category: "done", order: 2 },
     ];
 
-    const doneThreshold = getDoneColumnThreshold(args.doneColumnDays);
+    const doneThreshold = getDoneColumnThreshold(Date.now(), args.doneColumnDays);
     const counts: Record<string, { total: number; visible: number; hidden: number }> = {};
 
     await Promise.all(
@@ -890,7 +890,7 @@ export const getIssueCounts = authenticatedQuery({
     const hasAccess = await canAccessProject(ctx, args.projectId, ctx.userId);
     if (!hasAccess) return null;
 
-    const doneThreshold = getDoneColumnThreshold(args.doneColumnDays);
+    const doneThreshold = getDoneColumnThreshold(Date.now(), args.doneColumnDays);
     const counts: Record<string, { total: number; visible: number; hidden: number }> = {};
 
     const addCounts = (
