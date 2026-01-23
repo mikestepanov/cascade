@@ -52,7 +52,7 @@ export function AppSidebar() {
   } | null>(null);
 
   // Data
-  const documentsResult = useQuery(api.documents.list, { limit: 11 });
+  const documentsResult = useQuery(api.documents.list, { limit: 11, organizationId });
   const documents = documentsResult?.documents;
   const workspaces = useQuery(api.workspaces.list, { organizationId });
   const teams = useQuery(api.teams.getOrganizationTeams, { organizationId });

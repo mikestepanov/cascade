@@ -52,6 +52,7 @@ export const list = authenticatedQuery({
   args: {
     limit: v.optional(v.number()),
     cursor: v.optional(v.string()),
+    organizationId: v.optional(v.id("organizations")),
   },
   handler: async (ctx, args) => {
     // Cap limit to prevent abuse
@@ -63,21 +64,51 @@ export const list = authenticatedQuery({
     const fetchBuffer = limit * FETCH_BUFFER_MULTIPLIER;
 
     // Get user's private documents (their own non-public docs)
-    const privateDocuments = await ctx.db
+    // If organizationId is provided, filter by it
+    let privateDocumentsQuery = ctx.db
       .query("documents")
       .withIndex("by_creator", (q) => q.eq("createdBy", ctx.userId))
-      .filter((q) => q.eq(q.field("isPublic"), false))
+      .filter((q) => q.eq(q.field("isPublic"), false));
+
+    if (args.organizationId) {
+      privateDocumentsQuery = privateDocumentsQuery.filter((q) =>
+        q.eq(q.field("organizationId"), args.organizationId),
+      );
+    }
+
+    const privateDocuments = await privateDocumentsQuery
       .order("desc")
       .filter(notDeleted)
       .take(fetchBuffer);
 
-    // Get public documents (any user's public docs)
-    const publicDocuments = await ctx.db
-      .query("documents")
-      .withIndex("by_public", (q) => q.eq("isPublic", true))
-      .order("desc")
-      .filter(notDeleted)
-      .take(fetchBuffer);
+    // Get public documents (must be scoped to organization)
+    let publicDocuments: typeof privateDocuments = [];
+
+    if (args.organizationId) {
+      // If organizationId is provided, first verify user is a member
+      const membership = await ctx.db
+        .query("organizationMembers")
+        .withIndex("by_organization_user", (q) =>
+          q.eq("organizationId", args.organizationId!).eq("userId", ctx.userId),
+        )
+        .first();
+
+      if (membership) {
+        // Efficiently fetch public docs for that org
+        publicDocuments = await ctx.db
+          .query("documents")
+          .withIndex("by_organization_public", (q) =>
+            q.eq("organizationId", args.organizationId!).eq("isPublic", true),
+          )
+          .order("desc")
+          .filter(notDeleted)
+          .take(fetchBuffer);
+      }
+    } else {
+      // If no organizationId, we DO NOT return any public documents to prevent cross-tenant leaks.
+      // Users must be in an organization context to see shared documents.
+      publicDocuments = [];
+    }
 
     // Combine and deduplicate (user's public docs appear in both queries)
     const seenIds = new Set<string>();
@@ -131,8 +162,24 @@ export const get = authenticatedQuery({
     }
 
     // Check if user can access this document
-    if (!document.isPublic && document.createdBy !== ctx.userId) {
-      throw forbidden(undefined, "Not authorized to access this document");
+    const isCreator = document.createdBy === ctx.userId;
+
+    if (!isCreator) {
+      if (!document.isPublic) {
+        throw forbidden(undefined, "Not authorized to access this document");
+      }
+
+      // If public, user MUST be a member of the organization
+      const membership = await ctx.db
+        .query("organizationMembers")
+        .withIndex("by_organization_user", (q) =>
+          q.eq("organizationId", document.organizationId).eq("userId", ctx.userId),
+        )
+        .first();
+
+      if (!membership) {
+        throw forbidden(undefined, "You are not a member of this organization");
+      }
     }
 
     const creator = await ctx.db.get(document.createdBy);
@@ -235,10 +282,12 @@ function matchesDocumentFilters(
     isPublic: boolean;
     createdBy: Id<"users">;
     projectId?: Id<"projects">;
+    organizationId: Id<"organizations">;
     _creationTime: number;
   },
   filters: {
     projectId?: Id<"projects">;
+    organizationId?: Id<"organizations">;
     createdBy?: Id<"users"> | "me";
     isPublic?: boolean;
     dateFrom?: number;
@@ -248,6 +297,11 @@ function matchesDocumentFilters(
 ): boolean {
   // Apply project filter
   if (filters.projectId && doc.projectId !== filters.projectId) {
+    return false;
+  }
+
+  // Apply organization filter
+  if (filters.organizationId && doc.organizationId !== filters.organizationId) {
     return false;
   }
 
@@ -283,6 +337,7 @@ export const search = authenticatedQuery({
     limit: v.optional(v.number()),
     offset: v.optional(v.number()),
     projectId: v.optional(v.id("projects")),
+    organizationId: v.optional(v.id("organizations")),
     createdBy: v.optional(v.union(v.id("users"), v.literal("me"))),
     isPublic: v.optional(v.boolean()),
     dateFrom: v.optional(v.number()),
@@ -307,11 +362,27 @@ export const search = authenticatedQuery({
       .filter(notDeleted)
       .take(fetchLimit);
 
+    // Get user's organization memberships for validation
+    const memberships = await ctx.db
+      .query("organizationMembers")
+      .withIndex("by_user", (q) => q.eq("userId", ctx.userId))
+      .collect();
+    const myOrgIds = new Set(memberships.map((m) => m.organizationId));
+
     // Filter results based on access permissions and advanced filters
     const filtered = [];
     for (const doc of results) {
       // Check access permissions
-      if (!doc.isPublic && doc.createdBy !== ctx.userId) {
+      const isCreator = doc.createdBy === ctx.userId;
+
+      if (!isCreator) {
+        if (!doc.isPublic) continue;
+        // If public, must be in my organizations
+        if (!myOrgIds.has(doc.organizationId)) continue;
+      }
+
+      // If organizationId filter is provided, enforce it
+      if (args.organizationId && doc.organizationId !== args.organizationId) {
         continue;
       }
 
