@@ -10,8 +10,8 @@
 
 import type * as OTPPasswordReset from "../OTPPasswordReset.js";
 import type * as OTPVerification from "../OTPVerification.js";
-import type * as ai from "../ai.js";
 import type * as ai_actions from "../ai/actions.js";
+import type * as ai_chat from "../ai/chat.js";
 import type * as ai_config from "../ai/config.js";
 import type * as ai_mutations from "../ai/mutations.js";
 import type * as ai_providers from "../ai/providers.js";
@@ -19,8 +19,8 @@ import type * as ai_queries from "../ai/queries.js";
 import type * as ai_semanticSearch from "../ai/semanticSearch.js";
 import type * as ai_suggestions from "../ai/suggestions.js";
 import type * as analytics from "../analytics.js";
-import type * as apiKeys from "../apiKeys.js";
 import type * as api_issues from "../api/issues.js";
+import type * as apiKeys from "../apiKeys.js";
 import type * as attachments from "../attachments.js";
 import type * as auditLogs from "../auditLogs.js";
 import type * as auth from "../auth.js";
@@ -135,8 +135,8 @@ import type {
 declare const fullApi: ApiFromModules<{
   OTPPasswordReset: typeof OTPPasswordReset;
   OTPVerification: typeof OTPVerification;
-  ai: typeof ai;
   "ai/actions": typeof ai_actions;
+  "ai/chat": typeof ai_chat;
   "ai/config": typeof ai_config;
   "ai/mutations": typeof ai_mutations;
   "ai/providers": typeof ai_providers;
@@ -144,8 +144,8 @@ declare const fullApi: ApiFromModules<{
   "ai/semanticSearch": typeof ai_semanticSearch;
   "ai/suggestions": typeof ai_suggestions;
   analytics: typeof analytics;
-  apiKeys: typeof apiKeys;
   "api/issues": typeof api_issues;
+  apiKeys: typeof apiKeys;
   attachments: typeof attachments;
   auditLogs: typeof auditLogs;
   auth: typeof auth;

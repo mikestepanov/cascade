@@ -5,9 +5,10 @@
  */
 
 import { anthropic } from "@ai-sdk/anthropic";
+import { getAuthUserId } from "@convex-dev/auth/server";
 import { generateText } from "ai";
 import { v } from "convex/values";
-import { internal } from "../_generated/api";
+import { api, internal } from "../_generated/api";
 import type { Id } from "../_generated/dataModel";
 import { action, internalAction } from "../_generated/server";
 import { extractUsage } from "../lib/aiHelpers";
@@ -78,27 +79,27 @@ export const chat = action({
     message: v.string(),
   },
   handler: async (ctx, args): Promise<{ chatId: Id<"aiChats">; message: string }> => {
-    const userId = await ctx.auth.getUserIdentity();
+    const userId = await getAuthUserId(ctx);
     if (!userId) {
       throw unauthenticated();
     }
 
     // Rate limit: 10 messages per minute per user
     await rateLimit(ctx, "aiChat", {
-      key: userId.subject,
+      key: userId,
       throws: true,
     });
 
     // Create or get chat
     const chatId: Id<"aiChats"> =
       args.chatId ??
-      (await ctx.runMutation(internal.ai.mutations.createChat, {
+      (await ctx.runMutation(api.ai.mutations.createChat, {
         projectId: args.projectId,
         title: args.message.slice(0, 100), // First 100 chars as title
       }));
 
     // Store user message
-    await ctx.runMutation(internal.ai.mutations.addMessage, {
+    await ctx.runMutation(api.ai.mutations.addMessage, {
       chatId,
       role: "user",
       content: args.message,
@@ -140,7 +141,7 @@ Be concise, helpful, and professional.`;
     const usage = extractUsage(response.usage);
 
     // Store AI response
-    await ctx.runMutation(internal.ai.mutations.addMessage, {
+    await ctx.runMutation(api.ai.mutations.addMessage, {
       chatId,
       role: "assistant",
       content: response.text,
@@ -149,7 +150,7 @@ Be concise, helpful, and professional.`;
     });
 
     // Track usage
-    await ctx.runMutation(internal.ai.mutations.trackUsage, {
+    await ctx.runMutation(api.ai.mutations.trackUsage, {
       projectId: args.projectId,
       provider: "anthropic",
       model: CLAUDE_OPUS,
