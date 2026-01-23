@@ -152,9 +152,8 @@ Description:`;
     // Store suggestion
     await ctx.runMutation(
       // biome-ignore lint/suspicious/noExplicitAny: API type workaround
-      (internal as any)["ai/suggestions"].storeSuggestion,
+      (internal as any)["ai/mutations"].createSuggestion,
       {
-        userId: userId.subject,
         projectId: args.projectId,
         suggestionType: "issue_description",
         targetId: args.title,
@@ -249,9 +248,8 @@ Priority:`;
     // Store suggestion
     await ctx.runMutation(
       // biome-ignore lint/suspicious/noExplicitAny: API type workaround
-      (internal as any)["ai/suggestions"].storeSuggestion,
+      (internal as any)["ai/mutations"].createSuggestion,
       {
-        userId: userId.subject,
         projectId: args.projectId,
         suggestionType: "issue_priority",
         targetId: args.title,
@@ -263,9 +261,8 @@ Priority:`;
     // Track usage
     await ctx.runMutation(
       // biome-ignore lint/suspicious/noExplicitAny: API type workaround
-      (internal as any)["internal/ai"].trackUsage,
+      (internal as any)["ai/mutations"].trackUsage,
       {
-        userId: userId.subject,
         projectId: args.projectId,
         provider: "anthropic",
         model: CLAUDE_HAIKU,
@@ -357,9 +354,8 @@ Labels:`;
     // Store suggestion
     await ctx.runMutation(
       // biome-ignore lint/suspicious/noExplicitAny: API type workaround
-      (internal as any)["ai/suggestions"].storeSuggestion,
+      (internal as any)["ai/mutations"].createSuggestion,
       {
-        userId: userId.subject,
         projectId: args.projectId,
         suggestionType: "issue_labels",
         targetId: args.title,
@@ -404,50 +400,6 @@ export const getProjectLabels = query({
       .collect();
 
     return labels.map((label) => label.name);
-  },
-});
-
-/**
- * Store AI suggestion
- */
-export const storeSuggestion = mutation({
-  args: {
-    userId: v.string(),
-    projectId: v.id("projects"),
-    suggestionType: v.union(
-      v.literal("issue_description"),
-      v.literal("issue_priority"),
-      v.literal("issue_labels"),
-      v.literal("issue_assignee"),
-      v.literal("sprint_planning"),
-      v.literal("risk_detection"),
-      v.literal("insight"),
-    ),
-    targetId: v.string(),
-    suggestion: v.string(),
-    modelUsed: v.string(),
-    reasoning: v.optional(v.string()),
-  },
-  handler: async (ctx, args) => {
-    // Find user by subject ID
-    const user = await ctx.db
-      .query("users")
-      .filter((q) => q.eq(q.field("_id"), args.userId))
-      .first();
-
-    if (!user) {
-      throw notFound("user", args.userId);
-    }
-
-    await ctx.db.insert("aiSuggestions", {
-      userId: user._id as Id<"users">,
-      projectId: args.projectId,
-      suggestionType: args.suggestionType,
-      targetId: args.targetId,
-      suggestion: args.suggestion,
-      reasoning: args.reasoning,
-      modelUsed: args.modelUsed,
-    });
   },
 });
 

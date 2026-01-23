@@ -70,15 +70,14 @@ export const generateIssueEmbedding = internalAction({
 });
 
 /**
- * Internal query to get issue data for embedding
+ * Internal action to fetch issue data for embedding (wrapper)
  */
 export const getIssueForEmbedding = internalAction({
   args: {
     issueId: v.id("issues"),
   },
   handler: async (ctx, args): Promise<Doc<"issues"> | null> => {
-    const res = await ctx.runAction(internal.ai.getIssueForEmbedding, { issueId: args.issueId });
-    return res as Doc<"issues"> | null;
+    return await ctx.runQuery(internal.internal.ai.getIssueData, { issueId: args.issueId });
   },
 });
 
@@ -108,7 +107,6 @@ export const chat = action({
     const chatId: Id<"aiChats"> =
       args.chatId ??
       (await ctx.runMutation((internal as any)["ai/mutations"].createChat, {
-        userId: userId.subject,
         projectId: args.projectId,
         title: args.message.slice(0, 100), // First 100 chars as title
       }));
@@ -123,7 +121,7 @@ export const chat = action({
     // Get project context if available
     let context = "";
     if (args.projectId) {
-      context = await ctx.runAction(internal.ai.getProjectContext, {
+      context = await ctx.runQuery(internal.internal.ai.getProjectContext, {
         projectId: args.projectId,
       });
     }
@@ -181,37 +179,5 @@ Be concise, helpful, and professional.`;
       chatId,
       message: response.text,
     };
-  },
-});
-
-export const getProjectContext = internalAction({
-  args: {
-    projectId: v.id("projects"),
-  },
-  handler: async (ctx, args): Promise<string> => {
-    return await ctx.runAction(internal.ai.getProjectContext, args);
-  },
-});
-
-export const trackUsage = internalAction({
-  args: {
-    userId: v.string(),
-    projectId: v.optional(v.id("projects")),
-    provider: v.literal("anthropic"),
-    model: v.string(),
-    operation: v.union(
-      v.literal("chat"),
-      v.literal("suggestion"),
-      v.literal("automation"),
-      v.literal("analysis"),
-    ),
-    promptTokens: v.number(),
-    completionTokens: v.number(),
-    totalTokens: v.number(),
-    responseTime: v.number(),
-    success: v.boolean(),
-  },
-  handler: async (ctx, args): Promise<void> => {
-    await ctx.runMutation((internal as any)["ai/mutations"].trackUsage, args);
   },
 });
