@@ -187,7 +187,7 @@ export function FuzzySearchInput<T>({
           aria-controls="fuzzy-search-results"
           aria-expanded={showDropdown}
           className={cn(
-            "w-full px-3 py-2 border border-ui-border-primary dark:border-ui-border-primary-dark rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 dark:bg-ui-bg-secondary-dark dark:text-ui-text-primary-dark",
+            "w-full px-3 py-2 border border-ui-border-primary rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500",
             className,
           )}
         />
@@ -246,8 +246,8 @@ export function FuzzySearchInput<T>({
                 }}
                 onMouseEnter={() => setSelectedIndex(index)}
                 className={cn(
-                  "w-full px-4 py-2 text-left hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark flex items-center justify-between",
-                  index === selectedIndex && "bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark",
+                  "w-full px-4 py-2 text-left hover:bg-ui-bg-tertiary flex items-center justify-between",
+                  index === selectedIndex && "bg-ui-bg-tertiary",
                 )}
               >
                 <div className="flex-1">{renderItem(result)}</div>

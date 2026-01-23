@@ -52,7 +52,7 @@ export function SidebarTeamItem({
             "block px-3 py-1.5 rounded-md text-sm truncate transition-colors flex-1",
             isActive
               ? "bg-brand-50 dark:bg-brand-900/20 text-brand-600 dark:text-brand-400"
-              : "text-ui-text-secondary dark:text-ui-text-secondary-dark hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark",
+              : "text-ui-text-secondary hover:bg-ui-bg-secondary hover:text-ui-text-primary",
           )}
         >
           {team.name}
@@ -120,7 +120,7 @@ function SidebarTeamProjects({
               location.pathname === `/projects/${project.key}` ||
                 location.pathname.startsWith(`/projects/${project.key}/`)
                 ? "bg-brand-50 dark:bg-brand-900/20 text-brand-600 dark:text-brand-400 font-medium"
-                : "text-ui-text-secondary dark:text-ui-text-secondary-dark hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark",
+                : "text-ui-text-secondary hover:bg-ui-bg-secondary hover:text-ui-text-primary",
             )}
           >
             {project.key} - {project.name}

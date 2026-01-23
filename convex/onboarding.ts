@@ -403,6 +403,7 @@ export const createSampleProject = authenticatedMutation({
     for (const issue of issues) {
       const issueId = await ctx.db.insert("issues", {
         projectId,
+        organizationId,
         workspaceId,
         teamId,
         key: `SAMPLE-${createdIssues.length + 1}`,

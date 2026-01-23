@@ -52,7 +52,7 @@ export function AIAssistantPanel({ projectId, isOpen, onClose }: AIAssistantPane
           AI_CONFIG.panel.width.mobile,
           AI_CONFIG.panel.width.tablet,
           AI_CONFIG.panel.width.desktop,
-          "p-0 flex flex-col bg-ui-bg-primary dark:bg-ui-bg-primary-dark",
+          "p-0 flex flex-col bg-ui-bg-primary",
         )}
       >
         {/* Header */}
@@ -78,8 +78,8 @@ export function AIAssistantPanel({ projectId, isOpen, onClose }: AIAssistantPane
             className={cn(
               "flex-1 px-4 py-3 font-medium text-sm transition-colors",
               activeTab === "chat"
-                ? "text-brand-600 dark:text-brand-400 border-b-2 border-brand-600 dark:border-brand-400 bg-ui-bg-primary dark:bg-ui-bg-primary-dark"
-                : "text-ui-text-tertiary dark:text-ui-text-tertiary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark",
+                ? "text-brand-600 dark:text-brand-400 border-b-2 border-brand-600 dark:border-brand-400 bg-ui-bg-primary"
+                : "text-ui-text-tertiary hover:text-ui-text-primary",
             )}
           >
             💬 Chat
@@ -95,8 +95,8 @@ export function AIAssistantPanel({ projectId, isOpen, onClose }: AIAssistantPane
             className={cn(
               "flex-1 px-4 py-3 font-medium text-sm transition-colors relative",
               activeTab === "suggestions"
-                ? "text-brand-600 dark:text-brand-400 border-b-2 border-brand-600 dark:border-brand-400 bg-ui-bg-primary dark:bg-ui-bg-primary-dark"
-                : "text-ui-text-tertiary dark:text-ui-text-tertiary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark",
+                ? "text-brand-600 dark:text-brand-400 border-b-2 border-brand-600 dark:border-brand-400 bg-ui-bg-primary"
+                : "text-ui-text-tertiary hover:text-ui-text-primary",
             )}
           >
             💡 Suggestions

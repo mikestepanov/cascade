@@ -10,10 +10,9 @@ import { ActionCache } from "@convex-dev/action-cache";
 import { generateText } from "ai";
 import { v } from "convex/values";
 import { components, internal } from "../_generated/api";
-import type { Id } from "../_generated/dataModel";
 import { action, internalAction, mutation, query } from "../_generated/server";
 import { extractUsage } from "../lib/aiHelpers";
-import { notFound, unauthenticated } from "../lib/errors";
+import { unauthenticated } from "../lib/errors";
 import { rateLimit } from "../rateLimits";
 import { issueTypes } from "../validators";
 

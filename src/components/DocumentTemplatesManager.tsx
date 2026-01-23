@@ -214,7 +214,7 @@ export function DocumentTemplatesManager({
                     "px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors",
                     selectedCategory === cat.value
                       ? "bg-brand-600 text-white"
-                      : "bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark text-ui-text-primary dark:text-ui-text-primary-dark hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark",
+                      : "bg-ui-bg-tertiary text-ui-text-primary hover:bg-ui-bg-secondary",
                   )}
                 >
                   {cat.label}

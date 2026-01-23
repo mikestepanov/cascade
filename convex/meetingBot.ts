@@ -740,6 +740,7 @@ export const createIssueFromActionItem = authenticatedMutation({
     // Create the issue
     const issueId = await ctx.db.insert("issues", {
       projectId: args.projectId,
+      organizationId: project.organizationId,
       workspaceId: project.workspaceId,
       teamId: project.teamId,
       key: `${project.key}-${nextNumber}`,

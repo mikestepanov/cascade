@@ -45,6 +45,7 @@ export const projectsFields = {
 
 export const issuesFields = {
   projectId: v.id("projects"), // Issue belongs to project (required)
+  organizationId: v.id("organizations"), // Cached from project.organizationId
   workspaceId: v.id("workspaces"), // Cached from project.workspaceId
   teamId: v.optional(v.id("teams")), // Cached from project.teamId (optional, for performance)
   key: v.string(), // Issue key like "PROJ-123"

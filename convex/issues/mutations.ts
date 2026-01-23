@@ -69,6 +69,7 @@ export const create = projectEditorMutation({
     const now = Date.now();
     const issueId = await ctx.db.insert("issues", {
       projectId: ctx.projectId,
+      organizationId: ctx.project.organizationId, // Cache from project
       workspaceId: ctx.project.workspaceId, // Always present since projects require workspaceId
       teamId: ctx.project.teamId, // Cached from project (can be undefined for workspace-level projects)
       key: issueKey,

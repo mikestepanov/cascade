@@ -91,7 +91,7 @@ export function EventDetailsModal({ eventId, open, onOpenChange }: EventDetailsM
       case "personal":
         return "bg-accent-100 text-accent-800 dark:bg-accent-900 dark:text-accent-200";
       default:
-        return "bg-ui-bg-tertiary text-ui-text-secondary dark:bg-ui-bg-tertiary-dark dark:text-ui-text-secondary-dark";
+        return "bg-ui-bg-tertiary text-ui-text-secondary";
     }
   };
 
@@ -104,7 +104,7 @@ export function EventDetailsModal({ eventId, open, onOpenChange }: EventDetailsM
       case "cancelled":
         return "bg-status-error-bg text-status-error dark:bg-status-error-dark dark:text-status-error-dark";
       default:
-        return "bg-ui-bg-tertiary text-ui-text-secondary dark:bg-ui-bg-tertiary-dark dark:text-ui-text-secondary-dark";
+        return "bg-ui-bg-tertiary text-ui-text-secondary";
     }
   };
 

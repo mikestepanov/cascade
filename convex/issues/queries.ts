@@ -3,7 +3,7 @@ import { paginationOptsValidator } from "convex/server";
 import { v } from "convex/values";
 import type { Doc, Id } from "../_generated/dataModel";
 import { internalQuery, type QueryCtx, query } from "../_generated/server";
-import { authenticatedQuery, projectQuery } from "../customFunctions";
+import { authenticatedQuery, organizationQuery, projectQuery } from "../customFunctions";
 import { batchFetchUsers } from "../lib/batchHelpers";
 import { BOUNDED_LIST_LIMIT, BOUNDED_SEARCH_LIMIT, safeCollect } from "../lib/boundedQueries";
 import { forbidden, notFound } from "../lib/errors";
@@ -336,6 +336,33 @@ export const listProjectIssues = authenticatedQuery({
   },
 });
 
+export const listOrganizationIssues = organizationQuery({
+  args: {
+    status: v.optional(v.string()),
+    paginationOpts: paginationOptsValidator,
+  },
+  handler: async (ctx, args) => {
+    // organizationQuery handles auth and membership check
+    return await fetchPaginatedIssues(ctx, {
+      paginationOpts: args.paginationOpts,
+      query: (db) => {
+        if (args.status) {
+          return db
+            .query("issues")
+            .withIndex("by_organization_status", (q) =>
+              q.eq("organizationId", ctx.organizationId).eq("status", args.status as string),
+            )
+            .order("desc");
+        }
+        return db
+          .query("issues")
+          .withIndex("by_organization", (q) => q.eq("organizationId", ctx.organizationId))
+          .order("desc");
+      },
+    });
+  },
+});
+
 export const listTeamIssues = authenticatedQuery({
   args: {
     teamId: v.id("teams"),
@@ -601,6 +628,7 @@ export const search = authenticatedQuery({
     limit: v.optional(v.number()),
     offset: v.optional(v.number()),
     projectId: v.optional(v.id("projects")),
+    organizationId: v.optional(v.id("organizations")),
     assigneeId: v.optional(v.union(v.id("users"), v.literal("unassigned"), v.literal("me"))),
     reporterId: v.optional(v.id("users")),
     type: v.optional(v.array(v.string())),
@@ -646,6 +674,18 @@ export const search = authenticatedQuery({
           .order("desc"),
         fetchLimit,
         "issue search by project",
+      );
+    } else if (args.organizationId) {
+      const organizationId = args.organizationId;
+      // Bounded: organization issues limited
+      issues = await safeCollect(
+        ctx.db
+          .query("issues")
+          .withIndex("by_organization", (q) => q.eq("organizationId", organizationId))
+          .filter(notDeleted)
+          .order("desc"),
+        fetchLimit,
+        "issue search by organization",
       );
     } else {
       // Return empty if no filter is provided to prevent scanning the entire table

@@ -47,10 +47,7 @@ vi.mock("@/lib/issue-utils", () => ({
           "bg-status-warning-bg dark:bg-status-warning-bg-dark text-status-warning-text dark:text-status-warning-text-dark",
         low: "bg-status-info-bg dark:bg-status-info-bg-dark text-status-info-text dark:text-status-info-text-dark",
       };
-      return (
-        colors[priority as keyof typeof colors] ||
-        "bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark text-ui-text-secondary dark:text-ui-text-secondary-dark"
-      );
+      return colors[priority as keyof typeof colors] || "bg-ui-bg-tertiary text-ui-text-secondary";
     }
     return "";
   }),

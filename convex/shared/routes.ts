@@ -176,6 +176,10 @@ export const ROUTES = {
   },
 
   issues: {
+    list: {
+      path: "/$orgSlug/issues" as const,
+      build: (orgSlug: string) => `/${orgSlug}/issues`,
+    },
     detail: {
       path: "/$orgSlug/issues/$key" as const,
       build: (orgSlug: string, key: string) => `/${orgSlug}/issues/${key}`,
