@@ -6,6 +6,7 @@ import { Toaster } from "sonner";
 import { Flex } from "@/components/ui/Flex";
 import { LazyPostHog } from "../components/LazyPostHog";
 import { NotFoundPage } from "../components/NotFoundPage";
+import { TooltipProvider } from "../components/ui/Tooltip";
 import { Typography } from "../components/ui/Typography";
 import { ThemeProvider } from "../contexts/ThemeContext";
 import { register as registerServiceWorker } from "../lib/serviceWorker";
@@ -52,28 +53,30 @@ function RootComponent() {
   return (
     <ThemeProvider>
       <LazyPostHog apiKey={import.meta.env.VITE_PUBLIC_POSTHOG_KEY} options={posthogOptions}>
-        {convex ? (
-          <ConvexAuthProvider client={convex}>
-            <Outlet />
-          </ConvexAuthProvider>
-        ) : (
-          <Flex
-            direction="column"
-            align="center"
-            justify="center"
-            className="min-h-screen bg-ui-bg-secondary p-4"
-          >
-            <div className="text-center max-w-md">
-              <Typography variant="h1" className="text-2xl font-bold mb-4 text-ui-text-primary">
-                Service Unavailable
-              </Typography>
-              <Typography className="text-ui-text-secondary mb-6">
-                The application could not connect to the backend services. Please try again later.
-              </Typography>
-            </div>
-          </Flex>
-        )}
-        <Toaster />
+        <TooltipProvider delayDuration={200}>
+          {convex ? (
+            <ConvexAuthProvider client={convex}>
+              <Outlet />
+            </ConvexAuthProvider>
+          ) : (
+            <Flex
+              direction="column"
+              align="center"
+              justify="center"
+              className="min-h-screen bg-ui-bg-secondary p-4"
+            >
+              <div className="text-center max-w-md">
+                <Typography variant="h1" className="text-2xl font-bold mb-4 text-ui-text-primary">
+                  Service Unavailable
+                </Typography>
+                <Typography className="text-ui-text-secondary mb-6">
+                  The application could not connect to the backend services. Please try again later.
+                </Typography>
+              </div>
+            </Flex>
+          )}
+          <Toaster />
+        </TooltipProvider>
       </LazyPostHog>
     </ThemeProvider>
   );
