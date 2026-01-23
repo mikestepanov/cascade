@@ -9,3 +9,7 @@
 ## 2025-05-28 - Icon-Only Buttons
 **Learning:** Icon-only buttons save space but can be ambiguous. Users rely on tooltips to confirm the action before clicking.
 **Action:** Always wrap icon-only buttons in a Tooltip component with a descriptive label.
+
+## 2025-05-29 - Accessible Test Selectors
+**Learning:** Tests using `getByTitle` often rely on attributes (like `title`) that are being phased out for custom Tooltips.
+**Action:** Prefer `getByRole('button', { name: '...' })` which verifies the accessible name (ARIA label) regardless of the visual tooltip implementation.

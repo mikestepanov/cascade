@@ -247,7 +247,7 @@ describe("NotificationCenter", () => {
     const bellButton = screen.getByRole("button");
     await user.click(bellButton);
 
-    const markReadButton = screen.getByTitle("Mark as read");
+    const markReadButton = screen.getByRole("button", { name: "Mark as read" });
     await user.click(markReadButton);
 
     await waitFor(() => {
@@ -317,7 +317,7 @@ describe("NotificationCenter", () => {
     const bellButton = screen.getByRole("button");
     await user.click(bellButton);
 
-    const deleteButton = screen.getByTitle("Delete");
+    const deleteButton = screen.getByRole("button", { name: "Delete notification" });
     await user.click(deleteButton);
 
     await waitFor(() => {
