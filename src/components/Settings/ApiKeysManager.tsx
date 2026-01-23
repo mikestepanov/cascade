@@ -75,13 +75,8 @@ export function ApiKeysManager() {
           </div>
         ) : (
           <Flex direction="column" gap="lg">
-            {/* biome-ignore lint/suspicious/noExplicitAny: Doc type mismatch */}
-            {apiKeys.map((key: any) => (
-              <ApiKeyCard
-                key={key._id}
-                apiKey={key}
-                onViewStats={() => setSelectedKeyId(key._id)}
-              />
+            {apiKeys.map((key) => (
+              <ApiKeyCard key={key.id} apiKey={key} onViewStats={() => setSelectedKeyId(key.id)} />
             ))}
           </Flex>
         )}
@@ -119,7 +114,8 @@ export function ApiKeysManager() {
 /**
  * Individual API Key Card
  */
-function ApiKeyCard({ apiKey, onViewStats }: { apiKey: Doc<"apiKeys">; onViewStats: () => void }) {
+// biome-ignore lint/suspicious/noExplicitAny: API keys are mapped to a custom object
+function ApiKeyCard({ apiKey, onViewStats }: { apiKey: any; onViewStats: () => void }) {
   const revokeKey = useMutation(api.apiKeys.revoke);
   const deleteKey = useMutation(api.apiKeys.remove);
   const [isRevoking, setIsRevoking] = useState(false);
@@ -132,7 +128,7 @@ function ApiKeyCard({ apiKey, onViewStats }: { apiKey: Doc<"apiKeys">; onViewSta
 
     setIsRevoking(true);
     try {
-      await revokeKey({ keyId: apiKey._id });
+      await revokeKey({ keyId: apiKey.id });
       showSuccess("API key revoked successfully");
     } catch (error) {
       showError(error, "Failed to revoke API key");
@@ -148,7 +144,7 @@ function ApiKeyCard({ apiKey, onViewStats }: { apiKey: Doc<"apiKeys">; onViewSta
 
     setIsDeleting(true);
     try {
-      await deleteKey({ keyId: apiKey._id });
+      await deleteKey({ keyId: apiKey.id });
       showSuccess("API key deleted successfully");
     } catch (error) {
       showError(error, "Failed to delete API key");

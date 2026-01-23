@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Example: Assignee Search Dropdown with Fuzzy Matching
  *
@@ -53,14 +52,15 @@ export function AssigneeSearchDropdown({
   const members = useQuery(api.projectMembers.list, { projectId });
 
   // Step 2: Apply fuzzy search on loaded data
-  const { results, search, query, clear, isDebouncing } = useUserFuzzySearch<Doc<"users">>(members);
+  // biome-ignore lint/suspicious/noExplicitAny: Example uses any for simplicity
+  const { results, search, query, clear, isDebouncing } = useUserFuzzySearch<any>(members);
 
   if (!members) {
     return <div className="text-sm text-ui-text-tertiary">Loading members...</div>;
   }
 
   // Get selected user details
-  const selectedUser = members.find((m: Doc<"users">) => m._id === value);
+  const selectedUser = members.find((m) => m.userId === value);
 
   return (
     <div className={className}>
@@ -72,8 +72,8 @@ export function AssigneeSearchDropdown({
           className="p-2 border border-ui-border-secondary rounded-lg mb-2"
         >
           <Flex gap="sm" align="center">
-            <Avatar name={selectedUser.name} email={selectedUser.email} size="sm" />
-            <span className="text-sm">{selectedUser.name || selectedUser.email}</span>
+            <Avatar name={selectedUser.userName} email={selectedUser.userEmail} size="sm" />
+            <span className="text-sm">{selectedUser.userName}</span>
           </Flex>
           <button
             type="button"

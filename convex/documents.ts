@@ -23,6 +23,18 @@ export const create = authenticatedMutation({
     projectId: v.optional(v.id("projects")),
   },
   handler: async (ctx, args) => {
+    // Validate organization membership
+    const membership = await ctx.db
+      .query("organizationMembers")
+      .withIndex("by_organization_user", (q) =>
+        q.eq("organizationId", args.organizationId).eq("userId", ctx.userId),
+      )
+      .first();
+
+    if (!membership) {
+      throw forbidden(undefined, "You are not a member of this organization");
+    }
+
     const now = Date.now();
     return await ctx.db.insert("documents", {
       title: args.title,

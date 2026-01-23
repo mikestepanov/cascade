@@ -40,6 +40,7 @@ async function downloadFile(url, destPath) {
         });
       })
       .on("error", (err) => {
+        file.destroy(); // Ensure stream is closed before unlinking
         fs.unlink(destPath, () => {
           // ignore error
         });

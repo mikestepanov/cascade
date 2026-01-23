@@ -150,7 +150,7 @@ export function SubtasksList({ issueId, projectId, subtasks }: SubtasksListProps
                 </Flex>
                 {subtask.assignee && (
                   <span className="text-xs text-ui-text-tertiary">
-                    Assigned to {subtask.assignee.name}
+                    Assigned to {subtask.assignee.name || "Unknown"}
                   </span>
                 )}
               </div>

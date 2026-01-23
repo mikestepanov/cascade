@@ -59,10 +59,16 @@ export const { getSnapshot, submitSnapshot, latestVersion, getSteps, submitSteps
     checkRead: checkPermissions,
     checkWrite: checkWritePermissions,
     onSnapshot: async (ctx, id, snapshot, version) => {
-      const parsedSnapshot =
-        typeof snapshot === "string"
-          ? (JSON.parse(snapshot) as ProseMirrorSnapshot)
-          : (snapshot as ProseMirrorSnapshot);
+      let parsedSnapshot: ProseMirrorSnapshot;
+      try {
+        parsedSnapshot =
+          typeof snapshot === "string"
+            ? (JSON.parse(snapshot) as ProseMirrorSnapshot)
+            : (snapshot as ProseMirrorSnapshot);
+      } catch (e) {
+        console.error("Failed to parse ProseMirror snapshot", e);
+        return;
+      }
       // Update the document's updatedAt timestamp when content changes
       const document = await ctx.db.get(id as Id<"documents">);
       const userId = await getAuthUserId(ctx);

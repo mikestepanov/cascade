@@ -3,7 +3,6 @@
  */
 
 import { v } from "convex/values";
-import { type MutationCtx, mutation } from "../_generated/server";
 import { authenticatedMutation } from "../customFunctions";
 import { notFound, requireOwned } from "../lib/errors";
 import { chatRoles } from "../validators";
@@ -124,9 +123,8 @@ export const addMessage = authenticatedMutation({
 /**
  * Create an AI suggestion
  */
-export const createSuggestion = mutation({
+export const createSuggestion = authenticatedMutation({
   args: {
-    userId: v.id("users"),
     projectId: v.id("projects"),
     suggestionType: v.union(
       v.literal("issue_description"),
@@ -143,9 +141,9 @@ export const createSuggestion = mutation({
     modelUsed: v.string(),
     confidence: v.optional(v.number()),
   },
-  handler: async (ctx: MutationCtx, args) => {
+  handler: async (ctx, args) => {
     const suggestionId = await ctx.db.insert("aiSuggestions", {
-      userId: args.userId,
+      userId: ctx.userId,
       projectId: args.projectId,
       suggestionType: args.suggestionType,
       targetId: args.targetId,
@@ -200,9 +198,8 @@ export const dismissSuggestion = authenticatedMutation({
 /**
  * Track AI usage
  */
-export const trackUsage = mutation({
+export const trackUsage = authenticatedMutation({
   args: {
-    userId: v.id("users"),
     projectId: v.optional(v.id("projects")),
     provider: v.literal("anthropic"),
     model: v.string(),
@@ -220,9 +217,9 @@ export const trackUsage = mutation({
     success: v.boolean(),
     errorMessage: v.optional(v.string()),
   },
-  handler: async (ctx: MutationCtx, args) => {
+  handler: async (ctx, args) => {
     const usageId = await ctx.db.insert("aiUsage", {
-      userId: args.userId,
+      userId: ctx.userId,
       projectId: args.projectId,
       provider: args.provider,
       model: args.model,

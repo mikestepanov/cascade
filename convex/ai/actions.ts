@@ -7,7 +7,7 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 
 import { v } from "convex/values";
-import { api } from "../_generated/api";
+import { api, internal } from "../_generated/api";
 import { type ActionCtx, action } from "../_generated/server";
 import { unauthenticated } from "../lib/errors";
 import { getAIConfig } from "./config";
@@ -67,14 +67,14 @@ export const sendChatMessage = action({
     const responseTime = Date.now() - startTime;
 
     // Store user message
-    await ctx.runMutation(api.ai.mutations.addMessage, {
+    await ctx.runMutation((internal as any)["ai/mutations"].addMessage, {
       chatId: args.chatId,
       role: "user",
       content: args.message,
     });
 
     // Store AI response
-    await ctx.runMutation(api.ai.mutations.addMessage, {
+    await ctx.runMutation((internal as any)["ai/mutations"].addMessage, {
       chatId: args.chatId,
       role: "assistant",
       content: response.content,
@@ -84,8 +84,7 @@ export const sendChatMessage = action({
     });
 
     // Track usage
-    await ctx.runMutation(api.ai.mutations.trackUsage, {
-      userId,
+    await ctx.runMutation((internal as any)["ai/mutations"].trackUsage, {
       projectId: args.projectId,
       provider: config.provider,
       model: config.model,
@@ -128,7 +127,7 @@ export const generateIssueSuggestions = action({
     const startTime = Date.now();
 
     // Get project context
-    const projectData = await ctx.runQuery(api.ai.queries.getProjectContext, {
+    const projectData = await ctx.runQuery((internal as any)["ai/queries"].getProjectContext, {
       projectId: args.projectId,
     });
 
@@ -179,8 +178,7 @@ Format your response as JSON with keys: description, priority, priorityReason, l
     }
 
     // Track usage
-    await ctx.runMutation(api.ai.mutations.trackUsage, {
-      userId,
+    await ctx.runMutation((internal as any)["ai/mutations"].trackUsage, {
       projectId: args.projectId,
       provider: config.provider,
       model: config.model,
@@ -283,8 +281,7 @@ Format as JSON with keys: healthScore (0-100), risks (array), recommendations (a
     // Store insights as suggestions
     if (insights.risks && Array.isArray(insights.risks)) {
       for (const risk of insights.risks) {
-        await ctx.runMutation(api.ai.mutations.createSuggestion, {
-          userId,
+        await ctx.runMutation((internal as any)["ai/mutations"].createSuggestion, {
           projectId: args.projectId,
           suggestionType: "risk_detection",
           suggestion: risk,
@@ -294,8 +291,7 @@ Format as JSON with keys: healthScore (0-100), risks (array), recommendations (a
     }
 
     // Track usage
-    await ctx.runMutation(api.ai.mutations.trackUsage, {
-      userId,
+    await ctx.runMutation((internal as any)["ai/mutations"].trackUsage, {
       projectId: args.projectId,
       provider: config.provider,
       model: config.model,
@@ -326,7 +322,7 @@ export const answerQuestion = action({
     const startTime = Date.now();
 
     // Get project context
-    const projectData = await ctx.runQuery(api.ai.queries.getProjectContext, {
+    const projectData = await ctx.runQuery((internal as any)["ai/queries"].getProjectContext, {
       projectId: args.projectId,
     });
 
@@ -364,8 +360,7 @@ Team: ${projectData.members.map((m: { name?: string }) => m.name).join(", ")}`;
     const responseTime = Date.now() - startTime;
 
     // Track usage
-    await ctx.runMutation(api.ai.mutations.trackUsage, {
-      userId,
+    await ctx.runMutation((internal as any)["ai/mutations"].trackUsage, {
       projectId: args.projectId,
       provider: config.provider,
       model: config.model,
