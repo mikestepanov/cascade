@@ -96,9 +96,9 @@ export function IssueComments({ issueId, projectId }: IssueCommentsProps) {
                       {comment.author?.name || "Unknown User"}
                     </span>
                     <span className="text-xs text-ui-text-secondary">
-                      {formatRelativeTime(comment.createdAt)}
+                      {formatRelativeTime(comment._creationTime)}
                     </span>
-                    {comment.updatedAt > comment.createdAt && (
+                    {comment.updatedAt > comment._creationTime && (
                       <span className="text-xs text-ui-text-tertiary">(edited)</span>
                     )}
                   </Flex>

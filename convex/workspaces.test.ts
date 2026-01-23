@@ -84,7 +84,7 @@ describe("Workspaces", () => {
           slug: "test-workspace",
           organizationId,
         });
-      }).rejects.toThrow("Only organization admins can create workspaces");
+      }).rejects.toThrow("Only organization admins can perform this action");
     });
   });
 

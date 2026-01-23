@@ -110,7 +110,7 @@ describe("GlobalSearch", () => {
     // Component calls useQuery twice per render: first for issues, second for documents
     (useQuery as any).mockImplementation(() => {
       queryCallCount++;
-      if (queryCallCount % 2 === 1) return { results: mockIssues, total: 1, hasMore: false }; // Odd calls = issues
+      if (queryCallCount % 2 === 1) return { page: mockIssues, total: 1, hasMore: false }; // Odd calls = issues
       return { results: mockDocuments, total: 1, hasMore: false }; // Even calls = documents
     });
 
@@ -211,7 +211,7 @@ describe("GlobalSearch", () => {
 
     (useQuery as any).mockImplementation(() => {
       queryCallCount++;
-      if (queryCallCount % 2 === 1) return { results: mockIssues, total: 1, hasMore: false }; // Odd calls = issues
+      if (queryCallCount % 2 === 1) return { page: mockIssues, total: 1, hasMore: false }; // Odd calls = issues
       return { results: [], total: 0, hasMore: false }; // Even calls = documents
     });
 
@@ -315,7 +315,7 @@ describe("GlobalSearch", () => {
 
     (useQuery as any).mockImplementation(() => {
       queryCallCount++;
-      if (queryCallCount % 2 === 1) return { results: mockIssues, total: 3, hasMore: false }; // Odd calls = issues
+      if (queryCallCount % 2 === 1) return { page: mockIssues, total: 3, hasMore: false }; // Odd calls = issues
       return { results: [], total: 0, hasMore: false }; // Even calls = documents
     });
 
@@ -349,7 +349,7 @@ describe("GlobalSearch", () => {
 
     (useQuery as any).mockImplementation(() => {
       queryCallCount++;
-      if (queryCallCount % 2 === 1) return { results: mockIssues, total: 1, hasMore: false }; // Odd calls = issues
+      if (queryCallCount % 2 === 1) return { page: mockIssues, total: 1, hasMore: false }; // Odd calls = issues
       return { results: [], total: 0, hasMore: false }; // Even calls = documents
     });
 

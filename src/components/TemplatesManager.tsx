@@ -122,7 +122,13 @@ export function TemplatesManager({ projectId }: TemplatesManagerProps) {
       <ConfirmDialog
         isOpen={!!deleteConfirm.deleteId}
         onClose={deleteConfirm.cancelDelete}
-        onConfirm={() => deleteConfirm.executeDelete((id) => deleteTemplateMutation({ id }))}
+        onConfirm={() =>
+          deleteConfirm.executeDelete((id) =>
+            deleteTemplateMutation({ id }).then(() => {
+              /* intentional */
+            }),
+          )
+        }
         title="Delete Template"
         message="Are you sure you want to delete this template?"
         variant="danger"

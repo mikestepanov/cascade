@@ -28,9 +28,8 @@ export function FileAttachments({ issueId }: FileAttachmentsProps) {
     storageId: Id<"_storage">;
     filename: string;
     url: string | null;
-    contentType: string;
-    size: number;
     uploadedAt: number;
+    uploadedBy?: Id<"users">;
   }
 
   const handleFileSelect = async (files: FileList | null) => {

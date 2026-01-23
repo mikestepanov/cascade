@@ -56,8 +56,7 @@ if (!(targetUrl && targetPath)) {
         try {
           for (const rule of sheet.cssRules) {
             if (rule.style) {
-              for (let i = 0; i < rule.style.length; i++) {
-                const prop = rule.style[i];
+              for (const prop of rule.style) {
                 if (prop.startsWith("--")) {
                   cssVars[prop] = rule.style.getPropertyValue(prop).trim();
                 }

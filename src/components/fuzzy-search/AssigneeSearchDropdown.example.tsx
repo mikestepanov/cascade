@@ -8,11 +8,18 @@
 import { api } from "@convex/_generated/api";
 import type { Doc, Id } from "@convex/_generated/dataModel";
 import { useQuery } from "convex/react";
+import type { FunctionReturnType } from "convex/server";
+import { useMemo } from "react";
 import { Avatar } from "@/components/ui/Avatar";
 import { useUserFuzzySearch } from "@/hooks/useFuzzySearch";
 import { Flex } from "../ui/Flex";
 import { Typography } from "../ui/Typography";
 import { FuzzySearchInput, HighlightedText } from "./FuzzySearchInput";
+
+/**
+ * Project Member type (inferred from backend query)
+ */
+type ProjectMember = FunctionReturnType<typeof api.projectMembers.list>[number];
 
 interface AssigneeSearchDropdownProps {
   /**
@@ -52,14 +59,25 @@ export function AssigneeSearchDropdown({
   const members = useQuery(api.projectMembers.list, { projectId });
 
   // Step 2: Apply fuzzy search on loaded data
-  const { results, search, query, clear, isDebouncing } = useUserFuzzySearch<Doc<"users">>(members);
+  // Map our custom member format to the standard name/email format the hook expects
+  // We need to ensure T includes name/email for useUserFuzzySearch
+  const searchItems = useMemo(() => {
+    if (!members) return [];
+    return members.map((m) => ({
+      ...m,
+      name: m.userName,
+      email: m.userEmail ?? undefined,
+    }));
+  }, [members]);
+
+  const { results, search, query, clear, isDebouncing } = useUserFuzzySearch(searchItems);
 
   if (!members) {
     return <div className="text-sm text-ui-text-tertiary">Loading members...</div>;
   }
 
   // Get selected user details
-  const selectedUser = members.find((m: Doc<"users">) => m._id === value);
+  const selectedUser = members.find((m) => m.userId === value);
 
   return (
     <div className={className}>
@@ -71,8 +89,8 @@ export function AssigneeSearchDropdown({
           className="p-2 border border-ui-border-secondary rounded-lg mb-2"
         >
           <Flex gap="sm" align="center">
-            <Avatar name={selectedUser.name} email={selectedUser.email} size="sm" />
-            <span className="text-sm">{selectedUser.name || selectedUser.email}</span>
+            <Avatar name={selectedUser.userName} email={selectedUser.userEmail} size="sm" />
+            <span className="text-sm">{selectedUser.userName}</span>
           </Flex>
           <button
             type="button"
@@ -98,12 +116,12 @@ export function AssigneeSearchDropdown({
         results={results}
         query={query}
         onSearch={search}
-        onSelect={(user: Doc<"users">) => {
-          onChange(user._id);
+        onSelect={(member: ProjectMember) => {
+          onChange(member.userId);
           clear();
         }}
         onClear={() => onChange(null)}
-        getKey={(user: Doc<"users">) => user._id}
+        getKey={(member: ProjectMember) => member._id}
         placeholder={placeholder}
         showScore={false}
         isLoading={isDebouncing}

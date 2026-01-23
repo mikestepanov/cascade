@@ -626,7 +626,7 @@ export const issueViewerMutation = customMutation(mutation, {
     requireMinimumRole(role, "viewer");
 
     return {
-      ctx: { ...ctx, projectId: issue.projectId, role, project, issue },
+      ctx: { ...ctx, userId, projectId: issue.projectId, role, project, issue },
       args: {},
     };
   },

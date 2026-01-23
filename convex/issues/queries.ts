@@ -159,7 +159,7 @@ export const listRoadmapIssues = authenticatedQuery({
       const allSprintIssues = await safeCollect(
         ctx.db
           .query("issues")
-          .withIndex("by_project_sprint_created", (q) =>
+          .withIndex("by_project_sprint_status", (q) =>
             q.eq("projectId", args.projectId).eq("sprintId", args.sprintId),
           )
           .filter(notDeleted),
@@ -232,7 +232,7 @@ export const listRoadmapIssuesPaginated = authenticatedQuery({
     if (args.sprintId) {
       const result = await ctx.db
         .query("issues")
-        .withIndex("by_project_sprint_created", (q) =>
+        .withIndex("by_project_sprint_status", (q) =>
           q.eq("projectId", args.projectId).eq("sprintId", args.sprintId),
         )
         .filter(notDeleted)
@@ -314,7 +314,7 @@ export const listProjectIssues = authenticatedQuery({
         if (args.sprintId) {
           return db
             .query("issues")
-            .withIndex("by_project_sprint_created", (q) =>
+            .withIndex("by_project_sprint_status", (q) =>
               q.eq("projectId", args.projectId).eq("sprintId", args.sprintId),
             )
             .order("desc");
@@ -636,11 +636,12 @@ export const search = authenticatedQuery({
         "issue search",
       );
     } else if (args.projectId) {
+      const projectId = args.projectId;
       // Bounded: project issues limited
       issues = await safeCollect(
         ctx.db
           .query("issues")
-          .withIndex("by_project", (q) => q.eq("projectId", args.projectId as Id<"projects">))
+          .withIndex("by_project", (q) => q.eq("projectId", projectId))
           .filter(notDeleted)
           .order("desc"),
         fetchLimit,
@@ -680,7 +681,7 @@ export const listByProjectSmart = projectQuery({
   },
   handler: async (ctx, args) => {
     // ctx.userId provided by projectQuery wrapper
-    const doneThreshold = getDoneColumnThreshold(args.doneColumnDays);
+    const doneThreshold = getDoneColumnThreshold(Date.now(), args.doneColumnDays);
 
     const workflowStates = ctx.project.workflowStates;
     const issuesByColumn: Record<string, Doc<"issues">[]> = {};
@@ -727,7 +728,7 @@ export const listByProjectSmart = projectQuery({
 
           return ctx.db
             .query("issues")
-            .withIndex("by_project_status_updated", (q) =>
+            .withIndex("by_project_status", (q) =>
               q.eq("projectId", ctx.project._id).eq("status", state.id),
             )
             .filter(notDeleted);
@@ -779,7 +780,7 @@ export const listByTeamSmart = authenticatedQuery({
       { id: "done", name: "Done", category: "done", order: 2 },
     ];
 
-    const doneThreshold = getDoneColumnThreshold(args.doneColumnDays);
+    const doneThreshold = getDoneColumnThreshold(Date.now(), args.doneColumnDays);
     const issuesByColumn: Record<string, Doc<"issues">[]> = {};
 
     await Promise.all(
@@ -804,8 +805,16 @@ export const listByTeamSmart = authenticatedQuery({
       }),
     );
 
-    const allIssues = Object.values(issuesByColumn).flat();
-    return await enrichIssues(ctx, allIssues);
+    // Enrich all issues by status
+    const enrichedIssuesByStatus: Record<string, EnrichedIssue[]> = {};
+    for (const [statusId, issues] of Object.entries(issuesByColumn)) {
+      enrichedIssuesByStatus[statusId] = await enrichIssues(ctx, issues);
+    }
+
+    return {
+      issuesByStatus: enrichedIssuesByStatus,
+      workflowStates: workflowStates,
+    };
   },
 });
 
@@ -824,7 +833,7 @@ export const getTeamIssueCounts = authenticatedQuery({
       { id: "done", name: "Done", category: "done", order: 2 },
     ];
 
-    const doneThreshold = getDoneColumnThreshold(args.doneColumnDays);
+    const doneThreshold = getDoneColumnThreshold(Date.now(), args.doneColumnDays);
     const counts: Record<string, { total: number; visible: number; hidden: number }> = {};
 
     await Promise.all(
@@ -890,7 +899,7 @@ export const getIssueCounts = authenticatedQuery({
     const hasAccess = await canAccessProject(ctx, args.projectId, ctx.userId);
     if (!hasAccess) return null;
 
-    const doneThreshold = getDoneColumnThreshold(args.doneColumnDays);
+    const doneThreshold = getDoneColumnThreshold(Date.now(), args.doneColumnDays);
     const counts: Record<string, { total: number; visible: number; hidden: number }> = {};
 
     const addCounts = (

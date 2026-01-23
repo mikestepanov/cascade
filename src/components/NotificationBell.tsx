@@ -1,6 +1,6 @@
 import { api } from "@convex/_generated/api";
 import type { Doc, Id } from "@convex/_generated/dataModel";
-import { useMutation, useQuery } from "convex/react";
+import { useMutation, usePaginatedQuery, useQuery } from "convex/react";
 import { Bell, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Flex } from "@/components/ui/Flex";
@@ -13,7 +13,11 @@ export function NotificationBell() {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const notifications = useQuery(api.notifications.list, { limit: 20 });
+  const { results: notifications, status } = usePaginatedQuery(
+    api.notifications.list,
+    {},
+    { initialNumItems: 20 },
+  );
   const unreadCount = useQuery(api.notifications.getUnreadCount);
   const markAsRead = useMutation(api.notifications.markAsRead);
   const markAllAsRead = useMutation(api.notifications.markAllAsRead);
@@ -128,7 +132,7 @@ export function NotificationBell() {
 
           {/* Notifications List */}
           <div className="overflow-y-auto flex-1">
-            {!notifications ? (
+            {status === "LoadingFirstPage" ? (
               <Flex align="center" justify="center" className="py-8">
                 <LoadingSpinner />
               </Flex>

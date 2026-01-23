@@ -6,6 +6,7 @@
  */
 
 import { v } from "convex/values";
+import type { MutationCtx } from "./_generated/server";
 import { internalMutation } from "./_generated/server";
 import { authenticatedQuery } from "./customFunctions";
 import { logger } from "./lib/logger";
@@ -21,6 +22,40 @@ const TABLES_WITH_SOFT_DELETE = [
 ] as const;
 
 const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
+
+async function deleteFromTable<T extends (typeof TABLES_WITH_SOFT_DELETE)[number]>(
+  ctx: MutationCtx,
+  table: T,
+  ageLimitMs: number,
+): Promise<{ deleted: number; errors: string[] }> {
+  let deleted = 0;
+  const errors: string[] = [];
+
+  try {
+    // biome-ignore lint/suspicious/noExplicitAny: Querying generic table, simplified for cleanup
+    const records = await (ctx.db.query(table) as any)
+      // biome-ignore lint/suspicious/noExplicitAny: Index exists on all tables
+      .withIndex("by_deleted", (q: any) => q.eq("isDeleted", true))
+      .take(1000);
+
+    // biome-ignore lint/suspicious/noExplicitAny: Filtering generic records
+    for (const record of records.filter((r: any) =>
+      isEligibleForPermanentDeletion(r, ageLimitMs),
+    )) {
+      try {
+        await cascadeDelete(ctx, table, record._id);
+        await ctx.db.delete(record._id);
+        deleted++;
+      } catch (e) {
+        errors.push(`${table}/${record._id}: ${e instanceof Error ? e.message : "Unknown error"}`);
+      }
+    }
+  } catch (error) {
+    errors.push(`${table}: ${error instanceof Error ? error.message : "Unknown error"}`);
+  }
+
+  return { deleted, errors };
+}
 
 /**
  * Permanently delete soft-deleted records older than 30 days
@@ -38,35 +73,10 @@ export const permanentlyDeleteOld = internalMutation({
     const errors: string[] = [];
 
     for (const table of TABLES_WITH_SOFT_DELETE) {
-      deletedByTable[table] = 0;
-
-      try {
-        // Query all soft-deleted records (bounded to prevent OOM)
-        const deleted = await ctx.db
-          .query(table)
-          .withIndex("by_deleted", (q) => q.eq("isDeleted", true))
-          .take(1000); // Limit per run to prevent timeout
-
-        // Filter to only those older than 30 days
-        const toDelete = deleted.filter((record) =>
-          isEligibleForPermanentDeletion(record, THIRTY_DAYS_MS),
-        );
-
-        // Permanently delete each one with cascading
-        for (const record of toDelete) {
-          try {
-            await cascadeDelete(ctx, table, record._id);
-            totalDeleted++;
-            deletedByTable[table]++;
-          } catch (error) {
-            errors.push(
-              `${table}/${record._id}: ${error instanceof Error ? error.message : "Unknown error"}`,
-            );
-          }
-        }
-      } catch (error) {
-        errors.push(`${table}: ${error instanceof Error ? error.message : "Unknown error"}`);
-      }
+      const stats = await deleteFromTable(ctx, table, THIRTY_DAYS_MS);
+      totalDeleted += stats.deleted;
+      deletedByTable[table] = stats.deleted;
+      errors.push(...stats.errors);
     }
 
     const durationMs = Date.now() - startTime;

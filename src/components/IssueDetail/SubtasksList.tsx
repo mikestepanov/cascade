@@ -14,7 +14,8 @@ interface Subtask {
   key: string;
   title: string;
   status: string;
-  assignee?: { name: string } | null;
+  assignee?: { name?: string | null; email?: string } | null;
+  [key: string]: unknown;
 }
 
 interface SubtasksListProps {
@@ -149,7 +150,7 @@ export function SubtasksList({ issueId, projectId, subtasks }: SubtasksListProps
                 </Flex>
                 {subtask.assignee && (
                   <span className="text-xs text-ui-text-tertiary">
-                    Assigned to {subtask.assignee.name}
+                    Assigned to {subtask.assignee.name || subtask.assignee.email || "Unknown"}
                   </span>
                 )}
               </div>

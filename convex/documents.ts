@@ -18,14 +18,32 @@ export const create = authenticatedMutation({
   args: {
     title: v.string(),
     isPublic: v.boolean(),
+    organizationId: v.id("organizations"),
+    workspaceId: v.optional(v.id("workspaces")),
+    projectId: v.optional(v.id("projects")),
   },
   handler: async (ctx, args) => {
+    // Validate organization membership
+    const membership = await ctx.db
+      .query("organizationMembers")
+      .withIndex("by_organization_user", (q) =>
+        q.eq("organizationId", args.organizationId).eq("userId", ctx.userId),
+      )
+      .first();
+
+    if (!membership) {
+      throw forbidden(undefined, "You are not a member of this organization");
+    }
+
     const now = Date.now();
     return await ctx.db.insert("documents", {
       title: args.title,
       isPublic: args.isPublic,
       createdBy: ctx.userId,
       updatedAt: now,
+      organizationId: args.organizationId,
+      workspaceId: args.workspaceId,
+      projectId: args.projectId,
     });
   },
 });
@@ -217,7 +235,7 @@ function matchesDocumentFilters(
     isPublic: boolean;
     createdBy: Id<"users">;
     projectId?: Id<"projects">;
-    createdAt: number;
+    _creationTime: number;
   },
   filters: {
     projectId?: Id<"projects">;
@@ -249,10 +267,10 @@ function matchesDocumentFilters(
   }
 
   // Apply date range filter
-  if (filters.dateFrom && doc.createdAt < filters.dateFrom) {
+  if (filters.dateFrom && doc._creationTime < filters.dateFrom) {
     return false;
   }
-  if (filters.dateTo && doc.createdAt > filters.dateTo) {
+  if (filters.dateTo && doc._creationTime > filters.dateTo) {
     return false;
   }
 

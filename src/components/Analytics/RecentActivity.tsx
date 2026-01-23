@@ -11,7 +11,7 @@ interface Activity {
   action: string;
   field?: string;
   issueKey?: string;
-  createdAt: number;
+  _creationTime: number;
 }
 
 export function RecentActivity({ activities }: { activities: Activity[] | undefined }) {
@@ -52,7 +52,7 @@ export function RecentActivity({ activities }: { activities: Activity[] | undefi
                 </span>
               </Typography>
               <Typography variant="muted" className="text-xs mt-1">
-                {new Date(activity.createdAt).toLocaleString()}
+                {new Date(activity._creationTime).toLocaleString()}
               </Typography>
             </div>
           </Flex>

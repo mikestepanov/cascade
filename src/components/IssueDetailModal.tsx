@@ -86,7 +86,7 @@ export function IssueDetailModal({
   const handleSave = async () => {
     try {
       await updateIssue({
-        id: issueId,
+        issueId,
         title: title || undefined,
         description: description || undefined,
       });

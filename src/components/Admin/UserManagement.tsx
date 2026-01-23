@@ -469,16 +469,9 @@ export function UserManagement() {
                     </tr>
                   </thead>
                   <tbody className="bg-ui-bg-primary divide-y divide-ui-border-primary dark:divide-ui-border-primary-dark">
-                    {users.map(
-                      (
-                        user: Doc<"users"> & {
-                          projectsCreated: number;
-                          projectMemberships: number;
-                        },
-                      ) => (
-                        <UserRow key={user._id} user={user} />
-                      ),
-                    )}
+                    {users.map((user) => (
+                      <UserRow key={user._id} user={user} />
+                    ))}
                   </tbody>
                 </table>
               </div>

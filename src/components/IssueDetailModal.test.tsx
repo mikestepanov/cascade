@@ -277,7 +277,7 @@ describe("IssueDetailModal", () => {
 
     await waitFor(() => {
       expect(mockUpdateIssue as any).toHaveBeenCalledWith({
-        id: mockIssueId,
+        issueId: mockIssueId,
         title: "Updated title",
         description: "Users cannot login with valid credentials",
       });

@@ -229,8 +229,9 @@ export function ProfileContent({ userId }: ProfileContentProps) {
       <div className="p-6 space-y-6">
         {/* Profile Header */}
         <ProfileHeader
-          user={viewUser}
-          isOwnProfile={isOwnProfile}
+          // biome-ignore lint/suspicious/noExplicitAny: PublicUser vs Doc mismatch
+          user={viewUser as any}
+          isOwnProfile={!!isOwnProfile}
           isEditing={isEditing}
           name={name}
           email={email}
@@ -245,7 +246,8 @@ export function ProfileContent({ userId }: ProfileContentProps) {
         {userStats && <UserStatsCards stats={userStats} />}
 
         {/* Account Info */}
-        <AccountInfo user={viewUser} />
+        {/* biome-ignore lint/suspicious/noExplicitAny: missing property on narrowed type */}
+        {viewUser && "_creationTime" in viewUser && <AccountInfo user={viewUser as any} />}
       </div>
     </Card>
   );

@@ -24,14 +24,14 @@ describe("AttachmentList", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.mocked(useMutation).mockReturnValue(mockRemoveAttachment);
+    vi.mocked(useMutation).mockReturnValue(mockRemoveAttachment as any);
 
     // Loose mock for useQuery to ensure it returns data
-    vi.mocked(useQuery).mockImplementation((_query, args: any) => {
+    vi.mocked(useQuery).mockImplementation(((_query: any, args: any) => {
       if (args && args.storageId === "storage-1") return "https://example.com/file1.png";
       if (args && args.storageId === "storage-2") return "https://example.com/document.pdf";
       return undefined;
-    });
+    }) as any);
 
     // Mock confirm dialog
     global.confirm = vi.fn(() => true);

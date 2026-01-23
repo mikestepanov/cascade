@@ -158,6 +158,7 @@ export const listRecordings = authenticatedQuery({
     // Enrich with pre-fetched data (no N+1 - all fetches are parallel)
     return recordings.map((recording) => ({
       ...recording,
+      createdAt: recording._creationTime,
       calendarEvent: recording.calendarEventId
         ? (calendarEventMap.get(recording.calendarEventId) ?? null)
         : null,

@@ -88,6 +88,7 @@ export function AppSidebar() {
       const docId = await createDocument({
         title: "Untitled Document",
         isPublic: false,
+        organizationId,
       });
       navigate({
         to: ROUTES.documents.detail.path,
@@ -244,7 +245,7 @@ export function AppSidebar() {
                 icon={Copy}
               />
               <div className="h-px bg-ui-border-primary my-1 mx-2" />
-              {(documents?.documents ?? []).slice(0, 10).map((doc: Doc<"documents">) => (
+              {(documents ?? []).slice(0, 10).map((doc: Doc<"documents">) => (
                 <NavSubItem
                   key={doc._id}
                   to={ROUTES.documents.detail.path}
@@ -254,9 +255,9 @@ export function AppSidebar() {
                   onClick={handleNavClick}
                 />
               ))}
-              {(documents?.documents?.length ?? 0) > 10 && (
+              {(documents?.length ?? 0) > 10 && (
                 <Typography variant="p" color="tertiary" className="px-3 py-1 text-xs">
-                  +{(documents?.documents?.length ?? 0) - 10} more
+                  +{(documents?.length ?? 0) - 10} more
                 </Typography>
               )}
             </CollapsibleSection>

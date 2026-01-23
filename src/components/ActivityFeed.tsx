@@ -15,7 +15,7 @@ interface Activity {
   newValue?: string;
   issueKey?: string;
   userName: string;
-  createdAt: number;
+  _creationTime: number;
 }
 
 interface ActivityFeedProps {
@@ -214,7 +214,7 @@ export function ActivityFeed({ projectId, limit = 50, compact = false }: Activit
                 variant="muted"
                 className={cn(compact ? "text-xs" : "text-sm", "flex-shrink-0")}
               >
-                {formatRelativeTime(activity.createdAt)}
+                {formatRelativeTime(activity._creationTime)}
               </Typography>
             </Flex>
           </div>

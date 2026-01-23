@@ -96,21 +96,20 @@ export const suggestIssueDescription = action({
     type: issueTypes,
     projectId: v.id("projects"),
   },
-  handler: async (ctx, args) => {
+  handler: async (ctx, args): Promise<string> => {
     const userId = await ctx.auth.getUserIdentity();
     if (!userId) {
       throw unauthenticated();
     }
 
     // Rate limit: 20 suggestions per hour per user
-    await rateLimit(ctx, {
-      name: "aiSuggestion",
+    await rateLimit(ctx, "aiSuggestion", {
       key: userId.subject,
       throws: true,
     });
 
     // Get project context
-    const project = await ctx.runQuery(internal.ai.getProjectContext, {
+    const project = await ctx.runQuery(internal.ai.queries.getProjectContext, {
       projectId: args.projectId,
     });
 
@@ -147,8 +146,7 @@ Description:`;
         : result.usage;
 
     // Store suggestion
-    await ctx.runMutation(internal.ai.storeSuggestion, {
-      userId: userId.subject,
+    await ctx.runMutation(internal.ai.mutations.createSuggestion, {
       projectId: args.projectId,
       suggestionType: "issue_description",
       targetId: args.title,
@@ -157,8 +155,7 @@ Description:`;
     });
 
     // Track usage
-    await ctx.runMutation(internal.internal.ai.trackUsage, {
-      userId: userId.subject,
+    await ctx.runMutation(internal.ai.mutations.trackUsage, {
       projectId: args.projectId,
       provider: "anthropic",
       model: CLAUDE_HAIKU,
@@ -184,15 +181,14 @@ export const suggestPriority = action({
     type: issueTypes,
     projectId: v.id("projects"),
   },
-  handler: async (ctx, args) => {
+  handler: async (ctx, args): Promise<"highest" | "high" | "medium" | "low" | "lowest"> => {
     const userId = await ctx.auth.getUserIdentity();
     if (!userId) {
       throw unauthenticated();
     }
 
     // Rate limit: 20 suggestions per hour per user
-    await rateLimit(ctx, {
-      name: "aiSuggestion",
+    await rateLimit(ctx, "aiSuggestion", {
       key: userId.subject,
       throws: true,
     });
@@ -237,8 +233,7 @@ Priority:`;
     const suggestedPriority = validPriorities.includes(priority) ? priority : "medium";
 
     // Store suggestion
-    await ctx.runMutation(internal.ai.storeSuggestion, {
-      userId: userId.subject,
+    await ctx.runMutation(internal.ai.mutations.createSuggestion, {
       projectId: args.projectId,
       suggestionType: "issue_priority",
       targetId: args.title,
@@ -247,8 +242,7 @@ Priority:`;
     });
 
     // Track usage
-    await ctx.runMutation(internal.internal.ai.trackUsage, {
-      userId: userId.subject,
+    await ctx.runMutation(internal.ai.mutations.trackUsage, {
       projectId: args.projectId,
       provider: "anthropic",
       model: CLAUDE_HAIKU,
@@ -274,21 +268,20 @@ export const suggestLabels = action({
     type: issueTypes,
     projectId: v.id("projects"),
   },
-  handler: async (ctx, args) => {
+  handler: async (ctx, args): Promise<string[]> => {
     const userId = await ctx.auth.getUserIdentity();
     if (!userId) {
       throw unauthenticated();
     }
 
     // Rate limit: 20 suggestions per hour per user
-    await rateLimit(ctx, {
-      name: "aiSuggestion",
+    await rateLimit(ctx, "aiSuggestion", {
       key: userId.subject,
       throws: true,
     });
 
     // Get existing project labels
-    const existingLabels = await ctx.runQuery(internal.ai.getProjectLabels, {
+    const existingLabels = await ctx.runQuery(internal.ai.queries.getProjectLabels, {
       projectId: args.projectId,
     });
 
@@ -321,7 +314,7 @@ Labels:`;
     const responseTime = Date.now() - startTime;
 
     // Handle backward compatibility
-    const responseText = typeof result === "string" ? result : result.text;
+    const responseText = (typeof result === "string" ? result : result.text) as string;
     const usage =
       typeof result === "string"
         ? { promptTokens: 0, completionTokens: 0, totalTokens: 0 }
@@ -334,8 +327,7 @@ Labels:`;
       .slice(0, 4);
 
     // Store suggestion
-    await ctx.runMutation(internal.ai.storeSuggestion, {
-      userId: userId.subject,
+    await ctx.runMutation(internal.ai.mutations.createSuggestion, {
       projectId: args.projectId,
       suggestionType: "issue_labels",
       targetId: args.title,
@@ -344,8 +336,7 @@ Labels:`;
     });
 
     // Track usage
-    await ctx.runMutation(internal.internal.ai.trackUsage, {
-      userId: userId.subject,
+    await ctx.runMutation(internal.ai.mutations.trackUsage, {
       projectId: args.projectId,
       provider: "anthropic",
       model: CLAUDE_HAIKU,
@@ -375,50 +366,6 @@ export const getProjectLabels = query({
       .collect();
 
     return labels.map((label) => label.name);
-  },
-});
-
-/**
- * Store AI suggestion
- */
-export const storeSuggestion = mutation({
-  args: {
-    userId: v.string(),
-    projectId: v.id("projects"),
-    suggestionType: v.union(
-      v.literal("issue_description"),
-      v.literal("issue_priority"),
-      v.literal("issue_labels"),
-      v.literal("issue_assignee"),
-      v.literal("sprint_planning"),
-      v.literal("risk_detection"),
-      v.literal("insight"),
-    ),
-    targetId: v.string(),
-    suggestion: v.string(),
-    modelUsed: v.string(),
-    reasoning: v.optional(v.string()),
-  },
-  handler: async (ctx, args) => {
-    // Find user by subject ID
-    const user = await ctx.db
-      .query("users")
-      .filter((q) => q.eq(q.field("_id"), args.userId))
-      .first();
-
-    if (!user) {
-      throw notFound("user", args.userId);
-    }
-
-    await ctx.db.insert("aiSuggestions", {
-      userId: user._id as Id<"users">,
-      projectId: args.projectId,
-      suggestionType: args.suggestionType,
-      targetId: args.targetId,
-      suggestion: args.suggestion,
-      reasoning: args.reasoning,
-      modelUsed: args.modelUsed,
-    });
   },
 });
 

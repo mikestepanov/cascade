@@ -2,6 +2,7 @@ import { api } from "@convex/_generated/api";
 import type { Id } from "@convex/_generated/dataModel";
 import type { EnrichedIssue } from "@convex/lib/issueHelpers";
 import type { OptimisticLocalStore, OptimisticUpdate } from "convex/browser";
+import type { FunctionArgs } from "convex/server";
 
 function updateSingleIssue(
   localStore: OptimisticLocalStore,
@@ -87,7 +88,7 @@ export const optimisticBoardUpdate =
       doneColumnDays?: number;
     },
     isTeamMode = false,
-  ): OptimisticUpdate<typeof api.issues.updateStatus> =>
+  ): OptimisticUpdate<FunctionArgs<typeof api.issues.updateStatus>> =>
   (localStore, args) => {
     const { issueId, newStatus, newOrder } = args;
     const now = Date.now();

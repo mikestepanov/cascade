@@ -1,6 +1,7 @@
 import { api } from "@convex/_generated/api";
 import type { Doc, Id } from "@convex/_generated/dataModel";
 import { useMutation, useQuery } from "convex/react";
+import type { FunctionReturnType } from "convex/server";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Copy, Key, Plus, Trash2, TrendingUp } from "@/lib/icons";
@@ -16,6 +17,16 @@ import { Input } from "../ui/form/Input";
 import { LoadingSpinner } from "../ui/LoadingSpinner";
 import { Tooltip } from "../ui/Tooltip";
 import { Typography } from "../ui/Typography";
+
+/**
+ * API Key Type (inferred from backend)
+ */
+type ApiKey = FunctionReturnType<typeof api.apiKeys.list>[number];
+
+/**
+ * API Usage Log Type (inferred from backend)
+ */
+type UsageLog = FunctionReturnType<typeof api.apiKeys.getUsageStats>["recentLogs"][number];
 
 /**
  * API Keys Manager
@@ -75,12 +86,8 @@ export function ApiKeysManager() {
           </div>
         ) : (
           <Flex direction="column" gap="lg">
-            {apiKeys.map((key: Doc<"apiKeys">) => (
-              <ApiKeyCard
-                key={key._id}
-                apiKey={key}
-                onViewStats={() => setSelectedKeyId(key._id)}
-              />
+            {apiKeys.map((key) => (
+              <ApiKeyCard key={key.id} apiKey={key} onViewStats={() => setSelectedKeyId(key.id)} />
             ))}
           </Flex>
         )}
@@ -118,7 +125,7 @@ export function ApiKeysManager() {
 /**
  * Individual API Key Card
  */
-function ApiKeyCard({ apiKey, onViewStats }: { apiKey: Doc<"apiKeys">; onViewStats: () => void }) {
+function ApiKeyCard({ apiKey, onViewStats }: { apiKey: ApiKey; onViewStats: () => void }) {
   const revokeKey = useMutation(api.apiKeys.revoke);
   const deleteKey = useMutation(api.apiKeys.remove);
   const [isRevoking, setIsRevoking] = useState(false);
@@ -131,7 +138,7 @@ function ApiKeyCard({ apiKey, onViewStats }: { apiKey: Doc<"apiKeys">; onViewSta
 
     setIsRevoking(true);
     try {
-      await revokeKey({ keyId: apiKey._id });
+      await revokeKey({ keyId: apiKey.id });
       showSuccess("API key revoked successfully");
     } catch (error) {
       showError(error, "Failed to revoke API key");
@@ -147,7 +154,7 @@ function ApiKeyCard({ apiKey, onViewStats }: { apiKey: Doc<"apiKeys">; onViewSta
 
     setIsDeleting(true);
     try {
-      await deleteKey({ keyId: apiKey._id });
+      await deleteKey({ keyId: apiKey.id });
       showSuccess("API key deleted successfully");
     } catch (error) {
       showError(error, "Failed to delete API key");
@@ -554,9 +561,9 @@ function UsageStatsModal({
                 </Typography>
               ) : (
                 <Flex direction="column" gap="sm" className="max-h-64 overflow-y-auto">
-                  {stats.recentLogs.map((log: Doc<"apiUsageLogs">) => (
+                  {stats.recentLogs.map((log: UsageLog) => (
                     <div
-                      key={log._id}
+                      key={`${log.endpoint}-${log.createdAt}`}
                       className={cn(
                         "p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg text-sm",
                       )}
@@ -582,7 +589,7 @@ function UsageStatsModal({
                       <Flex gap="lg" align="center" className="text-xs text-ui-text-tertiary">
                         <span>{log.responseTime}ms</span>
                         <span>•</span>
-                        <span>{new Date(log._creationTime).toLocaleString()}</span>
+                        <span>{new Date(log.createdAt).toLocaleString()}</span>
                         {log.error && (
                           <>
                             <span>•</span>

@@ -19,6 +19,16 @@ export const createProject = authenticatedMutation({
     key: v.string(),
     description: v.optional(v.string()),
     boardType: boardTypes,
+    workflowStates: v.optional(
+      v.array(
+        v.object({
+          id: v.string(),
+          name: v.string(),
+          category: workflowCategories,
+          order: v.number(),
+        }),
+      ),
+    ),
     // Ownership (required)
     organizationId: v.id("organizations"), // organization this project belongs to
     workspaceId: v.id("workspaces"), // Workspace this project belongs to
@@ -66,7 +76,7 @@ export const createProject = authenticatedMutation({
       createdBy: ctx.userId,
       updatedAt: now,
       boardType: args.boardType,
-      workflowStates: defaultWorkflowStates,
+      workflowStates: args.workflowStates ?? defaultWorkflowStates,
       // Ownership (required)
       organizationId: args.organizationId,
       workspaceId: args.workspaceId,
@@ -382,7 +392,7 @@ export const updateProject = projectAdminMutation({
         actorId: ctx.userId,
         targetId: ctx.projectId,
         targetType: "projects",
-        metadata: updates,
+        metadata: updates as Record<string, string | number | boolean>,
       });
     }
 
@@ -487,7 +497,7 @@ export const updateWorkflow = projectAdminMutation({
         actorId: ctx.userId,
         targetId: ctx.projectId,
         targetType: "projects",
-        metadata: { workflowStates: args.workflowStates },
+        metadata: { workflowStates: JSON.stringify(args.workflowStates) },
       });
     }
   },

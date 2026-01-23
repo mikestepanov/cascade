@@ -16,10 +16,20 @@ function TeamHome() {
   const { workspaceSlug, teamSlug } = Route.useParams();
   const navigate = useNavigate();
 
-  const team = useQuery(api.teams.getBySlug, {
-    organizationId: organizationId,
-    slug: teamSlug,
+  const workspace = useQuery(api.workspaces.getBySlug, {
+    organizationId,
+    slug: workspaceSlug,
   });
+
+  const team = useQuery(
+    api.teams.getBySlug,
+    workspace?._id
+      ? {
+          workspaceId: workspace._id,
+          slug: teamSlug,
+        }
+      : "skip",
+  );
 
   // Redirect to projects list
   useEffect(() => {

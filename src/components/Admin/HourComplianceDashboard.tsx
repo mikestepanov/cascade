@@ -1,5 +1,5 @@
 import { api } from "@convex/_generated/api";
-import type { Doc, Id } from "@convex/_generated/dataModel";
+import type { Id } from "@convex/_generated/dataModel";
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
 import { Typography } from "@/components/ui/Typography";
@@ -251,7 +251,7 @@ export function HourComplianceDashboard() {
             />
           ) : (
             <div className="space-y-3">
-              {records?.map((record: Doc<"hourComplianceRecords"> & { user?: Doc<"users"> }) => (
+              {records?.map((record) => (
                 <div
                   key={record._id}
                   className="p-4 border border-ui-border-primary rounded-lg hover:bg-ui-bg-tertiary transition-colors"

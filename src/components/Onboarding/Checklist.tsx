@@ -29,7 +29,7 @@ export function OnboardingChecklist() {
   }
 
   // Calculate completion status for each task (using efficient backend queries)
-  const hasProjects = (projects?.length ?? 0) > 0;
+  const hasProjects = (projects?.page.length ?? 0) > 0;
   const hasCreatedIssue = (userIssueCount ?? 0) > 0;
 
   const items: ChecklistItem[] = [
@@ -55,7 +55,7 @@ export function OnboardingChecklist() {
       id: "complete",
       title: "Complete an issue",
       description: "Move an issue to 'Done'",
-      completed: hasCompletedIssue,
+      completed: hasCompletedIssue ?? false,
     },
   ];
 

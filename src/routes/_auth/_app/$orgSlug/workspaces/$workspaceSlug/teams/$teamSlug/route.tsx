@@ -18,14 +18,19 @@ function TeamLayout() {
   const { workspaceSlug, teamSlug } = Route.useParams();
 
   const workspace = useQuery(api.workspaces.getBySlug, {
-    organizationId: organizationId,
+    organizationId,
     slug: workspaceSlug,
   });
 
-  const team = useQuery(api.teams.getBySlug, {
-    organizationId: organizationId,
-    slug: teamSlug,
-  });
+  const team = useQuery(
+    api.teams.getBySlug,
+    workspace?._id
+      ? {
+          workspaceId: workspace._id,
+          slug: teamSlug,
+        }
+      : "skip",
+  );
 
   if (workspace === undefined || team === undefined) {
     return (

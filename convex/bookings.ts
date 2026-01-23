@@ -256,6 +256,7 @@ export const confirmBooking = authenticatedMutation({
   args: { id: v.id("bookings") },
   handler: async (ctx, args) => {
     const booking = await ctx.db.get(args.id);
+    if (!booking) throw notFound("booking", args.id);
     requireOwned(booking, ctx.userId, "booking", "hostId");
 
     if (booking.status !== "pending") {
@@ -301,6 +302,7 @@ export const cancelBooking = authenticatedMutation({
   },
   handler: async (ctx, args) => {
     const booking = await ctx.db.get(args.id);
+    if (!booking) throw notFound("booking", args.id);
     requireOwned(booking, ctx.userId, "booking", "hostId");
 
     if (booking.status === "cancelled" || booking.status === "completed") {

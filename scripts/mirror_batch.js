@@ -27,7 +27,7 @@ const TARGETS = [
 // Run mirror script for each target sequentially
 // biome-ignore lint/suspicious/useAwait: returns Promise constructor
 async function runMirror(target) {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve, _reject) => {
     const scriptPath = path.join(__dirname, "scrape_full_mirror.js");
     const child = spawn("node", [scriptPath, target.url, target.competitor, target.page], {
       stdio: "inherit",

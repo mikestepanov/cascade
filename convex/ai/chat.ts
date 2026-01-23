@@ -1,21 +1,18 @@
 /**
- * AI Integration with Anthropic Claude
+ * AI Chat and Helper Actions
  *
- * Provides AI-powered features:
- * - Project assistant (chat)
- * - Semantic issue search (vector embeddings)
- * - AI suggestions (descriptions, priorities, labels)
+ * This file replaces the shadowed convex/ai.ts to resolve naming collisions.
  */
 
 import { anthropic } from "@ai-sdk/anthropic";
 import { generateText } from "ai";
 import { v } from "convex/values";
-import { internal } from "./_generated/api";
-import type { Id } from "./_generated/dataModel";
-import { action, internalAction } from "./_generated/server";
-import { extractUsage } from "./lib/aiHelpers";
-import { notFound, unauthenticated } from "./lib/errors";
-import { rateLimit } from "./rateLimits";
+import { internal } from "../_generated/api";
+import type { Id } from "../_generated/dataModel";
+import { action, internalAction } from "../_generated/server";
+import { extractUsage } from "../lib/aiHelpers";
+import { notFound, unauthenticated } from "../lib/errors";
+import { rateLimit } from "../rateLimits";
 
 // Claude model (using alias - auto-points to latest snapshot)
 const CLAUDE_OPUS = "claude-opus-4-5";
@@ -43,6 +40,7 @@ export const generateIssueEmbedding = internalAction({
   },
   returns: v.array(v.float64()),
   handler: async (ctx, args): Promise<number[]> => {
+    // Calling internal.internal.ai.getIssueData (which is an internalQuery)
     const issue = await ctx.runQuery(internal.internal.ai.getIssueData, {
       issueId: args.issueId,
     });
@@ -66,21 +64,6 @@ export const generateIssueEmbedding = internalAction({
     });
 
     return embedding;
-  },
-});
-
-/**
- * Internal query to get issue data for embedding
- */
-export const getIssueForEmbedding = internalAction({
-  args: {
-    issueId: v.id("issues"),
-  },
-  handler: async (
-    ctx,
-    args,
-  ): Promise<{ _id: string; title: string; description?: string } | null> => {
-    return await ctx.runQuery(internal.internal.ai.getIssueData, { issueId: args.issueId });
   },
 });
 
@@ -109,14 +92,13 @@ export const chat = action({
     // Create or get chat
     const chatId: Id<"aiChats"> =
       args.chatId ??
-      (await ctx.runMutation(internal.internal.ai.createChat, {
-        userId: userId.subject,
+      (await ctx.runMutation(internal.ai.mutations.createChat, {
         projectId: args.projectId,
         title: args.message.slice(0, 100), // First 100 chars as title
       }));
 
     // Store user message
-    await ctx.runMutation(internal.internal.ai.addMessage, {
+    await ctx.runMutation(internal.ai.mutations.addMessage, {
       chatId,
       role: "user",
       content: args.message,
@@ -158,7 +140,7 @@ Be concise, helpful, and professional.`;
     const usage = extractUsage(response.usage);
 
     // Store AI response
-    await ctx.runMutation(internal.internal.ai.addMessage, {
+    await ctx.runMutation(internal.ai.mutations.addMessage, {
       chatId,
       role: "assistant",
       content: response.text,
@@ -167,8 +149,7 @@ Be concise, helpful, and professional.`;
     });
 
     // Track usage
-    await ctx.runMutation(internal.internal.ai.trackUsage, {
-      userId: userId.subject,
+    await ctx.runMutation(internal.ai.mutations.trackUsage, {
       projectId: args.projectId,
       provider: "anthropic",
       model: CLAUDE_OPUS,
@@ -184,37 +165,5 @@ Be concise, helpful, and professional.`;
       chatId,
       message: response.text,
     };
-  },
-});
-
-export const getProjectContext = internalAction({
-  args: {
-    projectId: v.id("projects"),
-  },
-  handler: async (ctx, args): Promise<string> => {
-    return await ctx.runQuery(internal.internal.ai.getProjectContext, args);
-  },
-});
-
-export const trackUsage = internalAction({
-  args: {
-    userId: v.string(),
-    projectId: v.optional(v.id("projects")),
-    provider: v.literal("anthropic"),
-    model: v.string(),
-    operation: v.union(
-      v.literal("chat"),
-      v.literal("suggestion"),
-      v.literal("automation"),
-      v.literal("analysis"),
-    ),
-    promptTokens: v.number(),
-    completionTokens: v.number(),
-    totalTokens: v.number(),
-    responseTime: v.number(),
-    success: v.boolean(),
-  },
-  handler: async (ctx, args): Promise<void> => {
-    await ctx.runMutation(internal.internal.ai.trackUsage, args);
   },
 });

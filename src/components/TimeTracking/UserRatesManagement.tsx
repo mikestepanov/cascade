@@ -13,7 +13,7 @@ import { Typography } from "../ui/Typography";
 
 export function UserRatesManagement() {
   const currentUser = useQuery(api.auth.loggedInUser);
-  const projects = useQuery(api.projects.getCurrentUserProjects);
+  const projects = useQuery(api.projects.getCurrentUserProjects, {});
   const userRates = useQuery(api.timeTracking.listUserRates, {});
 
   const setUserRate = useMutation(api.timeTracking.setUserRate);
@@ -92,7 +92,8 @@ export function UserRatesManagement() {
       {/* Current Rates List */}
       {userRates && userRates.length > 0 ? (
         <Flex direction="column" gap="md">
-          {userRates.map((rate: Doc<"userRates"> & { user?: Doc<"users"> }) => (
+          {/* biome-ignore lint/suspicious/noExplicitAny: enriched Doc type mismatch */}
+          {userRates.map((rate: any) => (
             <div
               key={rate._id}
               className="p-4 bg-ui-bg-primary border border-ui-border-primary rounded-lg"

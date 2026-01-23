@@ -15,12 +15,22 @@ export const Route = createFileRoute(
 
 function TeamBoardPage() {
   const { organizationId } = useOrganization();
-  const { teamSlug } = Route.useParams();
+  const { workspaceSlug, teamSlug } = Route.useParams();
 
-  const team = useQuery(api.teams.getBySlug, {
-    organizationId: organizationId,
-    slug: teamSlug,
+  const workspace = useQuery(api.workspaces.getBySlug, {
+    organizationId,
+    slug: workspaceSlug,
   });
+
+  const team = useQuery(
+    api.teams.getBySlug,
+    workspace?._id
+      ? {
+          workspaceId: workspace._id,
+          slug: teamSlug,
+        }
+      : "skip",
+  );
 
   if (!team) {
     return (

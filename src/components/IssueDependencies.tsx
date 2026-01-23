@@ -13,8 +13,10 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "
 import { Input, Select } from "./ui/form";
 import { Typography } from "./ui/Typography";
 
-type IssueLinkWithDetails = FunctionReturnType<typeof api.issueLinks.getForIssue>[number];
-type Issue = FunctionReturnType<typeof api.issues.search>[number];
+type IssueLinkWithDetails = FunctionReturnType<
+  typeof api.issueLinks.getForIssue
+>["outgoing"][number];
+type Issue = FunctionReturnType<typeof api.issues.search>["page"][number];
 
 interface IssueDependenciesProps {
   issueId: Id<"issues">;

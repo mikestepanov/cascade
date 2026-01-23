@@ -221,7 +221,13 @@ export function LabelsManager({ projectId }: LabelsManagerProps) {
       <ConfirmDialog
         isOpen={!!deleteConfirm.deleteId}
         onClose={deleteConfirm.cancelDelete}
-        onConfirm={() => deleteConfirm.executeDelete((id) => deleteLabelMutation({ id }))}
+        onConfirm={() => {
+          deleteConfirm.executeDelete((id) => {
+            return deleteLabelMutation({ id }).then(() => {
+              /* intentional */
+            });
+          });
+        }}
         title="Delete Label"
         message="Are you sure you want to delete this label? It will be removed from all issues."
         variant="danger"

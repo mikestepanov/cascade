@@ -70,6 +70,7 @@ export function DocumentTemplatesManager({
         description?: string;
         category: string;
         icon: string;
+        isPublic: boolean;
         [key: string]: unknown;
       };
     }) => {
@@ -79,17 +80,14 @@ export function DocumentTemplatesManager({
           description: value.description?.trim() || undefined,
           category: value.category,
           icon: value.icon,
-          content: {
-            type: "doc",
-            content: [
-              {
-                type: "heading",
-                attrs: { level: 1 },
-                content: [{ type: "text", text: value.name }],
-              },
-              { type: "paragraph", content: [] },
-            ],
-          },
+          content: [
+            {
+              type: "heading",
+              props: { level: 1 },
+              content: [{ type: "text", text: value.name }],
+            },
+            { type: "paragraph", content: [] },
+          ],
           isPublic: value.isPublic,
           projectId,
         };

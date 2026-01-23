@@ -150,7 +150,9 @@ export function useCommands({
   const navigate = useNavigate();
   const { orgSlug } = useOrganization();
   const projects = useQuery(api.dashboard.getMyProjects);
-  const myIssues = useQuery(api.dashboard.getMyIssues);
+  const myIssues = useQuery(api.dashboard.getMyIssues, {
+    paginationOpts: { numItems: 10, cursor: null },
+  });
 
   const commands: CommandAction[] = [
     // Navigation

@@ -120,7 +120,7 @@ export const getIssueAttachments = authenticatedQuery({
         storageId,
         url: urls[index],
         filename: activity?.newValue ?? "Unknown",
-        uploadedAt: activity?.createdAt ?? issue._creationTime,
+        uploadedAt: activity?._creationTime ?? issue._creationTime,
         uploadedBy: activity?.userId,
       };
     });

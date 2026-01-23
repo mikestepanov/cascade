@@ -346,6 +346,7 @@ export const listUserProfiles = authenticatedQuery({
     // Enrich with pre-fetched data (no N+1)
     const profilesWithUsers = profiles.map((profile) => ({
       ...profile,
+      createdAt: profile._creationTime,
       user: userMap.get(profile.userId) ?? null,
       manager: profile.managerId ? (userMap.get(profile.managerId) ?? null) : null,
     }));

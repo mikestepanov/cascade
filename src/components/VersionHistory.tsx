@@ -30,7 +30,7 @@ function getRelativeTimeString(diffMs: number): string | null {
 interface DocumentVersion {
   _id: Id<"documentVersions">;
   title: string;
-  createdAt: number;
+  _creationTime: number;
   createdByName: string;
   changeDescription?: string;
 }
@@ -146,7 +146,7 @@ export function VersionHistory({
                         <Flex align="center" gap="md" className="text-sm text-ui-text-secondary">
                           <span className="flex items-center gap-1">
                             <Clock className="w-3.5 h-3.5" />
-                            {formatDate(version.createdAt)}
+                            {formatDate(version._creationTime)}
                           </span>
                           <span>by {version.createdByName}</span>
                         </Flex>

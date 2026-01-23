@@ -73,7 +73,10 @@ export async function createTestUser(
  * const doc = await asUser.mutation(api.documents.create, { title: "Test" });
  * ```
  */
-export function asAuthenticatedUser(t: TestCtx, userId: Id<"users">) {
+export function asAuthenticatedUser(
+  t: TestCtx,
+  userId: Id<"users">,
+): ReturnType<typeof t.withIdentity> {
   // Format: userId|sessionId - the getAuthUserId extracts the part before the delimiter
   const subject = `${userId}${TOKEN_SUB_CLAIM_DIVIDER}test-session-${Date.now()}`;
   return t.withIdentity({ subject });
@@ -383,5 +386,88 @@ export async function createOrganizationAdmin(
     });
 
     return { organizationId, workspaceId, teamId };
+  });
+}
+
+/**
+ * Test context with commonly needed data already set up
+ */
+export interface TestContext {
+  t: TestCtx;
+  userId: Id<"users">;
+  organizationId: Id<"organizations">;
+  workspaceId: Id<"workspaces">;
+  teamId: Id<"teams">;
+  asUser: ReturnType<typeof asAuthenticatedUser>;
+}
+
+/**
+ * Create a complete test context with user, organization, workspace, and team
+ *
+ * This is the recommended way to set up tests - reduces boilerplate significantly.
+ *
+ * @param t - Convex test helper
+ * @param userData - Optional user data
+ * @returns Complete test context
+ *
+ * @example
+ * ```typescript
+ * const ctx = await createTestContext(convexTest(schema, modules));
+ * const docId = await ctx.asUser.mutation(api.documents.create, {
+ *   title: "Test",
+ *   isPublic: false,
+ *   organizationId: ctx.organizationId,
+ * });
+ * ```
+ */
+export async function createTestContext(
+  t: TestCtx,
+  userData?: { name?: string; email?: string },
+): Promise<TestContext> {
+  const userId = await createTestUser(t, userData);
+  const { organizationId, workspaceId, teamId } = await createOrganizationAdmin(t, userId);
+  const asUser = asAuthenticatedUser(t, userId);
+
+  return {
+    t,
+    userId,
+    organizationId,
+    workspaceId,
+    teamId,
+    asUser,
+  };
+}
+
+/**
+ * Create a document in an organization
+ *
+ * @param t - Convex test helper
+ * @param creatorId - User ID of the document creator
+ * @param organizationId - Organization the document belongs to
+ * @param documentData - Optional document data
+ * @returns Document ID
+ */
+export async function createDocumentInOrganization(
+  t: TestCtx,
+  creatorId: Id<"users">,
+  organizationId: Id<"organizations">,
+  documentData?: {
+    title?: string;
+    isPublic?: boolean;
+    workspaceId?: Id<"workspaces">;
+    projectId?: Id<"projects">;
+  },
+): Promise<Id<"documents">> {
+  return await t.run(async (ctx) => {
+    const now = Date.now();
+    return await ctx.db.insert("documents", {
+      title: documentData?.title || `Test Document ${now}`,
+      isPublic: documentData?.isPublic ?? false,
+      createdBy: creatorId,
+      organizationId,
+      workspaceId: documentData?.workspaceId,
+      projectId: documentData?.projectId,
+      updatedAt: now,
+    });
   });
 }

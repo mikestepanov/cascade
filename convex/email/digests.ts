@@ -5,6 +5,7 @@
  */
 
 import { internal } from "../_generated/api";
+import type { Id } from "../_generated/dataModel";
 import { internalAction } from "../_generated/server";
 
 /**
@@ -12,7 +13,7 @@ import { internalAction } from "../_generated/server";
  */
 export const sendDailyDigests = internalAction({
   args: {},
-  handler: async (ctx) => {
+  handler: async (ctx): Promise<{ sent: number; failed: number }> => {
     // Get all users who have daily digest enabled
     const users = await ctx.runQuery(internal.users.listWithDigestPreference, {
       frequency: "daily",
@@ -20,7 +21,7 @@ export const sendDailyDigests = internalAction({
 
     // Send digest to each user
     const results = await Promise.allSettled(
-      users.map((user) =>
+      users.map((user: { _id: Id<"users"> }) =>
         ctx.runAction(internal.email.notifications.sendDigestEmail, {
           userId: user._id,
           frequency: "daily",
@@ -40,7 +41,7 @@ export const sendDailyDigests = internalAction({
  */
 export const sendWeeklyDigests = internalAction({
   args: {},
-  handler: async (ctx) => {
+  handler: async (ctx): Promise<{ sent: number; failed: number }> => {
     // Get all users who have weekly digest enabled
     const users = await ctx.runQuery(internal.users.listWithDigestPreference, {
       frequency: "weekly",
@@ -48,7 +49,7 @@ export const sendWeeklyDigests = internalAction({
 
     // Send digest to each user
     const results = await Promise.allSettled(
-      users.map((user) =>
+      users.map((user: { _id: Id<"users"> }) =>
         ctx.runAction(internal.email.notifications.sendDigestEmail, {
           userId: user._id,
           frequency: "weekly",

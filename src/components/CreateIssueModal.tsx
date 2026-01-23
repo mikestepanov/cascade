@@ -164,16 +164,16 @@ export function CreateIssueModal({
 
       // Apply AI suggestions
       if (suggestions.description && !(description as string)?.trim()) {
-        form.setFieldValue("description", suggestions.description);
+        form.setFieldValue("description", suggestions.description as string);
       }
 
       if (suggestions.priority) {
         form.setFieldValue("priority", suggestions.priority as (typeof priorities)[number]);
       }
 
-      if (suggestions.labels && suggestions.labels.length > 0 && labels) {
+      if (suggestions.labels && (suggestions.labels as string[]).length > 0 && labels) {
         const suggestedLabelIds = labels
-          .filter((label: Doc<"labels">) => suggestions.labels.includes(label.name))
+          .filter((label: Doc<"labels">) => (suggestions.labels as string[]).includes(label.name))
           .map((label: Doc<"labels">) => label._id);
         setSelectedLabels((prev) => [...new Set([...prev, ...suggestedLabelIds])]);
       }
@@ -303,7 +303,7 @@ export function CreateIssueModal({
             {(field) => (
               <FormSelect field={field} label="Assignee">
                 <option value="">Unassigned</option>
-                {project.members.map((member: Doc<"users">) => (
+                {project.members.map((member) => (
                   <option key={member._id} value={member._id}>
                     {member.name}
                   </option>

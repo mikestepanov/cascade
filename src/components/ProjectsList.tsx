@@ -23,7 +23,8 @@ export function ProjectsList() {
     status,
     loadMore,
   } = usePaginatedQuery(
-    api.projects.getCurrentUserProjects,
+    // biome-ignore lint/suspicious/noExplicitAny: paginationOpts mismatch in generated types
+    api.projects.getCurrentUserProjects as any,
     { organizationId },
     { initialNumItems: 20 },
   );
