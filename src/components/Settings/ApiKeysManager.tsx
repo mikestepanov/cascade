@@ -1,6 +1,7 @@
 import { api } from "@convex/_generated/api";
 import type { Doc, Id } from "@convex/_generated/dataModel";
 import { useMutation, useQuery } from "convex/react";
+import type { FunctionReturnType } from "convex/server";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Copy, Key, Plus, Trash2, TrendingUp } from "@/lib/icons";
@@ -16,6 +17,16 @@ import { Input } from "../ui/form/Input";
 import { LoadingSpinner } from "../ui/LoadingSpinner";
 import { Tooltip } from "../ui/Tooltip";
 import { Typography } from "../ui/Typography";
+
+/**
+ * API Key Type (inferred from backend)
+ */
+type ApiKey = FunctionReturnType<typeof api.apiKeys.list>[number];
+
+/**
+ * API Usage Log Type (inferred from backend)
+ */
+type UsageLog = FunctionReturnType<typeof api.apiKeys.getUsageStats>["recentLogs"][number];
 
 /**
  * API Keys Manager
@@ -114,8 +125,7 @@ export function ApiKeysManager() {
 /**
  * Individual API Key Card
  */
-// biome-ignore lint/suspicious/noExplicitAny: API keys are mapped to a custom object
-function ApiKeyCard({ apiKey, onViewStats }: { apiKey: any; onViewStats: () => void }) {
+function ApiKeyCard({ apiKey, onViewStats }: { apiKey: ApiKey; onViewStats: () => void }) {
   const revokeKey = useMutation(api.apiKeys.revoke);
   const deleteKey = useMutation(api.apiKeys.remove);
   const [isRevoking, setIsRevoking] = useState(false);
@@ -551,10 +561,9 @@ function UsageStatsModal({
                 </Typography>
               ) : (
                 <Flex direction="column" gap="sm" className="max-h-64 overflow-y-auto">
-                  {/* biome-ignore lint/suspicious/noExplicitAny: Doc type mismatch */}
-                  {stats.recentLogs.map((log: any) => (
+                  {stats.recentLogs.map((log: UsageLog) => (
                     <div
-                      key={log._id}
+                      key={`${log.endpoint}-${log.createdAt}`}
                       className={cn(
                         "p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg text-sm",
                       )}
@@ -580,8 +589,7 @@ function UsageStatsModal({
                       <Flex gap="lg" align="center" className="text-xs text-ui-text-tertiary">
                         <span>{log.responseTime}ms</span>
                         <span>•</span>
-                        {/* biome-ignore lint/suspicious/noExplicitAny: property existence check on unknown Doc type */}
-                        <span>{new Date((log as any)._creationTime).toLocaleString()}</span>
+                        <span>{new Date(log.createdAt).toLocaleString()}</span>
                         {log.error && (
                           <>
                             <span>•</span>

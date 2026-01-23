@@ -29,7 +29,7 @@ export const generateEmbedding = internalAction({
   },
   returns: v.array(v.float64()),
   handler: async (ctx, args): Promise<number[]> => {
-    return await ctx.runAction(internal.ai.generateEmbedding, args);
+    return await ctx.runAction(internal.internal.ai.generateEmbedding, args);
   },
 });
 
@@ -43,7 +43,7 @@ export const generateIssueEmbedding = internalAction({
   },
   returns: v.array(v.float64()),
   handler: async (ctx, args): Promise<number[]> => {
-    const issue = await ctx.runAction(internal.ai.getIssueForEmbedding, {
+    const issue = await ctx.runQuery(internal.internal.ai.getIssueData, {
       issueId: args.issueId,
     });
 
@@ -55,12 +55,12 @@ export const generateIssueEmbedding = internalAction({
     const text = `${issue.title}\n\n${issue.description || ""}`.trim();
 
     // Generate embedding
-    const embedding = await ctx.runAction(internal.ai.generateEmbedding, {
+    const embedding = await ctx.runAction(internal.internal.ai.generateEmbedding, {
       text,
     });
 
     // Store embedding
-    await ctx.runMutation((internal as any)["ai/mutations"].storeIssueEmbedding, {
+    await ctx.runMutation(internal.internal.ai.storeIssueEmbedding, {
       issueId: args.issueId,
       embedding,
     });

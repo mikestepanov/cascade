@@ -8,11 +8,18 @@
 import { api } from "@convex/_generated/api";
 import type { Doc, Id } from "@convex/_generated/dataModel";
 import { useQuery } from "convex/react";
+import type { FunctionReturnType } from "convex/server";
+import { useMemo } from "react";
 import { Avatar } from "@/components/ui/Avatar";
 import { useUserFuzzySearch } from "@/hooks/useFuzzySearch";
 import { Flex } from "../ui/Flex";
 import { Typography } from "../ui/Typography";
 import { FuzzySearchInput, HighlightedText } from "./FuzzySearchInput";
+
+/**
+ * Project Member type (inferred from backend query)
+ */
+type ProjectMember = FunctionReturnType<typeof api.projectMembers.list>[number];
 
 interface AssigneeSearchDropdownProps {
   /**
@@ -52,8 +59,18 @@ export function AssigneeSearchDropdown({
   const members = useQuery(api.projectMembers.list, { projectId });
 
   // Step 2: Apply fuzzy search on loaded data
-  // biome-ignore lint/suspicious/noExplicitAny: Example uses any for simplicity
-  const { results, search, query, clear, isDebouncing } = useUserFuzzySearch<any>(members);
+  // Map our custom member format to the standard name/email format the hook expects
+  // We need to ensure T includes name/email for useUserFuzzySearch
+  const searchItems = useMemo(() => {
+    if (!members) return [];
+    return members.map((m) => ({
+      ...m,
+      name: m.userName,
+      email: m.userEmail ?? undefined,
+    }));
+  }, [members]);
+
+  const { results, search, query, clear, isDebouncing } = useUserFuzzySearch(searchItems);
 
   if (!members) {
     return <div className="text-sm text-ui-text-tertiary">Loading members...</div>;
@@ -99,12 +116,12 @@ export function AssigneeSearchDropdown({
         results={results}
         query={query}
         onSearch={search}
-        onSelect={(user: Doc<"users">) => {
-          onChange(user._id);
+        onSelect={(member: ProjectMember) => {
+          onChange(member.userId);
           clear();
         }}
         onClear={() => onChange(null)}
-        getKey={(user: Doc<"users">) => user._id}
+        getKey={(member: ProjectMember) => member._id}
         placeholder={placeholder}
         showScore={false}
         isLoading={isDebouncing}
