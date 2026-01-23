@@ -1,21 +1,18 @@
 /**
- * AI Integration with Anthropic Claude
+ * AI Chat and Helper Actions
  *
- * Provides AI-powered features:
- * - Project assistant (chat)
- * - Semantic issue search (vector embeddings)
- * - AI suggestions (descriptions, priorities, labels)
+ * This file replaces the shadowed convex/ai.ts to resolve naming collisions.
  */
 
 import { anthropic } from "@ai-sdk/anthropic";
 import { generateText } from "ai";
 import { v } from "convex/values";
-import { internal } from "./_generated/api";
-import type { Doc, Id } from "./_generated/dataModel";
-import { action, internalAction } from "./_generated/server";
-import { extractUsage } from "./lib/aiHelpers";
-import { notFound, unauthenticated } from "./lib/errors";
-import { rateLimit } from "./rateLimits";
+import { internal } from "../_generated/api";
+import type { Id } from "../_generated/dataModel";
+import { action, internalAction } from "../_generated/server";
+import { extractUsage } from "../lib/aiHelpers";
+import { notFound, unauthenticated } from "../lib/errors";
+import { rateLimit } from "../rateLimits";
 
 // Claude model (using alias - auto-points to latest snapshot)
 const CLAUDE_OPUS = "claude-opus-4-5";
@@ -43,6 +40,7 @@ export const generateIssueEmbedding = internalAction({
   },
   returns: v.array(v.float64()),
   handler: async (ctx, args): Promise<number[]> => {
+    // Calling internal.internal.ai.getIssueData (which is an internalQuery)
     const issue = await ctx.runQuery(internal.internal.ai.getIssueData, {
       issueId: args.issueId,
     });
@@ -66,18 +64,6 @@ export const generateIssueEmbedding = internalAction({
     });
 
     return embedding;
-  },
-});
-
-/**
- * Internal action to fetch issue data for embedding (wrapper)
- */
-export const getIssueForEmbedding = internalAction({
-  args: {
-    issueId: v.id("issues"),
-  },
-  handler: async (ctx, args): Promise<Doc<"issues"> | null> => {
-    return await ctx.runQuery(internal.internal.ai.getIssueData, { issueId: args.issueId });
   },
 });
 
@@ -106,13 +92,13 @@ export const chat = action({
     // Create or get chat
     const chatId: Id<"aiChats"> =
       args.chatId ??
-      (await ctx.runMutation((internal as any)["ai/mutations"].createChat, {
+      (await ctx.runMutation(internal.ai.mutations.createChat, {
         projectId: args.projectId,
         title: args.message.slice(0, 100), // First 100 chars as title
       }));
 
     // Store user message
-    await ctx.runMutation((internal as any)["ai/mutations"].addMessage, {
+    await ctx.runMutation(internal.ai.mutations.addMessage, {
       chatId,
       role: "user",
       content: args.message,
@@ -154,7 +140,7 @@ Be concise, helpful, and professional.`;
     const usage = extractUsage(response.usage);
 
     // Store AI response
-    await ctx.runMutation((internal as any)["ai/mutations"].addMessage, {
+    await ctx.runMutation(internal.ai.mutations.addMessage, {
       chatId,
       role: "assistant",
       content: response.text,
@@ -163,7 +149,7 @@ Be concise, helpful, and professional.`;
     });
 
     // Track usage
-    await ctx.runMutation((internal as any)["ai/mutations"].trackUsage, {
+    await ctx.runMutation(internal.ai.mutations.trackUsage, {
       projectId: args.projectId,
       provider: "anthropic",
       model: CLAUDE_OPUS,

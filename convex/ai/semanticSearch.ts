@@ -34,8 +34,7 @@ export const searchSimilarIssues = action({
     });
 
     // Generate embedding for search query
-    // biome-ignore lint/suspicious/noExplicitAny: Convex path collision
-    const queryEmbedding = await ctx.runAction((internal as any)["internal/ai"].generateEmbedding, {
+    const queryEmbedding = await ctx.runAction(internal.internal.ai.generateEmbedding, {
       text: args.query,
     });
 
@@ -52,7 +51,7 @@ export const searchSimilarIssues = action({
     // Fetch full issue details
     const issues = await Promise.all(
       typedResults.map(async (result) => {
-        const issue = await ctx.runAction((internal as any)["internal/ai"].getIssueData, {
+        const issue = await ctx.runQuery(internal.internal.ai.getIssueData, {
           issueId: result._id,
         });
         if (!issue) return null;
@@ -77,7 +76,7 @@ export const getRelatedIssues = action({
   },
   handler: async (ctx, args): Promise<(Doc<"issues"> & { similarity: number })[]> => {
     // Get the issue
-    const issue = await ctx.runAction((internal as any)["internal/ai"].getIssueData, {
+    const issue = await ctx.runQuery(internal.internal.ai.getIssueData, {
       issueId: args.issueId,
     });
 
@@ -101,7 +100,7 @@ export const getRelatedIssues = action({
         .filter((result) => result._id !== args.issueId)
         .slice(0, args.limit || 5)
         .map(async (result) => {
-          const relatedIssue = await ctx.runAction((internal as any)["internal/ai"].getIssueData, {
+          const relatedIssue = await ctx.runQuery(internal.internal.ai.getIssueData, {
             issueId: result._id,
           });
           if (!relatedIssue) return null;
@@ -131,7 +130,7 @@ export const findPotentialDuplicates = action({
     const text = `${args.title}\n\n${args.description || ""}`.trim();
 
     // Generate embedding
-    const embedding = await ctx.runAction((internal as any)["internal/ai"].generateEmbedding, {
+    const embedding = await ctx.runAction(internal.internal.ai.generateEmbedding, {
       text,
     });
 
@@ -152,7 +151,7 @@ export const findPotentialDuplicates = action({
       results
         .filter((result) => result._score >= threshold)
         .map(async (result) => {
-          const issue = await ctx.runAction((internal as any)["internal/ai"].getIssueData, {
+          const issue = await ctx.runQuery(internal.internal.ai.getIssueData, {
             issueId: result._id,
           });
           if (!issue) return null;

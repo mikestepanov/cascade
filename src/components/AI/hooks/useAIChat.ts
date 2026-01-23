@@ -49,7 +49,7 @@ export function useAIChat({
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const createChat = useMutation(api.ai.mutations.createChat);
-  const sendMessage = useAction(api.ai.actions.sendChatMessage);
+  const sendMessage = useAction(api.ai.chat.chat);
   const messages = useQuery(api.ai.queries.getChatMessages, chatId ? { chatId } : "skip");
 
   // Auto-scroll to bottom when new messages arrive

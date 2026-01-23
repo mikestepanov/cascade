@@ -42,8 +42,7 @@ export const generateDescription = internalAction({
 });
 
 const descriptionCache = new ActionCache(components.actionCache, {
-  // biome-ignore lint/suspicious/noExplicitAny: API type workaround
-  action: (internal as any)["ai/suggestions"].generateDescription,
+  action: internal.ai.suggestions.generateDescription,
 });
 
 /**
@@ -64,8 +63,7 @@ export const generatePriority = internalAction({
 });
 
 const priorityCache = new ActionCache(components.actionCache, {
-  // biome-ignore lint/suspicious/noExplicitAny: API type workaround
-  action: (internal as any)["ai/suggestions"].generatePriority,
+  action: internal.ai.suggestions.generatePriority,
 });
 
 /**
@@ -86,8 +84,7 @@ export const generateLabels = internalAction({
 });
 
 const labelsCache = new ActionCache(components.actionCache, {
-  // biome-ignore lint/suspicious/noExplicitAny: API type workaround
-  action: (internal as any)["ai/suggestions"].generateLabels,
+  action: internal.ai.suggestions.generateLabels,
 });
 
 /**
@@ -112,8 +109,7 @@ export const suggestIssueDescription = action({
     });
 
     // Get project context
-    // biome-ignore lint/suspicious/noExplicitAny: API type workaround
-    const project = await ctx.runQuery((internal as any)["ai/queries"].getProjectContext, {
+    const project = await ctx.runQuery(internal.ai.queries.getProjectContext, {
       projectId: args.projectId,
     });
 
@@ -150,35 +146,26 @@ Description:`;
         : result.usage;
 
     // Store suggestion
-    await ctx.runMutation(
-      // biome-ignore lint/suspicious/noExplicitAny: API type workaround
-      (internal as any)["ai/mutations"].createSuggestion,
-      {
-        projectId: args.projectId,
-        suggestionType: "issue_description",
-        targetId: args.title,
-        suggestion,
-        modelUsed: CLAUDE_HAIKU,
-      },
-    );
+    await ctx.runMutation(internal.ai.mutations.createSuggestion, {
+      projectId: args.projectId,
+      suggestionType: "issue_description",
+      targetId: args.title,
+      suggestion,
+      modelUsed: CLAUDE_HAIKU,
+    });
 
     // Track usage
-    await ctx.runMutation(
-      // biome-ignore lint/suspicious/noExplicitAny: API type workaround
-      (internal as any)["internal/ai"].trackUsage,
-      {
-        userId: userId.subject,
-        projectId: args.projectId,
-        provider: "anthropic",
-        model: CLAUDE_HAIKU,
-        operation: "suggestion",
-        promptTokens: usage.promptTokens,
-        completionTokens: usage.completionTokens,
-        totalTokens: usage.totalTokens,
-        responseTime,
-        success: true,
-      },
-    );
+    await ctx.runMutation(internal.ai.mutations.trackUsage, {
+      projectId: args.projectId,
+      provider: "anthropic",
+      model: CLAUDE_HAIKU,
+      operation: "suggestion",
+      promptTokens: usage.promptTokens,
+      completionTokens: usage.completionTokens,
+      totalTokens: usage.totalTokens,
+      responseTime,
+      success: true,
+    });
 
     return suggestion;
   },
@@ -246,34 +233,26 @@ Priority:`;
     const suggestedPriority = validPriorities.includes(priority) ? priority : "medium";
 
     // Store suggestion
-    await ctx.runMutation(
-      // biome-ignore lint/suspicious/noExplicitAny: API type workaround
-      (internal as any)["ai/mutations"].createSuggestion,
-      {
-        projectId: args.projectId,
-        suggestionType: "issue_priority",
-        targetId: args.title,
-        suggestion: suggestedPriority,
-        modelUsed: CLAUDE_HAIKU,
-      },
-    );
+    await ctx.runMutation(internal.ai.mutations.createSuggestion, {
+      projectId: args.projectId,
+      suggestionType: "issue_priority",
+      targetId: args.title,
+      suggestion: suggestedPriority,
+      modelUsed: CLAUDE_HAIKU,
+    });
 
     // Track usage
-    await ctx.runMutation(
-      // biome-ignore lint/suspicious/noExplicitAny: API type workaround
-      (internal as any)["ai/mutations"].trackUsage,
-      {
-        projectId: args.projectId,
-        provider: "anthropic",
-        model: CLAUDE_HAIKU,
-        operation: "suggestion",
-        promptTokens: usage.promptTokens,
-        completionTokens: usage.completionTokens,
-        totalTokens: usage.totalTokens,
-        responseTime,
-        success: true,
-      },
-    );
+    await ctx.runMutation(internal.ai.mutations.trackUsage, {
+      projectId: args.projectId,
+      provider: "anthropic",
+      model: CLAUDE_HAIKU,
+      operation: "suggestion",
+      promptTokens: usage.promptTokens,
+      completionTokens: usage.completionTokens,
+      totalTokens: usage.totalTokens,
+      responseTime,
+      success: true,
+    });
 
     return suggestedPriority as "highest" | "high" | "medium" | "low" | "lowest";
   },
@@ -302,13 +281,9 @@ export const suggestLabels = action({
     });
 
     // Get existing project labels
-    const existingLabels = await ctx.runQuery(
-      // biome-ignore lint/suspicious/noExplicitAny: API type workaround
-      (internal as any)["ai/suggestions"].getProjectLabels,
-      {
-        projectId: args.projectId,
-      },
-    );
+    const existingLabels = await ctx.runQuery(internal.ai.queries.getProjectLabels, {
+      projectId: args.projectId,
+    });
 
     const prompt = `Suggest 2-4 relevant labels for this issue:
 
@@ -352,35 +327,26 @@ Labels:`;
       .slice(0, 4);
 
     // Store suggestion
-    await ctx.runMutation(
-      // biome-ignore lint/suspicious/noExplicitAny: API type workaround
-      (internal as any)["ai/mutations"].createSuggestion,
-      {
-        projectId: args.projectId,
-        suggestionType: "issue_labels",
-        targetId: args.title,
-        suggestion: suggestedLabels.join(", "),
-        modelUsed: CLAUDE_HAIKU,
-      },
-    );
+    await ctx.runMutation(internal.ai.mutations.createSuggestion, {
+      projectId: args.projectId,
+      suggestionType: "issue_labels",
+      targetId: args.title,
+      suggestion: suggestedLabels.join(", "),
+      modelUsed: CLAUDE_HAIKU,
+    });
 
     // Track usage
-    await ctx.runMutation(
-      // biome-ignore lint/suspicious/noExplicitAny: API type workaround
-      (internal as any)["internal/ai"].trackUsage,
-      {
-        userId: userId.subject,
-        projectId: args.projectId,
-        provider: "anthropic",
-        model: CLAUDE_HAIKU,
-        operation: "suggestion",
-        promptTokens: usage.promptTokens,
-        completionTokens: usage.completionTokens,
-        totalTokens: usage.totalTokens,
-        responseTime,
-        success: true,
-      },
-    );
+    await ctx.runMutation(internal.ai.mutations.trackUsage, {
+      projectId: args.projectId,
+      provider: "anthropic",
+      model: CLAUDE_HAIKU,
+      operation: "suggestion",
+      promptTokens: usage.promptTokens,
+      completionTokens: usage.completionTokens,
+      totalTokens: usage.totalTokens,
+      responseTime,
+      success: true,
+    });
 
     return suggestedLabels;
   },
