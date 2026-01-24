@@ -10,6 +10,7 @@ interface BoardToolbarProps {
 }
 
 import { Flex } from "@/components/ui/Flex";
+import { Tooltip } from "@/components/ui/Tooltip";
 import { cn } from "@/lib/utils";
 import { Typography } from "../ui/Typography";
 
@@ -36,50 +37,54 @@ export function BoardToolbar({
         <Flex align="center" gap="xs" className="sm:gap-2 shrink-0">
           {/* Undo/Redo buttons */}
           <div className="hidden sm:flex items-center gap-1 mr-2 sm:mr-4">
-            <button
-              type="button"
-              onClick={onUndo}
-              disabled={historyStack.length === 0}
-              className="p-2.5 sm:p-3 rounded hover:bg-ui-bg-secondary disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              aria-label="Undo (Ctrl+Z)"
-            >
-              <svg
-                aria-hidden="true"
-                className="w-4 h-4 sm:w-5 sm:h-5 text-ui-text-primary"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
+            <Tooltip content="Undo (Ctrl+Z)">
+              <button
+                type="button"
+                onClick={onUndo}
+                disabled={historyStack.length === 0}
+                className="p-2.5 sm:p-3 rounded hover:bg-ui-bg-secondary disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                aria-label="Undo (Ctrl+Z)"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"
-                />
-              </svg>
-            </button>
-            <button
-              type="button"
-              onClick={onRedo}
-              disabled={redoStack.length === 0}
-              className="p-2.5 sm:p-3 rounded hover:bg-ui-bg-secondary disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              aria-label="Redo (Ctrl+Shift+Z)"
-            >
-              <svg
-                aria-hidden="true"
-                className="w-4 h-4 sm:w-5 sm:h-5 text-ui-text-primary"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
+                <svg
+                  aria-hidden="true"
+                  className="w-4 h-4 sm:w-5 sm:h-5 text-ui-text-primary"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"
+                  />
+                </svg>
+              </button>
+            </Tooltip>
+            <Tooltip content="Redo (Ctrl+Shift+Z)">
+              <button
+                type="button"
+                onClick={onRedo}
+                disabled={redoStack.length === 0}
+                className="p-2.5 sm:p-3 rounded hover:bg-ui-bg-secondary disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                aria-label="Redo (Ctrl+Shift+Z)"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M21 10H11a8 8 0 00-8 8v2m18-10l-6 6m6-6l-6-6"
-                />
-              </svg>
-            </button>
+                <svg
+                  aria-hidden="true"
+                  className="w-4 h-4 sm:w-5 sm:h-5 text-ui-text-primary"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M21 10H11a8 8 0 00-8 8v2m18-10l-6 6m6-6l-6-6"
+                  />
+                </svg>
+              </button>
+            </Tooltip>
           </div>
 
           {/* Selection mode toggle */}
