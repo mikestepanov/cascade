@@ -26,31 +26,25 @@ export const createBooking = mutation({
   },
   handler: async (ctx, args) => {
     // Rate limit by email: 10 bookings per minute per email (prevents spam)
+    // Use single atomic mutation to avoid TOCTOU race condition
     if (!process.env.IS_TEST_ENV) {
-      const rateLimitKey = `createBooking:${args.bookerEmail}`;
-      const rateLimitResult = await ctx.runQuery(components.rateLimiter.lib.checkRateLimit, {
-        name: rateLimitKey,
-        config: {
-          kind: "token bucket",
-          rate: 10,
-          period: MINUTE,
-          capacity: 3,
-        },
-      });
-
-      if (!rateLimitResult.ok) {
-        throw rateLimited(rateLimitResult.retryAfter);
+      try {
+        await ctx.runMutation(components.rateLimiter.lib.rateLimit, {
+          name: `createBooking:${args.bookerEmail}`,
+          config: {
+            kind: "token bucket",
+            rate: 10,
+            period: MINUTE,
+            capacity: 3,
+          },
+          throws: true,
+        });
+      } catch (e: unknown) {
+        if (e instanceof Error && e.message.includes("Rate limit")) {
+          throw rateLimited();
+        }
+        throw e;
       }
-
-      await ctx.runMutation(components.rateLimiter.lib.rateLimit, {
-        name: rateLimitKey,
-        config: {
-          kind: "token bucket",
-          rate: 10,
-          period: MINUTE,
-          capacity: 3,
-        },
-      });
     }
 
     // Validate input
