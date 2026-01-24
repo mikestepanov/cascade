@@ -215,6 +215,15 @@ const applicationTables = {
     .index("by_author", ["authorId"])
     .index("by_deleted", ["isDeleted"]),
 
+  issueCommentReactions: defineTable({
+    commentId: v.id("issueComments"),
+    userId: v.id("users"),
+    emoji: v.string(),
+    createdAt: v.number(),
+  })
+    .index("by_comment", ["commentId"])
+    .index("by_comment_user_emoji", ["commentId", "userId", "emoji"]),
+
   issueLinks: defineTable({
     fromIssueId: v.id("issues"),
     toIssueId: v.id("issues"),

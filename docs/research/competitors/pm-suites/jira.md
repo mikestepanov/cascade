@@ -12,6 +12,7 @@
 **Jira** is the market-leading issue tracking and project management tool, primarily used by software development teams. Originally launched in 2002, Jira has become the de facto standard for Agile teams, with over 100,000 organizations worldwide using it.
 
 **Market Position:**
+
 - 🏆 Market leader in enterprise software development PM
 - 📊 Estimated 40%+ market share in software development project management
 - 🌍 Used by Fortune 500 companies and small startups alike
@@ -21,21 +22,23 @@
 
 ## Pricing (2025)
 
-| Plan | Price (per user/month) | Max Users | Key Features |
-|------|----------------------|-----------|--------------|
-| **Free** | $0 | Up to 10 | Scrum/Kanban boards, basic workflows, 2GB storage |
-| **Standard** | $8.60 | Up to 35,000 | 250GB storage, user roles, 250 GB/file, standard support |
-| **Premium** | $17.00 | Up to 35,000 | Unlimited storage, advanced permissions, SLA, 24/7 support |
-| **Enterprise** | Custom | Up to 50,000+ | Enterprise security, unlimited sites, dedicated support, 99.9% SLA |
-| **Data Center** | $44,000/year+ | Unlimited | Self-hosted, enterprise control |
+| Plan            | Price (per user/month) | Max Users     | Key Features                                                       |
+| --------------- | ---------------------- | ------------- | ------------------------------------------------------------------ |
+| **Free**        | $0                     | Up to 10      | Scrum/Kanban boards, basic workflows, 2GB storage                  |
+| **Standard**    | $8.60                  | Up to 35,000  | 250GB storage, user roles, 250 GB/file, standard support           |
+| **Premium**     | $17.00                 | Up to 35,000  | Unlimited storage, advanced permissions, SLA, 24/7 support         |
+| **Enterprise**  | Custom                 | Up to 50,000+ | Enterprise security, unlimited sites, dedicated support, 99.9% SLA |
+| **Data Center** | $44,000/year+          | Unlimited     | Self-hosted, enterprise control                                    |
 
 **Hidden Costs:**
+
 - Marketplace apps (many essential features require paid add-ons)
 - Premium support plans
 - Migration and consulting services
 - User overage charges
 
 **Pricing Analysis:**
+
 - ⚠️ Expensive at scale ($8.60-$17/user adds up fast)
 - ⚠️ Many features require paid marketplace apps
 - ⚠️ Data Center pricing jumped $2,000 in 2024
@@ -47,6 +50,7 @@
 ## Core Features
 
 ### Issue Tracking ⭐⭐⭐⭐⭐
+
 - **Custom issue types** - Create bugs, tasks, stories, epics
 - **Advanced workflows** - Drag-and-drop workflow builder
 - **Sub-tasks** - Hierarchical issue organization
@@ -61,6 +65,7 @@
 **Rating: 5/5** - Best-in-class issue tracking
 
 ### Boards & Views ⭐⭐⭐⭐
+
 - **Scrum boards** - Sprint planning, backlog management
 - **Kanban boards** - WIP limits, swimlanes
 - **List view** - Spreadsheet-style view
@@ -73,6 +78,7 @@
 **Rating: 4/5** - Comprehensive but can be slow
 
 ### Agile Features ⭐⭐⭐⭐⭐
+
 - **Sprint planning** - Drag issues to sprints
 - **Backlog prioritization** - Drag to reorder
 - **Velocity charts** - Historical velocity tracking
@@ -85,6 +91,7 @@
 **Rating: 5/5** - Industry standard for Agile
 
 ### Reporting & Analytics ⭐⭐⭐⭐
+
 - **Pre-built reports** - 15+ standard reports
 - **Custom dashboards** - Drag-and-drop widgets
 - **Gadgets marketplace** - 100+ reporting add-ons
@@ -96,6 +103,7 @@
 **Rating: 4/5** - Powerful but complex
 
 ### Integrations ⭐⭐⭐⭐⭐
+
 - **Atlassian products** - Confluence, Bitbucket, Bamboo
 - **GitHub/GitLab** - Smart commits, PR tracking
 - **Slack** - Notifications, issue creation
@@ -108,6 +116,7 @@
 **Rating: 5/5** - Ecosystem is unmatched
 
 ### Collaboration ⭐⭐⭐
+
 - **Comments** - Threaded but not real-time
 - **@mentions** - Works well
 - **Notifications** - Email, in-app (can be overwhelming)
@@ -119,6 +128,7 @@
 **Rating: 3/5** - Good async, poor real-time
 
 ### Permissions & Security ⭐⭐⭐⭐⭐
+
 - **Project-level permissions** - Granular control
 - **Issue-level security** - Security levels
 - **Role-based access** - Custom roles
@@ -233,16 +243,19 @@
 ## Target Audience
 
 **Primary:**
+
 - Enterprise software development teams (50-1000+ developers)
 - Agile teams using Scrum/Kanban
 - Organizations already in Atlassian ecosystem
 
 **Secondary:**
+
 - IT/support teams (Jira Service Management)
 - Marketing/operations teams (adapted workflows)
 - Compliance-heavy industries (audit trails)
 
 **Not ideal for:**
+
 - Small teams (< 10 people) - too complex
 - Non-technical teams - confusing
 - Teams wanting simplicity - overwhelming
@@ -253,12 +266,14 @@
 ## Market Share & Adoption
 
 **Statistics:**
+
 - 100,000+ organizations worldwide
 - 40%+ market share in software development PM
 - 10M+ monthly active users
 - Used by 65+ Fortune 100 companies
 
 **Notable Users:**
+
 - Spotify, Twitter, Airbnb, eBay, Cisco
 - NASA, Tesla, Square
 - Most large tech companies
@@ -268,19 +283,23 @@
 ## Technology Stack
 
 **Backend:**
+
 - Java (Spring Framework)
 - PostgreSQL, MySQL (database)
 - Elasticsearch (search)
 
 **Frontend:**
+
 - React (modern UI)
 - Legacy jQuery (old UI)
 
 **Hosting:**
+
 - AWS (Cloud)
 - Self-hosted (Data Center)
 
 **Architecture:**
+
 - Monolithic (traditional 3-tier)
 - Microservices (newer components)
 
@@ -288,24 +307,27 @@
 
 ## Nixelo vs. Jira Comparison
 
-| Feature | Nixelo | Jira |
-|---------|---------|------|
-| **Real-time updates** | ✅ Sub-100ms | ❌ Must refresh |
-| **Live presence** | ✅ Yes | ❌ No |
-| **Collaborative editing** | ✅ Yes | ❌ No |
-| **UI/UX** | ✅ Modern, clean | ❌ Cluttered, dated |
-| **Performance** | ✅ Instant | ❌ Slow (2-5s loads) |
-| **Learning curve** | ✅ Easy | ❌ Steep |
-| **Pricing** | ✅ Free / $8-12 | ❌ $8.60-$17+ |
-| **Self-hosting** | ⚠️ Convex-dependent | ✅ Data Center |
-| **Mobile apps** | ❌ None yet | ✅ Native apps |
-| **Enterprise features** | ❌ No SSO/SAML yet | ✅ Full enterprise |
-| **Marketplace ecosystem** | ❌ None | ✅ 3,000+ apps |
-| **Agile maturity** | ⚠️ Good | ✅ Best-in-class |
-| **Document integration** | ✅ Built-in | ⚠️ Requires Confluence |
-| **Developer Experience** | ✅ Great (Convex) | ⚠️ OK (complex API) |
+| Feature                   | Nixelo              | Jira                   |
+| ------------------------- | ------------------- | ---------------------- |
+| **Real-time updates**     | ✅ Sub-100ms        | ❌ Must refresh        |
+| **Live presence**         | ✅ Yes              | ❌ No                  |
+| **Collaborative editing** | ✅ Yes              | ❌ No                  |
+| **UI/UX**                 | ✅ Modern, clean    | ❌ Cluttered, dated    |
+| **Performance**           | ✅ Instant          | ❌ Slow (2-5s loads)   |
+| **Learning curve**        | ✅ Easy             | ❌ Steep               |
+| **Pricing**               | ✅ Free / $8-12     | ❌ $8.60-$17+          |
+| **Self-hosting**          | ⚠️ Convex-dependent | ✅ Data Center         |
+| **Mobile apps**           | ❌ None yet         | ✅ Native apps         |
+| **Enterprise features**   | ❌ No SSO/SAML yet  | ✅ Full enterprise     |
+| **Marketplace ecosystem** | ❌ None             | ✅ 3,000+ apps         |
+| **Agile maturity**        | ⚠️ Good             | ✅ Best-in-class       |
+| **Document integration**  | ✅ Built-in         | ⚠️ Requires Confluence |
+| **Developer Experience**  | ✅ Great (Convex)   | ⚠️ OK (complex API)    |
+| **Description Search**    | ✅ Yes              | ✅ Yes                 |
+| **Comment Reactions**     | ✅ Yes              | ✅ Yes                 |
 
 **Nixelo's Advantages over Jira:**
+
 1. ✅ **Real-time collaboration** - Live updates, presence, collaborative editing
 2. ✅ **Speed** - Instant UI vs 2-5 second page loads
 3. ✅ **Simplicity** - Clean, intuitive UI vs cluttered
@@ -315,6 +337,7 @@
 7. ✅ **Better UX** - Keyboard shortcuts, smooth interactions
 
 **Jira's Advantages over Nixelo:**
+
 1. ✅ **Maturity** - 20+ years vs brand new
 2. ✅ **Features** - Every PM feature imaginable
 3. ✅ **Ecosystem** - 3,000+ apps vs none
@@ -329,6 +352,7 @@
 ## Key Takeaways for Nixelo
 
 **What to Learn:**
+
 1. **Workflow customization** - Jira's workflow builder is powerful
 2. **JQL-like querying** - Advanced filtering is essential
 3. **Automation rules** - If-this-then-that is useful
@@ -336,6 +360,7 @@
 5. **Sprint management** - Jira's Agile implementation is gold standard
 
 **What to Avoid:**
+
 1. **Complexity** - Don't make configuration overwhelming
 2. **Slow UI** - Keep Nixelo fast and responsive
 3. **Bloat** - Focus on core features, not everything
@@ -343,6 +368,7 @@
 5. **Bad UX** - Keep interface clean and intuitive
 
 **Competitive Positioning:**
+
 - **Jira users frustrated with:**
   - Slow performance
   - Complexity
@@ -418,6 +444,7 @@
 ---
 
 **Recommended Strategy:**
+
 1. Don't try to be Jira (feature parity is impossible)
 2. Be "Anti-Jira" - fast, simple, real-time, affordable
 3. Target Jira refugees - developers frustrated with slowness
@@ -426,5 +453,5 @@
 
 ---
 
-**Last Updated:** 2025-11-18
+**Last Updated:** 2026-01-24
 **Next Review:** After Nixelo hits 1,000 stars
