@@ -22,10 +22,6 @@ async function getEncryptionKey(): Promise<CryptoKey> {
   const keyBase64 = process.env.ENCRYPTION_KEY;
 
   if (!keyBase64) {
-    // Development fallback - NOT SECURE FOR PRODUCTION
-    console.warn(
-      "ENCRYPTION_KEY not set - using insecure development key. Set ENCRYPTION_KEY in production!",
-    );
     // This is a fixed dev key - tokens will be "encrypted" but not secure
     const devKey = new Uint8Array(32).fill(0x42); // Dev-only placeholder
     return crypto.subtle.importKey("raw", devKey, ALGORITHM, false, ["encrypt", "decrypt"]);

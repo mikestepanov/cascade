@@ -5,7 +5,7 @@ import type { MutationCtx, QueryCtx } from "./_generated/server";
 import { internalAction, internalMutation, mutation, query } from "./_generated/server";
 import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
 import { batchFetchCalendarEvents, batchFetchRecordings } from "./lib/batchHelpers";
-import { BOUNDED_LIST_LIMIT, safeCollect } from "./lib/boundedQueries";
+import { BOUNDED_LIST_LIMIT } from "./lib/boundedQueries";
 import { getBotServiceApiKey, getBotServiceUrl } from "./lib/env";
 import { conflict, forbidden, notFound, unauthenticated, validation } from "./lib/errors";
 import { notDeleted } from "./lib/softDeleteHelpers";

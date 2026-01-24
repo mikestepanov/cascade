@@ -2,6 +2,7 @@ import { v } from "convex/values";
 import type { Id } from "./_generated/dataModel";
 import { internalMutation, mutation } from "./_generated/server";
 import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
+import { BOUNDED_LIST_LIMIT } from "./lib/boundedQueries";
 import { decrypt, encrypt } from "./lib/encryption";
 import { conflict, forbidden, notFound, validation } from "./lib/errors";
 import { notDeleted } from "./lib/softDeleteHelpers";
@@ -237,7 +238,7 @@ export const listRepositories = authenticatedQuery({
       .query("githubRepositories")
       .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
       .filter(notDeleted)
-      .collect();
+      .take(BOUNDED_LIST_LIMIT);
   },
 });
 
@@ -381,7 +382,7 @@ export const getPullRequests = authenticatedQuery({
       .query("githubPullRequests")
       .withIndex("by_issue", (q) => q.eq("issueId", args.issueId))
       .filter(notDeleted)
-      .collect();
+      .take(BOUNDED_LIST_LIMIT);
   },
 });
 
@@ -480,6 +481,6 @@ export const getCommits = authenticatedQuery({
       .withIndex("by_issue", (q) => q.eq("issueId", args.issueId))
       .order("desc")
       .filter(notDeleted)
-      .collect();
+      .take(BOUNDED_LIST_LIMIT);
   },
 });

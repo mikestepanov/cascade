@@ -1,6 +1,7 @@
 import { v } from "convex/values";
 import { query } from "./_generated/server";
 import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
+import { BOUNDED_LIST_LIMIT } from "./lib/boundedQueries";
 import { requireOwned, validation } from "./lib/errors";
 
 /**
@@ -115,7 +116,7 @@ export const getMyAvailability = authenticatedQuery({
     const slots = await ctx.db
       .query("availabilitySlots")
       .withIndex("by_user", (q) => q.eq("userId", ctx.userId))
-      .collect();
+      .take(BOUNDED_LIST_LIMIT);
 
     return slots.sort((a, b) => {
       const dayOrder = [
@@ -140,7 +141,7 @@ export const getUserAvailability = query({
       .query("availabilitySlots")
       .withIndex("by_user", (q) => q.eq("userId", args.userId))
       .filter((q) => q.eq(q.field("isActive"), true))
-      .collect();
+      .take(BOUNDED_LIST_LIMIT);
 
     return slots.sort((a, b) => {
       const dayOrder = [

@@ -1,6 +1,7 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 import { authenticatedMutation } from "./customFunctions";
+import { BOUNDED_LIST_LIMIT } from "./lib/boundedQueries";
 import { conflict, forbidden, notFound } from "./lib/errors";
 import { notDeleted } from "./lib/softDeleteHelpers";
 
@@ -13,7 +14,7 @@ export const list = query({
     const templates = await ctx.db
       .query("projectTemplates")
       .withIndex("by_built_in", (q) => q.eq("isBuiltIn", true))
-      .collect();
+      .take(BOUNDED_LIST_LIMIT);
 
     return templates;
   },

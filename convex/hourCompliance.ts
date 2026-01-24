@@ -167,7 +167,7 @@ async function checkUserComplianceInternal(
     throw notFound("userProfile");
   }
 
-  // Get all time entries for the period
+  // Get all time entries for the period (bounded - typically ~30-50 entries per week/month)
   const timeEntries = await ctx.db
     .query("timeEntries")
     .withIndex("by_user_date", (q) => q.eq("userId", args.userId))
@@ -175,7 +175,7 @@ async function checkUserComplianceInternal(
       q.and(q.gte(q.field("date"), args.periodStart), q.lte(q.field("date"), args.periodEnd)),
     )
     .filter(notDeleted)
-    .collect();
+    .take(BOUNDED_LIST_LIMIT);
 
   // Calculate hours
   const { totalHoursWorked, totalEquityHours } = calculateHours(timeEntries);

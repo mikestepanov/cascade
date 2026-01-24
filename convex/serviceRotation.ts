@@ -7,6 +7,7 @@
 
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
+import { BOUNDED_LIST_LIMIT } from "./lib/boundedQueries";
 import { notFound } from "./lib/errors";
 import { freeUnitTypes, serviceTypes } from "./validators";
 
@@ -52,7 +53,7 @@ export const selectProvider = query({
       .withIndex("by_service_enabled", (q) =>
         q.eq("serviceType", args.serviceType).eq("isEnabled", true),
       )
-      .collect();
+      .take(BOUNDED_LIST_LIMIT);
 
     // Sort by priority
     providers.sort((a, b) => a.priority - b.priority);
@@ -149,7 +150,7 @@ export const getUsageSummary = query({
     const providers = await ctx.db
       .query("serviceProviders")
       .withIndex("by_service_type", (q) => q.eq("serviceType", args.serviceType))
-      .collect();
+      .take(BOUNDED_LIST_LIMIT);
 
     const summary = await Promise.all(
       providers.map(async (provider) => {
