@@ -105,6 +105,7 @@ import type * as purge from "../purge.js";
 import type * as rateLimiting from "../rateLimiting.js";
 import type * as rateLimits from "../rateLimits.js";
 import type * as rbac from "../rbac.js";
+import type * as reactions from "../reactions.js";
 import type * as router from "../router.js";
 import type * as savedFilters from "../savedFilters.js";
 import type * as schemaFields from "../schemaFields.js";
@@ -231,6 +232,7 @@ declare const fullApi: ApiFromModules<{
   rateLimiting: typeof rateLimiting;
   rateLimits: typeof rateLimits;
   rbac: typeof rbac;
+  reactions: typeof reactions;
   router: typeof router;
   savedFilters: typeof savedFilters;
   schemaFields: typeof schemaFields;

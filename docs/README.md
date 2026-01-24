@@ -156,15 +156,16 @@ const { page, continueCursor } = await ctx.db
 
 ### Research & Strategy (`research/`)
 
-| File                                        | Description                            |
-| ------------------------------------------- | -------------------------------------- |
-| `research/strategy/NICHE_STRATEGY.md`       | How we win against giants              |
-| `research/strategy/GAPS_vs_Competitors.md`  | Critical missing features              |
-| `research/strategy/FEATURE_DEEP_DIVE.md`    | Spec of differentiating features       |
-| `research/comparisons/pm-architecture.md`   | Jira vs Linear vs ClickUp architecture |
-| `research/comparisons/meeting-landscape.md` | Overview of the Meeting AI market      |
-| `research/comparisons/feature-matrix.md`    | Detailed comparison matrix             |
-| `research/competitor-tech-stack.md`         | **NEW:** Linear tech stack deep dive   |
+| File                                        | Description                             |
+| ------------------------------------------- | --------------------------------------- |
+| `research/strategy/NICHE_STRATEGY.md`       | How we win against giants               |
+| `research/strategy/GAPS_vs_Competitors.md`  | Critical missing features (Roadmap)     |
+| `research/strategy/FEATURE_DEEP_DIVE.md`    | Technical analysis of core domains      |
+| `research/INVENTORY.md`                     | **NEW:** Catalog of all collection data |
+| `research/comparisons/pm-architecture.md`   | Jira vs Linear vs ClickUp architecture  |
+| `research/comparisons/meeting-landscape.md` | Overview of the Meeting AI market       |
+| `research/comparisons/feature-matrix.md`    | Detailed comparison matrix              |
+| `research/competitor-tech-stack.md`         | **NEW:** Linear tech stack deep dive    |
 
 **Omega Comparison Library (`research/library/`):**
 
@@ -300,4 +301,4 @@ docs/
 
 ---
 
-_Last Updated: 2026-01-20_
+_Last Updated: 2026-01-24_

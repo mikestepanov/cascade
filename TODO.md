@@ -1,6 +1,6 @@
 # Nixelo - Product Roadmap
 
-> **Last Updated:** 2026-01-01
+> **Last Updated:** 2026-01-24
 > **Current Architecture:** Organization → Workspaces → Teams → Projects → Issues
 
 ---
@@ -67,7 +67,7 @@
 
 ### P1 - Quick Wins (Low Effort, High Impact)
 
-- [ ] **Comment reactions** - 👍 👎 ❤️ 🎉 (simple `commentReactions` table)
+- [x] **Comment reactions** - 👍 👎 ❤️ 🎉 (COMPLETED)
 - [ ] **Verify rich text comments** - Improve Markdown support in comments
 
 ### P2 - Medium Priority (Worth Doing)
@@ -114,7 +114,7 @@
 
 ### Document Version History
 
-- [ ] Restore previous version (UI)
+- [x] Restore previous version (UI) (COMPLETED)
 - [ ] Diff view
 
 ---
@@ -158,3 +158,4 @@
 ## Related Docs
 
 - [CLAUDE.md](./CLAUDE.md) - Development guide
+- [Research Inventory](./docs/research/INVENTORY.md) - Strategy & Research index

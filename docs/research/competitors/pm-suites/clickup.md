@@ -37,6 +37,25 @@
 - **Performance:** Historically slower than Linear/Jira due to feature weight.
 - **UX Clutter:** Too many buttons and options on screen.
 
+## Nixelo vs. ClickUp Comparison
+
+| Feature                | Nixelo                 | ClickUp                           |
+| ---------------------- | ---------------------- | --------------------------------- |
+| **Real-time updates**  | ✅ Sub-100ms (Convex)  | ❌ Lag (polling/WebSocket mix)    |
+| **UX Simplicity**      | ✅ High (Focused)      | ❌ Low (Bloated)                  |
+| **Performance**        | ✅ Instant             | ❌ Slower (heavy UI)              |
+| **All-in-One**         | ✅ Yes (Docs + Issues) | ✅ Yes (Docs, Tasks, Whiteboards) |
+| **Open-source**        | ✅ Yes                 | ❌ No                             |
+| **Self-hosting**       | ✅ Yes                 | ❌ No                             |
+| **Time tracking**      | ✅ Full Tracking       | ✅ Full Tracking                  |
+| **Description Search** | ✅ Yes                 | ✅ Yes                            |
+| **Comment Reactions**  | ✅ Yes                 | ✅ Yes                            |
+
 ## Nixelo Strategy
 
 Position Nixelo as the **fast, focused** alternative. ClickUp is the "Swiss Army Knife" (does everything, okayish); Nixelo is the "Scalpel" (does PM + Meetings perfectly).
+
+---
+
+**Last Updated:** 2026-01-24
+**Next Review:** After ClickUp 3.0 performance benchmarks are officially released.

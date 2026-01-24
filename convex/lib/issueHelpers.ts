@@ -61,6 +61,14 @@ export interface LabelInfo {
 }
 
 /**
+ * Reaction info for display
+ */
+export interface ReactionInfo {
+  emoji: string;
+  userIds: Id<"users">[];
+}
+
+/**
  * Enriched issue with related data
  */
 export interface EnrichedIssue extends Omit<Doc<"issues">, "labels"> {
@@ -68,6 +76,14 @@ export interface EnrichedIssue extends Omit<Doc<"issues">, "labels"> {
   reporter: UserInfo | null;
   epic: EpicInfo | null;
   labels: LabelInfo[];
+}
+
+/**
+ * Enriched comment with author and reactions
+ */
+export interface EnrichedComment extends Doc<"issueComments"> {
+  author: UserInfo | null;
+  reactions: ReactionInfo[];
 }
 
 /**
@@ -232,6 +248,60 @@ export async function enrichIssues(
     epic: issue.epicId ? toEpicInfo(epicMap.get(issue.epicId.toString()) ?? null) : null,
     labels: getLabelInfos(issue, labelsByProject),
   }));
+}
+
+/**
+ * Enrich multiple comments with author info and reactions
+ * Uses batching to avoid N+1 queries
+ */
+export async function enrichComments(
+  ctx: QueryCtx,
+  comments: Doc<"issueComments">[],
+): Promise<EnrichedComment[]> {
+  if (comments.length === 0) return [];
+
+  const authorIds = [...new Set(comments.map((c) => c.authorId))];
+  const commentIds = comments.map((c) => c._id);
+
+  // Batch fetch authors and reactions
+  const [users, allReactions] = await Promise.all([
+    asyncMap(authorIds, (id) => ctx.db.get(id)),
+    asyncMap(commentIds, (commentId) =>
+      ctx.db
+        .query("issueCommentReactions")
+        .withIndex("by_comment", (q) => q.eq("commentId", commentId))
+        .collect(),
+    ),
+  ]);
+
+  const userMap = buildLookupMap(users);
+
+  return comments.map((comment, index) => {
+    const author = userMap.get(comment.authorId.toString()) ?? null;
+    const reactions = allReactions[index];
+
+    // Group reactions by emoji
+    const emojiGroups = new Map<string, Id<"users">[]>();
+    for (const reaction of reactions) {
+      if (!emojiGroups.has(reaction.emoji)) {
+        emojiGroups.set(reaction.emoji, []);
+      }
+      emojiGroups.get(reaction.emoji)?.push(reaction.userId);
+    }
+
+    const formattedReactions: ReactionInfo[] = Array.from(emojiGroups.entries()).map(
+      ([emoji, userIds]) => ({
+        emoji,
+        userIds,
+      }),
+    );
+
+    return {
+      ...comment,
+      author: toUserInfo(author),
+      reactions: formattedReactions,
+    };
+  });
 }
 
 /**
