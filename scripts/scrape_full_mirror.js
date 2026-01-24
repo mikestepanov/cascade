@@ -125,7 +125,6 @@ function categorizeAsset(url, initiatorType) {
   console.log(`✅ Saved ${pageName}.html`);
 
   // Extract deep data
-  // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: Script needs to handle many data types
   const deepData = await page.evaluate(() => {
     // CSS Variables
     const cssVars = {};
