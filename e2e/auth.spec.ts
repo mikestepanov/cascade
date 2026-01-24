@@ -49,6 +49,8 @@ test.describe("Sign In Page", () => {
   });
 
   test("has link to forgot password", async ({ authPage }) => {
+    // Forgot password link only appears when email form is expanded
+    await authPage.expandEmailForm();
     await expect(authPage.forgotPasswordLink).toBeVisible();
   });
 
@@ -57,6 +59,8 @@ test.describe("Sign In Page", () => {
   });
 
   test("validates required fields", async ({ authPage }) => {
+    // Required attributes only set when form is expanded (formReady state)
+    await authPage.expandEmailForm();
     await expect(authPage.emailInput).toHaveAttribute("required", "");
     await expect(authPage.emailInput).toHaveAttribute("type", "email");
     await expect(authPage.passwordInput).toHaveAttribute("required", "");
@@ -77,6 +81,8 @@ test.describe("Sign Up Page", () => {
   });
 
   test("validates required fields", async ({ authPage }) => {
+    // Required attributes only set when form is expanded (formReady state)
+    await authPage.expandEmailForm();
     await expect(authPage.emailInput).toHaveAttribute("required", "");
     await expect(authPage.emailInput).toHaveAttribute("type", "email");
     await expect(authPage.passwordInput).toHaveAttribute("required", "");
