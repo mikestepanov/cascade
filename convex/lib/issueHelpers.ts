@@ -11,7 +11,7 @@ import type { Doc, Id } from "../_generated/dataModel";
 import type { MutationCtx, QueryCtx } from "../_generated/server";
 import { notFound, validation } from "./errors";
 import { fetchPaginatedQuery } from "./queryHelpers";
-import { MAX_PAGE_SIZE } from "./queryLimits";
+import { MAX_LABELS_PER_PROJECT, MAX_PAGE_SIZE } from "./queryLimits";
 
 /**
  * Get an issue and validate it has a projectId (for migration safety)
@@ -209,7 +209,7 @@ export async function enrichIssues(
       ctx.db
         .query("labels")
         .withIndex("by_project", (q) => q.eq("projectId", projectId))
-        .collect(),
+        .take(MAX_LABELS_PER_PROJECT),
     ),
   ]);
 

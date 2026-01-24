@@ -207,14 +207,26 @@ export const getUserStats = authenticatedQuery({
       ? issuesAssignedAll.filter((i) => allowedProjectIds.has(i.projectId))
       : issuesAssignedAll;
 
-    // Get comments
-    // Note: Filtering comments by project would require fetching issues for each comment
-    // which is expensive. We count all comments for now.
-    const comments = await ctx.db
+    // Get comments - filter by allowed projects when viewing another user
+    const commentsAll = await ctx.db
       .query("issueComments")
       .withIndex("by_author", (q) => q.eq("authorId", args.userId))
       .filter(notDeleted)
       .take(MAX_COMMENTS_FOR_STATS);
+
+    // Filter comments by allowed projects (requires fetching parent issues)
+    let comments = commentsAll;
+    if (allowedProjectIds) {
+      // Batch fetch unique issue IDs to check project membership
+      const issueIds = [...new Set(commentsAll.map((c) => c.issueId))];
+      const issues = await Promise.all(issueIds.map((id) => ctx.db.get(id)));
+      const allowedIssueIds = new Set(
+        issues
+          .filter((issue) => issue && allowedProjectIds.has(issue.projectId))
+          .map((issue) => issue!._id),
+      );
+      comments = commentsAll.filter((c) => allowedIssueIds.has(c.issueId));
+    }
 
     // Get projects (as member)
     const projectMembershipsAll = await ctx.db

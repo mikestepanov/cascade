@@ -61,13 +61,7 @@ export function SidebarTeamItem({
 
       {/* Lazy Loaded Projects */}
       {isExpanded && (
-        <SidebarTeamProjects
-          teamId={team._id}
-          teamSlug={team.slug}
-          workspaceSlug={workspaceSlug}
-          orgSlug={orgSlug}
-          onNavClick={onNavClick}
-        />
+        <SidebarTeamProjects teamId={team._id} orgSlug={orgSlug} onNavClick={onNavClick} />
       )}
     </div>
   );
@@ -75,14 +69,10 @@ export function SidebarTeamItem({
 
 function SidebarTeamProjects({
   teamId,
-  teamSlug,
-  workspaceSlug,
   orgSlug,
   onNavClick,
 }: {
   teamId: Id<"teams">;
-  teamSlug: string;
-  workspaceSlug: string;
   orgSlug: string;
   onNavClick: () => void;
 }) {
@@ -107,18 +97,16 @@ function SidebarTeamProjects({
       {projects.map((project) => (
         <div key={project._id}>
           <Link
-            to={ROUTES.workspaces.teams.projects.board.path}
+            to={ROUTES.projects.board.path}
             params={{
               orgSlug,
-              workspaceSlug,
-              teamSlug,
               key: project.key,
             }}
             onClick={onNavClick}
             className={cn(
               "block px-3 py-1.5 rounded-md text-sm truncate transition-colors",
-              location.pathname === `/projects/${project.key}` ||
-                location.pathname.startsWith(`/projects/${project.key}/`)
+              location.pathname === `/${orgSlug}/projects/${project.key}` ||
+                location.pathname.startsWith(`/${orgSlug}/projects/${project.key}/`)
                 ? "bg-brand-50 dark:bg-brand-900/20 text-brand-600 dark:text-brand-400 font-medium"
                 : "text-ui-text-secondary hover:bg-ui-bg-secondary hover:text-ui-text-primary",
             )}

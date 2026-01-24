@@ -140,6 +140,7 @@ describe("Issues", () => {
 
       // Try to create issue as viewer
       const asViewer = asAuthenticatedUser(t, viewerId);
+      // Viewer should not be able to create issues - requires editor role
       await expect(async () => {
         await asViewer.mutation(api.issues.create, {
           projectId,
@@ -147,7 +148,7 @@ describe("Issues", () => {
           type: "task",
           priority: "medium",
         });
-      }).rejects.toThrow();
+      }).rejects.toThrow(/FORBIDDEN|editor/i);
       await t.finishInProgressScheduledFunctions();
     });
   });
@@ -272,14 +273,14 @@ describe("Issues", () => {
         role: "viewer",
       });
 
-      // Try to update as viewer
+      // Try to update as viewer - should be forbidden (requires editor)
       const asViewer = asAuthenticatedUser(t, viewerId);
       await expect(async () => {
         await asViewer.mutation(api.issues.update, {
           issueId,
           title: "Updated by viewer",
         });
-      }).rejects.toThrow();
+      }).rejects.toThrow(/FORBIDDEN|editor/i);
       await t.finishInProgressScheduledFunctions();
     });
   });

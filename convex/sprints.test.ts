@@ -114,13 +114,14 @@ describe("Sprints", () => {
       const other = await createTestUser(t, { name: "Other" });
       const projectId = await createTestProject(t, owner);
 
+      // Other user should not be able to create sprint - requires editor role
       const asOther = asAuthenticatedUser(t, other);
       await expect(async () => {
         await asOther.mutation(api.sprints.create, {
           projectId,
           name: "Unauthorized Sprint",
         });
-      }).rejects.toThrow();
+      }).rejects.toThrow(/FORBIDDEN|editor/i);
     });
 
     it("should throw error for non-existent project", async () => {
@@ -442,6 +443,7 @@ describe("Sprints", () => {
         name: "Sprint 1",
       });
 
+      // Other user should not be able to start sprint - requires editor role
       const asOther = asAuthenticatedUser(t, other);
       await expect(async () => {
         await asOther.mutation(api.sprints.startSprint, {
@@ -449,7 +451,7 @@ describe("Sprints", () => {
           startDate: Date.now(),
           endDate: Date.now() + 14 * 24 * 60 * 60 * 1000,
         });
-      }).rejects.toThrow();
+      }).rejects.toThrow(/FORBIDDEN|editor/i);
     });
 
     it("should throw error for non-existent sprint", async () => {
@@ -589,10 +591,11 @@ describe("Sprints", () => {
         name: "Sprint 1",
       });
 
+      // Other user should not be able to complete sprint - requires editor role
       const asOther = asAuthenticatedUser(t, other);
       await expect(async () => {
         await asOther.mutation(api.sprints.completeSprint, { sprintId });
-      }).rejects.toThrow();
+      }).rejects.toThrow(/FORBIDDEN|editor/i);
     });
 
     it("should throw error for non-existent sprint", async () => {

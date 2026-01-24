@@ -78,7 +78,7 @@ describe("Webhooks", () => {
         role: "editor",
       });
 
-      // Editor tries to create webhook
+      // Editor tries to create webhook - should be forbidden (requires admin)
       const asEditor = asAuthenticatedUser(t, editor);
       await expect(async () => {
         await asEditor.mutation(api.webhooks.createWebhook, {
@@ -87,7 +87,7 @@ describe("Webhooks", () => {
           url: "https://example.com/hook",
           events: ["issue.created"],
         });
-      }).rejects.toThrow();
+      }).rejects.toThrow(/FORBIDDEN|admin/i);
       await t.finishInProgressScheduledFunctions();
     });
 
@@ -172,11 +172,11 @@ describe("Webhooks", () => {
         role: "editor",
       });
 
-      // Editor tries to list webhooks
+      // Editor tries to list webhooks - should be forbidden (requires admin)
       const asEditor = asAuthenticatedUser(t, editor);
       await expect(async () => {
         await asEditor.query(api.webhooks.listByProject, { projectId });
-      }).rejects.toThrow();
+      }).rejects.toThrow(/FORBIDDEN|admin/i);
       await t.finishInProgressScheduledFunctions();
     });
 
@@ -187,7 +187,7 @@ describe("Webhooks", () => {
 
       await expect(async () => {
         await t.query(api.webhooks.listByProject, { projectId });
-      }).rejects.toThrow("Not authenticated");
+      }).rejects.toThrow(/UNAUTHENTICATED|Not authenticated/i);
       await t.finishInProgressScheduledFunctions();
     });
   });
@@ -315,14 +315,14 @@ describe("Webhooks", () => {
         events: ["issue.created"],
       });
 
-      // Editor tries to update
+      // Editor tries to update - should be forbidden (requires admin)
       const asEditor = asAuthenticatedUser(t, editor);
       await expect(async () => {
         await asEditor.mutation(api.webhooks.updateWebhook, {
           id: webhookId,
           name: "Hacked",
         });
-      }).rejects.toThrow();
+      }).rejects.toThrow(/FORBIDDEN|admin/i);
       await t.finishInProgressScheduledFunctions();
     });
 
@@ -425,11 +425,11 @@ describe("Webhooks", () => {
         events: ["issue.created"],
       });
 
-      // Editor tries to delete
+      // Editor tries to delete - should be forbidden (requires admin)
       const asEditor = asAuthenticatedUser(t, editor);
       await expect(async () => {
         await asEditor.mutation(api.webhooks.softDeleteWebhook, { id: webhookId });
-      }).rejects.toThrow();
+      }).rejects.toThrow(/FORBIDDEN|admin/i);
       await t.finishInProgressScheduledFunctions();
     });
 
@@ -584,14 +584,14 @@ describe("Webhooks", () => {
         events: ["issue.created"],
       });
 
-      // Editor tries to view executions
+      // Editor tries to view executions - should be forbidden (requires admin)
       const asEditor = asAuthenticatedUser(t, editor);
       await expect(async () => {
         await asEditor.query(api.webhooks.listExecutions, {
           webhookId,
           paginationOpts: { numItems: 20, cursor: null },
         });
-      }).rejects.toThrow();
+      }).rejects.toThrow(/FORBIDDEN|admin/i);
       await t.finishInProgressScheduledFunctions();
     });
 
@@ -701,11 +701,11 @@ describe("Webhooks", () => {
         events: ["issue.created"],
       });
 
-      // Editor tries to test webhook
+      // Editor tries to test webhook - should be forbidden (requires admin)
       const asEditor = asAuthenticatedUser(t, editor);
       await expect(async () => {
         await asEditor.mutation(api.webhooks.test, { id: webhookId });
-      }).rejects.toThrow();
+      }).rejects.toThrow(/FORBIDDEN|admin/i);
       await t.finishInProgressScheduledFunctions();
     });
 
@@ -833,11 +833,11 @@ describe("Webhooks", () => {
         });
       });
 
-      // Editor tries to retry
+      // Editor tries to retry - should be forbidden (requires admin)
       const asEditor = asAuthenticatedUser(t, editor);
       await expect(async () => {
         await asEditor.mutation(api.webhooks.retryExecution, { id: executionId });
-      }).rejects.toThrow();
+      }).rejects.toThrow(/FORBIDDEN|admin/i);
       await t.finishInProgressScheduledFunctions();
     });
 

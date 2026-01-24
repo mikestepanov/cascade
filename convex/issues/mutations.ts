@@ -7,6 +7,7 @@ import {
   issueViewerMutation,
   projectEditorMutation,
 } from "../customFunctions";
+import { validate } from "../lib/constrainedValidators";
 import { validation } from "../lib/errors";
 import { cascadeDelete } from "../lib/relationships";
 import { assertCanEditProject, assertIsProjectAdmin } from "../projectAccess";
@@ -47,6 +48,13 @@ export const create = projectEditorMutation({
     storyPoints: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
+    // Validate input constraints
+    validate.title(args.title);
+    validate.description(args.description);
+    if (args.labels) {
+      validate.tags(args.labels, "labels");
+    }
+
     // Validate parent/epic constraints
     const inheritedEpicId = await validateParentIssue(ctx, args.parentId, args.type, args.epicId);
 

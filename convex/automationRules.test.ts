@@ -174,7 +174,7 @@ describe("Automation Rules", () => {
         role: "editor",
       });
 
-      // Editor tries to create rule
+      // Editor tries to create rule - should be forbidden (requires admin)
       const asEditor = asAuthenticatedUser(t, editor);
       await expect(async () => {
         await asEditor.mutation(api.automationRules.create, {
@@ -184,7 +184,7 @@ describe("Automation Rules", () => {
           actionType: "set_priority",
           actionValue: JSON.stringify({ priority: "high" }),
         });
-      }).rejects.toThrow();
+      }).rejects.toThrow(/FORBIDDEN|admin/i);
     });
 
     it("should deny unauthenticated users", async () => {
@@ -329,14 +329,14 @@ describe("Automation Rules", () => {
         actionValue: JSON.stringify({ priority: "high" }),
       });
 
-      // Editor tries to update
+      // Editor tries to update - should be forbidden (requires admin)
       const asEditor = asAuthenticatedUser(t, editor);
       await expect(async () => {
         await asEditor.mutation(api.automationRules.update, {
           id: ruleId,
           name: "Hacked",
         });
-      }).rejects.toThrow();
+      }).rejects.toThrow(/FORBIDDEN|admin/i);
     });
 
     it("should deny unauthenticated users", async () => {
@@ -439,11 +439,11 @@ describe("Automation Rules", () => {
         actionValue: JSON.stringify({ priority: "high" }),
       });
 
-      // Editor tries to delete
+      // Editor tries to delete - should be forbidden (requires admin)
       const asEditor = asAuthenticatedUser(t, editor);
       await expect(async () => {
         await asEditor.mutation(api.automationRules.remove, { id: ruleId });
-      }).rejects.toThrow();
+      }).rejects.toThrow(/FORBIDDEN|admin/i);
     });
 
     it("should deny unauthenticated users", async () => {

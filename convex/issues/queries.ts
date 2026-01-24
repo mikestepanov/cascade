@@ -858,10 +858,20 @@ export const listByTeamSmart = authenticatedQuery({
       }),
     );
 
-    // Enrich all issues by status
+    // Batch enrich all issues at once to avoid N+1 queries (one enrichIssues call per status)
+    // This reduces label queries from N (per status) to 1 (total)
+    const allIssues = Object.values(issuesByColumn).flat();
+    const enrichedAll = await enrichIssues(ctx, allIssues);
+
+    // Build a lookup map by issue ID for O(1) access
+    const enrichedById = new Map(enrichedAll.map((issue) => [issue._id, issue]));
+
+    // Reconstruct the status-grouped structure using the enriched issues
     const enrichedIssuesByStatus: Record<string, EnrichedIssue[]> = {};
     for (const [statusId, issues] of Object.entries(issuesByColumn)) {
-      enrichedIssuesByStatus[statusId] = await enrichIssues(ctx, issues);
+      enrichedIssuesByStatus[statusId] = issues
+        .map((issue) => enrichedById.get(issue._id))
+        .filter((issue): issue is EnrichedIssue => issue !== undefined);
     }
 
     return {
@@ -1144,6 +1154,14 @@ export const listIssuesByDateRange = authenticatedQuery({
     const hasAccess = await canAccessProject(ctx, args.projectId, ctx.userId);
     if (!hasAccess) {
       return [];
+    }
+
+    // Validate sprint belongs to this project if provided
+    if (args.sprintId) {
+      const sprint = await ctx.db.get(args.sprintId);
+      if (!sprint || sprint.projectId !== args.projectId) {
+        throw forbidden("Sprint not found in this project");
+      }
     }
 
     // Bounded: calendar date range queries limited to prevent large result sets

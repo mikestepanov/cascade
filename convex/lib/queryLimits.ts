@@ -83,6 +83,9 @@ export const MAX_TEAMS_PER_ORG = 200;
 /** Max projects per team query */
 export const MAX_PROJECTS_PER_TEAM = 200;
 
+/** Max labels per project query (reasonable upper bound) */
+export const MAX_LABELS_PER_PROJECT = 200;
+
 /** Max organization members per query */
 export const MAX_ORG_MEMBERS = 1000;
 
