@@ -7,24 +7,6 @@ const __dirname = path.dirname(__filename);
 
 // Define all target pages to mirror
 const TARGETS = [
-  // Linear
-  { url: "https://linear.app", competitor: "linear", page: "home" },
-  { url: "https://linear.app/features", competitor: "linear", page: "features" },
-  { url: "https://linear.app/docs", competitor: "linear", page: "docs" },
-
-  // ClickUp
-  { url: "https://clickup.com", competitor: "clickup", page: "home" },
-  { url: "https://clickup.com/pricing", competitor: "clickup", page: "pricing" },
-  { url: "https://clickup.com/features", competitor: "clickup", page: "features" },
-
-  // Notion
-  { url: "https://notion.so", competitor: "notion", page: "home" },
-  { url: "https://www.notion.so/product", competitor: "notion", page: "product" },
-  { url: "https://www.notion.so/pricing", competitor: "notion", page: "pricing" },
-
-  // Asana
-  { url: "https://asana.com", competitor: "asana", page: "home" },
-
   // Fireflies
   { url: "https://fireflies.ai", competitor: "fireflies", page: "home" },
 
