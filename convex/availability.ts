@@ -81,22 +81,29 @@ export const setDefaultWorkingHours = authenticatedMutation({
       "monday" | "tuesday" | "wednesday" | "thursday" | "friday" | "saturday" | "sunday"
     > = ["monday", "tuesday", "wednesday", "thursday", "friday"];
 
-    for (const day of workdays) {
-      // Check if slot exists
-      const existing = await ctx.db
-        .query("availabilitySlots")
-        .withIndex("by_user_day", (q) => q.eq("userId", userId).eq("dayOfWeek", day))
-        .first();
+    // Fetch all existing slots in parallel
+    const existingSlots = await Promise.all(
+      workdays.map((day) =>
+        ctx.db
+          .query("availabilitySlots")
+          .withIndex("by_user_day", (q) => q.eq("userId", userId).eq("dayOfWeek", day))
+          .first(),
+      ),
+    );
 
-      if (existing) {
-        await ctx.db.patch(existing._id, {
-          startTime,
-          endTime,
-          timezone: args.timezone,
-          isActive: true,
-        });
-      } else {
-        await ctx.db.insert("availabilitySlots", {
+    // Upsert all slots in parallel
+    await Promise.all(
+      workdays.map((day, i) => {
+        const existing = existingSlots[i];
+        if (existing) {
+          return ctx.db.patch(existing._id, {
+            startTime,
+            endTime,
+            timezone: args.timezone,
+            isActive: true,
+          });
+        }
+        return ctx.db.insert("availabilitySlots", {
           userId,
           dayOfWeek: day,
           startTime,
@@ -104,8 +111,8 @@ export const setDefaultWorkingHours = authenticatedMutation({
           timezone: args.timezone,
           isActive: true,
         });
-      }
-    }
+      }),
+    );
   },
 });
 

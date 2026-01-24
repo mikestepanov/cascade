@@ -315,18 +315,18 @@ async function sendComplianceNotifications(
     adminUserIds.add(managerId);
   }
 
-  // Create notifications only for actual admins/managers
-  const notifications: Id<"notifications">[] = [];
-  for (const adminId of adminUserIds) {
-    const notificationId = await ctx.db.insert("notifications", {
-      userId: adminId,
-      type: "hour_compliance",
-      title,
-      message,
-      isRead: false,
-    });
-    notifications.push(notificationId);
-  }
+  // Create notifications only for actual admins/managers (in parallel)
+  const notifications = await Promise.all(
+    [...adminUserIds].map((adminId) =>
+      ctx.db.insert("notifications", {
+        userId: adminId,
+        type: "hour_compliance",
+        title,
+        message,
+        isRead: false,
+      }),
+    ),
+  );
 
   // Update record with notification info
   if (notifications.length > 0) {

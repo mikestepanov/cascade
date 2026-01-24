@@ -290,16 +290,19 @@ export const update = issueMutation({
     if (Object.keys(updates).length > 0) {
       await ctx.db.patch(ctx.issue._id, updates);
 
-      for (const change of changes) {
-        await ctx.db.insert("issueActivity", {
-          issueId: ctx.issue._id,
-          userId: ctx.userId,
-          action: "updated",
-          field: change.field,
-          oldValue: String(change.oldValue || ""),
-          newValue: String(change.newValue || ""),
-        });
-      }
+      // Log all changes in parallel
+      await Promise.all(
+        changes.map((change) =>
+          ctx.db.insert("issueActivity", {
+            issueId: ctx.issue._id,
+            userId: ctx.userId,
+            action: "updated",
+            field: change.field,
+            oldValue: String(change.oldValue || ""),
+            newValue: String(change.newValue || ""),
+          }),
+        ),
+      );
     }
   },
 });
@@ -358,9 +361,11 @@ export const addComment = issueViewerMutation({
     // Dynamic import to avoid cycles
     const { sendEmailNotification } = await import("../email/helpers");
 
-    for (const mentionedUserId of mentions) {
-      if (mentionedUserId !== ctx.userId) {
-        await ctx.db.insert("notifications", {
+    // Notify mentioned users in parallel
+    const mentionedOthers = mentions.filter((id) => id !== ctx.userId);
+    await Promise.all(
+      mentionedOthers.flatMap((mentionedUserId) => [
+        ctx.db.insert("notifications", {
           userId: mentionedUserId,
           type: "issue_mentioned",
           title: "You were mentioned",
@@ -368,17 +373,16 @@ export const addComment = issueViewerMutation({
           issueId: ctx.issue._id,
           projectId: ctx.projectId,
           isRead: false,
-        });
-
-        await sendEmailNotification(ctx, {
+        }),
+        sendEmailNotification(ctx, {
           userId: mentionedUserId,
           type: "mention",
           issueId: ctx.issue._id,
           actorId: ctx.userId,
           commentText: args.content,
-        });
-      }
-    }
+        }),
+      ]),
+    );
 
     if (ctx.issue.reporterId !== ctx.userId) {
       await ctx.db.insert("notifications", {

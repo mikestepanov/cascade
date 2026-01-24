@@ -682,14 +682,16 @@ export const initializeBuiltInTemplates = mutation({
       },
     ];
 
-    // Insert all built-in templates
-    for (const template of builtInTemplates) {
-      await ctx.db.insert("documentTemplates", {
-        ...template,
-        createdBy: undefined,
-        projectId: undefined,
-      });
-    }
+    // Insert all built-in templates in parallel
+    await Promise.all(
+      builtInTemplates.map((template) =>
+        ctx.db.insert("documentTemplates", {
+          ...template,
+          createdBy: undefined,
+          projectId: undefined,
+        }),
+      ),
+    );
 
     return { message: `Created ${builtInTemplates.length} built-in templates` };
   },

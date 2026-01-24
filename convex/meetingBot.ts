@@ -683,31 +683,43 @@ export const saveParticipants = mutation({
     const recording = await ctx.db.get(args.recordingId);
     if (!recording) throw notFound("recording", args.recordingId);
 
-    // Try to match participants to Nixelo users by email
-    for (const participant of args.participants) {
-      let userId: Id<"users"> | undefined;
-
-      if (participant.email) {
-        const user = await ctx.db
+    // Try to match participants to Nixelo users by email (fetch all users in parallel)
+    const participantsWithEmails = args.participants.filter((p) => p.email);
+    const userLookups = await Promise.all(
+      participantsWithEmails.map((p) =>
+        ctx.db
           .query("users")
-          .withIndex("email", (q) => q.eq("email", participant.email))
-          .first();
-        userId = user?._id;
-      }
+          .withIndex("email", (q) => q.eq("email", p.email))
+          .first(),
+      ),
+    );
 
-      await ctx.db.insert("meetingParticipants", {
-        recordingId: args.recordingId,
-        displayName: participant.displayName,
-        email: participant.email,
-        userId,
-        joinedAt: participant.joinedAt,
-        leftAt: participant.leftAt,
-        speakingTime: participant.speakingTime,
-        speakingPercentage: participant.speakingPercentage,
-        isHost: participant.isHost,
-        isExternal: participant.isExternal,
-      });
-    }
+    // Build email -> userId map
+    const userIdByEmail = new Map<string, Id<"users">>();
+    participantsWithEmails.forEach((p, i) => {
+      const user = userLookups[i];
+      if (user && p.email) {
+        userIdByEmail.set(p.email, user._id);
+      }
+    });
+
+    // Insert all participants in parallel
+    await Promise.all(
+      args.participants.map((participant) =>
+        ctx.db.insert("meetingParticipants", {
+          recordingId: args.recordingId,
+          displayName: participant.displayName,
+          email: participant.email,
+          userId: participant.email ? userIdByEmail.get(participant.email) : undefined,
+          joinedAt: participant.joinedAt,
+          leftAt: participant.leftAt,
+          speakingTime: participant.speakingTime,
+          speakingPercentage: participant.speakingPercentage,
+          isHost: participant.isHost,
+          isExternal: participant.isExternal,
+        }),
+      ),
+    );
   },
 });
 

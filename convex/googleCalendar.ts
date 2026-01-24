@@ -275,36 +275,35 @@ export const syncFromGoogle = mutation({
       return { imported: 0 };
     }
 
-    let imported = 0;
+    const now = Date.now();
 
-    for (const event of args.events) {
-      // Check if event already exists
-      // Note: In production, you'd want to track Google event IDs
-      // For now, we'll just create the event
-      await ctx.db.insert("calendarEvents", {
-        title: event.title,
-        description: event.description,
-        startTime: event.startTime,
-        endTime: event.endTime,
-        allDay: event.allDay,
-        location: event.location,
-        eventType: "meeting",
-        organizerId: connection.userId,
-        attendeeIds: [], // Would need to map external emails to user IDs
-        externalAttendees: event.attendees,
-        status: "confirmed",
-        isRecurring: false,
-        updatedAt: Date.now(),
-      });
-      imported++;
-    }
+    // Insert all events in parallel
+    await Promise.all(
+      args.events.map((event) =>
+        ctx.db.insert("calendarEvents", {
+          title: event.title,
+          description: event.description,
+          startTime: event.startTime,
+          endTime: event.endTime,
+          allDay: event.allDay,
+          location: event.location,
+          eventType: "meeting",
+          organizerId: connection.userId,
+          attendeeIds: [], // Would need to map external emails to user IDs
+          externalAttendees: event.attendees,
+          status: "confirmed",
+          isRecurring: false,
+          updatedAt: now,
+        }),
+      ),
+    );
 
     await ctx.db.patch(args.connectionId, {
-      lastSyncAt: Date.now(),
-      updatedAt: Date.now(),
+      lastSyncAt: now,
+      updatedAt: now,
     });
 
-    return { imported };
+    return { imported: args.events.length };
   },
 });
 

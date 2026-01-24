@@ -94,15 +94,17 @@ export const createFromTemplate = authenticatedMutation({
       addedBy: ctx.userId,
     });
 
-    // Create default labels from template
-    for (const labelTemplate of template.defaultLabels) {
-      await ctx.db.insert("labels", {
-        projectId,
-        name: labelTemplate.name,
-        color: labelTemplate.color,
-        createdBy: ctx.userId,
-      });
-    }
+    // Create default labels from template (in parallel)
+    await Promise.all(
+      template.defaultLabels.map((labelTemplate) =>
+        ctx.db.insert("labels", {
+          projectId,
+          name: labelTemplate.name,
+          color: labelTemplate.color,
+          createdBy: ctx.userId,
+        }),
+      ),
+    );
 
     return projectId;
   },

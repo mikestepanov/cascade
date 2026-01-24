@@ -472,20 +472,27 @@ export const seedProviders = mutation({
       },
     ];
 
-    // Insert all providers
-    for (const provider of [...transcriptionProviders, ...emailProviders]) {
-      const existing = await ctx.db
-        .query("serviceProviders")
-        .withIndex("by_provider", (q) => q.eq("provider", provider.provider))
-        .first();
+    // Check and insert all providers in parallel
+    const allProviders = [...transcriptionProviders, ...emailProviders];
+    const existingProviders = await Promise.all(
+      allProviders.map((provider) =>
+        ctx.db
+          .query("serviceProviders")
+          .withIndex("by_provider", (q) => q.eq("provider", provider.provider))
+          .first(),
+      ),
+    );
 
-      if (!existing) {
-        await ctx.db.insert("serviceProviders", {
+    // Insert non-existing providers in parallel
+    const providersToInsert = allProviders.filter((_, i) => !existingProviders[i]);
+    await Promise.all(
+      providersToInsert.map((provider) =>
+        ctx.db.insert("serviceProviders", {
           ...provider,
           updatedAt: now,
-        });
-      }
-    }
+        }),
+      ),
+    );
 
     return { seeded: true };
   },

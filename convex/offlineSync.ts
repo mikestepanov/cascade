@@ -170,14 +170,17 @@ export const retryFailed = authenticatedMutation({
       .withIndex("by_user_status", (q) => q.eq("userId", ctx.userId).eq("status", "failed"))
       .take(BOUNDED_LIST_LIMIT);
 
-    for (const item of failed) {
-      await ctx.db.patch(item._id, {
-        status: "pending",
-        attempts: 0,
-        error: undefined,
-        updatedAt: Date.now(),
-      });
-    }
+    const now = Date.now();
+    await Promise.all(
+      failed.map((item) =>
+        ctx.db.patch(item._id, {
+          status: "pending",
+          attempts: 0,
+          error: undefined,
+          updatedAt: now,
+        }),
+      ),
+    );
 
     return { retried: failed.length };
   },
@@ -248,16 +251,10 @@ export const cleanupOldItems = internalMutation({
       .withIndex("by_status", (q) => q.eq("status", "completed"))
       .take(BOUNDED_LIST_LIMIT);
 
-    let deletedCount = 0;
+    const toDelete = completed.filter((item) => item.updatedAt < cutoff);
+    await Promise.all(toDelete.map((item) => ctx.db.delete(item._id)));
 
-    for (const item of completed) {
-      if (item.updatedAt < cutoff) {
-        await ctx.db.delete(item._id);
-        deletedCount++;
-      }
-    }
-
-    return { deletedCount };
+    return { deletedCount: toDelete.length };
   },
 });
 

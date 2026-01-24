@@ -210,7 +210,7 @@ export const sendInvite = authenticatedMutation({
     // Check if user already exists with this email
     const existingUser = await ctx.db
       .query("users")
-      .filter((q) => q.eq(q.field("email"), args.email))
+      .withIndex("email", (q) => q.eq("email", args.email))
       .first();
 
     // For project invites, add existing users directly

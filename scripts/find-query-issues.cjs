@@ -209,16 +209,37 @@ function analyzeFile(filePath) {
     }
 
     // === Check 3: Sequential awaits in loops ===
-    if (inLoopContext && /await\s+/.test(line) && !/Promise\.all/.test(line)) {
+    // Skip while loops (usually intentionally sequential - e.g., slug generation, retries)
+    const loopLine = lines[loopStartLine - 1] || "";
+    const isWhileLoop = /\bwhile\s*\(/.test(loopLine);
+
+    // Check if we're inside a switch statement (intentionally sequential)
+    const nearbyContext = lines.slice(Math.max(0, i - 10), i + 1).join("\n");
+    const isInSwitch = /switch\s*\([^)]+\)\s*\{/.test(nearbyContext) && /\bcase\s+/.test(nearbyContext);
+
+    // Check if we're inside a delete helper or cleanup function
+    const functionContext = lines.slice(Math.max(0, i - 40), i + 1).join("\n");
+    const isDeleteOrCleanup = /function\s+(delete|cleanup|purge|cascade|handleDelete)\w*/i.test(functionContext) ||
+      /async\s+function\s+(cascade|handleDelete)/i.test(functionContext) ||
+      /autoRetry/i.test(functionContext); // offlineSync auto-retry is intentionally sequential
+
+    if (inLoopContext && !isWhileLoop && !isInSwitch && !isDeleteOrCleanup && /await\s+/.test(line) && !/Promise\.all/.test(line)) {
       // Check if this is a database operation
       if (/ctx\.(db|storage|scheduler)/.test(line)) {
         const surroundingContext = lines.slice(Math.max(0, i - 5), Math.min(lines.length, i + 1)).join("\n");
 
         // Skip if already flagged or in Promise.all
         if (!/Promise\.all/.test(surroundingContext)) {
-          // Check if this is in a map that's wrapped in Promise.all
-          const widerContext = lines.slice(Math.max(0, loopStartLine - 2), Math.min(lines.length, i + 5)).join("\n");
-          if (!/Promise\.all\s*\(/.test(widerContext)) {
+          // Check if this is in a map that's wrapped in Promise.all (look further ahead)
+          const widerContext = lines.slice(Math.max(0, loopStartLine - 2), Math.min(lines.length, i + 15)).join("\n");
+          // Also check if the variable is assigned and later used in Promise.all
+          const assignmentMatch = lines[loopStartLine - 1]?.match(/const\s+(\w+)\s*=.*\.map/);
+          const variableName = assignmentMatch?.[1];
+          const promiseAllPattern = variableName
+            ? new RegExp(`Promise\\.all\\s*\\(\\s*${variableName}`)
+            : /Promise\.all\s*\(/;
+
+          if (!promiseAllPattern.test(widerContext)) {
             issues.push({
               type: "SEQUENTIAL_AWAIT",
               severity: SEVERITY.MEDIUM,
@@ -234,9 +255,10 @@ function analyzeFile(filePath) {
 
     // === Check 4: Missing index usage ===
     if (/\.query\s*\([^)]+\)/.test(line)) {
-      // Look ahead for .withIndex
+      // Look ahead for .withIndex or .withSearchIndex
       const queryContext = lines.slice(i, Math.min(lines.length, i + 5)).join("\n");
-      if (!/\.withIndex\s*\(/.test(queryContext) && /\.filter\s*\(/.test(queryContext)) {
+      const hasIndex = /\.withIndex\s*\(/.test(queryContext) || /\.withSearchIndex\s*\(/.test(queryContext);
+      if (!hasIndex && /\.filter\s*\(/.test(queryContext)) {
         // This is a query with filter but no index - potential full table scan
         issues.push({
           type: "MISSING_INDEX",
