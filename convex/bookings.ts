@@ -4,7 +4,7 @@ import { mutation, query } from "./_generated/server";
 import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
 import { batchFetchBookingPages } from "./lib/batchHelpers";
 import { BOUNDED_LIST_LIMIT } from "./lib/boundedQueries";
-import { validateEmail, validateName } from "./lib/constrainedValidators";
+import { validate, validateEmail } from "./lib/constrainedValidators";
 import { conflict, notFound, rateLimited, requireOwned, validation } from "./lib/errors";
 import { MINUTE } from "./lib/timeUtils";
 
@@ -55,7 +55,7 @@ export const createBooking = mutation({
 
     // Validate input
     validateEmail(args.bookerEmail);
-    validateName(args.bookerName, "bookerName");
+    validate.name(args.bookerName, "bookerName");
 
     // Get booking page
     const page = await ctx.db
