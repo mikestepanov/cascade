@@ -391,7 +391,7 @@ export function useLabelFuzzySearch(labels: string[] | undefined) {
  *
  * @example
  * ```typescript
- * const documentsResult = useQuery(api.documents.list);
+ * const documentsResult = useQuery(api.documents.list, { organizationId });
  * const { results, search, query } = useDocumentFuzzySearch(documentsResult?.documents);
  * ```
  */
