@@ -72,28 +72,47 @@ function categorizeAsset(url, initiatorType) {
   return null;
 }
 
+// Multi-shot configuration
+const VIEWPORTS = [
+  { name: "desktop", width: 1920, height: 1080 },
+  { name: "laptop", width: 1366, height: 768 },
+  { name: "phablet", width: 768, height: 1024 },
+  { name: "tablet", width: 1024, height: 1366 },
+  { name: "mobile", width: 375, height: 667 },
+  { name: "ultrawide", width: 3440, height: 1440 },
+];
+
+const THEMES = ["light", "dark"];
+
 (async () => {
   console.log(`\n🪞 Total Mirror Capture: ${competitor}/${pageName}`);
   console.log(`   URL: ${targetUrl}\n`);
 
-  // Output structure: docs/research/library/<competitor>/
   const outputDir = path.resolve(__dirname, "../docs/research/library", competitor);
   const assetsDir = path.join(outputDir, "assets");
 
-  // Create directories
+  if (!fs.existsSync(outputDir)) {
+    fs.mkdirSync(outputDir, { recursive: true });
+  }
+
+  // Create subdirectories for assets
   for (const subdir of ["js", "css", "fonts", "images", "animations"]) {
     fs.mkdirSync(path.join(assetsDir, subdir), { recursive: true });
   }
 
   const browser = await chromium.launch({ headless: true });
-  const context = await browser.newContext({
+
+  // Main technical capture (default Desktop Light)
+  const technicalContext = await browser.newContext({
     viewport: { width: 1920, height: 1080 },
+    colorScheme: "light",
+    userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36",
   });
-  const page = await context.newPage();
+  const techPage = await technicalContext.newPage();
 
   // Collect network requests
   const networkLog = [];
-  page.on("response", async (response) => {
+  techPage.on("response", async (response) => {
     const url = response.url();
     const request = response.request();
     networkLog.push({
@@ -104,37 +123,29 @@ function categorizeAsset(url, initiatorType) {
     });
   });
 
-  // Navigate
-  console.log("📡 Navigating...");
-  await page.goto(targetUrl, { waitUntil: "domcontentloaded", timeout: 60000 });
+  console.log("📡 Navigating for technical capture (120s timeout)...");
+  try {
+    await techPage.goto(targetUrl, { waitUntil: "load", timeout: 120000 });
+    // Attempt networkidle but don't crash if it stays busy
+    await techPage.waitForLoadState("networkidle", { timeout: 15000 }).catch(() => {});
+    await techPage.waitForTimeout(5000); // Buffer for animations
+  } catch (err) {
+    console.log(`   ⚠️ Navigation warning: ${err.message.split("\n")[0]}`);
+  }
 
-  // Wait for content
-  await page.waitForTimeout(3000);
-
-  // Scroll to trigger lazy loads
-  await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
-  await page.waitForTimeout(2000);
-  await page.evaluate(() => window.scrollTo(0, 0));
-  await page.waitForTimeout(1000);
-
-  console.log(`📊 Captured ${networkLog.length} network requests`);
-
-  // Extract HTML - named per page
-  const html = await page.content();
+  // Extract HTML
+  const html = await techPage.content();
   fs.writeFileSync(path.join(outputDir, `${pageName}.html`), html);
   console.log(`✅ Saved ${pageName}.html`);
 
   // Extract deep data
-  // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: Script needs to handle many data types
-  const deepData = await page.evaluate(() => {
-    // CSS Variables
+  const deepData = await techPage.evaluate(() => {
     const cssVars = {};
     try {
       for (const sheet of document.styleSheets) {
         try {
           for (const rule of sheet.cssRules) {
             if (rule.style) {
-              // biome-ignore lint/style/useForOf: style.length is index-based
               for (let i = 0; i < rule.style.length; i++) {
                 const prop = rule.style[i];
                 if (prop.startsWith("--")) {
@@ -143,51 +154,30 @@ function categorizeAsset(url, initiatorType) {
               }
             }
           }
-        } catch (_e) {
-          /* CORS-blocked */
-        }
+        } catch (_e) {}
       }
-    } catch (_e) {
-      /* CORS-blocked */
-    }
+    } catch (_e) {}
 
-    // Keyframes
     const keyframes = [];
     try {
       for (const sheet of document.styleSheets) {
         try {
           for (const rule of sheet.cssRules) {
             if (rule.type === CSSRule.KEYFRAMES_RULE) {
-              keyframes.push({
-                name: rule.name,
-                cssText: rule.cssText,
-              });
+              keyframes.push({ name: rule.name, cssText: rule.cssText });
             }
           }
-        } catch (_e) {
-          /* CORS-blocked */
-        }
+        } catch (_e) {}
       }
-    } catch (_e) {
-      /* CORS-blocked */
-    }
+    } catch (_e) {}
 
-    // Fonts
     const fonts = [];
     try {
       document.fonts.forEach((f) =>
-        fonts.push({
-          family: f.family,
-          status: f.status,
-          style: f.style,
-          weight: f.weight,
-        }),
+        fonts.push({ family: f.family, status: f.status, style: f.style, weight: f.weight }),
       );
-    } catch (_e) {
-      /* font API unavailable */
-    }
+    } catch (_e) {}
 
-    // Scripts
     const scripts = Array.from(document.scripts)
       .map((s) => s.src)
       .filter(Boolean);
@@ -195,16 +185,43 @@ function categorizeAsset(url, initiatorType) {
     return { cssVars, keyframes, fonts, scripts };
   });
 
-  // Named per page: homepage_deep.json, features_deep.json, etc.
   fs.writeFileSync(
     path.join(outputDir, `${pageName}_deep.json`),
     JSON.stringify(deepData, null, 2),
   );
-  console.log(
-    `✅ Saved ${pageName}_deep.json (${Object.keys(deepData.cssVars).length} CSS vars, ${deepData.keyframes.length} keyframes)`,
-  );
+  console.log(`✅ Saved ${pageName}_deep.json`);
 
-  // Download assets (shared across pages)
+  // --- Visual Multi-Shot (12-shot) ---
+  console.log("\n📸 Starting 12-shot visual capture...");
+  for (const theme of THEMES) {
+    for (const vp of VIEWPORTS) {
+      const fileName = `${pageName}_${vp.name}_${theme}.png`;
+      const filePath = path.join(outputDir, fileName);
+
+      process.stdout.write(`   Capture: ${vp.name} (${theme})... `);
+
+      const shotContext = await browser.newContext({
+        viewport: { width: vp.width, height: vp.height },
+        colorScheme: theme,
+        userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36",
+      });
+      const shotPage = await shotContext.newPage();
+
+      try {
+        await shotPage.goto(targetUrl, { waitUntil: "load", timeout: 90000 });
+        await shotPage.waitForLoadState("networkidle", { timeout: 10000 }).catch(() => {});
+        await shotPage.waitForTimeout(3000); // Stable render
+        await shotPage.screenshot({ path: filePath, fullPage: true });
+        process.stdout.write("✅\n");
+      } catch (err) {
+        process.stdout.write(`❌ (${err.message.split("\n")[0]})\n`);
+      } finally {
+        await shotContext.close();
+      }
+    }
+  }
+
+  // Assets download (from technical page)
   console.log("\n📥 Downloading assets...");
   const manifest = { js: [], css: [], fonts: [], images: [], animations: [] };
   let downloaded = 0;
@@ -223,7 +240,6 @@ function categorizeAsset(url, initiatorType) {
         path.basename(urlObj.pathname) || `file_${downloaded}${getExtension(entry.url)}`;
       const destPath = path.join(assetsDir, category, filename);
 
-      // Skip if already downloaded (shared assets)
       if (fs.existsSync(destPath)) {
         skipped++;
         continue;
@@ -232,29 +248,15 @@ function categorizeAsset(url, initiatorType) {
       await downloadFile(entry.url, destPath);
       manifest[category].push({ url: entry.url, local: `assets/${category}/${filename}` });
       downloaded++;
-
-      if (downloaded % 20 === 0) {
-        console.log(`   Downloaded ${downloaded} assets...`);
-      }
     } catch (_err) {
       skipped++;
     }
   }
 
-  // Append to existing manifest or create new
-  const manifestPath = path.join(outputDir, `${pageName}_manifest.json`);
-  fs.writeFileSync(manifestPath, JSON.stringify(manifest, null, 2));
-  console.log(`\n✅ Downloaded ${downloaded} new assets (skipped ${skipped} existing/unknown)`);
-
-  // Save network log per page
-  fs.writeFileSync(
-    path.join(outputDir, `${pageName}_network.json`),
-    JSON.stringify(networkLog, null, 2),
-  );
-  console.log(`✅ Saved ${pageName}_network.json`);
+  fs.writeFileSync(path.join(outputDir, `${pageName}_manifest.json`), JSON.stringify(manifest, null, 2));
+  fs.writeFileSync(path.join(outputDir, `${pageName}_network.json`), JSON.stringify(networkLog, null, 2));
+  console.log(`✅ Saved ${pageName}_manifest.json and ${pageName}_network.json`);
 
   await browser.close();
-
-  console.log(`\n🎉 Mirror complete: ${outputDir}/${pageName}.*`);
-  console.log(`   Files: ${pageName}.html, ${pageName}_deep.json, ${pageName}_manifest.json\n`);
+  console.log(`\n🎉 Mirror complete: ${outputDir}/${pageName}.*\n`);
 })();
