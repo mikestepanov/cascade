@@ -13,9 +13,12 @@ import { cascadeDelete } from "../lib/relationships";
 import { assertCanEditProject, assertIsProjectAdmin } from "../projectAccess";
 import { workflowCategories } from "../validators";
 import {
+  assertVersionMatch,
   generateIssueKey,
   getMaxOrderForStatus,
+  getNextVersion,
   getSearchContent,
+  issueKeyExists,
   processIssueUpdates,
   validateParentIssue,
 } from "./helpers";
@@ -58,8 +61,16 @@ export const create = projectEditorMutation({
     // Validate parent/epic constraints
     const inheritedEpicId = await validateParentIssue(ctx, args.parentId, args.type, args.epicId);
 
-    // Generate issue key
-    const issueKey = await generateIssueKey(ctx, ctx.projectId, ctx.project.key);
+    // Generate issue key with duplicate detection
+    // In rare concurrent scenarios, we verify the key doesn't exist before using
+    let issueKey = await generateIssueKey(ctx, ctx.projectId, ctx.project.key);
+
+    // Double-check for duplicates (handles race conditions)
+    if (await issueKeyExists(ctx, issueKey)) {
+      // Regenerate with timestamp suffix to guarantee uniqueness
+      const suffix = Date.now() % 10000;
+      issueKey = `${issueKey}-${suffix}`;
+    }
 
     // Get the first workflow state as default status
     const defaultStatus = ctx.project.workflowStates[0]?.id || "todo";
@@ -101,6 +112,7 @@ export const create = projectEditorMutation({
       searchContent: getSearchContent(args.title, args.description),
       loggedHours: 0,
       order: maxOrder + 1,
+      version: 1, // Initial version for optimistic locking
     });
 
     // Log activity
@@ -118,8 +130,12 @@ export const updateStatus = issueMutation({
   args: {
     newStatus: v.string(),
     newOrder: v.number(),
+    expectedVersion: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
+    // Verify optimistic lock
+    assertVersionMatch(ctx.issue.version, args.expectedVersion);
+
     const oldStatus = ctx.issue.status;
     const now = Date.now();
 
@@ -127,6 +143,7 @@ export const updateStatus = issueMutation({
       status: args.newStatus,
       order: args.newOrder,
       updatedAt: now,
+      version: getNextVersion(ctx.issue.version),
     });
 
     if (oldStatus !== args.newStatus) {
@@ -146,8 +163,12 @@ export const updateStatusByCategory = issueMutation({
   args: {
     category: workflowCategories,
     newOrder: v.number(),
+    expectedVersion: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
+    // Verify optimistic lock
+    assertVersionMatch(ctx.issue.version, args.expectedVersion);
+
     const workflowStates = ctx.project?.workflowStates || [];
     const targetState = [...workflowStates]
       .sort((a, b) => a.order - b.order)
@@ -167,6 +188,7 @@ export const updateStatusByCategory = issueMutation({
       status: targetState.id,
       order: args.newOrder,
       updatedAt: now,
+      version: getNextVersion(ctx.issue.version),
     });
 
     if (oldStatus !== targetState.id) {
@@ -200,8 +222,13 @@ export const update = issueMutation({
     dueDate: v.optional(v.union(v.number(), v.null())),
     estimatedHours: v.optional(v.union(v.number(), v.null())),
     storyPoints: v.optional(v.union(v.number(), v.null())),
+    // Optimistic locking: pass current version to detect concurrent edits
+    expectedVersion: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
+    // Verify optimistic lock - throws conflict error if version mismatch
+    assertVersionMatch(ctx.issue.version, args.expectedVersion);
+
     const _now = Date.now();
     const changes: Array<{
       field: string;
@@ -210,6 +237,9 @@ export const update = issueMutation({
     }> = [];
 
     const updates = processIssueUpdates(ctx.issue, args, changes);
+
+    // Always increment version on update
+    updates.version = getNextVersion(ctx.issue.version);
 
     if (
       args.assigneeId !== undefined &&

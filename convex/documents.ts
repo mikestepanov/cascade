@@ -3,6 +3,7 @@ import type { Id } from "./_generated/dataModel";
 
 import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
 import { batchFetchProjects, batchFetchUsers, getUserName } from "./lib/batchHelpers";
+import { BOUNDED_RELATION_LIMIT } from "./lib/boundedQueries";
 import { conflict, forbidden, notFound } from "./lib/errors";
 import {
   DEFAULT_PAGE_SIZE,
@@ -364,10 +365,11 @@ export const search = authenticatedQuery({
       .take(fetchLimit);
 
     // Get user's organization memberships for validation
+    // Bounded - users shouldn't be in more orgs than this
     const memberships = await ctx.db
       .query("organizationMembers")
       .withIndex("by_user", (q) => q.eq("userId", ctx.userId))
-      .collect();
+      .take(BOUNDED_RELATION_LIMIT);
     const myOrgIds = new Set(memberships.map((m) => m.organizationId));
 
     // Filter results based on access permissions and advanced filters

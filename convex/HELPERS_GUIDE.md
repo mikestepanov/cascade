@@ -207,13 +207,14 @@ export const deleteProject = adminMutation({
 ### Example 4: Rate-Limited Mutation
 
 ```typescript
-import { strictRateLimitedMutation } from "./rateLimiting";
+import { rateLimit } from "./rateLimits";
+import { authenticatedMutation } from "./customFunctions";
 
-export const sendInvite = strictRateLimitedMutation({
+export const sendInvite = authenticatedMutation({
   args: { email: v.string(), projectId: v.id("projects") },
   handler: async (ctx, args) => {
-    // Rate limit: 10 requests/minute per user
-    // ctx.userId automatically available
+    // Rate limit: uses persistent @convex-dev/rate-limiter
+    await rateLimit(ctx, "createIssue", { key: ctx.userId, throws: true });
 
     // Send invite email...
 
@@ -253,25 +254,26 @@ export const addComment = issueMutation({
 
 ## 🔧 Advanced Usage
 
-### Creating Custom Rate Limiters
+### Using Rate Limits
+
+Rate limiting uses the persistent `@convex-dev/rate-limiter` component.
+Configure limits in `rateLimits.ts`, then use in mutations:
 
 ```typescript
-import { rateLimitedMutation } from "./rateLimiting";
+import { rateLimit } from "./rateLimits";
+import { authenticatedMutation } from "./customFunctions";
 
-export const customRateLimiter = rateLimitedMutation({
-  keyPrefix: "custom",
-  maxRequests: 5,
-  windowMs: 10 * 60 * 1000, // 10 minutes
-});
-
-export const heavyOperation = customRateLimiter({
+export const heavyOperation = authenticatedMutation({
   args: { data: v.string() },
   handler: async (ctx, args) => {
-    // Rate limited to 5 requests per 10 minutes
+    // Rate limit persists across cold starts
+    await rateLimit(ctx, "aiSuggestion", { key: ctx.userId, throws: true });
     // ...
   },
 });
 ```
+
+Available rate limit names: `aiChat`, `aiSuggestion`, `semanticSearch`, `createIssue`, `apiEndpoint`
 
 ### Composing Custom Functions
 

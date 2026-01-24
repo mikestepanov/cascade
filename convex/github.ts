@@ -1,7 +1,8 @@
 import { v } from "convex/values";
 import type { Id } from "./_generated/dataModel";
-import { mutation } from "./_generated/server";
+import { internalMutation, mutation } from "./_generated/server";
 import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
+import { decrypt, encrypt } from "./lib/encryption";
 import { conflict, forbidden, notFound, validation } from "./lib/errors";
 import { notDeleted } from "./lib/softDeleteHelpers";
 import { ciStatuses, prStates } from "./validators";
@@ -16,6 +17,10 @@ export const connectGitHub = authenticatedMutation({
     expiresAt: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
+    // Encrypt tokens before storage
+    const encryptedAccessToken = await encrypt(args.accessToken);
+    const encryptedRefreshToken = args.refreshToken ? await encrypt(args.refreshToken) : undefined;
+
     // Check if connection already exists
     const existing = await ctx.db
       .query("githubConnections")
@@ -29,8 +34,8 @@ export const connectGitHub = authenticatedMutation({
       await ctx.db.patch(existing._id, {
         githubUserId: args.githubUserId,
         githubUsername: args.githubUsername,
-        accessToken: args.accessToken,
-        refreshToken: args.refreshToken,
+        accessToken: encryptedAccessToken,
+        refreshToken: encryptedRefreshToken,
         expiresAt: args.expiresAt,
         updatedAt: now,
       });
@@ -42,22 +47,59 @@ export const connectGitHub = authenticatedMutation({
       userId: ctx.userId,
       githubUserId: args.githubUserId,
       githubUsername: args.githubUsername,
-      accessToken: args.accessToken,
-      refreshToken: args.refreshToken,
+      accessToken: encryptedAccessToken,
+      refreshToken: encryptedRefreshToken,
       expiresAt: args.expiresAt,
       updatedAt: now,
     });
   },
 });
 
-// Get GitHub connection for current user
+// Get GitHub connection for current user (without exposing tokens)
 export const getConnection = authenticatedQuery({
   args: {},
   handler: async (ctx) => {
-    return await ctx.db
+    const connection = await ctx.db
       .query("githubConnections")
       .withIndex("by_user", (q) => q.eq("userId", ctx.userId))
       .first();
+
+    if (!connection) return null;
+
+    // Return connection without exposing tokens to frontend
+    return {
+      _id: connection._id,
+      _creationTime: connection._creationTime,
+      userId: connection.userId,
+      githubUserId: connection.githubUserId,
+      githubUsername: connection.githubUsername,
+      expiresAt: connection.expiresAt,
+      updatedAt: connection.updatedAt,
+      // Don't expose tokens to frontend
+      hasAccessToken: !!connection.accessToken,
+      hasRefreshToken: !!connection.refreshToken,
+    };
+  },
+});
+
+// Internal helper to get decrypted tokens (for backend API calls)
+export const getDecryptedGitHubTokens = internalMutation({
+  args: {
+    userId: v.id("users"),
+  },
+  handler: async (ctx, args) => {
+    const connection = await ctx.db
+      .query("githubConnections")
+      .withIndex("by_user", (q) => q.eq("userId", args.userId))
+      .first();
+
+    if (!connection) return null;
+
+    return {
+      accessToken: await decrypt(connection.accessToken),
+      refreshToken: connection.refreshToken ? await decrypt(connection.refreshToken) : undefined,
+      expiresAt: connection.expiresAt,
+    };
   },
 });
 

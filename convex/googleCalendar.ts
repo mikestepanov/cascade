@@ -1,6 +1,7 @@
 import { v } from "convex/values";
 import { internalMutation, mutation } from "./_generated/server";
 import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
+import { decrypt, encrypt } from "./lib/encryption";
 import { notFound } from "./lib/errors";
 import { syncDirections } from "./validators";
 
@@ -17,6 +18,12 @@ export const connectGoogleInternal = internalMutation({
   handler: async (ctx, args) => {
     const { userId, ...connectionArgs } = args;
 
+    // Encrypt tokens before storage
+    const encryptedAccessToken = await encrypt(connectionArgs.accessToken);
+    const encryptedRefreshToken = connectionArgs.refreshToken
+      ? await encrypt(connectionArgs.refreshToken)
+      : undefined;
+
     // Check if connection already exists for this provider
     const existing = await ctx.db
       .query("calendarConnections")
@@ -29,8 +36,8 @@ export const connectGoogleInternal = internalMutation({
       // Update existing connection
       await ctx.db.patch(existing._id, {
         providerAccountId: connectionArgs.providerAccountId,
-        accessToken: connectionArgs.accessToken,
-        refreshToken: connectionArgs.refreshToken,
+        accessToken: encryptedAccessToken,
+        refreshToken: encryptedRefreshToken,
         expiresAt: connectionArgs.expiresAt,
         syncDirection: connectionArgs.syncDirection || "bidirectional",
         updatedAt: now,
@@ -43,8 +50,8 @@ export const connectGoogleInternal = internalMutation({
       userId,
       provider: "google",
       providerAccountId: connectionArgs.providerAccountId,
-      accessToken: connectionArgs.accessToken,
-      refreshToken: connectionArgs.refreshToken,
+      accessToken: encryptedAccessToken,
+      refreshToken: encryptedRefreshToken,
       expiresAt: connectionArgs.expiresAt,
       syncDirection: connectionArgs.syncDirection || "bidirectional",
       syncEnabled: true,
@@ -64,6 +71,10 @@ export const connectGoogle = authenticatedMutation({
     syncDirection: v.optional(syncDirections),
   },
   handler: async (ctx, args) => {
+    // Encrypt tokens before storage
+    const encryptedAccessToken = await encrypt(args.accessToken);
+    const encryptedRefreshToken = args.refreshToken ? await encrypt(args.refreshToken) : undefined;
+
     // Check if connection already exists for this provider
     const existing = await ctx.db
       .query("calendarConnections")
@@ -76,8 +87,8 @@ export const connectGoogle = authenticatedMutation({
       // Update existing connection
       await ctx.db.patch(existing._id, {
         providerAccountId: args.providerAccountId,
-        accessToken: args.accessToken,
-        refreshToken: args.refreshToken,
+        accessToken: encryptedAccessToken,
+        refreshToken: encryptedRefreshToken,
         expiresAt: args.expiresAt,
         updatedAt: now,
       });
@@ -89,8 +100,8 @@ export const connectGoogle = authenticatedMutation({
       userId: ctx.userId,
       provider: "google",
       providerAccountId: args.providerAccountId,
-      accessToken: args.accessToken,
-      refreshToken: args.refreshToken,
+      accessToken: encryptedAccessToken,
+      refreshToken: encryptedRefreshToken,
       expiresAt: args.expiresAt,
       syncEnabled: true,
       syncDirection: args.syncDirection ?? "bidirectional",
@@ -100,14 +111,50 @@ export const connectGoogle = authenticatedMutation({
   },
 });
 
-// Get Google Calendar connection
+// Get Google Calendar connection (without decrypted tokens - for UI display)
 export const getConnection = authenticatedQuery({
   args: {},
   handler: async (ctx) => {
-    return await ctx.db
+    const connection = await ctx.db
       .query("calendarConnections")
       .withIndex("by_user_provider", (q) => q.eq("userId", ctx.userId).eq("provider", "google"))
       .first();
+
+    if (!connection) return null;
+
+    // Return connection without exposing tokens to frontend
+    return {
+      _id: connection._id,
+      _creationTime: connection._creationTime,
+      userId: connection.userId,
+      provider: connection.provider,
+      providerAccountId: connection.providerAccountId,
+      expiresAt: connection.expiresAt,
+      syncEnabled: connection.syncEnabled,
+      syncDirection: connection.syncDirection,
+      lastSyncAt: connection.lastSyncAt,
+      updatedAt: connection.updatedAt,
+      // Don't expose tokens to frontend
+      hasAccessToken: !!connection.accessToken,
+      hasRefreshToken: !!connection.refreshToken,
+    };
+  },
+});
+
+// Internal helper to get decrypted tokens (for backend sync processes)
+export const getDecryptedTokens = internalMutation({
+  args: {
+    connectionId: v.id("calendarConnections"),
+  },
+  handler: async (ctx, args) => {
+    const connection = await ctx.db.get(args.connectionId);
+    if (!connection) return null;
+
+    return {
+      accessToken: await decrypt(connection.accessToken),
+      refreshToken: connection.refreshToken ? await decrypt(connection.refreshToken) : undefined,
+      expiresAt: connection.expiresAt,
+    };
   },
 });
 
@@ -162,9 +209,15 @@ export const refreshToken = mutation({
     const connection = await ctx.db.get(args.connectionId);
     if (!connection) throw notFound("calendarConnection", args.connectionId);
 
+    // Encrypt new tokens before storage
+    const encryptedAccessToken = await encrypt(args.newAccessToken);
+    const encryptedRefreshToken = args.newRefreshToken
+      ? await encrypt(args.newRefreshToken)
+      : connection.refreshToken;
+
     await ctx.db.patch(args.connectionId, {
-      accessToken: args.newAccessToken,
-      refreshToken: args.newRefreshToken ?? connection.refreshToken,
+      accessToken: encryptedAccessToken,
+      refreshToken: encryptedRefreshToken,
       expiresAt: args.expiresAt,
       updatedAt: Date.now(),
     });

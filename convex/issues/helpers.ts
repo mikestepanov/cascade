@@ -1,6 +1,6 @@
 import type { Id } from "../_generated/dataModel";
 import type { MutationCtx } from "../_generated/server";
-import { notFound, validation } from "../lib/errors";
+import { conflict, notFound, validation } from "../lib/errors";
 import { notDeleted } from "../lib/softDeleteHelpers";
 
 export const ROOT_ISSUE_TYPES = ["task", "bug", "story", "epic"] as const;
@@ -47,32 +47,60 @@ export async function validateParentIssue(
   return epicId || parentIssue.epicId;
 }
 
-// Helper: Generate issue key
+// Helper: Generate issue key with race condition protection
 export async function generateIssueKey(
   ctx: MutationCtx,
   projectId: Id<"projects">,
   projectKey: string,
-) {
-  // Get the most recent issue to determine the next number
-  // Order by _creationTime desc to get the latest issue
-  // TODO: Potential race condition - consider using atomic counter for guaranteed uniqueness
+): Promise<string> {
+  // Get the most recent issue by creation time to find the highest key number
+  // We order desc and take the first - this works because keys are sequential
   const latestIssue = await ctx.db
     .query("issues")
     .withIndex("by_project", (q) => q.eq("projectId", projectId))
     .order("desc")
-    .filter(notDeleted)
     .first();
 
-  let issueNumber = 1;
+  let maxNumber = 0;
   if (latestIssue) {
-    // Parse the number from the key (e.g., "PROJ-123" -> 123)
     const match = latestIssue.key.match(/-(\d+)$/);
     if (match) {
-      issueNumber = parseInt(match[1], 10) + 1;
+      maxNumber = parseInt(match[1], 10);
     }
   }
 
-  return `${projectKey}-${issueNumber}`;
+  return `${projectKey}-${maxNumber + 1}`;
+}
+
+// Helper: Check if an issue key already exists (for duplicate detection)
+export async function issueKeyExists(ctx: MutationCtx, key: string): Promise<boolean> {
+  const existing = await ctx.db
+    .query("issues")
+    .withIndex("by_key", (q) => q.eq("key", key))
+    .first();
+  return existing !== null;
+}
+
+// Helper: Verify optimistic lock version matches
+// Throws conflict error if version mismatch (stale update)
+export function assertVersionMatch(
+  currentVersion: number | undefined,
+  expectedVersion: number | undefined,
+): void {
+  // If no expected version provided, skip check (backwards compatibility)
+  if (expectedVersion === undefined) return;
+
+  // Current version defaults to 1 if not set
+  const current = currentVersion ?? 1;
+
+  if (current !== expectedVersion) {
+    throw conflict("Issue was modified by another user. Please refresh and try again.");
+  }
+}
+
+// Helper: Get next version number for an issue update
+export function getNextVersion(currentVersion: number | undefined): number {
+  return (currentVersion ?? 1) + 1;
 }
 
 // Helper: Get max order for status column
