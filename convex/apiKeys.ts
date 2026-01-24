@@ -1,4 +1,5 @@
 import { v } from "convex/values";
+import { internal } from "./_generated/api";
 import { internalMutation, internalQuery } from "./_generated/server";
 import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
 import type { ApiAuthContext } from "./lib/apiAuth";
@@ -135,6 +136,19 @@ export const generate = authenticatedMutation({
       expiresAt: args.expiresAt,
     });
 
+    // Audit log: API key creation is a sensitive operation
+    await ctx.scheduler.runAfter(0, internal.auditLogs.log, {
+      action: "api_key.created",
+      actorId: ctx.userId,
+      targetId: keyId,
+      targetType: "apiKey",
+      metadata: {
+        name: args.name,
+        scopes: args.scopes,
+        ...(args.projectId && { projectId: args.projectId }),
+      },
+    });
+
     // Return the API key (ONLY time it's shown in plain text)
     return {
       id: keyId,
@@ -187,11 +201,23 @@ export const revoke = authenticatedMutation({
     keyId: v.id("apiKeys"),
   },
   handler: async (ctx, args) => {
-    const _key = requireOwned(await ctx.db.get(args.keyId), ctx.userId, "apiKey");
+    const key = requireOwned(await ctx.db.get(args.keyId), ctx.userId, "apiKey");
 
     await ctx.db.patch(args.keyId, {
       isActive: false,
       revokedAt: Date.now(),
+    });
+
+    // Audit log: API key revocation is a sensitive operation
+    await ctx.scheduler.runAfter(0, internal.auditLogs.log, {
+      action: "api_key.revoked",
+      actorId: ctx.userId,
+      targetId: args.keyId,
+      targetType: "apiKey",
+      metadata: {
+        name: key.name,
+        keyPrefix: key.keyPrefix,
+      },
     });
 
     return { success: true };

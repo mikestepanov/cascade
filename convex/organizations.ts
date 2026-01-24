@@ -1,5 +1,6 @@
 import { v } from "convex/values";
 import { pruneNull } from "convex-helpers";
+import { internal } from "./_generated/api";
 import type { Doc, Id } from "./_generated/dataModel";
 import type { MutationCtx, QueryCtx } from "./_generated/server";
 import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
@@ -323,6 +324,18 @@ export const addMember = authenticatedMutation({
       await ctx.db.patch(args.userId, { defaultOrganizationId: args.organizationId });
     }
 
+    // Audit log: membership changes are sensitive operations
+    await ctx.scheduler.runAfter(0, internal.auditLogs.log, {
+      action: "organization.member_added",
+      actorId: ctx.userId,
+      targetId: args.userId,
+      targetType: "user",
+      metadata: {
+        organizationId: args.organizationId,
+        role: args.role,
+      },
+    });
+
     return { success: true };
   },
 });
@@ -356,8 +369,22 @@ export const updateMemberRole = authenticatedMutation({
       throw forbidden("owner", "Cannot change owner role");
     }
 
+    const oldRole = membership.role;
     await ctx.db.patch(membership._id, {
       role: args.role,
+    });
+
+    // Audit log: role changes are sensitive operations
+    await ctx.scheduler.runAfter(0, internal.auditLogs.log, {
+      action: "organization.member_role_changed",
+      actorId: ctx.userId,
+      targetId: args.userId,
+      targetType: "user",
+      metadata: {
+        organizationId: args.organizationId,
+        oldRole,
+        newRole: args.role,
+      },
     });
 
     return { success: true };
@@ -392,6 +419,7 @@ export const removeMember = authenticatedMutation({
       throw forbidden("owner", "Cannot remove organization owner");
     }
 
+    const removedRole = membership.role;
     await ctx.db.delete(membership._id);
 
     // Clear defaultOrganizationId if this was the user's default
@@ -399,6 +427,18 @@ export const removeMember = authenticatedMutation({
     if (user?.defaultOrganizationId === args.organizationId) {
       await ctx.db.patch(args.userId, { defaultOrganizationId: undefined });
     }
+
+    // Audit log: member removal is a sensitive operation
+    await ctx.scheduler.runAfter(0, internal.auditLogs.log, {
+      action: "organization.member_removed",
+      actorId: ctx.userId,
+      targetId: args.userId,
+      targetType: "user",
+      metadata: {
+        organizationId: args.organizationId,
+        role: removedRole,
+      },
+    });
 
     return { success: true };
   },
