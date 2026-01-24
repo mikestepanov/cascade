@@ -13,6 +13,7 @@ import { v } from "convex/values";
 import { api, components, internal } from "../_generated/api";
 import { action, internalAction, mutation, query } from "../_generated/server";
 import { extractUsage } from "../lib/aiHelpers";
+import { BOUNDED_LIST_LIMIT } from "../lib/boundedQueries";
 import { unauthenticated } from "../lib/errors";
 import { rateLimit } from "../rateLimits";
 import { issueTypes } from "../validators";
@@ -348,7 +349,7 @@ export const getProjectLabels = query({
     const labels = await ctx.db
       .query("labels")
       .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
-      .collect();
+      .take(BOUNDED_LIST_LIMIT);
 
     return labels.map((label) => label.name);
   },

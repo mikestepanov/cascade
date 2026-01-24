@@ -1,6 +1,7 @@
 import { v } from "convex/values";
 import { internalMutation, mutation } from "./_generated/server";
 import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
+import { BOUNDED_LIST_LIMIT } from "./lib/boundedQueries";
 import { decrypt, encrypt } from "./lib/encryption";
 import { notFound } from "./lib/errors";
 import { syncDirections } from "./validators";
@@ -244,7 +245,7 @@ export const listConnections = authenticatedQuery({
     return await ctx.db
       .query("calendarConnections")
       .withIndex("by_user", (q) => q.eq("userId", ctx.userId))
-      .collect();
+      .take(BOUNDED_LIST_LIMIT);
   },
 });
 
@@ -330,6 +331,6 @@ export const getEventsToSync = authenticatedQuery({
       .query("calendarEvents")
       .withIndex("by_organizer", (q) => q.eq("organizerId", ctx.userId))
       .filter((q) => q.gte(q.field("updatedAt"), sinceTime))
-      .collect();
+      .take(BOUNDED_LIST_LIMIT);
   },
 });

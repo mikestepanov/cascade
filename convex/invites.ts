@@ -5,6 +5,7 @@ import { type MutationCtx, type QueryCtx, query } from "./_generated/server";
 import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
 import { sendEmail } from "./email/index";
 import { batchFetchProjects, batchFetchUsers } from "./lib/batchHelpers";
+import { BOUNDED_LIST_LIMIT } from "./lib/boundedQueries";
 import { getSiteUrl } from "./lib/env";
 import { conflict, forbidden, notFound, validation } from "./lib/errors";
 import { notDeleted } from "./lib/softDeleteHelpers";
@@ -668,14 +669,14 @@ export const listUsers = authenticatedQuery({
           .query("projects")
           .withIndex("by_creator", (q) => q.eq("createdBy", uid))
           .filter(notDeleted)
-          .collect(),
+          .take(BOUNDED_LIST_LIMIT),
       ),
       asyncMap(userIds, (uid) =>
         ctx.db
           .query("projectMembers")
           .withIndex("by_user", (q) => q.eq("userId", uid))
           .filter(notDeleted)
-          .collect(),
+          .take(BOUNDED_LIST_LIMIT),
       ),
     ]);
 

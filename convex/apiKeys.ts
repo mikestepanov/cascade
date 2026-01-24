@@ -3,6 +3,7 @@ import { internal } from "./_generated/api";
 import { internalMutation, internalQuery } from "./_generated/server";
 import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
 import type { ApiAuthContext } from "./lib/apiAuth";
+import { BOUNDED_LIST_LIMIT } from "./lib/boundedQueries";
 import { forbidden, notFound, requireOwned, validation } from "./lib/errors";
 import { notDeleted } from "./lib/softDeleteHelpers";
 
@@ -170,7 +171,7 @@ export const list = authenticatedQuery({
       .query("apiKeys")
       .withIndex("by_user", (q) => q.eq("userId", ctx.userId))
       .filter(notDeleted)
-      .collect();
+      .take(BOUNDED_LIST_LIMIT);
 
     // Return keys with sensitive data removed
     return keys.map((key) => ({
@@ -357,7 +358,7 @@ export const listExpiringSoon = authenticatedQuery({
     const keys = await ctx.db
       .query("apiKeys")
       .withIndex("by_user_active", (q) => q.eq("userId", ctx.userId).eq("isActive", true))
-      .collect();
+      .take(BOUNDED_LIST_LIMIT);
 
     // Filter to expiring keys
     const expiring = keys.filter((key) => key.expiresAt && key.expiresAt <= threshold);

@@ -15,11 +15,12 @@
  *     .query("issues")
  *     .withIndex("by_project", (q) => q.eq("projectId", projectId))
  *     .filter(notDeleted)  // ← Add this to exclude deleted
- *     .collect();
+ *     .take(BOUNDED_LIST_LIMIT);
  */
 
 import type { ExpressionOrValue, FilterBuilder, GenericTableInfo } from "convex/server";
 import type { Id } from "../_generated/dataModel";
+import { BOUNDED_LIST_LIMIT } from "./boundedQueries";
 
 // Loose type for dynamic table access
 
@@ -41,7 +42,7 @@ export interface SoftDeletable {
  *   .query("issues")
  *   .withIndex("by_project", (q) => q.eq("projectId", projectId))
  *   .filter(notDeleted)
- *   .collect();
+ *   .take(BOUNDED_LIST_LIMIT);
  */
 export function notDeleted(q: FilterBuilder<AnyTableInfo>): ExpressionOrValue<boolean> {
   return q.neq(q.field("isDeleted"), true);
@@ -55,7 +56,7 @@ export function notDeleted(q: FilterBuilder<AnyTableInfo>): ExpressionOrValue<bo
  * const deletedIssues = await ctx.db
  *   .query("issues")
  *   .withIndex("by_deleted", (q) => q.eq("isDeleted", true))
- *   .collect();
+ *   .take(BOUNDED_LIST_LIMIT);
  *
  * // Or with additional filters
  * const projectTrash = await ctx.db
@@ -64,7 +65,7 @@ export function notDeleted(q: FilterBuilder<AnyTableInfo>): ExpressionOrValue<bo
  *     q.eq(q.field("projectId"), projectId),
  *     onlyDeleted(q)
  *   ))
- *   .collect();
+ *   .take(BOUNDED_LIST_LIMIT);
  */
 export function onlyDeleted(q: FilterBuilder<AnyTableInfo>): ExpressionOrValue<boolean> {
   return q.eq(q.field("isDeleted"), true);
@@ -80,7 +81,7 @@ export function onlyDeleted(q: FilterBuilder<AnyTableInfo>): ExpressionOrValue<b
  * @example
  * const allIssues = await ctx.db
  *   .query("issues")
- *   .collect(); // Already includes deleted - no filter needed
+ *   .take(BOUNDED_LIST_LIMIT); // Already includes deleted - no filter needed
  */
 export function includeDeleted(): boolean {
   return true; // No filter applied

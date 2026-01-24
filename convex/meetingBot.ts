@@ -233,7 +233,7 @@ export const getRecording = authenticatedQuery({
     const participants = await ctx.db
       .query("meetingParticipants")
       .withIndex("by_recording", (q) => q.eq("recordingId", recording._id))
-      .collect();
+      .take(BOUNDED_LIST_LIMIT);
 
     const job = await ctx.db
       .query("meetingBotJobs")

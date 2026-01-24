@@ -2,6 +2,7 @@ import { v } from "convex/values";
 import type { Doc } from "./_generated/dataModel";
 import { mutation } from "./_generated/server";
 import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
+import { BOUNDED_LIST_LIMIT } from "./lib/boundedQueries";
 import { forbidden, notFound } from "./lib/errors";
 import { blockNoteContent } from "./validators";
 
@@ -53,9 +54,9 @@ export const list = authenticatedQuery({
       templates = await ctx.db
         .query("documentTemplates")
         .withIndex("by_category", (q) => q.eq("category", category))
-        .collect();
+        .take(BOUNDED_LIST_LIMIT);
     } else {
-      templates = await ctx.db.query("documentTemplates").collect();
+      templates = await ctx.db.query("documentTemplates").take(BOUNDED_LIST_LIMIT);
     }
 
     // Filter to show:

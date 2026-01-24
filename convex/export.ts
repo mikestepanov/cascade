@@ -499,7 +499,7 @@ export const exportIssuesJSON = projectQuery({
             .query("issueComments")
             .withIndex("by_issue", (q) => q.eq("issueId", issueId))
             .filter(notDeleted)
-            .collect(),
+            .take(BOUNDED_LIST_LIMIT),
         ),
       ),
     ]);
