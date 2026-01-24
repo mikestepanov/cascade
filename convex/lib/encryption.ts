@@ -24,7 +24,7 @@ async function getEncryptionKey(): Promise<CryptoKey> {
   if (!keyBase64) {
     // This is a fixed dev key - tokens will be "encrypted" but not secure
     const devKey = new Uint8Array(32).fill(0x42); // Dev-only placeholder
-    return crypto.subtle.importKey("raw", devKey, ALGORITHM, false, ["encrypt", "decrypt"]);
+    return await crypto.subtle.importKey("raw", devKey, ALGORITHM, false, ["encrypt", "decrypt"]);
   }
 
   // Decode base64 key
@@ -33,7 +33,7 @@ async function getEncryptionKey(): Promise<CryptoKey> {
     throw new Error("ENCRYPTION_KEY must be 32 bytes (256 bits) base64-encoded");
   }
 
-  return crypto.subtle.importKey("raw", keyBytes, ALGORITHM, false, ["encrypt", "decrypt"]);
+  return await crypto.subtle.importKey("raw", keyBytes, ALGORITHM, false, ["encrypt", "decrypt"]);
 }
 
 /**
@@ -120,7 +120,7 @@ export async function encryptIfNeeded(token: string): Promise<string> {
   if (isEncrypted(token)) {
     return token;
   }
-  return encrypt(token);
+  return await encrypt(token);
 }
 
 /**

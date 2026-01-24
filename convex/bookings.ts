@@ -3,9 +3,10 @@ import { components } from "./_generated/api";
 import { mutation, query } from "./_generated/server";
 import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
 import { batchFetchBookingPages } from "./lib/batchHelpers";
-import { BOUNDED_LIST_LIMIT, MINUTE } from "./lib/boundedQueries";
+import { BOUNDED_LIST_LIMIT } from "./lib/boundedQueries";
 import { validateEmail, validateName } from "./lib/constrainedValidators";
 import { conflict, notFound, rateLimited, requireOwned, validation } from "./lib/errors";
+import { MINUTE } from "./lib/timeUtils";
 
 /**
  * Bookings - Handle meeting bookings via booking pages

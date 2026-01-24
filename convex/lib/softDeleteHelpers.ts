@@ -20,7 +20,6 @@
 
 import type { ExpressionOrValue, FilterBuilder, GenericTableInfo } from "convex/server";
 import type { Id } from "../_generated/dataModel";
-import { BOUNDED_LIST_LIMIT } from "./boundedQueries";
 
 // Loose type for dynamic table access
 
