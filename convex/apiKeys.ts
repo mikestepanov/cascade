@@ -6,6 +6,7 @@ import type { ApiAuthContext } from "./lib/apiAuth";
 import { BOUNDED_LIST_LIMIT } from "./lib/boundedQueries";
 import { forbidden, notFound, requireOwned, validation } from "./lib/errors";
 import { notDeleted } from "./lib/softDeleteHelpers";
+import { isTestEnv } from "./testConfig";
 
 /**
  * API Key Management
@@ -138,17 +139,20 @@ export const generate = authenticatedMutation({
     });
 
     // Audit log: API key creation is a sensitive operation
-    await ctx.scheduler.runAfter(0, internal.auditLogs.log, {
-      action: "api_key.created",
-      actorId: ctx.userId,
-      targetId: keyId,
-      targetType: "apiKey",
-      metadata: {
-        name: args.name,
-        scopes: args.scopes,
-        ...(args.projectId && { projectId: args.projectId }),
-      },
-    });
+    // Skip scheduler in tests to avoid "Write outside of transaction" errors
+    if (!isTestEnv) {
+      await ctx.scheduler.runAfter(0, internal.auditLogs.log, {
+        action: "api_key.created",
+        actorId: ctx.userId,
+        targetId: keyId,
+        targetType: "apiKey",
+        metadata: {
+          name: args.name,
+          scopes: args.scopes,
+          ...(args.projectId && { projectId: args.projectId }),
+        },
+      });
+    }
 
     // Return the API key (ONLY time it's shown in plain text)
     return {
@@ -210,16 +214,19 @@ export const revoke = authenticatedMutation({
     });
 
     // Audit log: API key revocation is a sensitive operation
-    await ctx.scheduler.runAfter(0, internal.auditLogs.log, {
-      action: "api_key.revoked",
-      actorId: ctx.userId,
-      targetId: args.keyId,
-      targetType: "apiKey",
-      metadata: {
-        name: key.name,
-        keyPrefix: key.keyPrefix,
-      },
-    });
+    // Skip scheduler in tests to avoid "Write outside of transaction" errors
+    if (!isTestEnv) {
+      await ctx.scheduler.runAfter(0, internal.auditLogs.log, {
+        action: "api_key.revoked",
+        actorId: ctx.userId,
+        targetId: args.keyId,
+        targetType: "apiKey",
+        metadata: {
+          name: key.name,
+          keyPrefix: key.keyPrefix,
+        },
+      });
+    }
 
     return { success: true };
   },
