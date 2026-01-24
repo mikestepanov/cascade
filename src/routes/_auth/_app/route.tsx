@@ -6,6 +6,7 @@ import { Flex } from "@/components/ui/Flex";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { Typography } from "@/components/ui/Typography";
 import { ROUTES } from "@/config/routes";
+import { AppSidebar } from "@/components/layout/AppSidebar";
 
 export const Route = createFileRoute("/_auth/_app")({
   component: AppLayout,
@@ -85,7 +86,11 @@ function AppLayout() {
     return <InitializeOrganization />;
   }
 
-  return <Outlet />;
+  return (
+    <AppSidebar>
+      <Outlet />
+    </AppSidebar>
+  );
 }
 
 // Component to initialize default organization for users without one
