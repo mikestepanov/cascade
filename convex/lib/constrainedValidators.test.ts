@@ -228,7 +228,7 @@ describe("constrained validators", () => {
     });
 
     it("should reject email too long", () => {
-      const longEmail = "a".repeat(251) + "@b.c"; // 255 chars, exceeds 254 limit
+      const longEmail = `${"a".repeat(251)}@b.c`; // 255 chars, exceeds 254 limit
       expect(() => validateEmail(longEmail)).toThrow("email must be at most 254 characters");
     });
   });
@@ -250,7 +250,7 @@ describe("constrained validators", () => {
     });
 
     it("should reject URL too long", () => {
-      const longUrl = "https://example.com/" + "a".repeat(2030);
+      const longUrl = `https://example.com/${"a".repeat(2030)}`;
       expect(() => validateUrl(longUrl)).toThrow("must be at most 2048 characters");
     });
 

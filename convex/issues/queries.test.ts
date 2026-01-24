@@ -5,7 +5,6 @@ import type { Id } from "../_generated/dataModel";
 import schema from "../schema";
 import { modules } from "../testSetup.test-helper";
 import {
-  addProjectMember,
   asAuthenticatedUser,
   createProjectInOrganization,
   createTestContext,
@@ -83,7 +82,7 @@ describe("issue queries", () => {
       // Get the issue to find its key
       const issue = await t.run(async (runCtx) => runCtx.db.get(issueId));
 
-      const result = await ctx.asUser.query(api.issues.queries.getByKey, { key: issue!.key });
+      const result = await ctx.asUser.query(api.issues.queries.getByKey, { key: issue?.key });
 
       expect(result).not.toBeNull();
       expect(result?.title).toBe("Find by Key");
@@ -103,7 +102,7 @@ describe("issue queries", () => {
       const otherUserId = await createTestUser(t);
       const asOther = asAuthenticatedUser(t, otherUserId);
 
-      const result = await asOther.query(api.issues.queries.getByKey, { key: issue!.key });
+      const result = await asOther.query(api.issues.queries.getByKey, { key: issue?.key });
       expect(result).toBeNull();
     });
   });
@@ -193,10 +192,10 @@ describe("issue queries", () => {
         const project = await runCtx.db.get(projectId);
         await runCtx.db.insert("issues", {
           projectId,
-          organizationId: project!.organizationId,
-          workspaceId: project!.workspaceId,
-          teamId: project!.teamId,
-          key: `${project!.key}-100`,
+          organizationId: project?.organizationId,
+          workspaceId: project?.workspaceId,
+          teamId: project?.teamId,
+          key: `${project?.key}-100`,
           title: "Subtask 1",
           type: "subtask",
           status: "todo",
@@ -212,10 +211,10 @@ describe("issue queries", () => {
         });
         await runCtx.db.insert("issues", {
           projectId,
-          organizationId: project!.organizationId,
-          workspaceId: project!.workspaceId,
-          teamId: project!.teamId,
-          key: `${project!.key}-101`,
+          organizationId: project?.organizationId,
+          workspaceId: project?.workspaceId,
+          teamId: project?.teamId,
+          key: `${project?.key}-101`,
           title: "Subtask 2",
           type: "subtask",
           status: "todo",
@@ -440,8 +439,8 @@ describe("issue queries", () => {
       });
 
       expect(result).not.toBeNull();
-      expect(result!["todo"]).toBeDefined();
-      expect(result!["todo"].total).toBe(2);
+      expect(result?.todo).toBeDefined();
+      expect(result?.todo.total).toBe(2);
     });
   });
 
@@ -463,10 +462,10 @@ describe("issue queries", () => {
         const project = await runCtx.db.get(projectId);
         await runCtx.db.insert("issues", {
           projectId,
-          organizationId: project!.organizationId,
-          workspaceId: project!.workspaceId,
-          teamId: project!.teamId,
-          key: `${project!.key}-999`,
+          organizationId: project?.organizationId,
+          workspaceId: project?.workspaceId,
+          teamId: project?.teamId,
+          key: `${project?.key}-999`,
           title: "Has date",
           type: "story",
           status: "todo",

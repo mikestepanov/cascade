@@ -11,6 +11,11 @@ import { Textarea } from "../ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/Select";
 import { Typography } from "../ui/Typography";
 
+// Enriched user rate from listUserRates query
+type EnrichedUserRate = Doc<"userRates"> & {
+  user: { _id: Id<"users">; name: string; email?: string } | null;
+};
+
 export function UserRatesManagement() {
   const currentUser = useQuery(api.auth.loggedInUser);
   const projects = useQuery(api.projects.getCurrentUserProjects, {});
@@ -92,8 +97,7 @@ export function UserRatesManagement() {
       {/* Current Rates List */}
       {userRates && userRates.length > 0 ? (
         <Flex direction="column" gap="md">
-          {/* biome-ignore lint/suspicious/noExplicitAny: enriched Doc type mismatch */}
-          {userRates.map((rate: any) => (
+          {(userRates as EnrichedUserRate[]).map((rate) => (
             <div
               key={rate._id}
               className="p-4 bg-ui-bg-primary border border-ui-border-primary rounded-lg"

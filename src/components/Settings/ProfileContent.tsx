@@ -1,5 +1,5 @@
 import { api } from "@convex/_generated/api";
-import type { Doc, Id } from "@convex/_generated/dataModel";
+import type { Id } from "@convex/_generated/dataModel";
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
 import { Flex } from "@/components/ui/Flex";
@@ -17,6 +17,15 @@ interface UserStats {
   issuesCompleted: number;
   comments: number;
 }
+
+// User type that matches what the queries return
+type ProfileUser = {
+  _id: Id<"users">;
+  _creationTime?: number;
+  name?: string;
+  email?: string;
+  image?: string;
+};
 
 /**
  * User stats cards component
@@ -61,7 +70,7 @@ export function UserStatsCards({ stats }: { stats: UserStats }) {
 /**
  * User account information section
  */
-export function AccountInfo({ user }: { user: Doc<"users"> }) {
+export function AccountInfo({ user }: { user: ProfileUser & { _creationTime: number } }) {
   return (
     <div className="border-t border-ui-border-primary pt-6">
       <Typography variant="h3" className="text-lg font-semibold mb-4 text-ui-text-primary">
@@ -96,7 +105,7 @@ export function ProfileHeader({
   onSave,
   onCancel,
 }: {
-  user: Doc<"users">;
+  user: ProfileUser;
   isOwnProfile: boolean;
   isEditing: boolean;
   name: string;
@@ -229,8 +238,7 @@ export function ProfileContent({ userId }: ProfileContentProps) {
       <div className="p-6 space-y-6">
         {/* Profile Header */}
         <ProfileHeader
-          // biome-ignore lint/suspicious/noExplicitAny: PublicUser vs Doc mismatch
-          user={viewUser as any}
+          user={viewUser}
           isOwnProfile={!!isOwnProfile}
           isEditing={isEditing}
           name={name}
@@ -246,8 +254,9 @@ export function ProfileContent({ userId }: ProfileContentProps) {
         {userStats && <UserStatsCards stats={userStats} />}
 
         {/* Account Info */}
-        {/* biome-ignore lint/suspicious/noExplicitAny: missing property on narrowed type */}
-        {viewUser && "_creationTime" in viewUser && <AccountInfo user={viewUser as any} />}
+        {viewUser && "_creationTime" in viewUser && (
+          <AccountInfo user={viewUser as ProfileUser & { _creationTime: number }} />
+        )}
       </div>
     </Card>
   );

@@ -164,7 +164,8 @@ describe("pagination utilities", () => {
       const result = buildPaginatedResult(items, 2);
 
       expect(result.nextCursor).not.toBeNull();
-      const decoded = decodeCursor(result.nextCursor!);
+      if (result.nextCursor === null) throw new Error("nextCursor is null");
+      const decoded = decodeCursor(result.nextCursor);
       expect(decoded.timestamp).toBe(2000);
       expect(decoded.id).toBe("2");
     });
@@ -195,7 +196,8 @@ describe("pagination utilities", () => {
       const result = buildPaginatedResult(items, 2);
 
       expect(result.nextCursor).not.toBeNull();
-      const decoded = decodeCursor(result.nextCursor!);
+      if (result.nextCursor === null) throw new Error("nextCursor is null");
+      const decoded = decodeCursor(result.nextCursor);
       expect(decoded.timestamp).toBe(2000);
     });
 

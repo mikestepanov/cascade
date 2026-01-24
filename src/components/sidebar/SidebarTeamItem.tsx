@@ -2,11 +2,14 @@ import { api } from "@convex/_generated/api";
 import type { Doc, Id } from "@convex/_generated/dataModel";
 import { Link, useLocation } from "@tanstack/react-router";
 import { usePaginatedQuery } from "convex/react";
+import type { FunctionReference } from "convex/server";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Flex } from "@/components/ui/Flex";
 import { ROUTES } from "@/config/routes";
 import { cn } from "@/lib/utils";
+
+type PaginatedQuery = FunctionReference<"query", "public">;
 
 interface SidebarTeamItemProps {
   team: Doc<"teams">;
@@ -81,8 +84,11 @@ function SidebarTeamProjects({
     results: projects,
     status,
     loadMore,
-    // biome-ignore lint/suspicious/noExplicitAny: paginationOpts mismatch
-  } = usePaginatedQuery(api.projects.getTeamProjects as any, { teamId }, { initialNumItems: 10 });
+  } = usePaginatedQuery(
+    api.projects.getTeamProjects as PaginatedQuery,
+    { teamId },
+    { initialNumItems: 10 },
+  );
 
   if (status === "LoadingFirstPage") {
     return <div className="ml-6 text-xs text-ui-text-tertiary px-3 py-1">Loading...</div>;

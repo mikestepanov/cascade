@@ -51,8 +51,7 @@ export function ImportPanel({ projectId, onImportComplete }: ImportPanelProps) {
     setIsImporting(true);
 
     try {
-      // biome-ignore lint/suspicious/noExplicitAny: imported error array can be anything
-      let result: { imported: number; failed: number; errors?: any[] };
+      let result: { imported: number; failed: number; errors?: string[] };
 
       if (importFormat === "csv") {
         result = await importCSV({ projectId, csvData: importData });

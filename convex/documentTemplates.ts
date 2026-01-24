@@ -5,6 +5,11 @@ import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
 import { forbidden, notFound } from "./lib/errors";
 import { blockNoteContent } from "./validators";
 
+type TemplateData = Omit<
+  Doc<"documentTemplates">,
+  "_id" | "_creationTime" | "createdBy" | "projectId"
+>;
+
 // Create a document template
 export const create = authenticatedMutation({
   args: {
@@ -200,7 +205,7 @@ export const initializeBuiltInTemplates = mutation({
     }
 
     const now = Date.now();
-    const builtInTemplates = [
+    const builtInTemplates: TemplateData[] = [
       {
         name: "Meeting Notes",
         description: "Template for team meeting notes with agenda and action items",
@@ -706,8 +711,7 @@ export const initializeBuiltInTemplates = mutation({
     // Insert all built-in templates
     for (const template of builtInTemplates) {
       await ctx.db.insert("documentTemplates", {
-        // biome-ignore lint/suspicious/noExplicitAny: Casting to any to avoid complex validation error with blockNoteContent
-        ...(template as any),
+        ...template,
         createdBy: undefined,
         projectId: undefined,
       });

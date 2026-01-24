@@ -1,7 +1,7 @@
 import { api } from "@convex/_generated/api";
 import type { Doc, Id } from "@convex/_generated/dataModel";
 import { useForm } from "@tanstack/react-form";
-import { useMutation, useQuery } from "convex/react";
+import { useAction, useMutation, useQuery } from "convex/react";
 import { useEffect, useState } from "react";
 import { z } from "zod";
 import { toggleInArray } from "@/lib/array-utils";
@@ -12,6 +12,9 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "
 import { Flex } from "../ui/Flex";
 import { Checkbox } from "../ui/form/Checkbox";
 import { Typography } from "../ui/Typography";
+
+type PumbleWebhook = Doc<"pumbleWebhooks">;
+type Project = Doc<"projects">;
 
 // =============================================================================
 // Schema & Constants
@@ -39,10 +42,8 @@ const AVAILABLE_EVENTS = [
 export function PumbleIntegration() {
   const [showAddModal, setShowAddModal] = useState(false);
   const webhooks = useQuery(api.pumble.listWebhooks);
-  // biome-ignore lint/suspicious/noExplicitAny: paginationOpts mismatch
-  const projectsResult = useQuery(api.projects.getCurrentUserProjects as any);
-  // biome-ignore lint/suspicious/noExplicitAny: pagination return type
-  const projects = (projectsResult as any)?.page ?? [];
+  const projectsResult = useQuery(api.projects.getCurrentUserProjects, {});
+  const projects: Project[] = projectsResult?.page ?? [];
 
   return (
     <div className="bg-ui-bg-primary rounded-lg shadow-sm border border-ui-border-primary">
@@ -102,8 +103,7 @@ export function PumbleIntegration() {
         ) : (
           <Flex direction="column" gap="lg">
             {webhooks.map((webhook) => (
-              // biome-ignore lint/suspicious/noExplicitAny: ID table name conflict
-              <WebhookCard key={webhook._id} webhook={webhook as any} projects={projects || []} />
+              <WebhookCard key={webhook._id} webhook={webhook} projects={projects} />
             ))}
           </Flex>
         )}
@@ -190,27 +190,22 @@ function EmptyState({ onAddWebhook }: { onAddWebhook: () => void }) {
 }
 
 // WebhookCard component for displaying webhook details
-// WebhookCard component for displaying webhook details
 interface WebhookCardProps {
-  webhook: Doc<"webhooks">;
-  projects: Doc<"projects">[];
+  webhook: PumbleWebhook;
+  projects: Project[];
 }
 
 function WebhookCard({ webhook, projects }: WebhookCardProps) {
   const [showEditModal, setShowEditModal] = useState(false);
-  // biome-ignore lint/suspicious/noExplicitAny: mutation arg type mismatch
-  const testWebhook = useMutation(api.pumble.testWebhook as any);
-  // biome-ignore lint/suspicious/noExplicitAny: mutation arg type mismatch
-  const deleteWebhook = useMutation(api.pumble.deleteWebhook as any);
-  // biome-ignore lint/suspicious/noExplicitAny: mutation arg type mismatch
-  const updateWebhook = useMutation(api.pumble.updateWebhook as any);
+  const testWebhookAction = useAction(api.pumble.testWebhook);
+  const deleteWebhookMutation = useMutation(api.pumble.deleteWebhook);
+  const updateWebhookMutation = useMutation(api.pumble.updateWebhook);
 
   const project = webhook.projectId ? projects.find((p) => p._id === webhook.projectId) : null;
 
   const handleTest = async () => {
     try {
-      // biome-ignore lint/suspicious/noExplicitAny: mutation arg mismatch
-      await (testWebhook as any)({ webhookId: webhook._id });
+      await testWebhookAction({ webhookId: webhook._id });
       showSuccess("Test message sent to Pumble!");
     } catch (error) {
       showError(error, "Failed to send test message");
@@ -219,8 +214,7 @@ function WebhookCard({ webhook, projects }: WebhookCardProps) {
 
   const handleToggleActive = async () => {
     try {
-      // biome-ignore lint/suspicious/noExplicitAny: mutation arg mismatch
-      await (updateWebhook as any)({
+      await updateWebhookMutation({
         webhookId: webhook._id,
         isActive: !webhook.isActive,
       });
@@ -234,18 +228,15 @@ function WebhookCard({ webhook, projects }: WebhookCardProps) {
     if (!confirm(`Delete webhook "${webhook.name}"?`)) return;
 
     try {
-      // biome-ignore lint/suspicious/noExplicitAny: mutation arg mismatch
-      await (deleteWebhook as any)({ webhookId: webhook._id });
+      await deleteWebhookMutation({ webhookId: webhook._id });
       showSuccess("Webhook deleted");
     } catch (error) {
       showError(error, "Failed to delete webhook");
     }
   };
 
-  // biome-ignore lint/suspicious/noExplicitAny: property name mismatch
-  const webhookAny = webhook as any;
-  const maskedUrl = webhookAny.webhookUrl
-    ? webhookAny.webhookUrl.replace(/([^/]{8})[^/]+/, "$1***")
+  const maskedUrl = webhook.webhookUrl
+    ? webhook.webhookUrl.replace(/([^/]{8})[^/]+/, "$1***")
     : "No URL";
 
   return (
@@ -329,7 +320,7 @@ function WebhookCard({ webhook, projects }: WebhookCardProps) {
 interface AddWebhookModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  projects: Doc<"projects">[];
+  projects: Project[];
 }
 
 function AddWebhookModal({ open, onOpenChange, projects }: AddWebhookModalProps) {
@@ -356,8 +347,7 @@ function AddWebhookModal({ open, onOpenChange, projects }: AddWebhookModalProps)
       }
 
       try {
-        // biome-ignore lint/suspicious/noExplicitAny: mutation arg mismatch
-        await (addWebhook as any)({
+        await addWebhook({
           name: value.name.trim(),
           webhookUrl: value.webhookUrl.trim(),
           projectId,
@@ -441,7 +431,7 @@ function AddWebhookModal({ open, onOpenChange, projects }: AddWebhookModalProps)
               className="w-full px-3 py-2 border border-ui-border-primary rounded-lg bg-ui-bg-primary text-ui-text-primary"
             >
               <option value="">All Projects</option>
-              {projects?.map((project: Doc<"projects">) => (
+              {projects?.map((project) => (
                 <option key={project._id} value={project._id}>
                   {project.name}
                 </option>
@@ -508,8 +498,8 @@ function AddWebhookModal({ open, onOpenChange, projects }: AddWebhookModalProps)
 interface EditWebhookModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  webhook: Doc<"webhooks">;
-  projects: Doc<"projects">[];
+  webhook: PumbleWebhook;
+  projects: Project[];
 }
 
 function EditWebhookModal({ open, onOpenChange, webhook }: EditWebhookModalProps) {
@@ -521,8 +511,7 @@ function EditWebhookModal({ open, onOpenChange, webhook }: EditWebhookModalProps
   const form = useForm({
     defaultValues: {
       name: webhook.name,
-      // biome-ignore lint/suspicious/noExplicitAny: missing property on Doc type
-      webhookUrl: (webhook as any).webhookUrl || "",
+      webhookUrl: webhook.webhookUrl || "",
     },
     validators: { onChange: webhookSchema },
     onSubmit: async ({ value }: { value: { name: string; webhookUrl: string } }) => {
@@ -532,8 +521,7 @@ function EditWebhookModal({ open, onOpenChange, webhook }: EditWebhookModalProps
       }
 
       try {
-        // biome-ignore lint/suspicious/noExplicitAny: mutation arg mismatch
-        await (updateWebhook as any)({
+        await updateWebhook({
           webhookId: webhook._id,
           name: value.name.trim(),
           webhookUrl: value.webhookUrl.trim(),
@@ -550,7 +538,7 @@ function EditWebhookModal({ open, onOpenChange, webhook }: EditWebhookModalProps
   // Reset form when webhook changes
   useEffect(() => {
     form.setFieldValue("name", webhook.name);
-    form.setFieldValue("webhookUrl", webhook.url);
+    form.setFieldValue("webhookUrl", webhook.webhookUrl);
     setSelectedEvents(webhook.events);
   }, [webhook, form]);
 
