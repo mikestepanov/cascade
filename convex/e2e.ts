@@ -37,16 +37,20 @@ function isTestEmail(email: string): boolean {
 function validateE2EApiKey(request: Request): Response | null {
   const apiKey = process.env.E2E_API_KEY;
 
-  // If no API key is configured, reject all requests in production
+  // If no API key is configured, strict environment check
   if (!apiKey) {
-    // Allow in development (no key configured = development mode)
-    if (process.env.NODE_ENV === "production") {
-      return new Response(JSON.stringify({ error: "E2E endpoints disabled in production" }), {
-        status: 403,
-        headers: { "Content-Type": "application/json" },
-      });
+    const env = process.env.NODE_ENV;
+    // FAIL SECURE: Only allow if explicitly in development or test
+    // This prevents accidental exposure in misconfigured staging/prod environments
+    if (env === "development" || env === "test") {
+      return null; // Allow in explicitly unsafe environments
     }
-    return null; // Allow in dev without key
+
+    // Block everything else (production, staging, or undefined)
+    return new Response(JSON.stringify({ error: "E2E endpoints disabled (missing API key)" }), {
+      status: 403,
+      headers: { "Content-Type": "application/json" },
+    });
   }
 
   const providedKey = request.headers.get("x-e2e-api-key");
