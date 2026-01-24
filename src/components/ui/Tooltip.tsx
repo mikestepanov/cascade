@@ -58,18 +58,16 @@ function Tooltip({
   children,
   side = "top",
   align = "center",
-  delayDuration = 200,
+  delayDuration,
   className,
 }: TooltipProps) {
   return (
-    <TooltipProvider delayDuration={delayDuration}>
-      <TooltipRoot>
-        <TooltipTrigger asChild>{children}</TooltipTrigger>
-        <TooltipContent side={side} align={align} className={className}>
-          {content}
-        </TooltipContent>
-      </TooltipRoot>
-    </TooltipProvider>
+    <TooltipRoot delayDuration={delayDuration}>
+      <TooltipTrigger asChild>{children}</TooltipTrigger>
+      <TooltipContent side={side} align={align} className={className}>
+        {content}
+      </TooltipContent>
+    </TooltipRoot>
   );
 }
 
