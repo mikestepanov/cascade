@@ -2,7 +2,7 @@ import { api } from "@convex/_generated/api";
 import type { Id } from "@convex/_generated/dataModel";
 import { createFileRoute } from "@tanstack/react-router";
 import { usePaginatedQuery } from "convex/react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { CreateIssueModal } from "@/components/CreateIssueModal";
 import { IssueCard } from "@/components/IssueCard";
 import { IssueDetailModal } from "@/components/IssueDetailModal";
@@ -10,7 +10,6 @@ import { Button } from "@/components/ui/Button";
 import { Flex } from "@/components/ui/Flex";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { Typography } from "@/components/ui/Typography";
-import { useOrganization } from "@/hooks/useOrgContext";
 import { Filter, Plus, Search } from "@/lib/icons";
 
 export const Route = createFileRoute("/_auth/_app/$orgSlug/issues")({
@@ -18,7 +17,6 @@ export const Route = createFileRoute("/_auth/_app/$orgSlug/issues")({
 });
 
 function AllIssuesPage() {
-  const { organizationId } = useOrganization();
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [selectedIssueId, setSelectedIssueId] = useState<Id<"issues"> | null>(null);
   const [statusFilter, setStatusFilter] = useState<string | undefined>(undefined);
@@ -30,11 +28,21 @@ function AllIssuesPage() {
     loadMore,
   } = usePaginatedQuery(
     api.issues.listOrganizationIssues,
-    { organizationId, status: statusFilter },
+    { status: statusFilter },
     { initialNumItems: 20 },
   );
 
   const isLoading = status === "LoadingFirstPage";
+
+  // Client-side search filtering
+  const filteredIssues = useMemo(() => {
+    if (!searchQuery.trim()) return issues;
+    const query = searchQuery.toLowerCase();
+    return issues.filter(
+      (issue) =>
+        issue.title.toLowerCase().includes(query) || issue.key.toLowerCase().includes(query),
+    );
+  }, [issues, searchQuery]);
 
   const handleIssueClick = (id: Id<"issues">) => {
     setSelectedIssueId(id);
@@ -95,7 +103,7 @@ function AllIssuesPage() {
         <Flex align="center" justify="center" className="min-h-[400px]">
           <LoadingSpinner size="lg" />
         </Flex>
-      ) : issues.length === 0 ? (
+      ) : filteredIssues.length === 0 ? (
         <Flex
           direction="column"
           align="center"
@@ -111,7 +119,7 @@ function AllIssuesPage() {
         </Flex>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-          {issues.map((issue) => (
+          {filteredIssues.map((issue) => (
             <IssueCard
               key={issue._id}
               issue={issue as unknown as Parameters<typeof IssueCard>[0]["issue"]}
