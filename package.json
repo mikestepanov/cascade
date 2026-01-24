@@ -29,6 +29,7 @@
     "test:convex:coverage": "vitest --config vitest.convex.config.ts --coverage",
     "test:all": "pnpm run test run && pnpm run test:convex run",
     "check:api": "node scripts/check-api-calls.cjs",
+    "check:queries": "node scripts/find-query-issues.cjs",
     "check:standards": "node scripts/check-standards.js",
     "generate:routes": "tsr generate",
     "check": "pnpm run typecheck && pnpm run biome:check && pnpm run check:api && pnpm run check:standards && pnpm run test:all",
