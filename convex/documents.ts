@@ -28,14 +28,15 @@ export const create = authenticatedMutation({
   handler: async (ctx, args) => {
     // Rate limit: 20 documents per minute per user
     // Skip in test environment (convex-test doesn't support components)
+    // Rate limit: 60 documents per minute per user with burst of 15
     if (!process.env.IS_TEST_ENV) {
       const rateLimitResult = await ctx.runQuery(components.rateLimiter.lib.checkRateLimit, {
         name: `createDocument:${ctx.userId}`,
         config: {
           kind: "token bucket",
-          rate: 20,
+          rate: 60,
           period: MINUTE,
-          capacity: 5,
+          capacity: 15,
         },
       });
       if (!rateLimitResult.ok) {
@@ -46,9 +47,9 @@ export const create = authenticatedMutation({
         name: `createDocument:${ctx.userId}`,
         config: {
           kind: "token bucket",
-          rate: 20,
+          rate: 60,
           period: MINUTE,
-          capacity: 5,
+          capacity: 15,
         },
       });
     }

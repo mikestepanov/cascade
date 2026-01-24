@@ -53,16 +53,16 @@ export const create = projectEditorMutation({
     storyPoints: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
-    // Rate limit: 10 issues per minute per user with burst capacity of 3
+    // Rate limit: 60 issues per minute per user with burst capacity of 15
     // Skip in test environment (convex-test doesn't support components)
     if (!process.env.IS_TEST_ENV) {
       const rateLimitResult = await ctx.runQuery(components.rateLimiter.lib.checkRateLimit, {
         name: `createIssue:${ctx.userId}`,
         config: {
           kind: "token bucket",
-          rate: 10,
+          rate: 60,
           period: MINUTE,
-          capacity: 3,
+          capacity: 15,
         },
       });
       if (!rateLimitResult.ok) {
@@ -74,9 +74,9 @@ export const create = projectEditorMutation({
         name: `createIssue:${ctx.userId}`,
         config: {
           kind: "token bucket",
-          rate: 10,
+          rate: 60,
           period: MINUTE,
-          capacity: 3,
+          capacity: 15,
         },
       });
     }
@@ -310,16 +310,16 @@ export const addComment = issueViewerMutation({
     mentions: v.optional(v.array(v.id("users"))),
   },
   handler: async (ctx, args) => {
-    // Rate limit: 30 comments per minute per user
+    // Rate limit: 120 comments per minute per user with burst of 20
     // Skip in test environment (convex-test doesn't support components)
     if (!process.env.IS_TEST_ENV) {
       const rateLimitResult = await ctx.runQuery(components.rateLimiter.lib.checkRateLimit, {
         name: `addComment:${ctx.userId}`,
         config: {
           kind: "token bucket",
-          rate: 30,
+          rate: 120,
           period: MINUTE,
-          capacity: 5,
+          capacity: 20,
         },
       });
       if (!rateLimitResult.ok) {
@@ -330,9 +330,9 @@ export const addComment = issueViewerMutation({
         name: `addComment:${ctx.userId}`,
         config: {
           kind: "token bucket",
-          rate: 30,
+          rate: 120,
           period: MINUTE,
-          capacity: 5,
+          capacity: 20,
         },
       });
     }
