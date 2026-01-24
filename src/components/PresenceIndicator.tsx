@@ -3,14 +3,16 @@ import FacePile from "@convex-dev/presence/facepile";
 import usePresence from "@convex-dev/presence/react";
 import { Flex } from "@/components/ui/Flex";
 
+// Type cast for presence API which has complex generated type incompatibilities
+type PresenceApi = Parameters<typeof usePresence>[0];
+
 interface PresenceIndicatorProps {
   roomId: string;
   userId: string;
 }
 
 export function PresenceIndicator({ roomId, userId }: PresenceIndicatorProps) {
-  // biome-ignore lint/suspicious/noExplicitAny: api.presence has complex generated type mismatch with usePresence
-  const presenceState = usePresence(api.presence as any, roomId, userId);
+  const presenceState = usePresence(api.presence as PresenceApi, roomId, userId);
 
   if (!presenceState) {
     return null;

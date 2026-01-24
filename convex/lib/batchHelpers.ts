@@ -20,167 +20,89 @@
  */
 
 import { asyncMap, pruneNull } from "convex-helpers";
-import type { Doc, Id } from "../_generated/dataModel";
+import type { Doc, Id, TableNames } from "../_generated/dataModel";
 import type { QueryCtx } from "../_generated/server";
 
 // ============================================================================
-// BATCH FETCH FUNCTIONS
+// GENERIC BATCH FETCH
 // ============================================================================
 
 /**
- * Batch fetch users by ID
- * Returns a Map for O(1) lookups
+ * Generic batch fetch function for any table.
+ * Fetches multiple documents by ID in parallel and returns a Map for O(1) lookups.
+ *
+ * @param ctx - Query context
+ * @param _table - Table name (used for type inference only)
+ * @param ids - Array of IDs to fetch (can include undefined)
+ * @returns Map of ID to document
+ *
+ * @example
+ * const userMap = await batchFetch(ctx, "users", userIds);
+ * const projectMap = await batchFetch(ctx, "projects", projectIds);
  */
-export async function batchFetchUsers(
+export async function batchFetch<T extends TableNames>(
   ctx: QueryCtx,
-  userIds: (Id<"users"> | undefined)[],
-): Promise<Map<Id<"users">, Doc<"users">>> {
-  const uniqueIds = [...new Set(userIds.filter((id): id is Id<"users"> => !!id))];
+  _table: T,
+  ids: (Id<T> | undefined)[],
+): Promise<Map<Id<T>, Doc<T>>> {
+  const uniqueIds = [...new Set(ids.filter((id): id is Id<T> => !!id))];
   if (uniqueIds.length === 0) return new Map();
 
-  const users = await asyncMap(uniqueIds, (id) => ctx.db.get(id));
-  return new Map(pruneNull(users).map((u) => [u._id, u]));
+  const items = await asyncMap(uniqueIds, (id) => ctx.db.get(id));
+  return new Map(pruneNull(items).map((item) => [item._id as Id<T>, item as Doc<T>]));
 }
 
-/**
- * Batch fetch issues by ID
- */
-export async function batchFetchIssues(
+// ============================================================================
+// TYPED CONVENIENCE WRAPPERS
+// These provide better ergonomics and IDE autocomplete for common tables.
+// They all delegate to the generic batchFetch function.
+// ============================================================================
+
+/** Batch fetch users by ID */
+export const batchFetchUsers = (ctx: QueryCtx, ids: (Id<"users"> | undefined)[]) =>
+  batchFetch(ctx, "users", ids);
+
+/** Batch fetch issues by ID */
+export const batchFetchIssues = (ctx: QueryCtx, ids: (Id<"issues"> | undefined)[]) =>
+  batchFetch(ctx, "issues", ids);
+
+/** Batch fetch projects by ID */
+export const batchFetchProjects = (ctx: QueryCtx, ids: (Id<"projects"> | undefined)[]) =>
+  batchFetch(ctx, "projects", ids);
+
+/** Batch fetch calendar events by ID */
+export const batchFetchCalendarEvents = (
   ctx: QueryCtx,
-  issueIds: (Id<"issues"> | undefined)[],
-): Promise<Map<Id<"issues">, Doc<"issues">>> {
-  const uniqueIds = [...new Set(issueIds.filter((id): id is Id<"issues"> => !!id))];
-  if (uniqueIds.length === 0) return new Map();
+  ids: (Id<"calendarEvents"> | undefined)[],
+) => batchFetch(ctx, "calendarEvents", ids);
 
-  const issues = await asyncMap(uniqueIds, (id) => ctx.db.get(id));
-  return new Map(pruneNull(issues).map((i) => [i._id, i]));
-}
+/** Batch fetch teams by ID */
+export const batchFetchTeams = (ctx: QueryCtx, ids: (Id<"teams"> | undefined)[]) =>
+  batchFetch(ctx, "teams", ids);
 
-/**
- * Batch fetch projects by ID
- */
-export async function batchFetchProjects(
-  ctx: QueryCtx,
-  projectIds: (Id<"projects"> | undefined)[],
-): Promise<Map<Id<"projects">, Doc<"projects">>> {
-  const uniqueIds = [...new Set(projectIds.filter((id): id is Id<"projects"> => !!id))];
-  if (uniqueIds.length === 0) return new Map();
+/** Batch fetch organizations by ID */
+export const batchFetchOrganizations = (ctx: QueryCtx, ids: (Id<"organizations"> | undefined)[]) =>
+  batchFetch(ctx, "organizations", ids);
 
-  const projects = await asyncMap(uniqueIds, (id) => ctx.db.get(id));
-  return new Map(pruneNull(projects).map((p) => [p._id, p]));
-}
+/** Batch fetch sprints by ID */
+export const batchFetchSprints = (ctx: QueryCtx, ids: (Id<"sprints"> | undefined)[]) =>
+  batchFetch(ctx, "sprints", ids);
 
-/**
- * Batch fetch calendar events by ID
- */
-export async function batchFetchCalendarEvents(
-  ctx: QueryCtx,
-  eventIds: (Id<"calendarEvents"> | undefined)[],
-): Promise<Map<Id<"calendarEvents">, Doc<"calendarEvents">>> {
-  const uniqueIds = [...new Set(eventIds.filter((id): id is Id<"calendarEvents"> => !!id))];
-  if (uniqueIds.length === 0) return new Map();
+/** Batch fetch booking pages by ID */
+export const batchFetchBookingPages = (ctx: QueryCtx, ids: (Id<"bookingPages"> | undefined)[]) =>
+  batchFetch(ctx, "bookingPages", ids);
 
-  const events = await asyncMap(uniqueIds, (id) => ctx.db.get(id));
-  return new Map(pruneNull(events).map((e) => [e._id, e]));
-}
+/** Batch fetch documents by ID */
+export const batchFetchDocuments = (ctx: QueryCtx, ids: (Id<"documents"> | undefined)[]) =>
+  batchFetch(ctx, "documents", ids);
 
-/**
- * Batch fetch teams by ID
- */
-export async function batchFetchTeams(
-  ctx: QueryCtx,
-  teamIds: (Id<"teams"> | undefined)[],
-): Promise<Map<Id<"teams">, Doc<"teams">>> {
-  const uniqueIds = [...new Set(teamIds.filter((id): id is Id<"teams"> => !!id))];
-  if (uniqueIds.length === 0) return new Map();
+/** Batch fetch custom fields by ID */
+export const batchFetchCustomFields = (ctx: QueryCtx, ids: (Id<"customFields"> | undefined)[]) =>
+  batchFetch(ctx, "customFields", ids);
 
-  const teams = await asyncMap(uniqueIds, (id) => ctx.db.get(id));
-  return new Map(pruneNull(teams).map((t) => [t._id, t]));
-}
-
-/**
- * Batch fetch organizations by ID
- */
-export async function batchFetchOrganizations(
-  ctx: QueryCtx,
-  organizationIds: (Id<"organizations"> | undefined)[],
-): Promise<Map<Id<"organizations">, Doc<"organizations">>> {
-  const uniqueIds = [...new Set(organizationIds.filter((id): id is Id<"organizations"> => !!id))];
-  if (uniqueIds.length === 0) return new Map();
-
-  const organizations = await asyncMap(uniqueIds, (id) => ctx.db.get(id));
-  return new Map(pruneNull(organizations).map((o) => [o._id, o]));
-}
-
-/**
- * Batch fetch sprints by ID
- */
-export async function batchFetchSprints(
-  ctx: QueryCtx,
-  sprintIds: (Id<"sprints"> | undefined)[],
-): Promise<Map<Id<"sprints">, Doc<"sprints">>> {
-  const uniqueIds = [...new Set(sprintIds.filter((id): id is Id<"sprints"> => !!id))];
-  if (uniqueIds.length === 0) return new Map();
-
-  const sprints = await asyncMap(uniqueIds, (id) => ctx.db.get(id));
-  return new Map(pruneNull(sprints).map((s) => [s._id, s]));
-}
-
-/**
- * Batch fetch booking pages by ID
- */
-export async function batchFetchBookingPages(
-  ctx: QueryCtx,
-  pageIds: (Id<"bookingPages"> | undefined)[],
-): Promise<Map<Id<"bookingPages">, Doc<"bookingPages">>> {
-  const uniqueIds = [...new Set(pageIds.filter((id): id is Id<"bookingPages"> => !!id))];
-  if (uniqueIds.length === 0) return new Map();
-
-  const pages = await asyncMap(uniqueIds, (id) => ctx.db.get(id));
-  return new Map(pruneNull(pages).map((p) => [p._id, p]));
-}
-
-/**
- * Batch fetch documents by ID
- */
-export async function batchFetchDocuments(
-  ctx: QueryCtx,
-  docIds: (Id<"documents"> | undefined)[],
-): Promise<Map<Id<"documents">, Doc<"documents">>> {
-  const uniqueIds = [...new Set(docIds.filter((id): id is Id<"documents"> => !!id))];
-  if (uniqueIds.length === 0) return new Map();
-
-  const docs = await asyncMap(uniqueIds, (id) => ctx.db.get(id));
-  return new Map(pruneNull(docs).map((d) => [d._id, d]));
-}
-
-/**
- * Batch fetch custom fields by ID
- */
-export async function batchFetchCustomFields(
-  ctx: QueryCtx,
-  fieldIds: (Id<"customFields"> | undefined)[],
-): Promise<Map<Id<"customFields">, Doc<"customFields">>> {
-  const uniqueIds = [...new Set(fieldIds.filter((id): id is Id<"customFields"> => !!id))];
-  if (uniqueIds.length === 0) return new Map();
-
-  const fields = await asyncMap(uniqueIds, (id) => ctx.db.get(id));
-  return new Map(pruneNull(fields).map((f) => [f._id, f]));
-}
-
-/**
- * Batch fetch recordings by ID
- */
-export async function batchFetchRecordings(
-  ctx: QueryCtx,
-  recordingIds: (Id<"meetingRecordings"> | undefined)[],
-): Promise<Map<Id<"meetingRecordings">, Doc<"meetingRecordings">>> {
-  const uniqueIds = [...new Set(recordingIds.filter((id): id is Id<"meetingRecordings"> => !!id))];
-  if (uniqueIds.length === 0) return new Map();
-
-  const recordings = await asyncMap(uniqueIds, (id) => ctx.db.get(id));
-  return new Map(pruneNull(recordings).map((r) => [r._id, r]));
-}
+/** Batch fetch recordings by ID */
+export const batchFetchRecordings = (ctx: QueryCtx, ids: (Id<"meetingRecordings"> | undefined)[]) =>
+  batchFetch(ctx, "meetingRecordings", ids);
 
 // ============================================================================
 // FORMATTING HELPERS

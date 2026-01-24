@@ -154,7 +154,7 @@ export function NotificationBell() {
                       key={notification._id}
                       type="button"
                       className={cn(
-                        "w-full text-left px-4 py-3 hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark cursor-pointer border-b border-ui-border-primary dark:border-ui-border-primary-dark transition-colors",
+                        "w-full text-left px-4 py-3 hover:bg-ui-bg-secondary cursor-pointer border-b border-ui-border-primary transition-colors",
                         !notification.isRead && "bg-brand-50 dark:bg-brand-900/20",
                       )}
                       onClick={() =>

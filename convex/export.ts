@@ -58,6 +58,7 @@ async function processJSONIssue(
   issue: unknown,
   projectId: Id<"projects">,
   projectKey: string,
+  organizationId: Id<"organizations">,
   workspaceId: Id<"workspaces">,
   teamId: Id<"teams"> | undefined,
   userId: Id<"users">,
@@ -92,6 +93,7 @@ async function processJSONIssue(
     ctx,
     {
       projectId,
+      organizationId,
       workspaceId,
       teamId,
       key: issueKey,
@@ -154,6 +156,7 @@ function parseCSVRow(
   values: string[],
   indices: ReturnType<typeof parseCSVHeaders>,
   projectId: Id<"projects">,
+  organizationId: Id<"organizations">,
   workspaceId: Id<"workspaces">,
   teamId: Id<"teams"> | undefined,
   issueKey: string,
@@ -162,6 +165,7 @@ function parseCSVRow(
   order: number,
 ): {
   projectId: Id<"projects">;
+  organizationId: Id<"organizations">;
   workspaceId: Id<"workspaces">;
   teamId: Id<"teams"> | undefined;
   key: string;
@@ -182,6 +186,7 @@ function parseCSVRow(
 
   return {
     projectId,
+    organizationId,
     workspaceId,
     teamId,
     key: issueKey,
@@ -231,6 +236,7 @@ async function createIssueWithActivity(
   ctx: MutationCtx,
   issueData: {
     projectId: Id<"projects">;
+    organizationId: Id<"organizations">;
     workspaceId: Id<"workspaces">;
     teamId: Id<"teams"> | undefined;
     key: string;
@@ -540,6 +546,7 @@ export const importIssuesJSON = projectEditorMutation({
           issue,
           ctx.projectId,
           ctx.project.key,
+          ctx.project.organizationId,
           ctx.project.workspaceId,
           ctx.project.teamId,
           ctx.userId,
@@ -598,6 +605,7 @@ export const importIssuesCSV = projectEditorMutation({
           values,
           indices,
           ctx.projectId,
+          ctx.project.organizationId,
           ctx.project.workspaceId,
           ctx.project.teamId,
           issueKey,

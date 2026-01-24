@@ -17,6 +17,7 @@ import {
   FileText,
   FolderKanban,
   Home,
+  ListIcon,
   PanelLeftClose,
   PanelLeftOpen,
   Plus,
@@ -208,6 +209,17 @@ export function AppSidebar() {
               isCollapsed={isCollapsed}
               onClick={handleNavClick}
               data-tour="nav-dashboard"
+            />
+            {/* Issues */}
+            <NavItem
+              to={ROUTES.issues.list.path}
+              params={{ orgSlug }}
+              icon={ListIcon}
+              label="Issues"
+              isActive={isActive("/issues")}
+              isCollapsed={isCollapsed}
+              onClick={handleNavClick}
+              data-tour="nav-issues"
             />
             {/* Calendar - Links to first project's calendar */}
             {defaultProject && (

@@ -104,7 +104,7 @@ function SearchTab({
         "pb-2 px-1 text-xs sm:text-sm font-medium border-b-2 transition-colors whitespace-nowrap",
         isActive
           ? "border-brand-500 text-brand-600 dark:text-brand-400"
-          : "border-transparent text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark",
+          : "border-transparent text-ui-text-secondary hover:text-ui-text-primary",
       )}
     >
       {label} {showCount && <span className="text-xs">({count})</span>}

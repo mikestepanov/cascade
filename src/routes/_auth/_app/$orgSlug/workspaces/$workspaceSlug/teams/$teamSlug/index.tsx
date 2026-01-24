@@ -31,11 +31,11 @@ function TeamHome() {
       : "skip",
   );
 
-  // Redirect to projects list
+  // Redirect to team board
   useEffect(() => {
     if (team) {
       navigate({
-        to: ROUTES.workspaces.teams.projects.list.path,
+        to: ROUTES.workspaces.teams.board.path,
         params: { orgSlug, workspaceSlug, teamSlug },
         replace: true,
       });

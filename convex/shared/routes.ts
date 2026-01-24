@@ -116,39 +116,6 @@ export const ROUTES = {
         build: (orgSlug: string, workspaceSlug: string, teamSlug: string) =>
           `/${orgSlug}/workspaces/${workspaceSlug}/teams/${teamSlug}/settings`,
       },
-
-      projects: {
-        list: {
-          path: "/$orgSlug/workspaces/$workspaceSlug/teams/$teamSlug/projects" as const,
-          build: (orgSlug: string, workspaceSlug: string, teamSlug: string) =>
-            `/${orgSlug}/workspaces/${workspaceSlug}/teams/${teamSlug}/projects`,
-        },
-        board: {
-          path: "/$orgSlug/workspaces/$workspaceSlug/teams/$teamSlug/projects/$key/board" as const,
-          build: (orgSlug: string, workspaceSlug: string, teamSlug: string, key: string) =>
-            `/${orgSlug}/workspaces/${workspaceSlug}/teams/${teamSlug}/projects/${key}/board`,
-        },
-        calendar: {
-          path: "/$orgSlug/workspaces/$workspaceSlug/teams/$teamSlug/projects/$key/calendar" as const,
-          build: (orgSlug: string, workspaceSlug: string, teamSlug: string, key: string) =>
-            `/${orgSlug}/workspaces/${workspaceSlug}/teams/${teamSlug}/projects/${key}/calendar`,
-        },
-        timesheet: {
-          path: "/$orgSlug/workspaces/$workspaceSlug/teams/$teamSlug/projects/$key/timesheet" as const,
-          build: (orgSlug: string, workspaceSlug: string, teamSlug: string, key: string) =>
-            `/${orgSlug}/workspaces/${workspaceSlug}/teams/${teamSlug}/projects/${key}/timesheet`,
-        },
-        wiki: {
-          path: "/$orgSlug/workspaces/$workspaceSlug/teams/$teamSlug/projects/$key/wiki" as const,
-          build: (orgSlug: string, workspaceSlug: string, teamSlug: string, key: string) =>
-            `/${orgSlug}/workspaces/${workspaceSlug}/teams/${teamSlug}/projects/${key}/wiki`,
-        },
-        settings: {
-          path: "/$orgSlug/workspaces/$workspaceSlug/teams/$teamSlug/projects/$key/settings" as const,
-          build: (orgSlug: string, workspaceSlug: string, teamSlug: string, key: string) =>
-            `/${orgSlug}/workspaces/${workspaceSlug}/teams/${teamSlug}/projects/${key}/settings`,
-        },
-      },
     },
   },
 
@@ -176,6 +143,10 @@ export const ROUTES = {
   },
 
   issues: {
+    list: {
+      path: "/$orgSlug/issues" as const,
+      build: (orgSlug: string) => `/${orgSlug}/issues`,
+    },
     detail: {
       path: "/$orgSlug/issues/$key" as const,
       build: (orgSlug: string, key: string) => `/${orgSlug}/issues/${key}`,

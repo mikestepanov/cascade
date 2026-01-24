@@ -5,13 +5,23 @@
  * Runs daily via cron job
  */
 
+import type { GenericDatabaseReader, GenericId } from "convex/server";
 import { v } from "convex/values";
+import type { DataModel, TableNames } from "./_generated/dataModel";
 import type { MutationCtx } from "./_generated/server";
 import { internalMutation } from "./_generated/server";
 import { authenticatedQuery } from "./customFunctions";
 import { logger } from "./lib/logger";
 import { cascadeDelete } from "./lib/relationships";
-import { isEligibleForPermanentDeletion, onlyDeleted } from "./lib/softDeleteHelpers";
+import {
+  isEligibleForPermanentDeletion,
+  onlyDeleted,
+  type SoftDeletable,
+} from "./lib/softDeleteHelpers";
+
+interface SoftDeletableRecord extends SoftDeletable {
+  _id: GenericId<TableNames>;
+}
 
 const TABLES_WITH_SOFT_DELETE = [
   "projects",
@@ -23,25 +33,35 @@ const TABLES_WITH_SOFT_DELETE = [
 
 const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
 
-async function deleteFromTable<T extends (typeof TABLES_WITH_SOFT_DELETE)[number]>(
+function querySoftDeletedRecords(
+  db: GenericDatabaseReader<DataModel>,
+  table: (typeof TABLES_WITH_SOFT_DELETE)[number],
+): Promise<SoftDeletableRecord[]> {
+  // All tables in TABLES_WITH_SOFT_DELETE have by_deleted index
+  // Using type assertion because Convex's generic query builder doesn't track index availability
+  type QueryBuilder = {
+    withIndex: (
+      name: string,
+      predicate: (q: { eq: (field: string, value: boolean) => unknown }) => unknown,
+    ) => { take: (n: number) => Promise<SoftDeletableRecord[]> };
+  };
+  const query = db.query(table) as unknown as QueryBuilder;
+  return query.withIndex("by_deleted", (q) => q.eq("isDeleted", true)).take(1000);
+}
+
+async function deleteFromTable(
   ctx: MutationCtx,
-  table: T,
+  table: (typeof TABLES_WITH_SOFT_DELETE)[number],
   ageLimitMs: number,
 ): Promise<{ deleted: number; errors: string[] }> {
   let deleted = 0;
   const errors: string[] = [];
 
   try {
-    // biome-ignore lint/suspicious/noExplicitAny: Querying generic table, simplified for cleanup
-    const records = await (ctx.db.query(table) as any)
-      // biome-ignore lint/suspicious/noExplicitAny: Index exists on all tables
-      .withIndex("by_deleted", (q: any) => q.eq("isDeleted", true))
-      .take(1000);
+    const records = await querySoftDeletedRecords(ctx.db, table);
+    const eligibleRecords = records.filter((r) => isEligibleForPermanentDeletion(r, ageLimitMs));
 
-    // biome-ignore lint/suspicious/noExplicitAny: Filtering generic records
-    for (const record of records.filter((r: any) =>
-      isEligibleForPermanentDeletion(r, ageLimitMs),
-    )) {
+    for (const record of eligibleRecords) {
       try {
         await cascadeDelete(ctx, table, record._id);
         await ctx.db.delete(record._id);

@@ -23,7 +23,7 @@ export const MetricCard = memo(function MetricCard({
   return (
     <div
       className={cn(
-        "bg-ui-bg-primary dark:bg-ui-bg-primary-dark rounded-lg shadow p-6",
+        "bg-ui-bg-primary rounded-lg shadow p-6",
         highlight && "ring-2 ring-status-warning",
       )}
     >

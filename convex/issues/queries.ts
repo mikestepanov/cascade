@@ -3,7 +3,7 @@ import { paginationOptsValidator } from "convex/server";
 import { v } from "convex/values";
 import type { Doc, Id } from "../_generated/dataModel";
 import { internalQuery, type QueryCtx, query } from "../_generated/server";
-import { authenticatedQuery, projectQuery } from "../customFunctions";
+import { authenticatedQuery, organizationQuery, projectQuery } from "../customFunctions";
 import { batchFetchUsers } from "../lib/batchHelpers";
 import { BOUNDED_LIST_LIMIT, BOUNDED_SEARCH_LIMIT, safeCollect } from "../lib/boundedQueries";
 import { forbidden, notFound } from "../lib/errors";
@@ -337,6 +337,33 @@ export const listProjectIssues = authenticatedQuery({
   },
 });
 
+export const listOrganizationIssues = organizationQuery({
+  args: {
+    status: v.optional(v.string()),
+    paginationOpts: paginationOptsValidator,
+  },
+  handler: async (ctx, args) => {
+    // organizationQuery handles auth and membership check
+    return await fetchPaginatedIssues(ctx, {
+      paginationOpts: args.paginationOpts,
+      query: (db) => {
+        if (args.status) {
+          return db
+            .query("issues")
+            .withIndex("by_organization_status", (q) =>
+              q.eq("organizationId", ctx.organizationId).eq("status", args.status as string),
+            )
+            .order("desc");
+        }
+        return db
+          .query("issues")
+          .withIndex("by_organization", (q) => q.eq("organizationId", ctx.organizationId))
+          .order("desc");
+      },
+    });
+  },
+});
+
 export const listTeamIssues = authenticatedQuery({
   args: {
     teamId: v.id("teams"),
@@ -569,6 +596,7 @@ export const search = authenticatedQuery({
     limit: v.optional(v.number()),
     offset: v.optional(v.number()),
     projectId: v.optional(v.id("projects")),
+    organizationId: v.optional(v.id("organizations")),
     assigneeId: v.optional(v.union(v.id("users"), v.literal("unassigned"), v.literal("me"))),
     reporterId: v.optional(v.id("users")),
     type: v.optional(v.array(v.string())),
@@ -614,6 +642,18 @@ export const search = authenticatedQuery({
           .order("desc"),
         fetchLimit,
         "issue search by project",
+      );
+    } else if (args.organizationId) {
+      const organizationId = args.organizationId;
+      // Bounded: organization issues limited
+      issues = await safeCollect(
+        ctx.db
+          .query("issues")
+          .withIndex("by_organization", (q) => q.eq("organizationId", organizationId))
+          .filter(notDeleted)
+          .order("desc"),
+        fetchLimit,
+        "issue search by organization",
       );
     } else {
       // Return empty if no filter is provided to prevent scanning the entire table
@@ -786,10 +826,20 @@ export const listByTeamSmart = authenticatedQuery({
       }),
     );
 
-    // Enrich all issues by status
+    // Batch enrich all issues at once to avoid N+1 queries (one enrichIssues call per status)
+    // This reduces label queries from N (per status) to 1 (total)
+    const allIssues = Object.values(issuesByColumn).flat();
+    const enrichedAll = await enrichIssues(ctx, allIssues);
+
+    // Build a lookup map by issue ID for O(1) access
+    const enrichedById = new Map(enrichedAll.map((issue) => [issue._id, issue]));
+
+    // Reconstruct the status-grouped structure using the enriched issues
     const enrichedIssuesByStatus: Record<string, EnrichedIssue[]> = {};
     for (const [statusId, issues] of Object.entries(issuesByColumn)) {
-      enrichedIssuesByStatus[statusId] = await enrichIssues(ctx, issues);
+      enrichedIssuesByStatus[statusId] = issues
+        .map((issue) => enrichedById.get(issue._id))
+        .filter((issue): issue is EnrichedIssue => issue !== undefined);
     }
 
     return {
@@ -1072,6 +1122,14 @@ export const listIssuesByDateRange = authenticatedQuery({
     const hasAccess = await canAccessProject(ctx, args.projectId, ctx.userId);
     if (!hasAccess) {
       return [];
+    }
+
+    // Validate sprint belongs to this project if provided
+    if (args.sprintId) {
+      const sprint = await ctx.db.get(args.sprintId);
+      if (!sprint || sprint.projectId !== args.projectId) {
+        throw forbidden("Sprint not found in this project");
+      }
     }
 
     // Bounded: calendar date range queries limited to prevent large result sets

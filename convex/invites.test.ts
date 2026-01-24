@@ -5,7 +5,7 @@ import schema from "./schema";
 import { modules } from "./testSetup.test-helper";
 import {
   asAuthenticatedUser,
-  createOrganizationAdmin,
+  createTestContext,
   createTestProject,
   createTestUser,
 } from "./testUtils";
@@ -36,12 +36,7 @@ describe("Invites", () => {
   describe("sendInvite", () => {
     it("should send a platform invite from admin", { timeout: 15000 }, async () => {
       const t = convexTest(schema, modules);
-      const adminId = await createTestUser(t);
-
-      // Create organization admin status (proper way, not relying on fallback)
-      const { organizationId, workspaceId, teamId } = await createOrganizationAdmin(t, adminId);
-
-      const asAdmin = asAuthenticatedUser(t, adminId);
+      const { userId: adminId, organizationId, asUser: asAdmin } = await createTestContext(t);
 
       const { inviteId, token } = await asAdmin.mutation(api.invites.sendInvite, {
         email: "newuser@example.com",
@@ -82,12 +77,7 @@ describe("Invites", () => {
 
     it("should prevent duplicate pending invites", async () => {
       const t = convexTest(schema, modules);
-      const adminId = await createTestUser(t);
-      // Setup admin rights via organization
-      // Setup admin rights
-      const { organizationId, workspaceId, teamId } = await createOrganizationAdmin(t, adminId);
-
-      const asAdmin = asAuthenticatedUser(t, adminId);
+      const { organizationId, asUser: asAdmin } = await createTestContext(t);
 
       await asAdmin.mutation(api.invites.sendInvite, {
         email: "dupe@example.com",
@@ -108,11 +98,7 @@ describe("Invites", () => {
   describe("acceptInvite", () => {
     it("should accept invite and link user", async () => {
       const t = convexTest(schema, modules);
-      const adminId = await createTestUser(t);
-      // Setup admin
-      // Setup admin
-      const { organizationId, workspaceId, teamId } = await createOrganizationAdmin(t, adminId);
-      const asAdmin = asAuthenticatedUser(t, adminId);
+      const { organizationId, asUser: asAdmin } = await createTestContext(t);
 
       const { token } = await asAdmin.mutation(api.invites.sendInvite, {
         email: "new@example.com",
@@ -181,11 +167,7 @@ describe("Invites", () => {
   describe("revokeInvite", () => {
     it("should revoke pending invite", async () => {
       const t = convexTest(schema, modules);
-      const adminId = await createTestUser(t);
-      // Setup admin
-      // Setup admin
-      const { organizationId, workspaceId, teamId } = await createOrganizationAdmin(t, adminId);
-      const asAdmin = asAuthenticatedUser(t, adminId);
+      const { organizationId, asUser: asAdmin } = await createTestContext(t);
 
       const { inviteId } = await asAdmin.mutation(api.invites.sendInvite, {
         email: "revoke@example.com",

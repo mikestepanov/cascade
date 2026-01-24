@@ -111,7 +111,7 @@ export function CreateProjectFromTemplate({
       case "design":
         return "bg-accent-100 text-accent-800 dark:bg-accent-900 dark:text-accent-200";
       default:
-        return "bg-ui-bg-tertiary text-ui-text-secondary dark:bg-ui-bg-tertiary-dark dark:text-ui-text-secondary-dark";
+        return "bg-ui-bg-tertiary text-ui-text-secondary";
     }
   };
 

@@ -65,8 +65,7 @@ export const { getSnapshot, submitSnapshot, latestVersion, getSteps, submitSteps
           typeof snapshot === "string"
             ? (JSON.parse(snapshot) as ProseMirrorSnapshot)
             : (snapshot as ProseMirrorSnapshot);
-      } catch (e) {
-        console.error("Failed to parse ProseMirror snapshot", e);
+      } catch (_e) {
         return;
       }
       // Update the document's updatedAt timestamp when content changes

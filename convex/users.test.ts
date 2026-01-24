@@ -110,6 +110,7 @@ describe("Users", () => {
 
         return await ctx.db.insert("issues", {
           projectId,
+          organizationId: project.organizationId,
           workspaceId: project.workspaceId,
           teamId: project.teamId,
           key: "P-1",

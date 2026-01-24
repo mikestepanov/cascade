@@ -3,16 +3,19 @@ import { describe, expect, it } from "vitest";
 import { api } from "./_generated/api";
 import schema from "./schema";
 import { modules } from "./testSetup.test-helper";
-import { asAuthenticatedUser, createOrganizationAdmin, createTestUser } from "./testUtils";
+import {
+  asAuthenticatedUser,
+  createOrganizationAdmin,
+  createTestContext,
+  createTestUser,
+} from "./testUtils";
 
 describe("Documents", () => {
   describe("create", () => {
     it("should create a public document", async () => {
       const t = convexTest(schema, modules);
-      const userId = await createTestUser(t);
-      const { organizationId } = await createOrganizationAdmin(t, userId);
+      const { userId, organizationId, asUser } = await createTestContext(t);
 
-      const asUser = asAuthenticatedUser(t, userId);
       const docId = await asUser.mutation(api.documents.create, {
         title: "Public Document",
         isPublic: true,
@@ -29,10 +32,8 @@ describe("Documents", () => {
 
     it("should create a private document", async () => {
       const t = convexTest(schema, modules);
-      const userId = await createTestUser(t);
-      const { organizationId } = await createOrganizationAdmin(t, userId);
+      const { organizationId, asUser } = await createTestContext(t);
 
-      const asUser = asAuthenticatedUser(t, userId);
       const docId = await asUser.mutation(api.documents.create, {
         title: "Private Document",
         isPublic: false,
@@ -46,10 +47,8 @@ describe("Documents", () => {
 
     it("should create a document without project link", async () => {
       const t = convexTest(schema, modules);
-      const userId = await createTestUser(t);
-      const { organizationId } = await createOrganizationAdmin(t, userId);
+      const { organizationId, asUser } = await createTestContext(t);
 
-      const asUser = asAuthenticatedUser(t, userId);
       const docId = await asUser.mutation(api.documents.create, {
         title: "Document Without Project",
         isPublic: false,
@@ -63,8 +62,7 @@ describe("Documents", () => {
 
     it("should deny unauthenticated users", async () => {
       const t = convexTest(schema, modules);
-      const userId = await createTestUser(t);
-      const { organizationId } = await createOrganizationAdmin(t, userId);
+      const { organizationId } = await createTestContext(t);
 
       await expect(async () => {
         await t.mutation(api.documents.create, {
@@ -77,10 +75,8 @@ describe("Documents", () => {
 
     it("should set update timestamps", async () => {
       const t = convexTest(schema, modules);
-      const userId = await createTestUser(t);
-      const { organizationId } = await createOrganizationAdmin(t, userId);
+      const { organizationId, asUser } = await createTestContext(t);
 
-      const asUser = asAuthenticatedUser(t, userId);
       const docId = await asUser.mutation(api.documents.create, {
         title: "Timestamped Document",
         isPublic: false,
@@ -116,10 +112,8 @@ describe("Documents", () => {
 
     it("should return private documents for owner", async () => {
       const t = convexTest(schema, modules);
-      const userId = await createTestUser(t);
-      const { organizationId } = await createOrganizationAdmin(t, userId);
+      const { userId, organizationId, asUser } = await createTestContext(t);
 
-      const asUser = asAuthenticatedUser(t, userId);
       const docId = await asUser.mutation(api.documents.create, {
         title: "My Private Doc",
         isPublic: false,
@@ -177,10 +171,7 @@ describe("Documents", () => {
 
     it("should return null for deleted documents", async () => {
       const t = convexTest(schema, modules);
-      const userId = await createTestUser(t);
-      const { organizationId } = await createOrganizationAdmin(t, userId);
-
-      const asUser = asAuthenticatedUser(t, userId);
+      const { organizationId, asUser } = await createTestContext(t);
 
       // Create and then delete a document
       const docId = await asUser.mutation(api.documents.create, {
@@ -242,10 +233,8 @@ describe("Documents", () => {
 
     it("should include creator information", async () => {
       const t = convexTest(schema, modules);
-      const userId = await createTestUser(t, { name: "Creator" });
-      const { organizationId } = await createOrganizationAdmin(t, userId);
+      const { organizationId, asUser } = await createTestContext(t, { name: "Creator" });
 
-      const asUser = asAuthenticatedUser(t, userId);
       await asUser.mutation(api.documents.create, {
         title: "Test Doc",
         isPublic: false,
@@ -261,10 +250,8 @@ describe("Documents", () => {
   describe("updateTitle", () => {
     it("should allow owner to update title", async () => {
       const t = convexTest(schema, modules);
-      const userId = await createTestUser(t);
-      const { organizationId } = await createOrganizationAdmin(t, userId);
+      const { organizationId, asUser } = await createTestContext(t);
 
-      const asUser = asAuthenticatedUser(t, userId);
       const docId = await asUser.mutation(api.documents.create, {
         title: "Original Title",
         isPublic: false,
@@ -282,10 +269,8 @@ describe("Documents", () => {
 
     it("should update the updatedAt timestamp", async () => {
       const t = convexTest(schema, modules);
-      const userId = await createTestUser(t);
-      const { organizationId } = await createOrganizationAdmin(t, userId);
+      const { organizationId, asUser } = await createTestContext(t);
 
-      const asUser = asAuthenticatedUser(t, userId);
       const docId = await asUser.mutation(api.documents.create, {
         title: "Original",
         isPublic: false,
@@ -331,10 +316,8 @@ describe("Documents", () => {
 
     it("should deny unauthenticated users", async () => {
       const t = convexTest(schema, modules);
-      const userId = await createTestUser(t);
-      const { organizationId } = await createOrganizationAdmin(t, userId);
+      const { organizationId, asUser } = await createTestContext(t);
 
-      const asUser = asAuthenticatedUser(t, userId);
       const docId = await asUser.mutation(api.documents.create, {
         title: "Test",
         isPublic: false,
@@ -354,10 +337,8 @@ describe("Documents", () => {
   describe("togglePublic", () => {
     it("should toggle document from private to public", async () => {
       const t = convexTest(schema, modules);
-      const userId = await createTestUser(t);
-      const { organizationId } = await createOrganizationAdmin(t, userId);
+      const { organizationId, asUser } = await createTestContext(t);
 
-      const asUser = asAuthenticatedUser(t, userId);
       const docId = await asUser.mutation(api.documents.create, {
         title: "Private Doc",
         isPublic: false,
@@ -372,10 +353,8 @@ describe("Documents", () => {
 
     it("should toggle document from public to private", async () => {
       const t = convexTest(schema, modules);
-      const userId = await createTestUser(t);
-      const { organizationId } = await createOrganizationAdmin(t, userId);
+      const { organizationId, asUser } = await createTestContext(t);
 
-      const asUser = asAuthenticatedUser(t, userId);
       const docId = await asUser.mutation(api.documents.create, {
         title: "Public Doc",
         isPublic: true,
@@ -411,10 +390,8 @@ describe("Documents", () => {
   describe("deleteDocument", () => {
     it("should allow owner to delete document", async () => {
       const t = convexTest(schema, modules);
-      const userId = await createTestUser(t);
-      const { organizationId } = await createOrganizationAdmin(t, userId);
+      const { organizationId, asUser } = await createTestContext(t);
 
-      const asUser = asAuthenticatedUser(t, userId);
       const docId = await asUser.mutation(api.documents.create, {
         title: "To Delete",
         isPublic: false,
@@ -448,10 +425,8 @@ describe("Documents", () => {
 
     it("should deny unauthenticated users from deleting", async () => {
       const t = convexTest(schema, modules);
-      const userId = await createTestUser(t);
-      const { organizationId } = await createOrganizationAdmin(t, userId);
+      const { organizationId, asUser } = await createTestContext(t);
 
-      const asUser = asAuthenticatedUser(t, userId);
       const docId = await asUser.mutation(api.documents.create, {
         title: "Test",
         isPublic: false,
@@ -468,10 +443,8 @@ describe("Documents", () => {
   describe("search", () => {
     it("should search documents by title", async () => {
       const t = convexTest(schema, modules);
-      const userId = await createTestUser(t);
-      const { organizationId } = await createOrganizationAdmin(t, userId);
+      const { organizationId, asUser } = await createTestContext(t);
 
-      const asUser = asAuthenticatedUser(t, userId);
       await asUser.mutation(api.documents.create, {
         title: "Product Requirements Document",
         isPublic: false,
@@ -535,10 +508,8 @@ describe("Documents", () => {
 
     it("should return empty results when no matches found", async () => {
       const t = convexTest(schema, modules);
-      const userId = await createTestUser(t);
-      const { organizationId } = await createOrganizationAdmin(t, userId);
+      const { organizationId, asUser } = await createTestContext(t);
 
-      const asUser = asAuthenticatedUser(t, userId);
       await asUser.mutation(api.documents.create, {
         title: "Test Document",
         isPublic: false,

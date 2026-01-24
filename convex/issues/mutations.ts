@@ -7,6 +7,7 @@ import {
   issueViewerMutation,
   projectEditorMutation,
 } from "../customFunctions";
+import { validate } from "../lib/constrainedValidators";
 import { validation } from "../lib/errors";
 import { cascadeDelete } from "../lib/relationships";
 import { assertCanEditProject, assertIsProjectAdmin } from "../projectAccess";
@@ -47,6 +48,13 @@ export const create = projectEditorMutation({
     storyPoints: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
+    // Validate input constraints
+    validate.title(args.title);
+    validate.description(args.description);
+    if (args.labels) {
+      validate.tags(args.labels, "labels");
+    }
+
     // Validate parent/epic constraints
     const inheritedEpicId = await validateParentIssue(ctx, args.parentId, args.type, args.epicId);
 
@@ -69,6 +77,7 @@ export const create = projectEditorMutation({
     const now = Date.now();
     const issueId = await ctx.db.insert("issues", {
       projectId: ctx.projectId,
+      organizationId: ctx.project.organizationId, // Cache from project
       workspaceId: ctx.project.workspaceId, // Always present since projects require workspaceId
       teamId: ctx.project.teamId, // Cached from project (can be undefined for workspace-level projects)
       key: issueKey,

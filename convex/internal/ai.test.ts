@@ -108,6 +108,7 @@ describe("Internal AI", () => {
 
         await ctx.db.insert("issues", {
           projectId,
+          organizationId: project.organizationId,
           workspaceId: project.workspaceId,
           teamId: project.teamId,
           key: "CTX-1",
@@ -124,6 +125,7 @@ describe("Internal AI", () => {
         });
         await ctx.db.insert("issues", {
           projectId,
+          organizationId: project.organizationId,
           workspaceId: project.workspaceId,
           teamId: project.teamId,
           key: "CTX-2",

@@ -3,15 +3,18 @@ import { describe, expect, it } from "vitest";
 import { api } from "./_generated/api";
 import schema from "./schema";
 import { modules } from "./testSetup.test-helper";
-import { asAuthenticatedUser, createOrganizationAdmin, createTestUser } from "./testUtils";
+import {
+  asAuthenticatedUser,
+  createOrganizationAdmin,
+  createTestContext,
+  createTestUser,
+} from "./testUtils";
 
 describe("Projects", () => {
   describe("create", () => {
     it("should create a project with default workflow states", async () => {
       const t = convexTest(schema, modules);
-      const userId = await createTestUser(t);
-      const { organizationId, workspaceId, teamId } = await createOrganizationAdmin(t, userId);
-      const asUser = asAuthenticatedUser(t, userId);
+      const { userId, organizationId, workspaceId, teamId, asUser } = await createTestContext(t);
 
       const projectId = await asUser.mutation(api.projects.createProject, {
         name: "Test Project",
@@ -41,9 +44,7 @@ describe("Projects", () => {
 
     it("should uppercase project keys", async () => {
       const t = convexTest(schema, modules);
-      const userId = await createTestUser(t);
-      const { organizationId, workspaceId, teamId } = await createOrganizationAdmin(t, userId);
-      const asUser = asAuthenticatedUser(t, userId);
+      const { organizationId, workspaceId, teamId, asUser } = await createTestContext(t);
 
       const projectId = await asUser.mutation(api.projects.createProject, {
         name: "Test Project",
@@ -62,9 +63,7 @@ describe("Projects", () => {
 
     it("should add creator as admin member", async () => {
       const t = convexTest(schema, modules);
-      const userId = await createTestUser(t);
-      const { organizationId, workspaceId, teamId } = await createOrganizationAdmin(t, userId);
-      const asUser = asAuthenticatedUser(t, userId);
+      const { organizationId, workspaceId, teamId, asUser } = await createTestContext(t);
 
       const projectId = await asUser.mutation(api.projects.createProject, {
         name: "Test Project",
@@ -84,9 +83,7 @@ describe("Projects", () => {
 
     it("should reject duplicate project keys", async () => {
       const t = convexTest(schema, modules);
-      const userId = await createTestUser(t);
-      const { organizationId, workspaceId, teamId } = await createOrganizationAdmin(t, userId);
-      const asUser = asAuthenticatedUser(t, userId);
+      const { organizationId, workspaceId, teamId, asUser } = await createTestContext(t);
 
       await asUser.mutation(api.projects.createProject, {
         name: "First Project",
@@ -116,8 +113,7 @@ describe("Projects", () => {
     it("should reject unauthenticated users", async () => {
       const t = convexTest(schema, modules);
       // Create a user and organization for the organizationId, but don't authenticate
-      const userId = await createTestUser(t);
-      const { organizationId, workspaceId, teamId } = await createOrganizationAdmin(t, userId);
+      const { organizationId, workspaceId, teamId } = await createTestContext(t);
 
       await expect(async () => {
         await t.mutation(api.projects.createProject, {
@@ -137,9 +133,9 @@ describe("Projects", () => {
   describe("get", () => {
     it("should return project details for owner", async () => {
       const t = convexTest(schema, modules);
-      const userId = await createTestUser(t, { name: "Owner" });
-      const { organizationId, workspaceId, teamId } = await createOrganizationAdmin(t, userId);
-      const asUser = asAuthenticatedUser(t, userId);
+      const { organizationId, workspaceId, teamId, asUser } = await createTestContext(t, {
+        name: "Owner",
+      });
 
       const projectId = await asUser.mutation(api.projects.createProject, {
         name: "My Project",
@@ -224,9 +220,7 @@ describe("Projects", () => {
 
     it("should return null for non-existent projects", async () => {
       const t = convexTest(schema, modules);
-      const userId = await createTestUser(t);
-      const { organizationId, workspaceId, teamId } = await createOrganizationAdmin(t, userId);
-      const asUser = asAuthenticatedUser(t, userId);
+      const { organizationId, workspaceId, teamId, asUser } = await createTestContext(t);
 
       // Create and delete a project to test non-existent ID behavior
       const projectId = await asUser.mutation(api.projects.createProject, {
@@ -322,9 +316,7 @@ describe("Projects", () => {
 
     it("should include project metadata (issue count, role)", async () => {
       const t = convexTest(schema, modules);
-      const userId = await createTestUser(t);
-      const { organizationId, workspaceId, teamId } = await createOrganizationAdmin(t, userId);
-      const asUser = asAuthenticatedUser(t, userId);
+      const { organizationId, workspaceId, teamId, asUser } = await createTestContext(t);
 
       await asUser.mutation(api.projects.createProject, {
         name: "Test Project",
@@ -350,9 +342,14 @@ describe("Projects", () => {
   describe("updateWorkflow", () => {
     it("should allow admins to update workflow states", async () => {
       const t = convexTest(schema, modules);
-      const adminId = await createTestUser(t, { name: "Admin" });
-      const { organizationId, workspaceId, teamId } = await createOrganizationAdmin(t, adminId);
-      const asAdmin = asAuthenticatedUser(t, adminId);
+      const {
+        organizationId,
+        workspaceId,
+        teamId,
+        asUser: asAdmin,
+      } = await createTestContext(t, {
+        name: "Admin",
+      });
 
       const projectId = await asAdmin.mutation(api.projects.createProject, {
         name: "Workflow Project",
@@ -407,14 +404,14 @@ describe("Projects", () => {
         role: "editor",
       });
 
-      // Try to update workflow as editor
+      // Try to update workflow as editor - should be forbidden (requires admin)
       const asEditor = asAuthenticatedUser(t, editorId);
       await expect(async () => {
         await asEditor.mutation(api.projects.updateWorkflow, {
           projectId,
           workflowStates: [],
         });
-      }).rejects.toThrow();
+      }).rejects.toThrow(/FORBIDDEN|admin/i);
       await t.finishInProgressScheduledFunctions();
     });
 
@@ -508,7 +505,7 @@ describe("Projects", () => {
           role: "editor",
         });
 
-        // Try to add member as editor
+        // Try to add member as editor - should be forbidden (requires admin)
         const asEditor = asAuthenticatedUser(t, editorId);
         await expect(async () => {
           await asEditor.mutation(api.projects.addProjectMember, {
@@ -516,7 +513,7 @@ describe("Projects", () => {
             userEmail: "new@test.com",
             role: "viewer",
           });
-        }).rejects.toThrow();
+        }).rejects.toThrow(/FORBIDDEN|admin/i);
       });
     });
 
@@ -617,14 +614,578 @@ describe("Projects", () => {
           teamId,
         });
 
+        // Should fail - cannot remove project owner
         await expect(async () => {
           await asCreator.mutation(api.projects.removeProjectMember, {
             projectId,
             memberId: creatorId,
           });
-        }).rejects.toThrow();
+        }).rejects.toThrow(/FORBIDDEN|Cannot remove project owner/i);
         await t.finishInProgressScheduledFunctions();
       });
+
+      it("should prevent changing project owner's role", async () => {
+        const t = convexTest(schema, modules);
+        const creatorId = await createTestUser(t, { name: "Creator" });
+        const { organizationId, workspaceId, teamId } = await createOrganizationAdmin(t, creatorId);
+
+        const asCreator = asAuthenticatedUser(t, creatorId);
+        const projectId = await asCreator.mutation(api.projects.createProject, {
+          name: "Test Project",
+          key: "NOCHANGE",
+          isPublic: false,
+          boardType: "kanban",
+          organizationId,
+          workspaceId,
+          teamId,
+        });
+
+        await expect(async () => {
+          await asCreator.mutation(api.projects.updateProjectMemberRole, {
+            projectId,
+            memberId: creatorId,
+            newRole: "viewer",
+          });
+        }).rejects.toThrow(/Cannot change project owner's role/i);
+        await t.finishInProgressScheduledFunctions();
+      });
+    });
+  });
+
+  describe("getByKey", () => {
+    it("should return project by key for members", async () => {
+      const t = convexTest(schema, modules);
+      const { organizationId, workspaceId, teamId, asUser } = await createTestContext(t);
+
+      await asUser.mutation(api.projects.createProject, {
+        name: "My Project",
+        key: "BYKEY",
+        isPublic: false,
+        boardType: "kanban",
+        organizationId,
+        workspaceId,
+        teamId,
+      });
+
+      const project = await asUser.query(api.projects.getByKey, { key: "BYKEY" });
+
+      expect(project).toBeDefined();
+      expect(project?.name).toBe("My Project");
+      expect(project?.key).toBe("BYKEY");
+      await t.finishInProgressScheduledFunctions();
+    });
+
+    it("should return null for non-existent key", async () => {
+      const t = convexTest(schema, modules);
+      const { asUser } = await createTestContext(t);
+
+      const project = await asUser.query(api.projects.getByKey, { key: "NOTEXIST" });
+      expect(project).toBeNull();
+      await t.finishInProgressScheduledFunctions();
+    });
+
+    it("should return null for private project non-members", async () => {
+      const t = convexTest(schema, modules);
+      const ownerId = await createTestUser(t, { name: "Owner" });
+      const otherId = await createTestUser(t, { name: "Other" });
+      const { organizationId, workspaceId, teamId } = await createOrganizationAdmin(t, ownerId);
+
+      const asOwner = asAuthenticatedUser(t, ownerId);
+      await asOwner.mutation(api.projects.createProject, {
+        name: "Private Project",
+        key: "PRIV",
+        isPublic: false,
+        boardType: "kanban",
+        organizationId,
+        workspaceId,
+        teamId,
+      });
+
+      const asOther = asAuthenticatedUser(t, otherId);
+      const project = await asOther.query(api.projects.getByKey, { key: "PRIV" });
+      expect(project).toBeNull();
+      await t.finishInProgressScheduledFunctions();
+    });
+  });
+
+  describe("updateProject", () => {
+    it("should allow admin to update project name", async () => {
+      const t = convexTest(schema, modules);
+      const { organizationId, workspaceId, teamId, asUser } = await createTestContext(t);
+
+      const projectId = await asUser.mutation(api.projects.createProject, {
+        name: "Original Name",
+        key: "UPDATE",
+        isPublic: false,
+        boardType: "kanban",
+        organizationId,
+        workspaceId,
+        teamId,
+      });
+
+      await asUser.mutation(api.projects.updateProject, {
+        projectId,
+        name: "Updated Name",
+      });
+
+      const project = await asUser.query(api.projects.getProject, { id: projectId });
+      expect(project?.name).toBe("Updated Name");
+      await t.finishInProgressScheduledFunctions();
+    });
+
+    it("should allow admin to update project description", async () => {
+      const t = convexTest(schema, modules);
+      const { organizationId, workspaceId, teamId, asUser } = await createTestContext(t);
+
+      const projectId = await asUser.mutation(api.projects.createProject, {
+        name: "Test Project",
+        key: "DESC",
+        isPublic: false,
+        boardType: "kanban",
+        organizationId,
+        workspaceId,
+        teamId,
+      });
+
+      await asUser.mutation(api.projects.updateProject, {
+        projectId,
+        description: "New description",
+      });
+
+      const project = await asUser.query(api.projects.getProject, { id: projectId });
+      expect(project?.description).toBe("New description");
+      await t.finishInProgressScheduledFunctions();
+    });
+
+    it("should allow admin to update project visibility", async () => {
+      const t = convexTest(schema, modules);
+      const { organizationId, workspaceId, teamId, asUser } = await createTestContext(t);
+
+      const projectId = await asUser.mutation(api.projects.createProject, {
+        name: "Test Project",
+        key: "VIS",
+        isPublic: false,
+        boardType: "kanban",
+        organizationId,
+        workspaceId,
+        teamId,
+      });
+
+      await asUser.mutation(api.projects.updateProject, {
+        projectId,
+        isPublic: true,
+      });
+
+      const project = await asUser.query(api.projects.getProject, { id: projectId });
+      expect(project?.isPublic).toBe(true);
+      await t.finishInProgressScheduledFunctions();
+    });
+
+    it("should deny non-admin from updating project", async () => {
+      const t = convexTest(schema, modules);
+      const adminId = await createTestUser(t, { name: "Admin" });
+      const viewerId = await createTestUser(t, { name: "Viewer", email: "viewer@test.com" });
+      const { organizationId, workspaceId, teamId } = await createOrganizationAdmin(t, adminId);
+
+      const asAdmin = asAuthenticatedUser(t, adminId);
+      const projectId = await asAdmin.mutation(api.projects.createProject, {
+        name: "Test Project",
+        key: "NOUPDATE",
+        isPublic: false,
+        boardType: "kanban",
+        organizationId,
+        workspaceId,
+        teamId,
+      });
+
+      await asAdmin.mutation(api.projects.addProjectMember, {
+        projectId,
+        userEmail: "viewer@test.com",
+        role: "viewer",
+      });
+
+      const asViewer = asAuthenticatedUser(t, viewerId);
+      await expect(async () => {
+        await asViewer.mutation(api.projects.updateProject, {
+          projectId,
+          name: "Hacked Name",
+        });
+      }).rejects.toThrow(/FORBIDDEN|admin/i);
+      await t.finishInProgressScheduledFunctions();
+    });
+  });
+
+  describe("softDeleteProject", () => {
+    it("should allow owner to soft delete project", async () => {
+      const t = convexTest(schema, modules);
+      const { organizationId, workspaceId, teamId, asUser } = await createTestContext(t);
+
+      const projectId = await asUser.mutation(api.projects.createProject, {
+        name: "To Delete",
+        key: "DEL",
+        isPublic: false,
+        boardType: "kanban",
+        organizationId,
+        workspaceId,
+        teamId,
+      });
+
+      const result = await asUser.mutation(api.projects.softDeleteProject, { projectId });
+      expect(result.deleted).toBe(true);
+
+      const project = await t.run(async (ctx) => ctx.db.get(projectId));
+      expect(project?.isDeleted).toBe(true);
+      expect(project?.deletedAt).toBeDefined();
+      await t.finishInProgressScheduledFunctions();
+    });
+
+    it("should deny non-owner from deleting project", async () => {
+      const t = convexTest(schema, modules);
+      const ownerId = await createTestUser(t, { name: "Owner" });
+      const memberId = await createTestUser(t, { name: "Member", email: "member@test.com" });
+      const { organizationId, workspaceId, teamId } = await createOrganizationAdmin(t, ownerId);
+
+      const asOwner = asAuthenticatedUser(t, ownerId);
+      const projectId = await asOwner.mutation(api.projects.createProject, {
+        name: "Test Project",
+        key: "NODEL",
+        isPublic: false,
+        boardType: "kanban",
+        organizationId,
+        workspaceId,
+        teamId,
+      });
+
+      await asOwner.mutation(api.projects.addProjectMember, {
+        projectId,
+        userEmail: "member@test.com",
+        role: "admin",
+      });
+
+      const asMember = asAuthenticatedUser(t, memberId);
+      await expect(async () => {
+        await asMember.mutation(api.projects.softDeleteProject, { projectId });
+      }).rejects.toThrow(/FORBIDDEN|owner/i);
+      await t.finishInProgressScheduledFunctions();
+    });
+  });
+
+  describe("restoreProject", () => {
+    it("should allow owner to restore deleted project", async () => {
+      const t = convexTest(schema, modules);
+      const { organizationId, workspaceId, teamId, asUser } = await createTestContext(t);
+
+      const projectId = await asUser.mutation(api.projects.createProject, {
+        name: "To Restore",
+        key: "REST",
+        isPublic: false,
+        boardType: "kanban",
+        organizationId,
+        workspaceId,
+        teamId,
+      });
+
+      await asUser.mutation(api.projects.softDeleteProject, { projectId });
+
+      const result = await asUser.mutation(api.projects.restoreProject, { projectId });
+      expect(result.restored).toBe(true);
+
+      const project = await t.run(async (ctx) => ctx.db.get(projectId));
+      expect(project?.isDeleted).toBeUndefined();
+      await t.finishInProgressScheduledFunctions();
+    });
+
+    it("should deny restoring non-deleted project", async () => {
+      const t = convexTest(schema, modules);
+      const { organizationId, workspaceId, teamId, asUser } = await createTestContext(t);
+
+      const projectId = await asUser.mutation(api.projects.createProject, {
+        name: "Active Project",
+        key: "ACTIVE",
+        isPublic: false,
+        boardType: "kanban",
+        organizationId,
+        workspaceId,
+        teamId,
+      });
+
+      await expect(async () => {
+        await asUser.mutation(api.projects.restoreProject, { projectId });
+      }).rejects.toThrow(/not deleted/i);
+      await t.finishInProgressScheduledFunctions();
+    });
+
+    it("should deny non-owner from restoring project", async () => {
+      const t = convexTest(schema, modules);
+      const ownerId = await createTestUser(t, { name: "Owner" });
+      const otherId = await createTestUser(t, { name: "Other" });
+      const { organizationId, workspaceId, teamId } = await createOrganizationAdmin(t, ownerId);
+
+      const asOwner = asAuthenticatedUser(t, ownerId);
+      const projectId = await asOwner.mutation(api.projects.createProject, {
+        name: "Test Project",
+        key: "NORESTORE",
+        isPublic: false,
+        boardType: "kanban",
+        organizationId,
+        workspaceId,
+        teamId,
+      });
+
+      await asOwner.mutation(api.projects.softDeleteProject, { projectId });
+
+      const asOther = asAuthenticatedUser(t, otherId);
+      await expect(async () => {
+        await asOther.mutation(api.projects.restoreProject, { projectId });
+      }).rejects.toThrow(/FORBIDDEN|owner/i);
+      await t.finishInProgressScheduledFunctions();
+    });
+  });
+
+  describe("getTeamProjects", () => {
+    it("should return team projects for team members", async () => {
+      const t = convexTest(schema, modules);
+      const { organizationId, workspaceId, teamId, asUser } = await createTestContext(t);
+
+      await asUser.mutation(api.projects.createProject, {
+        name: "Team Project 1",
+        key: "TP1",
+        isPublic: false,
+        boardType: "kanban",
+        organizationId,
+        workspaceId,
+        teamId,
+      });
+
+      await asUser.mutation(api.projects.createProject, {
+        name: "Team Project 2",
+        key: "TP2",
+        isPublic: false,
+        boardType: "scrum",
+        organizationId,
+        workspaceId,
+        teamId,
+      });
+
+      const result = await asUser.query(api.projects.getTeamProjects, {
+        teamId,
+        paginationOpts: { numItems: 10, cursor: null },
+      });
+
+      expect(result.page.length).toBeGreaterThanOrEqual(2);
+      await t.finishInProgressScheduledFunctions();
+    });
+
+    it("should return empty for non-members", async () => {
+      const t = convexTest(schema, modules);
+      const ownerId = await createTestUser(t, { name: "Owner" });
+      const otherId = await createTestUser(t, { name: "Other" });
+      const { organizationId, workspaceId, teamId } = await createOrganizationAdmin(t, ownerId);
+
+      const asOwner = asAuthenticatedUser(t, ownerId);
+      await asOwner.mutation(api.projects.createProject, {
+        name: "Team Project",
+        key: "TEAM1",
+        isPublic: false,
+        boardType: "kanban",
+        organizationId,
+        workspaceId,
+        teamId,
+      });
+
+      const asOther = asAuthenticatedUser(t, otherId);
+      const result = await asOther.query(api.projects.getTeamProjects, {
+        teamId,
+        paginationOpts: { numItems: 10, cursor: null },
+      });
+
+      expect(result.page).toHaveLength(0);
+      await t.finishInProgressScheduledFunctions();
+    });
+  });
+
+  describe("getWorkspaceProjects", () => {
+    it("should return workspace projects without team", async () => {
+      const t = convexTest(schema, modules);
+      const { organizationId, workspaceId, asUser } = await createTestContext(t);
+
+      // Create a project without teamId (workspace-level project)
+      await asUser.mutation(api.projects.createProject, {
+        name: "Workspace Project",
+        key: "WSP",
+        isPublic: false,
+        boardType: "kanban",
+        organizationId,
+        workspaceId,
+        // No teamId - orphaned to workspace
+      });
+
+      const result = await asUser.query(api.projects.getWorkspaceProjects, {
+        workspaceId,
+        paginationOpts: { numItems: 10, cursor: null },
+      });
+
+      expect(result.page.length).toBeGreaterThanOrEqual(1);
+      expect(result.page.some((p) => p.name === "Workspace Project")).toBe(true);
+      await t.finishInProgressScheduledFunctions();
+    });
+
+    it("should not include team projects", async () => {
+      const t = convexTest(schema, modules);
+      const { organizationId, workspaceId, teamId, asUser } = await createTestContext(t);
+
+      // Create a project WITH teamId
+      await asUser.mutation(api.projects.createProject, {
+        name: "Team Project",
+        key: "TEAMPRJ",
+        isPublic: false,
+        boardType: "kanban",
+        organizationId,
+        workspaceId,
+        teamId,
+      });
+
+      const result = await asUser.query(api.projects.getWorkspaceProjects, {
+        workspaceId,
+        paginationOpts: { numItems: 10, cursor: null },
+      });
+
+      expect(result.page.some((p) => p.name === "Team Project")).toBe(false);
+      await t.finishInProgressScheduledFunctions();
+    });
+  });
+
+  describe("getProjectUserRole", () => {
+    it("should return admin role for project admin", async () => {
+      const t = convexTest(schema, modules);
+      const { organizationId, workspaceId, teamId, asUser } = await createTestContext(t);
+
+      const projectId = await asUser.mutation(api.projects.createProject, {
+        name: "Test Project",
+        key: "ROLE",
+        isPublic: false,
+        boardType: "kanban",
+        organizationId,
+        workspaceId,
+        teamId,
+      });
+
+      const role = await asUser.query(api.projects.getProjectUserRole, { projectId });
+      expect(role).toBe("admin");
+      await t.finishInProgressScheduledFunctions();
+    });
+
+    it("should return editor role for editors", async () => {
+      const t = convexTest(schema, modules);
+      const adminId = await createTestUser(t, { name: "Admin" });
+      const editorId = await createTestUser(t, { name: "Editor", email: "editor@test.com" });
+      const { organizationId, workspaceId, teamId } = await createOrganizationAdmin(t, adminId);
+
+      const asAdmin = asAuthenticatedUser(t, adminId);
+      const projectId = await asAdmin.mutation(api.projects.createProject, {
+        name: "Test Project",
+        key: "EDITROLE",
+        isPublic: false,
+        boardType: "kanban",
+        organizationId,
+        workspaceId,
+        teamId,
+      });
+
+      await asAdmin.mutation(api.projects.addProjectMember, {
+        projectId,
+        userEmail: "editor@test.com",
+        role: "editor",
+      });
+
+      const asEditor = asAuthenticatedUser(t, editorId);
+      const role = await asEditor.query(api.projects.getProjectUserRole, { projectId });
+      expect(role).toBe("editor");
+      await t.finishInProgressScheduledFunctions();
+    });
+
+    it("should return null for non-members", async () => {
+      const t = convexTest(schema, modules);
+      const ownerId = await createTestUser(t, { name: "Owner" });
+      const outsiderId = await createTestUser(t, { name: "Outsider" });
+      const { organizationId, workspaceId, teamId } = await createOrganizationAdmin(t, ownerId);
+
+      const asOwner = asAuthenticatedUser(t, ownerId);
+      const projectId = await asOwner.mutation(api.projects.createProject, {
+        name: "Test Project",
+        key: "NOTROLE",
+        isPublic: false,
+        boardType: "kanban",
+        organizationId,
+        workspaceId,
+        teamId,
+      });
+
+      const asOutsider = asAuthenticatedUser(t, outsiderId);
+      const role = await asOutsider.query(api.projects.getProjectUserRole, { projectId });
+      expect(role).toBeNull();
+      await t.finishInProgressScheduledFunctions();
+    });
+  });
+
+  describe("addProjectMember edge cases", () => {
+    it("should reject duplicate members", async () => {
+      const t = convexTest(schema, modules);
+      const adminId = await createTestUser(t, { name: "Admin" });
+      await createTestUser(t, { name: "Member", email: "dup@test.com" });
+      const { organizationId, workspaceId, teamId } = await createOrganizationAdmin(t, adminId);
+
+      const asAdmin = asAuthenticatedUser(t, adminId);
+      const projectId = await asAdmin.mutation(api.projects.createProject, {
+        name: "Test Project",
+        key: "NODUP",
+        isPublic: false,
+        boardType: "kanban",
+        organizationId,
+        workspaceId,
+        teamId,
+      });
+
+      await asAdmin.mutation(api.projects.addProjectMember, {
+        projectId,
+        userEmail: "dup@test.com",
+        role: "viewer",
+      });
+
+      await expect(async () => {
+        await asAdmin.mutation(api.projects.addProjectMember, {
+          projectId,
+          userEmail: "dup@test.com",
+          role: "editor",
+        });
+      }).rejects.toThrow(/already a member/i);
+      await t.finishInProgressScheduledFunctions();
+    });
+
+    it("should reject non-existent users", async () => {
+      const t = convexTest(schema, modules);
+      const adminId = await createTestUser(t, { name: "Admin" });
+      const { organizationId, workspaceId, teamId } = await createOrganizationAdmin(t, adminId);
+
+      const asAdmin = asAuthenticatedUser(t, adminId);
+      const projectId = await asAdmin.mutation(api.projects.createProject, {
+        name: "Test Project",
+        key: "NOUSER",
+        isPublic: false,
+        boardType: "kanban",
+        organizationId,
+        workspaceId,
+        teamId,
+      });
+
+      await expect(async () => {
+        await asAdmin.mutation(api.projects.addProjectMember, {
+          projectId,
+          userEmail: "nonexistent@test.com",
+          role: "viewer",
+        });
+      }).rejects.toThrow();
+      await t.finishInProgressScheduledFunctions();
     });
   });
 });

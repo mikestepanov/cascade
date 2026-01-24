@@ -5,6 +5,7 @@ import { internal } from "./_generated/api";
 import type { Doc } from "./_generated/dataModel";
 import { authenticatedMutation, authenticatedQuery, projectAdminMutation } from "./customFunctions";
 import { batchFetchProjects, batchFetchUsers, getUserName } from "./lib/batchHelpers";
+import { ARRAY_LIMITS, validate } from "./lib/constrainedValidators";
 import { conflict, forbidden, notFound, validation } from "./lib/errors";
 import { fetchPaginatedQuery } from "./lib/queryHelpers";
 import { cascadeSoftDelete } from "./lib/relationships";
@@ -40,6 +41,20 @@ export const createProject = authenticatedMutation({
     sharedWithTeamIds: v.optional(v.array(v.id("teams"))), // Share with specific teams
   },
   handler: async (ctx, args) => {
+    // Validate input constraints
+    validate.name(args.name, "name");
+    validate.projectKey(args.key);
+    validate.description(args.description);
+    if (args.sharedWithTeamIds) {
+      validate.tags(args.sharedWithTeamIds, "sharedWithTeamIds");
+    }
+    if (args.workflowStates && args.workflowStates.length > ARRAY_LIMITS.WORKFLOW_STATES.max) {
+      throw validation(
+        "workflowStates",
+        `Maximum ${ARRAY_LIMITS.WORKFLOW_STATES.max} workflow states allowed`,
+      );
+    }
+
     // Check if project key already exists
     const existingProject = await ctx.db
       .query("projects")

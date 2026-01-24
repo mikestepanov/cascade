@@ -7,13 +7,13 @@
 
 import { anthropic } from "@ai-sdk/anthropic";
 import { ActionCache } from "@convex-dev/action-cache";
+import { getAuthUserId } from "@convex-dev/auth/server";
 import { generateText } from "ai";
 import { v } from "convex/values";
-import { components, internal } from "../_generated/api";
-import type { Id } from "../_generated/dataModel";
+import { api, components, internal } from "../_generated/api";
 import { action, internalAction, mutation, query } from "../_generated/server";
 import { extractUsage } from "../lib/aiHelpers";
-import { notFound, unauthenticated } from "../lib/errors";
+import { unauthenticated } from "../lib/errors";
 import { rateLimit } from "../rateLimits";
 import { issueTypes } from "../validators";
 
@@ -97,19 +97,19 @@ export const suggestIssueDescription = action({
     projectId: v.id("projects"),
   },
   handler: async (ctx, args): Promise<string> => {
-    const userId = await ctx.auth.getUserIdentity();
+    const userId = await getAuthUserId(ctx);
     if (!userId) {
       throw unauthenticated();
     }
 
     // Rate limit: 20 suggestions per hour per user
     await rateLimit(ctx, "aiSuggestion", {
-      key: userId.subject,
+      key: userId,
       throws: true,
     });
 
     // Get project context
-    const project = await ctx.runQuery(internal.ai.queries.getProjectContext, {
+    const project = await ctx.runQuery(api.ai.queries.getProjectContext, {
       projectId: args.projectId,
     });
 
@@ -128,14 +128,9 @@ Requirements:
 
 Description:`;
 
-    // Use cache with 1 hour TTL - same title + type = cached result
-    const cacheKey = `desc:${args.type}:${args.title}`;
+    // Use cache with 1 hour TTL - same prompt = cached result
     const startTime = Date.now();
-    const result = await descriptionCache.fetch(ctx, {
-      key: cacheKey,
-      action: prompt,
-      ttl: 3600000, // 1 hour
-    });
+    const result = await descriptionCache.fetch(ctx, { prompt }, { ttl: 3600000 });
     const responseTime = Date.now() - startTime;
 
     // Handle backward compatibility (cache might contain strings)
@@ -146,7 +141,7 @@ Description:`;
         : result.usage;
 
     // Store suggestion
-    await ctx.runMutation(internal.ai.mutations.createSuggestion, {
+    await ctx.runMutation(api.ai.mutations.createSuggestion, {
       projectId: args.projectId,
       suggestionType: "issue_description",
       targetId: args.title,
@@ -155,7 +150,7 @@ Description:`;
     });
 
     // Track usage
-    await ctx.runMutation(internal.ai.mutations.trackUsage, {
+    await ctx.runMutation(api.ai.mutations.trackUsage, {
       projectId: args.projectId,
       provider: "anthropic",
       model: CLAUDE_HAIKU,
@@ -182,14 +177,14 @@ export const suggestPriority = action({
     projectId: v.id("projects"),
   },
   handler: async (ctx, args): Promise<"highest" | "high" | "medium" | "low" | "lowest"> => {
-    const userId = await ctx.auth.getUserIdentity();
+    const userId = await getAuthUserId(ctx);
     if (!userId) {
       throw unauthenticated();
     }
 
     // Rate limit: 20 suggestions per hour per user
     await rateLimit(ctx, "aiSuggestion", {
-      key: userId.subject,
+      key: userId,
       throws: true,
     });
 
@@ -209,14 +204,9 @@ Respond with ONLY ONE of these words: highest, high, medium, low, lowest
 
 Priority:`;
 
-    // Use cache with 1 hour TTL
-    const cacheKey = `priority:${args.type}:${args.title}:${args.description || ""}`;
+    // Use cache with 1 hour TTL - same prompt = cached result
     const startTime = Date.now();
-    const result = await priorityCache.fetch(ctx, {
-      key: cacheKey,
-      action: prompt,
-      ttl: 3600000, // 1 hour
-    });
+    const result = await priorityCache.fetch(ctx, { prompt }, { ttl: 3600000 });
     const responseTime = Date.now() - startTime;
 
     // Handle backward compatibility
@@ -233,7 +223,7 @@ Priority:`;
     const suggestedPriority = validPriorities.includes(priority) ? priority : "medium";
 
     // Store suggestion
-    await ctx.runMutation(internal.ai.mutations.createSuggestion, {
+    await ctx.runMutation(api.ai.mutations.createSuggestion, {
       projectId: args.projectId,
       suggestionType: "issue_priority",
       targetId: args.title,
@@ -242,7 +232,7 @@ Priority:`;
     });
 
     // Track usage
-    await ctx.runMutation(internal.ai.mutations.trackUsage, {
+    await ctx.runMutation(api.ai.mutations.trackUsage, {
       projectId: args.projectId,
       provider: "anthropic",
       model: CLAUDE_HAIKU,
@@ -269,19 +259,19 @@ export const suggestLabels = action({
     projectId: v.id("projects"),
   },
   handler: async (ctx, args): Promise<string[]> => {
-    const userId = await ctx.auth.getUserIdentity();
+    const userId = await getAuthUserId(ctx);
     if (!userId) {
       throw unauthenticated();
     }
 
     // Rate limit: 20 suggestions per hour per user
     await rateLimit(ctx, "aiSuggestion", {
-      key: userId.subject,
+      key: userId,
       throws: true,
     });
 
     // Get existing project labels
-    const existingLabels = await ctx.runQuery(internal.ai.queries.getProjectLabels, {
+    const existingLabels = await ctx.runQuery(api.ai.suggestions.getProjectLabels, {
       projectId: args.projectId,
     });
 
@@ -303,14 +293,9 @@ Respond with a comma-separated list of labels only.
 
 Labels:`;
 
-    // Use cache with 1 hour TTL
-    const cacheKey = `labels:${args.type}:${args.title}:${args.description || ""}`;
+    // Use cache with 1 hour TTL - same prompt = cached result
     const startTime = Date.now();
-    const result = await labelsCache.fetch(ctx, {
-      key: cacheKey,
-      action: prompt,
-      ttl: 3600000, // 1 hour
-    });
+    const result = await labelsCache.fetch(ctx, { prompt }, { ttl: 3600000 });
     const responseTime = Date.now() - startTime;
 
     // Handle backward compatibility
@@ -327,7 +312,7 @@ Labels:`;
       .slice(0, 4);
 
     // Store suggestion
-    await ctx.runMutation(internal.ai.mutations.createSuggestion, {
+    await ctx.runMutation(api.ai.mutations.createSuggestion, {
       projectId: args.projectId,
       suggestionType: "issue_labels",
       targetId: args.title,
@@ -336,7 +321,7 @@ Labels:`;
     });
 
     // Track usage
-    await ctx.runMutation(internal.ai.mutations.trackUsage, {
+    await ctx.runMutation(api.ai.mutations.trackUsage, {
       projectId: args.projectId,
       provider: "anthropic",
       model: CLAUDE_HAIKU,

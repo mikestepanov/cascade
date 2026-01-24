@@ -270,7 +270,7 @@ export function IssueDependencies({ issueId, projectId: _workspaceId }: IssueDep
                       setSearchQuery("");
                     }}
                     className={cn(
-                      "w-full p-3 text-left hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark border-b border-ui-border-secondary dark:border-ui-border-secondary-dark last:border-0",
+                      "w-full p-3 text-left hover:bg-ui-bg-tertiary border-b border-ui-border-secondary last:border-0",
                       selectedIssueKey === issue._id && "bg-brand-50 dark:bg-brand-950",
                     )}
                   >

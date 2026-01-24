@@ -9,7 +9,6 @@ import { IssueMetadataSection } from "@/components/IssueDetail/IssueMetadataSect
 import { SubtasksList } from "@/components/IssueDetail/SubtasksList";
 import { IssueWatchers } from "@/components/IssueWatchers";
 import { TimeTracker } from "@/components/TimeTracker";
-import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Flex } from "@/components/ui/Flex";
 import { Input } from "@/components/ui/form/Input";
@@ -22,7 +21,6 @@ import { useOrganization } from "@/hooks/useOrgContext";
 import { Check, ChevronLeft, Copy } from "@/lib/icons";
 import { getTypeIcon } from "@/lib/issue-utils";
 import { showError, showSuccess } from "@/lib/toast";
-import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_auth/_app/$orgSlug/issues/$key")({
   component: IssuePage,
@@ -41,6 +39,7 @@ function IssuePage() {
   const parts = key.split("-");
   const projectKey = parts.slice(0, -1).join("-");
 
+  // Query enriched issue data
   const issue = useQuery(api.issues.getByKey, { key });
   const updateIssue = useMutation(api.issues.update);
 
@@ -54,7 +53,7 @@ function IssuePage() {
   if (issue === undefined) {
     return (
       <Flex align="center" justify="center" className="h-full">
-        <LoadingSpinner size="lg" />
+        <LoadingSpinner size="lg" message="Loading issue details..." />
       </Flex>
     );
   }

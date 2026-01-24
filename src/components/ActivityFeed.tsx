@@ -167,9 +167,7 @@ export function ActivityFeed({ projectId, limit = 50, compact = false }: Activit
           key={`${activity._id}-${index}`}
           gap="lg"
           className={
-            compact
-              ? "py-2"
-              : "p-4 bg-ui-bg-primary dark:bg-ui-bg-primary-dark rounded-lg border border-ui-border-primary dark:border-ui-border-primary-dark"
+            compact ? "py-2" : "p-4 bg-ui-bg-primary rounded-lg border border-ui-border-primary"
           }
         >
           {/* Timeline dot */}

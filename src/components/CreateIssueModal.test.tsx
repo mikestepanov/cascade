@@ -12,6 +12,13 @@ vi.mock("convex/react", () => ({
   useAction: vi.fn(),
 }));
 
+vi.mock("@/hooks/useOrgContext", () => ({
+  useOrganization: vi.fn(() => ({
+    organizationId: "org-123",
+    billingEnabled: false,
+  })),
+}));
+
 // Mock toast utilities
 vi.mock("@/lib/toast", () => ({
   showSuccess: vi.fn(),
@@ -66,10 +73,12 @@ describe("CreateIssueModal", () => {
     (useMutation as any).mockReturnValue(mockCreateIssue);
     (useAction as any).mockReturnValue(vi.fn());
     // Mock useQuery to return values in order:
-    // 1st call: api.projects.getProject -> mockProject
-    // 2nd call: api.templates.listByProject -> mockTemplates
-    // 3rd call: api.labels.list -> mockLabels
+    // 1st call: api.projects.getCurrentUserProjects -> undefined (skipped)
+    // 2nd call: api.projects.getProject -> mockProject
+    // 3rd call: api.templates.listByProject -> mockTemplates
+    // 4th call: api.labels.list -> mockLabels
     (useQuery as any)
+      .mockReturnValueOnce(undefined) // orgProjects (skipped)
       .mockReturnValueOnce(mockProject)
       .mockReturnValueOnce(mockTemplates)
       .mockReturnValueOnce(mockLabels);
@@ -107,8 +116,8 @@ describe("CreateIssueModal", () => {
     let callCount = 0;
     (useQuery as any).mockImplementation(() => {
       callCount++;
-      const callIndex = (callCount - 1) % 3; // Cycle through 3 queries
-      return [mockProject, mockTemplates, mockLabels][callIndex];
+      const callIndex = (callCount - 1) % 4; // Cycle through 4 queries
+      return [undefined, mockProject, mockTemplates, mockLabels][callIndex];
     });
 
     render(
@@ -139,6 +148,7 @@ describe("CreateIssueModal", () => {
     // Reset mock calls for this test to ensure clean state
     (useQuery as any).mockReset();
     (useQuery as any)
+      .mockReturnValueOnce(undefined)
       .mockReturnValueOnce(mockProject)
       .mockReturnValueOnce(mockTemplates)
       .mockReturnValueOnce(mockLabels);

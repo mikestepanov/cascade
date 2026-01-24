@@ -5,7 +5,6 @@ import { Smile } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import type { ReactionInfo } from "../../convex/lib/issueHelpers";
-import { Button } from "./ui/Button";
 import { Flex } from "./ui/Flex";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/Popover";
 
@@ -25,8 +24,8 @@ export function CommentReactions({ commentId, reactions, currentUserId }: Commen
     try {
       await toggleReaction({ commentId, emoji });
       setIsOpen(false);
-    } catch (error) {
-      console.error("Failed to toggle reaction:", error);
+    } catch {
+      // Silently fail - UI shows current state
     }
   };
 

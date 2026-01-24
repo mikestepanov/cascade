@@ -25,9 +25,10 @@ describe("Analytics", () => {
 
       const asOther = asAuthenticatedUser(t, other);
 
+      // Should be forbidden - user doesn't have access to project
       await expect(async () => {
         await asOther.query(api.analytics.getProjectAnalytics, { projectId });
-      }).rejects.toThrow();
+      }).rejects.toThrow(/FORBIDDEN/i);
     });
 
     it("should throw error for non-existent project", async () => {
@@ -42,11 +43,12 @@ describe("Analytics", () => {
         await ctx.db.delete(projectId);
       });
 
+      // Should throw NOT_FOUND for non-existent project
       await expect(async () => {
         await asUser.query(api.analytics.getProjectAnalytics, {
           projectId,
         });
-      }).rejects.toThrow();
+      }).rejects.toThrow(/NOT_FOUND|not found/i);
     });
   });
 
@@ -467,11 +469,12 @@ describe("Analytics", () => {
         await ctx.db.delete(projectId);
       });
 
+      // Should throw NOT_FOUND for deleted project
       await expect(async () => {
         await asUser.query(api.analytics.getTeamVelocity, {
           projectId,
         });
-      }).rejects.toThrow();
+      }).rejects.toThrow(/NOT_FOUND|not found/i);
     });
   });
 

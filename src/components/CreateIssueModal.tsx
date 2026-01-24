@@ -4,6 +4,7 @@ import { useForm } from "@tanstack/react-form";
 import { useAction, useMutation, useQuery } from "convex/react";
 import { useEffect, useState } from "react";
 import { z } from "zod";
+import { useOrganization } from "@/hooks/useOrgContext";
 import { toggleInArray } from "@/lib/array-utils";
 import { FormInput, FormSelect, FormTextarea } from "@/lib/form";
 import { showError, showSuccess } from "@/lib/toast";
@@ -41,7 +42,7 @@ const createIssueSchema = z.object({
 // =============================================================================
 
 interface CreateIssueModalProps {
-  projectId: Id<"projects">;
+  projectId?: Id<"projects">;
   sprintId?: Id<"sprints">;
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -67,6 +68,12 @@ export function CreateIssueModal({
   open,
   onOpenChange,
 }: CreateIssueModalProps) {
+  const { organizationId } = useOrganization();
+
+  // Project selection for global use
+  const [internalSelectedProjectId, setInternalSelectedProjectId] = useState<Id<"projects"> | null>(
+    projectId || null,
+  );
   // Template selection (outside form - controls form reset)
   const [selectedTemplate, setSelectedTemplate] = useState<Id<"issueTemplates"> | "">("");
   // Labels (array state, not simple string)
@@ -76,9 +83,25 @@ export function CreateIssueModal({
   const [showAISuggestions, setShowAISuggestions] = useState(false);
 
   // Queries
-  const project = useQuery(api.projects.getProject, { id: projectId });
-  const templates = useQuery(api.templates.listByProject, { projectId });
-  const labels = useQuery(api.labels.list, { projectId });
+  const orgProjects = useQuery(
+    api.projects.getCurrentUserProjects,
+    projectId ? "skip" : { organizationId },
+  );
+
+  const effectiveProjectId = projectId || internalSelectedProjectId;
+
+  const project = useQuery(
+    api.projects.getProject,
+    effectiveProjectId ? { id: effectiveProjectId } : "skip",
+  );
+  const templates = useQuery(
+    api.templates.listByProject,
+    effectiveProjectId ? { projectId: effectiveProjectId } : "skip",
+  );
+  const labels = useQuery(
+    api.labels.list,
+    effectiveProjectId ? { projectId: effectiveProjectId } : "skip",
+  );
 
   // Mutations
   const createIssue = useMutation(api.issues.create);
@@ -98,9 +121,13 @@ export function CreateIssueModal({
     },
     validators: { onChange: createIssueSchema },
     onSubmit: async ({ value }: { value: CreateIssueForm }) => {
+      if (!effectiveProjectId) {
+        showError(new Error("Project is required"), "Validation error");
+        return;
+      }
       try {
         await createIssue({
-          projectId,
+          projectId: effectiveProjectId,
           title: value.title.trim(),
           description: value.description?.trim() || undefined,
           type: value.type,
@@ -144,50 +171,60 @@ export function CreateIssueModal({
     setSelectedLabels((prev) => toggleInArray(prev, labelId));
   };
 
+  interface AISuggestions {
+    description?: string;
+    priority?: string;
+    labels?: string[];
+  }
+
+  const applyAISuggestions = (suggestions: AISuggestions, description: string | undefined) => {
+    if (suggestions.description && !(description as string)?.trim()) {
+      form.setFieldValue("description", suggestions.description as string);
+    }
+    if (suggestions.priority) {
+      form.setFieldValue("priority", suggestions.priority as (typeof priorities)[number]);
+    }
+    if (suggestions.labels && (suggestions.labels as string[]).length > 0 && labels) {
+      const suggestedLabelIds = labels
+        .filter((label: Doc<"labels">) => (suggestions.labels as string[]).includes(label.name))
+        .map((label: Doc<"labels">) => label._id);
+      setSelectedLabels((prev) => [...new Set([...prev, ...suggestedLabelIds])]);
+    }
+  };
+
   const handleGenerateAISuggestions = async () => {
     const title = form.getFieldValue("title") as string;
     const description = form.getFieldValue("description");
 
-    if (!title?.trim()) {
-      showError(new Error("Please enter a title first"), "Title required");
+    if (!(effectiveProjectId && title?.trim())) {
+      showError(
+        new Error(effectiveProjectId ? "Please enter a title" : "Please select a project"),
+        "Requirement missing",
+      );
       return;
     }
 
     setIsGeneratingAI(true);
     try {
       const suggestions = await generateSuggestions({
-        projectId,
+        projectId: effectiveProjectId,
         issueTitle: title,
         issueDescription: description || undefined,
         suggestionTypes: ["description", "priority", "labels"],
       });
 
-      // Apply AI suggestions
-      if (suggestions.description && !(description as string)?.trim()) {
-        form.setFieldValue("description", suggestions.description as string);
-      }
-
-      if (suggestions.priority) {
-        form.setFieldValue("priority", suggestions.priority as (typeof priorities)[number]);
-      }
-
-      if (suggestions.labels && (suggestions.labels as string[]).length > 0 && labels) {
-        const suggestedLabelIds = labels
-          .filter((label: Doc<"labels">) => (suggestions.labels as string[]).includes(label.name))
-          .map((label: Doc<"labels">) => label._id);
-        setSelectedLabels((prev) => [...new Set([...prev, ...suggestedLabelIds])]);
-      }
-
+      applyAISuggestions(suggestions, description);
       setShowAISuggestions(true);
       showSuccess("AI suggestions applied!");
     } catch (error) {
-      showError(error, "Failed to generate AI suggestions. Make sure AI provider is configured.");
+      showError(error, "Failed to generate AI suggestions");
     } finally {
       setIsGeneratingAI(false);
     }
   };
 
-  if (!project) return null;
+  // Only show loading if we don't have a projectId but are fetching projects
+  if (!(projectId || orgProjects)) return null;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -203,6 +240,25 @@ export function CreateIssueModal({
           }}
           className="space-y-4"
         >
+          {/* Project Selector (if no projectId passed) */}
+          {!projectId && orgProjects && (
+            <Select
+              label="Project"
+              value={internalSelectedProjectId || ""}
+              onChange={(e) => setInternalSelectedProjectId(e.target.value as Id<"projects">)}
+              required
+            >
+              <option value="" disabled>
+                Select a project...
+              </option>
+              {orgProjects?.page.map((p: Doc<"projects">) => (
+                <option key={p._id} value={p._id}>
+                  {p.name} ({p.key})
+                </option>
+              ))}
+            </Select>
+          )}
+
           {/* Template Selector (outside form state) */}
           {templates && templates.length > 0 && (
             <Select
@@ -303,7 +359,7 @@ export function CreateIssueModal({
             {(field) => (
               <FormSelect field={field} label="Assignee">
                 <option value="">Unassigned</option>
-                {project.members.map((member) => (
+                {project?.members.map((member) => (
                   <option key={member._id} value={member._id}>
                     {member.name}
                   </option>

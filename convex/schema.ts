@@ -169,6 +169,7 @@ const applicationTables = {
 
   issues: defineTable(issuesFields)
     .index("by_project", ["projectId"])
+    .index("by_organization", ["organizationId"]) // NEW
     .index("by_workspace", ["workspaceId"]) // Standardized
     .index("by_team", ["teamId"]) // NEW
     .index("by_key", ["key"])
@@ -184,6 +185,7 @@ const applicationTables = {
     .index("by_project_sprint_status_updated", ["projectId", "sprintId", "status", "updatedAt"]) // NEW OPTIMIZATION
     .index("by_project_updated", ["projectId", "updatedAt"])
     .index("by_project_due_date", ["projectId", "dueDate"])
+    .index("by_organization_status", ["organizationId", "status"]) // NEW
     .index("by_workspace_status", ["workspaceId", "status"]) // Standardized
     .index("by_team_status", ["teamId", "status"]) // NEW
     .index("by_team_status_updated", ["teamId", "status", "updatedAt"]) // NEW OPTIMIZATION
@@ -191,7 +193,15 @@ const applicationTables = {
     .index("by_project_deleted", ["projectId", "isDeleted"]) // Project trash view
     .searchIndex("search_title", {
       searchField: "searchContent",
-      filterFields: ["projectId", "workspaceId", "teamId", "type", "status", "priority"], // Added workspaceId, teamId
+      filterFields: [
+        "projectId",
+        "organizationId",
+        "workspaceId",
+        "teamId",
+        "type",
+        "status",
+        "priority",
+      ], // Added organizationId
     })
     .vectorIndex("by_embedding", {
       vectorField: "embedding",

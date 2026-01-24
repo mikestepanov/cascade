@@ -155,7 +155,7 @@ export function CreateEventModal({
                           "px-3 py-2 rounded-md text-sm font-medium capitalize",
                           eventType === type
                             ? "bg-brand-600 text-white"
-                            : "bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark text-ui-text-primary dark:text-ui-text-primary-dark hover:bg-ui-bg-tertiary dark:hover:bg-ui-bg-tertiary-dark",
+                            : "bg-ui-bg-secondary text-ui-text-primary hover:bg-ui-bg-tertiary",
                         )}
                       >
                         {type}

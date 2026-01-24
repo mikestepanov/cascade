@@ -1,228 +1,269 @@
-import type { Doc, Id } from "./_generated/dataModel";
+import type { Id } from "./_generated/dataModel";
 import type { MutationCtx, QueryCtx } from "./_generated/server";
 import { forbidden } from "./lib/errors";
 import { isOrganizationAdmin } from "./lib/organizationAccess";
 import { notDeleted } from "./lib/softDeleteHelpers";
-import { getTeamRole } from "./lib/teamAccess";
 
 // ============================================================================
 // Project Access Control Helpers
 // ============================================================================
 
 /**
- * Check organization-level access permissions
+ * Access level enum for comparison
  */
-async function checkOrganizationAccess(
-  ctx: QueryCtx | MutationCtx,
-  project: Doc<"projects">,
-  userId: Id<"users">,
-): Promise<boolean> {
-  const organizationId = project.organizationId;
-  if (!organizationId) return false;
+type AccessLevel = "admin" | "editor" | "viewer" | null;
 
-  // 1. organization admin has full access
-  const isAdmin = await isOrganizationAdmin(ctx, organizationId, userId);
-  if (isAdmin) return true;
-
-  // 2. organization-visible project (isPublic=true) + user is organization member
-  if (project.isPublic) {
-    const organizationMembership = await ctx.db
-      .query("organizationMembers")
-      .withIndex("by_organization_user", (q) =>
-        q.eq("organizationId", organizationId).eq("userId", userId),
-      )
-      .first();
-
-    if (organizationMembership) return true;
-  }
-
-  return false;
+/**
+ * Computed project access result - single pass computation
+ */
+interface ProjectAccessResult {
+  canAccess: boolean;
+  canEdit: boolean;
+  isAdmin: boolean;
+  role: AccessLevel;
+  reason: string;
 }
 
 /**
- * Check team-level access permissions
+ * Batch check if user is member of any of the given teams
+ * Returns the highest role found, or null if not a member of any team
  */
-async function checkTeamAccess(
+async function batchGetTeamRole(
   ctx: QueryCtx | MutationCtx,
-  project: Doc<"projects">,
+  teamIds: Id<"teams">[],
   userId: Id<"users">,
-): Promise<boolean> {
-  // 1. User is member of owning team
-  if (project.teamId) {
-    const teamRole = await getTeamRole(ctx, project.teamId, userId);
-    if (teamRole) return true;
+): Promise<{ role: "admin" | "member" | null; teamId: Id<"teams"> | null }> {
+  if (teamIds.length === 0) {
+    return { role: null, teamId: null };
   }
 
-  // 2. User is member of shared team
-  if (project.sharedWithTeamIds) {
-    for (const sharedTeamId of project.sharedWithTeamIds) {
-      const teamRole = await getTeamRole(ctx, sharedTeamId, userId);
-      if (teamRole) return true;
+  // Query all team memberships for this user in one query
+  const memberships = await ctx.db
+    .query("teamMembers")
+    .withIndex("by_user", (q) => q.eq("userId", userId))
+    .collect();
+
+  // Filter to only the teams we care about
+  const relevantTeamIds = new Set(teamIds.map((id) => id.toString()));
+  let highestRole: "admin" | "member" | null = null;
+  let matchedTeamId: Id<"teams"> | null = null;
+
+  for (const membership of memberships) {
+    if (relevantTeamIds.has(membership.teamId.toString())) {
+      if (membership.role === "admin") {
+        return { role: "admin", teamId: membership.teamId };
+      }
+      if (highestRole === null) {
+        highestRole = "member";
+        matchedTeamId = membership.teamId;
+      }
     }
   }
 
-  return false;
+  return { role: highestRole, teamId: matchedTeamId };
 }
 
 /**
- * Check direct user access (Owner, Creator, Collaborator)
+ * Build the result object for access checks
  */
-async function checkDirectAccess(
+function buildAccessResult(
+  canAccess: boolean,
+  canEdit: boolean,
+  isAdmin: boolean,
+  role: AccessLevel,
+  reason: string,
+): ProjectAccessResult {
+  return { canAccess, canEdit, isAdmin, role, reason };
+}
+
+/**
+ * Check team-based access for a project
+ */
+async function checkTeamBasedAccess(
   ctx: QueryCtx | MutationCtx,
-  project: Doc<"projects">,
+  projectTeamId: Id<"teams"> | undefined,
+  sharedWithTeamIds: Id<"teams">[] | undefined,
   userId: Id<"users">,
-): Promise<boolean> {
-  // 1. User owns the project
-  if (project.ownerId === userId) return true;
+): Promise<ProjectAccessResult | null> {
+  const teamIds: Id<"teams">[] = [];
+  if (projectTeamId) {
+    teamIds.push(projectTeamId);
+  }
+  if (sharedWithTeamIds) {
+    teamIds.push(...sharedWithTeamIds);
+  }
 
-  // 2. Legacy: creator has access
-  if (project.createdBy === userId) return true;
+  if (teamIds.length === 0) {
+    return null;
+  }
 
-  // 3. User is individual collaborator (projectMembers)
+  const { role: teamRole, teamId: matchedTeamId } = await batchGetTeamRole(ctx, teamIds, userId);
+  if (!teamRole) {
+    return null;
+  }
+
+  const isOwningTeam = matchedTeamId?.toString() === projectTeamId?.toString();
+  if (isOwningTeam) {
+    return buildAccessResult(
+      true,
+      true,
+      teamRole === "admin",
+      teamRole === "admin" ? "admin" : "editor",
+      "owning_team_member",
+    );
+  }
+
+  return buildAccessResult(true, false, false, "viewer", "shared_team_member");
+}
+
+/**
+ * Check organization public project access
+ */
+async function checkOrgPublicAccess(
+  ctx: QueryCtx | MutationCtx,
+  organizationId: Id<"organizations">,
+  userId: Id<"users">,
+): Promise<ProjectAccessResult | null> {
+  const orgMembership = await ctx.db
+    .query("organizationMembers")
+    .withIndex("by_organization_user", (q) =>
+      q.eq("organizationId", organizationId).eq("userId", userId),
+    )
+    .first();
+
+  if (orgMembership) {
+    return buildAccessResult(true, false, false, "viewer", "organization_public_project");
+  }
+
+  return null;
+}
+
+/**
+ * Compute all access levels for a user on a project in a single pass
+ *
+ * This consolidates all access checks to avoid N+1 queries and duplicated logic.
+ * Call this once and use the result for any access decisions.
+ */
+export async function computeProjectAccess(
+  ctx: QueryCtx | MutationCtx,
+  projectId: Id<"projects">,
+  userId: Id<"users">,
+): Promise<ProjectAccessResult> {
+  const noAccess = buildAccessResult(false, false, false, null, "no_access");
+
+  const project = await ctx.db.get(projectId);
+  if (!project) {
+    return buildAccessResult(false, false, false, null, "project_not_found");
+  }
+
+  // 1. Check direct ownership (no DB queries needed)
+  if (project.ownerId === userId || project.createdBy === userId) {
+    return buildAccessResult(true, true, true, "admin", "owner");
+  }
+
+  // 2. Check organization admin
+  if (project.organizationId) {
+    const isOrgAdmin = await isOrganizationAdmin(ctx, project.organizationId, userId);
+    if (isOrgAdmin) {
+      return buildAccessResult(true, true, true, "admin", "organization_admin");
+    }
+  }
+
+  // 3. Check direct project membership
   const projectMembership = await ctx.db
     .query("projectMembers")
-    .withIndex("by_project_user", (q) => q.eq("projectId", project._id).eq("userId", userId))
+    .withIndex("by_project_user", (q) => q.eq("projectId", projectId).eq("userId", userId))
     .filter(notDeleted)
     .first();
 
   if (projectMembership) {
-    return true;
+    const memberRole = projectMembership.role;
+    return buildAccessResult(
+      true,
+      memberRole === "admin" || memberRole === "editor",
+      memberRole === "admin",
+      memberRole,
+      "project_member",
+    );
   }
 
-  return false;
+  // 4. Check team access (batched)
+  const teamAccess = await checkTeamBasedAccess(
+    ctx,
+    project.teamId,
+    project.sharedWithTeamIds,
+    userId,
+  );
+  if (teamAccess) {
+    return teamAccess;
+  }
+
+  // 5. Check organization-visible project (public within org)
+  if (project.isPublic && project.organizationId) {
+    const orgAccess = await checkOrgPublicAccess(ctx, project.organizationId, userId);
+    if (orgAccess) {
+      return orgAccess;
+    }
+  }
+
+  return noAccess;
 }
+
+// ============================================================================
+// Convenience functions (thin wrappers around computeProjectAccess)
+// ============================================================================
 
 /**
  * Check if user can access a project (read access)
- *
- * Access is granted if ANY of the following are true:
- * 1. User is organization admin
- * 2. Project is organization-visible (isPublic=true) AND user is organization member
- * 3. User owns the project (ownerId)
- * 4. User is member of team that owns the project (teamId)
- * 5. User is in projectMembers (individual collaborator)
- * 6. User is member of a team in sharedWithTeamIds
  */
 export async function canAccessProject(
   ctx: QueryCtx | MutationCtx,
   projectId: Id<"projects">,
   userId: Id<"users">,
 ): Promise<boolean> {
-  const project = await ctx.db.get(projectId);
-  if (!project) {
-    return false;
-  }
-
-  const result = await (async () => {
-    if (await checkDirectAccess(ctx, project, userId)) return true;
-    if (await checkTeamAccess(ctx, project, userId)) return true;
-    if (await checkOrganizationAccess(ctx, project, userId)) return true;
-    return false;
-  })();
-
-  return result;
+  const access = await computeProjectAccess(ctx, projectId, userId);
+  return access.canAccess;
 }
 
 /**
  * Check if user can edit a project (write access)
- *
- * Edit access is granted if ANY of the following are true:
- * 1. User is organization admin
- * 2. User owns the project (ownerId)
- * 3. User is member of team that owns the project (teamId)
- * 4. User is admin or editor in projectMembers
  */
 export async function canEditProject(
   ctx: QueryCtx | MutationCtx,
   projectId: Id<"projects">,
   userId: Id<"users">,
 ): Promise<boolean> {
-  const project = await ctx.db.get(projectId);
-  if (!project) return false;
-
-  // 1. organization admin has full access (if project belongs to organization)
-  if (project.organizationId) {
-    const isAdmin = await isOrganizationAdmin(ctx, project.organizationId, userId);
-    if (isAdmin) return true;
-  }
-
-  // 2. User owns the project
-  if (project.ownerId === userId) return true;
-
-  // Legacy: creator has edit access
-  if (project.createdBy === userId) return true;
-
-  // 3. User is member of owning team
-  if (project.teamId) {
-    const teamRole = await getTeamRole(ctx, project.teamId, userId);
-    if (teamRole) return true;
-  }
-
-  // 4. User is admin or editor in projectMembers
-  const projectMembership = await ctx.db
-    .query("projectMembers")
-    .withIndex("by_project_user", (q) => q.eq("projectId", projectId).eq("userId", userId))
-    .filter(notDeleted)
-    .first();
-
-  if (
-    projectMembership &&
-    (projectMembership.role === "admin" || projectMembership.role === "editor")
-  ) {
-    return true;
-  }
-
-  return false;
+  const access = await computeProjectAccess(ctx, projectId, userId);
+  return access.canEdit;
 }
 
 /**
- * Check if user is project admin (can manage settings, members, delete)
- *
- * Admin access is granted if ANY of the following are true:
- * 1. User is organization admin
- * 2. User owns the project (ownerId)
- * 3. User is team admin of owning team (teamId)
- * 4. User is admin in projectMembers
+ * Check if user is project admin
  */
 export async function isProjectAdmin(
   ctx: QueryCtx | MutationCtx,
   projectId: Id<"projects">,
   userId: Id<"users">,
 ): Promise<boolean> {
-  const project = await ctx.db.get(projectId);
-  if (!project) return false;
-
-  // 1. organization admin has full access (if project belongs to organization)
-  if (project.organizationId) {
-    const isAdmin = await isOrganizationAdmin(ctx, project.organizationId, userId);
-    if (isAdmin) return true;
-  }
-
-  // 2. User owns the project
-  if (project.ownerId === userId) return true;
-
-  // 3. Legacy: creator has admin access (backward compatibility)
-  if (project.createdBy === userId) return true;
-
-  // 4. User is team admin of owning team
-  if (project.teamId) {
-    const teamRole = await getTeamRole(ctx, project.teamId, userId);
-    if (teamRole === "admin") return true;
-  }
-
-  // 5. User is admin in projectMembers
-  const projectMembership = await ctx.db
-    .query("projectMembers")
-    .withIndex("by_project_user", (q) => q.eq("projectId", projectId).eq("userId", userId))
-    .filter(notDeleted)
-    .first();
-
-  if (projectMembership && projectMembership.role === "admin") {
-    return true;
-  }
-
-  return false;
+  const access = await computeProjectAccess(ctx, projectId, userId);
+  return access.isAdmin;
 }
+
+/**
+ * Get user's effective role in a project
+ */
+export async function getProjectRole(
+  ctx: QueryCtx | MutationCtx,
+  projectId: Id<"projects">,
+  userId: Id<"users">,
+): Promise<AccessLevel> {
+  const access = await computeProjectAccess(ctx, projectId, userId);
+  return access.role;
+}
+
+// ============================================================================
+// Assert functions (throw on failure)
+// ============================================================================
 
 /**
  * Assert user can access project
@@ -232,8 +273,8 @@ export async function assertCanAccessProject(
   projectId: Id<"projects">,
   userId: Id<"users">,
 ): Promise<void> {
-  const canAccess = await canAccessProject(ctx, projectId, userId);
-  if (!canAccess) {
+  const access = await computeProjectAccess(ctx, projectId, userId);
+  if (!access.canAccess) {
     throw forbidden();
   }
 }
@@ -246,8 +287,8 @@ export async function assertCanEditProject(
   projectId: Id<"projects">,
   userId: Id<"users">,
 ): Promise<void> {
-  const canEdit = await canEditProject(ctx, projectId, userId);
-  if (!canEdit) {
+  const access = await computeProjectAccess(ctx, projectId, userId);
+  if (!access.canEdit) {
     throw forbidden("editor");
   }
 }
@@ -260,36 +301,8 @@ export async function assertIsProjectAdmin(
   projectId: Id<"projects">,
   userId: Id<"users">,
 ): Promise<void> {
-  const isAdmin = await isProjectAdmin(ctx, projectId, userId);
-  if (!isAdmin) {
+  const access = await computeProjectAccess(ctx, projectId, userId);
+  if (!access.isAdmin) {
     throw forbidden("admin");
   }
-}
-
-/**
- * Get user's effective role in a project
- * Returns the highest privilege level
- */
-export async function getProjectRole(
-  ctx: QueryCtx | MutationCtx,
-  projectId: Id<"projects">,
-  userId: Id<"users">,
-): Promise<"admin" | "editor" | "viewer" | null> {
-  const project = await ctx.db.get(projectId);
-  if (!project) return null;
-
-  // Check if can access at all
-  const canAccess = await canAccessProject(ctx, projectId, userId);
-  if (!canAccess) return null;
-
-  // Check admin level
-  const isAdmin = await isProjectAdmin(ctx, projectId, userId);
-  if (isAdmin) return "admin";
-
-  // Check editor level
-  const canEdit = await canEditProject(ctx, projectId, userId);
-  if (canEdit) return "editor";
-
-  // Has read-only access
-  return "viewer";
 }

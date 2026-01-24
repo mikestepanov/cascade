@@ -1,5 +1,4 @@
 import { v } from "convex/values";
-import { mutation } from "./_generated/server";
 import { authenticatedMutation } from "./customFunctions";
 import { forbidden, notFound } from "./lib/errors";
 import { canAccessProject } from "./projectAccess";

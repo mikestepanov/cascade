@@ -54,7 +54,7 @@ function MessageItem({
           "relative max-w-[85%] md:max-w-[80%] rounded-lg px-4 py-3",
           message.role === "user"
             ? "bg-brand-600 text-white"
-            : "bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark text-ui-text-primary dark:text-ui-text-primary-dark",
+            : "bg-ui-bg-secondary text-ui-text-primary",
         )}
       >
         {/* Copy button for assistant messages */}
@@ -237,7 +237,7 @@ export const AIChat = React.memo(function AIChat({
             onKeyPress={handleKeyPress}
             placeholder="Ask me anything about your project..."
             disabled={isSending}
-            className="flex-1 resize-none rounded-lg border border-ui-border-primary bg-ui-bg-primary px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base text-ui-text-primary placeholder-ui-text-tertiary dark:placeholder-ui-text-tertiary-dark focus:outline-none focus:ring-2 focus:ring-brand-500 disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden transition-all"
+            className="flex-1 resize-none rounded-lg border border-ui-border-primary bg-ui-bg-primary px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base text-ui-text-primary placeholder-ui-text-tertiary focus:outline-none focus:ring-2 focus:ring-brand-500 disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden transition-all"
             rows={1}
             style={{
               minHeight: `${AI_CONFIG.textarea.minHeight}px`,

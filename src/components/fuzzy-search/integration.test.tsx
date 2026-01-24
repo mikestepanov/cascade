@@ -7,7 +7,7 @@
 
 import { describe, expect, it } from "vitest";
 import { useUserFuzzySearch } from "@/hooks/useFuzzySearch";
-import { renderHook, waitFor } from "@/test/custom-render";
+import { act, renderHook, waitFor } from "@/test/custom-render";
 
 describe("Hybrid Search Integration", () => {
   describe("Convex + Fuse.js Pattern", () => {
@@ -27,7 +27,9 @@ describe("Hybrid Search Integration", () => {
       expect(result.current.totalItems).toBe(3);
 
       // Search with typo
-      result.current.search("jhon"); // Typo
+      await act(async () => {
+        result.current.search("jhon"); // Typo
+      });
 
       // Should still find John due to fuzzy matching
       await waitFor(() => {
@@ -70,7 +72,9 @@ describe("Hybrid Search Integration", () => {
       });
 
       // Search for "john"
-      result.current.search("john");
+      await act(async () => {
+        result.current.search("john");
+      });
 
       await waitFor(() => {
         expect(result.current.query).toBe("john");
@@ -116,10 +120,12 @@ describe("Hybrid Search Integration", () => {
       const { result } = renderHook(() => useUserFuzzySearch(data));
 
       // Type quickly
-      result.current.search("j");
-      result.current.search("jo");
-      result.current.search("joh");
-      result.current.search("john");
+      await act(async () => {
+        result.current.search("j");
+        result.current.search("jo");
+        result.current.search("joh");
+        result.current.search("john");
+      });
 
       // Should be debouncing
       await waitFor(() => {
@@ -152,7 +158,9 @@ describe("Hybrid Search Integration", () => {
       const { result } = renderHook(() => useUserFuzzySearch(authorizedUsers));
 
       // Search should only work with data Convex returned
-      result.current.search("bob"); // User that Convex didn't return
+      await act(async () => {
+        result.current.search("bob"); // User that Convex didn't return
+      });
 
       // Wait for debounce
       await waitFor(
@@ -168,7 +176,9 @@ describe("Hybrid Search Integration", () => {
       });
 
       // Can find authorized users
-      result.current.search("alice");
+      await act(async () => {
+        result.current.search("alice");
+      });
 
       // Wait for debounce
       await waitFor(
@@ -211,7 +221,9 @@ describe("Hybrid Search Integration", () => {
       const { result } = renderHook(() => useUserFuzzySearch(projectMembers));
 
       // User types with typo
-      result.current.search("jhon");
+      await act(async () => {
+        result.current.search("jhon");
+      });
 
       // Should find John despite typo
       const johnResult = result.current.results.find((r) => r.item?.name?.includes("John"));
@@ -231,7 +243,9 @@ describe("Hybrid Search Integration", () => {
       expect(result.current.totalItems).toBe(2);
 
       // Can search by project name
-      result.current.search("nixelo");
+      await act(async () => {
+        result.current.search("nixelo");
+      });
 
       expect(result.current.results.length).toBeGreaterThan(0);
       expect(result.current.results[0].item.name).toContain("Nixelo");
@@ -249,7 +263,9 @@ describe("Hybrid Search Integration", () => {
       const { result } = renderHook(() => useUserFuzzySearch(malformedData));
 
       // Should still work with valid entries
-      result.current.search("john");
+      await act(async () => {
+        result.current.search("john");
+      });
 
       expect(result.current.results.length).toBeGreaterThan(0);
     });
@@ -260,20 +276,26 @@ describe("Hybrid Search Integration", () => {
       const { result } = renderHook(() => useUserFuzzySearch(data));
 
       // Normal search
-      result.current.search("john");
+      await act(async () => {
+        result.current.search("john");
+      });
 
       await waitFor(() => {
         expect(result.current.results.length).toBeGreaterThan(0);
       });
 
       // Clear and search again
-      result.current.clear();
+      await act(async () => {
+        result.current.clear();
+      });
 
       await waitFor(() => {
         expect(result.current.query).toBe("");
       });
 
-      result.current.search("john");
+      await act(async () => {
+        result.current.search("john");
+      });
 
       await waitFor(() => {
         expect(result.current.results.length).toBeGreaterThan(0);
@@ -294,7 +316,9 @@ describe("Hybrid Search Integration", () => {
 
       const startTime = performance.now();
 
-      result.current.search("user 123");
+      await act(async () => {
+        result.current.search("user 123");
+      });
 
       const endTime = performance.now();
       const searchTime = endTime - startTime;

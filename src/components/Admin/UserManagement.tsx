@@ -146,8 +146,7 @@ export function UserManagement() {
         "bg-status-success-bg dark:bg-status-success-dark text-status-success dark:text-status-success-dark",
       revoked:
         "bg-status-error-bg dark:bg-status-error-dark text-status-error dark:text-status-error-dark",
-      expired:
-        "bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark text-ui-text-secondary dark:text-ui-text-secondary-dark",
+      expired: "bg-ui-bg-tertiary text-ui-text-secondary",
     };
     return badges[status as keyof typeof badges] || badges.pending;
   };
@@ -179,7 +178,7 @@ export function UserManagement() {
               "py-4 px-1 border-b-2 font-medium text-sm transition-colors",
               activeTab === "invites"
                 ? "border-brand-500 text-brand-600 dark:text-brand-400"
-                : "border-transparent text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark hover:border-ui-border-secondary dark:hover:border-ui-border-secondary-dark",
+                : "border-transparent text-ui-text-secondary hover:text-ui-text-primary hover:border-ui-border-secondary",
             )}
           >
             Invitations
@@ -191,7 +190,7 @@ export function UserManagement() {
               "py-4 px-1 border-b-2 font-medium text-sm transition-colors",
               activeTab === "users"
                 ? "border-brand-500 text-brand-600 dark:text-brand-400"
-                : "border-transparent text-ui-text-secondary dark:text-ui-text-secondary-dark hover:text-ui-text-primary dark:hover:text-ui-text-primary-dark hover:border-ui-border-secondary dark:hover:border-ui-border-secondary-dark",
+                : "border-transparent text-ui-text-secondary hover:text-ui-text-primary hover:border-ui-border-secondary",
             )}
           >
             Users

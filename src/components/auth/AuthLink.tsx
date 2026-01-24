@@ -6,7 +6,7 @@ const linkStyles =
   "text-sm text-brand-500 hover:text-brand-400 hover:underline font-medium cursor-pointer transition-colors";
 
 const mutedLinkStyles =
-  "text-sm text-ui-text-tertiary dark:text-ui-text-tertiary-dark hover:text-ui-text-secondary dark:hover:text-ui-text-secondary-dark hover:underline cursor-pointer transition-colors";
+  "text-sm text-ui-text-tertiary hover:text-ui-text-secondary hover:underline cursor-pointer transition-colors";
 
 interface AuthLinkProps {
   to: string;

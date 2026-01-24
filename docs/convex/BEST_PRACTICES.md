@@ -733,6 +733,82 @@ export async function assertCanAccessProject(
 }
 ```
 
+### Cross-Entity Validation
+
+When a query/mutation accepts IDs for related entities, always validate they belong together:
+
+```typescript
+// ❌ BAD: No validation that sprint belongs to project
+export const listByDateRange = query({
+  args: { projectId: v.id("projects"), sprintId: v.optional(v.id("sprints")) },
+  handler: async (ctx, args) => {
+    // User could pass any sprintId from another project!
+    const issues = await getIssues(ctx, args.projectId);
+    return args.sprintId ? issues.filter(i => i.sprintId === args.sprintId) : issues;
+  },
+});
+
+// ✅ GOOD: Validate sprint belongs to this project
+export const listByDateRange = query({
+  args: { projectId: v.id("projects"), sprintId: v.optional(v.id("sprints")) },
+  handler: async (ctx, args) => {
+    if (args.sprintId) {
+      const sprint = await ctx.db.get(args.sprintId);
+      if (!sprint || sprint.projectId !== args.projectId) {
+        throw forbidden("Sprint not found in this project");
+      }
+    }
+    // Now safe to use sprintId
+  },
+});
+```
+
+### Multi-Tenant Data Filtering
+
+When returning stats/counts for users across projects, filter by shared project membership:
+
+```typescript
+// ❌ BAD: Returns all comments, leaking data from other projects
+export const getUserStats = query({
+  args: { userId: v.id("users") },
+  handler: async (ctx, args) => {
+    const comments = await ctx.db.query("issueComments")
+      .withIndex("by_author", (q) => q.eq("authorId", args.userId))
+      .collect();
+    return { commentCount: comments.length };  // Leaks count from all projects!
+  },
+});
+
+// ✅ GOOD: Filter by shared project membership
+export const getUserStats = query({
+  args: { userId: v.id("users") },
+  handler: async (ctx, args) => {
+    const viewerId = await getAuthUserId(ctx);
+
+    // Get projects the viewer can access
+    const viewerProjects = await ctx.db.query("projectMembers")
+      .withIndex("by_user", (q) => q.eq("userId", viewerId))
+      .collect();
+    const allowedProjectIds = new Set(viewerProjects.map(m => m.projectId));
+
+    // Get comments and filter by allowed projects
+    const allComments = await ctx.db.query("issueComments")
+      .withIndex("by_author", (q) => q.eq("authorId", args.userId))
+      .take(1000);
+
+    // Batch fetch issues to check project membership
+    const issueIds = [...new Set(allComments.map(c => c.issueId))];
+    const issues = await Promise.all(issueIds.map(id => ctx.db.get(id)));
+    const allowedIssueIds = new Set(
+      issues.filter(i => i && allowedProjectIds.has(i.projectId)).map(i => i!._id)
+    );
+
+    const filteredComments = allComments.filter(c => allowedIssueIds.has(c.issueId));
+    return { commentCount: filteredComments.length };
+  },
+});
+```
+
 ### Public vs Internal Functions
 
 ```typescript
@@ -780,6 +856,48 @@ export const cleanupInternal = internalAction({ ... });
 - [ ] Results limited with `.take()`, `.first()`, or pagination
 - [ ] Using batch fetching for related data
 - [ ] No N+1 query patterns
+
+### Batch Enrichment Pattern
+
+When enriching a list of items by status/category, batch all items first, then enrich once:
+
+```typescript
+// ❌ BAD: Enrich per status (N+1 on labels, users, etc.)
+const enrichedByStatus: Record<string, EnrichedIssue[]> = {};
+for (const [statusId, issues] of Object.entries(issuesByStatus)) {
+  enrichedByStatus[statusId] = await enrichIssues(ctx, issues);  // Called N times!
+}
+
+// ✅ GOOD: Batch all, then redistribute
+const allIssues = Object.values(issuesByStatus).flat();
+const enrichedAll = await enrichIssues(ctx, allIssues);  // Called once
+
+const enrichedById = new Map(enrichedAll.map((i) => [i._id, i]));
+const enrichedByStatus: Record<string, EnrichedIssue[]> = {};
+for (const [statusId, issues] of Object.entries(issuesByStatus)) {
+  enrichedByStatus[statusId] = issues
+    .map((i) => enrichedById.get(i._id))
+    .filter((i): i is EnrichedIssue => i !== undefined);
+}
+```
+
+### Add Limits to .collect() Queries
+
+Always add `.take()` limits to prevent unbounded memory usage:
+
+```typescript
+// ❌ BAD: Unbounded - could return thousands
+const labels = await ctx.db.query("labels")
+  .withIndex("by_project", (q) => q.eq("projectId", projectId))
+  .collect();
+
+// ✅ GOOD: Bounded with sensible limit
+import { MAX_LABELS_PER_PROJECT } from "./lib/queryLimits";
+
+const labels = await ctx.db.query("labels")
+  .withIndex("by_project", (q) => q.eq("projectId", projectId))
+  .take(MAX_LABELS_PER_PROJECT);
+```
 
 ### Denormalization
 
@@ -1005,38 +1123,56 @@ describe("issues", () => {
 
 ### Test Utilities
 
-```typescript
-// convex/testUtils.ts
-export async function createTestUser(
-  t: ConvexTestClient,
-  data: { name?: string; email?: string } = {}
-) {
-  return await t.run(async (ctx) => {
-    return await ctx.db.insert("users", {
-      name: data.name ?? "Test User",
-      email: data.email ?? `test-${Date.now()}@example.com`,
-      createdAt: Date.now(),
-    });
-  });
-}
+Use `createTestContext()` for tests that need full setup (user + org + workspace + team):
 
-export async function createTestProject(
-  t: ConvexTestClient,
-  ownerId: Id<"users">,
-  data: { key?: string; name?: string } = {}
-) {
-  return await t.run(async (ctx) => {
-    return await ctx.db.insert("projects", {
-      name: data.name ?? "Test Project",
-      key: data.key ?? "TEST",
-      ownerId,
-      createdBy: ownerId,
-      createdAt: Date.now(),
-      updatedAt: Date.now(),
-      // ... required fields
+```typescript
+// convex/testUtils.ts - Preferred pattern
+import { createTestContext } from "./testUtils";
+
+describe("projects", () => {
+  it("should create a project", async () => {
+    const t = convexTest(schema, modules);
+
+    // ✅ GOOD: One-liner for full context
+    const { userId, organizationId, workspaceId, teamId, asUser } = await createTestContext(t);
+
+    const projectId = await asUser.mutation(api.projects.create, {
+      name: "Test",
+      organizationId,
+      workspaceId,
     });
+
+    expect(projectId).toBeDefined();
   });
-}
+});
+
+// For tests needing multiple separate users (e.g., access control)
+it("should deny access to non-members", async () => {
+  const t = convexTest(schema, modules);
+
+  // Setup owner with full context
+  const { organizationId, asUser: asOwner } = await createTestContext(t, { name: "Owner" });
+
+  // Create separate user (not in org)
+  const outsiderId = await createTestUser(t, { name: "Outsider" });
+  const asOutsider = asAuthenticatedUser(t, outsiderId);
+
+  // ... test access control
+});
+```
+
+Lower-level utilities (use when `createTestContext` is overkill):
+
+```typescript
+// Create just a user
+const userId = await createTestUser(t, { name: "Test User" });
+
+// Create user + org/workspace/team (returns IDs but not asUser)
+const { organizationId, workspaceId, teamId } = await createOrganizationAdmin(t, userId);
+
+// Create authenticated test client
+const asUser = asAuthenticatedUser(t, userId);
+```
 ```
 
 ### Running Tests
