@@ -1,10 +1,12 @@
+import { MINUTE } from "@convex-dev/rate-limiter";
 import { v } from "convex/values";
+import { components } from "./_generated/api";
 import type { Id } from "./_generated/dataModel";
 
 import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
 import { batchFetchProjects, batchFetchUsers, getUserName } from "./lib/batchHelpers";
 import { BOUNDED_RELATION_LIMIT } from "./lib/boundedQueries";
-import { conflict, forbidden, notFound } from "./lib/errors";
+import { conflict, forbidden, notFound, rateLimited } from "./lib/errors";
 import {
   DEFAULT_PAGE_SIZE,
   DEFAULT_SEARCH_PAGE_SIZE,
@@ -24,6 +26,33 @@ export const create = authenticatedMutation({
     projectId: v.optional(v.id("projects")),
   },
   handler: async (ctx, args) => {
+    // Rate limit: 20 documents per minute per user
+    // Skip in test environment (convex-test doesn't support components)
+    if (!process.env.IS_TEST_ENV) {
+      const rateLimitResult = await ctx.runQuery(components.rateLimiter.lib.checkRateLimit, {
+        name: `createDocument:${ctx.userId}`,
+        config: {
+          kind: "token bucket",
+          rate: 20,
+          period: MINUTE,
+          capacity: 5,
+        },
+      });
+      if (!rateLimitResult.ok) {
+        throw rateLimited(rateLimitResult.retryAfter);
+      }
+
+      await ctx.runMutation(components.rateLimiter.lib.rateLimit, {
+        name: `createDocument:${ctx.userId}`,
+        config: {
+          kind: "token bucket",
+          rate: 20,
+          period: MINUTE,
+          capacity: 5,
+        },
+      });
+    }
+
     // Validate organization membership
     const membership = await ctx.db
       .query("organizationMembers")

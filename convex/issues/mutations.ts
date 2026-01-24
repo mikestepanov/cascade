@@ -1,5 +1,7 @@
+import { MINUTE } from "@convex-dev/rate-limiter";
 import { v } from "convex/values";
 import { asyncMap, pruneNull } from "convex-helpers";
+import { components } from "../_generated/api";
 import type { Id } from "../_generated/dataModel";
 import {
   authenticatedMutation,
@@ -8,7 +10,7 @@ import {
   projectEditorMutation,
 } from "../customFunctions";
 import { validate } from "../lib/constrainedValidators";
-import { validation } from "../lib/errors";
+import { rateLimited, validation } from "../lib/errors";
 import { cascadeDelete } from "../lib/relationships";
 import { assertCanEditProject, assertIsProjectAdmin } from "../projectAccess";
 import { workflowCategories } from "../validators";
@@ -51,6 +53,34 @@ export const create = projectEditorMutation({
     storyPoints: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
+    // Rate limit: 10 issues per minute per user with burst capacity of 3
+    // Skip in test environment (convex-test doesn't support components)
+    if (!process.env.IS_TEST_ENV) {
+      const rateLimitResult = await ctx.runQuery(components.rateLimiter.lib.checkRateLimit, {
+        name: `createIssue:${ctx.userId}`,
+        config: {
+          kind: "token bucket",
+          rate: 10,
+          period: MINUTE,
+          capacity: 3,
+        },
+      });
+      if (!rateLimitResult.ok) {
+        throw rateLimited(rateLimitResult.retryAfter);
+      }
+
+      // Consume the rate limit token
+      await ctx.runMutation(components.rateLimiter.lib.rateLimit, {
+        name: `createIssue:${ctx.userId}`,
+        config: {
+          kind: "token bucket",
+          rate: 10,
+          period: MINUTE,
+          capacity: 3,
+        },
+      });
+    }
+
     // Validate input constraints
     validate.title(args.title);
     validate.description(args.description);
@@ -280,6 +310,33 @@ export const addComment = issueViewerMutation({
     mentions: v.optional(v.array(v.id("users"))),
   },
   handler: async (ctx, args) => {
+    // Rate limit: 30 comments per minute per user
+    // Skip in test environment (convex-test doesn't support components)
+    if (!process.env.IS_TEST_ENV) {
+      const rateLimitResult = await ctx.runQuery(components.rateLimiter.lib.checkRateLimit, {
+        name: `addComment:${ctx.userId}`,
+        config: {
+          kind: "token bucket",
+          rate: 30,
+          period: MINUTE,
+          capacity: 5,
+        },
+      });
+      if (!rateLimitResult.ok) {
+        throw rateLimited(rateLimitResult.retryAfter);
+      }
+
+      await ctx.runMutation(components.rateLimiter.lib.rateLimit, {
+        name: `addComment:${ctx.userId}`,
+        config: {
+          kind: "token bucket",
+          rate: 30,
+          period: MINUTE,
+          capacity: 5,
+        },
+      });
+    }
+
     const now = Date.now();
     const mentions = args.mentions || [];
 
