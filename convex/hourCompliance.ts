@@ -3,6 +3,7 @@ import type { Doc, Id } from "./_generated/dataModel";
 import type { MutationCtx, QueryCtx } from "./_generated/server";
 import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
 import { batchFetchUsers } from "./lib/batchHelpers";
+import { BOUNDED_LIST_LIMIT } from "./lib/boundedQueries";
 import { forbidden, notFound } from "./lib/errors";
 import { notDeleted } from "./lib/softDeleteHelpers";
 import { periodTypes } from "./validators";
@@ -366,12 +367,12 @@ export const checkAllUsersCompliance = authenticatedMutation({
       throw forbidden("admin");
     }
 
-    // Get all active user profiles
+    // Get active user profiles (bounded - compliance checks batch within limits)
     const profiles = await ctx.db
       .query("userProfiles")
       .withIndex("by_active", (q) => q.eq("isActive", true))
       .filter(notDeleted)
-      .collect();
+      .take(BOUNDED_LIST_LIMIT);
 
     const results = [];
     for (const profile of profiles) {

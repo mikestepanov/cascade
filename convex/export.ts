@@ -3,6 +3,7 @@ import type { Id } from "./_generated/dataModel";
 import type { MutationCtx } from "./_generated/server";
 import { projectEditorMutation, projectQuery } from "./customFunctions";
 import { batchFetchSprints, batchFetchUsers } from "./lib/batchHelpers";
+import { BOUNDED_LIST_LIMIT, safeCollect } from "./lib/boundedQueries";
 import { validation } from "./lib/errors";
 import { notDeleted } from "./lib/softDeleteHelpers";
 
@@ -18,21 +19,32 @@ async function generateNextIssueKey(
   projectId: Id<"projects">,
   projectKey: string,
 ): Promise<{ key: string; order: number }> {
-  const existingIssues = await ctx.db
+  // Get the most recent issue by creation time to find the highest key number
+  // Order desc and take first - efficient O(1) lookup instead of scanning all issues
+  const latestIssue = await ctx.db
+    .query("issues")
+    .withIndex("by_project", (q) => q.eq("projectId", projectId))
+    .order("desc")
+    .first();
+
+  let maxNumber = 0;
+  if (latestIssue) {
+    const match = latestIssue.key.match(/-(\d+)$/);
+    if (match) {
+      maxNumber = Number.parseInt(match[1], 10);
+    }
+  }
+
+  const key = `${projectKey}-${maxNumber + 1}`;
+
+  // Get approximate order (bounded count)
+  const issueCount = await ctx.db
     .query("issues")
     .withIndex("by_project", (q) => q.eq("projectId", projectId))
     .filter(notDeleted)
-    .collect();
+    .take(BOUNDED_LIST_LIMIT);
 
-  const issueNumbers = existingIssues
-    .map((issue) => Number.parseInt(issue.key.split("-")[1], 10))
-    .filter((n) => !Number.isNaN(n));
-
-  const nextNumber = Math.max(0, ...issueNumbers) + 1;
-  const key = `${projectKey}-${nextNumber}`;
-  const order = existingIssues.length;
-
-  return { key, order };
+  return { key, order: issueCount.length };
 }
 
 // Helper: Validate and parse JSON import data
@@ -283,12 +295,12 @@ export const exportIssuesCSV = projectQuery({
   handler: async (ctx, args) => {
     // projectQuery handles auth + access check + provides ctx.projectId, ctx.project
 
-    // Get issues
+    // Get issues (bounded to prevent memory issues on large exports)
     const issuesQuery = ctx.db
       .query("issues")
       .withIndex("by_project", (q) => q.eq("projectId", ctx.projectId));
 
-    let issues = await issuesQuery.collect();
+    let issues = await safeCollect(issuesQuery, BOUNDED_LIST_LIMIT, "exportIssuesCSV");
 
     // Filter by sprint if specified
     if (args.sprintId) {
@@ -383,19 +395,25 @@ export const exportAnalytics = projectQuery({
   handler: async (ctx) => {
     // projectQuery handles auth + access check + provides ctx.projectId, ctx.project
 
-    // Get all issues
-    const issues = await ctx.db
-      .query("issues")
-      .withIndex("by_project", (q) => q.eq("projectId", ctx.projectId))
-      .filter(notDeleted)
-      .collect();
+    // Get issues (bounded)
+    const issues = await safeCollect(
+      ctx.db
+        .query("issues")
+        .withIndex("by_project", (q) => q.eq("projectId", ctx.projectId))
+        .filter(notDeleted),
+      BOUNDED_LIST_LIMIT,
+      "exportAnalytics:issues",
+    );
 
-    // Get all sprints
-    const sprints = await ctx.db
-      .query("sprints")
-      .withIndex("by_project", (q) => q.eq("projectId", ctx.projectId))
-      .filter(notDeleted)
-      .collect();
+    // Get sprints (bounded)
+    const sprints = await safeCollect(
+      ctx.db
+        .query("sprints")
+        .withIndex("by_project", (q) => q.eq("projectId", ctx.projectId))
+        .filter(notDeleted),
+      BOUNDED_LIST_LIMIT,
+      "exportAnalytics:sprints",
+    );
 
     // Calculate metrics
     const totalIssues = issues.length;
@@ -449,12 +467,12 @@ export const exportIssuesJSON = projectQuery({
   handler: async (ctx, args) => {
     // projectQuery handles auth + access check + provides ctx.projectId, ctx.project
 
-    // Get issues with same filtering as CSV export
+    // Get issues with same filtering as CSV export (bounded)
     const issuesQuery = ctx.db
       .query("issues")
       .withIndex("by_project", (q) => q.eq("projectId", ctx.projectId));
 
-    let issues = await issuesQuery.collect();
+    let issues = await safeCollect(issuesQuery, BOUNDED_LIST_LIMIT, "exportIssuesJSON");
 
     if (args.sprintId) {
       issues = issues.filter((i) => i.sprintId === args.sprintId);

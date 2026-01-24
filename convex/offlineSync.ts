@@ -1,6 +1,7 @@
 import { v } from "convex/values";
 import { internalMutation } from "./_generated/server";
 import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
+import { BOUNDED_LIST_LIMIT } from "./lib/boundedQueries";
 import { forbidden, notFound } from "./lib/errors";
 
 // Add mutation to offline queue
@@ -27,11 +28,12 @@ export const queueMutation = authenticatedMutation({
 export const getPendingMutations = authenticatedQuery({
   args: {},
   handler: async (ctx) => {
+    // Bounded to prevent memory issues with large backlogs
     return await ctx.db
       .query("offlineSyncQueue")
       .withIndex("by_user_status", (q) => q.eq("userId", ctx.userId).eq("status", "pending"))
       .order("asc") // Process in order
-      .collect();
+      .take(BOUNDED_LIST_LIMIT);
   },
 });
 
@@ -110,20 +112,21 @@ export const markFailed = authenticatedMutation({
 export const getSyncStatus = authenticatedQuery({
   args: {},
   handler: async (ctx) => {
+    // Bounded queries for status counts
     const pending = await ctx.db
       .query("offlineSyncQueue")
       .withIndex("by_user_status", (q) => q.eq("userId", ctx.userId).eq("status", "pending"))
-      .collect();
+      .take(BOUNDED_LIST_LIMIT);
 
     const syncing = await ctx.db
       .query("offlineSyncQueue")
       .withIndex("by_user_status", (q) => q.eq("userId", ctx.userId).eq("status", "syncing"))
-      .collect();
+      .take(BOUNDED_LIST_LIMIT);
 
     const failed = await ctx.db
       .query("offlineSyncQueue")
       .withIndex("by_user_status", (q) => q.eq("userId", ctx.userId).eq("status", "failed"))
-      .collect();
+      .take(BOUNDED_LIST_LIMIT);
 
     return {
       pending: pending.length,
@@ -142,11 +145,12 @@ export const clearCompleted = authenticatedMutation({
   handler: async (ctx, args) => {
     const cutoff = args.olderThan ?? Date.now() - 24 * 60 * 60 * 1000; // Default: 24 hours ago
 
+    // Bounded cleanup batch
     const completed = await ctx.db
       .query("offlineSyncQueue")
       .withIndex("by_user_status", (q) => q.eq("userId", ctx.userId).eq("status", "completed"))
       .filter((q) => q.lt(q.field("updatedAt"), cutoff))
-      .collect();
+      .take(BOUNDED_LIST_LIMIT);
 
     for (const item of completed) {
       await ctx.db.delete(item._id);
@@ -160,10 +164,11 @@ export const clearCompleted = authenticatedMutation({
 export const retryFailed = authenticatedMutation({
   args: {},
   handler: async (ctx) => {
+    // Bounded retry batch
     const failed = await ctx.db
       .query("offlineSyncQueue")
       .withIndex("by_user_status", (q) => q.eq("userId", ctx.userId).eq("status", "failed"))
-      .collect();
+      .take(BOUNDED_LIST_LIMIT);
 
     for (const item of failed) {
       await ctx.db.patch(item._id, {
@@ -187,11 +192,11 @@ export const autoRetryFailed = internalMutation({
     const now = Date.now();
     const MAX_ATTEMPTS = 5;
 
-    // Get all failed items
+    // Get failed items (bounded batch for cron processing)
     const failed = await ctx.db
       .query("offlineSyncQueue")
       .withIndex("by_status", (q) => q.eq("status", "failed"))
-      .collect();
+      .take(BOUNDED_LIST_LIMIT);
 
     let retriedCount = 0;
     let archivedCount = 0;
@@ -237,10 +242,11 @@ export const cleanupOldItems = internalMutation({
     const SEVEN_DAYS = 7 * 24 * 60 * 60 * 1000;
     const cutoff = now - SEVEN_DAYS;
 
+    // Bounded batch for cron cleanup
     const completed = await ctx.db
       .query("offlineSyncQueue")
       .withIndex("by_status", (q) => q.eq("status", "completed"))
-      .collect();
+      .take(BOUNDED_LIST_LIMIT);
 
     let deletedCount = 0;
 
