@@ -67,9 +67,11 @@ function findTsFiles(dir, files = []) {
     } else if (entry.isFile() && /\.tsx?$/.test(entry.name)) {
       // Skip test files, type declaration files, and excluded files
       if (
-        !entry.name.includes(".test.") &&
-        !entry.name.endsWith(".d.ts") &&
-        !EXCLUDED_FILES.includes(entry.name)
+        !(
+          entry.name.includes(".test.") ||
+          entry.name.endsWith(".d.ts") ||
+          EXCLUDED_FILES.includes(entry.name)
+        )
       ) {
         files.push(fullPath);
       }
@@ -107,15 +109,16 @@ function analyzeFile(filePath) {
     // Check surrounding lines for ctx.db query context
     const surroundingForFilter = lines.slice(Math.max(0, i - 5), i + 1).join("\n");
     // Database filter patterns: .filter((q) => ...) or .filter(notDeleted) etc.
-    const isQueryFilter = /\.filter\s*\(/.test(line) &&
+    const isQueryFilter =
+      /\.filter\s*\(/.test(line) &&
       (surroundingForFilter.includes("ctx.db") ||
-       surroundingForFilter.includes(".query(") ||
-       /\.filter\s*\(\s*(notDeleted|onlyDeleted)\s*\)/.test(line) ||
-       /\.filter\s*\(\s*\(?\s*q\s*\)?\s*=>/.test(line));
+        surroundingForFilter.includes(".query(") ||
+        /\.filter\s*\(\s*(notDeleted|onlyDeleted)\s*\)/.test(line) ||
+        /\.filter\s*\(\s*\(?\s*q\s*\)?\s*=>/.test(line));
     // Also exclude .sort() which is often chained with filter
     const isSortOrOther = /\.(sort|find|some|every|includes)\s*\(/.test(line);
-    const isArrayMethod = /\.(map|forEach|reduce)\s*\(/.test(line) ||
-      (/\.filter\s*\(/.test(line) && !isQueryFilter);
+    const isArrayMethod =
+      /\.(map|forEach|reduce)\s*\(/.test(line) || (/\.filter\s*\(/.test(line) && !isQueryFilter);
     const isActualLoop = /\b(for|while)\s*\(/.test(line) || (isArrayMethod && !isSortOrOther);
 
     if (isActualLoop) {
@@ -134,7 +137,11 @@ function analyzeFile(filePath) {
         inLoopContext = false;
       }
       // End context on array method chain termination (line ending with ; or ][0] etc.)
-      if (/\)\s*;?\s*$/.test(line) && braceDepth <= loopBraceDepth && !/^\s*(for|while|if|else)\s*\(/.test(lines[i + 1] || "")) {
+      if (
+        /\)\s*;?\s*$/.test(line) &&
+        braceDepth <= loopBraceDepth &&
+        !/^\s*(for|while|if|else)\s*\(/.test(lines[i + 1] || "")
+      ) {
         // Check if next line doesn't continue the chain
         const nextLine = lines[i + 1] || "";
         if (!/^\s*\./.test(nextLine)) {
@@ -181,21 +188,34 @@ function analyzeFile(filePath) {
     if (inLoopContext) {
       // Skip lines in comments or JSDoc
       const trimmedLine = line.trim();
-      if (trimmedLine.startsWith("//") || trimmedLine.startsWith("*") || trimmedLine.startsWith("/*")) {
+      if (
+        trimmedLine.startsWith("//") ||
+        trimmedLine.startsWith("*") ||
+        trimmedLine.startsWith("/*")
+      ) {
         continue;
       }
 
       // Check for ctx.db queries
       if (/ctx\.db\.(get|query)\s*\(/.test(line) || /await\s+ctx\.db\.(get|query)/.test(line)) {
         // Exclude if it's clearly a batch helper, Promise.all context, or delete helper function
-        const surroundingContext = lines.slice(Math.max(0, i - 3), Math.min(lines.length, i + 3)).join("\n");
+        const surroundingContext = lines
+          .slice(Math.max(0, i - 3), Math.min(lines.length, i + 3))
+          .join("\n");
         // Check for delete helper function context (larger window to find function name)
         const functionContext = lines.slice(Math.max(0, i - 40), i + 1).join("\n");
-        const isDeleteHelper = /function\s+delete\w*\s*\(/.test(functionContext) ||
+        const isDeleteHelper =
+          /function\s+delete\w*\s*\(/.test(functionContext) ||
           /async\s+function\s+delete\w*/.test(functionContext) ||
           /\bdelete\w*\s*=\s*async/.test(functionContext);
 
-        if (!/Promise\.all/.test(surroundingContext) && !/batch/i.test(surroundingContext) && !isDeleteHelper) {
+        if (
+          !(
+            /Promise\.all/.test(surroundingContext) ||
+            /batch/i.test(surroundingContext) ||
+            isDeleteHelper
+          )
+        ) {
           issues.push({
             type: "N_PLUS_1",
             severity: SEVERITY.HIGH,
@@ -215,23 +235,36 @@ function analyzeFile(filePath) {
 
     // Check if we're inside a switch statement (intentionally sequential)
     const nearbyContext = lines.slice(Math.max(0, i - 10), i + 1).join("\n");
-    const isInSwitch = /switch\s*\([^)]+\)\s*\{/.test(nearbyContext) && /\bcase\s+/.test(nearbyContext);
+    const isInSwitch =
+      /switch\s*\([^)]+\)\s*\{/.test(nearbyContext) && /\bcase\s+/.test(nearbyContext);
 
     // Check if we're inside a delete helper or cleanup function
     const functionContext = lines.slice(Math.max(0, i - 40), i + 1).join("\n");
-    const isDeleteOrCleanup = /function\s+(delete|cleanup|purge|cascade|handleDelete)\w*/i.test(functionContext) ||
+    const isDeleteOrCleanup =
+      /function\s+(delete|cleanup|purge|cascade|handleDelete)\w*/i.test(functionContext) ||
       /async\s+function\s+(cascade|handleDelete)/i.test(functionContext) ||
       /autoRetry/i.test(functionContext); // offlineSync auto-retry is intentionally sequential
 
-    if (inLoopContext && !isWhileLoop && !isInSwitch && !isDeleteOrCleanup && /await\s+/.test(line) && !/Promise\.all/.test(line)) {
+    if (
+      inLoopContext &&
+      !isWhileLoop &&
+      !isInSwitch &&
+      !isDeleteOrCleanup &&
+      /await\s+/.test(line) &&
+      !/Promise\.all/.test(line)
+    ) {
       // Check if this is a database operation
       if (/ctx\.(db|storage|scheduler)/.test(line)) {
-        const surroundingContext = lines.slice(Math.max(0, i - 5), Math.min(lines.length, i + 1)).join("\n");
+        const surroundingContext = lines
+          .slice(Math.max(0, i - 5), Math.min(lines.length, i + 1))
+          .join("\n");
 
         // Skip if already flagged or in Promise.all
         if (!/Promise\.all/.test(surroundingContext)) {
           // Check if this is in a map that's wrapped in Promise.all (look further ahead)
-          const widerContext = lines.slice(Math.max(0, loopStartLine - 2), Math.min(lines.length, i + 15)).join("\n");
+          const widerContext = lines
+            .slice(Math.max(0, loopStartLine - 2), Math.min(lines.length, i + 15))
+            .join("\n");
           // Also check if the variable is assigned and later used in Promise.all
           const assignmentMatch = lines[loopStartLine - 1]?.match(/const\s+(\w+)\s*=.*\.map/);
           const variableName = assignmentMatch?.[1];
@@ -257,7 +290,8 @@ function analyzeFile(filePath) {
     if (/\.query\s*\([^)]+\)/.test(line)) {
       // Look ahead for .withIndex or .withSearchIndex
       const queryContext = lines.slice(i, Math.min(lines.length, i + 5)).join("\n");
-      const hasIndex = /\.withIndex\s*\(/.test(queryContext) || /\.withSearchIndex\s*\(/.test(queryContext);
+      const hasIndex =
+        /\.withIndex\s*\(/.test(queryContext) || /\.withSearchIndex\s*\(/.test(queryContext);
       if (!hasIndex && /\.filter\s*\(/.test(queryContext)) {
         // This is a query with filter but no index - potential full table scan
         issues.push({
@@ -348,10 +382,12 @@ function main() {
       for (const issue of issues) {
         const sevColor = severityColors[issue.severity];
         console.log(
-          `  ${sevColor}[${issue.severity}]${colors.reset} Line ${issue.line}: ${issue.type}`
+          `  ${sevColor}[${issue.severity}]${colors.reset} Line ${issue.line}: ${issue.type}`,
         );
         console.log(`    ${colors.dim}${issue.message}${colors.reset}`);
-        console.log(`    ${colors.dim}→ ${issue.code.substring(0, 80)}${issue.code.length > 80 ? "..." : ""}${colors.reset}`);
+        console.log(
+          `    ${colors.dim}→ ${issue.code.substring(0, 80)}${issue.code.length > 80 ? "..." : ""}${colors.reset}`,
+        );
       }
       console.log();
     }
@@ -365,7 +401,9 @@ function main() {
 
   if (allIssues.length > 0) {
     console.log(`${colors.red}[HIGH]${colors.reset}   ${bySeverity[SEVERITY.HIGH].length} issues`);
-    console.log(`${colors.yellow}[MEDIUM]${colors.reset} ${bySeverity[SEVERITY.MEDIUM].length} issues`);
+    console.log(
+      `${colors.yellow}[MEDIUM]${colors.reset} ${bySeverity[SEVERITY.MEDIUM].length} issues`,
+    );
     console.log(`${colors.cyan}[LOW]${colors.reset}    ${bySeverity[SEVERITY.LOW].length} issues`);
     console.log();
 
@@ -384,7 +422,7 @@ function main() {
     // Exit with error code if HIGH severity issues found
     if (bySeverity[SEVERITY.HIGH].length > 0) {
       console.log(
-        `${colors.red}❌ Found ${bySeverity[SEVERITY.HIGH].length} high severity issues${colors.reset}\n`
+        `${colors.red}❌ Found ${bySeverity[SEVERITY.HIGH].length} high severity issues${colors.reset}\n`,
       );
       process.exit(1);
     }
