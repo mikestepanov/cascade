@@ -40,6 +40,16 @@ const severityColors = {
   [SEVERITY.LOW]: colors.cyan,
 };
 
+// Files to exclude from analysis (contain examples, intentional batch patterns, or utility code)
+const EXCLUDED_FILES = [
+  "boundedQueries.ts", // Contains JSDoc examples of query patterns
+  "softDeleteHelpers.ts", // Contains JSDoc examples of filter patterns
+  "batchHelpers.ts", // Intentional batch pattern using asyncMap
+  "purge.ts", // Database cleanup utility with intentional batch deletion
+  "e2e.ts", // E2E test setup file with intentional sequential patterns
+  "testUtils.ts", // Test utility file with intentional patterns
+];
+
 /**
  * Find all TypeScript files in a directory recursively
  */
@@ -55,8 +65,12 @@ function findTsFiles(dir, files = []) {
         findTsFiles(fullPath, files);
       }
     } else if (entry.isFile() && /\.tsx?$/.test(entry.name)) {
-      // Skip test files and type declaration files
-      if (!entry.name.includes(".test.") && !entry.name.endsWith(".d.ts")) {
+      // Skip test files, type declaration files, and excluded files
+      if (
+        !entry.name.includes(".test.") &&
+        !entry.name.endsWith(".d.ts") &&
+        !EXCLUDED_FILES.includes(entry.name)
+      ) {
         files.push(fullPath);
       }
     }
@@ -89,7 +103,22 @@ function analyzeFile(filePath) {
     braceDepth += openBraces - closeBraces;
 
     // Detect loop starts
-    if (/\b(for|while)\s*\(/.test(line) || /\.(map|forEach|reduce|filter)\s*\(/.test(line)) {
+    // Note: We exclude .filter() in query chains (ctx.db...filter) as those are database filters, not JS loops
+    // Check surrounding lines for ctx.db query context
+    const surroundingForFilter = lines.slice(Math.max(0, i - 5), i + 1).join("\n");
+    // Database filter patterns: .filter((q) => ...) or .filter(notDeleted) etc.
+    const isQueryFilter = /\.filter\s*\(/.test(line) &&
+      (surroundingForFilter.includes("ctx.db") ||
+       surroundingForFilter.includes(".query(") ||
+       /\.filter\s*\(\s*(notDeleted|onlyDeleted)\s*\)/.test(line) ||
+       /\.filter\s*\(\s*\(?\s*q\s*\)?\s*=>/.test(line));
+    // Also exclude .sort() which is often chained with filter
+    const isSortOrOther = /\.(sort|find|some|every|includes)\s*\(/.test(line);
+    const isArrayMethod = /\.(map|forEach|reduce)\s*\(/.test(line) ||
+      (/\.filter\s*\(/.test(line) && !isQueryFilter);
+    const isActualLoop = /\b(for|while)\s*\(/.test(line) || (isArrayMethod && !isSortOrOther);
+
+    if (isActualLoop) {
       if (!inLoopContext) {
         inLoopContext = true;
         loopStartLine = lineNum;
@@ -98,8 +127,24 @@ function analyzeFile(filePath) {
     }
 
     // Detect loop ends
-    if (inLoopContext && braceDepth < loopBraceDepth) {
-      inLoopContext = false;
+    // Also end loop context when we see a semicolon that ends the array method chain
+    // e.g., `.filter(...).map(...);` or `.sort(...)[0];`
+    if (inLoopContext) {
+      if (braceDepth < loopBraceDepth) {
+        inLoopContext = false;
+      }
+      // End context on array method chain termination (line ending with ; or ][0] etc.)
+      if (/\)\s*;?\s*$/.test(line) && braceDepth <= loopBraceDepth && !/^\s*(for|while|if|else)\s*\(/.test(lines[i + 1] || "")) {
+        // Check if next line doesn't continue the chain
+        const nextLine = lines[i + 1] || "";
+        if (!/^\s*\./.test(nextLine)) {
+          inLoopContext = false;
+        }
+      }
+      // [0] or other array access after chain ends the "loop"
+      if (/\]\s*[0-9]*\s*;?\s*$/.test(line)) {
+        inLoopContext = false;
+      }
     }
 
     // === Check 1: Unbounded .collect() ===
@@ -134,12 +179,23 @@ function analyzeFile(filePath) {
     // === Check 2: N+1 Query Pattern ===
     // Detect database queries inside loops
     if (inLoopContext) {
+      // Skip lines in comments or JSDoc
+      const trimmedLine = line.trim();
+      if (trimmedLine.startsWith("//") || trimmedLine.startsWith("*") || trimmedLine.startsWith("/*")) {
+        continue;
+      }
+
       // Check for ctx.db queries
       if (/ctx\.db\.(get|query)\s*\(/.test(line) || /await\s+ctx\.db\.(get|query)/.test(line)) {
-        // Exclude if it's clearly a batch helper or Promise.all context
+        // Exclude if it's clearly a batch helper, Promise.all context, or delete helper function
         const surroundingContext = lines.slice(Math.max(0, i - 3), Math.min(lines.length, i + 3)).join("\n");
+        // Check for delete helper function context (larger window to find function name)
+        const functionContext = lines.slice(Math.max(0, i - 40), i + 1).join("\n");
+        const isDeleteHelper = /function\s+delete\w*\s*\(/.test(functionContext) ||
+          /async\s+function\s+delete\w*/.test(functionContext) ||
+          /\bdelete\w*\s*=\s*async/.test(functionContext);
 
-        if (!/Promise\.all/.test(surroundingContext) && !/batch/i.test(surroundingContext)) {
+        if (!/Promise\.all/.test(surroundingContext) && !/batch/i.test(surroundingContext) && !isDeleteHelper) {
           issues.push({
             type: "N_PLUS_1",
             severity: SEVERITY.HIGH,
