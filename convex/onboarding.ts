@@ -54,7 +54,7 @@ export const getOnboardingStatus = authenticatedQuery({
 
 /**
  * Check if user has completed any issue (for onboarding checklist)
- * More efficient than loading all issues just to check this
+ * Optimized: uses batch fetching to avoid N+1 queries
  */
 export const hasCompletedIssue = authenticatedQuery({
   args: {},
@@ -67,32 +67,42 @@ export const hasCompletedIssue = authenticatedQuery({
       .filter(notDeleted)
       .take(10); // Only check first 10 projects
 
-    for (const membership of memberships) {
-      const project = await ctx.db.get(membership.projectId);
+    if (memberships.length === 0) return false;
+
+    // Batch fetch all projects at once to avoid N+1
+    const projectIds = memberships.map((m) => m.projectId);
+    const projects = await Promise.all(projectIds.map((id) => ctx.db.get(id)));
+
+    // Build list of all (projectId, doneStateId) pairs to check
+    const checkPairs: { projectId: Id<"projects">; stateId: string }[] = [];
+    for (let i = 0; i < memberships.length; i++) {
+      const project = projects[i];
       if (!project) continue;
 
-      // Get done state IDs for this project
       const doneStateIds = project.workflowStates
         .filter((s) => s.category === "done")
         .map((s) => s.id);
 
-      // Check if user has any issues in done states
       for (const stateId of doneStateIds) {
-        const doneIssue = await ctx.db
-          .query("issues")
-          .withIndex("by_project_status", (q) =>
-            q.eq("projectId", membership.projectId).eq("status", stateId),
-          )
-          .filter(notDeleted)
-          .first();
-
-        if (doneIssue && doneIssue.assigneeId === ctx.userId) {
-          return true;
-        }
+        checkPairs.push({ projectId: memberships[i].projectId, stateId });
       }
     }
 
-    return false;
+    if (checkPairs.length === 0) return false;
+
+    // Check all done states in parallel
+    const results = await Promise.all(
+      checkPairs.map(({ projectId, stateId }) =>
+        ctx.db
+          .query("issues")
+          .withIndex("by_project_status", (q) => q.eq("projectId", projectId).eq("status", stateId))
+          .filter(notDeleted)
+          .first(),
+      ),
+    );
+
+    // Check if any done issue is assigned to the current user
+    return results.some((issue) => issue && issue.assigneeId === ctx.userId);
   },
 });
 
@@ -399,39 +409,45 @@ export const createSampleProject = authenticatedMutation({
       },
     ];
 
-    const createdIssues: Id<"issues">[] = [];
-    for (const issue of issues) {
-      const issueId = await ctx.db.insert("issues", {
-        projectId,
-        organizationId,
-        workspaceId,
-        teamId,
-        key: `SAMPLE-${createdIssues.length + 1}`,
-        title: issue.title,
-        description: issue.description,
-        type: issue.type,
-        status: issue.status,
-        priority: issue.priority,
-        assigneeId: ctx.userId, // Assign first few to user
-        reporterId: ctx.userId,
-        updatedAt: Date.now(),
-        labels: issue.labels,
-        sprintId: issue.type !== "epic" ? sprintId : undefined, // Don't add epic to sprint
-        linkedDocuments: [],
-        attachments: [],
-        loggedHours: 0,
-        order: issue.order,
-        searchContent: getSearchContent(issue.title, issue.description),
-      });
-      createdIssues.push(issueId);
+    // Create all issues in parallel
+    const issueNow = Date.now();
+    const createdIssues = await Promise.all(
+      issues.map((issue, index) =>
+        ctx.db.insert("issues", {
+          projectId,
+          organizationId,
+          workspaceId,
+          teamId,
+          key: `SAMPLE-${index + 1}`,
+          title: issue.title,
+          description: issue.description,
+          type: issue.type,
+          status: issue.status,
+          priority: issue.priority,
+          assigneeId: ctx.userId, // Assign first few to user
+          reporterId: ctx.userId,
+          updatedAt: issueNow,
+          labels: issue.labels,
+          sprintId: issue.type !== "epic" ? sprintId : undefined, // Don't add epic to sprint
+          linkedDocuments: [],
+          attachments: [],
+          loggedHours: 0,
+          order: issue.order,
+          searchContent: getSearchContent(issue.title, issue.description),
+        }),
+      ),
+    );
 
-      // Add activity log
-      await ctx.db.insert("issueActivity", {
-        issueId,
-        userId: ctx.userId,
-        action: "created",
-      });
-    }
+    // Add activity logs for all issues in parallel
+    await Promise.all(
+      createdIssues.map((issueId) =>
+        ctx.db.insert("issueActivity", {
+          issueId,
+          userId: ctx.userId,
+          action: "created",
+        }),
+      ),
+    );
 
     // Add sample comments on a few issues
     const commentsData = [
@@ -463,15 +479,19 @@ export const createSampleProject = authenticatedMutation({
       },
     ];
 
-    for (const { issueIndex, content, mentions = [] } of commentsData) {
-      await ctx.db.insert("issueComments", {
-        issueId: createdIssues[issueIndex],
-        authorId: ctx.userId,
-        content,
-        mentions,
-        updatedAt: Date.now(),
-      });
-    }
+    // Add comments in parallel
+    const commentNow = Date.now();
+    await Promise.all(
+      commentsData.map(({ issueIndex, content, mentions = [] }) =>
+        ctx.db.insert("issueComments", {
+          issueId: createdIssues[issueIndex],
+          authorId: ctx.userId,
+          content,
+          mentions,
+          updatedAt: commentNow,
+        }),
+      ),
+    );
 
     // Update onboarding status
     await ctx.db.insert("userOnboarding", {

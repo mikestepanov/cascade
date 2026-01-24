@@ -9,6 +9,7 @@ import type { PaginationOptions, PaginationResult } from "convex/server";
 import { asyncMap } from "convex-helpers";
 import type { Doc, Id } from "../_generated/dataModel";
 import type { MutationCtx, QueryCtx } from "../_generated/server";
+import { BOUNDED_LIST_LIMIT } from "./boundedQueries";
 import { notFound, validation } from "./errors";
 import { fetchPaginatedQuery } from "./queryHelpers";
 import { MAX_LABELS_PER_PROJECT, MAX_PAGE_SIZE } from "./queryLimits";
@@ -270,7 +271,7 @@ export async function enrichComments(
       ctx.db
         .query("issueCommentReactions")
         .withIndex("by_comment", (q) => q.eq("commentId", commentId))
-        .collect(),
+        .take(BOUNDED_LIST_LIMIT),
     ),
   ]);
 

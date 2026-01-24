@@ -1,9 +1,12 @@
+import { MINUTE } from "@convex-dev/rate-limiter";
 import { v } from "convex/values";
+import { components } from "./_generated/api";
 import type { Id } from "./_generated/dataModel";
 
 import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
 import { batchFetchProjects, batchFetchUsers, getUserName } from "./lib/batchHelpers";
-import { conflict, forbidden, notFound } from "./lib/errors";
+import { BOUNDED_RELATION_LIMIT } from "./lib/boundedQueries";
+import { conflict, forbidden, notFound, rateLimited } from "./lib/errors";
 import {
   DEFAULT_PAGE_SIZE,
   DEFAULT_SEARCH_PAGE_SIZE,
@@ -23,6 +26,34 @@ export const create = authenticatedMutation({
     projectId: v.optional(v.id("projects")),
   },
   handler: async (ctx, args) => {
+    // Rate limit: 20 documents per minute per user
+    // Skip in test environment (convex-test doesn't support components)
+    // Rate limit: 60 documents per minute per user with burst of 15
+    if (!process.env.IS_TEST_ENV) {
+      const rateLimitResult = await ctx.runQuery(components.rateLimiter.lib.checkRateLimit, {
+        name: `createDocument:${ctx.userId}`,
+        config: {
+          kind: "token bucket",
+          rate: 60,
+          period: MINUTE,
+          capacity: 15,
+        },
+      });
+      if (!rateLimitResult.ok) {
+        throw rateLimited(rateLimitResult.retryAfter);
+      }
+
+      await ctx.runMutation(components.rateLimiter.lib.rateLimit, {
+        name: `createDocument:${ctx.userId}`,
+        config: {
+          kind: "token bucket",
+          rate: 60,
+          period: MINUTE,
+          capacity: 15,
+        },
+      });
+    }
+
     // Validate organization membership
     const membership = await ctx.db
       .query("organizationMembers")
@@ -277,6 +308,24 @@ export const restoreDocument = authenticatedMutation({
   },
 });
 
+// Helper: Check if document matches creator filter
+function matchesCreatorFilter(
+  docCreatedBy: Id<"users">,
+  filterCreatedBy: Id<"users"> | "me" | undefined,
+  userId: Id<"users">,
+): boolean {
+  if (!filterCreatedBy) return true;
+  if (filterCreatedBy === "me") return docCreatedBy === userId;
+  return docCreatedBy === filterCreatedBy;
+}
+
+// Helper: Check if document matches date range filter
+function matchesDateRange(creationTime: number, dateFrom?: number, dateTo?: number): boolean {
+  if (dateFrom && creationTime < dateFrom) return false;
+  if (dateTo && creationTime > dateTo) return false;
+  return true;
+}
+
 // Helper: Check if document matches search filters
 function matchesDocumentFilters(
   doc: {
@@ -296,40 +345,22 @@ function matchesDocumentFilters(
   },
   userId: Id<"users">,
 ): boolean {
-  // Apply project filter
-  if (filters.projectId && doc.projectId !== filters.projectId) {
-    return false;
-  }
+  if (filters.projectId && doc.projectId !== filters.projectId) return false;
+  if (filters.organizationId && doc.organizationId !== filters.organizationId) return false;
+  if (!matchesCreatorFilter(doc.createdBy, filters.createdBy, userId)) return false;
+  if (filters.isPublic !== undefined && doc.isPublic !== filters.isPublic) return false;
+  return matchesDateRange(doc._creationTime, filters.dateFrom, filters.dateTo);
+}
 
-  // Apply organization filter
-  if (filters.organizationId && doc.organizationId !== filters.organizationId) {
-    return false;
-  }
-
-  // Apply creator filter
-  if (filters.createdBy) {
-    if (filters.createdBy === "me" && doc.createdBy !== userId) {
-      return false;
-    }
-    if (filters.createdBy !== "me" && doc.createdBy !== filters.createdBy) {
-      return false;
-    }
-  }
-
-  // Apply public/private filter
-  if (filters.isPublic !== undefined && doc.isPublic !== filters.isPublic) {
-    return false;
-  }
-
-  // Apply date range filter
-  if (filters.dateFrom && doc._creationTime < filters.dateFrom) {
-    return false;
-  }
-  if (filters.dateTo && doc._creationTime > filters.dateTo) {
-    return false;
-  }
-
-  return true;
+// Helper: Check if user has access to view document
+function hasDocumentAccess(
+  doc: { isPublic: boolean; createdBy: Id<"users">; organizationId: Id<"organizations"> },
+  userId: Id<"users">,
+  myOrgIds: Set<Id<"organizations">>,
+): boolean {
+  if (doc.createdBy === userId) return true;
+  if (!doc.isPublic) return false;
+  return myOrgIds.has(doc.organizationId);
 }
 
 export const search = authenticatedQuery({
@@ -364,40 +395,25 @@ export const search = authenticatedQuery({
       .take(fetchLimit);
 
     // Get user's organization memberships for validation
+    // Bounded - users shouldn't be in more orgs than this
     const memberships = await ctx.db
       .query("organizationMembers")
       .withIndex("by_user", (q) => q.eq("userId", ctx.userId))
-      .collect();
+      .take(BOUNDED_RELATION_LIMIT);
     const myOrgIds = new Set(memberships.map((m) => m.organizationId));
 
     // Filter results based on access permissions and advanced filters
     const filtered = [];
+    const targetCount = offset + limit + 1;
+
     for (const doc of results) {
-      // Check access permissions
-      const isCreator = doc.createdBy === ctx.userId;
-
-      if (!isCreator) {
-        if (!doc.isPublic) continue;
-        // If public, must be in my organizations
-        if (!myOrgIds.has(doc.organizationId)) continue;
-      }
-
-      // If organizationId filter is provided, enforce it
-      if (args.organizationId && doc.organizationId !== args.organizationId) {
-        continue;
-      }
-
-      // Apply all search filters
-      if (!matchesDocumentFilters(doc, args, ctx.userId)) {
-        continue;
-      }
+      // Check access and filter conditions
+      if (!hasDocumentAccess(doc, ctx.userId, myOrgIds)) continue;
+      if (args.organizationId && doc.organizationId !== args.organizationId) continue;
+      if (!matchesDocumentFilters(doc, args, ctx.userId)) continue;
 
       filtered.push(doc);
-
-      // Early exit: stop once we have enough results for this page
-      if (filtered.length >= offset + limit + 1) {
-        break;
-      }
+      if (filtered.length >= targetCount) break;
     }
 
     const total = filtered.length;

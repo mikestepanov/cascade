@@ -68,6 +68,8 @@ export const issuesFields = {
   linkedDocuments: v.array(v.id("documents")),
   attachments: v.array(v.id("_storage")),
   order: v.number(), // For ordering within status columns
+  // Optimistic locking - version increments on each update
+  version: v.optional(v.number()), // Defaults to 1 on create, increments on update
   // AI/Semantic Search
   embedding: v.optional(v.array(v.float64())), // Vector embedding for semantic search
   searchContent: v.optional(v.string()), // Combined title and description for search

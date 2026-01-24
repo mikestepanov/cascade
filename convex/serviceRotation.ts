@@ -7,6 +7,7 @@
 
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
+import { BOUNDED_LIST_LIMIT } from "./lib/boundedQueries";
 import { notFound } from "./lib/errors";
 import { freeUnitTypes, serviceTypes } from "./validators";
 
@@ -52,7 +53,7 @@ export const selectProvider = query({
       .withIndex("by_service_enabled", (q) =>
         q.eq("serviceType", args.serviceType).eq("isEnabled", true),
       )
-      .collect();
+      .take(BOUNDED_LIST_LIMIT);
 
     // Sort by priority
     providers.sort((a, b) => a.priority - b.priority);
@@ -149,7 +150,7 @@ export const getUsageSummary = query({
     const providers = await ctx.db
       .query("serviceProviders")
       .withIndex("by_service_type", (q) => q.eq("serviceType", args.serviceType))
-      .collect();
+      .take(BOUNDED_LIST_LIMIT);
 
     const summary = await Promise.all(
       providers.map(async (provider) => {
@@ -471,20 +472,27 @@ export const seedProviders = mutation({
       },
     ];
 
-    // Insert all providers
-    for (const provider of [...transcriptionProviders, ...emailProviders]) {
-      const existing = await ctx.db
-        .query("serviceProviders")
-        .withIndex("by_provider", (q) => q.eq("provider", provider.provider))
-        .first();
+    // Check and insert all providers in parallel
+    const allProviders = [...transcriptionProviders, ...emailProviders];
+    const existingProviders = await Promise.all(
+      allProviders.map((provider) =>
+        ctx.db
+          .query("serviceProviders")
+          .withIndex("by_provider", (q) => q.eq("provider", provider.provider))
+          .first(),
+      ),
+    );
 
-      if (!existing) {
-        await ctx.db.insert("serviceProviders", {
+    // Insert non-existing providers in parallel
+    const providersToInsert = allProviders.filter((_, i) => !existingProviders[i]);
+    await Promise.all(
+      providersToInsert.map((provider) =>
+        ctx.db.insert("serviceProviders", {
           ...provider,
           updatedAt: now,
-        });
-      }
-    }
+        }),
+      ),
+    );
 
     return { seeded: true };
   },

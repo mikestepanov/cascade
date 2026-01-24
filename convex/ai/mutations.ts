@@ -4,6 +4,7 @@
 
 import { v } from "convex/values";
 import { authenticatedMutation } from "../customFunctions";
+import { BOUNDED_LIST_LIMIT } from "../lib/boundedQueries";
 import { notFound, requireOwned } from "../lib/errors";
 import { chatRoles } from "../validators";
 
@@ -59,15 +60,13 @@ export const deleteChat = authenticatedMutation({
     const chat = await ctx.db.get(args.chatId);
     requireOwned(chat, ctx.userId, "chat");
 
-    // Delete all messages
+    // Delete all messages in batches
     const messages = await ctx.db
       .query("aiMessages")
       .withIndex("by_chat", (q) => q.eq("chatId", args.chatId))
-      .collect();
+      .take(BOUNDED_LIST_LIMIT);
 
-    for (const message of messages) {
-      await ctx.db.delete(message._id);
-    }
+    await Promise.all(messages.map((message) => ctx.db.delete(message._id)));
 
     // Delete chat
     await ctx.db.delete(args.chatId);

@@ -3,6 +3,7 @@ import { pruneNull } from "convex-helpers";
 import type { Doc, Id } from "./_generated/dataModel";
 import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
 import { batchFetchCalendarEvents, batchFetchUsers, getUserName } from "./lib/batchHelpers";
+import { BOUNDED_LIST_LIMIT } from "./lib/boundedQueries";
 import { forbidden, notFound } from "./lib/errors";
 import { attendanceStatuses } from "./validators";
 
@@ -142,7 +143,7 @@ export const getAttendance = authenticatedQuery({
     const attendanceRecords = await ctx.db
       .query("meetingAttendance")
       .withIndex("by_event", (q) => q.eq("eventId", args.eventId))
-      .collect();
+      .take(BOUNDED_LIST_LIMIT);
 
     // Batch fetch all attendee users
     const userMap = await batchFetchUsers(ctx, event.attendeeIds);
@@ -182,7 +183,7 @@ export const getUserAttendanceHistory = authenticatedQuery({
     const attendanceRecords = await ctx.db
       .query("meetingAttendance")
       .withIndex("by_user", (q) => q.eq("userId", args.userId))
-      .collect();
+      .take(BOUNDED_LIST_LIMIT);
 
     // Batch fetch all events
     const eventIds = attendanceRecords.map((r) => r.eventId);
@@ -230,7 +231,7 @@ export const getAttendanceReport = authenticatedQuery({
     const requiredEvents = await ctx.db
       .query("calendarEvents")
       .withIndex("by_required", (q) => q.eq("isRequired", true))
-      .collect();
+      .take(BOUNDED_LIST_LIMIT);
 
     // Filter by date range
     const requiredMeetings = requiredEvents.filter((event) => {
@@ -245,7 +246,7 @@ export const getAttendanceReport = authenticatedQuery({
       ctx.db
         .query("meetingAttendance")
         .withIndex("by_event", (q) => q.eq("eventId", eventId))
-        .collect(),
+        .take(BOUNDED_LIST_LIMIT),
     );
     const attendanceArrays = await Promise.all(attendancePromises);
     const allAttendance = attendanceArrays.flat();

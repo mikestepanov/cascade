@@ -3,6 +3,7 @@ import { api } from "./_generated/api";
 import type { Doc } from "./_generated/dataModel";
 import { action, mutation } from "./_generated/server";
 import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
+import { BOUNDED_LIST_LIMIT } from "./lib/boundedQueries";
 import { forbidden, notFound, validation } from "./lib/errors";
 import { notDeleted } from "./lib/softDeleteHelpers";
 
@@ -78,7 +79,7 @@ export const listWebhooks = authenticatedQuery({
       .query("pumbleWebhooks")
       .withIndex("by_user", (q) => q.eq("userId", ctx.userId))
       .filter(notDeleted)
-      .collect();
+      .take(BOUNDED_LIST_LIMIT);
   },
 });
 

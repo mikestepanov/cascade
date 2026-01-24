@@ -99,12 +99,15 @@ export const startSprint = sprintMutation({
       .filter(notDeleted)
       .take(MAX_PAGE_SIZE);
 
-    for (const activeSprint of activeSprints) {
-      await ctx.db.patch(activeSprint._id, {
-        status: "completed",
-        updatedAt: Date.now(),
-      });
-    }
+    const now = Date.now();
+    await Promise.all(
+      activeSprints.map((activeSprint) =>
+        ctx.db.patch(activeSprint._id, {
+          status: "completed",
+          updatedAt: now,
+        }),
+      ),
+    );
 
     await ctx.db.patch(ctx.sprint._id, {
       status: "active",

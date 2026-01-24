@@ -1,6 +1,7 @@
 import { v } from "convex/values";
 import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
 import { batchFetchUsers } from "./lib/batchHelpers";
+import { BOUNDED_LIST_LIMIT } from "./lib/boundedQueries";
 import { forbidden, notFound } from "./lib/errors";
 
 // List all versions for a document
@@ -22,7 +23,7 @@ export const listVersions = authenticatedQuery({
       .query("documentVersions")
       .withIndex("by_document", (q) => q.eq("documentId", args.documentId))
       .order("desc")
-      .collect();
+      .take(BOUNDED_LIST_LIMIT);
 
     // Batch fetch users to avoid N+1 queries
     const userIds = versions.map((v) => v.createdBy);
@@ -139,7 +140,7 @@ export const getVersionCount = authenticatedQuery({
     const versions = await ctx.db
       .query("documentVersions")
       .withIndex("by_document", (q) => q.eq("documentId", args.documentId))
-      .collect();
+      .take(BOUNDED_LIST_LIMIT);
 
     return versions.length;
   },

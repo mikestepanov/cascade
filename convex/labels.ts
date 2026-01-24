@@ -1,5 +1,6 @@
 import { v } from "convex/values";
 import { authenticatedMutation, projectEditorMutation, projectQuery } from "./customFunctions";
+import { BOUNDED_LIST_LIMIT } from "./lib/boundedQueries";
 import { conflict, notFound, validation } from "./lib/errors";
 import { assertCanEditProject } from "./projectAccess";
 
@@ -44,7 +45,7 @@ export const list = projectQuery({
     const labels = await ctx.db
       .query("labels")
       .withIndex("by_project", (q) => q.eq("projectId", ctx.projectId))
-      .collect();
+      .take(BOUNDED_LIST_LIMIT);
 
     return labels;
   },

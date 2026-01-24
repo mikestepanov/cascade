@@ -1,4 +1,4 @@
-import { api } from "../_generated/api";
+import { api, internal } from "../_generated/api";
 import { httpAction } from "../_generated/server";
 import { getGitHubClientId, getGitHubClientSecret, isGitHubOAuthConfigured } from "../lib/env";
 import { validation } from "../lib/errors";
@@ -264,7 +264,7 @@ export const handleCallback = httpAction(async (_ctx, request) => {
  */
 export const listRepos = httpAction(async (ctx, _request) => {
   try {
-    // Get user's GitHub connection
+    // Get user's GitHub connection (metadata only, no tokens)
     const connection = await ctx.runQuery(api.github.getConnection);
 
     if (!connection) {
@@ -274,12 +274,24 @@ export const listRepos = httpAction(async (ctx, _request) => {
       });
     }
 
+    // Get decrypted tokens for API call
+    const tokens = await ctx.runMutation(internal.github.getDecryptedGitHubTokens, {
+      userId: connection.userId,
+    });
+
+    if (!tokens) {
+      return new Response(JSON.stringify({ error: "Failed to get GitHub tokens" }), {
+        status: 500,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
     // Fetch repositories from GitHub API
     const reposResponse = await fetch(
       "https://api.github.com/user/repos?sort=updated&per_page=100",
       {
         headers: {
-          Authorization: `Bearer ${connection.accessToken}`,
+          Authorization: `Bearer ${tokens.accessToken}`,
           Accept: "application/vnd.github.v3+json",
           "User-Agent": "Nixelo-App",
         },

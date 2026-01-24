@@ -2,6 +2,7 @@ import { v } from "convex/values";
 import type { Doc } from "./_generated/dataModel";
 import { mutation } from "./_generated/server";
 import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
+import { BOUNDED_LIST_LIMIT } from "./lib/boundedQueries";
 import { forbidden, notFound } from "./lib/errors";
 import { blockNoteContent } from "./validators";
 
@@ -53,9 +54,9 @@ export const list = authenticatedQuery({
       templates = await ctx.db
         .query("documentTemplates")
         .withIndex("by_category", (q) => q.eq("category", category))
-        .collect();
+        .take(BOUNDED_LIST_LIMIT);
     } else {
-      templates = await ctx.db.query("documentTemplates").collect();
+      templates = await ctx.db.query("documentTemplates").take(BOUNDED_LIST_LIMIT);
     }
 
     // Filter to show:
@@ -211,75 +212,72 @@ export const initializeBuiltInTemplates = mutation({
         description: "Template for team meeting notes with agenda and action items",
         category: "meeting",
         icon: "📝",
-        content: {
-          type: "doc",
-          content: [
-            {
-              type: "heading",
-              attrs: { level: 1 },
-              content: [{ type: "text", text: "Meeting Notes" }],
-            },
-            {
-              type: "heading",
-              attrs: { level: 2 },
-              content: [{ type: "text", text: "Meeting Details" }],
-            },
-            {
-              type: "paragraph",
-              content: [
-                { type: "text", marks: [{ type: "bold" }], text: "Date: " },
-                { type: "text", text: "[Date]" },
-              ],
-            },
-            {
-              type: "paragraph",
-              content: [
-                { type: "text", marks: [{ type: "bold" }], text: "Attendees: " },
-                { type: "text", text: "[Names]" },
-              ],
-            },
-            {
-              type: "heading",
-              attrs: { level: 2 },
-              content: [{ type: "text", text: "Agenda" }],
-            },
-            {
-              type: "bulletListItem",
-              content: [{ type: "paragraph", content: [{ type: "text", text: "Topic 1" }] }],
-            },
-            {
-              type: "bulletListItem",
-              content: [{ type: "paragraph", content: [{ type: "text", text: "Topic 2" }] }],
-            },
-            {
-              type: "heading",
-              attrs: { level: 2 },
-              content: [{ type: "text", text: "Discussion" }],
-            },
-            { type: "paragraph", content: [{ type: "text", text: "" }] },
-            {
-              type: "heading",
-              attrs: { level: 2 },
-              content: [{ type: "text", text: "Action Items" }],
-            },
-            {
-              type: "checkListItem",
-              attrs: { checked: false },
-              content: [{ type: "paragraph", content: [{ type: "text", text: "Action item 1" }] }],
-            },
-            {
-              type: "checkListItem",
-              attrs: { checked: false },
-              content: [{ type: "paragraph", content: [{ type: "text", text: "Action item 2" }] }],
-            },
-            {
-              type: "heading",
-              attrs: { level: 2 },
-              content: [{ type: "text", text: "Next Steps" }],
-            },
-            { type: "paragraph", content: [{ type: "text", text: "" }] },
-          ],
-        },
+        content: [
+          {
+            type: "heading",
+            props: { level: 1 },
+            content: [{ type: "text", text: "Meeting Notes" }],
+          },
+          {
+            type: "heading",
+            props: { level: 2 },
+            content: [{ type: "text", text: "Meeting Details" }],
+          },
+          {
+            type: "paragraph",
+            content: [
+              { type: "text", styles: { bold: true }, text: "Date: " },
+              { type: "text", text: "[Date]" },
+            ],
+          },
+          {
+            type: "paragraph",
+            content: [
+              { type: "text", styles: { bold: true }, text: "Attendees: " },
+              { type: "text", text: "[Names]" },
+            ],
+          },
+          {
+            type: "heading",
+            props: { level: 2 },
+            content: [{ type: "text", text: "Agenda" }],
+          },
+          {
+            type: "bulletListItem",
+            content: [{ type: "text", text: "Topic 1" }],
+          },
+          {
+            type: "bulletListItem",
+            content: [{ type: "text", text: "Topic 2" }],
+          },
+          {
+            type: "heading",
+            props: { level: 2 },
+            content: [{ type: "text", text: "Discussion" }],
+          },
+          { type: "paragraph", content: [] },
+          {
+            type: "heading",
+            props: { level: 2 },
+            content: [{ type: "text", text: "Action Items" }],
+          },
+          {
+            type: "checkListItem",
+            props: { checked: false },
+            content: [{ type: "text", text: "Action item 1" }],
+          },
+          {
+            type: "checkListItem",
+            props: { checked: false },
+            content: [{ type: "text", text: "Action item 2" }],
+          },
+          {
+            type: "heading",
+            props: { level: 2 },
+            content: [{ type: "text", text: "Next Steps" }],
+          },
+          { type: "paragraph", content: [] },
+        ],
         isBuiltIn: true,
         isPublic: true,
         updatedAt: now,
@@ -289,102 +287,97 @@ export const initializeBuiltInTemplates = mutation({
         description: "Template for technical design documents and proposals",
         category: "engineering",
         icon: "📋",
-        content: {
-          type: "doc",
-          content: [
-            {
-              type: "heading",
-              attrs: { level: 1 },
-              content: [{ type: "text", text: "RFC: [Title]" }],
-            },
-            {
-              type: "paragraph",
-              content: [
-                { type: "text", marks: [{ type: "bold" }], text: "Status: " },
-                { type: "text", text: "Draft" },
-              ],
-            },
-            {
-              type: "paragraph",
-              content: [
-                { type: "text", marks: [{ type: "bold" }], text: "Author: " },
-                { type: "text", text: "[Your Name]" },
-              ],
-            },
-            {
-              type: "paragraph",
-              content: [
-                { type: "text", marks: [{ type: "bold" }], text: "Date: " },
-                { type: "text", text: "[Date]" },
-              ],
-            },
-            {
-              type: "heading",
-              attrs: { level: 2 },
-              content: [{ type: "text", text: "Summary" }],
-            },
-            {
-              type: "paragraph",
-              content: [{ type: "text", text: "Brief overview of the proposal..." }],
-            },
-            {
-              type: "heading",
-              attrs: { level: 2 },
-              content: [{ type: "text", text: "Motivation" }],
-            },
-            {
-              type: "paragraph",
-              content: [
-                { type: "text", text: "Why are we doing this? What problem does it solve?" },
-              ],
-            },
-            {
-              type: "heading",
-              attrs: { level: 2 },
-              content: [{ type: "text", text: "Proposed Solution" }],
-            },
-            {
-              type: "paragraph",
-              content: [{ type: "text", text: "Detailed explanation of the proposed solution..." }],
-            },
-            {
-              type: "heading",
-              attrs: { level: 2 },
-              content: [{ type: "text", text: "Alternatives Considered" }],
-            },
-            {
-              type: "paragraph",
-              content: [
-                {
-                  type: "text",
-                  text: "Other approaches we considered and why we didn't choose them...",
-                },
-              ],
-            },
-            {
-              type: "heading",
-              attrs: { level: 2 },
-              content: [{ type: "text", text: "Implementation Plan" }],
-            },
-            {
-              type: "numberedListItem",
-              content: [{ type: "paragraph", content: [{ type: "text", text: "Phase 1: ..." }] }],
-            },
-            {
-              type: "numberedListItem",
-              content: [{ type: "paragraph", content: [{ type: "text", text: "Phase 2: ..." }] }],
-            },
-            {
-              type: "heading",
-              attrs: { level: 2 },
-              content: [{ type: "text", text: "Open Questions" }],
-            },
-            {
-              type: "bulletListItem",
-              content: [{ type: "paragraph", content: [{ type: "text", text: "Question 1?" }] }],
-            },
-          ],
-        },
+        content: [
+          {
+            type: "heading",
+            props: { level: 1 },
+            content: [{ type: "text", text: "RFC: [Title]" }],
+          },
+          {
+            type: "paragraph",
+            content: [
+              { type: "text", styles: { bold: true }, text: "Status: " },
+              { type: "text", text: "Draft" },
+            ],
+          },
+          {
+            type: "paragraph",
+            content: [
+              { type: "text", styles: { bold: true }, text: "Author: " },
+              { type: "text", text: "[Your Name]" },
+            ],
+          },
+          {
+            type: "paragraph",
+            content: [
+              { type: "text", styles: { bold: true }, text: "Date: " },
+              { type: "text", text: "[Date]" },
+            ],
+          },
+          {
+            type: "heading",
+            props: { level: 2 },
+            content: [{ type: "text", text: "Summary" }],
+          },
+          {
+            type: "paragraph",
+            content: [{ type: "text", text: "Brief overview of the proposal..." }],
+          },
+          {
+            type: "heading",
+            props: { level: 2 },
+            content: [{ type: "text", text: "Motivation" }],
+          },
+          {
+            type: "paragraph",
+            content: [{ type: "text", text: "Why are we doing this? What problem does it solve?" }],
+          },
+          {
+            type: "heading",
+            props: { level: 2 },
+            content: [{ type: "text", text: "Proposed Solution" }],
+          },
+          {
+            type: "paragraph",
+            content: [{ type: "text", text: "Detailed explanation of the proposed solution..." }],
+          },
+          {
+            type: "heading",
+            props: { level: 2 },
+            content: [{ type: "text", text: "Alternatives Considered" }],
+          },
+          {
+            type: "paragraph",
+            content: [
+              {
+                type: "text",
+                text: "Other approaches we considered and why we didn't choose them...",
+              },
+            ],
+          },
+          {
+            type: "heading",
+            props: { level: 2 },
+            content: [{ type: "text", text: "Implementation Plan" }],
+          },
+          {
+            type: "numberedListItem",
+            content: [{ type: "text", text: "Phase 1: ..." }],
+          },
+          {
+            type: "numberedListItem",
+            content: [{ type: "text", text: "Phase 2: ..." }],
+          },
+          {
+            type: "heading",
+            props: { level: 2 },
+            content: [{ type: "text", text: "Open Questions" }],
+          },
+          {
+            type: "bulletListItem",
+            content: [{ type: "text", text: "Question 1?" }],
+          },
+        ],
         isBuiltIn: true,
         isPublic: true,
         updatedAt: now,
@@ -394,112 +387,109 @@ export const initializeBuiltInTemplates = mutation({
         description: "Template for project kickoff and planning documents",
         category: "planning",
         icon: "🎯",
-        content: {
-          type: "doc",
-          content: [
-            {
-              type: "heading",
-              attrs: { level: 1 },
-              content: [{ type: "text", text: "Project Brief: [Project Name]" }],
-            },
-            {
-              type: "heading",
-              attrs: { level: 2 },
-              content: [{ type: "text", text: "Project Overview" }],
-            },
-            {
-              type: "paragraph",
-              content: [{ type: "text", text: "High-level description of the project..." }],
-            },
-            {
-              type: "heading",
-              attrs: { level: 2 },
-              content: [{ type: "text", text: "Objectives" }],
-            },
-            {
-              type: "bulletListItem",
-              content: [{ type: "paragraph", content: [{ type: "text", text: "Objective 1" }] }],
-            },
-            {
-              type: "bulletListItem",
-              content: [{ type: "paragraph", content: [{ type: "text", text: "Objective 2" }] }],
-            },
-            {
-              type: "heading",
-              attrs: { level: 2 },
-              content: [{ type: "text", text: "Success Criteria" }],
-            },
-            {
-              type: "paragraph",
-              content: [{ type: "text", text: "How will we measure success?" }],
-            },
-            {
-              type: "heading",
-              attrs: { level: 2 },
-              content: [{ type: "text", text: "Scope" }],
-            },
-            {
-              type: "paragraph",
-              content: [{ type: "text", marks: [{ type: "bold" }], text: "In Scope:" }],
-            },
-            {
-              type: "bulletListItem",
-              content: [{ type: "paragraph", content: [{ type: "text", text: "Item 1" }] }],
-            },
-            {
-              type: "paragraph",
-              content: [{ type: "text", marks: [{ type: "bold" }], text: "Out of Scope:" }],
-            },
-            {
-              type: "bulletListItem",
-              content: [{ type: "paragraph", content: [{ type: "text", text: "Item 1" }] }],
-            },
-            {
-              type: "heading",
-              attrs: { level: 2 },
-              content: [{ type: "text", text: "Timeline" }],
-            },
-            {
-              type: "paragraph",
-              content: [
-                { type: "text", marks: [{ type: "bold" }], text: "Start Date: " },
-                { type: "text", text: "[Date]" },
-              ],
-            },
-            {
-              type: "paragraph",
-              content: [
-                { type: "text", marks: [{ type: "bold" }], text: "Target Completion: " },
-                { type: "text", text: "[Date]" },
-              ],
-            },
-            {
-              type: "heading",
-              attrs: { level: 2 },
-              content: [{ type: "text", text: "Team" }],
-            },
-            {
-              type: "paragraph",
-              content: [
-                { type: "text", marks: [{ type: "bold" }], text: "Project Lead: " },
-                { type: "text", text: "[Name]" },
-              ],
-            },
-            {
-              type: "paragraph",
-              content: [
-                { type: "text", marks: [{ type: "bold" }], text: "Team Members: " },
-                { type: "text", text: "[Names]" },
-              ],
-            },
-            {
-              type: "heading",
-              attrs: { level: 2 },
-              content: [{ type: "text", text: "Risks & Mitigation" }],
-            },
-            { type: "paragraph", content: [{ type: "text", text: "" }] },
-          ],
-        },
+        content: [
+          {
+            type: "heading",
+            props: { level: 1 },
+            content: [{ type: "text", text: "Project Brief: [Project Name]" }],
+          },
+          {
+            type: "heading",
+            props: { level: 2 },
+            content: [{ type: "text", text: "Project Overview" }],
+          },
+          {
+            type: "paragraph",
+            content: [{ type: "text", text: "High-level description of the project..." }],
+          },
+          {
+            type: "heading",
+            props: { level: 2 },
+            content: [{ type: "text", text: "Objectives" }],
+          },
+          {
+            type: "bulletListItem",
+            content: [{ type: "text", text: "Objective 1" }],
+          },
+          {
+            type: "bulletListItem",
+            content: [{ type: "text", text: "Objective 2" }],
+          },
+          {
+            type: "heading",
+            props: { level: 2 },
+            content: [{ type: "text", text: "Success Criteria" }],
+          },
+          {
+            type: "paragraph",
+            content: [{ type: "text", text: "How will we measure success?" }],
+          },
+          {
+            type: "heading",
+            props: { level: 2 },
+            content: [{ type: "text", text: "Scope" }],
+          },
+          {
+            type: "paragraph",
+            content: [{ type: "text", styles: { bold: true }, text: "In Scope:" }],
+          },
+          {
+            type: "bulletListItem",
+            content: [{ type: "text", text: "Item 1" }],
+          },
+          {
+            type: "paragraph",
+            content: [{ type: "text", styles: { bold: true }, text: "Out of Scope:" }],
+          },
+          {
+            type: "bulletListItem",
+            content: [{ type: "text", text: "Item 1" }],
+          },
+          {
+            type: "heading",
+            props: { level: 2 },
+            content: [{ type: "text", text: "Timeline" }],
+          },
+          {
+            type: "paragraph",
+            content: [
+              { type: "text", styles: { bold: true }, text: "Start Date: " },
+              { type: "text", text: "[Date]" },
+            ],
+          },
+          {
+            type: "paragraph",
+            content: [
+              { type: "text", styles: { bold: true }, text: "Target Completion: " },
+              { type: "text", text: "[Date]" },
+            ],
+          },
+          {
+            type: "heading",
+            props: { level: 2 },
+            content: [{ type: "text", text: "Team" }],
+          },
+          {
+            type: "paragraph",
+            content: [
+              { type: "text", styles: { bold: true }, text: "Project Lead: " },
+              { type: "text", text: "[Name]" },
+            ],
+          },
+          {
+            type: "paragraph",
+            content: [
+              { type: "text", styles: { bold: true }, text: "Team Members: " },
+              { type: "text", text: "[Names]" },
+            ],
+          },
+          {
+            type: "heading",
+            props: { level: 2 },
+            content: [{ type: "text", text: "Risks & Mitigation" }],
+          },
+          { type: "paragraph", content: [] },
+        ],
         isBuiltIn: true,
         isPublic: true,
         updatedAt: now,
@@ -509,132 +499,119 @@ export const initializeBuiltInTemplates = mutation({
         description: "Template for incident post-mortem analysis",
         category: "engineering",
         icon: "🔍",
-        content: {
-          type: "doc",
-          content: [
-            {
-              type: "heading",
-              attrs: { level: 1 },
-              content: [{ type: "text", text: "Post-Mortem: [Incident Name]" }],
-            },
-            {
-              type: "paragraph",
-              content: [
-                { type: "text", marks: [{ type: "bold" }], text: "Date: " },
-                { type: "text", text: "[Date]" },
-              ],
-            },
-            {
-              type: "paragraph",
-              content: [
-                { type: "text", marks: [{ type: "bold" }], text: "Author: " },
-                { type: "text", text: "[Name]" },
-              ],
-            },
-            {
-              type: "heading",
-              attrs: { level: 2 },
-              content: [{ type: "text", text: "Summary" }],
-            },
-            {
-              type: "paragraph",
-              content: [{ type: "text", text: "Brief description of what happened..." }],
-            },
-            {
-              type: "heading",
-              attrs: { level: 2 },
-              content: [{ type: "text", text: "Impact" }],
-            },
-            {
-              type: "bulletListItem",
-              content: [
-                { type: "paragraph", content: [{ type: "text", text: "Users affected: " }] },
-              ],
-            },
-            {
-              type: "bulletListItem",
-              content: [{ type: "paragraph", content: [{ type: "text", text: "Duration: " }] }],
-            },
-            {
-              type: "bulletListItem",
-              content: [
-                { type: "paragraph", content: [{ type: "text", text: "Services affected: " }] },
-              ],
-            },
-            {
-              type: "heading",
-              attrs: { level: 2 },
-              content: [{ type: "text", text: "Timeline" }],
-            },
-            {
-              type: "paragraph",
-              content: [
-                { type: "text", marks: [{ type: "bold" }], text: "HH:MM - " },
-                { type: "text", text: "Event description" },
-              ],
-            },
-            {
-              type: "heading",
-              attrs: { level: 2 },
-              content: [{ type: "text", text: "Root Cause" }],
-            },
-            {
-              type: "paragraph",
-              content: [{ type: "text", text: "What was the underlying cause of the incident?" }],
-            },
-            {
-              type: "heading",
-              attrs: { level: 2 },
-              content: [{ type: "text", text: "Resolution" }],
-            },
-            {
-              type: "paragraph",
-              content: [{ type: "text", text: "How was the incident resolved?" }],
-            },
-            {
-              type: "heading",
-              attrs: { level: 2 },
-              content: [{ type: "text", text: "Action Items" }],
-            },
-            {
-              type: "checkListItem",
-              attrs: { checked: false },
-              content: [
-                { type: "paragraph", content: [{ type: "text", text: "Action item 1 - [Owner]" }] },
-              ],
-            },
-            {
-              type: "checkListItem",
-              attrs: { checked: false },
-              content: [
-                { type: "paragraph", content: [{ type: "text", text: "Action item 2 - [Owner]" }] },
-              ],
-            },
-            {
-              type: "heading",
-              attrs: { level: 2 },
-              content: [{ type: "text", text: "Lessons Learned" }],
-            },
-            {
-              type: "paragraph",
-              content: [{ type: "text", marks: [{ type: "bold" }], text: "What went well:" }],
-            },
-            {
-              type: "bulletListItem",
-              content: [{ type: "paragraph", content: [{ type: "text", text: "..." }] }],
-            },
-            {
-              type: "paragraph",
-              content: [
-                { type: "text", marks: [{ type: "bold" }], text: "What could be improved:" },
-              ],
-            },
-            {
-              type: "bulletListItem",
-              content: [{ type: "paragraph", content: [{ type: "text", text: "..." }] }],
-            },
-          ],
-        },
+        content: [
+          {
+            type: "heading",
+            props: { level: 1 },
+            content: [{ type: "text", text: "Post-Mortem: [Incident Name]" }],
+          },
+          {
+            type: "paragraph",
+            content: [
+              { type: "text", styles: { bold: true }, text: "Date: " },
+              { type: "text", text: "[Date]" },
+            ],
+          },
+          {
+            type: "paragraph",
+            content: [
+              { type: "text", styles: { bold: true }, text: "Author: " },
+              { type: "text", text: "[Name]" },
+            ],
+          },
+          {
+            type: "heading",
+            props: { level: 2 },
+            content: [{ type: "text", text: "Summary" }],
+          },
+          {
+            type: "paragraph",
+            content: [{ type: "text", text: "Brief description of what happened..." }],
+          },
+          {
+            type: "heading",
+            props: { level: 2 },
+            content: [{ type: "text", text: "Impact" }],
+          },
+          {
+            type: "bulletListItem",
+            content: [{ type: "text", text: "Users affected: " }],
+          },
+          {
+            type: "bulletListItem",
+            content: [{ type: "text", text: "Duration: " }],
+          },
+          {
+            type: "bulletListItem",
+            content: [{ type: "text", text: "Services affected: " }],
+          },
+          {
+            type: "heading",
+            props: { level: 2 },
+            content: [{ type: "text", text: "Timeline" }],
+          },
+          {
+            type: "paragraph",
+            content: [
+              { type: "text", styles: { bold: true }, text: "HH:MM - " },
+              { type: "text", text: "Event description" },
+            ],
+          },
+          {
+            type: "heading",
+            props: { level: 2 },
+            content: [{ type: "text", text: "Root Cause" }],
+          },
+          {
+            type: "paragraph",
+            content: [{ type: "text", text: "What was the underlying cause of the incident?" }],
+          },
+          {
+            type: "heading",
+            props: { level: 2 },
+            content: [{ type: "text", text: "Resolution" }],
+          },
+          {
+            type: "paragraph",
+            content: [{ type: "text", text: "How was the incident resolved?" }],
+          },
+          {
+            type: "heading",
+            props: { level: 2 },
+            content: [{ type: "text", text: "Action Items" }],
+          },
+          {
+            type: "checkListItem",
+            props: { checked: false },
+            content: [{ type: "text", text: "Action item 1 - [Owner]" }],
+          },
+          {
+            type: "checkListItem",
+            props: { checked: false },
+            content: [{ type: "text", text: "Action item 2 - [Owner]" }],
+          },
+          {
+            type: "heading",
+            props: { level: 2 },
+            content: [{ type: "text", text: "Lessons Learned" }],
+          },
+          {
+            type: "paragraph",
+            content: [{ type: "text", styles: { bold: true }, text: "What went well:" }],
+          },
+          {
+            type: "bulletListItem",
+            content: [{ type: "text", text: "..." }],
+          },
+          {
+            type: "paragraph",
+            content: [{ type: "text", styles: { bold: true }, text: "What could be improved:" }],
+          },
+          {
+            type: "bulletListItem",
+            content: [{ type: "text", text: "..." }],
+          },
+        ],
         isBuiltIn: true,
         isPublic: true,
         updatedAt: now,
@@ -644,78 +621,77 @@ export const initializeBuiltInTemplates = mutation({
         description: "Template for one-on-one meetings between managers and team members",
         category: "meeting",
         icon: "👥",
-        content: {
-          type: "doc",
-          content: [
-            {
-              type: "heading",
-              attrs: { level: 1 },
-              content: [{ type: "text", text: "1:1 Meeting" }],
-            },
-            {
-              type: "paragraph",
-              content: [
-                { type: "text", marks: [{ type: "bold" }], text: "Date: " },
-                { type: "text", text: "[Date]" },
-              ],
-            },
-            {
-              type: "paragraph",
-              content: [
-                { type: "text", marks: [{ type: "bold" }], text: "Participants: " },
-                { type: "text", text: "[Names]" },
-              ],
-            },
-            {
-              type: "heading",
-              attrs: { level: 2 },
-              content: [{ type: "text", text: "Updates & Progress" }],
-            },
-            { type: "paragraph", content: [{ type: "text", text: "" }] },
-            {
-              type: "heading",
-              attrs: { level: 2 },
-              content: [{ type: "text", text: "Challenges & Blockers" }],
-            },
-            { type: "paragraph", content: [{ type: "text", text: "" }] },
-            {
-              type: "heading",
-              attrs: { level: 2 },
-              content: [{ type: "text", text: "Career Development" }],
-            },
-            { type: "paragraph", content: [{ type: "text", text: "" }] },
-            {
-              type: "heading",
-              attrs: { level: 2 },
-              content: [{ type: "text", text: "Feedback" }],
-            },
-            { type: "paragraph", content: [{ type: "text", text: "" }] },
-            {
-              type: "heading",
-              attrs: { level: 2 },
-              content: [{ type: "text", text: "Action Items" }],
-            },
-            {
-              type: "checkListItem",
-              attrs: { checked: false },
-              content: [{ type: "paragraph", content: [{ type: "text", text: "Action item 1" }] }],
-            },
-          ],
-        },
+        content: [
+          {
+            type: "heading",
+            props: { level: 1 },
+            content: [{ type: "text", text: "1:1 Meeting" }],
+          },
+          {
+            type: "paragraph",
+            content: [
+              { type: "text", styles: { bold: true }, text: "Date: " },
+              { type: "text", text: "[Date]" },
+            ],
+          },
+          {
+            type: "paragraph",
+            content: [
+              { type: "text", styles: { bold: true }, text: "Participants: " },
+              { type: "text", text: "[Names]" },
+            ],
+          },
+          {
+            type: "heading",
+            props: { level: 2 },
+            content: [{ type: "text", text: "Updates & Progress" }],
+          },
+          { type: "paragraph", content: [] },
+          {
+            type: "heading",
+            props: { level: 2 },
+            content: [{ type: "text", text: "Challenges & Blockers" }],
+          },
+          { type: "paragraph", content: [] },
+          {
+            type: "heading",
+            props: { level: 2 },
+            content: [{ type: "text", text: "Career Development" }],
+          },
+          { type: "paragraph", content: [] },
+          {
+            type: "heading",
+            props: { level: 2 },
+            content: [{ type: "text", text: "Feedback" }],
+          },
+          { type: "paragraph", content: [] },
+          {
+            type: "heading",
+            props: { level: 2 },
+            content: [{ type: "text", text: "Action Items" }],
+          },
+          {
+            type: "checkListItem",
+            props: { checked: false },
+            content: [{ type: "text", text: "Action item 1" }],
+          },
+        ],
         isBuiltIn: true,
         isPublic: true,
         updatedAt: now,
       },
     ];
 
-    // Insert all built-in templates
-    for (const template of builtInTemplates) {
-      await ctx.db.insert("documentTemplates", {
-        ...template,
-        createdBy: undefined,
-        projectId: undefined,
-      });
-    }
+    // Insert all built-in templates in parallel
+    await Promise.all(
+      builtInTemplates.map((template) =>
+        ctx.db.insert("documentTemplates", {
+          ...template,
+          createdBy: undefined,
+          projectId: undefined,
+        }),
+      ),
+    );
 
     return { message: `Created ${builtInTemplates.length} built-in templates` };
   },

@@ -86,11 +86,8 @@ export const createChat = internalMutation({
     title: v.string(),
   },
   handler: async (ctx, args) => {
-    // Find user by subject ID
-    const user = await ctx.db
-      .query("users")
-      .filter((q) => q.eq(q.field("_id"), args.userId))
-      .first();
+    // Find user by ID (direct get is more efficient than filter on _id)
+    const user = await ctx.db.get(args.userId);
 
     if (!user) {
       throw notFound("user");
@@ -198,11 +195,8 @@ export const trackUsage = internalMutation({
     success: v.boolean(),
   },
   handler: async (ctx, args) => {
-    // Find user by subject ID
-    const user = await ctx.db
-      .query("users")
-      .filter((q) => q.eq(q.field("_id"), args.userId))
-      .first();
+    // Find user by ID (direct get is more efficient than filter on _id)
+    const user = await ctx.db.get(args.userId);
 
     if (!user) {
       throw notFound("user");
