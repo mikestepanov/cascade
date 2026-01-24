@@ -85,11 +85,12 @@ export const list = authenticatedQuery({
     let publicDocuments: typeof privateDocuments = [];
 
     if (args.organizationId) {
+      const orgId = args.organizationId;
       // If organizationId is provided, first verify user is a member
       const membership = await ctx.db
         .query("organizationMembers")
         .withIndex("by_organization_user", (q) =>
-          q.eq("organizationId", args.organizationId!).eq("userId", ctx.userId),
+          q.eq("organizationId", orgId).eq("userId", ctx.userId),
         )
         .first();
 
@@ -98,7 +99,7 @@ export const list = authenticatedQuery({
         publicDocuments = await ctx.db
           .query("documents")
           .withIndex("by_organization_public", (q) =>
-            q.eq("organizationId", args.organizationId!).eq("isPublic", true),
+            q.eq("organizationId", orgId).eq("isPublic", true),
           )
           .order("desc")
           .filter(notDeleted)

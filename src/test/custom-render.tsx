@@ -1,4 +1,3 @@
-import { TooltipProvider } from "@/components/ui/Tooltip";
 import {
   type RenderHookOptions,
   type RenderHookResult,
@@ -8,6 +7,7 @@ import {
 } from "@testing-library/react";
 import type { ReactElement } from "react";
 import { flushSync } from "react-dom";
+import { TooltipProvider } from "@/components/ui/Tooltip";
 
 const AllTheProviders = ({ children }: { children: React.ReactNode }) => {
   return <TooltipProvider delayDuration={0}>{children}</TooltipProvider>;
