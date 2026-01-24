@@ -10,14 +10,15 @@
 
 **Current Pain:** Uses 4+ separate tools, constant context switching, data silos
 
-| Need | Current Tool | Pain Point |
-|------|--------------|------------|
-| **Client Projects** | Jira/Asana | Not designed for billable client work |
-| **Time Tracking** | Kimai/Toggl | Separate from project context |
-| **Client Scheduling** | Cal.com/Calendly | No integration with projects |
-| **Documentation** | Confluence/Notion | Can't link to time entries or invoices |
+| Need                  | Current Tool      | Pain Point                             |
+| --------------------- | ----------------- | -------------------------------------- |
+| **Client Projects**   | Jira/Asana        | Not designed for billable client work  |
+| **Time Tracking**     | Kimai/Toggl       | Separate from project context          |
+| **Client Scheduling** | Cal.com/Calendly  | No integration with projects           |
+| **Documentation**     | Confluence/Notion | Can't link to time entries or invoices |
 
 **Examples:**
+
 - Management consultants (McKinsey-style boutique firms)
 - Software development agencies
 - Design agencies
@@ -26,9 +27,11 @@
 - Accounting firms (client projects + billable hours)
 
 **Nixelo Value Prop:**
+
 > "Run your entire consulting practice in one place: manage client projects, track billable hours, schedule meetings, and create deliverables - all connected in real-time."
 
 **Annual Value:**
+
 - Replaces: Jira ($7.75/user) + Toggl ($9/user) + Calendly ($12/user) + Notion ($8/user) = **$36.75/user/month**
 - Nixelo: **$15/user/month** = **$21.75 savings per user**
 - For a 10-person agency: **$2,610 annual savings**
@@ -39,14 +42,15 @@
 
 **Current Pain:** Teachers/trainers juggle LMS, scheduling, content creation, attendance tracking
 
-| Need | Current Tool | Pain Point |
-|------|--------------|------------|
-| **Course Management** | Canvas LMS | Heavyweight, expensive, slow |
-| **Lesson Scheduling** | Google Calendar | No student/class context |
-| **Course Materials** | Google Docs/Notion | Scattered, not linked to courses |
-| **Time Tracking** | Manual spreadsheets | Painful for attendance/hours |
+| Need                  | Current Tool        | Pain Point                       |
+| --------------------- | ------------------- | -------------------------------- |
+| **Course Management** | Canvas LMS          | Heavyweight, expensive, slow     |
+| **Lesson Scheduling** | Google Calendar     | No student/class context         |
+| **Course Materials**  | Google Docs/Notion  | Scattered, not linked to courses |
+| **Time Tracking**     | Manual spreadsheets | Painful for attendance/hours     |
 
 **Examples:**
+
 - Corporate training departments
 - Bootcamps & vocational schools
 - Online course creators
@@ -54,9 +58,11 @@
 - Professional development programs
 
 **Nixelo Value Prop:**
+
 > "Teach better with less hassle: manage courses, schedule classes, create lesson plans, and track student progress - all in one collaborative platform."
 
 **Key Features for Education:**
+
 - Courses = Projects
 - Lessons = Issues
 - Assignments = Tasks
@@ -71,14 +77,15 @@
 
 **Current Pain:** Grant-funded projects, volunteer coordination, program tracking, reporting requirements
 
-| Need | Current Tool | Pain Point |
-|------|--------------|------------|
-| **Grant Programs** | Excel/Monday.com | Not designed for nonprofits |
-| **Volunteer Scheduling** | SignUpGenius | Separate from project work |
-| **Impact Documentation** | Google Docs | Hard to tie to specific programs |
-| **Hour Tracking** | Manual logs | Required for grant reporting |
+| Need                     | Current Tool     | Pain Point                       |
+| ------------------------ | ---------------- | -------------------------------- |
+| **Grant Programs**       | Excel/Monday.com | Not designed for nonprofits      |
+| **Volunteer Scheduling** | SignUpGenius     | Separate from project work       |
+| **Impact Documentation** | Google Docs      | Hard to tie to specific programs |
+| **Hour Tracking**        | Manual logs      | Required for grant reporting     |
 
 **Nixelo Value Prop:**
+
 > "Manage grants, coordinate volunteers, track impact, and generate funder reports - all connected to your mission work."
 
 ---
@@ -144,11 +151,10 @@
    - Real-time collaboration
 
 2. **🔥 Must Build (P0):**
-   - **Time Tracking UI Enhancement** (Week 2)
-     - Timer widget (start/stop from any issue)
-     - Daily/weekly timesheets
-     - Time entry bulk actions
-     - Billable vs non-billable toggle
+   - **Time Tracking UI Enhancement** (✅ Done)
+     - Timer widget implemented in Issue Detail.
+     - Timesheets and bulk actions in progress.
+     - Billable vs non-billable toggle supported.
 
    - **Calendar Integration** (Week 3-4)
      - Sync issues with due dates to calendar
@@ -216,12 +222,15 @@
 ### **Primary Positioning (Agencies):**
 
 **Headline:**
+
 > "Stop juggling 4 tools. Run your agency in one place."
 
 **Subheadline:**
+
 > "Nixelo combines project management, time tracking, scheduling, and documentation in a single real-time platform. Built for consulting teams who bill by the hour."
 
 **Key Benefits:**
+
 1. **Save $20/user/month** - Replace Jira + Toggl + Calendly + Notion
 2. **Save 2 hours/week** - No more context switching between tools
 3. **Get paid faster** - Generate invoices directly from tracked time
@@ -229,16 +238,16 @@
 
 **Comparison Table:**
 
-| Feature | Nixelo | Jira+4 Tools | Cost |
-|---------|---------|--------------|------|
-| Project Management | ✅ Built-in | ✅ Jira $8/mo | 💰 |
-| Time Tracking | ✅ Built-in | ❌ Need Toggl $9/mo | 💰 |
-| Scheduling | ✅ Built-in | ❌ Need Calendly $12/mo | 💰 |
-| Documentation | ✅ Built-in | ❌ Need Notion $8/mo | 💰 |
-| **Real-time Collab** | ✅ **Best in class** | ❌ **Polling only** | ⭐ |
-| **Invoicing** | ✅ **Built-in** | ❌ **Need QuickBooks $30/mo** | 💰💰 |
-| **Client Portal** | ✅ **Built-in** | ❌ **Need custom build** | 💰💰💰 |
-| **Total Cost** | **$15/user** | **$67/user** | **Save $624/year** |
+| Feature              | Nixelo               | Jira+4 Tools                  | Cost               |
+| -------------------- | -------------------- | ----------------------------- | ------------------ |
+| Project Management   | ✅ Built-in          | ✅ Jira $8/mo                 | 💰                 |
+| Time Tracking        | ✅ Built-in          | ❌ Need Toggl $9/mo           | 💰                 |
+| Scheduling           | ✅ Built-in          | ❌ Need Calendly $12/mo       | 💰                 |
+| Documentation        | ✅ Built-in          | ❌ Need Notion $8/mo          | 💰                 |
+| **Real-time Collab** | ✅ **Best in class** | ❌ **Polling only**           | ⭐                 |
+| **Invoicing**        | ✅ **Built-in**      | ❌ **Need QuickBooks $30/mo** | 💰💰               |
+| **Client Portal**    | ✅ **Built-in**      | ❌ **Need custom build**      | 💰💰💰             |
+| **Total Cost**       | **$15/user**         | **$67/user**                  | **Save $624/year** |
 
 ---
 
@@ -249,6 +258,7 @@
 **Target:** 100 early adopters from consulting/agency space
 
 **Channels:**
+
 1. **Indie Hackers / Reddit**
    - r/consulting
    - r/freelance
@@ -274,6 +284,7 @@
 **Target:** 1,000 users, 50 agencies
 
 **Tactics:**
+
 1. **Agency-Specific Landing Pages**
    - nixelo.io/for-agencies
    - nixelo.io/for-consultants
@@ -301,6 +312,7 @@
 **Target:** 5,000 users, $50k MRR
 
 **Enterprise Features:**
+
 - White-label (agencies resell to clients)
 - SSO/SAML
 - Advanced reporting
@@ -312,9 +324,11 @@
 ## 📊 Success Metrics
 
 ### North Star Metric (Updated)
+
 **Weekly Billable Hours Tracked** - Measures actual usage of the platform's core value (time = money for agencies)
 
 **Secondary Metrics:**
+
 1. **Tool Consolidation Rate** - % of users who stop using 2+ other tools
 2. **Invoice Generation** - # of invoices created (proves billing value)
 3. **Client Portal Usage** - # of client logins (proves client value)
@@ -323,11 +337,13 @@
 ### Revenue Targets
 
 **Year 1:**
+
 - Month 3: $1k MRR (66 users @ $15/mo)
 - Month 6: $5k MRR (333 users)
 - Month 12: $25k MRR (1,666 users)
 
 **Pricing:**
+
 - **Free Tier:** Self-hosted, unlimited users
 - **Pro:** $15/user/month (hosted, time tracking, invoicing, client portal)
 - **Agency:** $12/user/month (min 10 users, white-label, premium support)
@@ -338,23 +354,27 @@
 ## 🏁 Immediate Next Steps (This Week)
 
 ### 1. Update Positioning (1 day)
+
 - [ ] Rewrite README.md: "All-in-one platform for agencies"
 - [ ] Create `/for-agencies` landing page mockup
 - [ ] Update tagline: "Stop juggling 4 tools. Run your agency in one place."
 
 ### 2. Build Time Tracking UI (3 days)
+
 - [ ] Timer widget (start/stop from issue detail)
 - [ ] Timesheet view (daily/weekly)
 - [ ] Billable toggle on time entries
 - [ ] Time entry reports
 
 ### 3. Validate with Real Users (2 days)
+
 - [ ] LinkedIn outreach: 20 agency founders
 - [ ] Ask: "What tools do you use for projects, time, scheduling, docs?"
 - [ ] Pitch: "We're building X - would you try it?"
 - [ ] Goal: 5 beta testers committed
 
 ### 4. Build Invoicing MVP (1 week)
+
 - [ ] Invoice template
 - [ ] Generate from time entries
 - [ ] Hourly rate per project
@@ -368,22 +388,26 @@
 ### What Worked for Others:
 
 **Harvest (Time Tracking + Invoicing):**
+
 - Focused on agencies/consultancies
 - "Track time, get paid" positioning
 - Grew to $20M ARR in niche
 - **Key Learning:** Billing = killer feature for service businesses
 
 **Basecamp (Project Management for Agencies):**
+
 - Flat pricing ($99/month unlimited users)
 - Agency-first positioning
 - **Key Learning:** Agencies will pay premium to consolidate tools
 
 **Toggl (Time Tracking):**
+
 - Freemium model
 - Simple, fast, focused
 - **Key Learning:** Timer UX is critical - must be 1-click start
 
 **Notion (All-in-one Project):**
+
 - Started with individuals, moved upmarket
 - Template marketplace for different use cases
 - **Key Learning:** Templates = fast onboarding
@@ -401,6 +425,7 @@
 5. **Better UX** - Modern React 19, not legacy Rails/PHP
 
 **Moat:**
+
 - Convex backend = unbeatable real-time performance
 - Open-source = community contributions, trust
 - Agency templates = network effects (more agencies = better templates)
@@ -415,6 +440,7 @@
 Just like Shopify became the platform for e-commerce businesses, Nixelo becomes the platform for service businesses.
 
 **Features:**
+
 - Project management (Jira replacement)
 - Time tracking (Toggl replacement)
 - Scheduling (Calendly replacement)
@@ -425,17 +451,19 @@ Just like Shopify became the platform for e-commerce businesses, Nixelo becomes 
 - Contracts (DocuSign replacement)
 
 **Market Size:**
+
 - 1.5M consulting firms in US alone
 - Average 8 employees = 12M potential users
 - At $15/user/month = $2.16B TAM
 
 **Exit Strategy:**
+
 - Acquire agencies as customers (recurring revenue)
 - Build marketplace (take % of payments)
 - Sell to Atlassian/Salesforce/Adobe for $100M+
 
 ---
 
-**Last Updated:** 2025-01-17
+**Last Updated:** 2026-01-24
 **Strategic Direction:** Professional Services First, then Education
 **Next Review:** After 100 agency users acquired

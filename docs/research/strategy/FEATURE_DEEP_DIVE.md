@@ -58,6 +58,7 @@ Schema:
 - ✅ Labels are project-scoped (good isolation)
 - ✅ Have colors (like Linear)
 - ✅ Separate management table
+- ✅ Labels displayed on standalone Issue Detail page
 - ⚠️ Issues store label NAMES as strings (not IDs)
 - ❌ No label groups
 - ❌ No label descriptions
@@ -75,13 +76,11 @@ Schema:
 ### Recommendations
 
 1. **Add Label Groups** (P2)
-
    - Like Linear: group labels like "Priority", "Component", "Area"
    - Only one label from a group can be applied
    - Schema: Add `groupId` to labels table, create `labelGroups` table
 
 2. **Add Descriptions** (P3)
-
    - Simple string field on labels table
    - Shows on hover in UI
 
@@ -140,13 +139,11 @@ Field Types: text, number, select, multiselect, date, checkbox, url
 ### Recommendations
 
 1. **Add User Picker Type** (P2)
-
    - Very common need for "Reviewer", "QA", "Designer" fields
    - Store as `v.id("users")`
 
-2. **Add Project Picker Type** (P3)
-
-   - For cross-project linking
+2. **Improve Story Points Visibility** (✅ Done)
+   - Story points now display as a badge on the standalone Issue Detail page.
 
 3. **Add Cascading Select** (P3)
    - Parent/child dropdowns (e.g., Component → Sub-component)
@@ -200,7 +197,6 @@ Schema:
 ### Recommendations
 
 1. **Keep Current Simple Model** (Linear-like)
-
    - Jira's transitions are often seen as overly complex
    - Linear's simplicity is a selling point
 
@@ -299,7 +295,7 @@ Schema:
 
 1. **Current Model is Good**
    - Matches Jira's most-used pattern
-   - Adding more levels adds complexity
+   - ✅ Recently refined standalone Issue Detail page with dedicated Sub-tasks section.
 
 ---
 
@@ -348,12 +344,10 @@ Schema:
 ### Recommendations
 
 1. **Add Velocity Tracking** (P2)
-
    - Track story points completed per sprint
    - Show average velocity over time
 
 2. **Add Burndown Charts** (P2)
-
    - Visual progress tracking within sprints
 
 3. **Consider Auto-Cycles** (P3)
@@ -408,10 +402,9 @@ Schema:
 
 ### Recommendations
 
-1. **Add Timer Widget** (P2)
-
+1. **Add Timer Widget** (✅ Done)
+   - Timer widget implemented in `TimeTracker.tsx`
    - Start/stop timer from issue detail page
-   - Background timer with notifications
 
 2. **Defer Invoicing** (P3)
    - Only if targeting agencies/freelancers
@@ -445,8 +438,8 @@ Schema:
 
 - ✅ Basic comments
 - ✅ @mentions with notifications
-- ❌ No rich text (just plain text?)
-- ❌ No reactions
+- ✅ Emoji Reactions (👍, ❤️, 🔥, etc.) - Just added!
+- ⚠️ No rich text (just plain text?)
 - ❌ No threads
 
 ### Gap Analysis
@@ -462,7 +455,6 @@ Schema:
 ### Recommendations
 
 1. **Add Reactions** (P2)
-
    - 👍 👎 ❤️ 🎉 etc.
    - Simple table: `commentReactions: { commentId, userId, emoji }`
 
@@ -516,7 +508,6 @@ Schema:
 ### Recommendations
 
 1. **Add Slack Integration** (P2)
-
    - Already have `pumbleWebhooks` table
    - Extend to Slack
 
@@ -567,9 +558,8 @@ Schema:
 
 ### Recommendations
 
-1. **Add Description Search** (P2)
-
-   - Add description to search index
+1. **Add Description Search** (✅ Done)
+   - Verified that Convex backend indexes both titles and descriptions.
 
 2. **Consider Simple Query Language** (P3)
    - Not full JQL, but `status:done priority:high`
