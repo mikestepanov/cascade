@@ -279,9 +279,9 @@ function WebhookCard({ webhook, projects }: WebhookCardProps) {
       </Flex>
 
       {/* Stats */}
-      {webhook.lastTriggered && (
+      {webhook.lastMessageAt && (
         <div className="text-xs text-ui-text-tertiary mb-3">
-          Last triggered: {new Date(webhook.lastTriggered).toLocaleDateString()}
+          Last triggered: {new Date(webhook.lastMessageAt).toLocaleDateString()}
         </div>
       )}
 

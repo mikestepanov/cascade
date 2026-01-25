@@ -99,7 +99,11 @@ export function WebhooksManager({ projectId }: WebhooksManagerProps) {
       <ConfirmDialog
         isOpen={!!deleteConfirm.deleteId}
         onClose={deleteConfirm.cancelDelete}
-        onConfirm={() => deleteConfirm.executeDelete((id) => deleteWebhookMutation({ id }))}
+        onConfirm={() =>
+          deleteConfirm.executeDelete(async (id) => {
+            await deleteWebhookMutation({ id });
+          })
+        }
         title="Delete Webhook"
         message="Are you sure you want to delete this webhook? This action cannot be undone."
         variant="danger"

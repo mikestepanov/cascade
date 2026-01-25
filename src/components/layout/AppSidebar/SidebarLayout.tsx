@@ -1,4 +1,4 @@
-import { Menu, PanelLeftClose, PanelLeftOpen } from "lucide-react";
+import { Menu } from "lucide-react";
 import type React from "react";
 import { Button } from "@/components/ui/Button";
 import { cn } from "@/lib/utils";
@@ -32,9 +32,10 @@ export function SidebarLayout({
       {isMobile && (
         <>
           {/* Backdrop */}
-          <div
+          <button
+            type="button"
             className={cn(
-              "fixed inset-0 bg-black/40 backdrop-blur-sm z-40 transition-opacity duration-300",
+              "fixed inset-0 bg-black/40 backdrop-blur-sm z-40 transition-opacity duration-300 w-full h-full border-0 cursor-default",
               isOpenMobile ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none",
             )}
             onClick={closeMobileMenu}

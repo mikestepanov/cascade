@@ -81,7 +81,7 @@ export const storeIssueEmbedding = internalMutation({
  */
 export const createChat = internalMutation({
   args: {
-    userId: v.string(),
+    userId: v.id("users"),
     projectId: v.optional(v.id("projects")),
     title: v.string(),
   },
@@ -178,7 +178,7 @@ Issues by Status: ${Object.entries(issuesByStatus)
  */
 export const trackUsage = internalMutation({
   args: {
-    userId: v.string(),
+    userId: v.id("users"),
     projectId: v.optional(v.id("projects")),
     provider: v.literal("anthropic"),
     model: v.string(),

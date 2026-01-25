@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/Button";
 import { Flex } from "@/components/ui/Flex";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { Typography } from "@/components/ui/Typography";
+import { useOrganization } from "@/hooks/useOrgContext";
 import { Filter, Plus, Search } from "@/lib/icons";
 
 export const Route = createFileRoute("/_auth/_app/$orgSlug/issues")({
@@ -22,13 +23,15 @@ function AllIssuesPage() {
   const [statusFilter, setStatusFilter] = useState<string | undefined>(undefined);
   const [searchQuery, setSearchQuery] = useState("");
 
+  const { organizationId } = useOrganization();
+
   const {
     results: issues,
     status,
     loadMore,
   } = usePaginatedQuery(
     api.issues.listOrganizationIssues,
-    { status: statusFilter },
+    organizationId ? { status: statusFilter, organizationId } : "skip",
     { initialNumItems: 20 },
   );
 

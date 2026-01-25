@@ -41,6 +41,7 @@ function IssuePage() {
 
   // Query enriched issue data
   const issue = useQuery(api.issues.getByKey, { key });
+  const subtasks = useQuery(api.issues.listSubtasks, issue ? { parentId: issue._id } : "skip");
   const updateIssue = useMutation(api.issues.update);
 
   useEffect(() => {
@@ -196,7 +197,7 @@ function IssuePage() {
                 >
                   Sub-tasks
                 </Typography>
-                <SubtasksList issueId={issue._id} projectId={issue.projectId} />
+                <SubtasksList issueId={issue._id} projectId={issue.projectId} subtasks={subtasks} />
               </div>
             )}
 
