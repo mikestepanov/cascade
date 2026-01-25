@@ -20,7 +20,8 @@ describe("GitHub Integration", () => {
 
       const connection = await asUser.query(api.github.getConnection, {});
       expect(connection?.githubUsername).toBe("testuser");
-      expect(connection?.accessToken).toBe("gho_token");
+      // Tokens are encrypted and not exposed to frontend
+      expect(connection?.hasAccessToken).toBe(true);
     });
 
     it("should update existing connection", async () => {
@@ -41,7 +42,8 @@ describe("GitHub Integration", () => {
       });
 
       const connection = await asUser.query(api.github.getConnection, {});
-      expect(connection?.accessToken).toBe("token2");
+      // Tokens are encrypted and not exposed - just verify connection exists
+      expect(connection?.hasAccessToken).toBe(true);
 
       // Check no duplicate
       const connections = await t.run(async (ctx) => ctx.db.query("githubConnections").collect());

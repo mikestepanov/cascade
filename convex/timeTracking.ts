@@ -704,11 +704,11 @@ export const setUserRate = authenticatedMutation({
 
     const now = Date.now();
 
-    for (const rate of currentRates) {
-      if (rate.rateType === args.rateType && !rate.effectiveTo) {
-        await ctx.db.patch(rate._id, { effectiveTo: now });
-      }
-    }
+    // Close existing rates of the same type (in parallel)
+    const ratesToClose = currentRates.filter(
+      (rate) => rate.rateType === args.rateType && !rate.effectiveTo,
+    );
+    await Promise.all(ratesToClose.map((rate) => ctx.db.patch(rate._id, { effectiveTo: now })));
 
     // Create new rate
     return await ctx.db.insert("userRates", {

@@ -3,6 +3,7 @@ import { ProsemirrorSync } from "@convex-dev/prosemirror-sync";
 import type { GenericMutationCtx, GenericQueryCtx } from "convex/server";
 import { components } from "./_generated/api";
 import type { DataModel, Id } from "./_generated/dataModel";
+import { BOUNDED_LIST_LIMIT } from "./lib/boundedQueries";
 import { forbidden, notFound, unauthenticated, validation } from "./lib/errors";
 import type { ProseMirrorSnapshot } from "./validators";
 
@@ -105,7 +106,7 @@ export const { getSnapshot, submitSnapshot, latestVersion, getSteps, submitSteps
             .query("documentVersions")
             .withIndex("by_document", (q) => q.eq("documentId", id as Id<"documents">))
             .order("desc")
-            .collect();
+            .take(BOUNDED_LIST_LIMIT);
 
           if (versions.length > 50) {
             // Delete oldest versions beyond 50

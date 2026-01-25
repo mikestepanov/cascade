@@ -39,7 +39,6 @@ if (!(targetUrl && targetPath)) {
   const fullHtml = await page.content();
 
   // 4. Extract Deep Data
-  // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: research utility
   const deepData = await page.evaluate(() => {
     // Network (Performance)
     const network = performance.getEntriesByType("resource").map((e) => ({

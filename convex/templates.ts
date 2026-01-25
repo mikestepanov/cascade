@@ -6,6 +6,7 @@ import {
   projectEditorMutation,
   projectQuery,
 } from "./customFunctions";
+import { BOUNDED_LIST_LIMIT } from "./lib/boundedQueries";
 import { forbidden, notFound } from "./lib/errors";
 import { assertCanAccessProject, assertCanEditProject } from "./projectAccess";
 import { issuePriorities, issueTypes } from "./validators";
@@ -52,12 +53,12 @@ export const listByProject = projectQuery({
         .withIndex("by_project_type", (q) =>
           q.eq("projectId", ctx.projectId).eq("type", templateType),
         )
-        .collect();
+        .take(BOUNDED_LIST_LIMIT);
     } else {
       templates = await ctx.db
         .query("issueTemplates")
         .withIndex("by_project", (q) => q.eq("projectId", ctx.projectId))
-        .collect();
+        .take(BOUNDED_LIST_LIMIT);
     }
 
     return templates;

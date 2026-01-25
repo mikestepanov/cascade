@@ -1,4 +1,4 @@
-import { api } from "../_generated/api";
+import { api, internal } from "../_generated/api";
 import { httpAction } from "../_generated/server";
 import { getGoogleClientId, getGoogleClientSecret, isGoogleOAuthConfigured } from "../lib/env";
 import { validation } from "../lib/errors";
@@ -275,7 +275,7 @@ export const handleCallback = httpAction(async (_ctx, request) => {
  */
 export const triggerSync = httpAction(async (ctx, _request) => {
   try {
-    // Get user's Google Calendar connection
+    // Get user's Google Calendar connection (metadata only, no tokens)
     const connection = await ctx.runQuery(api.googleCalendar.getConnection);
 
     if (!connection) {
@@ -292,12 +292,24 @@ export const triggerSync = httpAction(async (ctx, _request) => {
       });
     }
 
+    // Get decrypted tokens for API call
+    const tokens = await ctx.runMutation(internal.googleCalendar.getDecryptedTokens, {
+      connectionId: connection._id,
+    });
+
+    if (!tokens) {
+      return new Response(JSON.stringify({ error: "Failed to get Google tokens" }), {
+        status: 500,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
     // Fetch events from Google Calendar API
     const eventsResponse = await fetch(
       `https://www.googleapis.com/calendar/v3/calendars/primary/events?timeMin=${new Date().toISOString()}&maxResults=100`,
       {
         headers: {
-          Authorization: `Bearer ${connection.accessToken}`,
+          Authorization: `Bearer ${tokens.accessToken}`,
         },
       },
     );

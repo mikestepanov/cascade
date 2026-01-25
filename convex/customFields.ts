@@ -7,6 +7,7 @@ import {
   projectQuery,
 } from "./customFunctions";
 import { batchFetchCustomFields } from "./lib/batchHelpers";
+import { BOUNDED_LIST_LIMIT } from "./lib/boundedQueries";
 import { conflict, notFound, validation } from "./lib/errors";
 import { MAX_PAGE_SIZE } from "./lib/queryLimits";
 import {
@@ -177,11 +178,9 @@ export const remove = authenticatedMutation({
     const values = await ctx.db
       .query("customFieldValues")
       .withIndex("by_field", (q) => q.eq("fieldId", args.id))
-      .collect();
+      .take(BOUNDED_LIST_LIMIT);
 
-    for (const value of values) {
-      await ctx.db.delete(value._id);
-    }
+    await Promise.all(values.map((value) => ctx.db.delete(value._id)));
 
     await ctx.db.delete(args.id);
   },
@@ -206,7 +205,7 @@ export const getValuesForIssue = authenticatedQuery({
     const values = await ctx.db
       .query("customFieldValues")
       .withIndex("by_issue", (q) => q.eq("issueId", args.issueId))
-      .collect();
+      .take(BOUNDED_LIST_LIMIT);
 
     // Batch fetch field definitions to avoid N+1 queries
     const fieldIds = values.map((v) => v.fieldId);

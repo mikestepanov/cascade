@@ -5,12 +5,13 @@
  * Runs daily via cron job
  */
 
-import type { GenericDatabaseReader, GenericId } from "convex/server";
+import type { GenericDatabaseReader } from "convex/server";
 import { v } from "convex/values";
-import type { DataModel, TableNames } from "./_generated/dataModel";
+import type { DataModel, Id, TableNames } from "./_generated/dataModel";
 import type { MutationCtx } from "./_generated/server";
 import { internalMutation } from "./_generated/server";
 import { authenticatedQuery } from "./customFunctions";
+import { BOUNDED_LIST_LIMIT } from "./lib/boundedQueries";
 import { logger } from "./lib/logger";
 import { cascadeDelete } from "./lib/relationships";
 import {
@@ -20,7 +21,7 @@ import {
 } from "./lib/softDeleteHelpers";
 
 interface SoftDeletableRecord extends SoftDeletable {
-  _id: GenericId<TableNames>;
+  _id: Id<TableNames>;
 }
 
 const TABLES_WITH_SOFT_DELETE = [
@@ -130,7 +131,11 @@ export const permanentlyDeleteOld = internalMutation({
 export const listDeletedProjects = authenticatedQuery({
   args: {},
   handler: async (ctx) => {
-    const deleted = await ctx.db.query("projects").filter(onlyDeleted).collect();
+    // Use by_deleted index for efficient lookup, bounded to prevent memory issues
+    const deleted = await ctx.db
+      .query("projects")
+      .withIndex("by_deleted", (q) => q.eq("isDeleted", true))
+      .take(BOUNDED_LIST_LIMIT);
 
     // Filter to projects user has access to
     return deleted.filter(
@@ -146,11 +151,12 @@ export const listDeletedProjects = authenticatedQuery({
 export const listDeletedDocuments = authenticatedQuery({
   args: {},
   handler: async (ctx) => {
+    // Use by_deleted index for efficient lookup, bounded
     return await ctx.db
       .query("documents")
-      .filter(onlyDeleted)
+      .withIndex("by_deleted", (q) => q.eq("isDeleted", true))
       .filter((q) => q.eq(q.field("createdBy"), ctx.userId))
-      .collect();
+      .take(BOUNDED_LIST_LIMIT);
   },
 });
 
@@ -163,10 +169,11 @@ export const listDeletedIssues = authenticatedQuery({
     projectId: v.id("projects"),
   },
   handler: async (ctx, args) => {
+    // Bounded query for trash view
     return await ctx.db
       .query("issues")
       .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
       .filter(onlyDeleted)
-      .collect();
+      .take(BOUNDED_LIST_LIMIT);
   },
 });

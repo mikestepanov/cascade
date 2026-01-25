@@ -106,7 +106,8 @@ const THEMES = ["light", "dark"];
   const technicalContext = await browser.newContext({
     viewport: { width: 1920, height: 1080 },
     colorScheme: "light",
-    userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36",
+    userAgent:
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36",
   });
   const techPage = await technicalContext.newPage();
 
@@ -127,7 +128,9 @@ const THEMES = ["light", "dark"];
   try {
     await techPage.goto(targetUrl, { waitUntil: "load", timeout: 120000 });
     // Attempt networkidle but don't crash if it stays busy
-    await techPage.waitForLoadState("networkidle", { timeout: 15000 }).catch(() => {});
+    await techPage.waitForLoadState("networkidle", { timeout: 15000 }).catch(() => {
+      // ignore
+    });
     await techPage.waitForTimeout(5000); // Buffer for animations
   } catch (err) {
     console.log(`   ⚠️ Navigation warning: ${err.message.split("\n")[0]}`);
@@ -140,6 +143,7 @@ const THEMES = ["light", "dark"];
 
   // Extract deep data
   const deepData = await techPage.evaluate(() => {
+    // CSS Variables
     const cssVars = {};
     try {
       for (const sheet of document.styleSheets) {
@@ -154,9 +158,13 @@ const THEMES = ["light", "dark"];
               }
             }
           }
-        } catch (_e) {}
+        } catch (_e) {
+          // ignore
+        }
       }
-    } catch (_e) {}
+    } catch (_e) {
+      // ignore
+    }
 
     const keyframes = [];
     try {
@@ -167,16 +175,22 @@ const THEMES = ["light", "dark"];
               keyframes.push({ name: rule.name, cssText: rule.cssText });
             }
           }
-        } catch (_e) {}
+        } catch (_e) {
+          // ignore
+        }
       }
-    } catch (_e) {}
+    } catch (_e) {
+      // ignore
+    }
 
     const fonts = [];
     try {
       document.fonts.forEach((f) =>
         fonts.push({ family: f.family, status: f.status, style: f.style, weight: f.weight }),
       );
-    } catch (_e) {}
+    } catch (_e) {
+      // ignore
+    }
 
     const scripts = Array.from(document.scripts)
       .map((s) => s.src)
@@ -203,13 +217,16 @@ const THEMES = ["light", "dark"];
       const shotContext = await browser.newContext({
         viewport: { width: vp.width, height: vp.height },
         colorScheme: theme,
-        userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36",
+        userAgent:
+          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36",
       });
       const shotPage = await shotContext.newPage();
 
       try {
         await shotPage.goto(targetUrl, { waitUntil: "load", timeout: 90000 });
-        await shotPage.waitForLoadState("networkidle", { timeout: 10000 }).catch(() => {});
+        await shotPage.waitForLoadState("networkidle", { timeout: 10000 }).catch(() => {
+          // ignore
+        });
         await shotPage.waitForTimeout(3000); // Stable render
         await shotPage.screenshot({ path: filePath, fullPage: true });
         process.stdout.write("✅\n");
@@ -225,12 +242,12 @@ const THEMES = ["light", "dark"];
   console.log("\n📥 Downloading assets...");
   const manifest = { js: [], css: [], fonts: [], images: [], animations: [] };
   let downloaded = 0;
-  let skipped = 0;
+  let _skipped = 0;
 
   for (const entry of networkLog) {
     const category = categorizeAsset(entry.url, entry.type);
     if (!category) {
-      skipped++;
+      _skipped++;
       continue;
     }
 
@@ -241,7 +258,7 @@ const THEMES = ["light", "dark"];
       const destPath = path.join(assetsDir, category, filename);
 
       if (fs.existsSync(destPath)) {
-        skipped++;
+        _skipped++;
         continue;
       }
 
@@ -249,12 +266,18 @@ const THEMES = ["light", "dark"];
       manifest[category].push({ url: entry.url, local: `assets/${category}/${filename}` });
       downloaded++;
     } catch (_err) {
-      skipped++;
+      _skipped++;
     }
   }
 
-  fs.writeFileSync(path.join(outputDir, `${pageName}_manifest.json`), JSON.stringify(manifest, null, 2));
-  fs.writeFileSync(path.join(outputDir, `${pageName}_network.json`), JSON.stringify(networkLog, null, 2));
+  fs.writeFileSync(
+    path.join(outputDir, `${pageName}_manifest.json`),
+    JSON.stringify(manifest, null, 2),
+  );
+  fs.writeFileSync(
+    path.join(outputDir, `${pageName}_network.json`),
+    JSON.stringify(networkLog, null, 2),
+  );
   console.log(`✅ Saved ${pageName}_manifest.json and ${pageName}_network.json`);
 
   await browser.close();

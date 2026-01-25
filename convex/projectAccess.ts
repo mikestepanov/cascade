@@ -1,5 +1,6 @@
 import type { Id } from "./_generated/dataModel";
 import type { MutationCtx, QueryCtx } from "./_generated/server";
+import { BOUNDED_LIST_LIMIT } from "./lib/boundedQueries";
 import { forbidden } from "./lib/errors";
 import { isOrganizationAdmin } from "./lib/organizationAccess";
 import { notDeleted } from "./lib/softDeleteHelpers";
@@ -38,10 +39,11 @@ async function batchGetTeamRole(
   }
 
   // Query all team memberships for this user in one query
+  // Bounded - users shouldn't be in more teams than this
   const memberships = await ctx.db
     .query("teamMembers")
     .withIndex("by_user", (q) => q.eq("userId", userId))
-    .collect();
+    .take(BOUNDED_LIST_LIMIT);
 
   // Filter to only the teams we care about
   const relevantTeamIds = new Set(teamIds.map((id) => id.toString()));

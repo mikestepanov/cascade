@@ -1,5 +1,7 @@
+import { MINUTE } from "@convex-dev/rate-limiter";
 import { v } from "convex/values";
 import { asyncMap, pruneNull } from "convex-helpers";
+import { components } from "../_generated/api";
 import type { Id } from "../_generated/dataModel";
 import {
   authenticatedMutation,
@@ -8,14 +10,17 @@ import {
   projectEditorMutation,
 } from "../customFunctions";
 import { validate } from "../lib/constrainedValidators";
-import { validation } from "../lib/errors";
+import { rateLimited, validation } from "../lib/errors";
 import { cascadeDelete } from "../lib/relationships";
 import { assertCanEditProject, assertIsProjectAdmin } from "../projectAccess";
 import { workflowCategories } from "../validators";
 import {
+  assertVersionMatch,
   generateIssueKey,
   getMaxOrderForStatus,
+  getNextVersion,
   getSearchContent,
+  issueKeyExists,
   processIssueUpdates,
   validateParentIssue,
 } from "./helpers";
@@ -48,6 +53,34 @@ export const create = projectEditorMutation({
     storyPoints: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
+    // Rate limit: 60 issues per minute per user with burst capacity of 15
+    // Skip in test environment (convex-test doesn't support components)
+    if (!process.env.IS_TEST_ENV) {
+      const rateLimitResult = await ctx.runQuery(components.rateLimiter.lib.checkRateLimit, {
+        name: `createIssue:${ctx.userId}`,
+        config: {
+          kind: "token bucket",
+          rate: 60,
+          period: MINUTE,
+          capacity: 15,
+        },
+      });
+      if (!rateLimitResult.ok) {
+        throw rateLimited(rateLimitResult.retryAfter);
+      }
+
+      // Consume the rate limit token
+      await ctx.runMutation(components.rateLimiter.lib.rateLimit, {
+        name: `createIssue:${ctx.userId}`,
+        config: {
+          kind: "token bucket",
+          rate: 60,
+          period: MINUTE,
+          capacity: 15,
+        },
+      });
+    }
+
     // Validate input constraints
     validate.title(args.title);
     validate.description(args.description);
@@ -58,8 +91,16 @@ export const create = projectEditorMutation({
     // Validate parent/epic constraints
     const inheritedEpicId = await validateParentIssue(ctx, args.parentId, args.type, args.epicId);
 
-    // Generate issue key
-    const issueKey = await generateIssueKey(ctx, ctx.projectId, ctx.project.key);
+    // Generate issue key with duplicate detection
+    // In rare concurrent scenarios, we verify the key doesn't exist before using
+    let issueKey = await generateIssueKey(ctx, ctx.projectId, ctx.project.key);
+
+    // Double-check for duplicates (handles race conditions)
+    if (await issueKeyExists(ctx, issueKey)) {
+      // Regenerate with timestamp suffix to guarantee uniqueness
+      const suffix = Date.now() % 10000;
+      issueKey = `${issueKey}-${suffix}`;
+    }
 
     // Get the first workflow state as default status
     const defaultStatus = ctx.project.workflowStates[0]?.id || "todo";
@@ -101,6 +142,7 @@ export const create = projectEditorMutation({
       searchContent: getSearchContent(args.title, args.description),
       loggedHours: 0,
       order: maxOrder + 1,
+      version: 1, // Initial version for optimistic locking
     });
 
     // Log activity
@@ -118,8 +160,12 @@ export const updateStatus = issueMutation({
   args: {
     newStatus: v.string(),
     newOrder: v.number(),
+    expectedVersion: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
+    // Verify optimistic lock
+    assertVersionMatch(ctx.issue.version, args.expectedVersion);
+
     const oldStatus = ctx.issue.status;
     const now = Date.now();
 
@@ -127,6 +173,7 @@ export const updateStatus = issueMutation({
       status: args.newStatus,
       order: args.newOrder,
       updatedAt: now,
+      version: getNextVersion(ctx.issue.version),
     });
 
     if (oldStatus !== args.newStatus) {
@@ -146,8 +193,12 @@ export const updateStatusByCategory = issueMutation({
   args: {
     category: workflowCategories,
     newOrder: v.number(),
+    expectedVersion: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
+    // Verify optimistic lock
+    assertVersionMatch(ctx.issue.version, args.expectedVersion);
+
     const workflowStates = ctx.project?.workflowStates || [];
     const targetState = [...workflowStates]
       .sort((a, b) => a.order - b.order)
@@ -167,6 +218,7 @@ export const updateStatusByCategory = issueMutation({
       status: targetState.id,
       order: args.newOrder,
       updatedAt: now,
+      version: getNextVersion(ctx.issue.version),
     });
 
     if (oldStatus !== targetState.id) {
@@ -200,8 +252,13 @@ export const update = issueMutation({
     dueDate: v.optional(v.union(v.number(), v.null())),
     estimatedHours: v.optional(v.union(v.number(), v.null())),
     storyPoints: v.optional(v.union(v.number(), v.null())),
+    // Optimistic locking: pass current version to detect concurrent edits
+    expectedVersion: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
+    // Verify optimistic lock - throws conflict error if version mismatch
+    assertVersionMatch(ctx.issue.version, args.expectedVersion);
+
     const _now = Date.now();
     const changes: Array<{
       field: string;
@@ -210,6 +267,9 @@ export const update = issueMutation({
     }> = [];
 
     const updates = processIssueUpdates(ctx.issue, args, changes);
+
+    // Always increment version on update
+    updates.version = getNextVersion(ctx.issue.version);
 
     if (
       args.assigneeId !== undefined &&
@@ -230,16 +290,19 @@ export const update = issueMutation({
     if (Object.keys(updates).length > 0) {
       await ctx.db.patch(ctx.issue._id, updates);
 
-      for (const change of changes) {
-        await ctx.db.insert("issueActivity", {
-          issueId: ctx.issue._id,
-          userId: ctx.userId,
-          action: "updated",
-          field: change.field,
-          oldValue: String(change.oldValue || ""),
-          newValue: String(change.newValue || ""),
-        });
-      }
+      // Log all changes in parallel
+      await Promise.all(
+        changes.map((change) =>
+          ctx.db.insert("issueActivity", {
+            issueId: ctx.issue._id,
+            userId: ctx.userId,
+            action: "updated",
+            field: change.field,
+            oldValue: String(change.oldValue || ""),
+            newValue: String(change.newValue || ""),
+          }),
+        ),
+      );
     }
   },
 });
@@ -250,6 +313,33 @@ export const addComment = issueViewerMutation({
     mentions: v.optional(v.array(v.id("users"))),
   },
   handler: async (ctx, args) => {
+    // Rate limit: 120 comments per minute per user with burst of 20
+    // Skip in test environment (convex-test doesn't support components)
+    if (!process.env.IS_TEST_ENV) {
+      const rateLimitResult = await ctx.runQuery(components.rateLimiter.lib.checkRateLimit, {
+        name: `addComment:${ctx.userId}`,
+        config: {
+          kind: "token bucket",
+          rate: 120,
+          period: MINUTE,
+          capacity: 20,
+        },
+      });
+      if (!rateLimitResult.ok) {
+        throw rateLimited(rateLimitResult.retryAfter);
+      }
+
+      await ctx.runMutation(components.rateLimiter.lib.rateLimit, {
+        name: `addComment:${ctx.userId}`,
+        config: {
+          kind: "token bucket",
+          rate: 120,
+          period: MINUTE,
+          capacity: 20,
+        },
+      });
+    }
+
     const now = Date.now();
     const mentions = args.mentions || [];
 
@@ -271,9 +361,11 @@ export const addComment = issueViewerMutation({
     // Dynamic import to avoid cycles
     const { sendEmailNotification } = await import("../email/helpers");
 
-    for (const mentionedUserId of mentions) {
-      if (mentionedUserId !== ctx.userId) {
-        await ctx.db.insert("notifications", {
+    // Notify mentioned users in parallel
+    const mentionedOthers = mentions.filter((id) => id !== ctx.userId);
+    await Promise.all(
+      mentionedOthers.flatMap((mentionedUserId) => [
+        ctx.db.insert("notifications", {
           userId: mentionedUserId,
           type: "issue_mentioned",
           title: "You were mentioned",
@@ -281,17 +373,16 @@ export const addComment = issueViewerMutation({
           issueId: ctx.issue._id,
           projectId: ctx.projectId,
           isRead: false,
-        });
-
-        await sendEmailNotification(ctx, {
+        }),
+        sendEmailNotification(ctx, {
           userId: mentionedUserId,
           type: "mention",
           issueId: ctx.issue._id,
           actorId: ctx.userId,
           commentText: args.content,
-        });
-      }
-    }
+        }),
+      ]),
+    );
 
     if (ctx.issue.reporterId !== ctx.userId) {
       await ctx.db.insert("notifications", {

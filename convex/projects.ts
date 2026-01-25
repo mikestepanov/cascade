@@ -5,6 +5,7 @@ import { internal } from "./_generated/api";
 import type { Doc } from "./_generated/dataModel";
 import { authenticatedMutation, authenticatedQuery, projectAdminMutation } from "./customFunctions";
 import { batchFetchProjects, batchFetchUsers, getUserName } from "./lib/batchHelpers";
+import { BOUNDED_LIST_LIMIT } from "./lib/boundedQueries";
 import { ARRAY_LIMITS, validate } from "./lib/constrainedValidators";
 import { conflict, forbidden, notFound, validation } from "./lib/errors";
 import { fetchPaginatedQuery } from "./lib/queryHelpers";
@@ -282,12 +283,12 @@ export const getProject = authenticatedQuery({
 
     const creator = await ctx.db.get(project.createdBy);
 
-    // Get members with their roles from projectMembers table
+    // Get members with their roles from projectMembers table (bounded)
     const projectMembers = await ctx.db
       .query("projectMembers")
       .withIndex("by_project", (q) => q.eq("projectId", project._id))
       .filter(notDeleted)
-      .collect();
+      .take(BOUNDED_LIST_LIMIT);
 
     // Batch fetch all members to avoid N+1
     const memberUserIds = projectMembers.map((m) => m.userId);
@@ -340,12 +341,12 @@ export const getByKey = authenticatedQuery({
 
     const creator = await ctx.db.get(project.createdBy);
 
-    // Get members with their roles from projectMembers table
+    // Get members with their roles from projectMembers table (bounded)
     const memberships = await ctx.db
       .query("projectMembers")
       .withIndex("by_project", (q) => q.eq("projectId", project._id))
       .filter(notDeleted)
-      .collect();
+      .take(BOUNDED_LIST_LIMIT);
 
     // Batch fetch all members to avoid N+1
     const memberUserIds = memberships.map((m) => m.userId);
