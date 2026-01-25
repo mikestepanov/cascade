@@ -13,3 +13,7 @@
 ## 2026-01-24 - [Tooltip Provider Optimization]
 **Learning:** Wrapping every `Tooltip` in its own `TooltipProvider` creates excessive Context overhead and breaks Radix UI's "grace period" (one tooltip open at a time).
 **Action:** Move `TooltipProvider` to the application root (and test render wrapper) to share a single context, reducing DOM node count and enabling proper UX.
+
+## 2024-05-24 - [Query Optimization Regression]
+**Learning:** Optimizing a query by using a different index (e.g., filtering in memory instead of database) can change the implicit sort order. If the original query used an index that sorted by the field (e.g. `by_project_due_date`), switching to a non-sorting index (e.g. `by_sprint`) requires manual sorting in memory to preserve API contract.
+**Action:** When replacing a DB query with an in-memory filter, always verify if the original query provided a specific sort order and replicate it.
