@@ -31,6 +31,14 @@ Nixelo is a modern web application built with the following technologies:
 - **Verify File Paths**: Ensure imports point to existing files. Use `@/` alias for `src/` where configured.
 - **Context Awareness**: Read `README.md` and existing code to understand conventions before changing them.
 
+## Git Safety Protocol
+
+**CRITICAL**: Agents must prevent data loss during version control operations.
+
+1.  **Never** use `git reset --hard` or `git clean -fd` unless you have explicitly verified via `git status` that there are no uncommitted changes you intend to keep.
+2.  **Verify Commits**: Before resetting, ensure your previous `git commit` actually succeeded (check for linting failures or empty commits).
+3.  **Preserve Index**: Prefer `git reset --soft` or `git reset` (mixed) when correcting commit history.
+
 ## Testing
 
 ### Local Quality Checks

@@ -44,6 +44,18 @@ export const ROUTES = {
     path: "/$orgSlug/dashboard" as const,
     build: (orgSlug: string) => `/${orgSlug}/dashboard`,
   },
+  inbox: {
+    path: "/$orgSlug/inbox" as const,
+    build: (orgSlug: string) => `/${orgSlug}/inbox`,
+  },
+  analytics: {
+    path: "/$orgSlug/analytics" as const,
+    build: (orgSlug: string) => `/${orgSlug}/analytics`,
+  },
+  team: {
+    path: "/$orgSlug/team" as const,
+    build: (orgSlug: string) => `/${orgSlug}/team`,
+  },
 
   documents: {
     list: {
