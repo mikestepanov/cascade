@@ -1,8 +1,8 @@
-import React from "react";
-import { useSidebar } from "./SidebarContext";
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
 import { Menu, PanelLeftClose, PanelLeftOpen } from "lucide-react";
+import type React from "react";
+import { Button } from "@/components/ui/Button";
+import { cn } from "@/lib/utils";
+import { useSidebar } from "./SidebarContext";
 
 export function SidebarLayout({
   sidebar,
@@ -14,15 +14,15 @@ export function SidebarLayout({
   const { state, isMobile, isOpenMobile, closeMobileMenu, toggleSidebar } = useSidebar();
 
   // CSS Variables for smooth pure-css transitions where possible
-  const sidebarWidth = state === "expanded" ? "240px" : "56px";
+  // constant widths removed in favor of tailwind classes
 
   return (
     <div className="flex min-h-screen w-full bg-ui-bg-base overflow-hidden">
       {/* --- Desktop Sidebar --- */}
       <aside
         className={cn(
-          "hidden md:flex flex-col border-r border-ui-border-primary bg-ui-bg-secondary/50 backdrop-blur-xl transition-[width] duration-300 ease-[cubic-bezier(0.2,0,0,1)] will-change-[width] z-20",
-          state === "expanded" ? "w-[240px]" : "w-[56px]"
+          "hidden md:flex flex-col border-r border-ui-border-primary bg-ui-bg-secondary/50 backdrop-blur-xl transition-[width] duration-300 ease-in-out will-change-[width] z-20",
+          state === "expanded" ? "w-60" : "w-14",
         )}
       >
         {sidebar}
@@ -35,15 +35,15 @@ export function SidebarLayout({
           <div
             className={cn(
               "fixed inset-0 bg-black/40 backdrop-blur-sm z-40 transition-opacity duration-300",
-              isOpenMobile ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+              isOpenMobile ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none",
             )}
             onClick={closeMobileMenu}
           />
           {/* Drawer */}
           <aside
             className={cn(
-              "fixed inset-y-0 left-0 w-[280px] bg-ui-bg-secondary border-r border-ui-border-primary z-50 shadow-2xl transform transition-transform duration-300 cubic-bezier(0.2,0,0,1)",
-              isOpenMobile ? "translate-x-0" : "-translate-x-full"
+              "fixed inset-y-0 left-0 w-72 bg-ui-bg-secondary border-r border-ui-border-primary z-50 shadow-2xl transform transition-transform duration-300 ease-in-out",
+              isOpenMobile ? "translate-x-0" : "-translate-x-full",
             )}
           >
             {sidebar}
@@ -65,9 +65,8 @@ export function SidebarLayout({
 
         {/* Scrollable Content */}
         <div className="flex-1 overflow-y-auto overflow-x-hidden relative scroll-smooth">
-           {children}
+          {children}
         </div>
-        
       </main>
     </div>
   );

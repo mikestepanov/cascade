@@ -150,8 +150,7 @@ const THEMES = ["light", "dark"];
         try {
           for (const rule of sheet.cssRules) {
             if (rule.style) {
-              for (let i = 0; i < rule.style.length; i++) {
-                const prop = rule.style[i];
+              for (const prop of rule.style) {
                 if (prop.startsWith("--")) {
                   cssVars[prop] = rule.style.getPropertyValue(prop).trim();
                 }
@@ -204,6 +203,8 @@ const THEMES = ["light", "dark"];
     JSON.stringify(deepData, null, 2),
   );
   console.log(`✅ Saved ${pageName}_deep.json`);
+
+  await technicalContext.close();
 
   // --- Visual Multi-Shot (12-shot) ---
   console.log("\n📸 Starting 12-shot visual capture...");

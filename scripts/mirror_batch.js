@@ -18,7 +18,7 @@ const TARGETS = [
   { url: "https://clickup.com/features", competitor: "clickup", page: "features" },
 
   // Notion
-  { url: "https://notion.so", competitor: "notion", page: "home" },
+  { url: "https://www.notion.so", competitor: "notion", page: "home" },
   { url: "https://www.notion.so/product", competitor: "notion", page: "product" },
   { url: "https://www.notion.so/pricing", competitor: "notion", page: "pricing" },
 

@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import type React from "react";
+import { createContext, useCallback, useContext, useEffect, useState } from "react";
 
 type SidebarState = "expanded" | "collapsed";
 
@@ -22,12 +23,19 @@ export function SidebarProvider({ children }: { children: React.ReactNode }) {
   const [state, setState] = useState<SidebarState>(() => {
     if (typeof window !== "undefined") {
       const saved = localStorage.getItem(STORAGE_KEY);
-      return (saved as SidebarState) || "expanded";
+      if (saved === "expanded" || saved === "collapsed") {
+        return saved;
+      }
     }
     return "expanded";
   });
 
-  const [isMobile, setIsMobile] = useState(false);
+  const [isMobile, setIsMobile] = useState(() => {
+    if (typeof window !== "undefined") {
+      return window.innerWidth < MOBILE_BREAKPOINT;
+    }
+    return false;
+  });
   const [isOpenMobile, setIsOpenMobile] = useState(false);
 
   // Handle Resize for Mobile Detection
@@ -55,30 +63,37 @@ export function SidebarProvider({ children }: { children: React.ReactNode }) {
   }, [state, isMobile]);
 
   // Keyboard shortcut `[` to toggle
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "[" && !["INPUT", "TEXTAREA"].includes((e.target as HTMLElement).tagName)) {
-        toggleSidebar();
-      }
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [state, isMobile]); // Dependency on state/isMobile is minor, but accurate 
+  const toggleMobileMenu = () => setIsOpenMobile((prev) => !prev);
+  const closeMobileMenu = () => setIsOpenMobile(false);
 
-  const toggleSidebar = () => {
+  const toggleSidebar = useCallback(() => {
     if (isMobile) {
       toggleMobileMenu();
     } else {
       setState((prev) => (prev === "expanded" ? "collapsed" : "expanded"));
     }
-  };
+  }, [isMobile]);
+
+  // Keyboard shortcut `[` to toggle
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement;
+      const isEditable = ["INPUT", "TEXTAREA"].includes(target.tagName) || target.isContentEditable;
+      if (e.key === "[" && !isEditable) {
+        toggleSidebar();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [toggleSidebar]);
+
+  // toggleSidebar moved up for useCallback
 
   const setSidebarState = (newState: SidebarState) => {
     setState(newState);
   };
 
-  const toggleMobileMenu = () => setIsOpenMobile((prev) => !prev);
-  const closeMobileMenu = () => setIsOpenMobile(false);
+  // Mobile menu handlers moved up
 
   return (
     <SidebarContext.Provider
