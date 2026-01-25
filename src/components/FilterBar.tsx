@@ -15,6 +15,7 @@ import {
 import { Flex } from "./ui/Flex";
 import { Checkbox, Input } from "./ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/Select";
+import { Tooltip } from "./ui/Tooltip";
 
 type FilterValues = Record<string, unknown>;
 
@@ -202,16 +203,17 @@ export function FilterBar({ projectId, onFilterChange }: FilterBarProps) {
                 {filter.name}
               </Button>
               {filter.isOwner && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => handleDeleteFilter(filter._id)}
-                  className="p-0 min-h-0 text-ui-text-tertiary hover:text-status-error"
-                  title="Delete"
-                  aria-label="Delete filter"
-                >
-                  ✕
-                </Button>
+                <Tooltip content="Delete filter">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => handleDeleteFilter(filter._id)}
+                    className="p-0 min-h-0 text-ui-text-tertiary hover:text-status-error"
+                    aria-label="Delete filter"
+                  >
+                    ✕
+                  </Button>
+                </Tooltip>
               )}
             </Flex>
           ))}
