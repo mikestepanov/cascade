@@ -50,7 +50,7 @@ export function TemplateCard({ template, onEdit, onDelete }: TemplateCardProps) 
             <span className="text-xs px-2 py-0.5 bg-ui-bg-tertiary text-ui-text-primary rounded capitalize">
               {template.type}
             </span>
-            <span className="text-xs px-2 py-0.5 bg-brand-100 dark:bg-brand-900/30 text-brand-700 dark:text-brand-300 rounded capitalize">
+            <span className="text-xs px-2 py-0.5 bg-brand-100 text-brand-700 rounded capitalize">
               {template.defaultPriority}
             </span>
           </Flex>

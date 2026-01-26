@@ -306,7 +306,7 @@ export function CreateIssueModal({
               <Flex
                 align="center"
                 gap="xs"
-                className="text-sm text-status-success dark:text-status-success"
+                className="text-sm text-status-success"
                 aria-live="polite"
               >
                 <span>✓</span>
@@ -396,7 +396,7 @@ export function CreateIssueModal({
                     className={cn(
                       "inline-flex items-center px-3 py-1 rounded-full text-sm font-medium text-white transition-opacity",
                       selectedLabels.includes(label._id)
-                        ? "opacity-100 ring-2 ring-offset-2 ring-brand-600 dark:ring-brand-500"
+                        ? "opacity-100 ring-2 ring-offset-2 ring-brand-600"
                         : "opacity-60 hover:opacity-80",
                     )}
                     style={{ backgroundColor: label.color }}

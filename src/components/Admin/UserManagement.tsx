@@ -140,12 +140,9 @@ export function UserManagement() {
 
   const getStatusBadge = (status: string) => {
     const badges = {
-      pending:
-        "bg-status-warning-bg dark:bg-status-warning-dark text-status-warning dark:text-status-warning-dark",
-      accepted:
-        "bg-status-success-bg dark:bg-status-success-dark text-status-success dark:text-status-success-dark",
-      revoked:
-        "bg-status-error-bg dark:bg-status-error-dark text-status-error dark:text-status-error-dark",
+      pending: "bg-status-warning-bg text-status-warning",
+      accepted: "bg-status-success-bg text-status-success",
+      revoked: "bg-status-error-bg text-status-error",
       expired: "bg-ui-bg-tertiary text-ui-text-secondary",
     };
     return badges[status as keyof typeof badges] || badges.pending;
@@ -177,7 +174,7 @@ export function UserManagement() {
             className={cn(
               "py-4 px-1 border-b-2 font-medium text-sm transition-colors",
               activeTab === "invites"
-                ? "border-brand-500 text-brand-600 dark:text-brand-400"
+                ? "border-brand-500 text-brand-600"
                 : "border-transparent text-ui-text-secondary hover:text-ui-text-primary hover:border-ui-border-secondary",
             )}
           >
@@ -189,7 +186,7 @@ export function UserManagement() {
             className={cn(
               "py-4 px-1 border-b-2 font-medium text-sm transition-colors",
               activeTab === "users"
-                ? "border-brand-500 text-brand-600 dark:text-brand-400"
+                ? "border-brand-500 text-brand-600"
                 : "border-transparent text-ui-text-secondary hover:text-ui-text-primary hover:border-ui-border-secondary",
             )}
           >
@@ -294,7 +291,7 @@ export function UserManagement() {
             ) : (
               <div className="overflow-x-auto">
                 <table
-                  className="min-w-full divide-y divide-ui-border-primary dark:divide-ui-border-primary-dark"
+                  className="min-w-full divide-y divide-ui-border-primary"
                   aria-label="User invitations"
                 >
                   <thead className="bg-ui-bg-secondary">
@@ -343,7 +340,7 @@ export function UserManagement() {
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="bg-ui-bg-primary divide-y divide-ui-border-primary dark:divide-ui-border-primary-dark">
+                  <tbody className="bg-ui-bg-primary divide-y divide-ui-border-primary">
                     {invites.map(
                       (
                         invite: Doc<"invites"> & { acceptedByName?: string; inviterName?: string },
@@ -353,7 +350,7 @@ export function UserManagement() {
                             {invite.email}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm">
-                            <span className="px-2 py-1 rounded text-xs font-medium bg-brand-100 dark:bg-brand-900 text-brand-800 dark:text-brand-200 capitalize">
+                            <span className="px-2 py-1 rounded text-xs font-medium bg-brand-100 text-brand-800 capitalize">
                               {invite.role}
                             </span>
                           </td>
@@ -384,7 +381,7 @@ export function UserManagement() {
                                     onClick={() => handleResendInvite(invite._id)}
                                     variant="ghost"
                                     size="sm"
-                                    className="text-brand-600 dark:text-brand-400 hover:text-brand-700 dark:hover:text-brand-300"
+                                    className="text-brand-600 hover:text-brand-700:text-brand-300"
                                     aria-label="Resend invitation"
                                   >
                                     Resend
@@ -393,7 +390,7 @@ export function UserManagement() {
                                     onClick={() => handleRevokeInvite(invite._id)}
                                     variant="ghost"
                                     size="sm"
-                                    className="text-status-error hover:text-status-error dark:hover:text-status-error"
+                                    className="text-status-error hover:text-status-error:text-status-error"
                                     aria-label="Revoke invitation"
                                   >
                                     Revoke
@@ -430,7 +427,7 @@ export function UserManagement() {
             ) : (
               <div className="overflow-x-auto">
                 <table
-                  className="min-w-full divide-y divide-ui-border-primary dark:divide-ui-border-primary-dark"
+                  className="min-w-full divide-y divide-ui-border-primary"
                   aria-label="Platform users"
                 >
                   <thead className="bg-ui-bg-secondary">
@@ -467,7 +464,7 @@ export function UserManagement() {
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="bg-ui-bg-primary divide-y divide-ui-border-primary dark:divide-ui-border-primary-dark">
+                  <tbody className="bg-ui-bg-primary divide-y divide-ui-border-primary">
                     {users.map((user) => (
                       <UserRow key={user._id} user={user} />
                     ))}

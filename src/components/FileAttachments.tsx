@@ -188,7 +188,7 @@ export function FileAttachments({ issueId }: FileAttachmentsProps) {
                   <a
                     href={attachment.url || "#"}
                     download={attachment.filename}
-                    className="text-sm font-medium text-brand-600 dark:text-brand-400 hover:text-brand-700 dark:hover:text-brand-500 truncate block"
+                    className="text-sm font-medium text-brand-600 hover:text-brand-700:text-brand-500 truncate block"
                   >
                     {attachment.filename}
                   </a>
@@ -201,7 +201,7 @@ export function FileAttachments({ issueId }: FileAttachmentsProps) {
                 <a
                   href={attachment.url || "#"}
                   download={attachment.filename}
-                  className="p-1 text-ui-text-secondary hover:text-brand-600 dark:hover:text-brand-400 rounded"
+                  className="p-1 text-ui-text-secondary hover:text-brand-600:text-brand-400 rounded"
                   title="Download"
                 >
                   <span className="sr-only">Download {attachment.filename}</span>

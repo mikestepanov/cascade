@@ -37,9 +37,7 @@ export function OfflineTab() {
               <Typography
                 className={cn(
                   "text-sm mt-1",
-                  isOnline
-                    ? "text-status-success dark:text-status-success"
-                    : "text-status-error dark:text-status-error",
+                  isOnline ? "text-status-success" : "text-status-error",
                 )}
               >
                 {isOnline ? "✓ You are online" : "✗ You are offline"}

@@ -83,13 +83,13 @@ export function EventDetailsModal({ eventId, open, onOpenChange }: EventDetailsM
   const getEventTypeColor = (eventType: string) => {
     switch (eventType) {
       case "meeting":
-        return "bg-brand-100 text-brand-800 dark:bg-brand-900 dark:text-brand-200";
+        return "bg-brand-100 text-brand-800";
       case "deadline":
-        return "bg-status-error-bg text-status-error dark:bg-status-error-dark dark:text-status-error-dark";
+        return "bg-status-error-bg text-status-error";
       case "timeblock":
-        return "bg-status-success-bg text-status-success dark:bg-status-success-dark dark:text-status-success-dark";
+        return "bg-status-success-bg text-status-success";
       case "personal":
-        return "bg-accent-100 text-accent-800 dark:bg-accent-900 dark:text-accent-200";
+        return "bg-accent-100 text-accent-800";
       default:
         return "bg-ui-bg-tertiary text-ui-text-secondary";
     }
@@ -98,11 +98,11 @@ export function EventDetailsModal({ eventId, open, onOpenChange }: EventDetailsM
   const getStatusColor = (status: string) => {
     switch (status) {
       case "confirmed":
-        return "bg-status-success-bg text-status-success dark:bg-status-success-dark dark:text-status-success-dark";
+        return "bg-status-success-bg text-status-success";
       case "tentative":
-        return "bg-status-warning-bg text-status-warning dark:bg-status-warning-dark dark:text-status-warning-dark";
+        return "bg-status-warning-bg text-status-warning";
       case "cancelled":
-        return "bg-status-error-bg text-status-error dark:bg-status-error-dark dark:text-status-error-dark";
+        return "bg-status-error-bg text-status-error";
       default:
         return "bg-ui-bg-tertiary text-ui-text-secondary";
     }
@@ -201,7 +201,7 @@ export function EventDetailsModal({ eventId, open, onOpenChange }: EventDetailsM
                     href={event.meetingUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="font-medium text-brand-600 hover:text-brand-700 dark:text-brand-400 dark:hover:text-brand-300"
+                    className="font-medium text-brand-600 hover:text-brand-700:text-brand-300"
                   >
                     Join Meeting
                   </a>

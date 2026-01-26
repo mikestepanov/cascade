@@ -73,7 +73,7 @@ export function SubtasksList({ issueId, projectId, subtasks }: SubtasksListProps
         <button
           type="button"
           onClick={() => setIsCreatingSubtask(true)}
-          className="text-sm text-brand-600 dark:text-brand-400 hover:text-brand-700 dark:hover:text-brand-500 font-medium"
+          className="text-sm text-brand-600 hover:text-brand-700:text-brand-500 font-medium"
         >
           + Add Sub-task
         </button>

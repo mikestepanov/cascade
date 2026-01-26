@@ -23,7 +23,7 @@ const CATEGORY_OPTIONS = [
 ];
 
 const CATEGORY_COLORS: Record<string, string> = {
-  todo: "bg-ui-bg-tertiary dark:bg-ui-bg-tertiary-dark text-ui-text-primary dark:text-ui-text-primary-dark",
+  todo: "bg-ui-bg-tertiary text-ui-text-primary",
   inprogress: "bg-status-info/20 text-status-info",
   done: "bg-status-success/20 text-status-success",
 };

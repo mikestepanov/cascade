@@ -114,7 +114,7 @@ export function PumbleIntegration() {
             href="https://help.pumble.com/hc/en-us/articles/360041954051-Incoming-webhooks"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-sm text-accent-600 dark:text-accent-400 hover:text-accent-700 dark:hover:text-accent-300"
+            className="text-sm text-accent-600 hover:text-accent-700:text-accent-300"
           >
             <Flex gap="xs" align="center">
               <span>How to create a Pumble incoming webhook</span>
@@ -153,10 +153,10 @@ function EmptyState({ onAddWebhook }: { onAddWebhook: () => void }) {
       <Flex
         align="center"
         justify="center"
-        className="mx-auto w-16 h-16 bg-accent-100 dark:bg-accent-900/20 rounded-full mb-4"
+        className="mx-auto w-16 h-16 bg-accent-100 rounded-full mb-4"
       >
         <svg
-          className="w-8 h-8 text-accent-600 dark:text-accent-400"
+          className="w-8 h-8 text-accent-600"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -240,7 +240,7 @@ function WebhookCard({ webhook, projects }: WebhookCardProps) {
     : "No URL";
 
   return (
-    <div className="border border-ui-border-primary rounded-lg p-4 hover:border-accent-300 dark:hover:border-accent-700 transition-colors">
+    <div className="border border-ui-border-primary rounded-lg p-4 hover:border-accent-300:border-accent-700 transition-colors">
       <Flex justify="between" align="start" className="mb-3">
         <div className="flex-1">
           <Flex gap="sm" align="center" className="mb-1">
@@ -271,7 +271,7 @@ function WebhookCard({ webhook, projects }: WebhookCardProps) {
         {webhook.events.map((event: string) => (
           <span
             key={event}
-            className="px-2 py-0.5 text-xs font-medium bg-accent-100 dark:bg-accent-900/30 text-accent-800 dark:text-accent-300 rounded"
+            className="px-2 py-0.5 text-xs font-medium bg-accent-100 text-accent-800 rounded"
           >
             {event.replace("issue.", "")}
           </span>
@@ -291,7 +291,7 @@ function WebhookCard({ webhook, projects }: WebhookCardProps) {
           onClick={handleTest}
           variant="ghost"
           size="sm"
-          className="text-accent-600 dark:text-accent-400 hover:bg-accent-50 dark:hover:bg-accent-900/20"
+          className="text-accent-600 hover:bg-accent-50:bg-accent-900/20"
         >
           Test Webhook
         </Button>

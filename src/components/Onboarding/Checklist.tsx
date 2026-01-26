@@ -123,7 +123,7 @@ export function OnboardingChecklist() {
                   "flex-shrink-0 w-5 h-5 rounded-full border-2 flex items-center justify-center mt-0.5 transition-all",
                   item.completed
                     ? "bg-status-success border-status-success"
-                    : "border-ui-border-secondary dark:border-ui-border-secondary-dark",
+                    : "border-ui-border-secondary",
                 )}
               >
                 {item.completed && <Check className="w-3 h-3 text-white" />}
@@ -132,9 +132,7 @@ export function OnboardingChecklist() {
                 <Typography
                   className={cn(
                     "font-medium text-sm",
-                    item.completed
-                      ? "text-ui-text-tertiary dark:text-ui-text-tertiary-dark line-through"
-                      : "text-ui-text-primary dark:text-ui-text-primary-dark",
+                    item.completed ? "text-ui-text-tertiary line-through" : "text-ui-text-primary",
                   )}
                 >
                   {item.title}
@@ -148,11 +146,11 @@ export function OnboardingChecklist() {
 
           {/* Completion Message */}
           {allComplete && (
-            <div className="mt-4 p-3 bg-status-success/10 dark:bg-status-success/20 rounded-lg border border-status-success/30 dark:border-status-success/50">
-              <Typography className="text-sm font-medium text-status-success dark:text-status-success">
+            <div className="mt-4 p-3 bg-status-success/10 rounded-lg border border-status-success/30">
+              <Typography className="text-sm font-medium text-status-success">
                 🎉 Congratulations! You've completed the basics.
               </Typography>
-              <Typography className="text-xs text-status-success/90 dark:text-status-success/80 mt-1">
+              <Typography className="text-xs text-status-success/90 mt-1">
                 You're ready to use Nixelo! Feel free to dismiss this checklist.
               </Typography>
             </div>

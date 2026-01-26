@@ -93,8 +93,8 @@ export function ApiKeysManager() {
         )}
 
         {/* Documentation Link */}
-        <div className="mt-6 p-4 bg-brand-50 dark:bg-brand-900/20 rounded-lg border border-brand-200 dark:border-brand-800">
-          <Typography className="text-sm text-brand-900 dark:text-brand-100">
+        <div className="mt-6 p-4 bg-brand-50 rounded-lg border border-brand-200">
+          <Typography className="text-sm text-brand-900">
             📚 <strong>Need help?</strong> Check out the{" "}
             <a
               href="/docs/API.md"
@@ -205,10 +205,7 @@ function ApiKeyCard({ apiKey, onViewStats }: { apiKey: ApiKey; onViewStats: () =
           {/* Scopes */}
           <Flex className="flex-wrap gap-1 mb-3">
             {apiKey.scopes.map((scope: string) => (
-              <span
-                key={scope}
-                className="px-2 py-0.5 text-xs bg-brand-100 text-brand-800 dark:bg-brand-900/30 dark:text-brand-400 rounded"
-              >
+              <span key={scope} className="px-2 py-0.5 text-xs bg-brand-100 text-brand-800 rounded">
                 {scope}
               </span>
             ))}
@@ -247,7 +244,7 @@ function ApiKeyCard({ apiKey, onViewStats }: { apiKey: ApiKey; onViewStats: () =
               onClick={onViewStats}
               variant="ghost"
               size="sm"
-              className="p-2 min-w-0 text-ui-text-tertiary hover:text-brand-600 dark:hover:text-brand-400"
+              className="p-2 min-w-0 text-ui-text-tertiary hover:text-brand-600:text-brand-400"
               aria-label="View usage statistics"
             >
               <TrendingUp className="h-4 w-4" />
@@ -271,7 +268,7 @@ function ApiKeyCard({ apiKey, onViewStats }: { apiKey: ApiKey; onViewStats: () =
               variant="ghost"
               size="sm"
               isLoading={isDeleting}
-              className="p-2 min-w-0 text-ui-text-tertiary hover:text-status-error dark:hover:text-status-error"
+              className="p-2 min-w-0 text-ui-text-tertiary hover:text-status-error:text-status-error"
               aria-label="Delete key"
             >
               <Trash2 className="h-4 w-4" />
@@ -433,7 +430,7 @@ function GenerateKeyModal({
                   align="center"
                   className="mx-auto h-12 w-12 rounded-full bg-status-success-bg mb-4"
                 >
-                  <Key className="h-6 w-6 text-status-success dark:text-status-success" />
+                  <Key className="h-6 w-6 text-status-success" />
                 </Flex>
                 <Typography
                   variant="h3"
@@ -533,7 +530,7 @@ function UsageStatsModal({
                 <Typography className="text-xs text-ui-text-secondary mb-1">
                   Success Rate
                 </Typography>
-                <Typography className="text-2xl font-bold text-status-success dark:text-status-success">
+                <Typography className="text-2xl font-bold text-status-success">
                   {stats.last24Hours > 0
                     ? Math.round((stats.successCount / stats.last24Hours) * 100)
                     : 100}
@@ -564,9 +561,7 @@ function UsageStatsModal({
                   {stats.recentLogs.map((log: UsageLog) => (
                     <div
                       key={`${log.endpoint}-${log.createdAt}`}
-                      className={cn(
-                        "p-3 bg-ui-bg-secondary dark:bg-ui-bg-secondary-dark rounded-lg text-sm",
-                      )}
+                      className={cn("p-3 bg-ui-bg-secondary rounded-lg text-sm")}
                     >
                       <Flex justify="between" align="center" className="mb-1">
                         <Flex gap="sm" align="center">
@@ -579,8 +574,8 @@ function UsageStatsModal({
                           className={cn(
                             "px-2 py-0.5 text-xs font-medium rounded",
                             log.statusCode < 400
-                              ? "bg-status-success/10 text-status-success dark:bg-status-success/20 dark:text-status-success"
-                              : "bg-status-error/10 text-status-error dark:bg-status-error/20 dark:text-status-error",
+                              ? "bg-status-success/10 text-status-success"
+                              : "bg-status-error/10 text-status-error",
                           )}
                         >
                           {log.statusCode}
@@ -593,9 +588,7 @@ function UsageStatsModal({
                         {log.error && (
                           <>
                             <span>•</span>
-                            <span className="text-status-error dark:text-status-error">
-                              {log.error}
-                            </span>
+                            <span className="text-status-error">{log.error}</span>
                           </>
                         )}
                       </Flex>

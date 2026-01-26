@@ -253,17 +253,14 @@ export function NotificationsTab() {
       </Card>
 
       {/* Help Text */}
-      <div className="mt-6 p-4 bg-brand-50 dark:bg-brand-950 rounded-lg border border-brand-200 dark:border-brand-800">
+      <div className="mt-6 p-4 bg-brand-50 rounded-lg border border-brand-200">
         <Flex gap="md">
-          <span className="text-brand-600 dark:text-brand-400 text-xl">ℹ️</span>
+          <span className="text-brand-600 text-xl">ℹ️</span>
           <div className="flex-1">
-            <Typography
-              variant="h4"
-              className="font-medium text-brand-900 dark:text-brand-100 mb-1"
-            >
+            <Typography variant="h4" className="font-medium text-brand-900 mb-1">
               Email Configuration
             </Typography>
-            <Typography variant="p" className="text-sm text-brand-800 dark:text-brand-200">
+            <Typography variant="p" className="text-sm text-brand-800">
               Email notifications require Resend API configuration. If you're not receiving emails,
               contact your administrator to set up email notifications.
             </Typography>

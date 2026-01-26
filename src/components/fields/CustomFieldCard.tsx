@@ -86,12 +86,7 @@ export function CustomFieldCard({ field, onEdit, onDelete }: CustomFieldCardProp
           <Button onClick={onEdit} variant="secondary" size="sm">
             Edit
           </Button>
-          <Button
-            onClick={onDelete}
-            variant="secondary"
-            size="sm"
-            className="text-status-error dark:text-status-error"
-          >
+          <Button onClick={onDelete} variant="secondary" size="sm" className="text-status-error">
             Delete
           </Button>
         </Flex>

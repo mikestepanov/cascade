@@ -169,7 +169,7 @@ export function CustomFieldValues({ issueId, projectId }: CustomFieldValuesProps
             href={value}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-brand-600 dark:text-brand-400 hover:underline"
+            className="text-brand-600 hover:underline"
           >
             {value}
           </a>
@@ -184,7 +184,7 @@ export function CustomFieldValues({ issueId, projectId }: CustomFieldValuesProps
             {value.split(",").map((option) => (
               <span
                 key={option.trim()}
-                className="text-xs px-2 py-1 bg-brand-100 dark:bg-brand-900 text-brand-800 dark:text-brand-200 rounded"
+                className="text-xs px-2 py-1 bg-brand-100 text-brand-800 rounded"
               >
                 {option.trim()}
               </span>

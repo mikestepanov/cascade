@@ -115,7 +115,7 @@ export function ExportPanel({ projectId, sprintId, status }: ExportPanelProps) {
               "p-4 cursor-pointer transition-all",
               exportFormat === "csv"
                 ? "ring-2 ring-primary bg-primary/5"
-                : "hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark",
+                : "hover:bg-ui-bg-secondary:bg-ui-bg-secondary-dark",
             )}
           >
             <Flex gap="md" align="center">
@@ -133,7 +133,7 @@ export function ExportPanel({ projectId, sprintId, status }: ExportPanelProps) {
               "p-4 cursor-pointer transition-all",
               exportFormat === "json"
                 ? "ring-2 ring-primary bg-primary/5"
-                : "hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark",
+                : "hover:bg-ui-bg-secondary:bg-ui-bg-secondary-dark",
             )}
           >
             <Flex gap="md" align="center">
@@ -147,14 +147,14 @@ export function ExportPanel({ projectId, sprintId, status }: ExportPanelProps) {
         </div>
       </div>
 
-      <div className="bg-brand-50 dark:bg-brand-900/20 border border-brand-200 dark:border-brand-800 rounded-lg p-4">
+      <div className="bg-brand-50 border border-brand-200 rounded-lg p-4">
         <Flex gap="md" align="start">
-          <div className="text-brand-600 dark:text-brand-400 text-xl">ℹ️</div>
-          <div className="text-sm text-brand-800 dark:text-brand-200">
+          <div className="text-brand-600 text-xl">ℹ️</div>
+          <div className="text-sm text-brand-800">
             <Typography variant="p" className="font-semibold mb-1">
               Export Information
             </Typography>
-            <ul className="list-disc list-inside space-y-1 text-brand-700 dark:text-brand-300">
+            <ul className="list-disc list-inside space-y-1 text-brand-700">
               <li>CSV format is compatible with Excel, Google Sheets</li>
               <li>JSON format includes full issue data and metadata</li>
               <li>

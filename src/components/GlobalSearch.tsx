@@ -103,7 +103,7 @@ function SearchTab({
       className={cn(
         "pb-2 px-1 text-xs sm:text-sm font-medium border-b-2 transition-colors whitespace-nowrap",
         isActive
-          ? "border-brand-500 text-brand-600 dark:text-brand-400"
+          ? "border-brand-500 text-brand-600"
           : "border-transparent text-ui-text-secondary hover:text-ui-text-primary",
       )}
     >
@@ -174,7 +174,7 @@ function SearchListContent({
             variant="ghost"
             size="sm"
             onClick={onLoadMore}
-            className="w-full text-brand-600 dark:text-brand-400 bg-brand-50 dark:bg-brand-900/30 hover:bg-brand-100 dark:hover:bg-brand-900/50"
+            className="w-full text-brand-600 bg-brand-50 hover:bg-brand-100:bg-brand-900/50"
           >
             Load More ({totalCount - filteredResults.length} remaining)
           </Button>

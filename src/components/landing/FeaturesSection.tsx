@@ -8,21 +8,21 @@ import { ArrowIcon } from "./icons";
 export function FeaturesSection() {
   const features = [
     {
-      icon: <FileText className="w-6 h-6 text-cyan-600 dark:text-cyan-400" />,
+      icon: <FileText className="w-6 h-6 text-cyan-600" />,
       title: "Docs and issues, finally together",
       description:
         "No more tab-switching between your wiki and your task board. Link specs to tickets, discussions to sprints. All in one place.",
       gradient: "cyan" as const,
     },
     {
-      icon: <Users className="w-6 h-6 text-teal-600 dark:text-teal-400" />,
+      icon: <Users className="w-6 h-6 text-teal-600" />,
       title: "Edit together, in real-time",
       description:
         "See who's typing, where they are, what changed. Collaborate like you're in the same room, even when you're not.",
       gradient: "teal" as const,
     },
     {
-      icon: <PanelsTopLeft className="w-6 h-6 text-purple-600 dark:text-purple-400" />,
+      icon: <PanelsTopLeft className="w-6 h-6 text-purple-600" />,
       title: "See everything. Miss nothing.",
       description:
         "One dashboard that actually makes sense. No more digging through 5 different tools to find what you need.",
@@ -88,8 +88,8 @@ function FeatureCard({
     <div
       className={cn(
         "group relative p-6 rounded-2xl",
-        "bg-linear-to-b from-gray-100/80 to-gray-200/50 dark:from-gray-800/50 dark:to-gray-900/50",
-        "border border-gray-300/40 dark:border-gray-700/40",
+        "bg-linear-to-b from-gray-100/80 to-gray-200/50",
+        "border border-gray-300/40",
         "backdrop-blur-md",
         "transition-all duration-300",
         "hover:shadow-xl hover:-translate-y-1",

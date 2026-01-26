@@ -311,9 +311,9 @@ export function UserTypeManager() {
   const getTypeColor = (type: EmploymentType) => {
     switch (type) {
       case "employee":
-        return "bg-brand-100 text-brand-700 dark:bg-brand-900/30 dark:text-brand-300";
+        return "bg-brand-100 text-brand-700";
       case "contractor":
-        return "bg-accent-100 text-accent-700 dark:bg-accent-900/30 dark:text-accent-300";
+        return "bg-accent-100 text-accent-700";
       case "intern":
         return "bg-status-success-bg text-status-success-text";
     }
@@ -428,7 +428,7 @@ export function UserTypeManager() {
         <CardBody>
           {/* Users without profiles */}
           {usersWithoutProfiles && usersWithoutProfiles.length > 0 && (
-            <div className="mb-6 p-4 bg-status-warning-bg border border-status-warning dark:border-status-warning rounded-lg">
+            <div className="mb-6 p-4 bg-status-warning-bg border border-status-warning rounded-lg">
               <Typography variant="h4" className="font-semibold text-status-warning-text mb-2">
                 Unassigned Users ({usersWithoutProfiles.length})
               </Typography>
@@ -762,12 +762,9 @@ export function UserTypeManager() {
 
               {/* Equity Compensation Section (Employees Only) */}
               {profileType === "employee" && (
-                <div className="p-4 bg-brand-50 dark:bg-brand-900/20 border border-brand-200 dark:border-brand-800 rounded-lg">
+                <div className="p-4 bg-brand-50 border border-brand-200 rounded-lg">
                   <Flex justify="between" align="center" className="mb-3">
-                    <Typography
-                      variant="h4"
-                      className="font-medium text-sm text-brand-900 dark:text-brand-100"
-                    >
+                    <Typography variant="h4" className="font-medium text-sm text-brand-900">
                       💎 Equity Compensation
                     </Typography>
                     <label>
@@ -778,9 +775,7 @@ export function UserTypeManager() {
                           onChange={(e) => setProfileHasEquity(e.target.checked)}
                           className="w-4 h-4"
                         />
-                        <span className="text-xs font-medium text-brand-900 dark:text-brand-100">
-                          Has Equity
-                        </span>
+                        <span className="text-xs font-medium text-brand-900">Has Equity</span>
                       </Flex>
                     </label>
                   </Flex>
@@ -848,7 +843,7 @@ export function UserTypeManager() {
                         rows={2}
                       />
 
-                      <div className="text-xs text-brand-700 dark:text-brand-300 bg-brand-100 dark:bg-brand-900/40 p-2 rounded">
+                      <div className="text-xs text-brand-700 bg-brand-100 p-2 rounded">
                         💡 Tip: Equity hours are non-paid hours compensated with equity. Set
                         required hours/week OR hours/month (not both). Max hours/week prevents
                         overwork.

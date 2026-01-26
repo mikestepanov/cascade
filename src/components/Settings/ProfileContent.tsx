@@ -35,33 +35,23 @@ export function UserStatsCards({ stats }: { stats: UserStats }) {
   return (
     <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
       <div className="bg-ui-bg-secondary rounded-lg p-4 text-center">
-        <div className="text-2xl font-bold text-brand-600 dark:text-brand-400">
-          {stats.projects}
-        </div>
+        <div className="text-2xl font-bold text-brand-600">{stats.projects}</div>
         <div className="text-sm text-ui-text-secondary">Workspaces</div>
       </div>
       <div className="bg-ui-bg-secondary rounded-lg p-4 text-center">
-        <div className="text-2xl font-bold text-brand-600 dark:text-brand-400">
-          {stats.issuesCreated}
-        </div>
+        <div className="text-2xl font-bold text-brand-600">{stats.issuesCreated}</div>
         <div className="text-sm text-ui-text-secondary">Created</div>
       </div>
       <div className="bg-ui-bg-secondary rounded-lg p-4 text-center">
-        <div className="text-2xl font-bold text-brand-600 dark:text-brand-400">
-          {stats.issuesAssigned}
-        </div>
+        <div className="text-2xl font-bold text-brand-600">{stats.issuesAssigned}</div>
         <div className="text-sm text-ui-text-secondary">Assigned</div>
       </div>
       <div className="bg-ui-bg-secondary rounded-lg p-4 text-center">
-        <div className="text-2xl font-bold text-brand-600 dark:text-brand-400">
-          {stats.issuesCompleted}
-        </div>
+        <div className="text-2xl font-bold text-brand-600">{stats.issuesCompleted}</div>
         <div className="text-sm text-ui-text-secondary">Completed</div>
       </div>
       <div className="bg-ui-bg-secondary rounded-lg p-4 text-center">
-        <div className="text-2xl font-bold text-brand-600 dark:text-brand-400">
-          {stats.comments}
-        </div>
+        <div className="text-2xl font-bold text-brand-600">{stats.comments}</div>
         <div className="text-sm text-ui-text-secondary">Comments</div>
       </div>
     </div>

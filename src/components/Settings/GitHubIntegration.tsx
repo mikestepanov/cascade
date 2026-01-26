@@ -110,7 +110,7 @@ export function GitHubIntegration() {
                 Link repositories and track PRs and commits
               </Typography>
               {githubConnection && (
-                <Typography className="text-sm text-status-success dark:text-status-success mt-2">
+                <Typography className="text-sm text-status-success mt-2">
                   ✓ Connected as @{githubConnection.githubUsername}
                 </Typography>
               )}

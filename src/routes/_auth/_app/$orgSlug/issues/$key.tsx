@@ -175,7 +175,7 @@ function IssuePage() {
                   <Typography variant="h1" className="text-3xl font-semibold border-none">
                     {issue.title}
                   </Typography>
-                  <div className="prose dark:prose-invert max-w-none">
+                  <div className="prose max-w-none">
                     <Typography variant="p" className="text-base text-ui-text-secondary">
                       {issue.description || (
                         <span className="italic text-ui-text-tertiary">

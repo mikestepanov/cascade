@@ -110,7 +110,7 @@ export function Toggle({
           // Focus ring
           "peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-brand-500/20",
           // Track background
-          checked ? "bg-brand-600 dark:bg-brand-500" : "bg-ui-bg-tertiary",
+          checked ? "bg-brand-600" : "bg-ui-bg-tertiary",
           // Thumb pseudo-element
           "after:content-[''] after:absolute after:rounded-full after:transition-all after:duration-200 after:ease-in-out",
           "after:bg-ui-bg-primary",

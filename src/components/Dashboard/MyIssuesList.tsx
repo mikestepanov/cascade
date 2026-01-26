@@ -94,7 +94,7 @@ export function MyIssuesList({
           className={cn(
             "py-3 px-2 border-b-2 transition-all font-bold text-xs uppercase tracking-wider",
             issueFilter === "assigned"
-              ? "border-brand-600 text-brand-600 dark:text-brand-400"
+              ? "border-brand-600 text-brand-600"
               : "border-transparent text-ui-text-tertiary hover:text-ui-text-primary",
           )}
           aria-label="Filter Assigned"
@@ -108,7 +108,7 @@ export function MyIssuesList({
           className={cn(
             "py-3 px-2 border-b-2 transition-all font-bold text-xs uppercase tracking-wider",
             issueFilter === "created"
-              ? "border-brand-600 text-brand-600 dark:text-brand-400"
+              ? "border-brand-600 text-brand-600"
               : "border-transparent text-ui-text-tertiary hover:text-ui-text-primary",
           )}
           aria-label="Filter Created"
@@ -168,7 +168,7 @@ export function MyIssuesList({
                     </Flex>
                     <Typography
                       variant="h4"
-                      className="font-bold text-ui-text-primary mb-1 group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors"
+                      className="font-bold text-ui-text-primary mb-1 group-hover:text-brand-600:text-brand-400 transition-colors"
                     >
                       {issue.title}
                     </Typography>

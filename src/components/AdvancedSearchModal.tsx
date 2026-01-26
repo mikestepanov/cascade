@@ -146,7 +146,7 @@ export function AdvancedSearchModal({
                     setSelectedPriority([]);
                     setSelectedStatus([]);
                   }}
-                  className="text-sm text-brand-600 dark:text-brand-400 hover:underline"
+                  className="text-sm text-brand-600 hover:underline"
                 >
                   Clear Filters
                 </button>

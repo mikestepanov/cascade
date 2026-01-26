@@ -89,7 +89,7 @@ function AttachmentItem({
           href={url}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-sm font-medium text-brand-600 dark:text-brand-400 hover:text-brand-700 dark:hover:text-brand-300 hover:underline truncate block"
+          className="text-sm font-medium text-brand-600 hover:text-brand-700:text-brand-300 hover:underline truncate block"
         >
           {filename}
         </a>

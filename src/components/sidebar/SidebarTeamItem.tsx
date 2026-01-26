@@ -54,7 +54,7 @@ export function SidebarTeamItem({
           className={cn(
             "block px-3 py-1.5 rounded-md text-sm truncate transition-colors flex-1",
             isActive
-              ? "bg-brand-50 dark:bg-brand-900/20 text-brand-600 dark:text-brand-400"
+              ? "bg-brand-50 text-brand-600"
               : "text-ui-text-secondary hover:bg-ui-bg-secondary hover:text-ui-text-primary",
           )}
         >
@@ -113,7 +113,7 @@ function SidebarTeamProjects({
               "block px-3 py-1.5 rounded-md text-sm truncate transition-colors",
               location.pathname === `/${orgSlug}/projects/${project.key}` ||
                 location.pathname.startsWith(`/${orgSlug}/projects/${project.key}/`)
-                ? "bg-brand-50 dark:bg-brand-900/20 text-brand-600 dark:text-brand-400 font-medium"
+                ? "bg-brand-50 text-brand-600 font-medium"
                 : "text-ui-text-secondary hover:bg-ui-bg-secondary hover:text-ui-text-primary",
             )}
           >
@@ -127,7 +127,7 @@ function SidebarTeamProjects({
           variant="ghost"
           size="sm"
           onClick={() => loadMore(10)}
-          className="ml-2 text-xs h-6 px-2 text-brand-600 dark:text-brand-400"
+          className="ml-2 text-xs h-6 px-2 text-brand-600"
         >
           Load more...
         </Button>

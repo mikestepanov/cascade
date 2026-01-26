@@ -101,13 +101,13 @@ export function HourComplianceDashboard() {
   const getStatusColor = (status: ComplianceStatus) => {
     switch (status) {
       case "compliant":
-        return "bg-status-success/10 text-status-success dark:bg-status-success/20 dark:text-status-success";
+        return "bg-status-success/10 text-status-success";
       case "under_hours":
-        return "bg-status-warning/10 text-status-warning dark:bg-status-warning/20 dark:text-status-warning";
+        return "bg-status-warning/10 text-status-warning";
       case "over_hours":
-        return "bg-status-error/10 text-status-error dark:bg-status-error/20 dark:text-status-error";
+        return "bg-status-error/10 text-status-error";
       case "equity_under":
-        return "bg-brand-100 text-brand-700 dark:bg-brand-900/40 dark:text-brand-300";
+        return "bg-brand-100 text-brand-700";
     }
   };
 
@@ -151,9 +151,7 @@ export function HourComplianceDashboard() {
           <Card>
             <CardBody>
               <div className="text-center">
-                <div className="text-2xl font-bold text-status-success dark:text-status-success">
-                  {summary.compliant}
-                </div>
+                <div className="text-2xl font-bold text-status-success">{summary.compliant}</div>
                 <div className="text-sm text-ui-text-secondary">✅ Compliant</div>
               </div>
             </CardBody>
@@ -162,9 +160,7 @@ export function HourComplianceDashboard() {
           <Card>
             <CardBody>
               <div className="text-center">
-                <div className="text-2xl font-bold text-status-warning dark:text-status-warning">
-                  {summary.underHours}
-                </div>
+                <div className="text-2xl font-bold text-status-warning">{summary.underHours}</div>
                 <div className="text-sm text-ui-text-secondary">⚠️ Under Hours</div>
               </div>
             </CardBody>
@@ -173,9 +169,7 @@ export function HourComplianceDashboard() {
           <Card>
             <CardBody>
               <div className="text-center">
-                <div className="text-2xl font-bold text-status-error dark:text-status-error">
-                  {summary.overHours}
-                </div>
+                <div className="text-2xl font-bold text-status-error">{summary.overHours}</div>
                 <div className="text-sm text-ui-text-secondary">🔴 Over Hours</div>
               </div>
             </CardBody>
@@ -184,9 +178,7 @@ export function HourComplianceDashboard() {
           <Card>
             <CardBody>
               <div className="text-center">
-                <div className="text-2xl font-bold text-brand-600 dark:text-brand-400">
-                  {summary.equityUnder}
-                </div>
+                <div className="text-2xl font-bold text-brand-600">{summary.equityUnder}</div>
                 <div className="text-sm text-ui-text-secondary">💎 Equity Short</div>
               </div>
             </CardBody>
@@ -277,7 +269,7 @@ export function HourComplianceDashboard() {
                               {record.periodType}ly
                             </span>
                             {record.reviewedBy && (
-                              <span className="text-xs px-2 py-0.5 bg-accent-100 dark:bg-accent-900/40 text-accent-700 dark:text-accent-300 rounded">
+                              <span className="text-xs px-2 py-0.5 bg-accent-100 text-accent-700 rounded">
                                 Reviewed
                               </span>
                             )}
@@ -303,7 +295,7 @@ export function HourComplianceDashboard() {
                         {record.hoursDeficit && (
                           <div>
                             <span className="text-ui-text-tertiary text-xs">Deficit:</span>
-                            <div className="font-medium text-status-warning dark:text-status-warning">
+                            <div className="font-medium text-status-warning">
                               -{record.hoursDeficit.toFixed(1)}h
                             </div>
                           </div>
@@ -312,7 +304,7 @@ export function HourComplianceDashboard() {
                         {record.hoursExcess && (
                           <div>
                             <span className="text-ui-text-tertiary text-xs">Excess:</span>
-                            <div className="font-medium text-status-error dark:text-status-error">
+                            <div className="font-medium text-status-error">
                               +{record.hoursExcess.toFixed(1)}h
                             </div>
                           </div>
@@ -321,7 +313,7 @@ export function HourComplianceDashboard() {
                         {record.equityHoursDeficit && (
                           <div>
                             <span className="text-ui-text-tertiary text-xs">Equity Short:</span>
-                            <div className="font-medium text-brand-600 dark:text-brand-400">
+                            <div className="font-medium text-brand-600">
                               -{record.equityHoursDeficit.toFixed(1)}h
                             </div>
                           </div>
@@ -338,13 +330,9 @@ export function HourComplianceDashboard() {
                       </div>
 
                       {record.reviewNotes && (
-                        <div className="mt-3 p-2 bg-accent-50 dark:bg-accent-900/20 rounded text-sm">
-                          <span className="font-medium text-accent-900 dark:text-accent-100">
-                            Review Notes:
-                          </span>{" "}
-                          <span className="text-accent-700 dark:text-accent-300">
-                            {record.reviewNotes}
-                          </span>
+                        <div className="mt-3 p-2 bg-accent-50 rounded text-sm">
+                          <span className="font-medium text-accent-900">Review Notes:</span>{" "}
+                          <span className="text-accent-700">{record.reviewNotes}</span>
                         </div>
                       )}
                     </div>

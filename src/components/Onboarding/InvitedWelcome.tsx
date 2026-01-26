@@ -14,7 +14,7 @@ export function InvitedWelcome({ inviterName, onStartTour, onSkip }: InvitedWelc
     <div className="text-center space-y-8">
       {/* Icon */}
       <Flex justify="center">
-        <div className="p-6 rounded-full bg-primary-100 dark:bg-primary-900/30">
+        <div className="p-6 rounded-full bg-primary-100">
           <PartyPopper className="w-16 h-16 text-primary-600" />
         </div>
       </Flex>

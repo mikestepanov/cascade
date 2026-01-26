@@ -250,7 +250,7 @@ export function DocumentTemplatesManager({
                         key={template._id}
                         type="button"
                         onClick={() => onSelectTemplate?.(template._id)}
-                        className="p-4 bg-linear-to-br from-brand-50 to-brand-100 dark:from-brand-900/20 dark:to-brand-900/40 rounded-lg hover:shadow-md transition-all text-left border-2 border-transparent hover:border-brand-300 dark:hover:border-brand-700"
+                        className="p-4 bg-linear-to-br from-brand-50 to-brand-100 rounded-lg hover:shadow-md transition-all text-left border-2 border-transparent hover:border-brand-300:border-brand-700"
                       >
                         <Flex align="start" gap="md">
                           <span className="text-3xl">{template.icon}</span>
@@ -455,7 +455,7 @@ export function DocumentTemplatesManager({
                       checked={field.state.value as boolean}
                       onChange={(e) => field.handleChange(e.target.checked)}
                       onBlur={field.handleBlur}
-                      className="w-4 h-4 text-brand-600 bg-ui-bg-primary border-ui-border-primary rounded focus:ring-brand-500 dark:focus:ring-brand-600 dark:ring-offset-ui-bg-primary-dark focus:ring-2"
+                      className="w-4 h-4 text-brand-600 bg-ui-bg-primary border-ui-border-primary rounded focus:ring-brand-500:ring-brand-600 focus:ring-2"
                     />
                     <label htmlFor="isPublic" className="text-sm font-medium text-ui-text-primary">
                       Make public (visible to all users)

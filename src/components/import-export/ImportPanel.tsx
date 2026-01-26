@@ -96,7 +96,7 @@ export function ImportPanel({ projectId, onImportComplete }: ImportPanelProps) {
               "p-4 cursor-pointer transition-all",
               importFormat === "csv"
                 ? "ring-2 ring-primary bg-primary/5"
-                : "hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark",
+                : "hover:bg-ui-bg-secondary:bg-ui-bg-secondary-dark",
             )}
           >
             <Flex gap="md" align="center">
@@ -114,7 +114,7 @@ export function ImportPanel({ projectId, onImportComplete }: ImportPanelProps) {
               "p-4 cursor-pointer transition-all",
               importFormat === "json"
                 ? "ring-2 ring-primary bg-primary/5"
-                : "hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark",
+                : "hover:bg-ui-bg-secondary:bg-ui-bg-secondary-dark",
             )}
           >
             <Flex gap="md" align="center">
@@ -143,20 +143,17 @@ export function ImportPanel({ projectId, onImportComplete }: ImportPanelProps) {
         )}
       </div>
 
-      <div className="bg-status-warning/10 dark:bg-status-warning/20 border border-status-warning/30 dark:border-status-warning/50 rounded-lg p-4">
+      <div className="bg-status-warning/10 border border-status-warning/30 rounded-lg p-4">
         <Flex gap="md" align="start">
-          <div className="text-status-warning dark:text-status-warning text-xl">⚠️</div>
-          <div className="text-sm text-status-warning dark:text-status-warning">
+          <div className="text-status-warning text-xl">⚠️</div>
+          <div className="text-sm text-status-warning">
             <Typography variant="p" className="font-semibold mb-1">
               Import Requirements
             </Typography>
-            <ul className="list-disc list-inside space-y-1 text-status-warning/90 dark:text-status-warning/80">
+            <ul className="list-disc list-inside space-y-1 text-status-warning/90">
               <li>CSV must have a header row with column names</li>
               <li>
-                Required column:{" "}
-                <code className="bg-status-warning/20 dark:bg-status-warning/30 px-1 rounded">
-                  title
-                </code>
+                Required column: <code className="bg-status-warning/20 px-1 rounded">title</code>
               </li>
               <li>Optional: type, priority, description, labels, estimated hours, due date</li>
               <li>All imported issues will be created in the first workflow state</li>

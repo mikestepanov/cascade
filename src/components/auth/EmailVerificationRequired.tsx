@@ -64,10 +64,10 @@ export function EmailVerificationRequired() {
           <Flex
             align="center"
             justify="center"
-            className="w-16 h-16 bg-brand-100 dark:bg-brand-900/30 rounded-full mx-auto mb-4"
+            className="w-16 h-16 bg-brand-100 rounded-full mx-auto mb-4"
           >
             <svg
-              className="w-8 h-8 text-brand-600 dark:text-brand-400"
+              className="w-8 h-8 text-brand-600"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"

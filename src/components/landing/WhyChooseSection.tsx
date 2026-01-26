@@ -13,7 +13,7 @@ export function WhyChooseSection() {
   return (
     <section className="px-6 py-24 transition-colors">
       <div className="max-w-6xl mx-auto">
-        <div className="bg-ui-bg-secondary border border-ui-border-primary rounded-3xl p-12 backdrop-blur-md transition-colors shadow-xl shadow-black/5 dark:shadow-none">
+        <div className="bg-ui-bg-secondary border border-ui-border-primary rounded-3xl p-12 backdrop-blur-md transition-colors shadow-xl shadow-black/5">
           <div className="text-center mb-16">
             <Typography
               variant="h2"

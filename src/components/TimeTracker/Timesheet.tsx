@@ -132,7 +132,7 @@ export function Timesheet() {
               className={cn(
                 "border rounded-lg p-3",
                 isToday
-                  ? "border-brand-500 bg-brand-50 dark:bg-brand-900/20"
+                  ? "border-brand-500 bg-brand-50"
                   : "border-ui-border-primary bg-ui-bg-primary",
               )}
             >

@@ -123,7 +123,7 @@ export function NotificationBell() {
                 variant="ghost"
                 size="sm"
                 onClick={() => markAllAsRead()}
-                className="text-brand-600 dark:text-brand-500 hover:text-brand-700 dark:hover:text-brand-600 min-h-0 p-0"
+                className="text-brand-600 hover:text-brand-700:text-brand-600 min-h-0 p-0"
               >
                 Mark all read
               </Button>
@@ -155,7 +155,7 @@ export function NotificationBell() {
                       type="button"
                       className={cn(
                         "w-full text-left px-4 py-3 hover:bg-ui-bg-secondary cursor-pointer border-b border-ui-border-primary transition-colors",
-                        !notification.isRead && "bg-brand-50 dark:bg-brand-900/20",
+                        !notification.isRead && "bg-brand-50",
                       )}
                       onClick={() =>
                         handleNotificationClick(notification._id, notification.issueId)
