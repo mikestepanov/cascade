@@ -100,4 +100,28 @@ describe("IssueCard", () => {
     const tooltipText = await screen.findByRole("tooltip", { name: "Assigned to: Alice Johnson" });
     expect(tooltipText).toBeInTheDocument();
   });
+
+  it("should display tooltip with hidden labels", async () => {
+    const user = userEvent.setup();
+    const issueWithManyLabels = {
+      ...mockIssue,
+      labels: [
+        { name: "L1", color: "red" },
+        { name: "L2", color: "blue" },
+        { name: "L3", color: "green" },
+        { name: "Hidden1", color: "yellow" },
+        { name: "Hidden2", color: "purple" },
+      ],
+    };
+    render(<IssueCard issue={issueWithManyLabels} onDragStart={mockOnDragStart} />);
+
+    // The text "+2" should be present
+    const hiddenCount = screen.getByText("+2");
+    expect(hiddenCount).toBeInTheDocument();
+
+    await user.hover(hiddenCount);
+
+    const tooltipText = await screen.findByRole("tooltip", { name: "Hidden1, Hidden2" });
+    expect(tooltipText).toBeInTheDocument();
+  });
 });
