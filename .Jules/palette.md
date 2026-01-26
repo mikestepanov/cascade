@@ -1,19 +1,23 @@
-## 2024-05-24 - Copy Affordances
-**Learning:** Users frequently need to copy identifiers (like issue keys) for use in external contexts (Git, Slack).
-**Action:** Always provide a one-click copy button next to primary identifiers in detail views.
+# Palette's Journal
 
-## 2025-05-27 - Dynamic ARIA Labels
-**Learning:** Users relying on screen readers need immediate context about notification counts (e.g., "5 unread") without having to open the notification panel.
-**Action:** Implement dynamic `aria-label` attributes on notification triggers that include the unread count when > 0.
+## 2024-05-22 - Improving Tooltip Flexibility
+**Learning:** The Base UI `Tooltip.Trigger` renders a `button` by default, which can lead to invalid HTML when nested inside other interactive elements like `label` (used in file inputs).
+**Action:** Modified `SDSTooltip` to accept a `renderTrigger` prop, allowing the use of `div` or other elements as triggers when necessary. This pattern should be used whenever a tooltip is needed on an element that cannot contain a button.
 
-## 2025-05-28 - Icon-Only Buttons
-**Learning:** Icon-only buttons save space but can be ambiguous. Users rely on tooltips to confirm the action before clicking.
-**Action:** Always wrap icon-only buttons in a Tooltip component with a descriptive label.
+## 2024-05-23 - Keeping Completed Items Focusable
+**Learning:** Disabling buttons for "completed" steps removes them from the tab order, making them invisible to keyboard and screen reader users. Users can't perceive that a task was already completed.
+**Action:** Instead of using the native `disabled` attribute, use `aria-disabled="true"` and a descriptive `aria-label` (e.g., "Complete profile, Completed"). Ensure visual styling matches the disabled state (e.g., `cursor: default`) while keeping the element interactive or at least focusable.
 
-## 2025-05-29 - Accessible Test Selectors
-**Learning:** Tests using `getByTitle` often rely on attributes (like `title`) that are being phased out for custom Tooltips.
-**Action:** Prefer `getByRole('button', { name: '...' })` which verifies the accessible name (ARIA label) regardless of the visual tooltip implementation.
+## 2026-01-14 - SDSIcon Accessibility on Links
+**Learning:** When `SDSIcon` is used as a link (with `href`), the underlying `SDSPrimitiveButton` fails to pass standard HTML attributes (like `aria-label`) to the anchor tag.
+**Action:** Use the `ariaLabel` (camelCase) prop on `SDSIcon`. This prop is explicitly handled to apply `aria-label` and `role="img"` to the inner icon element, ensuring accessible names are preserved even when the outer link wrapper drops attributes.
 
-## 2025-05-30 - Nested Interactive Elements
-**Learning:** Placing a button (e.g., for a tooltip trigger) inside another button (e.g., a clickable card) is invalid HTML and problematic for accessibility.
-**Action:** Use `<span role="button" tabIndex={0}>` for the inner interactive element to maintain keyboard accessibility without violating HTML nesting rules.
+## 2026-01-15 - SDSIcon Nesting & Semantics
+**Learning:** `SDSIcon` renders a `<button>` by default. When used inside another interactive element (like `SDSMenu` trigger) or as a non-interactive indicator (like "5 likes"), this creates invalid HTML (nested buttons) or misleading semantics.
+**Action:** Always use `isIconOnly` prop on `SDSIcon` when:
+1. It is nested inside another button/trigger.
+2. It is purely decorative or informational (not clickable).
+
+## 2026-01-24 - Icon-only SDSButtons must have ariaLabel
+**Learning:** Developers use `text=""` on `SDSButton` to create icon-only buttons but often forget `ariaLabel`, leaving the button inaccessible.
+**Action:** When using `SDSButton` with empty text for icon-only usage, always enforce `ariaLabel`. Ideally, prefer `SDSIconButton` which enforces `ariaLabel` via types.
