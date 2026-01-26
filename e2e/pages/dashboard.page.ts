@@ -97,11 +97,10 @@ export class DashboardPage extends BasePage {
     this.documentsTab = page
       .locator("[data-tour='nav-documents']")
       .or(page.getByRole("link", { name: /^documents$/i }));
-    // Workspaces tab (previously Projects) - matches new UI label
+    // Projects tab - in the main sidebar nav
     this.projectsTab = page
       .locator("[data-tour='nav-projects']")
-      .or(page.getByRole("link", { name: /^projects$/i }))
-      .or(page.getByRole("link", { name: /^workspaces$/i }));
+      .or(page.getByRole("link", { name: /^projects$/i }));
     this.timesheetTab = page
       .locator("[data-tour='nav-timesheet']")
       .or(page.getByRole("link", { name: /timesheet/i }));

@@ -256,10 +256,10 @@ export async function trySignInUser(
         },
       );
 
-      // Navigate to dashboard directly
-      await page.goto(`${baseURL}/dashboard`, { waitUntil: "domcontentloaded" });
+      // Navigate to /app gateway which handles auth routing to the correct org dashboard
+      await page.goto(`${baseURL}/app`, { waitUntil: "domcontentloaded" });
 
-      // Wait to confirm we are logged in
+      // Wait to confirm we are logged in - /app will redirect to /:orgSlug/dashboard
       try {
         await page.waitForURL(urlPatterns.dashboardOrOnboarding, { timeout: 15000 });
         if (await isOnDashboard(page)) {

@@ -8,770 +8,792 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { Route as rootRouteImport } from "./routes/__root";
-import { Route as AuthAppOrgSlugDashboardRouteImport } from "./routes/_auth/_app/$orgSlug/dashboard";
-import { Route as AuthAppOrgSlugDocumentsIdRouteImport } from "./routes/_auth/_app/$orgSlug/documents/$id";
-import { Route as AuthAppOrgSlugDocumentsIndexRouteImport } from "./routes/_auth/_app/$orgSlug/documents/index";
-import { Route as AuthAppOrgSlugDocumentsTemplatesRouteImport } from "./routes/_auth/_app/$orgSlug/documents/templates";
-import { Route as AuthAppOrgSlugIndexRouteImport } from "./routes/_auth/_app/$orgSlug/index";
-import { Route as AuthAppOrgSlugIssuesRouteImport } from "./routes/_auth/_app/$orgSlug/issues";
-import { Route as AuthAppOrgSlugIssuesKeyRouteImport } from "./routes/_auth/_app/$orgSlug/issues/$key";
-import { Route as AuthAppOrgSlugProjectsKeyBoardRouteImport } from "./routes/_auth/_app/$orgSlug/projects/$key/board";
-import { Route as AuthAppOrgSlugProjectsKeyCalendarRouteImport } from "./routes/_auth/_app/$orgSlug/projects/$key/calendar";
-import { Route as AuthAppOrgSlugProjectsKeyIndexRouteImport } from "./routes/_auth/_app/$orgSlug/projects/$key/index";
-import { Route as AuthAppOrgSlugProjectsKeyRouteRouteImport } from "./routes/_auth/_app/$orgSlug/projects/$key/route";
-import { Route as AuthAppOrgSlugProjectsKeySettingsRouteImport } from "./routes/_auth/_app/$orgSlug/projects/$key/settings";
-import { Route as AuthAppOrgSlugProjectsKeyTimesheetRouteImport } from "./routes/_auth/_app/$orgSlug/projects/$key/timesheet";
-import { Route as AuthAppOrgSlugProjectsIndexRouteImport } from "./routes/_auth/_app/$orgSlug/projects/index";
-import { Route as AuthAppOrgSlugRouteRouteImport } from "./routes/_auth/_app/$orgSlug/route";
-import { Route as AuthAppOrgSlugSettingsIndexRouteImport } from "./routes/_auth/_app/$orgSlug/settings/index";
-import { Route as AuthAppOrgSlugSettingsProfileRouteImport } from "./routes/_auth/_app/$orgSlug/settings/profile";
-import { Route as AuthAppOrgSlugTimeTrackingRouteImport } from "./routes/_auth/_app/$orgSlug/time-tracking";
-import { Route as AuthAppOrgSlugWorkspacesWorkspaceSlugIndexRouteImport } from "./routes/_auth/_app/$orgSlug/workspaces/$workspaceSlug/index";
-import { Route as AuthAppOrgSlugWorkspacesWorkspaceSlugRouteRouteImport } from "./routes/_auth/_app/$orgSlug/workspaces/$workspaceSlug/route";
-import { Route as AuthAppOrgSlugWorkspacesWorkspaceSlugSettingsRouteImport } from "./routes/_auth/_app/$orgSlug/workspaces/$workspaceSlug/settings";
-import { Route as AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsTeamSlugBoardRouteImport } from "./routes/_auth/_app/$orgSlug/workspaces/$workspaceSlug/teams/$teamSlug/board";
-import { Route as AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsTeamSlugCalendarRouteImport } from "./routes/_auth/_app/$orgSlug/workspaces/$workspaceSlug/teams/$teamSlug/calendar";
-import { Route as AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsTeamSlugIndexRouteImport } from "./routes/_auth/_app/$orgSlug/workspaces/$workspaceSlug/teams/$teamSlug/index";
-import { Route as AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsTeamSlugRouteRouteImport } from "./routes/_auth/_app/$orgSlug/workspaces/$workspaceSlug/teams/$teamSlug/route";
-import { Route as AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsTeamSlugSettingsRouteImport } from "./routes/_auth/_app/$orgSlug/workspaces/$workspaceSlug/teams/$teamSlug/settings";
-import { Route as AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsIndexRouteImport } from "./routes/_auth/_app/$orgSlug/workspaces/$workspaceSlug/teams/index";
-import { Route as AuthAppOrgSlugWorkspacesIndexRouteImport } from "./routes/_auth/_app/$orgSlug/workspaces/index";
-import { Route as AuthAppAppRouteImport } from "./routes/_auth/_app/app";
-import { Route as AuthAppRouteRouteImport } from "./routes/_auth/_app/route";
-import { Route as AuthOnboardingRouteImport } from "./routes/_auth/onboarding";
-import { Route as AuthRouteRouteImport } from "./routes/_auth/route";
-import { Route as ForgotPasswordRouteImport } from "./routes/forgot-password";
-import { Route as IndexRouteImport } from "./routes/index";
-import { Route as InviteTokenRouteImport } from "./routes/invite.$token";
-import { Route as SigninRouteImport } from "./routes/signin";
-import { Route as SignupRouteImport } from "./routes/signup";
+import { Route as rootRouteImport } from './routes/__root'
+import { Route as SignupRouteImport } from './routes/signup'
+import { Route as SigninRouteImport } from './routes/signin'
+import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
+import { Route as AuthRouteRouteImport } from './routes/_auth/route'
+import { Route as IndexRouteImport } from './routes/index'
+import { Route as InviteTokenRouteImport } from './routes/invite.$token'
+import { Route as AuthOnboardingRouteImport } from './routes/_auth/onboarding'
+import { Route as AuthAppRouteRouteImport } from './routes/_auth/_app/route'
+import { Route as AuthAppAppRouteImport } from './routes/_auth/_app/app'
+import { Route as AuthAppOrgSlugRouteRouteImport } from './routes/_auth/_app/$orgSlug/route'
+import { Route as AuthAppOrgSlugIndexRouteImport } from './routes/_auth/_app/$orgSlug/index'
+import { Route as AuthAppOrgSlugTimeTrackingRouteImport } from './routes/_auth/_app/$orgSlug/time-tracking'
+import { Route as AuthAppOrgSlugIssuesRouteImport } from './routes/_auth/_app/$orgSlug/issues'
+import { Route as AuthAppOrgSlugDashboardRouteImport } from './routes/_auth/_app/$orgSlug/dashboard'
+import { Route as AuthAppOrgSlugWorkspacesIndexRouteImport } from './routes/_auth/_app/$orgSlug/workspaces/index'
+import { Route as AuthAppOrgSlugSettingsIndexRouteImport } from './routes/_auth/_app/$orgSlug/settings/index'
+import { Route as AuthAppOrgSlugProjectsIndexRouteImport } from './routes/_auth/_app/$orgSlug/projects/index'
+import { Route as AuthAppOrgSlugDocumentsIndexRouteImport } from './routes/_auth/_app/$orgSlug/documents/index'
+import { Route as AuthAppOrgSlugSettingsProfileRouteImport } from './routes/_auth/_app/$orgSlug/settings/profile'
+import { Route as AuthAppOrgSlugIssuesKeyRouteImport } from './routes/_auth/_app/$orgSlug/issues/$key'
+import { Route as AuthAppOrgSlugDocumentsTemplatesRouteImport } from './routes/_auth/_app/$orgSlug/documents/templates'
+import { Route as AuthAppOrgSlugDocumentsIdRouteImport } from './routes/_auth/_app/$orgSlug/documents/$id'
+import { Route as AuthAppOrgSlugWorkspacesWorkspaceSlugRouteRouteImport } from './routes/_auth/_app/$orgSlug/workspaces/$workspaceSlug/route'
+import { Route as AuthAppOrgSlugProjectsKeyRouteRouteImport } from './routes/_auth/_app/$orgSlug/projects/$key/route'
+import { Route as AuthAppOrgSlugWorkspacesWorkspaceSlugIndexRouteImport } from './routes/_auth/_app/$orgSlug/workspaces/$workspaceSlug/index'
+import { Route as AuthAppOrgSlugProjectsKeyIndexRouteImport } from './routes/_auth/_app/$orgSlug/projects/$key/index'
+import { Route as AuthAppOrgSlugWorkspacesWorkspaceSlugSettingsRouteImport } from './routes/_auth/_app/$orgSlug/workspaces/$workspaceSlug/settings'
+import { Route as AuthAppOrgSlugProjectsKeyTimesheetRouteImport } from './routes/_auth/_app/$orgSlug/projects/$key/timesheet'
+import { Route as AuthAppOrgSlugProjectsKeySettingsRouteImport } from './routes/_auth/_app/$orgSlug/projects/$key/settings'
+import { Route as AuthAppOrgSlugProjectsKeyCalendarRouteImport } from './routes/_auth/_app/$orgSlug/projects/$key/calendar'
+import { Route as AuthAppOrgSlugProjectsKeyBoardRouteImport } from './routes/_auth/_app/$orgSlug/projects/$key/board'
+import { Route as AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsIndexRouteImport } from './routes/_auth/_app/$orgSlug/workspaces/$workspaceSlug/teams/index'
+import { Route as AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsTeamSlugRouteRouteImport } from './routes/_auth/_app/$orgSlug/workspaces/$workspaceSlug/teams/$teamSlug/route'
+import { Route as AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsTeamSlugIndexRouteImport } from './routes/_auth/_app/$orgSlug/workspaces/$workspaceSlug/teams/$teamSlug/index'
+import { Route as AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsTeamSlugSettingsRouteImport } from './routes/_auth/_app/$orgSlug/workspaces/$workspaceSlug/teams/$teamSlug/settings'
+import { Route as AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsTeamSlugCalendarRouteImport } from './routes/_auth/_app/$orgSlug/workspaces/$workspaceSlug/teams/$teamSlug/calendar'
+import { Route as AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsTeamSlugBoardRouteImport } from './routes/_auth/_app/$orgSlug/workspaces/$workspaceSlug/teams/$teamSlug/board'
 
 const SignupRoute = SignupRouteImport.update({
-  id: "/signup",
-  path: "/signup",
+  id: '/signup',
+  path: '/signup',
   getParentRoute: () => rootRouteImport,
-} as any);
+} as any)
 const SigninRoute = SigninRouteImport.update({
-  id: "/signin",
-  path: "/signin",
+  id: '/signin',
+  path: '/signin',
   getParentRoute: () => rootRouteImport,
-} as any);
+} as any)
 const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
-  id: "/forgot-password",
-  path: "/forgot-password",
+  id: '/forgot-password',
+  path: '/forgot-password',
   getParentRoute: () => rootRouteImport,
-} as any);
+} as any)
 const AuthRouteRoute = AuthRouteRouteImport.update({
-  id: "/_auth",
+  id: '/_auth',
   getParentRoute: () => rootRouteImport,
-} as any);
+} as any)
 const IndexRoute = IndexRouteImport.update({
-  id: "/",
-  path: "/",
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
-} as any);
+} as any)
 const InviteTokenRoute = InviteTokenRouteImport.update({
-  id: "/invite/$token",
-  path: "/invite/$token",
+  id: '/invite/$token',
+  path: '/invite/$token',
   getParentRoute: () => rootRouteImport,
-} as any);
+} as any)
 const AuthOnboardingRoute = AuthOnboardingRouteImport.update({
-  id: "/onboarding",
-  path: "/onboarding",
+  id: '/onboarding',
+  path: '/onboarding',
   getParentRoute: () => AuthRouteRoute,
-} as any);
+} as any)
 const AuthAppRouteRoute = AuthAppRouteRouteImport.update({
-  id: "/_app",
+  id: '/_app',
   getParentRoute: () => AuthRouteRoute,
-} as any);
+} as any)
 const AuthAppAppRoute = AuthAppAppRouteImport.update({
-  id: "/app",
-  path: "/app",
+  id: '/app',
+  path: '/app',
   getParentRoute: () => AuthAppRouteRoute,
-} as any);
+} as any)
 const AuthAppOrgSlugRouteRoute = AuthAppOrgSlugRouteRouteImport.update({
-  id: "/$orgSlug",
-  path: "/$orgSlug",
+  id: '/$orgSlug',
+  path: '/$orgSlug',
   getParentRoute: () => AuthAppRouteRoute,
-} as any);
+} as any)
 const AuthAppOrgSlugIndexRoute = AuthAppOrgSlugIndexRouteImport.update({
-  id: "/",
-  path: "/",
+  id: '/',
+  path: '/',
   getParentRoute: () => AuthAppOrgSlugRouteRoute,
-} as any);
-const AuthAppOrgSlugTimeTrackingRoute = AuthAppOrgSlugTimeTrackingRouteImport.update({
-  id: "/time-tracking",
-  path: "/time-tracking",
-  getParentRoute: () => AuthAppOrgSlugRouteRoute,
-} as any);
+} as any)
+const AuthAppOrgSlugTimeTrackingRoute =
+  AuthAppOrgSlugTimeTrackingRouteImport.update({
+    id: '/time-tracking',
+    path: '/time-tracking',
+    getParentRoute: () => AuthAppOrgSlugRouteRoute,
+  } as any)
 const AuthAppOrgSlugIssuesRoute = AuthAppOrgSlugIssuesRouteImport.update({
-  id: "/issues",
-  path: "/issues",
+  id: '/issues',
+  path: '/issues',
   getParentRoute: () => AuthAppOrgSlugRouteRoute,
-} as any);
+} as any)
 const AuthAppOrgSlugDashboardRoute = AuthAppOrgSlugDashboardRouteImport.update({
-  id: "/dashboard",
-  path: "/dashboard",
+  id: '/dashboard',
+  path: '/dashboard',
   getParentRoute: () => AuthAppOrgSlugRouteRoute,
-} as any);
-const AuthAppOrgSlugWorkspacesIndexRoute = AuthAppOrgSlugWorkspacesIndexRouteImport.update({
-  id: "/workspaces/",
-  path: "/workspaces/",
-  getParentRoute: () => AuthAppOrgSlugRouteRoute,
-} as any);
-const AuthAppOrgSlugSettingsIndexRoute = AuthAppOrgSlugSettingsIndexRouteImport.update({
-  id: "/settings/",
-  path: "/settings/",
-  getParentRoute: () => AuthAppOrgSlugRouteRoute,
-} as any);
-const AuthAppOrgSlugProjectsIndexRoute = AuthAppOrgSlugProjectsIndexRouteImport.update({
-  id: "/projects/",
-  path: "/projects/",
-  getParentRoute: () => AuthAppOrgSlugRouteRoute,
-} as any);
-const AuthAppOrgSlugDocumentsIndexRoute = AuthAppOrgSlugDocumentsIndexRouteImport.update({
-  id: "/documents/",
-  path: "/documents/",
-  getParentRoute: () => AuthAppOrgSlugRouteRoute,
-} as any);
-const AuthAppOrgSlugSettingsProfileRoute = AuthAppOrgSlugSettingsProfileRouteImport.update({
-  id: "/settings/profile",
-  path: "/settings/profile",
-  getParentRoute: () => AuthAppOrgSlugRouteRoute,
-} as any);
+} as any)
+const AuthAppOrgSlugWorkspacesIndexRoute =
+  AuthAppOrgSlugWorkspacesIndexRouteImport.update({
+    id: '/workspaces/',
+    path: '/workspaces/',
+    getParentRoute: () => AuthAppOrgSlugRouteRoute,
+  } as any)
+const AuthAppOrgSlugSettingsIndexRoute =
+  AuthAppOrgSlugSettingsIndexRouteImport.update({
+    id: '/settings/',
+    path: '/settings/',
+    getParentRoute: () => AuthAppOrgSlugRouteRoute,
+  } as any)
+const AuthAppOrgSlugProjectsIndexRoute =
+  AuthAppOrgSlugProjectsIndexRouteImport.update({
+    id: '/projects/',
+    path: '/projects/',
+    getParentRoute: () => AuthAppOrgSlugRouteRoute,
+  } as any)
+const AuthAppOrgSlugDocumentsIndexRoute =
+  AuthAppOrgSlugDocumentsIndexRouteImport.update({
+    id: '/documents/',
+    path: '/documents/',
+    getParentRoute: () => AuthAppOrgSlugRouteRoute,
+  } as any)
+const AuthAppOrgSlugSettingsProfileRoute =
+  AuthAppOrgSlugSettingsProfileRouteImport.update({
+    id: '/settings/profile',
+    path: '/settings/profile',
+    getParentRoute: () => AuthAppOrgSlugRouteRoute,
+  } as any)
 const AuthAppOrgSlugIssuesKeyRoute = AuthAppOrgSlugIssuesKeyRouteImport.update({
-  id: "/$key",
-  path: "/$key",
+  id: '/$key',
+  path: '/$key',
   getParentRoute: () => AuthAppOrgSlugIssuesRoute,
-} as any);
-const AuthAppOrgSlugDocumentsTemplatesRoute = AuthAppOrgSlugDocumentsTemplatesRouteImport.update({
-  id: "/documents/templates",
-  path: "/documents/templates",
-  getParentRoute: () => AuthAppOrgSlugRouteRoute,
-} as any);
-const AuthAppOrgSlugDocumentsIdRoute = AuthAppOrgSlugDocumentsIdRouteImport.update({
-  id: "/documents/$id",
-  path: "/documents/$id",
-  getParentRoute: () => AuthAppOrgSlugRouteRoute,
-} as any);
+} as any)
+const AuthAppOrgSlugDocumentsTemplatesRoute =
+  AuthAppOrgSlugDocumentsTemplatesRouteImport.update({
+    id: '/documents/templates',
+    path: '/documents/templates',
+    getParentRoute: () => AuthAppOrgSlugRouteRoute,
+  } as any)
+const AuthAppOrgSlugDocumentsIdRoute =
+  AuthAppOrgSlugDocumentsIdRouteImport.update({
+    id: '/documents/$id',
+    path: '/documents/$id',
+    getParentRoute: () => AuthAppOrgSlugRouteRoute,
+  } as any)
 const AuthAppOrgSlugWorkspacesWorkspaceSlugRouteRoute =
   AuthAppOrgSlugWorkspacesWorkspaceSlugRouteRouteImport.update({
-    id: "/workspaces/$workspaceSlug",
-    path: "/workspaces/$workspaceSlug",
+    id: '/workspaces/$workspaceSlug',
+    path: '/workspaces/$workspaceSlug',
     getParentRoute: () => AuthAppOrgSlugRouteRoute,
-  } as any);
-const AuthAppOrgSlugProjectsKeyRouteRoute = AuthAppOrgSlugProjectsKeyRouteRouteImport.update({
-  id: "/projects/$key",
-  path: "/projects/$key",
-  getParentRoute: () => AuthAppOrgSlugRouteRoute,
-} as any);
+  } as any)
+const AuthAppOrgSlugProjectsKeyRouteRoute =
+  AuthAppOrgSlugProjectsKeyRouteRouteImport.update({
+    id: '/projects/$key',
+    path: '/projects/$key',
+    getParentRoute: () => AuthAppOrgSlugRouteRoute,
+  } as any)
 const AuthAppOrgSlugWorkspacesWorkspaceSlugIndexRoute =
   AuthAppOrgSlugWorkspacesWorkspaceSlugIndexRouteImport.update({
-    id: "/",
-    path: "/",
+    id: '/',
+    path: '/',
     getParentRoute: () => AuthAppOrgSlugWorkspacesWorkspaceSlugRouteRoute,
-  } as any);
-const AuthAppOrgSlugProjectsKeyIndexRoute = AuthAppOrgSlugProjectsKeyIndexRouteImport.update({
-  id: "/",
-  path: "/",
-  getParentRoute: () => AuthAppOrgSlugProjectsKeyRouteRoute,
-} as any);
+  } as any)
+const AuthAppOrgSlugProjectsKeyIndexRoute =
+  AuthAppOrgSlugProjectsKeyIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthAppOrgSlugProjectsKeyRouteRoute,
+  } as any)
 const AuthAppOrgSlugWorkspacesWorkspaceSlugSettingsRoute =
   AuthAppOrgSlugWorkspacesWorkspaceSlugSettingsRouteImport.update({
-    id: "/settings",
-    path: "/settings",
+    id: '/settings',
+    path: '/settings',
     getParentRoute: () => AuthAppOrgSlugWorkspacesWorkspaceSlugRouteRoute,
-  } as any);
+  } as any)
 const AuthAppOrgSlugProjectsKeyTimesheetRoute =
   AuthAppOrgSlugProjectsKeyTimesheetRouteImport.update({
-    id: "/timesheet",
-    path: "/timesheet",
+    id: '/timesheet',
+    path: '/timesheet',
     getParentRoute: () => AuthAppOrgSlugProjectsKeyRouteRoute,
-  } as any);
-const AuthAppOrgSlugProjectsKeySettingsRoute = AuthAppOrgSlugProjectsKeySettingsRouteImport.update({
-  id: "/settings",
-  path: "/settings",
-  getParentRoute: () => AuthAppOrgSlugProjectsKeyRouteRoute,
-} as any);
-const AuthAppOrgSlugProjectsKeyCalendarRoute = AuthAppOrgSlugProjectsKeyCalendarRouteImport.update({
-  id: "/calendar",
-  path: "/calendar",
-  getParentRoute: () => AuthAppOrgSlugProjectsKeyRouteRoute,
-} as any);
-const AuthAppOrgSlugProjectsKeyBoardRoute = AuthAppOrgSlugProjectsKeyBoardRouteImport.update({
-  id: "/board",
-  path: "/board",
-  getParentRoute: () => AuthAppOrgSlugProjectsKeyRouteRoute,
-} as any);
+  } as any)
+const AuthAppOrgSlugProjectsKeySettingsRoute =
+  AuthAppOrgSlugProjectsKeySettingsRouteImport.update({
+    id: '/settings',
+    path: '/settings',
+    getParentRoute: () => AuthAppOrgSlugProjectsKeyRouteRoute,
+  } as any)
+const AuthAppOrgSlugProjectsKeyCalendarRoute =
+  AuthAppOrgSlugProjectsKeyCalendarRouteImport.update({
+    id: '/calendar',
+    path: '/calendar',
+    getParentRoute: () => AuthAppOrgSlugProjectsKeyRouteRoute,
+  } as any)
+const AuthAppOrgSlugProjectsKeyBoardRoute =
+  AuthAppOrgSlugProjectsKeyBoardRouteImport.update({
+    id: '/board',
+    path: '/board',
+    getParentRoute: () => AuthAppOrgSlugProjectsKeyRouteRoute,
+  } as any)
 const AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsIndexRoute =
   AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsIndexRouteImport.update({
-    id: "/teams/",
-    path: "/teams/",
+    id: '/teams/',
+    path: '/teams/',
     getParentRoute: () => AuthAppOrgSlugWorkspacesWorkspaceSlugRouteRoute,
-  } as any);
+  } as any)
 const AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsTeamSlugRouteRoute =
   AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsTeamSlugRouteRouteImport.update({
-    id: "/teams/$teamSlug",
-    path: "/teams/$teamSlug",
+    id: '/teams/$teamSlug',
+    path: '/teams/$teamSlug',
     getParentRoute: () => AuthAppOrgSlugWorkspacesWorkspaceSlugRouteRoute,
-  } as any);
+  } as any)
 const AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsTeamSlugIndexRoute =
   AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsTeamSlugIndexRouteImport.update({
-    id: "/",
-    path: "/",
-    getParentRoute: () => AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsTeamSlugRouteRoute,
-  } as any);
+    id: '/',
+    path: '/',
+    getParentRoute: () =>
+      AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsTeamSlugRouteRoute,
+  } as any)
 const AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsTeamSlugSettingsRoute =
   AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsTeamSlugSettingsRouteImport.update({
-    id: "/settings",
-    path: "/settings",
-    getParentRoute: () => AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsTeamSlugRouteRoute,
-  } as any);
+    id: '/settings',
+    path: '/settings',
+    getParentRoute: () =>
+      AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsTeamSlugRouteRoute,
+  } as any)
 const AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsTeamSlugCalendarRoute =
   AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsTeamSlugCalendarRouteImport.update({
-    id: "/calendar",
-    path: "/calendar",
-    getParentRoute: () => AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsTeamSlugRouteRoute,
-  } as any);
+    id: '/calendar',
+    path: '/calendar',
+    getParentRoute: () =>
+      AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsTeamSlugRouteRoute,
+  } as any)
 const AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsTeamSlugBoardRoute =
   AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsTeamSlugBoardRouteImport.update({
-    id: "/board",
-    path: "/board",
-    getParentRoute: () => AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsTeamSlugRouteRoute,
-  } as any);
+    id: '/board',
+    path: '/board',
+    getParentRoute: () =>
+      AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsTeamSlugRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
-  "/": typeof IndexRoute;
-  "/forgot-password": typeof ForgotPasswordRoute;
-  "/signin": typeof SigninRoute;
-  "/signup": typeof SignupRoute;
-  "/onboarding": typeof AuthOnboardingRoute;
-  "/invite/$token": typeof InviteTokenRoute;
-  "/$orgSlug": typeof AuthAppOrgSlugRouteRouteWithChildren;
-  "/app": typeof AuthAppAppRoute;
-  "/$orgSlug/dashboard": typeof AuthAppOrgSlugDashboardRoute;
-  "/$orgSlug/issues": typeof AuthAppOrgSlugIssuesRouteWithChildren;
-  "/$orgSlug/time-tracking": typeof AuthAppOrgSlugTimeTrackingRoute;
-  "/$orgSlug/": typeof AuthAppOrgSlugIndexRoute;
-  "/$orgSlug/projects/$key": typeof AuthAppOrgSlugProjectsKeyRouteRouteWithChildren;
-  "/$orgSlug/workspaces/$workspaceSlug": typeof AuthAppOrgSlugWorkspacesWorkspaceSlugRouteRouteWithChildren;
-  "/$orgSlug/documents/$id": typeof AuthAppOrgSlugDocumentsIdRoute;
-  "/$orgSlug/documents/templates": typeof AuthAppOrgSlugDocumentsTemplatesRoute;
-  "/$orgSlug/issues/$key": typeof AuthAppOrgSlugIssuesKeyRoute;
-  "/$orgSlug/settings/profile": typeof AuthAppOrgSlugSettingsProfileRoute;
-  "/$orgSlug/documents/": typeof AuthAppOrgSlugDocumentsIndexRoute;
-  "/$orgSlug/projects/": typeof AuthAppOrgSlugProjectsIndexRoute;
-  "/$orgSlug/settings/": typeof AuthAppOrgSlugSettingsIndexRoute;
-  "/$orgSlug/workspaces/": typeof AuthAppOrgSlugWorkspacesIndexRoute;
-  "/$orgSlug/projects/$key/board": typeof AuthAppOrgSlugProjectsKeyBoardRoute;
-  "/$orgSlug/projects/$key/calendar": typeof AuthAppOrgSlugProjectsKeyCalendarRoute;
-  "/$orgSlug/projects/$key/settings": typeof AuthAppOrgSlugProjectsKeySettingsRoute;
-  "/$orgSlug/projects/$key/timesheet": typeof AuthAppOrgSlugProjectsKeyTimesheetRoute;
-  "/$orgSlug/workspaces/$workspaceSlug/settings": typeof AuthAppOrgSlugWorkspacesWorkspaceSlugSettingsRoute;
-  "/$orgSlug/projects/$key/": typeof AuthAppOrgSlugProjectsKeyIndexRoute;
-  "/$orgSlug/workspaces/$workspaceSlug/": typeof AuthAppOrgSlugWorkspacesWorkspaceSlugIndexRoute;
-  "/$orgSlug/workspaces/$workspaceSlug/teams/$teamSlug": typeof AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsTeamSlugRouteRouteWithChildren;
-  "/$orgSlug/workspaces/$workspaceSlug/teams/": typeof AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsIndexRoute;
-  "/$orgSlug/workspaces/$workspaceSlug/teams/$teamSlug/board": typeof AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsTeamSlugBoardRoute;
-  "/$orgSlug/workspaces/$workspaceSlug/teams/$teamSlug/calendar": typeof AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsTeamSlugCalendarRoute;
-  "/$orgSlug/workspaces/$workspaceSlug/teams/$teamSlug/settings": typeof AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsTeamSlugSettingsRoute;
-  "/$orgSlug/workspaces/$workspaceSlug/teams/$teamSlug/": typeof AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsTeamSlugIndexRoute;
+  '/': typeof IndexRoute
+  '/forgot-password': typeof ForgotPasswordRoute
+  '/signin': typeof SigninRoute
+  '/signup': typeof SignupRoute
+  '/onboarding': typeof AuthOnboardingRoute
+  '/invite/$token': typeof InviteTokenRoute
+  '/$orgSlug': typeof AuthAppOrgSlugRouteRouteWithChildren
+  '/app': typeof AuthAppAppRoute
+  '/$orgSlug/dashboard': typeof AuthAppOrgSlugDashboardRoute
+  '/$orgSlug/issues': typeof AuthAppOrgSlugIssuesRouteWithChildren
+  '/$orgSlug/time-tracking': typeof AuthAppOrgSlugTimeTrackingRoute
+  '/$orgSlug/': typeof AuthAppOrgSlugIndexRoute
+  '/$orgSlug/projects/$key': typeof AuthAppOrgSlugProjectsKeyRouteRouteWithChildren
+  '/$orgSlug/workspaces/$workspaceSlug': typeof AuthAppOrgSlugWorkspacesWorkspaceSlugRouteRouteWithChildren
+  '/$orgSlug/documents/$id': typeof AuthAppOrgSlugDocumentsIdRoute
+  '/$orgSlug/documents/templates': typeof AuthAppOrgSlugDocumentsTemplatesRoute
+  '/$orgSlug/issues/$key': typeof AuthAppOrgSlugIssuesKeyRoute
+  '/$orgSlug/settings/profile': typeof AuthAppOrgSlugSettingsProfileRoute
+  '/$orgSlug/documents/': typeof AuthAppOrgSlugDocumentsIndexRoute
+  '/$orgSlug/projects/': typeof AuthAppOrgSlugProjectsIndexRoute
+  '/$orgSlug/settings/': typeof AuthAppOrgSlugSettingsIndexRoute
+  '/$orgSlug/workspaces/': typeof AuthAppOrgSlugWorkspacesIndexRoute
+  '/$orgSlug/projects/$key/board': typeof AuthAppOrgSlugProjectsKeyBoardRoute
+  '/$orgSlug/projects/$key/calendar': typeof AuthAppOrgSlugProjectsKeyCalendarRoute
+  '/$orgSlug/projects/$key/settings': typeof AuthAppOrgSlugProjectsKeySettingsRoute
+  '/$orgSlug/projects/$key/timesheet': typeof AuthAppOrgSlugProjectsKeyTimesheetRoute
+  '/$orgSlug/workspaces/$workspaceSlug/settings': typeof AuthAppOrgSlugWorkspacesWorkspaceSlugSettingsRoute
+  '/$orgSlug/projects/$key/': typeof AuthAppOrgSlugProjectsKeyIndexRoute
+  '/$orgSlug/workspaces/$workspaceSlug/': typeof AuthAppOrgSlugWorkspacesWorkspaceSlugIndexRoute
+  '/$orgSlug/workspaces/$workspaceSlug/teams/$teamSlug': typeof AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsTeamSlugRouteRouteWithChildren
+  '/$orgSlug/workspaces/$workspaceSlug/teams/': typeof AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsIndexRoute
+  '/$orgSlug/workspaces/$workspaceSlug/teams/$teamSlug/board': typeof AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsTeamSlugBoardRoute
+  '/$orgSlug/workspaces/$workspaceSlug/teams/$teamSlug/calendar': typeof AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsTeamSlugCalendarRoute
+  '/$orgSlug/workspaces/$workspaceSlug/teams/$teamSlug/settings': typeof AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsTeamSlugSettingsRoute
+  '/$orgSlug/workspaces/$workspaceSlug/teams/$teamSlug/': typeof AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsTeamSlugIndexRoute
 }
 export interface FileRoutesByTo {
-  "/": typeof IndexRoute;
-  "/forgot-password": typeof ForgotPasswordRoute;
-  "/signin": typeof SigninRoute;
-  "/signup": typeof SignupRoute;
-  "/onboarding": typeof AuthOnboardingRoute;
-  "/invite/$token": typeof InviteTokenRoute;
-  "/app": typeof AuthAppAppRoute;
-  "/$orgSlug/dashboard": typeof AuthAppOrgSlugDashboardRoute;
-  "/$orgSlug/issues": typeof AuthAppOrgSlugIssuesRouteWithChildren;
-  "/$orgSlug/time-tracking": typeof AuthAppOrgSlugTimeTrackingRoute;
-  "/$orgSlug": typeof AuthAppOrgSlugIndexRoute;
-  "/$orgSlug/documents/$id": typeof AuthAppOrgSlugDocumentsIdRoute;
-  "/$orgSlug/documents/templates": typeof AuthAppOrgSlugDocumentsTemplatesRoute;
-  "/$orgSlug/issues/$key": typeof AuthAppOrgSlugIssuesKeyRoute;
-  "/$orgSlug/settings/profile": typeof AuthAppOrgSlugSettingsProfileRoute;
-  "/$orgSlug/documents": typeof AuthAppOrgSlugDocumentsIndexRoute;
-  "/$orgSlug/projects": typeof AuthAppOrgSlugProjectsIndexRoute;
-  "/$orgSlug/settings": typeof AuthAppOrgSlugSettingsIndexRoute;
-  "/$orgSlug/workspaces": typeof AuthAppOrgSlugWorkspacesIndexRoute;
-  "/$orgSlug/projects/$key/board": typeof AuthAppOrgSlugProjectsKeyBoardRoute;
-  "/$orgSlug/projects/$key/calendar": typeof AuthAppOrgSlugProjectsKeyCalendarRoute;
-  "/$orgSlug/projects/$key/settings": typeof AuthAppOrgSlugProjectsKeySettingsRoute;
-  "/$orgSlug/projects/$key/timesheet": typeof AuthAppOrgSlugProjectsKeyTimesheetRoute;
-  "/$orgSlug/workspaces/$workspaceSlug/settings": typeof AuthAppOrgSlugWorkspacesWorkspaceSlugSettingsRoute;
-  "/$orgSlug/projects/$key": typeof AuthAppOrgSlugProjectsKeyIndexRoute;
-  "/$orgSlug/workspaces/$workspaceSlug": typeof AuthAppOrgSlugWorkspacesWorkspaceSlugIndexRoute;
-  "/$orgSlug/workspaces/$workspaceSlug/teams": typeof AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsIndexRoute;
-  "/$orgSlug/workspaces/$workspaceSlug/teams/$teamSlug/board": typeof AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsTeamSlugBoardRoute;
-  "/$orgSlug/workspaces/$workspaceSlug/teams/$teamSlug/calendar": typeof AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsTeamSlugCalendarRoute;
-  "/$orgSlug/workspaces/$workspaceSlug/teams/$teamSlug/settings": typeof AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsTeamSlugSettingsRoute;
-  "/$orgSlug/workspaces/$workspaceSlug/teams/$teamSlug": typeof AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsTeamSlugIndexRoute;
+  '/': typeof IndexRoute
+  '/forgot-password': typeof ForgotPasswordRoute
+  '/signin': typeof SigninRoute
+  '/signup': typeof SignupRoute
+  '/onboarding': typeof AuthOnboardingRoute
+  '/invite/$token': typeof InviteTokenRoute
+  '/app': typeof AuthAppAppRoute
+  '/$orgSlug/dashboard': typeof AuthAppOrgSlugDashboardRoute
+  '/$orgSlug/issues': typeof AuthAppOrgSlugIssuesRouteWithChildren
+  '/$orgSlug/time-tracking': typeof AuthAppOrgSlugTimeTrackingRoute
+  '/$orgSlug': typeof AuthAppOrgSlugIndexRoute
+  '/$orgSlug/documents/$id': typeof AuthAppOrgSlugDocumentsIdRoute
+  '/$orgSlug/documents/templates': typeof AuthAppOrgSlugDocumentsTemplatesRoute
+  '/$orgSlug/issues/$key': typeof AuthAppOrgSlugIssuesKeyRoute
+  '/$orgSlug/settings/profile': typeof AuthAppOrgSlugSettingsProfileRoute
+  '/$orgSlug/documents': typeof AuthAppOrgSlugDocumentsIndexRoute
+  '/$orgSlug/projects': typeof AuthAppOrgSlugProjectsIndexRoute
+  '/$orgSlug/settings': typeof AuthAppOrgSlugSettingsIndexRoute
+  '/$orgSlug/workspaces': typeof AuthAppOrgSlugWorkspacesIndexRoute
+  '/$orgSlug/projects/$key/board': typeof AuthAppOrgSlugProjectsKeyBoardRoute
+  '/$orgSlug/projects/$key/calendar': typeof AuthAppOrgSlugProjectsKeyCalendarRoute
+  '/$orgSlug/projects/$key/settings': typeof AuthAppOrgSlugProjectsKeySettingsRoute
+  '/$orgSlug/projects/$key/timesheet': typeof AuthAppOrgSlugProjectsKeyTimesheetRoute
+  '/$orgSlug/workspaces/$workspaceSlug/settings': typeof AuthAppOrgSlugWorkspacesWorkspaceSlugSettingsRoute
+  '/$orgSlug/projects/$key': typeof AuthAppOrgSlugProjectsKeyIndexRoute
+  '/$orgSlug/workspaces/$workspaceSlug': typeof AuthAppOrgSlugWorkspacesWorkspaceSlugIndexRoute
+  '/$orgSlug/workspaces/$workspaceSlug/teams': typeof AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsIndexRoute
+  '/$orgSlug/workspaces/$workspaceSlug/teams/$teamSlug/board': typeof AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsTeamSlugBoardRoute
+  '/$orgSlug/workspaces/$workspaceSlug/teams/$teamSlug/calendar': typeof AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsTeamSlugCalendarRoute
+  '/$orgSlug/workspaces/$workspaceSlug/teams/$teamSlug/settings': typeof AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsTeamSlugSettingsRoute
+  '/$orgSlug/workspaces/$workspaceSlug/teams/$teamSlug': typeof AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsTeamSlugIndexRoute
 }
 export interface FileRoutesById {
-  __root__: typeof rootRouteImport;
-  "/": typeof IndexRoute;
-  "/_auth": typeof AuthRouteRouteWithChildren;
-  "/forgot-password": typeof ForgotPasswordRoute;
-  "/signin": typeof SigninRoute;
-  "/signup": typeof SignupRoute;
-  "/_auth/_app": typeof AuthAppRouteRouteWithChildren;
-  "/_auth/onboarding": typeof AuthOnboardingRoute;
-  "/invite/$token": typeof InviteTokenRoute;
-  "/_auth/_app/$orgSlug": typeof AuthAppOrgSlugRouteRouteWithChildren;
-  "/_auth/_app/app": typeof AuthAppAppRoute;
-  "/_auth/_app/$orgSlug/dashboard": typeof AuthAppOrgSlugDashboardRoute;
-  "/_auth/_app/$orgSlug/issues": typeof AuthAppOrgSlugIssuesRouteWithChildren;
-  "/_auth/_app/$orgSlug/time-tracking": typeof AuthAppOrgSlugTimeTrackingRoute;
-  "/_auth/_app/$orgSlug/": typeof AuthAppOrgSlugIndexRoute;
-  "/_auth/_app/$orgSlug/projects/$key": typeof AuthAppOrgSlugProjectsKeyRouteRouteWithChildren;
-  "/_auth/_app/$orgSlug/workspaces/$workspaceSlug": typeof AuthAppOrgSlugWorkspacesWorkspaceSlugRouteRouteWithChildren;
-  "/_auth/_app/$orgSlug/documents/$id": typeof AuthAppOrgSlugDocumentsIdRoute;
-  "/_auth/_app/$orgSlug/documents/templates": typeof AuthAppOrgSlugDocumentsTemplatesRoute;
-  "/_auth/_app/$orgSlug/issues/$key": typeof AuthAppOrgSlugIssuesKeyRoute;
-  "/_auth/_app/$orgSlug/settings/profile": typeof AuthAppOrgSlugSettingsProfileRoute;
-  "/_auth/_app/$orgSlug/documents/": typeof AuthAppOrgSlugDocumentsIndexRoute;
-  "/_auth/_app/$orgSlug/projects/": typeof AuthAppOrgSlugProjectsIndexRoute;
-  "/_auth/_app/$orgSlug/settings/": typeof AuthAppOrgSlugSettingsIndexRoute;
-  "/_auth/_app/$orgSlug/workspaces/": typeof AuthAppOrgSlugWorkspacesIndexRoute;
-  "/_auth/_app/$orgSlug/projects/$key/board": typeof AuthAppOrgSlugProjectsKeyBoardRoute;
-  "/_auth/_app/$orgSlug/projects/$key/calendar": typeof AuthAppOrgSlugProjectsKeyCalendarRoute;
-  "/_auth/_app/$orgSlug/projects/$key/settings": typeof AuthAppOrgSlugProjectsKeySettingsRoute;
-  "/_auth/_app/$orgSlug/projects/$key/timesheet": typeof AuthAppOrgSlugProjectsKeyTimesheetRoute;
-  "/_auth/_app/$orgSlug/workspaces/$workspaceSlug/settings": typeof AuthAppOrgSlugWorkspacesWorkspaceSlugSettingsRoute;
-  "/_auth/_app/$orgSlug/projects/$key/": typeof AuthAppOrgSlugProjectsKeyIndexRoute;
-  "/_auth/_app/$orgSlug/workspaces/$workspaceSlug/": typeof AuthAppOrgSlugWorkspacesWorkspaceSlugIndexRoute;
-  "/_auth/_app/$orgSlug/workspaces/$workspaceSlug/teams/$teamSlug": typeof AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsTeamSlugRouteRouteWithChildren;
-  "/_auth/_app/$orgSlug/workspaces/$workspaceSlug/teams/": typeof AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsIndexRoute;
-  "/_auth/_app/$orgSlug/workspaces/$workspaceSlug/teams/$teamSlug/board": typeof AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsTeamSlugBoardRoute;
-  "/_auth/_app/$orgSlug/workspaces/$workspaceSlug/teams/$teamSlug/calendar": typeof AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsTeamSlugCalendarRoute;
-  "/_auth/_app/$orgSlug/workspaces/$workspaceSlug/teams/$teamSlug/settings": typeof AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsTeamSlugSettingsRoute;
-  "/_auth/_app/$orgSlug/workspaces/$workspaceSlug/teams/$teamSlug/": typeof AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsTeamSlugIndexRoute;
+  __root__: typeof rootRouteImport
+  '/': typeof IndexRoute
+  '/_auth': typeof AuthRouteRouteWithChildren
+  '/forgot-password': typeof ForgotPasswordRoute
+  '/signin': typeof SigninRoute
+  '/signup': typeof SignupRoute
+  '/_auth/_app': typeof AuthAppRouteRouteWithChildren
+  '/_auth/onboarding': typeof AuthOnboardingRoute
+  '/invite/$token': typeof InviteTokenRoute
+  '/_auth/_app/$orgSlug': typeof AuthAppOrgSlugRouteRouteWithChildren
+  '/_auth/_app/app': typeof AuthAppAppRoute
+  '/_auth/_app/$orgSlug/dashboard': typeof AuthAppOrgSlugDashboardRoute
+  '/_auth/_app/$orgSlug/issues': typeof AuthAppOrgSlugIssuesRouteWithChildren
+  '/_auth/_app/$orgSlug/time-tracking': typeof AuthAppOrgSlugTimeTrackingRoute
+  '/_auth/_app/$orgSlug/': typeof AuthAppOrgSlugIndexRoute
+  '/_auth/_app/$orgSlug/projects/$key': typeof AuthAppOrgSlugProjectsKeyRouteRouteWithChildren
+  '/_auth/_app/$orgSlug/workspaces/$workspaceSlug': typeof AuthAppOrgSlugWorkspacesWorkspaceSlugRouteRouteWithChildren
+  '/_auth/_app/$orgSlug/documents/$id': typeof AuthAppOrgSlugDocumentsIdRoute
+  '/_auth/_app/$orgSlug/documents/templates': typeof AuthAppOrgSlugDocumentsTemplatesRoute
+  '/_auth/_app/$orgSlug/issues/$key': typeof AuthAppOrgSlugIssuesKeyRoute
+  '/_auth/_app/$orgSlug/settings/profile': typeof AuthAppOrgSlugSettingsProfileRoute
+  '/_auth/_app/$orgSlug/documents/': typeof AuthAppOrgSlugDocumentsIndexRoute
+  '/_auth/_app/$orgSlug/projects/': typeof AuthAppOrgSlugProjectsIndexRoute
+  '/_auth/_app/$orgSlug/settings/': typeof AuthAppOrgSlugSettingsIndexRoute
+  '/_auth/_app/$orgSlug/workspaces/': typeof AuthAppOrgSlugWorkspacesIndexRoute
+  '/_auth/_app/$orgSlug/projects/$key/board': typeof AuthAppOrgSlugProjectsKeyBoardRoute
+  '/_auth/_app/$orgSlug/projects/$key/calendar': typeof AuthAppOrgSlugProjectsKeyCalendarRoute
+  '/_auth/_app/$orgSlug/projects/$key/settings': typeof AuthAppOrgSlugProjectsKeySettingsRoute
+  '/_auth/_app/$orgSlug/projects/$key/timesheet': typeof AuthAppOrgSlugProjectsKeyTimesheetRoute
+  '/_auth/_app/$orgSlug/workspaces/$workspaceSlug/settings': typeof AuthAppOrgSlugWorkspacesWorkspaceSlugSettingsRoute
+  '/_auth/_app/$orgSlug/projects/$key/': typeof AuthAppOrgSlugProjectsKeyIndexRoute
+  '/_auth/_app/$orgSlug/workspaces/$workspaceSlug/': typeof AuthAppOrgSlugWorkspacesWorkspaceSlugIndexRoute
+  '/_auth/_app/$orgSlug/workspaces/$workspaceSlug/teams/$teamSlug': typeof AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsTeamSlugRouteRouteWithChildren
+  '/_auth/_app/$orgSlug/workspaces/$workspaceSlug/teams/': typeof AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsIndexRoute
+  '/_auth/_app/$orgSlug/workspaces/$workspaceSlug/teams/$teamSlug/board': typeof AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsTeamSlugBoardRoute
+  '/_auth/_app/$orgSlug/workspaces/$workspaceSlug/teams/$teamSlug/calendar': typeof AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsTeamSlugCalendarRoute
+  '/_auth/_app/$orgSlug/workspaces/$workspaceSlug/teams/$teamSlug/settings': typeof AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsTeamSlugSettingsRoute
+  '/_auth/_app/$orgSlug/workspaces/$workspaceSlug/teams/$teamSlug/': typeof AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsTeamSlugIndexRoute
 }
 export interface FileRouteTypes {
-  fileRoutesByFullPath: FileRoutesByFullPath;
+  fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    | "/"
-    | "/forgot-password"
-    | "/signin"
-    | "/signup"
-    | "/onboarding"
-    | "/invite/$token"
-    | "/$orgSlug"
-    | "/app"
-    | "/$orgSlug/dashboard"
-    | "/$orgSlug/issues"
-    | "/$orgSlug/time-tracking"
-    | "/$orgSlug/"
-    | "/$orgSlug/projects/$key"
-    | "/$orgSlug/workspaces/$workspaceSlug"
-    | "/$orgSlug/documents/$id"
-    | "/$orgSlug/documents/templates"
-    | "/$orgSlug/issues/$key"
-    | "/$orgSlug/settings/profile"
-    | "/$orgSlug/documents/"
-    | "/$orgSlug/projects/"
-    | "/$orgSlug/settings/"
-    | "/$orgSlug/workspaces/"
-    | "/$orgSlug/projects/$key/board"
-    | "/$orgSlug/projects/$key/calendar"
-    | "/$orgSlug/projects/$key/settings"
-    | "/$orgSlug/projects/$key/timesheet"
-    | "/$orgSlug/workspaces/$workspaceSlug/settings"
-    | "/$orgSlug/projects/$key/"
-    | "/$orgSlug/workspaces/$workspaceSlug/"
-    | "/$orgSlug/workspaces/$workspaceSlug/teams/$teamSlug"
-    | "/$orgSlug/workspaces/$workspaceSlug/teams/"
-    | "/$orgSlug/workspaces/$workspaceSlug/teams/$teamSlug/board"
-    | "/$orgSlug/workspaces/$workspaceSlug/teams/$teamSlug/calendar"
-    | "/$orgSlug/workspaces/$workspaceSlug/teams/$teamSlug/settings"
-    | "/$orgSlug/workspaces/$workspaceSlug/teams/$teamSlug/";
-  fileRoutesByTo: FileRoutesByTo;
+    | '/'
+    | '/forgot-password'
+    | '/signin'
+    | '/signup'
+    | '/onboarding'
+    | '/invite/$token'
+    | '/$orgSlug'
+    | '/app'
+    | '/$orgSlug/dashboard'
+    | '/$orgSlug/issues'
+    | '/$orgSlug/time-tracking'
+    | '/$orgSlug/'
+    | '/$orgSlug/projects/$key'
+    | '/$orgSlug/workspaces/$workspaceSlug'
+    | '/$orgSlug/documents/$id'
+    | '/$orgSlug/documents/templates'
+    | '/$orgSlug/issues/$key'
+    | '/$orgSlug/settings/profile'
+    | '/$orgSlug/documents/'
+    | '/$orgSlug/projects/'
+    | '/$orgSlug/settings/'
+    | '/$orgSlug/workspaces/'
+    | '/$orgSlug/projects/$key/board'
+    | '/$orgSlug/projects/$key/calendar'
+    | '/$orgSlug/projects/$key/settings'
+    | '/$orgSlug/projects/$key/timesheet'
+    | '/$orgSlug/workspaces/$workspaceSlug/settings'
+    | '/$orgSlug/projects/$key/'
+    | '/$orgSlug/workspaces/$workspaceSlug/'
+    | '/$orgSlug/workspaces/$workspaceSlug/teams/$teamSlug'
+    | '/$orgSlug/workspaces/$workspaceSlug/teams/'
+    | '/$orgSlug/workspaces/$workspaceSlug/teams/$teamSlug/board'
+    | '/$orgSlug/workspaces/$workspaceSlug/teams/$teamSlug/calendar'
+    | '/$orgSlug/workspaces/$workspaceSlug/teams/$teamSlug/settings'
+    | '/$orgSlug/workspaces/$workspaceSlug/teams/$teamSlug/'
+  fileRoutesByTo: FileRoutesByTo
   to:
-    | "/"
-    | "/forgot-password"
-    | "/signin"
-    | "/signup"
-    | "/onboarding"
-    | "/invite/$token"
-    | "/app"
-    | "/$orgSlug/dashboard"
-    | "/$orgSlug/issues"
-    | "/$orgSlug/time-tracking"
-    | "/$orgSlug"
-    | "/$orgSlug/documents/$id"
-    | "/$orgSlug/documents/templates"
-    | "/$orgSlug/issues/$key"
-    | "/$orgSlug/settings/profile"
-    | "/$orgSlug/documents"
-    | "/$orgSlug/projects"
-    | "/$orgSlug/settings"
-    | "/$orgSlug/workspaces"
-    | "/$orgSlug/projects/$key/board"
-    | "/$orgSlug/projects/$key/calendar"
-    | "/$orgSlug/projects/$key/settings"
-    | "/$orgSlug/projects/$key/timesheet"
-    | "/$orgSlug/workspaces/$workspaceSlug/settings"
-    | "/$orgSlug/projects/$key"
-    | "/$orgSlug/workspaces/$workspaceSlug"
-    | "/$orgSlug/workspaces/$workspaceSlug/teams"
-    | "/$orgSlug/workspaces/$workspaceSlug/teams/$teamSlug/board"
-    | "/$orgSlug/workspaces/$workspaceSlug/teams/$teamSlug/calendar"
-    | "/$orgSlug/workspaces/$workspaceSlug/teams/$teamSlug/settings"
-    | "/$orgSlug/workspaces/$workspaceSlug/teams/$teamSlug";
+    | '/'
+    | '/forgot-password'
+    | '/signin'
+    | '/signup'
+    | '/onboarding'
+    | '/invite/$token'
+    | '/app'
+    | '/$orgSlug/dashboard'
+    | '/$orgSlug/issues'
+    | '/$orgSlug/time-tracking'
+    | '/$orgSlug'
+    | '/$orgSlug/documents/$id'
+    | '/$orgSlug/documents/templates'
+    | '/$orgSlug/issues/$key'
+    | '/$orgSlug/settings/profile'
+    | '/$orgSlug/documents'
+    | '/$orgSlug/projects'
+    | '/$orgSlug/settings'
+    | '/$orgSlug/workspaces'
+    | '/$orgSlug/projects/$key/board'
+    | '/$orgSlug/projects/$key/calendar'
+    | '/$orgSlug/projects/$key/settings'
+    | '/$orgSlug/projects/$key/timesheet'
+    | '/$orgSlug/workspaces/$workspaceSlug/settings'
+    | '/$orgSlug/projects/$key'
+    | '/$orgSlug/workspaces/$workspaceSlug'
+    | '/$orgSlug/workspaces/$workspaceSlug/teams'
+    | '/$orgSlug/workspaces/$workspaceSlug/teams/$teamSlug/board'
+    | '/$orgSlug/workspaces/$workspaceSlug/teams/$teamSlug/calendar'
+    | '/$orgSlug/workspaces/$workspaceSlug/teams/$teamSlug/settings'
+    | '/$orgSlug/workspaces/$workspaceSlug/teams/$teamSlug'
   id:
-    | "__root__"
-    | "/"
-    | "/_auth"
-    | "/forgot-password"
-    | "/signin"
-    | "/signup"
-    | "/_auth/_app"
-    | "/_auth/onboarding"
-    | "/invite/$token"
-    | "/_auth/_app/$orgSlug"
-    | "/_auth/_app/app"
-    | "/_auth/_app/$orgSlug/dashboard"
-    | "/_auth/_app/$orgSlug/issues"
-    | "/_auth/_app/$orgSlug/time-tracking"
-    | "/_auth/_app/$orgSlug/"
-    | "/_auth/_app/$orgSlug/projects/$key"
-    | "/_auth/_app/$orgSlug/workspaces/$workspaceSlug"
-    | "/_auth/_app/$orgSlug/documents/$id"
-    | "/_auth/_app/$orgSlug/documents/templates"
-    | "/_auth/_app/$orgSlug/issues/$key"
-    | "/_auth/_app/$orgSlug/settings/profile"
-    | "/_auth/_app/$orgSlug/documents/"
-    | "/_auth/_app/$orgSlug/projects/"
-    | "/_auth/_app/$orgSlug/settings/"
-    | "/_auth/_app/$orgSlug/workspaces/"
-    | "/_auth/_app/$orgSlug/projects/$key/board"
-    | "/_auth/_app/$orgSlug/projects/$key/calendar"
-    | "/_auth/_app/$orgSlug/projects/$key/settings"
-    | "/_auth/_app/$orgSlug/projects/$key/timesheet"
-    | "/_auth/_app/$orgSlug/workspaces/$workspaceSlug/settings"
-    | "/_auth/_app/$orgSlug/projects/$key/"
-    | "/_auth/_app/$orgSlug/workspaces/$workspaceSlug/"
-    | "/_auth/_app/$orgSlug/workspaces/$workspaceSlug/teams/$teamSlug"
-    | "/_auth/_app/$orgSlug/workspaces/$workspaceSlug/teams/"
-    | "/_auth/_app/$orgSlug/workspaces/$workspaceSlug/teams/$teamSlug/board"
-    | "/_auth/_app/$orgSlug/workspaces/$workspaceSlug/teams/$teamSlug/calendar"
-    | "/_auth/_app/$orgSlug/workspaces/$workspaceSlug/teams/$teamSlug/settings"
-    | "/_auth/_app/$orgSlug/workspaces/$workspaceSlug/teams/$teamSlug/";
-  fileRoutesById: FileRoutesById;
+    | '__root__'
+    | '/'
+    | '/_auth'
+    | '/forgot-password'
+    | '/signin'
+    | '/signup'
+    | '/_auth/_app'
+    | '/_auth/onboarding'
+    | '/invite/$token'
+    | '/_auth/_app/$orgSlug'
+    | '/_auth/_app/app'
+    | '/_auth/_app/$orgSlug/dashboard'
+    | '/_auth/_app/$orgSlug/issues'
+    | '/_auth/_app/$orgSlug/time-tracking'
+    | '/_auth/_app/$orgSlug/'
+    | '/_auth/_app/$orgSlug/projects/$key'
+    | '/_auth/_app/$orgSlug/workspaces/$workspaceSlug'
+    | '/_auth/_app/$orgSlug/documents/$id'
+    | '/_auth/_app/$orgSlug/documents/templates'
+    | '/_auth/_app/$orgSlug/issues/$key'
+    | '/_auth/_app/$orgSlug/settings/profile'
+    | '/_auth/_app/$orgSlug/documents/'
+    | '/_auth/_app/$orgSlug/projects/'
+    | '/_auth/_app/$orgSlug/settings/'
+    | '/_auth/_app/$orgSlug/workspaces/'
+    | '/_auth/_app/$orgSlug/projects/$key/board'
+    | '/_auth/_app/$orgSlug/projects/$key/calendar'
+    | '/_auth/_app/$orgSlug/projects/$key/settings'
+    | '/_auth/_app/$orgSlug/projects/$key/timesheet'
+    | '/_auth/_app/$orgSlug/workspaces/$workspaceSlug/settings'
+    | '/_auth/_app/$orgSlug/projects/$key/'
+    | '/_auth/_app/$orgSlug/workspaces/$workspaceSlug/'
+    | '/_auth/_app/$orgSlug/workspaces/$workspaceSlug/teams/$teamSlug'
+    | '/_auth/_app/$orgSlug/workspaces/$workspaceSlug/teams/'
+    | '/_auth/_app/$orgSlug/workspaces/$workspaceSlug/teams/$teamSlug/board'
+    | '/_auth/_app/$orgSlug/workspaces/$workspaceSlug/teams/$teamSlug/calendar'
+    | '/_auth/_app/$orgSlug/workspaces/$workspaceSlug/teams/$teamSlug/settings'
+    | '/_auth/_app/$orgSlug/workspaces/$workspaceSlug/teams/$teamSlug/'
+  fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute;
-  AuthRouteRoute: typeof AuthRouteRouteWithChildren;
-  ForgotPasswordRoute: typeof ForgotPasswordRoute;
-  SigninRoute: typeof SigninRoute;
-  SignupRoute: typeof SignupRoute;
-  InviteTokenRoute: typeof InviteTokenRoute;
+  IndexRoute: typeof IndexRoute
+  AuthRouteRoute: typeof AuthRouteRouteWithChildren
+  ForgotPasswordRoute: typeof ForgotPasswordRoute
+  SigninRoute: typeof SigninRoute
+  SignupRoute: typeof SignupRoute
+  InviteTokenRoute: typeof InviteTokenRoute
 }
 
-declare module "@tanstack/react-router" {
+declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    "/signup": {
-      id: "/signup";
-      path: "/signup";
-      fullPath: "/signup";
-      preLoaderRoute: typeof SignupRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    "/signin": {
-      id: "/signin";
-      path: "/signin";
-      fullPath: "/signin";
-      preLoaderRoute: typeof SigninRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    "/forgot-password": {
-      id: "/forgot-password";
-      path: "/forgot-password";
-      fullPath: "/forgot-password";
-      preLoaderRoute: typeof ForgotPasswordRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    "/_auth": {
-      id: "/_auth";
-      path: "";
-      fullPath: "/";
-      preLoaderRoute: typeof AuthRouteRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    "/": {
-      id: "/";
-      path: "/";
-      fullPath: "/";
-      preLoaderRoute: typeof IndexRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    "/invite/$token": {
-      id: "/invite/$token";
-      path: "/invite/$token";
-      fullPath: "/invite/$token";
-      preLoaderRoute: typeof InviteTokenRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    "/_auth/onboarding": {
-      id: "/_auth/onboarding";
-      path: "/onboarding";
-      fullPath: "/onboarding";
-      preLoaderRoute: typeof AuthOnboardingRouteImport;
-      parentRoute: typeof AuthRouteRoute;
-    };
-    "/_auth/_app": {
-      id: "/_auth/_app";
-      path: "";
-      fullPath: "/";
-      preLoaderRoute: typeof AuthAppRouteRouteImport;
-      parentRoute: typeof AuthRouteRoute;
-    };
-    "/_auth/_app/app": {
-      id: "/_auth/_app/app";
-      path: "/app";
-      fullPath: "/app";
-      preLoaderRoute: typeof AuthAppAppRouteImport;
-      parentRoute: typeof AuthAppRouteRoute;
-    };
-    "/_auth/_app/$orgSlug": {
-      id: "/_auth/_app/$orgSlug";
-      path: "/$orgSlug";
-      fullPath: "/$orgSlug";
-      preLoaderRoute: typeof AuthAppOrgSlugRouteRouteImport;
-      parentRoute: typeof AuthAppRouteRoute;
-    };
-    "/_auth/_app/$orgSlug/": {
-      id: "/_auth/_app/$orgSlug/";
-      path: "/";
-      fullPath: "/$orgSlug/";
-      preLoaderRoute: typeof AuthAppOrgSlugIndexRouteImport;
-      parentRoute: typeof AuthAppOrgSlugRouteRoute;
-    };
-    "/_auth/_app/$orgSlug/time-tracking": {
-      id: "/_auth/_app/$orgSlug/time-tracking";
-      path: "/time-tracking";
-      fullPath: "/$orgSlug/time-tracking";
-      preLoaderRoute: typeof AuthAppOrgSlugTimeTrackingRouteImport;
-      parentRoute: typeof AuthAppOrgSlugRouteRoute;
-    };
-    "/_auth/_app/$orgSlug/issues": {
-      id: "/_auth/_app/$orgSlug/issues";
-      path: "/issues";
-      fullPath: "/$orgSlug/issues";
-      preLoaderRoute: typeof AuthAppOrgSlugIssuesRouteImport;
-      parentRoute: typeof AuthAppOrgSlugRouteRoute;
-    };
-    "/_auth/_app/$orgSlug/dashboard": {
-      id: "/_auth/_app/$orgSlug/dashboard";
-      path: "/dashboard";
-      fullPath: "/$orgSlug/dashboard";
-      preLoaderRoute: typeof AuthAppOrgSlugDashboardRouteImport;
-      parentRoute: typeof AuthAppOrgSlugRouteRoute;
-    };
-    "/_auth/_app/$orgSlug/workspaces/": {
-      id: "/_auth/_app/$orgSlug/workspaces/";
-      path: "/workspaces";
-      fullPath: "/$orgSlug/workspaces/";
-      preLoaderRoute: typeof AuthAppOrgSlugWorkspacesIndexRouteImport;
-      parentRoute: typeof AuthAppOrgSlugRouteRoute;
-    };
-    "/_auth/_app/$orgSlug/settings/": {
-      id: "/_auth/_app/$orgSlug/settings/";
-      path: "/settings";
-      fullPath: "/$orgSlug/settings/";
-      preLoaderRoute: typeof AuthAppOrgSlugSettingsIndexRouteImport;
-      parentRoute: typeof AuthAppOrgSlugRouteRoute;
-    };
-    "/_auth/_app/$orgSlug/projects/": {
-      id: "/_auth/_app/$orgSlug/projects/";
-      path: "/projects";
-      fullPath: "/$orgSlug/projects/";
-      preLoaderRoute: typeof AuthAppOrgSlugProjectsIndexRouteImport;
-      parentRoute: typeof AuthAppOrgSlugRouteRoute;
-    };
-    "/_auth/_app/$orgSlug/documents/": {
-      id: "/_auth/_app/$orgSlug/documents/";
-      path: "/documents";
-      fullPath: "/$orgSlug/documents/";
-      preLoaderRoute: typeof AuthAppOrgSlugDocumentsIndexRouteImport;
-      parentRoute: typeof AuthAppOrgSlugRouteRoute;
-    };
-    "/_auth/_app/$orgSlug/settings/profile": {
-      id: "/_auth/_app/$orgSlug/settings/profile";
-      path: "/settings/profile";
-      fullPath: "/$orgSlug/settings/profile";
-      preLoaderRoute: typeof AuthAppOrgSlugSettingsProfileRouteImport;
-      parentRoute: typeof AuthAppOrgSlugRouteRoute;
-    };
-    "/_auth/_app/$orgSlug/issues/$key": {
-      id: "/_auth/_app/$orgSlug/issues/$key";
-      path: "/$key";
-      fullPath: "/$orgSlug/issues/$key";
-      preLoaderRoute: typeof AuthAppOrgSlugIssuesKeyRouteImport;
-      parentRoute: typeof AuthAppOrgSlugIssuesRoute;
-    };
-    "/_auth/_app/$orgSlug/documents/templates": {
-      id: "/_auth/_app/$orgSlug/documents/templates";
-      path: "/documents/templates";
-      fullPath: "/$orgSlug/documents/templates";
-      preLoaderRoute: typeof AuthAppOrgSlugDocumentsTemplatesRouteImport;
-      parentRoute: typeof AuthAppOrgSlugRouteRoute;
-    };
-    "/_auth/_app/$orgSlug/documents/$id": {
-      id: "/_auth/_app/$orgSlug/documents/$id";
-      path: "/documents/$id";
-      fullPath: "/$orgSlug/documents/$id";
-      preLoaderRoute: typeof AuthAppOrgSlugDocumentsIdRouteImport;
-      parentRoute: typeof AuthAppOrgSlugRouteRoute;
-    };
-    "/_auth/_app/$orgSlug/workspaces/$workspaceSlug": {
-      id: "/_auth/_app/$orgSlug/workspaces/$workspaceSlug";
-      path: "/workspaces/$workspaceSlug";
-      fullPath: "/$orgSlug/workspaces/$workspaceSlug";
-      preLoaderRoute: typeof AuthAppOrgSlugWorkspacesWorkspaceSlugRouteRouteImport;
-      parentRoute: typeof AuthAppOrgSlugRouteRoute;
-    };
-    "/_auth/_app/$orgSlug/projects/$key": {
-      id: "/_auth/_app/$orgSlug/projects/$key";
-      path: "/projects/$key";
-      fullPath: "/$orgSlug/projects/$key";
-      preLoaderRoute: typeof AuthAppOrgSlugProjectsKeyRouteRouteImport;
-      parentRoute: typeof AuthAppOrgSlugRouteRoute;
-    };
-    "/_auth/_app/$orgSlug/workspaces/$workspaceSlug/": {
-      id: "/_auth/_app/$orgSlug/workspaces/$workspaceSlug/";
-      path: "/";
-      fullPath: "/$orgSlug/workspaces/$workspaceSlug/";
-      preLoaderRoute: typeof AuthAppOrgSlugWorkspacesWorkspaceSlugIndexRouteImport;
-      parentRoute: typeof AuthAppOrgSlugWorkspacesWorkspaceSlugRouteRoute;
-    };
-    "/_auth/_app/$orgSlug/projects/$key/": {
-      id: "/_auth/_app/$orgSlug/projects/$key/";
-      path: "/";
-      fullPath: "/$orgSlug/projects/$key/";
-      preLoaderRoute: typeof AuthAppOrgSlugProjectsKeyIndexRouteImport;
-      parentRoute: typeof AuthAppOrgSlugProjectsKeyRouteRoute;
-    };
-    "/_auth/_app/$orgSlug/workspaces/$workspaceSlug/settings": {
-      id: "/_auth/_app/$orgSlug/workspaces/$workspaceSlug/settings";
-      path: "/settings";
-      fullPath: "/$orgSlug/workspaces/$workspaceSlug/settings";
-      preLoaderRoute: typeof AuthAppOrgSlugWorkspacesWorkspaceSlugSettingsRouteImport;
-      parentRoute: typeof AuthAppOrgSlugWorkspacesWorkspaceSlugRouteRoute;
-    };
-    "/_auth/_app/$orgSlug/projects/$key/timesheet": {
-      id: "/_auth/_app/$orgSlug/projects/$key/timesheet";
-      path: "/timesheet";
-      fullPath: "/$orgSlug/projects/$key/timesheet";
-      preLoaderRoute: typeof AuthAppOrgSlugProjectsKeyTimesheetRouteImport;
-      parentRoute: typeof AuthAppOrgSlugProjectsKeyRouteRoute;
-    };
-    "/_auth/_app/$orgSlug/projects/$key/settings": {
-      id: "/_auth/_app/$orgSlug/projects/$key/settings";
-      path: "/settings";
-      fullPath: "/$orgSlug/projects/$key/settings";
-      preLoaderRoute: typeof AuthAppOrgSlugProjectsKeySettingsRouteImport;
-      parentRoute: typeof AuthAppOrgSlugProjectsKeyRouteRoute;
-    };
-    "/_auth/_app/$orgSlug/projects/$key/calendar": {
-      id: "/_auth/_app/$orgSlug/projects/$key/calendar";
-      path: "/calendar";
-      fullPath: "/$orgSlug/projects/$key/calendar";
-      preLoaderRoute: typeof AuthAppOrgSlugProjectsKeyCalendarRouteImport;
-      parentRoute: typeof AuthAppOrgSlugProjectsKeyRouteRoute;
-    };
-    "/_auth/_app/$orgSlug/projects/$key/board": {
-      id: "/_auth/_app/$orgSlug/projects/$key/board";
-      path: "/board";
-      fullPath: "/$orgSlug/projects/$key/board";
-      preLoaderRoute: typeof AuthAppOrgSlugProjectsKeyBoardRouteImport;
-      parentRoute: typeof AuthAppOrgSlugProjectsKeyRouteRoute;
-    };
-    "/_auth/_app/$orgSlug/workspaces/$workspaceSlug/teams/": {
-      id: "/_auth/_app/$orgSlug/workspaces/$workspaceSlug/teams/";
-      path: "/teams";
-      fullPath: "/$orgSlug/workspaces/$workspaceSlug/teams/";
-      preLoaderRoute: typeof AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsIndexRouteImport;
-      parentRoute: typeof AuthAppOrgSlugWorkspacesWorkspaceSlugRouteRoute;
-    };
-    "/_auth/_app/$orgSlug/workspaces/$workspaceSlug/teams/$teamSlug": {
-      id: "/_auth/_app/$orgSlug/workspaces/$workspaceSlug/teams/$teamSlug";
-      path: "/teams/$teamSlug";
-      fullPath: "/$orgSlug/workspaces/$workspaceSlug/teams/$teamSlug";
-      preLoaderRoute: typeof AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsTeamSlugRouteRouteImport;
-      parentRoute: typeof AuthAppOrgSlugWorkspacesWorkspaceSlugRouteRoute;
-    };
-    "/_auth/_app/$orgSlug/workspaces/$workspaceSlug/teams/$teamSlug/": {
-      id: "/_auth/_app/$orgSlug/workspaces/$workspaceSlug/teams/$teamSlug/";
-      path: "/";
-      fullPath: "/$orgSlug/workspaces/$workspaceSlug/teams/$teamSlug/";
-      preLoaderRoute: typeof AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsTeamSlugIndexRouteImport;
-      parentRoute: typeof AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsTeamSlugRouteRoute;
-    };
-    "/_auth/_app/$orgSlug/workspaces/$workspaceSlug/teams/$teamSlug/settings": {
-      id: "/_auth/_app/$orgSlug/workspaces/$workspaceSlug/teams/$teamSlug/settings";
-      path: "/settings";
-      fullPath: "/$orgSlug/workspaces/$workspaceSlug/teams/$teamSlug/settings";
-      preLoaderRoute: typeof AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsTeamSlugSettingsRouteImport;
-      parentRoute: typeof AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsTeamSlugRouteRoute;
-    };
-    "/_auth/_app/$orgSlug/workspaces/$workspaceSlug/teams/$teamSlug/calendar": {
-      id: "/_auth/_app/$orgSlug/workspaces/$workspaceSlug/teams/$teamSlug/calendar";
-      path: "/calendar";
-      fullPath: "/$orgSlug/workspaces/$workspaceSlug/teams/$teamSlug/calendar";
-      preLoaderRoute: typeof AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsTeamSlugCalendarRouteImport;
-      parentRoute: typeof AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsTeamSlugRouteRoute;
-    };
-    "/_auth/_app/$orgSlug/workspaces/$workspaceSlug/teams/$teamSlug/board": {
-      id: "/_auth/_app/$orgSlug/workspaces/$workspaceSlug/teams/$teamSlug/board";
-      path: "/board";
-      fullPath: "/$orgSlug/workspaces/$workspaceSlug/teams/$teamSlug/board";
-      preLoaderRoute: typeof AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsTeamSlugBoardRouteImport;
-      parentRoute: typeof AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsTeamSlugRouteRoute;
-    };
+    '/signup': {
+      id: '/signup'
+      path: '/signup'
+      fullPath: '/signup'
+      preLoaderRoute: typeof SignupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/signin': {
+      id: '/signin'
+      path: '/signin'
+      fullPath: '/signin'
+      preLoaderRoute: typeof SigninRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/forgot-password': {
+      id: '/forgot-password'
+      path: '/forgot-password'
+      fullPath: '/forgot-password'
+      preLoaderRoute: typeof ForgotPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_auth': {
+      id: '/_auth'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/invite/$token': {
+      id: '/invite/$token'
+      path: '/invite/$token'
+      fullPath: '/invite/$token'
+      preLoaderRoute: typeof InviteTokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_auth/onboarding': {
+      id: '/_auth/onboarding'
+      path: '/onboarding'
+      fullPath: '/onboarding'
+      preLoaderRoute: typeof AuthOnboardingRouteImport
+      parentRoute: typeof AuthRouteRoute
+    }
+    '/_auth/_app': {
+      id: '/_auth/_app'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthAppRouteRouteImport
+      parentRoute: typeof AuthRouteRoute
+    }
+    '/_auth/_app/app': {
+      id: '/_auth/_app/app'
+      path: '/app'
+      fullPath: '/app'
+      preLoaderRoute: typeof AuthAppAppRouteImport
+      parentRoute: typeof AuthAppRouteRoute
+    }
+    '/_auth/_app/$orgSlug': {
+      id: '/_auth/_app/$orgSlug'
+      path: '/$orgSlug'
+      fullPath: '/$orgSlug'
+      preLoaderRoute: typeof AuthAppOrgSlugRouteRouteImport
+      parentRoute: typeof AuthAppRouteRoute
+    }
+    '/_auth/_app/$orgSlug/': {
+      id: '/_auth/_app/$orgSlug/'
+      path: '/'
+      fullPath: '/$orgSlug/'
+      preLoaderRoute: typeof AuthAppOrgSlugIndexRouteImport
+      parentRoute: typeof AuthAppOrgSlugRouteRoute
+    }
+    '/_auth/_app/$orgSlug/time-tracking': {
+      id: '/_auth/_app/$orgSlug/time-tracking'
+      path: '/time-tracking'
+      fullPath: '/$orgSlug/time-tracking'
+      preLoaderRoute: typeof AuthAppOrgSlugTimeTrackingRouteImport
+      parentRoute: typeof AuthAppOrgSlugRouteRoute
+    }
+    '/_auth/_app/$orgSlug/issues': {
+      id: '/_auth/_app/$orgSlug/issues'
+      path: '/issues'
+      fullPath: '/$orgSlug/issues'
+      preLoaderRoute: typeof AuthAppOrgSlugIssuesRouteImport
+      parentRoute: typeof AuthAppOrgSlugRouteRoute
+    }
+    '/_auth/_app/$orgSlug/dashboard': {
+      id: '/_auth/_app/$orgSlug/dashboard'
+      path: '/dashboard'
+      fullPath: '/$orgSlug/dashboard'
+      preLoaderRoute: typeof AuthAppOrgSlugDashboardRouteImport
+      parentRoute: typeof AuthAppOrgSlugRouteRoute
+    }
+    '/_auth/_app/$orgSlug/workspaces/': {
+      id: '/_auth/_app/$orgSlug/workspaces/'
+      path: '/workspaces'
+      fullPath: '/$orgSlug/workspaces/'
+      preLoaderRoute: typeof AuthAppOrgSlugWorkspacesIndexRouteImport
+      parentRoute: typeof AuthAppOrgSlugRouteRoute
+    }
+    '/_auth/_app/$orgSlug/settings/': {
+      id: '/_auth/_app/$orgSlug/settings/'
+      path: '/settings'
+      fullPath: '/$orgSlug/settings/'
+      preLoaderRoute: typeof AuthAppOrgSlugSettingsIndexRouteImport
+      parentRoute: typeof AuthAppOrgSlugRouteRoute
+    }
+    '/_auth/_app/$orgSlug/projects/': {
+      id: '/_auth/_app/$orgSlug/projects/'
+      path: '/projects'
+      fullPath: '/$orgSlug/projects/'
+      preLoaderRoute: typeof AuthAppOrgSlugProjectsIndexRouteImport
+      parentRoute: typeof AuthAppOrgSlugRouteRoute
+    }
+    '/_auth/_app/$orgSlug/documents/': {
+      id: '/_auth/_app/$orgSlug/documents/'
+      path: '/documents'
+      fullPath: '/$orgSlug/documents/'
+      preLoaderRoute: typeof AuthAppOrgSlugDocumentsIndexRouteImport
+      parentRoute: typeof AuthAppOrgSlugRouteRoute
+    }
+    '/_auth/_app/$orgSlug/settings/profile': {
+      id: '/_auth/_app/$orgSlug/settings/profile'
+      path: '/settings/profile'
+      fullPath: '/$orgSlug/settings/profile'
+      preLoaderRoute: typeof AuthAppOrgSlugSettingsProfileRouteImport
+      parentRoute: typeof AuthAppOrgSlugRouteRoute
+    }
+    '/_auth/_app/$orgSlug/issues/$key': {
+      id: '/_auth/_app/$orgSlug/issues/$key'
+      path: '/$key'
+      fullPath: '/$orgSlug/issues/$key'
+      preLoaderRoute: typeof AuthAppOrgSlugIssuesKeyRouteImport
+      parentRoute: typeof AuthAppOrgSlugIssuesRoute
+    }
+    '/_auth/_app/$orgSlug/documents/templates': {
+      id: '/_auth/_app/$orgSlug/documents/templates'
+      path: '/documents/templates'
+      fullPath: '/$orgSlug/documents/templates'
+      preLoaderRoute: typeof AuthAppOrgSlugDocumentsTemplatesRouteImport
+      parentRoute: typeof AuthAppOrgSlugRouteRoute
+    }
+    '/_auth/_app/$orgSlug/documents/$id': {
+      id: '/_auth/_app/$orgSlug/documents/$id'
+      path: '/documents/$id'
+      fullPath: '/$orgSlug/documents/$id'
+      preLoaderRoute: typeof AuthAppOrgSlugDocumentsIdRouteImport
+      parentRoute: typeof AuthAppOrgSlugRouteRoute
+    }
+    '/_auth/_app/$orgSlug/workspaces/$workspaceSlug': {
+      id: '/_auth/_app/$orgSlug/workspaces/$workspaceSlug'
+      path: '/workspaces/$workspaceSlug'
+      fullPath: '/$orgSlug/workspaces/$workspaceSlug'
+      preLoaderRoute: typeof AuthAppOrgSlugWorkspacesWorkspaceSlugRouteRouteImport
+      parentRoute: typeof AuthAppOrgSlugRouteRoute
+    }
+    '/_auth/_app/$orgSlug/projects/$key': {
+      id: '/_auth/_app/$orgSlug/projects/$key'
+      path: '/projects/$key'
+      fullPath: '/$orgSlug/projects/$key'
+      preLoaderRoute: typeof AuthAppOrgSlugProjectsKeyRouteRouteImport
+      parentRoute: typeof AuthAppOrgSlugRouteRoute
+    }
+    '/_auth/_app/$orgSlug/workspaces/$workspaceSlug/': {
+      id: '/_auth/_app/$orgSlug/workspaces/$workspaceSlug/'
+      path: '/'
+      fullPath: '/$orgSlug/workspaces/$workspaceSlug/'
+      preLoaderRoute: typeof AuthAppOrgSlugWorkspacesWorkspaceSlugIndexRouteImport
+      parentRoute: typeof AuthAppOrgSlugWorkspacesWorkspaceSlugRouteRoute
+    }
+    '/_auth/_app/$orgSlug/projects/$key/': {
+      id: '/_auth/_app/$orgSlug/projects/$key/'
+      path: '/'
+      fullPath: '/$orgSlug/projects/$key/'
+      preLoaderRoute: typeof AuthAppOrgSlugProjectsKeyIndexRouteImport
+      parentRoute: typeof AuthAppOrgSlugProjectsKeyRouteRoute
+    }
+    '/_auth/_app/$orgSlug/workspaces/$workspaceSlug/settings': {
+      id: '/_auth/_app/$orgSlug/workspaces/$workspaceSlug/settings'
+      path: '/settings'
+      fullPath: '/$orgSlug/workspaces/$workspaceSlug/settings'
+      preLoaderRoute: typeof AuthAppOrgSlugWorkspacesWorkspaceSlugSettingsRouteImport
+      parentRoute: typeof AuthAppOrgSlugWorkspacesWorkspaceSlugRouteRoute
+    }
+    '/_auth/_app/$orgSlug/projects/$key/timesheet': {
+      id: '/_auth/_app/$orgSlug/projects/$key/timesheet'
+      path: '/timesheet'
+      fullPath: '/$orgSlug/projects/$key/timesheet'
+      preLoaderRoute: typeof AuthAppOrgSlugProjectsKeyTimesheetRouteImport
+      parentRoute: typeof AuthAppOrgSlugProjectsKeyRouteRoute
+    }
+    '/_auth/_app/$orgSlug/projects/$key/settings': {
+      id: '/_auth/_app/$orgSlug/projects/$key/settings'
+      path: '/settings'
+      fullPath: '/$orgSlug/projects/$key/settings'
+      preLoaderRoute: typeof AuthAppOrgSlugProjectsKeySettingsRouteImport
+      parentRoute: typeof AuthAppOrgSlugProjectsKeyRouteRoute
+    }
+    '/_auth/_app/$orgSlug/projects/$key/calendar': {
+      id: '/_auth/_app/$orgSlug/projects/$key/calendar'
+      path: '/calendar'
+      fullPath: '/$orgSlug/projects/$key/calendar'
+      preLoaderRoute: typeof AuthAppOrgSlugProjectsKeyCalendarRouteImport
+      parentRoute: typeof AuthAppOrgSlugProjectsKeyRouteRoute
+    }
+    '/_auth/_app/$orgSlug/projects/$key/board': {
+      id: '/_auth/_app/$orgSlug/projects/$key/board'
+      path: '/board'
+      fullPath: '/$orgSlug/projects/$key/board'
+      preLoaderRoute: typeof AuthAppOrgSlugProjectsKeyBoardRouteImport
+      parentRoute: typeof AuthAppOrgSlugProjectsKeyRouteRoute
+    }
+    '/_auth/_app/$orgSlug/workspaces/$workspaceSlug/teams/': {
+      id: '/_auth/_app/$orgSlug/workspaces/$workspaceSlug/teams/'
+      path: '/teams'
+      fullPath: '/$orgSlug/workspaces/$workspaceSlug/teams/'
+      preLoaderRoute: typeof AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsIndexRouteImport
+      parentRoute: typeof AuthAppOrgSlugWorkspacesWorkspaceSlugRouteRoute
+    }
+    '/_auth/_app/$orgSlug/workspaces/$workspaceSlug/teams/$teamSlug': {
+      id: '/_auth/_app/$orgSlug/workspaces/$workspaceSlug/teams/$teamSlug'
+      path: '/teams/$teamSlug'
+      fullPath: '/$orgSlug/workspaces/$workspaceSlug/teams/$teamSlug'
+      preLoaderRoute: typeof AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsTeamSlugRouteRouteImport
+      parentRoute: typeof AuthAppOrgSlugWorkspacesWorkspaceSlugRouteRoute
+    }
+    '/_auth/_app/$orgSlug/workspaces/$workspaceSlug/teams/$teamSlug/': {
+      id: '/_auth/_app/$orgSlug/workspaces/$workspaceSlug/teams/$teamSlug/'
+      path: '/'
+      fullPath: '/$orgSlug/workspaces/$workspaceSlug/teams/$teamSlug/'
+      preLoaderRoute: typeof AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsTeamSlugIndexRouteImport
+      parentRoute: typeof AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsTeamSlugRouteRoute
+    }
+    '/_auth/_app/$orgSlug/workspaces/$workspaceSlug/teams/$teamSlug/settings': {
+      id: '/_auth/_app/$orgSlug/workspaces/$workspaceSlug/teams/$teamSlug/settings'
+      path: '/settings'
+      fullPath: '/$orgSlug/workspaces/$workspaceSlug/teams/$teamSlug/settings'
+      preLoaderRoute: typeof AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsTeamSlugSettingsRouteImport
+      parentRoute: typeof AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsTeamSlugRouteRoute
+    }
+    '/_auth/_app/$orgSlug/workspaces/$workspaceSlug/teams/$teamSlug/calendar': {
+      id: '/_auth/_app/$orgSlug/workspaces/$workspaceSlug/teams/$teamSlug/calendar'
+      path: '/calendar'
+      fullPath: '/$orgSlug/workspaces/$workspaceSlug/teams/$teamSlug/calendar'
+      preLoaderRoute: typeof AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsTeamSlugCalendarRouteImport
+      parentRoute: typeof AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsTeamSlugRouteRoute
+    }
+    '/_auth/_app/$orgSlug/workspaces/$workspaceSlug/teams/$teamSlug/board': {
+      id: '/_auth/_app/$orgSlug/workspaces/$workspaceSlug/teams/$teamSlug/board'
+      path: '/board'
+      fullPath: '/$orgSlug/workspaces/$workspaceSlug/teams/$teamSlug/board'
+      preLoaderRoute: typeof AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsTeamSlugBoardRouteImport
+      parentRoute: typeof AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsTeamSlugRouteRoute
+    }
   }
 }
 
 interface AuthAppOrgSlugIssuesRouteChildren {
-  AuthAppOrgSlugIssuesKeyRoute: typeof AuthAppOrgSlugIssuesKeyRoute;
+  AuthAppOrgSlugIssuesKeyRoute: typeof AuthAppOrgSlugIssuesKeyRoute
 }
 
 const AuthAppOrgSlugIssuesRouteChildren: AuthAppOrgSlugIssuesRouteChildren = {
   AuthAppOrgSlugIssuesKeyRoute: AuthAppOrgSlugIssuesKeyRoute,
-};
-
-const AuthAppOrgSlugIssuesRouteWithChildren = AuthAppOrgSlugIssuesRoute._addFileChildren(
-  AuthAppOrgSlugIssuesRouteChildren,
-);
-
-interface AuthAppOrgSlugProjectsKeyRouteRouteChildren {
-  AuthAppOrgSlugProjectsKeyBoardRoute: typeof AuthAppOrgSlugProjectsKeyBoardRoute;
-  AuthAppOrgSlugProjectsKeyCalendarRoute: typeof AuthAppOrgSlugProjectsKeyCalendarRoute;
-  AuthAppOrgSlugProjectsKeySettingsRoute: typeof AuthAppOrgSlugProjectsKeySettingsRoute;
-  AuthAppOrgSlugProjectsKeyTimesheetRoute: typeof AuthAppOrgSlugProjectsKeyTimesheetRoute;
-  AuthAppOrgSlugProjectsKeyIndexRoute: typeof AuthAppOrgSlugProjectsKeyIndexRoute;
 }
 
-const AuthAppOrgSlugProjectsKeyRouteRouteChildren: AuthAppOrgSlugProjectsKeyRouteRouteChildren = {
-  AuthAppOrgSlugProjectsKeyBoardRoute: AuthAppOrgSlugProjectsKeyBoardRoute,
-  AuthAppOrgSlugProjectsKeyCalendarRoute: AuthAppOrgSlugProjectsKeyCalendarRoute,
-  AuthAppOrgSlugProjectsKeySettingsRoute: AuthAppOrgSlugProjectsKeySettingsRoute,
-  AuthAppOrgSlugProjectsKeyTimesheetRoute: AuthAppOrgSlugProjectsKeyTimesheetRoute,
-  AuthAppOrgSlugProjectsKeyIndexRoute: AuthAppOrgSlugProjectsKeyIndexRoute,
-};
+const AuthAppOrgSlugIssuesRouteWithChildren =
+  AuthAppOrgSlugIssuesRoute._addFileChildren(AuthAppOrgSlugIssuesRouteChildren)
+
+interface AuthAppOrgSlugProjectsKeyRouteRouteChildren {
+  AuthAppOrgSlugProjectsKeyBoardRoute: typeof AuthAppOrgSlugProjectsKeyBoardRoute
+  AuthAppOrgSlugProjectsKeyCalendarRoute: typeof AuthAppOrgSlugProjectsKeyCalendarRoute
+  AuthAppOrgSlugProjectsKeySettingsRoute: typeof AuthAppOrgSlugProjectsKeySettingsRoute
+  AuthAppOrgSlugProjectsKeyTimesheetRoute: typeof AuthAppOrgSlugProjectsKeyTimesheetRoute
+  AuthAppOrgSlugProjectsKeyIndexRoute: typeof AuthAppOrgSlugProjectsKeyIndexRoute
+}
+
+const AuthAppOrgSlugProjectsKeyRouteRouteChildren: AuthAppOrgSlugProjectsKeyRouteRouteChildren =
+  {
+    AuthAppOrgSlugProjectsKeyBoardRoute: AuthAppOrgSlugProjectsKeyBoardRoute,
+    AuthAppOrgSlugProjectsKeyCalendarRoute:
+      AuthAppOrgSlugProjectsKeyCalendarRoute,
+    AuthAppOrgSlugProjectsKeySettingsRoute:
+      AuthAppOrgSlugProjectsKeySettingsRoute,
+    AuthAppOrgSlugProjectsKeyTimesheetRoute:
+      AuthAppOrgSlugProjectsKeyTimesheetRoute,
+    AuthAppOrgSlugProjectsKeyIndexRoute: AuthAppOrgSlugProjectsKeyIndexRoute,
+  }
 
 const AuthAppOrgSlugProjectsKeyRouteRouteWithChildren =
-  AuthAppOrgSlugProjectsKeyRouteRoute._addFileChildren(AuthAppOrgSlugProjectsKeyRouteRouteChildren);
+  AuthAppOrgSlugProjectsKeyRouteRoute._addFileChildren(
+    AuthAppOrgSlugProjectsKeyRouteRouteChildren,
+  )
 
 interface AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsTeamSlugRouteRouteChildren {
-  AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsTeamSlugBoardRoute: typeof AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsTeamSlugBoardRoute;
-  AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsTeamSlugCalendarRoute: typeof AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsTeamSlugCalendarRoute;
-  AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsTeamSlugSettingsRoute: typeof AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsTeamSlugSettingsRoute;
-  AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsTeamSlugIndexRoute: typeof AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsTeamSlugIndexRoute;
+  AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsTeamSlugBoardRoute: typeof AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsTeamSlugBoardRoute
+  AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsTeamSlugCalendarRoute: typeof AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsTeamSlugCalendarRoute
+  AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsTeamSlugSettingsRoute: typeof AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsTeamSlugSettingsRoute
+  AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsTeamSlugIndexRoute: typeof AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsTeamSlugIndexRoute
 }
 
 const AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsTeamSlugRouteRouteChildren: AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsTeamSlugRouteRouteChildren =
@@ -784,18 +806,18 @@ const AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsTeamSlugRouteRouteChildren: Auth
       AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsTeamSlugSettingsRoute,
     AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsTeamSlugIndexRoute:
       AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsTeamSlugIndexRoute,
-  };
+  }
 
 const AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsTeamSlugRouteRouteWithChildren =
   AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsTeamSlugRouteRoute._addFileChildren(
     AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsTeamSlugRouteRouteChildren,
-  );
+  )
 
 interface AuthAppOrgSlugWorkspacesWorkspaceSlugRouteRouteChildren {
-  AuthAppOrgSlugWorkspacesWorkspaceSlugSettingsRoute: typeof AuthAppOrgSlugWorkspacesWorkspaceSlugSettingsRoute;
-  AuthAppOrgSlugWorkspacesWorkspaceSlugIndexRoute: typeof AuthAppOrgSlugWorkspacesWorkspaceSlugIndexRoute;
-  AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsTeamSlugRouteRoute: typeof AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsTeamSlugRouteRouteWithChildren;
-  AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsIndexRoute: typeof AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsIndexRoute;
+  AuthAppOrgSlugWorkspacesWorkspaceSlugSettingsRoute: typeof AuthAppOrgSlugWorkspacesWorkspaceSlugSettingsRoute
+  AuthAppOrgSlugWorkspacesWorkspaceSlugIndexRoute: typeof AuthAppOrgSlugWorkspacesWorkspaceSlugIndexRoute
+  AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsTeamSlugRouteRoute: typeof AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsTeamSlugRouteRouteWithChildren
+  AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsIndexRoute: typeof AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsIndexRoute
 }
 
 const AuthAppOrgSlugWorkspacesWorkspaceSlugRouteRouteChildren: AuthAppOrgSlugWorkspacesWorkspaceSlugRouteRouteChildren =
@@ -808,27 +830,27 @@ const AuthAppOrgSlugWorkspacesWorkspaceSlugRouteRouteChildren: AuthAppOrgSlugWor
       AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsTeamSlugRouteRouteWithChildren,
     AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsIndexRoute:
       AuthAppOrgSlugWorkspacesWorkspaceSlugTeamsIndexRoute,
-  };
+  }
 
 const AuthAppOrgSlugWorkspacesWorkspaceSlugRouteRouteWithChildren =
   AuthAppOrgSlugWorkspacesWorkspaceSlugRouteRoute._addFileChildren(
     AuthAppOrgSlugWorkspacesWorkspaceSlugRouteRouteChildren,
-  );
+  )
 
 interface AuthAppOrgSlugRouteRouteChildren {
-  AuthAppOrgSlugDashboardRoute: typeof AuthAppOrgSlugDashboardRoute;
-  AuthAppOrgSlugIssuesRoute: typeof AuthAppOrgSlugIssuesRouteWithChildren;
-  AuthAppOrgSlugTimeTrackingRoute: typeof AuthAppOrgSlugTimeTrackingRoute;
-  AuthAppOrgSlugIndexRoute: typeof AuthAppOrgSlugIndexRoute;
-  AuthAppOrgSlugProjectsKeyRouteRoute: typeof AuthAppOrgSlugProjectsKeyRouteRouteWithChildren;
-  AuthAppOrgSlugWorkspacesWorkspaceSlugRouteRoute: typeof AuthAppOrgSlugWorkspacesWorkspaceSlugRouteRouteWithChildren;
-  AuthAppOrgSlugDocumentsIdRoute: typeof AuthAppOrgSlugDocumentsIdRoute;
-  AuthAppOrgSlugDocumentsTemplatesRoute: typeof AuthAppOrgSlugDocumentsTemplatesRoute;
-  AuthAppOrgSlugSettingsProfileRoute: typeof AuthAppOrgSlugSettingsProfileRoute;
-  AuthAppOrgSlugDocumentsIndexRoute: typeof AuthAppOrgSlugDocumentsIndexRoute;
-  AuthAppOrgSlugProjectsIndexRoute: typeof AuthAppOrgSlugProjectsIndexRoute;
-  AuthAppOrgSlugSettingsIndexRoute: typeof AuthAppOrgSlugSettingsIndexRoute;
-  AuthAppOrgSlugWorkspacesIndexRoute: typeof AuthAppOrgSlugWorkspacesIndexRoute;
+  AuthAppOrgSlugDashboardRoute: typeof AuthAppOrgSlugDashboardRoute
+  AuthAppOrgSlugIssuesRoute: typeof AuthAppOrgSlugIssuesRouteWithChildren
+  AuthAppOrgSlugTimeTrackingRoute: typeof AuthAppOrgSlugTimeTrackingRoute
+  AuthAppOrgSlugIndexRoute: typeof AuthAppOrgSlugIndexRoute
+  AuthAppOrgSlugProjectsKeyRouteRoute: typeof AuthAppOrgSlugProjectsKeyRouteRouteWithChildren
+  AuthAppOrgSlugWorkspacesWorkspaceSlugRouteRoute: typeof AuthAppOrgSlugWorkspacesWorkspaceSlugRouteRouteWithChildren
+  AuthAppOrgSlugDocumentsIdRoute: typeof AuthAppOrgSlugDocumentsIdRoute
+  AuthAppOrgSlugDocumentsTemplatesRoute: typeof AuthAppOrgSlugDocumentsTemplatesRoute
+  AuthAppOrgSlugSettingsProfileRoute: typeof AuthAppOrgSlugSettingsProfileRoute
+  AuthAppOrgSlugDocumentsIndexRoute: typeof AuthAppOrgSlugDocumentsIndexRoute
+  AuthAppOrgSlugProjectsIndexRoute: typeof AuthAppOrgSlugProjectsIndexRoute
+  AuthAppOrgSlugSettingsIndexRoute: typeof AuthAppOrgSlugSettingsIndexRoute
+  AuthAppOrgSlugWorkspacesIndexRoute: typeof AuthAppOrgSlugWorkspacesIndexRoute
 }
 
 const AuthAppOrgSlugRouteRouteChildren: AuthAppOrgSlugRouteRouteChildren = {
@@ -836,7 +858,8 @@ const AuthAppOrgSlugRouteRouteChildren: AuthAppOrgSlugRouteRouteChildren = {
   AuthAppOrgSlugIssuesRoute: AuthAppOrgSlugIssuesRouteWithChildren,
   AuthAppOrgSlugTimeTrackingRoute: AuthAppOrgSlugTimeTrackingRoute,
   AuthAppOrgSlugIndexRoute: AuthAppOrgSlugIndexRoute,
-  AuthAppOrgSlugProjectsKeyRouteRoute: AuthAppOrgSlugProjectsKeyRouteRouteWithChildren,
+  AuthAppOrgSlugProjectsKeyRouteRoute:
+    AuthAppOrgSlugProjectsKeyRouteRouteWithChildren,
   AuthAppOrgSlugWorkspacesWorkspaceSlugRouteRoute:
     AuthAppOrgSlugWorkspacesWorkspaceSlugRouteRouteWithChildren,
   AuthAppOrgSlugDocumentsIdRoute: AuthAppOrgSlugDocumentsIdRoute,
@@ -846,35 +869,38 @@ const AuthAppOrgSlugRouteRouteChildren: AuthAppOrgSlugRouteRouteChildren = {
   AuthAppOrgSlugProjectsIndexRoute: AuthAppOrgSlugProjectsIndexRoute,
   AuthAppOrgSlugSettingsIndexRoute: AuthAppOrgSlugSettingsIndexRoute,
   AuthAppOrgSlugWorkspacesIndexRoute: AuthAppOrgSlugWorkspacesIndexRoute,
-};
+}
 
-const AuthAppOrgSlugRouteRouteWithChildren = AuthAppOrgSlugRouteRoute._addFileChildren(
-  AuthAppOrgSlugRouteRouteChildren,
-);
+const AuthAppOrgSlugRouteRouteWithChildren =
+  AuthAppOrgSlugRouteRoute._addFileChildren(AuthAppOrgSlugRouteRouteChildren)
 
 interface AuthAppRouteRouteChildren {
-  AuthAppOrgSlugRouteRoute: typeof AuthAppOrgSlugRouteRouteWithChildren;
-  AuthAppAppRoute: typeof AuthAppAppRoute;
+  AuthAppOrgSlugRouteRoute: typeof AuthAppOrgSlugRouteRouteWithChildren
+  AuthAppAppRoute: typeof AuthAppAppRoute
 }
 
 const AuthAppRouteRouteChildren: AuthAppRouteRouteChildren = {
   AuthAppOrgSlugRouteRoute: AuthAppOrgSlugRouteRouteWithChildren,
   AuthAppAppRoute: AuthAppAppRoute,
-};
+}
 
-const AuthAppRouteRouteWithChildren = AuthAppRouteRoute._addFileChildren(AuthAppRouteRouteChildren);
+const AuthAppRouteRouteWithChildren = AuthAppRouteRoute._addFileChildren(
+  AuthAppRouteRouteChildren,
+)
 
 interface AuthRouteRouteChildren {
-  AuthAppRouteRoute: typeof AuthAppRouteRouteWithChildren;
-  AuthOnboardingRoute: typeof AuthOnboardingRoute;
+  AuthAppRouteRoute: typeof AuthAppRouteRouteWithChildren
+  AuthOnboardingRoute: typeof AuthOnboardingRoute
 }
 
 const AuthRouteRouteChildren: AuthRouteRouteChildren = {
   AuthAppRouteRoute: AuthAppRouteRouteWithChildren,
   AuthOnboardingRoute: AuthOnboardingRoute,
-};
+}
 
-const AuthRouteRouteWithChildren = AuthRouteRoute._addFileChildren(AuthRouteRouteChildren);
+const AuthRouteRouteWithChildren = AuthRouteRoute._addFileChildren(
+  AuthRouteRouteChildren,
+)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
@@ -883,7 +909,7 @@ const rootRouteChildren: RootRouteChildren = {
   SigninRoute: SigninRoute,
   SignupRoute: SignupRoute,
   InviteTokenRoute: InviteTokenRoute,
-};
+}
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
-  ._addFileTypes<FileRouteTypes>();
+  ._addFileTypes<FileRouteTypes>()
