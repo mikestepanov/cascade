@@ -16,6 +16,9 @@ test.describe("Sign In Form - Elements", () => {
     // Heading - use page object locator
     await expect(authPage.signInHeading).toBeVisible({ timeout: 30000 });
 
+    // Expand form to reveal all elements (required attrs and forgot password only show when expanded)
+    await authPage.expandEmailForm();
+
     // Form inputs
     await expect(authPage.emailInput).toBeVisible();
     await expect(authPage.emailInput).toHaveAttribute("type", "email");
@@ -41,6 +44,8 @@ test.describe("Sign In Form - Elements", () => {
   });
 
   test("email input validates email format", async ({ authPage }) => {
+    // Ensure form is expanded before interacting with inputs
+    await authPage.expandEmailForm();
     await authPage.emailInput.fill("invalid-email");
     await authPage.passwordInput.fill("password123");
     await authPage.submitButton.evaluate((el: HTMLElement) => el.click());
@@ -53,6 +58,8 @@ test.describe("Sign In Form - Elements", () => {
   });
 
   test("password input is masked", async ({ authPage }) => {
+    // Ensure form is expanded before interacting with inputs
+    await authPage.expandEmailForm();
     await authPage.passwordInput.fill("secretpassword");
     await expect(authPage.passwordInput).toHaveAttribute("type", "password");
   });
