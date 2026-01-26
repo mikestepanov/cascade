@@ -247,7 +247,13 @@ export const getWorkspaceProjects = authenticatedQuery({
     if (!workspace) {
       return { page: [], isDone: true, continueCursor: "" };
     }
-    // Ideally check if user is in organization, but for now existence + auth is better than crashing on type mismatch against projectAccess
+
+    // Check if user is in organization
+    const { isOrganizationMember } = await import("./lib/organizationAccess");
+    const isMember = await isOrganizationMember(ctx, workspace.organizationId, ctx.userId);
+    if (!isMember) {
+      throw forbidden("member", "You must be an organization member to access this workspace");
+    }
 
     // Fetch projects directly attached to workspace but NO teamId
     // We use by_workspace index. Since we can't complex filter efficiently in pagination
