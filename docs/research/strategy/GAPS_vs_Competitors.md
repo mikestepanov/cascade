@@ -8,6 +8,7 @@
 ## 🔴 CRITICAL GAPS (Blocking Enterprise Adoption)
 
 ### 1. **No Native Mobile Apps**
+
 - ❌ Nixelo: PWA only
 - ✅ Jira: Native iOS + Android apps with offline support
 - ✅ AppFlowy: Native iOS + Android apps with widgets
@@ -18,6 +19,7 @@
 **Priority:** P0 for Phase 3
 
 ### 2. **No SSO/SAML Authentication**
+
 - ❌ Nixelo: Only password + anonymous auth
 - ✅ Jira: Full SSO/SAML/2FA (Premium+)
 - ✅ Kimai: LDAP/Active Directory/SAML/2FA
@@ -28,6 +30,7 @@
 **Priority:** P0 for Phase 3
 
 ### 3. **No Offline Mode**
+
 - ❌ Nixelo: Requires internet connection
 - ✅ AppFlowy: Offline-first with CRDT, works fully offline
 - ⚠️ Jira: Limited offline support
@@ -37,21 +40,23 @@
 **Effort:** VERY HIGH (8 weeks - CRDT implementation)
 **Priority:** P2 for Phase 3
 
-### 4. **No Version History**
-- ❌ Nixelo: No document version tracking
+### 4. **Version History**
+
+- ✅ Nixelo: Automatic document versioning every 60s
 - ✅ AppFlowy: Full version history
 - ✅ Jira: Issue history (field changes only)
 - ⚠️ Kimai: Audit trail plugin
 
 **Impact:** HIGH - Users expect undo/restore
-**Effort:** MEDIUM (4 weeks)
-**Priority:** P1 for Phase 2
+**Effort:** COMPLETED
+**Priority:** COMPLETED (Phase 1)
 
 ---
 
 ## 🟡 HIGH-PRIORITY GAPS (Missing Table Stakes)
 
 ### 5. **No Invoice Generation**
+
 - ❌ Nixelo: No invoicing
 - ✅ Kimai: Full invoicing (PDF, templates, tax, multi-currency)
 - ✅ Jira: Via marketplace apps
@@ -63,6 +68,7 @@
 **Decision:** Only if we compete with Kimai
 
 ### 6. **Limited Advanced Workflows**
+
 - ⚠️ Nixelo: Basic workflow states (custom per project)
 - ✅ Jira: Drag-and-drop workflow builder, transitions, conditions, validators
 - ⚠️ Kimai: Basic workflows
@@ -73,6 +79,7 @@
 **Priority:** P1 for Phase 3
 
 ### 7. **No JQL-like Query Language**
+
 - ❌ Nixelo: Basic filters only
 - ✅ Jira: JQL (Jira Query Language) - extremely powerful
 - ❌ Kimai: Basic filters
@@ -82,17 +89,19 @@
 **Effort:** MEDIUM-HIGH (4-6 weeks)
 **Priority:** P2 for Phase 2
 
-### 8. **No Sub-tasks / Issue Hierarchy**
-- ❌ Nixelo: Flat issue structure (epics only)
+### 8. **Sub-tasks / Issue Hierarchy**
+
+- ✅ Nixelo: Multi-level hierarchy (Epics → Issues → Sub-tasks)
 - ✅ Jira: Sub-tasks, epics, initiatives, themes (full hierarchy)
 - ⚠️ Kimai: Activities under projects
 - ✅ AppFlowy: Nested pages, sub-items in databases
 
 **Impact:** MEDIUM - Teams need task breakdown
-**Effort:** MEDIUM (3-4 weeks)
-**Priority:** P1 for Phase 2
+**Effort:** COMPLETED
+**Priority:** COMPLETED (Phase 1)
 
 ### 9. **No Marketplace / Plugin Ecosystem**
+
 - ❌ Nixelo: No plugins
 - ✅ Jira: 3,000+ marketplace apps (HUGE ecosystem)
 - ✅ Kimai: 20+ plugins (free + paid)
@@ -107,6 +116,7 @@
 ## 🟡 MEDIUM-PRIORITY GAPS (Nice to Have)
 
 ### 10. **No Audit Logs**
+
 - ❌ Nixelo: Activity log (issues only)
 - ✅ Jira: Full audit logs (Enterprise)
 - ✅ Kimai: Audit trail plugin
@@ -117,6 +127,7 @@
 **Priority:** P1 for Phase 3
 
 ### 11. **No Budget Tracking**
+
 - ❌ Nixelo: No budget features
 - ✅ Kimai: Time budgets, money budgets, warnings, recurrence
 - ⚠️ Jira: Via marketplace apps
@@ -127,6 +138,7 @@
 **Priority:** P2 for Phase 2
 
 ### 12. **No Expense Tracking**
+
 - ❌ Nixelo: No expenses
 - ✅ Kimai: Full expense tracking
 - ⚠️ Jira: Via marketplace apps
@@ -137,6 +149,7 @@
 **Priority:** P2 for Phase 2
 
 ### 13. **No Approval Workflows**
+
 - ❌ Nixelo: No approvals
 - ✅ Kimai: Timesheet approval workflow
 - ✅ Jira: Complex approval workflows
@@ -147,6 +160,7 @@
 **Priority:** P2 for Phase 3
 
 ### 14. **No AI Features**
+
 - ❌ Nixelo: No AI
 - ✅ AppFlowy: AI writing, summarization, translations, chat
 - ⚠️ Jira: AI features in premium plans
@@ -157,6 +171,7 @@
 **Priority:** P2 for Phase 2 (AI Project Assistant in roadmap)
 
 ### 15. **No Advanced Database Views**
+
 - ⚠️ Nixelo: Kanban board + basic list
 - ✅ AppFlowy: Grid, Board, Calendar, Gallery, List views
 - ✅ Jira: List, Board, Calendar, Timeline
@@ -167,6 +182,7 @@
 **Priority:** P1 for Phase 2
 
 ### 16. **No Formulas in Custom Fields**
+
 - ❌ Nixelo: Static custom fields
 - ✅ AppFlowy: Formulas, relations, rollups
 - ⚠️ Jira: Limited (via apps)
@@ -177,6 +193,7 @@
 **Priority:** P2 for Phase 3
 
 ### 17. **No Backlinks**
+
 - ❌ Nixelo: No backlinks
 - ✅ AppFlowy: Automatic backlinks
 - ❌ Jira: No backlinks
@@ -187,6 +204,7 @@
 **Priority:** P2 for Phase 2
 
 ### 18. **No Page Templates**
+
 - ❌ Nixelo: No templates (except project templates)
 - ✅ AppFlowy: Page templates, database templates
 - ⚠️ Jira: Issue templates
@@ -197,6 +215,7 @@
 **Priority:** P1 for Phase 2
 
 ### 19. **No End-to-End Encryption**
+
 - ❌ Nixelo: Server-side encryption only
 - ✅ AppFlowy: Optional E2E encryption
 - ⚠️ Jira: Enterprise encryption
@@ -207,6 +226,7 @@
 **Priority:** P2 for Phase 3
 
 ### 20. **No Import from Competitors**
+
 - ❌ Nixelo: Only CSV/JSON import
 - ✅ AppFlowy: Import from Notion
 - ⚠️ Jira: Import from other tools (limited)
@@ -221,6 +241,7 @@
 ## ✅ WHAT NIXELO HAS THAT COMPETITORS DON'T
 
 ### Nixelo's Unique Advantages:
+
 1. ✅ **Real-time collaboration** - None of them have true real-time (Convex magic)
 2. ✅ **Documents + Issues in one** - Jira needs Confluence, AppFlowy needs separate tools
 3. ✅ **Modern tech stack** - React 19 + Convex vs old Java/PHP
@@ -234,6 +255,7 @@
 ## 📊 PRIORITY MATRIX
 
 ### MUST HAVE (Phase 2 - Next 3-6 months)
+
 1. **Version History** - P1 (4 weeks)
 2. **Sub-tasks / Issue Hierarchy** - P1 (3-4 weeks)
 3. **Advanced Database Views** (Calendar, Timeline) - P1 (4-6 weeks)
@@ -242,6 +264,7 @@
 6. **AI Project Assistant** - P2 (6-8 weeks) - Already in roadmap
 
 ### SHOULD HAVE (Phase 3 - Months 7-12)
+
 1. **SSO/SAML** - P0 for Enterprise (4 weeks)
 2. **Native Mobile Apps** - P0 for Modern Teams (12 weeks)
 3. **Audit Logs** - P1 for Enterprise (3 weeks)
@@ -250,6 +273,7 @@
 6. **Offline Mode** - P2 (8 weeks)
 
 ### NICE TO HAVE (Phase 4 - Year 2)
+
 1. **Invoice Generation** - Only if targeting freelancers
 2. **Budget Tracking** - For project managers
 3. **Expense Tracking** - For professional services
@@ -262,24 +286,28 @@
 ## 🎯 STRATEGIC RECOMMENDATIONS
 
 ### 1. **Don't Try to Be Everything**
+
 - Kimai = Time tracking specialist
 - Jira = Enterprise workflow monster
 - AppFlowy = Notion clone
 - **Nixelo = Real-time Jira + Confluence alternative**
 
 ### 2. **Focus on Core Strengths**
+
 - Real-time collaboration (nobody else has this)
 - Speed and simplicity (vs Jira's slowness)
 - Documents + Issues unified (vs Jira + Confluence)
 - Modern UX (vs Jira's dated UI)
 
 ### 3. **Enterprise Features Can Wait**
+
 - SSO/SAML → Phase 3
 - Native apps → Phase 3
 - Offline mode → Phase 3
 - Get to 1,000 users first, THEN worry about enterprise
 
 ### 4. **Quick Wins to Target**
+
 - Version history (4 weeks) - AppFlowy users expect this
 - Sub-tasks (3-4 weeks) - Jira users need this
 - Calendar view (2-3 weeks) - Visual teams want this
@@ -290,6 +318,7 @@
 ## 📈 COMPETITIVE POSITIONING
 
 **Nixelo's Ideal Customer:**
+
 - 🎯 Teams of 5-50 people
 - 🎯 Developer teams frustrated with Jira's slowness
 - 🎯 Teams wanting documents + issues in one tool
@@ -297,6 +326,7 @@
 - 🎯 Budget-conscious startups ($0-12/user vs $17+/user for Jira)
 
 **NOT Targeting (Yet):**
+
 - ❌ Enterprise (1000+ users) - Need SSO, mobile, offline first
 - ❌ Freelancers - Need invoicing, Kimai is better
 - ❌ Non-technical teams - Need simpler UI than Jira, but also simpler than Nixelo
@@ -304,10 +334,11 @@
 ---
 
 **Bottom Line:**
+
 - Nixelo has **10-15 critical gaps** vs competitors
 - But Nixelo's **real-time collaboration** is unique and valuable
-- Focus on **Phase 2 quick wins** (version history, sub-tasks, calendar view)
+- Focus on **Phase 2 quick wins** (version history, calendar view)
 - Defer **enterprise features** until Phase 3 (SSO, mobile, offline)
 - **Launch now**, iterate based on user feedback
 
-**Strategy:** Fill gaps that matter to early adopters (version history, sub-tasks), defer enterprise features until we have traction.
+**Strategy:** Fill gaps that matter to early adopters (version history, calendar view), defer enterprise features until we have traction.

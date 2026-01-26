@@ -7,8 +7,11 @@
 import { api } from "@convex/_generated/api";
 import type { Id } from "@convex/_generated/dataModel";
 import { usePaginatedQuery, useQuery } from "convex/react";
+import type { FunctionReference } from "convex/server";
 import { useCallback, useMemo } from "react";
 import type { EnrichedIssue } from "../../convex/lib/issueHelpers";
+
+type PaginatedQuery = FunctionReference<"query", "public">;
 
 export interface UsePaginatedIssuesOptions {
   projectId: Id<"projects">;
@@ -61,11 +64,10 @@ export function usePaginatedIssues({
     status: queryStatus,
     loadMore: convexLoadMore,
   } = usePaginatedQuery(
-    // biome-ignore lint/suspicious/noExplicitAny: paginationOpts mismatch
-    api.issues.listProjectIssues as any,
+    api.issues.listProjectIssues as PaginatedQuery,
     { projectId, sprintId, status },
     { initialNumItems: pageSize },
-  );
+  ) as { results: EnrichedIssue[]; status: string; loadMore: (n: number) => void };
 
   const countsData = useQuery(api.issues.getIssueCounts, {
     projectId,
@@ -74,11 +76,13 @@ export function usePaginatedIssues({
 
   const totalCount = useMemo(() => {
     if (!countsData) return 0;
-    if (status && countsData.byStatus?.total) {
-      // biome-ignore lint/suspicious/noExplicitAny: property access on narrowed object
-      return (countsData.byStatus.total as any)[status] || 0;
+
+    if (status) {
+      return countsData[status]?.total || 0;
     }
-    return countsData.total || 0;
+
+    // Sum all totals from the record values
+    return Object.values(countsData).reduce((acc, curr) => acc + (curr.total || 0), 0);
   }, [countsData, status]);
 
   const loadMore = useCallback(() => {
@@ -92,8 +96,7 @@ export function usePaginatedIssues({
   }, []);
 
   return {
-    // biome-ignore lint/suspicious/noExplicitAny: complex array type mismatch
-    issues: (issues as any) || [],
+    issues: issues || [],
     totalCount,
     hasMore: queryStatus === "CanLoadMore",
     loadMore,

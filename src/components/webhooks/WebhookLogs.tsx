@@ -1,12 +1,16 @@
 import { api } from "@convex/_generated/api";
-import type { Id } from "@convex/_generated/dataModel";
+import type { Doc, Id } from "@convex/_generated/dataModel";
 import { useMutation, usePaginatedQuery } from "convex/react";
+import type { FunctionReference } from "convex/server";
 import { useState } from "react";
 import { showError, showSuccess } from "@/lib/toast";
 import { Button } from "../ui/Button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/Dialog";
 import { Flex } from "../ui/Flex";
 import { Typography } from "../ui/Typography";
+
+type WebhookExecution = Doc<"webhookExecutions">;
+type PaginatedQuery = FunctionReference<"query", "public">;
 
 interface WebhookLogsProps {
   webhookId: Id<"webhooks">;
@@ -18,11 +22,10 @@ export function WebhookLogs({ webhookId, open, onOpenChange }: WebhookLogsProps)
   const [selectedExecution, setSelectedExecution] = useState<string | null>(null);
 
   const { results: executions } = usePaginatedQuery(
-    // biome-ignore lint/suspicious/noExplicitAny: paginationOpts mismatch
-    api.webhooks.listExecutions as any,
+    api.webhooks.listExecutions as PaginatedQuery,
     { webhookId },
     { initialNumItems: 50 },
-  );
+  ) as { results: WebhookExecution[] };
   const retryExecution = useMutation(api.webhooks.retryExecution);
 
   const handleRetry = async (executionId: Id<"webhookExecutions">) => {
@@ -101,9 +104,8 @@ export function WebhookLogs({ webhookId, open, onOpenChange }: WebhookLogsProps)
                   {/* Header */}
                   <Flex justify="between" align="center" className="mb-3">
                     <Flex gap="md" align="center">
-                      {getStatusBadge(execution.status as string)}
-                      {/* biome-ignore lint/suspicious/noExplicitAny: missing property on Value type */}
-                      <Typography variant="small">{String((execution as any).event)}</Typography>
+                      {getStatusBadge(execution.status)}
+                      <Typography variant="small">{execution.event}</Typography>
                       {execution.responseStatus && (
                         <Typography variant="muted" size="xs" color="secondary">
                           HTTP {String(execution.responseStatus)}
@@ -141,8 +143,7 @@ export function WebhookLogs({ webhookId, open, onOpenChange }: WebhookLogsProps)
                   <div className="grid grid-cols-3 gap-4 mb-2">
                     <Typography variant="muted" size="xs">
                       <span className="font-medium text-ui-text-primary">Attempts:</span>{" "}
-                      {/* biome-ignore lint/suspicious/noExplicitAny: missing property on Value type */}
-                      {String((execution as any).attempts)}
+                      {execution.attempts}
                     </Typography>
                     <Typography variant="muted" size="xs">
                       <span className="font-medium text-ui-text-primary">Duration:</span>{" "}
@@ -184,8 +185,7 @@ export function WebhookLogs({ webhookId, open, onOpenChange }: WebhookLogsProps)
                             Response Body:
                           </Typography>
                           <pre className="bg-ui-bg-secondary border border-ui-border-primary rounded p-3 text-xs overflow-x-auto max-h-48">
-                            {/* biome-ignore lint/suspicious/noExplicitAny: missing property on Value type */}
-                            {String((execution as any).responseBody)}
+                            {execution.responseBody}
                           </pre>
                         </div>
                       )}

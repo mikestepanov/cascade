@@ -223,7 +223,7 @@ export const getUserStats = authenticatedQuery({
       const allowedIssueIds = new Set(
         issues
           .filter((issue) => issue && allowedProjectIds.has(issue.projectId))
-          .map((issue) => issue!._id),
+          .map((issue) => issue?._id),
       );
       comments = commentsAll.filter((c) => allowedIssueIds.has(c.issueId));
     }

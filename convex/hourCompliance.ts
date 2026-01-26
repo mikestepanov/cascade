@@ -3,6 +3,7 @@ import type { Doc, Id } from "./_generated/dataModel";
 import type { MutationCtx, QueryCtx } from "./_generated/server";
 import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
 import { batchFetchUsers } from "./lib/batchHelpers";
+import { BOUNDED_LIST_LIMIT } from "./lib/boundedQueries";
 import { forbidden, notFound } from "./lib/errors";
 import { notDeleted } from "./lib/softDeleteHelpers";
 import { periodTypes } from "./validators";
@@ -166,7 +167,7 @@ async function checkUserComplianceInternal(
     throw notFound("userProfile");
   }
 
-  // Get all time entries for the period
+  // Get all time entries for the period (bounded - typically ~30-50 entries per week/month)
   const timeEntries = await ctx.db
     .query("timeEntries")
     .withIndex("by_user_date", (q) => q.eq("userId", args.userId))
@@ -174,7 +175,7 @@ async function checkUserComplianceInternal(
       q.and(q.gte(q.field("date"), args.periodStart), q.lte(q.field("date"), args.periodEnd)),
     )
     .filter(notDeleted)
-    .collect();
+    .take(BOUNDED_LIST_LIMIT);
 
   // Calculate hours
   const { totalHoursWorked, totalEquityHours } = calculateHours(timeEntries);
@@ -314,18 +315,18 @@ async function sendComplianceNotifications(
     adminUserIds.add(managerId);
   }
 
-  // Create notifications only for actual admins/managers
-  const notifications: Id<"notifications">[] = [];
-  for (const adminId of adminUserIds) {
-    const notificationId = await ctx.db.insert("notifications", {
-      userId: adminId,
-      type: "hour_compliance",
-      title,
-      message,
-      isRead: false,
-    });
-    notifications.push(notificationId);
-  }
+  // Create notifications only for actual admins/managers (in parallel)
+  const notifications = await Promise.all(
+    [...adminUserIds].map((adminId) =>
+      ctx.db.insert("notifications", {
+        userId: adminId,
+        type: "hour_compliance",
+        title,
+        message,
+        isRead: false,
+      }),
+    ),
+  );
 
   // Update record with notification info
   if (notifications.length > 0) {
@@ -366,12 +367,12 @@ export const checkAllUsersCompliance = authenticatedMutation({
       throw forbidden("admin");
     }
 
-    // Get all active user profiles
+    // Get active user profiles (bounded - compliance checks batch within limits)
     const profiles = await ctx.db
       .query("userProfiles")
       .withIndex("by_active", (q) => q.eq("isActive", true))
       .filter(notDeleted)
-      .collect();
+      .take(BOUNDED_LIST_LIMIT);
 
     const results = [];
     for (const profile of profiles) {

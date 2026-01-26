@@ -12,12 +12,14 @@
 **Linear** is a modern, high-performance issue tracking tool designed specifically for software development teams. Launched in 2019 by former Uber and Coinbase engineers, Linear has become the go-to tool for fast-moving startups and product teams who prioritize speed, keyboard shortcuts, and elegant UX.
 
 **Market Position:**
+
 - 🚀 Fastest-growing PM tool for tech startups
 - 🎨 Known for best-in-class UI/UX design
 - ⚡ Emphasizes speed (50ms interaction target)
 - 💎 Premium positioning ($8-16/user/month minimum)
 
 **Funding & Growth:**
+
 - Series B: $52M (March 2023)
 - Valuation: $275M (unconfirmed)
 - 10,000+ companies using Linear
@@ -27,14 +29,15 @@
 
 ## Pricing (2025)
 
-| Plan | Price (per user/month, billed annually) | Max Users | Key Features |
-|------|---------------------------------------|-----------|--------------|
-| **Free** | $0 | Unlimited users | 1 active project, 250 issues, 14-day history |
-| **Standard** | $8 | Unlimited | Unlimited projects, unlimited issues, unlimited history |
-| **Plus** | $14 | Unlimited | Advanced features, insights, automations |
-| **Enterprise** | Custom | Unlimited | SSO, SAML, advanced security, dedicated support |
+| Plan           | Price (per user/month, billed annually) | Max Users       | Key Features                                            |
+| -------------- | --------------------------------------- | --------------- | ------------------------------------------------------- |
+| **Free**       | $0                                      | Unlimited users | 1 active project, 250 issues, 14-day history            |
+| **Standard**   | $8                                      | Unlimited       | Unlimited projects, unlimited issues, unlimited history |
+| **Plus**       | $14                                     | Unlimited       | Advanced features, insights, automations                |
+| **Enterprise** | Custom                                  | Unlimited       | SSO, SAML, advanced security, dedicated support         |
 
 **Pricing Notes:**
+
 - ✅ Month-to-month pricing is 20% higher ($10/$17)
 - ✅ Simple, transparent pricing (no hidden costs)
 - ✅ Free tier is limited but usable for small projects
@@ -42,6 +45,7 @@
 - ⚠️ Standard plan is minimum for real usage
 
 **Pricing Analysis:**
+
 - ✅ Comparable to Jira ($8.60) but better value
 - ✅ No marketplace tax (features included)
 - ⚠️ More expensive than ClickUp ($7-12)
@@ -52,6 +56,7 @@
 ## Core Features
 
 ### Issue Tracking ⭐⭐⭐⭐⭐
+
 - **Lightning-fast issue creation** - `C` keyboard shortcut, <50ms
 - **Rich text descriptions** - Markdown-based editor
 - **Custom fields** - Text, number, select, date
@@ -70,6 +75,7 @@
 **Rating: 5/5** - Best UX in the industry
 
 ### Real-Time Collaboration ⭐⭐⭐⭐⭐
+
 - **Instant updates** - < 100ms sync across clients
 - **Live presence** - See who's viewing
 - **Optimistic UI** - Changes appear instantly
@@ -80,6 +86,7 @@
 **Rating: 5/5** - Best real-time in the market (except typing indicators)
 
 ### Boards & Views ⭐⭐⭐⭐
+
 - **Board view** - Kanban with drag-and-drop
 - **List view** - Table-style
 - **Roadmap view** - Timeline visualization
@@ -93,6 +100,7 @@
 **Rating: 4/5** - Great but could use more view types
 
 ### Roadmaps & Planning ⭐⭐⭐⭐⭐
+
 - **Projects** - Organize initiatives
 - **Milestones** - Timeline-based goals
 - **Roadmaps** - Visual timeline
@@ -105,6 +113,7 @@
 **Rating: 5/5** - Excellent planning features
 
 ### Cycles (Sprints) ⭐⭐⭐⭐⭐
+
 - **Active cycle** - Auto-created weekly/bi-weekly/monthly
 - **Unstarted cycles** - Plan future sprints
 - **Completed cycles** - Historical archive
@@ -116,6 +125,7 @@
 **Rating: 5/5** - Excellent Agile implementation
 
 ### Keyboard Shortcuts ⭐⭐⭐⭐⭐
+
 - **`C`** - Create issue
 - **`K`** - Command palette
 - **`/`** - Search
@@ -131,6 +141,7 @@
 **Rating: 5/5** - Keyboard-first design is unmatched
 
 ### Integrations ⭐⭐⭐⭐
+
 - **GitHub/GitLab** - PR linking, auto-close
 - **Slack** - Notifications, issue creation
 - **Figma** - Design link embeds
@@ -143,6 +154,7 @@
 **Rating: 4/5** - Good integrations, but fewer than Jira
 
 ### Reporting & Analytics ⭐⭐⭐⭐
+
 - **Insights** (Plus) - Analytics dashboard
 - **Cycle reports** - Velocity, burndown
 - **Issue breakdown** - By label, assignee, etc.
@@ -153,6 +165,7 @@
 **Rating: 4/5** - Good analytics, not as deep as Jira
 
 ### Permissions & Security ⭐⭐⭐⭐
+
 - **Team-based access** - Invite to teams
 - **Public/private projects** - Project-level visibility
 - **SSO/SAML** (Enterprise) - Enterprise auth
@@ -272,18 +285,21 @@
 ## Target Audience
 
 **Primary:**
+
 - Fast-moving startups (10-100 people)
 - Product-focused development teams
 - Design-conscious engineering teams
 - Teams that value speed and UX
 
 **Secondary:**
+
 - Remote-first teams
 - Keyboard power users
 - Former Jira refugees
 - Modern tech companies
 
 **Not ideal for:**
+
 - Large enterprises (> 500 people) - expensive
 - Budget-conscious teams - not cheap
 - Non-technical teams - too developer-focused
@@ -294,18 +310,21 @@
 ## Market Share & Adoption
 
 **Statistics:**
+
 - 10,000+ companies using Linear (2023)
 - Growing 300%+ year-over-year
 - Strong in startup/tech community
 - Weaker in enterprise market
 
 **Notable Users:**
+
 - Vercel, Coinbase, Loom, Ramp
 - Mercury, Cal.com, Retool
 - Replicate, Railway, Deno
 - Most YC startups
 
 **Market Position:**
+
 - #1 among tech startups
 - Jira alternative for modern teams
 - Displacing Jira in SMB market
@@ -315,23 +334,27 @@
 ## Technology Stack
 
 **Frontend:**
+
 - React 18
 - GraphQL (Apollo Client)
 - Optimistic UI
 - Real-time subscriptions
 
 **Backend:**
+
 - Node.js / TypeScript
 - GraphQL (Apollo Server)
 - PostgreSQL
 - Redis (caching)
 
 **Infrastructure:**
+
 - AWS
 - CloudFront (CDN)
 - WebSockets (real-time)
 
 **Mobile:**
+
 - React Native (iOS/Android)
 - Native performance
 
@@ -339,8 +362,6 @@
 
 ## Nixelo vs. Linear Comparison
 
-| Feature | Nixelo | Linear |
-|---------|---------|--------|
 | **Real-time updates** | ✅ Sub-100ms (Convex) | ✅ Sub-100ms (GraphQL subscriptions) |
 | **Keyboard shortcuts** | ⚠️ Basic | ✅ 100+ shortcuts, command palette |
 | **UI/UX** | ✅ Modern, clean | ✅ Industry-leading design |
@@ -354,10 +375,13 @@
 | **API** | ✅ Convex API | ✅ GraphQL API + SDK |
 | **Integrations** | ❌ Few | ⚠️ ~50 (fewer than Jira) |
 | **Time tracking** | ✅ Full time tracking | ❌ Estimates only |
-| **Customization** | ⚠️ Moderate | ⚠️ Limited (opinionated) |
+| **Customization** | ✅ High (Custom fields/Workflow) | ⚠️ Limited (opinionated) |
 | **Enterprise features** | ❌ No SSO/SAML yet | ✅ Enterprise tier |
+| **Description Search**| ✅ Yes | ✅ Yes |
+| **Comment Reactions** | ✅ Yes | ✅ Yes |
 
 **Nixelo's Advantages over Linear:**
+
 1. ✅ **Open-source** - No vendor lock-in, self-hostable
 2. ✅ **Documents built-in** - No need for separate Notion
 3. ✅ **More affordable** - Free tier + lower pricing planned
@@ -366,6 +390,7 @@
 6. ✅ **Community-driven** - Open development, contributions
 
 **Linear's Advantages over Nixelo:**
+
 1. ✅ **Keyboard shortcuts** - 100+ shortcuts, fully keyboard-driven
 2. ✅ **Mobile apps** - Native iOS/Android
 3. ✅ **Brand & polish** - Industry-leading UI/UX design
@@ -435,6 +460,7 @@
 ## Competitive Positioning
 
 **Linear users frustrated with:**
+
 - High pricing ($8-14/user adds up)
 - No self-hosting option
 - Need separate tool for documents
@@ -442,6 +468,7 @@
 - Vendor lock-in
 
 **Nixelo's pitch to Linear users:**
+
 > "Love Linear's speed and design? Get that PLUS open-source, self-hosting, built-in documents, and lower pricing. Linear's elegance meets Nixelo's freedom."
 
 ---
@@ -514,6 +541,7 @@
 ---
 
 **Recommended Strategy:**
+
 1. **Match Linear's keyboard shortcuts** - This is table stakes
 2. **Implement command palette** - `K` to search/navigate everything
 3. **Keep speed parity** - Convex gives us this, don't lose it
@@ -524,5 +552,5 @@
 
 ---
 
-**Last Updated:** 2025-11-18
+**Last Updated:** 2026-01-24
 **Next Review:** After Nixelo implements keyboard shortcuts

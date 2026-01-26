@@ -2,6 +2,7 @@ import { api } from "@convex/_generated/api";
 import { createFileRoute, Outlet, useLocation, useNavigate } from "@tanstack/react-router";
 import { useConvexAuth, useMutation, useQuery } from "convex/react";
 import { useEffect, useRef, useState } from "react";
+import { AppSidebar } from "@/components/layout/AppSidebar";
 import { Flex } from "@/components/ui/Flex";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { Typography } from "@/components/ui/Typography";
@@ -85,7 +86,11 @@ function AppLayout() {
     return <InitializeOrganization />;
   }
 
-  return <Outlet />;
+  return (
+    <AppSidebar>
+      <Outlet />
+    </AppSidebar>
+  );
 }
 
 // Component to initialize default organization for users without one

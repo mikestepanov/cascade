@@ -1,6 +1,7 @@
 import { v } from "convex/values";
 import { query } from "./_generated/server";
 import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
+import { BOUNDED_LIST_LIMIT } from "./lib/boundedQueries";
 import { conflict, requireOwned, validation } from "./lib/errors";
 import { bookingFieldTypes } from "./validators";
 
@@ -151,9 +152,10 @@ export const listMine = authenticatedQuery({
     const pages = await ctx.db
       .query("bookingPages")
       .withIndex("by_user", (q) => q.eq("userId", ctx.userId))
-      .collect();
+      .order("desc")
+      .take(BOUNDED_LIST_LIMIT);
 
-    return pages.sort((a, b) => b._creationTime - a._creationTime);
+    return pages;
   },
 });
 
@@ -209,14 +211,14 @@ export const remove = authenticatedMutation({
     const page = await ctx.db.get(args.id);
     requireOwned(page, ctx.userId, "bookingPage");
 
-    // Check for active bookings
-    const activeBookings = await ctx.db
+    // Check for active bookings (only need to know if any exist)
+    const activeBooking = await ctx.db
       .query("bookings")
       .withIndex("by_booking_page", (q) => q.eq("bookingPageId", args.id))
       .filter((q) => q.or(q.eq(q.field("status"), "pending"), q.eq(q.field("status"), "confirmed")))
-      .collect();
+      .first();
 
-    if (activeBookings.length > 0) {
+    if (activeBooking) {
       throw conflict("Cannot delete booking page with active bookings");
     }
 

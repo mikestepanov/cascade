@@ -26,24 +26,26 @@ import { logger } from "./logger";
 // =============================================================================
 // DEFAULT LIMITS (import and use these for consistency)
 // =============================================================================
+// Industry standards: Linear=50, Notion=100, Jira=50, GitHub=30
+// We use slightly higher defaults but rely on pagination for large datasets
 
 /** Max items for general list queries (e.g., all issues in a project) */
-export const BOUNDED_LIST_LIMIT = 1000;
+export const BOUNDED_LIST_LIMIT = 100;
 
 /** Max items for relationship queries (e.g., comments per issue) */
-export const BOUNDED_RELATION_LIMIT = 500;
+export const BOUNDED_RELATION_LIMIT = 100;
 
 /** Max items for search results */
-export const BOUNDED_SEARCH_LIMIT = 200;
+export const BOUNDED_SEARCH_LIMIT = 50;
 
 /** Max items for batch delete operations per call */
-export const BOUNDED_DELETE_BATCH = 500;
+export const BOUNDED_DELETE_BATCH = 100;
 
 /** Max items for count operations (returns capped count) */
-export const BOUNDED_COUNT_LIMIT = 2000;
+export const BOUNDED_COUNT_LIMIT = 500;
 
 /** Max items for "select/dropdown" queries (e.g., issue picker) */
-export const BOUNDED_SELECT_LIMIT = 500;
+export const BOUNDED_SELECT_LIMIT = 50;
 
 // =============================================================================
 // TYPES

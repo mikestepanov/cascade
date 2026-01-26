@@ -53,6 +53,7 @@ const applicationTables = {
     .index("by_creator_updated", ["createdBy", "updatedAt"])
     .index("by_deleted", ["isDeleted"])
     .index("by_organization_deleted", ["organizationId", "isDeleted"])
+    .index("by_organization_public", ["organizationId", "isPublic"])
     .searchIndex("search_title", {
       searchField: "title",
       filterFields: ["isPublic", "createdBy", "organizationId", "workspaceId", "projectId"],
@@ -224,6 +225,15 @@ const applicationTables = {
     .index("by_issue", ["issueId"])
     .index("by_author", ["authorId"])
     .index("by_deleted", ["isDeleted"]),
+
+  issueCommentReactions: defineTable({
+    commentId: v.id("issueComments"),
+    userId: v.id("users"),
+    emoji: v.string(),
+    createdAt: v.number(),
+  })
+    .index("by_comment", ["commentId"])
+    .index("by_comment_user_emoji", ["commentId", "userId", "emoji"]),
 
   issueLinks: defineTable({
     fromIssueId: v.id("issues"),

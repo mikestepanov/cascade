@@ -12,6 +12,26 @@ import { useQuery } from "convex/react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { EnrichedIssue } from "../../convex/lib/issueHelpers";
 
+// Type for the smart query return data
+interface SmartBoardQueryResult {
+  issuesByStatus: Record<string, EnrichedIssue[]>;
+  workflowStates: {
+    id: string;
+    name: string;
+    category: "todo" | "inprogress" | "done";
+    order: number;
+  }[];
+}
+
+// Type for issue counts data
+interface IssueCountsResult {
+  byStatus: {
+    total: Record<string, number>;
+    visible: Record<string, number>;
+    hidden: Record<string, number>;
+  };
+}
+
 /** Type guard to validate EnrichedIssue array structure */
 function isEnrichedIssueArray(data: unknown): data is EnrichedIssue[] {
   if (!Array.isArray(data)) return false;
@@ -110,15 +130,7 @@ export interface SmartBoardData {
 }
 
 function calculateStatusCounts(
-  countsData:
-    | {
-        byStatus: {
-          total: Record<string, number>;
-          visible: Record<string, number>;
-          hidden: Record<string, number>;
-        };
-      }
-    | undefined,
+  countsData: IssueCountsResult | undefined,
   issuesByStatus: Record<string, EnrichedIssue[]>,
 ) {
   const result: Record<string, { total: number; loaded: number; hidden: number }> = {};
@@ -151,7 +163,7 @@ function calculateStatusCounts(
 
 function getAllLoadedIssues(
   additionalDoneIssues: EnrichedIssue[],
-  smartData?: { issuesByStatus?: Record<string, EnrichedIssue[]> },
+  smartData?: SmartBoardQueryResult,
 ) {
   const issues: EnrichedIssue[] = [...additionalDoneIssues];
   if (smartData?.issuesByStatus) {
@@ -227,12 +239,12 @@ export function useSmartBoardData({
   const smartData = useQuery(
     isTeamMode ? api.issues.listByTeamSmart : api.issues.listByProjectSmart,
     queryArgs,
-  );
+  ) as SmartBoardQueryResult | undefined;
 
   const countsData = useQuery(
     isTeamMode ? api.issues.getTeamIssueCounts : api.issues.getIssueCounts,
     queryArgs,
-  );
+  ) as IssueCountsResult | undefined;
 
   const moreDoneData = useQuery(
     api.issues.loadMoreDoneIssues,
@@ -260,22 +272,19 @@ export function useSmartBoardData({
 
   // Build issues by status
   const issuesByStatus = useMemo(() => {
-    // biome-ignore lint/suspicious/noExplicitAny: dynamic property access
-    return mergeIssuesByStatus((smartData as any)?.issuesByStatus, additionalDoneIssues);
+    return mergeIssuesByStatus(smartData?.issuesByStatus, additionalDoneIssues);
   }, [smartData, additionalDoneIssues]);
 
   // Build status counts from countsData.byStatus
   const statusCounts = useMemo(() => {
-    // biome-ignore lint/suspicious/noExplicitAny: complex conditional type mismatch
-    return calculateStatusCounts(countsData as any, issuesByStatus);
+    return calculateStatusCounts(countsData, issuesByStatus);
   }, [countsData, issuesByStatus]);
 
   // Find done statuses that have more items to load
   const doneStatusesWithMore = useMemo(() => {
     const result: string[] = [];
     for (const [status, counts] of Object.entries(statusCounts)) {
-      // biome-ignore lint/suspicious/noExplicitAny: narrowed property access
-      if ((counts as any).hidden > 0) {
+      if (counts.hidden > 0) {
         result.push(status);
       }
     }
@@ -286,16 +295,14 @@ export function useSmartBoardData({
   const hiddenDoneCount = useMemo(() => {
     let total = 0;
     for (const counts of Object.values(statusCounts)) {
-      // biome-ignore lint/suspicious/noExplicitAny: narrowed property access
-      total += (counts as any).hidden;
+      total += counts.hidden;
     }
     return total;
   }, [statusCounts]);
 
   // Helper for loadMoreDone
   const findOldestIssue = useCallback(() => {
-    // biome-ignore lint/suspicious/noExplicitAny: dynamic property access
-    const allLoadedIssues = getAllLoadedIssues(additionalDoneIssues, smartData as any);
+    const allLoadedIssues = getAllLoadedIssues(additionalDoneIssues, smartData);
     if (allLoadedIssues.length === 0) return undefined;
 
     const oldest = allLoadedIssues.reduce((min: EnrichedIssue, issue: EnrichedIssue) =>
@@ -324,7 +331,6 @@ export function useSmartBoardData({
     loadMoreDone,
     isLoadingMore,
     hiddenDoneCount,
-    // biome-ignore lint/suspicious/noExplicitAny: dynamic property access
-    workflowStates: (smartData as any)?.workflowStates,
+    workflowStates: smartData?.workflowStates,
   };
 }

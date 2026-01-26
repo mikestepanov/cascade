@@ -7,6 +7,11 @@ import {
 } from "@testing-library/react";
 import type { ReactElement } from "react";
 import { flushSync } from "react-dom";
+import { TooltipProvider } from "@/components/ui/Tooltip";
+
+const AllTheProviders = ({ children }: { children: React.ReactNode }) => {
+  return <TooltipProvider delayDuration={0}>{children}</TooltipProvider>;
+};
 
 /**
  * Custom render for React 19 that uses flushSync to ensure synchronous rendering
@@ -19,7 +24,7 @@ import { flushSync } from "react-dom";
 export function render(ui: ReactElement, options?: RenderOptions) {
   let result: ReturnType<typeof rtlRender> | undefined;
   flushSync(() => {
-    result = rtlRender(ui, options);
+    result = rtlRender(ui, { wrapper: AllTheProviders, ...options });
   });
   return result as ReturnType<typeof rtlRender>;
 }

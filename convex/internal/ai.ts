@@ -81,16 +81,13 @@ export const storeIssueEmbedding = internalMutation({
  */
 export const createChat = internalMutation({
   args: {
-    userId: v.string(),
+    userId: v.id("users"),
     projectId: v.optional(v.id("projects")),
     title: v.string(),
   },
   handler: async (ctx, args) => {
-    // Find user by subject ID
-    const user = await ctx.db
-      .query("users")
-      .filter((q) => q.eq(q.field("_id"), args.userId))
-      .first();
+    // Find user by ID (direct get is more efficient than filter on _id)
+    const user = await ctx.db.get(args.userId);
 
     if (!user) {
       throw notFound("user");
@@ -181,7 +178,7 @@ Issues by Status: ${Object.entries(issuesByStatus)
  */
 export const trackUsage = internalMutation({
   args: {
-    userId: v.string(),
+    userId: v.id("users"),
     projectId: v.optional(v.id("projects")),
     provider: v.literal("anthropic"),
     model: v.string(),
@@ -198,11 +195,8 @@ export const trackUsage = internalMutation({
     success: v.boolean(),
   },
   handler: async (ctx, args) => {
-    // Find user by subject ID
-    const user = await ctx.db
-      .query("users")
-      .filter((q) => q.eq(q.field("_id"), args.userId))
-      .first();
+    // Find user by ID (direct get is more efficient than filter on _id)
+    const user = await ctx.db.get(args.userId);
 
     if (!user) {
       throw notFound("user");

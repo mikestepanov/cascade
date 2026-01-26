@@ -1,6 +1,7 @@
 import { api } from "@convex/_generated/api";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { usePaginatedQuery } from "convex/react";
+import type { FunctionReference } from "convex/server";
 import { useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
@@ -11,6 +12,9 @@ import { Typography } from "@/components/ui/Typography";
 import { ROUTES } from "@/config/routes";
 import { useOrganization } from "@/hooks/useOrgContext";
 import { CreateProjectFromTemplate } from "./CreateProjectFromTemplate";
+
+// Type helper for paginated queries with custom return types
+type PaginatedQuery = FunctionReference<"query", "public">;
 
 export function ProjectsList() {
   const { organizationId, orgSlug } = useOrganization();
@@ -23,8 +27,7 @@ export function ProjectsList() {
     status,
     loadMore,
   } = usePaginatedQuery(
-    // biome-ignore lint/suspicious/noExplicitAny: paginationOpts mismatch in generated types
-    api.projects.getCurrentUserProjects as any,
+    api.projects.getCurrentUserProjects as PaginatedQuery,
     { organizationId },
     { initialNumItems: 20 },
   );

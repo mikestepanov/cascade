@@ -9,6 +9,7 @@ import { BOUNDED_LIST_LIMIT, BOUNDED_SEARCH_LIMIT, safeCollect } from "../lib/bo
 import { forbidden, notFound } from "../lib/errors";
 import {
   type EnrichedIssue,
+  enrichComments,
   enrichIssue,
   enrichIssues,
   fetchPaginatedIssues,
@@ -449,21 +450,6 @@ export const get = query({
     const allUserIds = [...commentAuthorIds, ...activityUserIds];
     const userMap = await batchFetchUsers(ctx, allUserIds);
 
-    const commentsWithAuthors = comments.map((comment) => {
-      const author = userMap.get(comment.authorId);
-      return {
-        ...comment,
-        author: author
-          ? {
-              _id: author._id,
-              name: author.name || author.email || "Unknown",
-              email: author.email,
-              image: author.image,
-            }
-          : null,
-      };
-    });
-
     const activity = activities.map((act) => {
       const user = userMap.get(act.userId);
       return {
@@ -475,7 +461,7 @@ export const get = query({
     return {
       ...enriched,
       project,
-      comments: commentsWithAuthors,
+      comments: await enrichComments(ctx, comments),
       activity,
     };
   },
@@ -516,27 +502,9 @@ export const listComments = query({
       .order("asc")
       .paginate(args.paginationOpts);
 
-    const authorIds = results.page.map((c) => c.authorId);
-    const userMap = await batchFetchUsers(ctx, authorIds);
-
-    const enrichedPage = results.page.map((comment) => {
-      const author = userMap.get(comment.authorId);
-      return {
-        ...comment,
-        author: author
-          ? {
-              _id: author._id,
-              name: author.name || author.email || "Unknown",
-              email: author.email,
-              image: author.image,
-            }
-          : null,
-      };
-    });
-
     return {
       ...results,
-      page: enrichedPage,
+      page: await enrichComments(ctx, results.page),
     };
   },
 });
@@ -1056,22 +1024,29 @@ export const loadMoreDoneIssues = authenticatedQuery({
 
     const outcomes = await Promise.all(
       doneStates.map(async (status) => {
-        let q = ctx.db
-          .query("issues")
-          .withIndex("by_project_status_updated", (q) =>
-            q.eq("projectId", args.projectId).eq("status", status),
-          )
-          .filter(notDeleted);
+        const limit = args.limit ?? DEFAULT_PAGE_SIZE;
+        // Use a large number if no cursor provided, effectively "from the beginning (newest)"
+        const beforeTs = args.beforeTimestamp ?? Number.MAX_SAFE_INTEGER;
 
-        if (args.sprintId) {
-          q = q.filter((q) => q.eq(q.field("sprintId"), args.sprintId));
-        }
+        const q = args.sprintId
+          ? ctx.db
+              .query("issues")
+              .withIndex("by_project_sprint_status_updated", (q) =>
+                q
+                  .eq("projectId", args.projectId)
+                  .eq("sprintId", args.sprintId as Id<"sprints">)
+                  .eq("status", status)
+                  .lt("updatedAt", beforeTs),
+              )
+              .order("desc") // Descending to get the items immediately preceding the cursor
+          : ctx.db
+              .query("issues")
+              .withIndex("by_project_status_updated", (q) =>
+                q.eq("projectId", args.projectId).eq("status", status).lt("updatedAt", beforeTs),
+              )
+              .order("desc"); // Descending to get the items immediately preceding the cursor
 
-        if (args.beforeTimestamp) {
-          q = q.filter((q) => q.lt(q.field("updatedAt"), args.beforeTimestamp as number));
-        }
-
-        return await q.take(args.limit ?? DEFAULT_PAGE_SIZE);
+        return await q.filter(notDeleted).take(limit);
       }),
     );
 

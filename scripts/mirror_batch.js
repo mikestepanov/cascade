@@ -8,9 +8,8 @@ const __dirname = path.dirname(__filename);
 // Define all target pages to mirror
 const TARGETS = [
   // Linear
-  { url: "https://linear.app/homepage", competitor: "linear", page: "homepage" },
+  { url: "https://linear.app", competitor: "linear", page: "home" },
   { url: "https://linear.app/features", competitor: "linear", page: "features" },
-  { url: "https://linear.app/pricing", competitor: "linear", page: "pricing" },
   { url: "https://linear.app/docs", competitor: "linear", page: "docs" },
 
   // ClickUp
@@ -19,9 +18,39 @@ const TARGETS = [
   { url: "https://clickup.com/features", competitor: "clickup", page: "features" },
 
   // Notion
+  { url: "https://www.notion.so", competitor: "notion", page: "home" },
   { url: "https://www.notion.so/product", competitor: "notion", page: "product" },
   { url: "https://www.notion.so/pricing", competitor: "notion", page: "pricing" },
-  { url: "https://www.notion.so/templates", competitor: "notion", page: "templates" },
+
+  // Asana
+  { url: "https://asana.com", competitor: "asana", page: "home" },
+
+  // Fireflies
+  { url: "https://fireflies.ai", competitor: "fireflies", page: "home" },
+
+  // Gong
+  { url: "https://gong.io", competitor: "gong", page: "home" },
+
+  // Jira
+  { url: "https://www.atlassian.com/software/jira", competitor: "jira", page: "home" },
+
+  // MeetingBaas
+  { url: "https://meetingbaas.com", competitor: "meetingbaas", page: "home" },
+
+  // Monday
+  { url: "https://monday.com", competitor: "monday", page: "home" },
+
+  // Otter
+  { url: "https://otter.ai", competitor: "otter", page: "home" },
+
+  // Read AI
+  { url: "https://read.ai", competitor: "read_ai", page: "home" },
+
+  // Recall
+  { url: "https://recall.ai", competitor: "recall", page: "home" },
+
+  // tl;dv
+  { url: "https://tldv.io", competitor: "tldv", page: "home" },
 ];
 
 // Run mirror script for each target sequentially

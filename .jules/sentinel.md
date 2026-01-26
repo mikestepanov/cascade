@@ -27,3 +27,13 @@
 **Vulnerability:** `validateApiKey` and `validate` queries in `convex/apiKeys.ts` were public `query`, exposing API keys in function arguments logs and potentially allowing public validation.
 **Learning:** Validation queries that accept secrets as arguments must be `internalQuery` to avoid logging secrets in the dashboard and prevent public access to validation logic.
 **Prevention:** Converted `validateApiKey` and `validate` to `internalQuery` and updated call sites to use `internal.apiKeys`.
+
+## 2026-01-23 - Multi-Tenant Document Leak
+**Vulnerability:** `api.documents.list` and `get` treated "public" documents as globally accessible across all organizations, allowing users in Org A to see public documents from Org B.
+**Learning:** In multi-tenant applications, "Public" is ambiguous. Developers often implement it as "globally public" (like a blog post) when users expect "public to my team/organization".
+**Prevention:** Always scope "public" data queries by `organizationId`. Added `by_organization_public` index and enforced strict organization membership checks for all shared resources.
+
+## 2026-01-24 - Insecure Default in E2E Endpoints
+**Vulnerability:** E2E endpoints in `convex/e2e.ts` were "Fail Open" when `E2E_API_KEY` was missing, allowing access unless `NODE_ENV` was explicitly "production". This could expose dangerous endpoints in misconfigured environments (e.g. staging or where env vars are missing).
+**Learning:** Security checks must "Fail Secure" (Deny by default). Relying on an environment variable to NOT be a specific value (like "production") is unsafe because it treats unknown states (undefined, "staging") as safe.
+**Prevention:** Refactored `validateE2EApiKey` to explicit allow-listing: Access is denied by default unless `NODE_ENV` is explicitly "development" or "test".

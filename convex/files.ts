@@ -1,5 +1,6 @@
 import { v } from "convex/values";
 import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
+import { BOUNDED_LIST_LIMIT } from "./lib/boundedQueries";
 import { notFound } from "./lib/errors";
 
 // Generate upload URL for files
@@ -100,7 +101,7 @@ export const getIssueAttachments = authenticatedQuery({
       .query("issueActivity")
       .withIndex("by_issue", (q) => q.eq("issueId", args.issueId))
       .filter((q) => q.eq(q.field("action"), "attached"))
-      .collect();
+      .take(BOUNDED_LIST_LIMIT);
 
     // Build lookup map by storageId (stored in oldValue)
     const activityByStorageId = new Map(

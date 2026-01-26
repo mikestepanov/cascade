@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import { api } from "./_generated/api";
 import schema from "./schema";
 import { modules } from "./testSetup.test-helper";
-import { asAuthenticatedUser, createOrganizationAdmin, createTestUser } from "./testUtils";
+import { asAuthenticatedUser, createTestUser } from "./testUtils";
 
 describe("calendarEvents", () => {
   describe("create", () => {

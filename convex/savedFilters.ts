@@ -1,6 +1,7 @@
 import { v } from "convex/values";
 import { authenticatedMutation, projectQuery, projectViewerMutation } from "./customFunctions";
 import { batchFetchUsers, getUserName } from "./lib/batchHelpers";
+import { BOUNDED_LIST_LIMIT } from "./lib/boundedQueries";
 import { forbidden, notFound } from "./lib/errors";
 import { issuePriorities, issueTypes } from "./validators";
 
@@ -50,14 +51,14 @@ export const list = projectQuery({
       .query("savedFilters")
       .withIndex("by_user", (q) => q.eq("userId", ctx.userId))
       .filter((q) => q.eq(q.field("projectId"), ctx.projectId))
-      .collect();
+      .take(BOUNDED_LIST_LIMIT);
 
     // Get public filters from other users
     const publicFilters = await ctx.db
       .query("savedFilters")
       .withIndex("by_project_public", (q) => q.eq("projectId", ctx.projectId).eq("isPublic", true))
       .filter((q) => q.neq(q.field("userId"), ctx.userId))
-      .collect();
+      .take(BOUNDED_LIST_LIMIT);
 
     // Combine and batch fetch creators to avoid N+1 queries
     const all = [...myFilters, ...publicFilters];

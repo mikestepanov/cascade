@@ -1,8 +1,12 @@
 import { v } from "convex/values";
+import { components } from "./_generated/api";
 import { mutation, query } from "./_generated/server";
 import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
 import { batchFetchBookingPages } from "./lib/batchHelpers";
-import { conflict, notFound, requireOwned, validation } from "./lib/errors";
+import { BOUNDED_LIST_LIMIT } from "./lib/boundedQueries";
+import { validate, validateEmail } from "./lib/constrainedValidators";
+import { conflict, notFound, rateLimited, requireOwned, validation } from "./lib/errors";
+import { MINUTE } from "./lib/timeUtils";
 
 /**
  * Bookings - Handle meeting bookings via booking pages
@@ -21,6 +25,32 @@ export const createBooking = mutation({
     timezone: v.string(),
   },
   handler: async (ctx, args) => {
+    // Rate limit by email: 10 bookings per minute per email (prevents spam)
+    // Use single atomic mutation to avoid TOCTOU race condition
+    if (!process.env.IS_TEST_ENV) {
+      try {
+        await ctx.runMutation(components.rateLimiter.lib.rateLimit, {
+          name: `createBooking:${args.bookerEmail}`,
+          config: {
+            kind: "token bucket",
+            rate: 10,
+            period: MINUTE,
+            capacity: 3,
+          },
+          throws: true,
+        });
+      } catch (e: unknown) {
+        if (e instanceof Error && e.message.includes("Rate limit")) {
+          throw rateLimited();
+        }
+        throw e;
+      }
+    }
+
+    // Validate input
+    validateEmail(args.bookerEmail);
+    validate.name(args.bookerName, "bookerName");
+
     // Get booking page
     const page = await ctx.db
       .query("bookingPages")
@@ -41,8 +71,8 @@ export const createBooking = mutation({
       throw validation("startTime", `Requires at least ${page.minimumNotice} hours notice`);
     }
 
-    // Check if slot is still available
-    const conflictingBookings = await ctx.db
+    // Check if slot is still available (only need to find one conflict)
+    const conflictingBooking = await ctx.db
       .query("bookings")
       .withIndex("by_host", (q) => q.eq("hostId", page.userId))
       .filter((q) =>
@@ -61,9 +91,9 @@ export const createBooking = mutation({
           ),
         ),
       )
-      .collect();
+      .first();
 
-    if (conflictingBookings.length > 0) {
+    if (conflictingBooking) {
       throw conflict("This time slot is no longer available");
     }
 
@@ -161,7 +191,7 @@ export const getAvailableSlots = query({
           q.lt(q.field("startTime"), dayEnd),
         ),
       )
-      .collect();
+      .take(BOUNDED_LIST_LIMIT);
 
     // Generate available slots
     const slots: number[] = [];
@@ -227,11 +257,11 @@ export const listMyBookings = authenticatedQuery({
               .eq("hostId", ctx.userId)
               .eq("status", args.status as "pending" | "confirmed" | "cancelled" | "completed"),
           )
-          .collect()
+          .take(BOUNDED_LIST_LIMIT)
       : await ctx.db
           .query("bookings")
           .withIndex("by_host", (q) => q.eq("hostId", ctx.userId))
-          .collect();
+          .take(BOUNDED_LIST_LIMIT);
 
     // Batch fetch booking pages to avoid N+1 queries
     const pageIds = bookings.map((b) => b.bookingPageId);

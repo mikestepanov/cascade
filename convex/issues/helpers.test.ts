@@ -3,12 +3,7 @@ import { describe, expect, it } from "vitest";
 import type { Id } from "../_generated/dataModel";
 import schema from "../schema";
 import { modules } from "../testSetup.test-helper";
-import {
-  asAuthenticatedUser,
-  createTestIssue,
-  createTestProject,
-  createTestUser,
-} from "../testUtils";
+import { createTestIssue, createTestProject, createTestUser } from "../testUtils";
 import {
   generateIssueKey,
   getMaxOrderForStatus,
@@ -469,8 +464,8 @@ describe("issue helpers", () => {
         const project = await ctx.db.get(projectId);
         return await ctx.db.insert("issues", {
           projectId,
-          organizationId: project!.organizationId,
-          workspaceId: project!.workspaceId,
+          organizationId: project?.organizationId,
+          workspaceId: project?.workspaceId,
           key: "TEST-2",
           title: "Subtask",
           type: "subtask",

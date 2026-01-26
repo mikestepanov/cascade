@@ -12,6 +12,7 @@
 import type { GenericDatabaseWriter, GenericDataModel } from "convex/server";
 import type { Id, TableNames } from "../_generated/dataModel";
 import type { MutationCtx } from "../_generated/server";
+import { BOUNDED_DELETE_BATCH } from "./boundedQueries";
 import { conflict } from "./errors";
 
 // Loose type for dynamic table access
@@ -247,10 +248,11 @@ export const RELATIONSHIPS: Relationship[] = [
 ];
 
 async function handleDeleteRelation(ctx: MutationCtx, rel: Relationship, recordId: Id<TableNames>) {
+  // Bounded query for cascade operations - process in batches to prevent memory issues
   const children = await (ctx.db as unknown as GenericDatabaseWriter<AnyDataModel>)
     .query(rel.child)
     .withIndex(rel.index, (q) => q.eq(rel.foreignKey, recordId))
-    .collect();
+    .take(BOUNDED_DELETE_BATCH);
 
   if (rel.onDelete === "cascade") {
     // Recursively delete children
@@ -328,10 +330,11 @@ async function handleSoftDeleteRelation(
   deletedAt: number,
 ) {
   if (rel.onDelete === "cascade") {
+    // Bounded query for cascade operations
     const children = await (ctx.db as unknown as GenericDatabaseWriter<AnyDataModel>)
       .query(rel.child)
       .withIndex(rel.index, (q) => q.eq(rel.foreignKey, recordId))
-      .collect();
+      .take(BOUNDED_DELETE_BATCH);
 
     for (const child of children) {
       // Recursively soft delete children
@@ -385,11 +388,11 @@ async function handleRestoreRelation(
   recordId: Id<TableNames>,
 ) {
   if (rel.onDelete === "cascade") {
-    // Find children (including soft-deleted ones)
+    // Find children (including soft-deleted ones) - bounded query
     const children = await (ctx.db as unknown as GenericDatabaseWriter<AnyDataModel>)
       .query(rel.child)
       .withIndex(rel.index, (q) => q.eq(rel.foreignKey, recordId))
-      .collect();
+      .take(BOUNDED_DELETE_BATCH);
 
     for (const child of children) {
       // Recursively restore children

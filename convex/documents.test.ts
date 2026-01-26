@@ -89,27 +89,6 @@ describe("Documents", () => {
   });
 
   describe("get", () => {
-    it("should return public documents for anyone", async () => {
-      const t = convexTest(schema, modules);
-      const owner = await createTestUser(t, { name: "Owner" });
-      const viewer = await createTestUser(t, { name: "Viewer" });
-      const { organizationId } = await createOrganizationAdmin(t, owner);
-
-      // Create public document
-      const asOwner = asAuthenticatedUser(t, owner);
-      const docId = await asOwner.mutation(api.documents.create, {
-        title: "Public Doc",
-        isPublic: true,
-        organizationId,
-      });
-
-      // Access as different user
-      const asViewer = asAuthenticatedUser(t, viewer);
-      const doc = await asViewer.query(api.documents.get, { id: docId });
-      expect(doc?.title).toBe("Public Doc");
-      expect(doc?.isPublic).toBe(true);
-    });
-
     it("should return private documents for owner", async () => {
       const t = convexTest(schema, modules);
       const { userId, organizationId, asUser } = await createTestContext(t);
@@ -146,13 +125,40 @@ describe("Documents", () => {
       }).rejects.toThrow("Not authorized to access this document");
     });
 
-    it("should return public documents to anyone", async () => {
+    it("should return public documents to organization members", async () => {
       const t = convexTest(schema, modules);
       const owner = await createTestUser(t, { name: "Owner" });
       const member = await createTestUser(t, {
         name: "Member",
         email: "member@test.com",
       });
+      const { organizationId } = await createOrganizationAdmin(t, owner);
+
+      // Add member to organization
+      const asOwner = asAuthenticatedUser(t, owner);
+      await asOwner.mutation(api.organizations.addMember, {
+        organizationId,
+        userId: member,
+        role: "member",
+      });
+
+      // Create public document as owner
+      const docId = await asOwner.mutation(api.documents.create, {
+        title: "Public Project Doc",
+        isPublic: true,
+        organizationId,
+      });
+
+      // Access as member
+      const asMember = asAuthenticatedUser(t, member);
+      const doc = await asMember.query(api.documents.get, { id: docId });
+      expect(doc?.title).toBe("Public Project Doc");
+    });
+
+    it("should deny access to public documents for non-organization members", async () => {
+      const t = convexTest(schema, modules);
+      const owner = await createTestUser(t, { name: "Owner" });
+      const outsider = await createTestUser(t, { name: "Outsider" });
       const { organizationId } = await createOrganizationAdmin(t, owner);
 
       // Create public document as owner
@@ -163,10 +169,11 @@ describe("Documents", () => {
         organizationId,
       });
 
-      // Access as different user - should work because it's public
-      const asMember = asAuthenticatedUser(t, member);
-      const doc = await asMember.query(api.documents.get, { id: docId });
-      expect(doc?.title).toBe("Public Project Doc");
+      // Access as outsider (not in organization)
+      const asOutsider = asAuthenticatedUser(t, outsider);
+      await expect(async () => {
+        await asOutsider.query(api.documents.get, { id: docId });
+      }).rejects.toThrow("You are not a member of this organization");
     });
 
     it("should return null for deleted documents", async () => {
@@ -189,14 +196,14 @@ describe("Documents", () => {
   });
 
   describe("list", () => {
-    it("should return all accessible documents for user", async () => {
+    it("should return filtered documents for organization", async () => {
       const t = convexTest(schema, modules);
       const user1 = await createTestUser(t, { name: "User 1" });
       const user2 = await createTestUser(t, { name: "User 2" });
       const { organizationId: org1 } = await createOrganizationAdmin(t, user1);
       const { organizationId: org2 } = await createOrganizationAdmin(t, user2);
 
-      // User 1 creates documents
+      // User 1 creates documents in Org 1
       const asUser1 = asAuthenticatedUser(t, user1);
       await asUser1.mutation(api.documents.create, {
         title: "User 1 Private",
@@ -204,12 +211,12 @@ describe("Documents", () => {
         organizationId: org1,
       });
       await asUser1.mutation(api.documents.create, {
-        title: "Public Doc",
+        title: "Public Doc Org 1",
         isPublic: true,
         organizationId: org1,
       });
 
-      // User 2 creates a document
+      // User 2 creates a document in Org 2
       const asUser2 = asAuthenticatedUser(t, user2);
       await asUser2.mutation(api.documents.create, {
         title: "User 2 Private",
@@ -217,13 +224,40 @@ describe("Documents", () => {
         organizationId: org2,
       });
 
-      // User 2 should see: their own doc + the public doc
-      const result = await asUser2.query(api.documents.list, {});
-      expect(result.documents).toHaveLength(2);
-      const titles = result.documents.map((d) => d.title);
-      expect(titles).toContain("User 2 Private");
-      expect(titles).toContain("Public Doc");
-      expect(titles).not.toContain("User 1 Private");
+      // User 2 listing Org 2: Should see their private doc only (since no public docs in Org 2)
+      const resultOrg2 = await asUser2.query(api.documents.list, { organizationId: org2 });
+      expect(resultOrg2.documents).toHaveLength(1);
+      expect(resultOrg2.documents[0].title).toBe("User 2 Private");
+
+      // User 2 listing Org 1: Should see NOTHING because they are not a member of Org 1
+      // and they haven't created any private docs there.
+      const resultOrg1 = await asUser2.query(api.documents.list, { organizationId: org1 });
+      expect(resultOrg1.documents).toHaveLength(0);
+    });
+
+    it("should see public documents in same organization", async () => {
+      const t = convexTest(schema, modules);
+      const user1 = await createTestUser(t, { name: "User 1" });
+      const user2 = await createTestUser(t, { name: "User 2" });
+      const { organizationId } = await createOrganizationAdmin(t, user1);
+
+      // Add user2 to organization
+      const asUser1 = asAuthenticatedUser(t, user1);
+      await asUser1.mutation(api.organizations.addMember, {
+        organizationId,
+        userId: user2,
+        role: "member",
+      });
+      await asUser1.mutation(api.documents.create, {
+        title: "Public Doc",
+        isPublic: true,
+        organizationId,
+      });
+
+      const asUser2 = asAuthenticatedUser(t, user2);
+      const result = await asUser2.query(api.documents.list, { organizationId });
+      expect(result.documents).toHaveLength(1);
+      expect(result.documents[0].title).toBe("Public Doc");
     });
 
     it("should deny unauthenticated users", async () => {

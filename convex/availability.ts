@@ -1,6 +1,7 @@
 import { v } from "convex/values";
 import { query } from "./_generated/server";
 import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
+import { BOUNDED_LIST_LIMIT } from "./lib/boundedQueries";
 import { requireOwned, validation } from "./lib/errors";
 
 /**
@@ -80,22 +81,29 @@ export const setDefaultWorkingHours = authenticatedMutation({
       "monday" | "tuesday" | "wednesday" | "thursday" | "friday" | "saturday" | "sunday"
     > = ["monday", "tuesday", "wednesday", "thursday", "friday"];
 
-    for (const day of workdays) {
-      // Check if slot exists
-      const existing = await ctx.db
-        .query("availabilitySlots")
-        .withIndex("by_user_day", (q) => q.eq("userId", userId).eq("dayOfWeek", day))
-        .first();
+    // Fetch all existing slots in parallel
+    const existingSlots = await Promise.all(
+      workdays.map((day) =>
+        ctx.db
+          .query("availabilitySlots")
+          .withIndex("by_user_day", (q) => q.eq("userId", userId).eq("dayOfWeek", day))
+          .first(),
+      ),
+    );
 
-      if (existing) {
-        await ctx.db.patch(existing._id, {
-          startTime,
-          endTime,
-          timezone: args.timezone,
-          isActive: true,
-        });
-      } else {
-        await ctx.db.insert("availabilitySlots", {
+    // Upsert all slots in parallel
+    await Promise.all(
+      workdays.map((day, i) => {
+        const existing = existingSlots[i];
+        if (existing) {
+          return ctx.db.patch(existing._id, {
+            startTime,
+            endTime,
+            timezone: args.timezone,
+            isActive: true,
+          });
+        }
+        return ctx.db.insert("availabilitySlots", {
           userId,
           dayOfWeek: day,
           startTime,
@@ -103,8 +111,8 @@ export const setDefaultWorkingHours = authenticatedMutation({
           timezone: args.timezone,
           isActive: true,
         });
-      }
-    }
+      }),
+    );
   },
 });
 
@@ -115,7 +123,7 @@ export const getMyAvailability = authenticatedQuery({
     const slots = await ctx.db
       .query("availabilitySlots")
       .withIndex("by_user", (q) => q.eq("userId", ctx.userId))
-      .collect();
+      .take(BOUNDED_LIST_LIMIT);
 
     return slots.sort((a, b) => {
       const dayOrder = [
@@ -140,7 +148,7 @@ export const getUserAvailability = query({
       .query("availabilitySlots")
       .withIndex("by_user", (q) => q.eq("userId", args.userId))
       .filter((q) => q.eq(q.field("isActive"), true))
-      .collect();
+      .take(BOUNDED_LIST_LIMIT);
 
     return slots.sort((a, b) => {
       const dayOrder = [

@@ -5,6 +5,7 @@ import type { MutationCtx, QueryCtx } from "./_generated/server";
 import { internalAction, internalMutation, mutation, query } from "./_generated/server";
 import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
 import { batchFetchCalendarEvents, batchFetchRecordings } from "./lib/batchHelpers";
+import { BOUNDED_LIST_LIMIT } from "./lib/boundedQueries";
 import { getBotServiceApiKey, getBotServiceUrl } from "./lib/env";
 import { conflict, forbidden, notFound, unauthenticated, validation } from "./lib/errors";
 import { notDeleted } from "./lib/softDeleteHelpers";
@@ -232,7 +233,7 @@ export const getRecording = authenticatedQuery({
     const participants = await ctx.db
       .query("meetingParticipants")
       .withIndex("by_recording", (q) => q.eq("recordingId", recording._id))
-      .collect();
+      .take(BOUNDED_LIST_LIMIT);
 
     const job = await ctx.db
       .query("meetingBotJobs")
@@ -299,10 +300,11 @@ export const getPendingJobs = query({
     const now = Date.now();
 
     // Get jobs that are pending and scheduled to start within next 5 minutes
+    // Bounded to prevent memory issues with many pending jobs
     const jobs = await ctx.db
       .query("meetingBotJobs")
       .withIndex("by_status", (q) => q.eq("status", "pending"))
-      .collect();
+      .take(BOUNDED_LIST_LIMIT);
 
     // Filter to jobs that should start soon
     const readyJobs = jobs.filter((job) => job.scheduledTime <= now + 5 * 60 * 1000);
@@ -681,31 +683,43 @@ export const saveParticipants = mutation({
     const recording = await ctx.db.get(args.recordingId);
     if (!recording) throw notFound("recording", args.recordingId);
 
-    // Try to match participants to Nixelo users by email
-    for (const participant of args.participants) {
-      let userId: Id<"users"> | undefined;
-
-      if (participant.email) {
-        const user = await ctx.db
+    // Try to match participants to Nixelo users by email (fetch all users in parallel)
+    const participantsWithEmails = args.participants.filter((p) => p.email);
+    const userLookups = await Promise.all(
+      participantsWithEmails.map((p) =>
+        ctx.db
           .query("users")
-          .withIndex("email", (q) => q.eq("email", participant.email))
-          .first();
-        userId = user?._id;
-      }
+          .withIndex("email", (q) => q.eq("email", p.email))
+          .first(),
+      ),
+    );
 
-      await ctx.db.insert("meetingParticipants", {
-        recordingId: args.recordingId,
-        displayName: participant.displayName,
-        email: participant.email,
-        userId,
-        joinedAt: participant.joinedAt,
-        leftAt: participant.leftAt,
-        speakingTime: participant.speakingTime,
-        speakingPercentage: participant.speakingPercentage,
-        isHost: participant.isHost,
-        isExternal: participant.isExternal,
-      });
-    }
+    // Build email -> userId map
+    const userIdByEmail = new Map<string, Id<"users">>();
+    participantsWithEmails.forEach((p, i) => {
+      const user = userLookups[i];
+      if (user && p.email) {
+        userIdByEmail.set(p.email, user._id);
+      }
+    });
+
+    // Insert all participants in parallel
+    await Promise.all(
+      args.participants.map((participant) =>
+        ctx.db.insert("meetingParticipants", {
+          recordingId: args.recordingId,
+          displayName: participant.displayName,
+          email: participant.email,
+          userId: participant.email ? userIdByEmail.get(participant.email) : undefined,
+          joinedAt: participant.joinedAt,
+          leftAt: participant.leftAt,
+          speakingTime: participant.speakingTime,
+          speakingPercentage: participant.speakingPercentage,
+          isHost: participant.isHost,
+          isExternal: participant.isExternal,
+        }),
+      ),
+    );
   },
 });
 
@@ -727,13 +741,27 @@ export const createIssueFromActionItem = authenticatedMutation({
     const project = await ctx.db.get(args.projectId);
     if (!project) throw notFound("project", args.projectId);
 
-    // Get next issue number
-    const existingIssues = await ctx.db
+    // Get next issue number using efficient order desc first pattern
+    const latestIssue = await ctx.db
+      .query("issues")
+      .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
+      .order("desc")
+      .first();
+
+    let nextNumber = 1;
+    if (latestIssue) {
+      const match = latestIssue.key.match(/-(\d+)$/);
+      if (match) {
+        nextNumber = Number.parseInt(match[1], 10) + 1;
+      }
+    }
+
+    // Get approximate count for order
+    const issueCount = await ctx.db
       .query("issues")
       .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
       .filter(notDeleted)
-      .collect();
-    const nextNumber = existingIssues.length + 1;
+      .take(BOUNDED_LIST_LIMIT);
 
     const now = Date.now();
 
@@ -756,7 +784,7 @@ export const createIssueFromActionItem = authenticatedMutation({
       linkedDocuments: [],
       attachments: [],
       loggedHours: 0,
-      order: existingIssues.length,
+      order: issueCount.length,
     });
 
     // Update the action item with the created issue

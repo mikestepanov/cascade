@@ -1,10 +1,11 @@
 import { api } from "@convex/_generated/api";
 import type { Id } from "@convex/_generated/dataModel";
-import { useMutation, usePaginatedQuery } from "convex/react";
+import { useMutation, usePaginatedQuery, useQuery } from "convex/react";
 import { useState } from "react";
 import { Flex } from "@/components/ui/Flex";
 import { formatRelativeTime } from "@/lib/formatting";
 import { showError, showSuccess } from "@/lib/toast";
+import { CommentReactions } from "./CommentReactions";
 import { CommentRenderer } from "./CommentRenderer";
 import { MentionInput } from "./MentionInput";
 import { Avatar } from "./ui/Avatar";
@@ -20,6 +21,7 @@ export function IssueComments({ issueId, projectId }: IssueCommentsProps) {
   const [newComment, setNewComment] = useState("");
   const [mentions, setMentions] = useState<Id<"users">[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const currentUser = useQuery(api.users.getCurrent);
 
   const {
     results: comments,
@@ -105,6 +107,13 @@ export function IssueComments({ issueId, projectId }: IssueCommentsProps) {
 
                   {/* Comment Text with Mentions */}
                   <CommentRenderer content={comment.content} mentions={comment.mentions} />
+
+                  {/* Comment Reactions */}
+                  <CommentReactions
+                    commentId={comment._id}
+                    reactions={comment.reactions || []}
+                    currentUserId={currentUser?._id}
+                  />
                 </div>
               </Flex>
             ))}

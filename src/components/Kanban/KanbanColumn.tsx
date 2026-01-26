@@ -3,6 +3,7 @@ import type { WorkflowState } from "@convex/shared/types";
 import { Plus } from "lucide-react";
 import { memo, useCallback, useMemo } from "react";
 import { Flex } from "@/components/ui/Flex";
+import { Tooltip } from "@/components/ui/Tooltip";
 import { Typography } from "@/components/ui/Typography";
 import { ANIMATION } from "@/lib/constants";
 import { getWorkflowCategoryColor } from "@/lib/issue-utils";
@@ -113,15 +114,17 @@ export const KanbanColumn = memo(function KanbanColumn({
             </Badge>
           </Flex>
           {canEdit && (
-            <button
-              type="button"
-              onClick={handleCreateIssue}
-              className="text-ui-text-tertiary hover:text-ui-text-primary p-2.5 sm:p-3 shrink-0"
-              aria-label={`Add issue to ${state.name}`}
-              {...(columnIndex === 0 ? { "data-tour": "create-issue" } : {})}
-            >
-              <Plus className="w-4 h-4" />
-            </button>
+            <Tooltip content="Create issue">
+              <button
+                type="button"
+                onClick={handleCreateIssue}
+                className="text-ui-text-tertiary hover:text-ui-text-primary p-2.5 sm:p-3 shrink-0"
+                aria-label={`Add issue to ${state.name}`}
+                {...(columnIndex === 0 ? { "data-tour": "create-issue" } : {})}
+              >
+                <Plus className="w-4 h-4" />
+              </button>
+            </Tooltip>
           )}
         </Flex>
       </div>
