@@ -687,4 +687,89 @@ describe("Issues", () => {
       await t.finishInProgressScheduledFunctions();
     });
   });
+
+  describe("roadmap", () => {
+    it("should exclude epics when excludeEpics is true", async () => {
+      const t = convexTest(schema, modules);
+      const userId = await createTestUser(t);
+      const projectId = await createTestProject(t, userId);
+
+      const asUser = asAuthenticatedUser(t, userId);
+
+      // Create an epic
+      await asUser.mutation(api.issues.create, {
+        projectId,
+        title: "Epic 1",
+        type: "epic",
+        priority: "high",
+      });
+
+      // Create a task
+      await asUser.mutation(api.issues.create, {
+        projectId,
+        title: "Task 1",
+        type: "task",
+        priority: "medium",
+      });
+
+      // List without exclusion
+      const issues = await asUser.query(api.issues.listRoadmapIssues, {
+        projectId,
+      });
+      expect(issues).toHaveLength(2);
+
+      // List WITH exclusion
+      const issuesNoEpics = await asUser.query(api.issues.listRoadmapIssues, {
+        projectId,
+        excludeEpics: true,
+      });
+      expect(issuesNoEpics).toHaveLength(1);
+      expect(issuesNoEpics[0].type).toBe("task");
+      await t.finishInProgressScheduledFunctions();
+    });
+
+    it("should filter by epicId using optimized path", async () => {
+      const t = convexTest(schema, modules);
+      const userId = await createTestUser(t);
+      const projectId = await createTestProject(t, userId);
+
+      const asUser = asAuthenticatedUser(t, userId);
+
+      // Create an epic
+      const epicId = await asUser.mutation(api.issues.create, {
+        projectId,
+        title: "Epic 1",
+        type: "epic",
+        priority: "high",
+      });
+
+      // Create task IN the epic
+      const taskInEpicId = await asUser.mutation(api.issues.create, {
+        projectId,
+        title: "Task in Epic",
+        type: "task",
+        priority: "medium",
+        epicId: epicId,
+      });
+
+      // Create task NOT in the epic
+      await asUser.mutation(api.issues.create, {
+        projectId,
+        title: "Task not in Epic",
+        type: "task",
+        priority: "medium",
+      });
+
+      // List by epicId
+      const issuesInEpic = await asUser.query(api.issues.listRoadmapIssues, {
+        projectId,
+        epicId: epicId,
+      });
+
+      expect(issuesInEpic).toHaveLength(1);
+      expect(issuesInEpic[0].title).toBe("Task in Epic");
+      expect(issuesInEpic[0]._id).toBe(taskInEpicId);
+      await t.finishInProgressScheduledFunctions();
+    });
+  });
 });
