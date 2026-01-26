@@ -171,10 +171,34 @@ export const listRoadmapIssues = authenticatedQuery({
       issues = allSprintIssues.filter((i) =>
         (ROOT_ISSUE_TYPES as readonly string[]).includes(i.type),
       );
+    } else if (args.epicId) {
+      // Optimization: Fetch by epic directly if filtering by specific epic
+      // This is much faster (O(K)) than scanning the whole project (O(N))
+      const allEpicIssues = await safeCollect(
+        ctx.db
+          .query("issues")
+          .withIndex("by_epic", (q) => q.eq("epicId", args.epicId))
+          .filter(notDeleted),
+        BOUNDED_LIST_LIMIT,
+        "roadmap epic issues",
+      );
+
+      // Filter by project (security) and ensure root types only (no subtasks)
+      // Note: Epics themselves don't have an epicId, so this excludes epics naturally
+      issues = allEpicIssues.filter(
+        (i) =>
+          i.projectId === args.projectId &&
+          (ROOT_ISSUE_TYPES as readonly string[]).includes(i.type),
+      );
     } else {
       // Bounded: fetch by type with limits
+      // Optimization: Skip fetching epics if they will be excluded anyway
+      const typesToFetch = args.excludeEpics
+        ? ROOT_ISSUE_TYPES.filter((t) => t !== "epic")
+        : ROOT_ISSUE_TYPES;
+
       const outcomes = await Promise.all(
-        ROOT_ISSUE_TYPES.map((type) =>
+        typesToFetch.map((type) =>
           safeCollect(
             ctx.db
               .query("issues")
