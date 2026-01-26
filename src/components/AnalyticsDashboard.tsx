@@ -183,23 +183,23 @@ export function AnalyticsDashboard({ projectId }: Props) {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
           {/* Issues by Status */}
           <ChartCard title="Issues by Status">
-            <BarChart data={statusChartData} color="bg-status-info dark:bg-status-info" />
+            <BarChart data={statusChartData} color="bg-status-info" />
           </ChartCard>
 
           {/* Issues by Type */}
           <ChartCard title="Issues by Type">
-            <BarChart data={typeChartData} color="bg-status-success dark:bg-status-success" />
+            <BarChart data={typeChartData} color="bg-status-success" />
           </ChartCard>
 
           {/* Issues by Priority */}
           <ChartCard title="Issues by Priority">
-            <BarChart data={priorityChartData} color="bg-status-warning dark:bg-status-warning" />
+            <BarChart data={priorityChartData} color="bg-status-warning" />
           </ChartCard>
 
           {/* Team Velocity */}
           <ChartCard title="Team Velocity (Last 10 Sprints)">
             {velocityChartData.length > 0 ? (
-              <BarChart data={velocityChartData} color="bg-accent-600 dark:bg-accent-500" />
+              <BarChart data={velocityChartData} color="bg-accent-600" />
             ) : (
               <Flex align="center" justify="center" className="h-full text-ui-text-secondary">
                 <Typography variant="p">No completed sprints yet</Typography>
@@ -211,7 +211,7 @@ export function AnalyticsDashboard({ projectId }: Props) {
         {/* Issues by Assignee */}
         {assigneeChartData.length > 0 && (
           <ChartCard title="Issues by Assignee">
-            <BarChart data={assigneeChartData} color="bg-brand-600 dark:bg-brand-500" />
+            <BarChart data={assigneeChartData} color="bg-brand-600" />
           </ChartCard>
         )}
 

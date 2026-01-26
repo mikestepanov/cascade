@@ -361,8 +361,8 @@ export function ManualTimeEntryModal({
 
                   {/* Duration Display */}
                   {durationSeconds > 0 && (
-                    <div className="mt-3 p-3 bg-brand-50 dark:bg-brand-900/20 border border-brand-200 dark:border-brand-800 rounded-lg">
-                      <span className="text-sm font-medium text-brand-900 dark:text-brand-100">
+                    <div className="mt-3 p-3 bg-brand-50 border border-brand-200 rounded-lg">
+                      <span className="text-sm font-medium text-brand-900">
                         Duration: {formatDurationHuman(durationSeconds)}
                       </span>
                     </div>
@@ -420,8 +420,8 @@ export function ManualTimeEntryModal({
 
               {/* Duration Display */}
               {timeRangeDuration > 0 && (
-                <div className="p-3 bg-brand-50 dark:bg-brand-900/20 border border-brand-200 dark:border-brand-800 rounded-lg">
-                  <span className="text-sm font-medium text-brand-900 dark:text-brand-100">
+                <div className="p-3 bg-brand-50 border border-brand-200 rounded-lg">
+                  <span className="text-sm font-medium text-brand-900">
                     Duration: {formatDurationHuman(timeRangeDuration)}
                   </span>
                 </div>

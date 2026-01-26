@@ -61,7 +61,7 @@ function TabButton({
       className={cn(
         "pb-2 px-2 sm:px-0 border-b-2 transition-colors whitespace-nowrap flex-shrink-0 text-sm sm:text-base flex items-center gap-1.5",
         isActive
-          ? "border-brand-600 text-brand-600 dark:text-brand-500"
+          ? "border-brand-600 text-brand-600"
           : "border-transparent text-ui-text-secondary hover:text-ui-text-primary",
       )}
       aria-label={`${label} view`}

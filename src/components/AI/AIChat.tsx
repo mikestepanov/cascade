@@ -68,7 +68,7 @@ function MessageItem({
           >
             {isCopied ? (
               <svg
-                className="w-4 h-4 text-status-success dark:text-status-success"
+                className="w-4 h-4 text-status-success"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -102,7 +102,7 @@ function MessageItem({
 
         {/* Message content with markdown for assistant */}
         {message.role === "assistant" ? (
-          <div className="prose prose-sm dark:prose-invert max-w-none prose-pre:bg-slate-900 prose-pre:text-slate-100 prose-code:text-sm">
+          <div className="prose prose-sm max-w-none prose-pre:bg-slate-900 prose-pre:text-slate-100 prose-code:text-sm">
             <ReactMarkdown remarkPlugins={[remarkGfm]}>{message.content}</ReactMarkdown>
           </div>
         ) : (

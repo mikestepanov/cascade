@@ -114,7 +114,7 @@ export function RoadmapView({ projectId, sprintId, canEdit = true }: RoadmapView
           className={cn(
             "flex items-center p-3 transition-colors border-b border-ui-border-primary",
             isSelected
-              ? "bg-brand-50/50 dark:bg-brand-900/20 ring-1 ring-inset ring-brand-500/50 z-10"
+              ? "bg-brand-50/50 ring-1 ring-inset ring-brand-500/50 z-10"
               : "hover:bg-ui-bg-secondary",
           )}
         >
@@ -128,8 +128,8 @@ export function RoadmapView({ projectId, sprintId, canEdit = true }: RoadmapView
                 className={cn(
                   "text-sm font-medium truncate text-left",
                   isSelected
-                    ? "text-brand-700 dark:text-brand-300"
-                    : "text-ui-text-primary hover:text-brand-600 dark:hover:text-brand-400",
+                    ? "text-brand-700"
+                    : "text-ui-text-primary hover:text-brand-600:text-brand-400",
                 )}
               >
                 {issue.key}

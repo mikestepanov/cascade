@@ -22,7 +22,7 @@ export function HeroSection() {
         >
           Revolutionize Your Workflow.
           <br />
-          <span className="bg-linear-to-r from-cyan-600 via-teal-500 to-emerald-500 dark:from-cyan-400 dark:via-teal-400 dark:to-emerald-400 bg-clip-text text-transparent">
+          <span className="bg-linear-to-r from-cyan-600 via-teal-500 to-emerald-500 bg-clip-text text-transparent">
             Harmonize Your Team.
           </span>
         </Typography>
@@ -51,7 +51,7 @@ export function HeroSection() {
             className="group px-8 py-3.5 bg-transparent border border-ui-border-secondary rounded-full text-base font-medium text-ui-text-secondary hover:border-ui-border-primary hover:text-ui-text-primary transition-all flex items-center justify-center gap-2 hover:bg-ui-bg-secondary"
           >
             Watch Demo
-            <PlayIcon className="w-4 h-4 text-cyan-600 dark:text-current" />
+            <PlayIcon className="w-4 h-4 text-cyan-600" />
           </a>
         </Flex>
       </div>

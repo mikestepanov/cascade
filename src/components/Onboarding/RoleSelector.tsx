@@ -28,7 +28,7 @@ function RoleCard({ icon, title, description, selected, disabled, onClick }: Rol
         "relative p-8 rounded-3xl border-2 text-left transition-all duration-300 cursor-pointer overflow-hidden group w-full",
         "hover:shadow-2xl hover:-translate-y-1 active:scale-95",
         selected
-          ? "border-brand-500 bg-brand-50/50 dark:bg-brand-500/10 ring-4 ring-brand-500/10"
+          ? "border-brand-500 bg-brand-50/50 ring-4 ring-brand-500/10"
           : "border-ui-border-primary bg-ui-bg-primary hover:border-brand-400/50",
         disabled && "opacity-50 cursor-wait",
       )}
@@ -36,8 +36,8 @@ function RoleCard({ icon, title, description, selected, disabled, onClick }: Rol
       {/* Background Glow */}
       <div
         className={cn(
-          "absolute inset-0 opacity-0 group-hover:opacity-10 dark:group-hover:opacity-5 transition-opacity duration-500 bg-gradient-to-br from-brand-500 to-accent-500",
-          selected && "opacity-10 dark:opacity-5",
+          "absolute inset-0 opacity-0 group-hover:opacity-10:opacity-5 transition-opacity duration-500 bg-gradient-to-br from-brand-500 to-accent-500",
+          selected && "opacity-10",
         )}
       />
 

@@ -31,8 +31,8 @@ const fallbackVariants = cva(
         xl: "text-lg",
       },
       variant: {
-        brand: "bg-brand-600 dark:bg-brand-500 text-white",
-        accent: "bg-accent-600 dark:bg-accent-500 text-white",
+        brand: "bg-brand-600 text-white",
+        accent: "bg-accent-600 text-white",
         neutral: "bg-ui-bg-tertiary text-ui-text-primary",
         success: "bg-status-success text-white",
         warning: "bg-status-warning text-white",

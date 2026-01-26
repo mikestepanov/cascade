@@ -51,7 +51,7 @@ export function FocusZone({ task }: FocusZoneProps) {
         aria-label={`Focus task: ${task.title}`}
         className="relative overflow-hidden group border-none shadow-xl bg-gradient-to-br from-brand-600 to-accent-600 text-white p-1"
       >
-        <CardBody className="bg-ui-bg-primary/95 dark:bg-ui-bg-primary/90 backdrop-blur-sm rounded-md p-6">
+        <CardBody className="bg-ui-bg-primary/95 backdrop-blur-sm rounded-md p-6">
           <Flex direction="column" gap="md">
             <Flex justify="between" align="center">
               <Badge variant="primary" className="bg-brand-600 text-white border-none">
@@ -65,7 +65,7 @@ export function FocusZone({ task }: FocusZoneProps) {
             <div>
               <Typography
                 variant="h3"
-                className="text-xl sm:text-2xl font-bold group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors"
+                className="text-xl sm:text-2xl font-bold group-hover:text-brand-600:text-brand-400 transition-colors"
               >
                 {task.title}
               </Typography>
@@ -76,7 +76,7 @@ export function FocusZone({ task }: FocusZoneProps) {
             </div>
 
             <Flex justify="end">
-              <span className="text-sm font-medium text-brand-600 dark:text-brand-400 group-hover:translate-x-1 transition-transform inline-flex items-center gap-1">
+              <span className="text-sm font-medium text-brand-600 group-hover:translate-x-1 transition-transform inline-flex items-center gap-1">
                 View Task <span>→</span>
               </span>
             </Flex>

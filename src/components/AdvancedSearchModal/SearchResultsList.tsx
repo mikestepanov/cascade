@@ -61,7 +61,7 @@ export function SearchResultsList({
 
   return (
     <>
-      <div className="max-h-96 overflow-y-auto divide-y divide-ui-border-secondary dark:divide-ui-border-secondary-dark">
+      <div className="max-h-96 overflow-y-auto divide-y divide-ui-border-secondary">
         {results.map((issue) => (
           <button
             type="button"
@@ -97,7 +97,7 @@ export function SearchResultsList({
           <button
             type="button"
             onClick={onLoadMore}
-            className="w-full px-4 py-2 text-sm font-medium text-brand-600 dark:text-brand-400 bg-brand-50 dark:bg-brand-900/20 hover:bg-brand-100 dark:hover:bg-brand-900/30 rounded-lg transition-colors"
+            className="w-full px-4 py-2 text-sm font-medium text-brand-600 bg-brand-50 hover:bg-brand-100:bg-brand-900/30 rounded-lg transition-colors"
           >
             Load More ({total - results.length} remaining)
           </button>

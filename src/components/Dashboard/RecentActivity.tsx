@@ -70,7 +70,7 @@ export function RecentActivity({ activities }: RecentActivityProps) {
                   <Flex
                     align="center"
                     justify="center"
-                    className="shrink-0 w-8 h-8 rounded-full bg-brand-600/10 dark:bg-brand-400/10 border border-brand-600/20 relative z-10"
+                    className="shrink-0 w-8 h-8 rounded-full bg-brand-600/10 border border-brand-600/20 relative z-10"
                   >
                     <span className="text-sm" aria-hidden="true">
                       {getActionIcon(activity.action)}

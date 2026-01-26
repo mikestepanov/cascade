@@ -134,7 +134,7 @@ export function GoogleCalendarIntegration() {
               </Typography>
               {calendarConnection && (
                 <Flex direction="column" gap="xs" className="mt-2">
-                  <Typography className="text-sm text-status-success dark:text-status-success">
+                  <Typography className="text-sm text-status-success">
                     ✓ Connected to {calendarConnection.providerAccountId}
                   </Typography>
                   {calendarConnection.lastSyncAt && (

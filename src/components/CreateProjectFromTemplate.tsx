@@ -105,11 +105,11 @@ export function CreateProjectFromTemplate({
   const getCategoryColor = (category: string) => {
     switch (category) {
       case "software":
-        return "bg-brand-100 text-brand-800 dark:bg-brand-900 dark:text-brand-200";
+        return "bg-brand-100 text-brand-800";
       case "marketing":
-        return "bg-accent-100 text-accent-800 dark:bg-accent-900 dark:text-accent-200";
+        return "bg-accent-100 text-accent-800";
       case "design":
-        return "bg-accent-100 text-accent-800 dark:bg-accent-900 dark:text-accent-200";
+        return "bg-accent-100 text-accent-800";
       default:
         return "bg-ui-bg-tertiary text-ui-text-secondary";
     }

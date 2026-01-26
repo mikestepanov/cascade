@@ -166,13 +166,13 @@ export function NotificationCenter() {
               <Typography>No notifications</Typography>
             </div>
           ) : (
-            <div className="divide-y divide-ui-border-primary dark:divide-ui-border-primary-dark">
+            <div className="divide-y divide-ui-border-primary">
               {notifications.map((notification) => (
                 <div
                   key={notification._id}
                   className={cn(
-                    "p-4 hover:bg-ui-bg-secondary dark:hover:bg-ui-bg-secondary-dark transition-colors",
-                    !notification.isRead && "bg-status-info-bg dark:bg-brand-900/20",
+                    "p-4 hover:bg-ui-bg-secondary:bg-ui-bg-secondary-dark transition-colors",
+                    !notification.isRead && "bg-status-info-bg",
                   )}
                 >
                   <Flex align="start" gap="md">
@@ -212,7 +212,7 @@ export function NotificationCenter() {
                               <button
                                 type="button"
                                 onClick={() => handleMarkAsRead(notification._id)}
-                                className="p-1 text-brand-600 dark:text-brand-400 hover:bg-brand-100 dark:hover:bg-brand-900/30 rounded"
+                                className="p-1 text-brand-600 hover:bg-brand-100:bg-brand-900/30 rounded"
                                 aria-label="Mark as read"
                               >
                                 <svg
@@ -234,7 +234,7 @@ export function NotificationCenter() {
                             <button
                               type="button"
                               onClick={() => handleDelete(notification._id)}
-                              className="p-1 text-ui-text-tertiary hover:text-status-error dark:hover:text-status-error hover:bg-status-error-bg rounded"
+                              className="p-1 text-ui-text-tertiary hover:text-status-error:text-status-error hover:bg-status-error-bg rounded"
                               aria-label="Delete notification"
                             >
                               <svg

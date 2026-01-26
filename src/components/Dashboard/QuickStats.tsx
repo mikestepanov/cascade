@@ -26,16 +26,16 @@ interface StatCardProps {
 
 const variantStyles = {
   brand: {
-    text: "text-brand-600 dark:text-brand-400",
-    bg: "bg-brand-600 dark:bg-brand-400",
+    text: "text-brand-600",
+    bg: "bg-brand-600",
   },
   success: {
     text: "text-status-success",
     bg: "bg-status-success",
   },
   accent: {
-    text: "text-accent-600 dark:text-accent-400",
-    bg: "bg-accent-600 dark:bg-accent-400",
+    text: "text-accent-600",
+    bg: "bg-accent-600",
   },
 } as const;
 

@@ -84,7 +84,7 @@ export function MarkdownPreviewModal({
             className={cn(
               "px-4 py-2 text-sm font-medium border-b-2 transition-colors",
               activeTab === "preview"
-                ? "border-brand-500 text-brand-600 dark:text-brand-400"
+                ? "border-brand-500 text-brand-600"
                 : "border-transparent text-ui-text-tertiary hover:text-ui-text-secondary",
             )}
           >
@@ -96,7 +96,7 @@ export function MarkdownPreviewModal({
             className={cn(
               "px-4 py-2 text-sm font-medium border-b-2 transition-colors",
               activeTab === "raw"
-                ? "border-brand-500 text-brand-600 dark:text-brand-400"
+                ? "border-brand-500 text-brand-600"
                 : "border-transparent text-ui-text-tertiary hover:text-ui-text-secondary",
             )}
           >
@@ -107,7 +107,7 @@ export function MarkdownPreviewModal({
         {/* Content */}
         <div className="max-h-96 overflow-y-auto border border-ui-border-primary rounded-lg">
           {activeTab === "preview" ? (
-            <div className="p-4 prose dark:prose-invert max-w-none">
+            <div className="p-4 prose max-w-none">
               <ReactMarkdown remarkPlugins={[remarkGfm]}>{markdown}</ReactMarkdown>
             </div>
           ) : (

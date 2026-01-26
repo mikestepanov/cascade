@@ -78,7 +78,7 @@ export function AIAssistantPanel({ projectId, isOpen, onClose }: AIAssistantPane
             className={cn(
               "flex-1 px-4 py-3 font-medium text-sm transition-colors",
               activeTab === "chat"
-                ? "text-brand-600 dark:text-brand-400 border-b-2 border-brand-600 dark:border-brand-400 bg-ui-bg-primary"
+                ? "text-brand-600 border-b-2 border-brand-600 bg-ui-bg-primary"
                 : "text-ui-text-tertiary hover:text-ui-text-primary",
             )}
           >
@@ -95,7 +95,7 @@ export function AIAssistantPanel({ projectId, isOpen, onClose }: AIAssistantPane
             className={cn(
               "flex-1 px-4 py-3 font-medium text-sm transition-colors relative",
               activeTab === "suggestions"
-                ? "text-brand-600 dark:text-brand-400 border-b-2 border-brand-600 dark:border-brand-400 bg-ui-bg-primary"
+                ? "text-brand-600 border-b-2 border-brand-600 bg-ui-bg-primary"
                 : "text-ui-text-tertiary hover:text-ui-text-primary",
             )}
           >

@@ -18,7 +18,7 @@ export function Greeting({ userName, completedCount = 0 }: GreetingProps) {
     <div className="mb-8 animate-in fade-in slide-in-from-top-4 duration-700">
       <Flex direction="column" gap="xs">
         <Typography variant="h1" className="text-3xl sm:text-4xl font-extrabold tracking-tight">
-          {greeting}, <span className="text-brand-600 dark:text-brand-400">{firstName}</span>.
+          {greeting}, <span className="text-brand-600">{firstName}</span>.
         </Typography>
         <Typography variant="lead" color="secondary" className="max-w-2xl">
           {completedCount > 0 ? (

@@ -41,7 +41,7 @@ export function CommentReactions({ commentId, reactions, currentUserId }: Commen
             className={cn(
               "inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-medium transition-all border",
               hasReacted
-                ? "bg-brand-50 border-brand-200 text-brand-700 dark:bg-brand-500/10 dark:border-brand-500/20 dark:text-brand-400"
+                ? "bg-brand-50 border-brand-200 text-brand-700"
                 : "bg-ui-bg-secondary border-ui-border-primary text-ui-text-secondary hover:border-ui-border-secondary",
             )}
           >

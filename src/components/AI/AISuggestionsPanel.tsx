@@ -155,7 +155,7 @@ const SuggestionCard = React.memo(function SuggestionCard({
         <div className="text-2xl shrink-0">{metadata?.icon || "💡"}</div>
         <div className="flex-1 min-w-0">
           <Flex align="center" gap="sm" className="mb-2">
-            <span className="text-xs font-medium px-2 py-1 rounded-full bg-brand-100 dark:bg-brand-900 text-brand-800 dark:text-brand-200">
+            <span className="text-xs font-medium px-2 py-1 rounded-full bg-brand-100 text-brand-800">
               {metadata?.label || suggestion.suggestionType}
             </span>
             <span className="text-xs text-ui-text-tertiary">
@@ -200,11 +200,7 @@ const SuggestionCard = React.memo(function SuggestionCard({
             </Flex>
           )}
           {suggestion.accepted && (
-            <Flex
-              align="center"
-              gap="xs"
-              className="mt-3 text-sm text-status-success dark:text-status-success"
-            >
+            <Flex align="center" gap="xs" className="mt-3 text-sm text-status-success">
               <span>✓</span>
               <span>Accepted</span>
             </Flex>

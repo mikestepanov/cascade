@@ -34,7 +34,7 @@ const STATUS_BADGE_CONFIG: Record<string, StatusBadgeConfig> = {
   scheduled: {
     icon: <Clock className="w-3 h-3 mr-1" />,
     label: "Scheduled",
-    className: "bg-brand-100 text-brand-800 dark:bg-brand-900 dark:text-brand-200",
+    className: "bg-brand-100 text-brand-800",
   },
   joining: {
     icon: <Play className="w-3 h-3 mr-1 animate-pulse" />,
@@ -49,17 +49,17 @@ const STATUS_BADGE_CONFIG: Record<string, StatusBadgeConfig> = {
   processing: {
     icon: <LoadingSpinner size="xs" className="mr-1" />,
     label: "Processing...",
-    className: "bg-accent-100 text-accent-800 dark:bg-accent-900 dark:text-accent-200",
+    className: "bg-accent-100 text-accent-800",
   },
   transcribing: {
     icon: <LoadingSpinner size="xs" className="mr-1" />,
     label: "Processing...",
-    className: "bg-accent-100 text-accent-800 dark:bg-accent-900 dark:text-accent-200",
+    className: "bg-accent-100 text-accent-800",
   },
   summarizing: {
     icon: <LoadingSpinner size="xs" className="mr-1" />,
     label: "Processing...",
-    className: "bg-accent-100 text-accent-800 dark:bg-accent-900 dark:text-accent-200",
+    className: "bg-accent-100 text-accent-800",
   },
   completed: {
     icon: <CheckCircle className="w-3 h-3 mr-1" />,
@@ -127,7 +127,7 @@ function NoRecordingState({
 
 function ScheduledState({ onCancel }: { onCancel: () => void }) {
   return (
-    <div className="bg-brand-50 dark:bg-brand-900/20 rounded-lg p-4">
+    <div className="bg-brand-50 rounded-lg p-4">
       <Flex justify="between" align="center">
         <div>
           <Typography variant="p" className="font-medium text-ui-text-primary">
@@ -421,7 +421,7 @@ function RecordingResults({ recordingId }: { recordingId: Id<"meetingRecordings"
           <button
             type="button"
             onClick={() => setShowTranscript(!showTranscript)}
-            className="flex items-center gap-2 text-sm text-brand-600 hover:text-brand-700 dark:text-brand-400"
+            className="flex items-center gap-2 text-sm text-brand-600 hover:text-brand-700"
           >
             <FileText className="w-4 h-4" />
             {showTranscript ? "Hide Transcript" : "Show Full Transcript"}
