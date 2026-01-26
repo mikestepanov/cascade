@@ -51,7 +51,11 @@ export function ImportPanel({ projectId, onImportComplete }: ImportPanelProps) {
     setIsImporting(true);
 
     try {
-      let result: { imported: number; failed: number; errors?: string[] };
+      let result: {
+        imported: number;
+        failed: number;
+        errors?: { row?: number; title?: string; error: string }[];
+      };
 
       if (importFormat === "csv") {
         result = await importCSV({ projectId, csvData: importData });

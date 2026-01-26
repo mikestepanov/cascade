@@ -10,10 +10,10 @@ import {
   Users,
 } from "lucide-react";
 import type React from "react";
+import { UserMenu } from "@/components/UserMenu";
 import { Button } from "@/components/ui/Button";
-import { TooltipProvider } from "@/components/ui/tooltip";
+import { TooltipProvider } from "@/components/ui/Tooltip";
 import { ROUTES } from "@/config/routes";
-import { UserButton } from "@/features/auth/components/user-button";
 import { cn } from "@/lib/utils";
 import { SidebarProvider, useSidebar } from "./SidebarContext";
 import { SidebarItem } from "./SidebarItem";
@@ -72,7 +72,7 @@ function SidebarContent() {
         </Button>
 
         <div className="pt-2 flex justify-center">
-          <UserButton />
+          <UserMenu />
         </div>
       </div>
     </div>

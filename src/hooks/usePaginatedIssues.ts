@@ -76,10 +76,13 @@ export function usePaginatedIssues({
 
   const totalCount = useMemo(() => {
     if (!countsData) return 0;
-    if (status && countsData.byStatus?.total) {
-      return countsData.byStatus.total[status] || 0;
+
+    if (status) {
+      return countsData[status]?.total || 0;
     }
-    return countsData.total || 0;
+
+    // Sum all totals from the record values
+    return Object.values(countsData).reduce((acc, curr) => acc + (curr.total || 0), 0);
   }, [countsData, status]);
 
   const loadMore = useCallback(() => {

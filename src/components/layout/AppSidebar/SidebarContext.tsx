@@ -63,8 +63,8 @@ export function SidebarProvider({ children }: { children: React.ReactNode }) {
   }, [state, isMobile]);
 
   // Keyboard shortcut `[` to toggle
-  const toggleMobileMenu = () => setIsOpenMobile((prev) => !prev);
-  const closeMobileMenu = () => setIsOpenMobile(false);
+  const toggleMobileMenu = useCallback(() => setIsOpenMobile((prev) => !prev), []);
+  const closeMobileMenu = useCallback(() => setIsOpenMobile(false), []);
 
   const toggleSidebar = useCallback(() => {
     if (isMobile) {
@@ -72,7 +72,7 @@ export function SidebarProvider({ children }: { children: React.ReactNode }) {
     } else {
       setState((prev) => (prev === "expanded" ? "collapsed" : "expanded"));
     }
-  }, [isMobile]);
+  }, [isMobile, toggleMobileMenu]);
 
   // Keyboard shortcut `[` to toggle
   useEffect(() => {

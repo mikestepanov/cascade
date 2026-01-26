@@ -30,10 +30,12 @@ describe("Internal AI", () => {
       // Actually internal.ai.createChat takes a string userId which is expected to match _id.
       // But it queries by string equality on _id.
 
-      // Let's just pass a random string that won't match any user
+      const userId = await createTestUser(t);
+      await t.run(async (ctx) => ctx.db.delete(userId));
+
       await expect(async () => {
         await t.mutation(internal.internal.ai.createChat, {
-          userId: "non-existent-user",
+          userId,
           title: "Fail Chat",
         });
       }).rejects.toThrow("User not found");

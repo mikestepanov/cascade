@@ -1,6 +1,6 @@
 import { Link, useLocation } from "@tanstack/react-router";
 import type React from "react";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { TooltipContent, TooltipRoot, TooltipTrigger } from "@/components/ui/Tooltip";
 import { cn } from "@/lib/utils";
 import { useSidebar } from "./SidebarContext";
 
@@ -20,6 +20,7 @@ export function SidebarItem({ icon: Icon, label, to, active, onClick, badge }: S
 
   const content = (
     <button
+      type="button"
       onClick={onClick}
       className={cn(
         "flex items-center w-full rounded-md transition-all duration-200 group relative",
@@ -62,7 +63,7 @@ export function SidebarItem({ icon: Icon, label, to, active, onClick, badge }: S
   // If collapsed, wrap in Tooltip
   if (state === "collapsed") {
     return (
-      <Tooltip delayDuration={0}>
+      <TooltipRoot delayDuration={0}>
         <TooltipTrigger asChild>{wrappedContent}</TooltipTrigger>
         <TooltipContent
           side="right"
@@ -71,7 +72,7 @@ export function SidebarItem({ icon: Icon, label, to, active, onClick, badge }: S
           {label}
           {badge && <span className="text-xs opacity-70">{badge}</span>}
         </TooltipContent>
-      </Tooltip>
+      </TooltipRoot>
     );
   }
 
