@@ -140,7 +140,7 @@ export function FileAttachments({ issueId }: FileAttachmentsProps) {
         className={cn(
           "border-2 border-dashed rounded-lg p-6 text-center transition-colors",
           dragOver
-            ? "border-brand-500 bg-brand-50 dark:bg-brand-950"
+            ? "border-brand-500 bg-brand-50"
             : "border-ui-border-primary hover:border-ui-border-secondary",
         )}
       >
