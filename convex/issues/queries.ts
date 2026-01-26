@@ -1161,9 +1161,27 @@ export const listIssuesByDateRange = authenticatedQuery({
       if (!sprint || sprint.projectId !== args.projectId) {
         throw forbidden("Sprint not found in this project");
       }
+
+      // Optimization: Fetch all issues in the sprint and filter by date in memory.
+      // Sprints are typically small (<200 issues), whereas finding all issues in the project
+      // within a date range could return thousands of items, most of which are not in the sprint.
+      const sprintIssues = await safeCollect(
+        ctx.db
+          .query("issues")
+          .withIndex("by_project_sprint_status", (q) =>
+            q.eq("projectId", args.projectId).eq("sprintId", args.sprintId as Id<"sprints">),
+          )
+          .filter(notDeleted),
+        BOUNDED_LIST_LIMIT,
+        "sprint issues by date",
+      );
+
+      return sprintIssues
+        .filter((i) => i.dueDate !== undefined && i.dueDate >= args.from && i.dueDate <= args.to)
+        .sort((a, b) => (a.dueDate ?? 0) - (b.dueDate ?? 0));
     }
 
-    // Bounded: calendar date range queries limited to prevent large result sets
+    // Fallback: Use date range index for project-wide query
     const issues = await safeCollect(
       ctx.db
         .query("issues")
@@ -1175,14 +1193,9 @@ export const listIssuesByDateRange = authenticatedQuery({
       "issues by date range",
     );
 
-    // If sprintId is provided, filter in memory
-    const filteredIssues = args.sprintId
-      ? issues.filter((i) => i.sprintId === args.sprintId)
-      : issues;
-
     // Optimization: Return raw issues instead of enriching them.
     // CalendarView only uses basic fields (title, status, priority) and does not display
     // assignee, reporter, or labels, so we skip the expensive enrichment (N+1 lookups).
-    return filteredIssues;
+    return issues;
   },
 });
