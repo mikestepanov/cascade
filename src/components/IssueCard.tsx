@@ -138,9 +138,27 @@ export const IssueCard = memo(function IssueCard({
             </Typography>
           ))}
           {issue.labels.length > 3 && (
-            <Typography variant="small" color="secondary" className="px-1.5 py-0.5 border-none">
-              +{issue.labels.length - 3}
-            </Typography>
+            <Tooltip
+              content={issue.labels
+                .slice(3)
+                .map((l) => l.name)
+                .join(", ")}
+            >
+              {/* biome-ignore lint/a11y/useSemanticElements: Nested buttons are invalid, using span with role="button" */}
+              <span
+                tabIndex={0}
+                role="button"
+                className="inline-flex rounded-md focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-brand-500"
+              >
+                <Typography
+                  variant="small"
+                  color="secondary"
+                  className="px-1.5 py-0.5 border-none cursor-help"
+                >
+                  +{issue.labels.length - 3}
+                </Typography>
+              </span>
+            </Tooltip>
           )}
         </Flex>
       )}
