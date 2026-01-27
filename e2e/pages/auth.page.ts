@@ -235,9 +235,18 @@ export class AuthPage extends BasePage {
     await this.expandEmailForm();
     await this.emailInput.fill(email);
     await this.passwordInput.fill(password);
+
+    // Ensure form is ready before clicking submit
+    await this.waitForFormReady();
+
+    // Wait for button to be enabled
+    await expect(this.signUpButton).toBeEnabled({ timeout: 5000 });
+
+    // Click the submit button
     await this.signUpButton.click();
-    // Wait for form submission - button may become disabled or form may transition
-    await this.page.waitForTimeout(1000);
+
+    // Wait for form submission to complete (verification form or error)
+    await this.page.waitForTimeout(3000);
   }
 
   async navigateToSignUp() {

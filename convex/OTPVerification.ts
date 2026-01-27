@@ -85,9 +85,24 @@ export const OTPVerification = Resend({
       });
 
       if (!result.success) {
+        // For test emails, don't fail on email send errors (e.g., Mailtrap rate limiting)
+        // E2E tests can retrieve the OTP via /e2e/get-latest-otp endpoint instead
+        const isTestEmail = email.endsWith("@inbox.mailtrap.io");
+        if (isTestEmail) {
+          console.warn(
+            `[OTPVerification] Email send failed for test user, continuing: ${result.error}`,
+          );
+          return; // Don't throw - OTP is already stored in DB
+        }
         throw new Error(`Could not send verification email: ${result.error}`);
       }
     } catch (err) {
+      // For test emails, don't fail on email send errors
+      const isTestEmail = email.endsWith("@inbox.mailtrap.io");
+      if (isTestEmail) {
+        console.warn(`[OTPVerification] Email send failed for test user, continuing: ${err}`);
+        return; // Don't throw - OTP is already stored in DB
+      }
       // Fail fast so users aren't stuck without a verification code.
       throw err instanceof Error ? err : new Error("Could not send verification email");
     }
