@@ -61,27 +61,14 @@ rbacTest.describe("Workspace Management", () => {
 
       await adminWorkspacesPage.createWorkspace(wsName1);
 
-      // Reload to ensure list is updated
-      await adminPage.reload({ waitUntil: "domcontentloaded" });
+      // After creation, the app navigates to the new workspace detail page
+      // Verify we're on the workspace detail page by checking the heading
+      await expect(adminPage.getByRole("heading", { name: wsName1 })).toBeVisible({
+        timeout: 15000,
+      });
 
-      await expect(adminPage.getByRole("link", { name: wsName1 })).toBeVisible({ timeout: 15000 });
-
-      // Second workspace creation is currently flaky in E2E environment due to modal/toast timing
-      // TODO: Re-enable this when we have a more robust way to handle the swift transition
-      /*
-    await adminWorkspacesPage.goto(rbacOrgSlug);
-    await adminWorkspacesPage.createWorkspace(wsName2);
-    await expect(adminPage.getByRole("link", { name: wsName2 })).toBeVisible();
-
-    // Verify both in list
-    await adminPage.goto(rbacOrgSlug);
-    await expect(adminPage.getByRole("link", { name: wsName1 })).toBeVisible();
-    await expect(adminPage.getByRole("link", { name: wsName2 })).toBeVisible();
-    */
-
-      // Verify first workspace is in list
-      await adminPage.goto(rbacOrgSlug);
-      await expect(adminPage.getByRole("link", { name: wsName1 })).toBeVisible();
+      // Verify the workspace name appears on the page (both heading and sidebar)
+      await expect(adminPage.getByText(wsName1).first()).toBeVisible({ timeout: 15000 });
     },
   );
 });

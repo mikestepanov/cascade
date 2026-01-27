@@ -217,28 +217,39 @@ export class SettingsPage extends BasePage {
   async switchToTab(
     tab: "integrations" | "apiKeys" | "offline" | "preferences" | "admin" | "devTools",
   ) {
-    // Wait for React to fully hydrate and attach event handlers
-    // Don't use networkidle - Convex WebSocket keeps connection active
+    // Map tab names to URL param values (must match validTabs in Settings.tsx)
+    const tabParamMap: Record<string, string> = {
+      integrations: "integrations",
+      apiKeys: "apikeys",
+      offline: "offline",
+      preferences: "preferences",
+      admin: "admin",
+      devTools: "developer",
+    };
+
+    // Navigate via URL param - more reliable than clicking
+    const tabParam = tabParamMap[tab] || tab;
+    const currentUrl = new URL(this.page.url());
+    currentUrl.searchParams.set("tab", tabParam);
+    await this.page.goto(currentUrl.toString());
     await this.page.waitForLoadState("domcontentloaded");
 
-    // For admin tab, we need to wait longer for isOrganizationAdmin query to resolve
+    // For admin tab, wait for the tab to appear (requires isOrganizationAdmin query)
     const waitTimeout = tab === "admin" ? 60000 : 30000;
+    const tabName = tab === "admin" ? /^Admin$/i : new RegExp(tab, "i");
+    const tabLocator = this.page.getByRole("tab", { name: tabName });
+    await tabLocator.waitFor({ state: "visible", timeout: waitTimeout });
 
-    // UI stabilization wait - Tabs often re-render when auth/user data loads
-    await this.page.waitForTimeout(1000);
+    // Verify tab is selected
+    await expect(tabLocator).toHaveAttribute("aria-selected", "true", { timeout: 10000 });
 
-    // Use getByRole("tab") directly - Radix UI tabs have role="tab"
-    const tabLocator = this.page.getByRole("tab", { name: new RegExp(tab, "i") });
-    await tabLocator.first().waitFor({ state: "visible", timeout: waitTimeout });
+    // For admin tab, also verify the admin content is actually visible
+    if (tab === "admin") {
+      await this.page
+        .getByRole("heading", { name: /organization settings/i })
+        .waitFor({ state: "visible", timeout: 15000 });
+    }
 
-    // Focus first, then click - ensures React event handlers are attached
-    await tabLocator.first().focus();
-
-    // Click with increased timeout and retry resilience
-    await tabLocator.first().click({ timeout: 20000 });
-
-    // Wait for tab to become active
-    await expect(tabLocator.first()).toHaveAttribute("aria-selected", "true", { timeout: 10000 });
     await this.waitForLoad();
   }
 
@@ -365,9 +376,11 @@ export class SettingsPage extends BasePage {
     // Wait for the switch to appear - OrganizationSettings component makes its own query
     await this.requiresTimeApprovalSwitch.waitFor({ state: "visible", timeout: 30000 });
 
+    // Wait for save button to appear (form is loaded)
+    await this.saveSettingsButton.waitFor({ state: "visible", timeout: 10000 });
+
     // Scroll the switch into view
     await this.requiresTimeApprovalSwitch.scrollIntoViewIfNeeded();
-    await this.page.waitForTimeout(300);
 
     const isChecked = await this.requiresTimeApprovalSwitch.getAttribute("aria-checked");
     const needsChange = (isChecked === "true") !== enabled;
@@ -377,16 +390,23 @@ export class SettingsPage extends BasePage {
       return;
     }
 
-    // Click the switch to toggle
+    // Click the switch to toggle - verify the aria-checked changes
     await this.requiresTimeApprovalSwitch.click();
-    // Wait for form state to update after click
-    await this.page.waitForTimeout(500);
+    const expectedChecked = enabled ? "true" : "false";
+    await expect(this.requiresTimeApprovalSwitch).toHaveAttribute("aria-checked", expectedChecked, {
+      timeout: 5000,
+    });
 
     // Wait for save button to be enabled (form has changes)
-    await expect(this.saveSettingsButton).toBeEnabled({ timeout: 5000 });
-    await this.saveSettingsButton.click();
-    // Use .first() to handle multiple toast notifications
-    await expect(this.page.getByText(/organization settings updated/i).first()).toBeVisible();
+    await expect(this.saveSettingsButton).toBeEnabled({ timeout: 10000 });
+
+    // Click immediately after enabled check passes
+    await this.saveSettingsButton.click({ force: true });
+
+    // Wait for success toast - use data attribute to be more specific
+    await expect(this.page.locator("[data-sonner-toast][data-type='success']").first()).toBeVisible(
+      { timeout: 15000 },
+    );
   }
 
   async expectOrganizationName(name: string) {

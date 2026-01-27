@@ -76,14 +76,16 @@ export class WorkspacesPage extends BasePage {
   async createWorkspace(name: string, description?: string) {
     // Wait for page to be stable first
     await this.page.waitForLoadState("domcontentloaded");
-    await this.page.waitForTimeout(1000);
 
-    // Wait for button to be ready
-    await this.newWorkspaceButton.waitFor({ state: "visible", timeout: 10000 });
+    // Wait for button to be ready - use first() to get the header button (not empty state)
+    const createButton = this.newWorkspaceButton.first();
+    await createButton.waitFor({ state: "visible", timeout: 10000 });
 
-    // Scroll button into view and click using evaluate to bypass any overlays
-    await this.newWorkspaceButton.scrollIntoViewIfNeeded();
-    await this.newWorkspaceButton.click({ timeout: 10000 });
+    // Scroll into view
+    await createButton.scrollIntoViewIfNeeded();
+
+    // Use JavaScript click to ensure React event handler fires
+    await createButton.evaluate((el: HTMLElement) => el.click());
 
     // Wait for modal dialog to appear
     const modal = this.page.getByRole("dialog");
@@ -109,8 +111,12 @@ export class WorkspacesPage extends BasePage {
     await this.submitWorkspaceButton.click({ force: true });
 
     // Wait for success toast to appear - this confirms the mutation completed
+    // Use .first() to handle multiple matching elements (toast container + text inside)
     await expect(
-      this.page.getByText(/workspace created/i).or(this.page.locator("[data-sonner-toast]")),
+      this.page
+        .getByText(/workspace created/i)
+        .or(this.page.locator("[data-sonner-toast]"))
+        .first(),
     ).toBeVisible({ timeout: 15000 });
 
     // Wait for modal to close (name input disappears)
