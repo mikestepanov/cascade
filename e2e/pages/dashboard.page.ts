@@ -90,26 +90,28 @@ export class DashboardPage extends BasePage {
   constructor(page: Page, orgSlug: string) {
     super(page, orgSlug);
 
-    // Navigation tabs - TanStack Router uses links, not buttons
+    // Navigation tabs - in the org-specific inner sidebar (navigation role)
+    // Use navigation landmark to scope to the correct sidebar
+    const navSidebar = page.getByRole("navigation");
     this.dashboardTab = page
       .locator("[data-tour='nav-dashboard']")
-      .or(page.getByRole("link", { name: /^dashboard$/i }));
+      .or(navSidebar.getByRole("link", { name: /^dashboard$/i }));
     this.documentsTab = page
       .locator("[data-tour='nav-documents']")
-      .or(page.getByRole("link", { name: /^documents$/i }));
-    // Projects tab - in the main sidebar nav
+      .or(navSidebar.getByRole("link", { name: /^documents$/i }));
+    // Projects/Workspaces - the inner nav may have "Workspaces" instead of "Projects"
     this.projectsTab = page
       .locator("[data-tour='nav-projects']")
-      .or(page.getByRole("link", { name: /^projects$/i }));
+      .or(navSidebar.getByRole("link", { name: /^workspaces$/i }));
     this.timesheetTab = page
       .locator("[data-tour='nav-timesheet']")
-      .or(page.getByRole("link", { name: /timesheet/i }));
+      .or(navSidebar.getByRole("link", { name: /time tracking/i }));
     this.calendarTab = page
       .locator("[data-tour='nav-calendar']")
-      .or(page.getByRole("link", { name: /calendar/i }));
+      .or(navSidebar.getByRole("link", { name: /^calendar$/i }));
     this.settingsTab = page
       .locator("[data-tour='nav-settings']")
-      .or(page.getByRole("link", { name: /settings/i }));
+      .or(navSidebar.getByRole("link", { name: /^settings$/i }));
 
     // Header actions - using aria-labels for accessibility
     this.mobileMenuButton = page.getByRole("button", { name: /toggle sidebar menu/i });
@@ -132,8 +134,8 @@ export class DashboardPage extends BasePage {
     this.darkThemeButton = page.getByRole("button", { name: /switch to dark theme/i });
     this.systemThemeButton = page.getByRole("button", { name: /switch to system theme/i });
 
-    // Content areas
-    this.mainContent = page.getByRole("main");
+    // Content areas - use last() to get innermost main element (nested layout)
+    this.mainContent = page.getByRole("main").last();
     this.sidebar = page.locator("[data-tour='sidebar']");
     this.loadingSpinner = page.locator(".animate-spin");
 
