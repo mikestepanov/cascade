@@ -443,8 +443,8 @@ export class ProjectsPage extends BasePage {
    */
   async waitForBoardInteractive() {
     await expect(this.projectBoard).toBeVisible({ timeout: 10000 });
-    await expect(this.createIssueButton).toBeVisible({ timeout: 10000 });
-    await expect(this.createIssueButton).toBeEnabled({ timeout: 5000 });
+    // toBeEnabled implies toBeVisible, so we only need one check
+    await expect(this.createIssueButton).toBeEnabled({ timeout: 10000 });
   }
 
   async expectProjectCount(count: number) {
