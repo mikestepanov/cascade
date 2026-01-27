@@ -357,19 +357,36 @@ export class SettingsPage extends BasePage {
       await this.organizationNameInput.fill(name);
     }
     await this.saveSettingsButton.click();
-    await expect(this.page.getByText(/organization settings updated/i)).toBeVisible();
+    // Use .first() to handle multiple toast notifications
+    await expect(this.page.getByText(/organization settings updated/i).first()).toBeVisible();
   }
 
   async toggleTimeApproval(enabled: boolean) {
     // Wait for the switch to appear - OrganizationSettings component makes its own query
     await this.requiresTimeApprovalSwitch.waitFor({ state: "visible", timeout: 30000 });
 
+    // Scroll the switch into view
+    await this.requiresTimeApprovalSwitch.scrollIntoViewIfNeeded();
+    await this.page.waitForTimeout(300);
+
     const isChecked = await this.requiresTimeApprovalSwitch.getAttribute("aria-checked");
-    if ((isChecked === "true") !== enabled) {
-      await this.requiresTimeApprovalSwitch.click();
+    const needsChange = (isChecked === "true") !== enabled;
+
+    if (!needsChange) {
+      // Already in desired state, nothing to do
+      return;
     }
+
+    // Click the switch to toggle
+    await this.requiresTimeApprovalSwitch.click();
+    // Wait for form state to update after click
+    await this.page.waitForTimeout(500);
+
+    // Wait for save button to be enabled (form has changes)
+    await expect(this.saveSettingsButton).toBeEnabled({ timeout: 5000 });
     await this.saveSettingsButton.click();
-    await expect(this.page.getByText(/organization settings updated/i)).toBeVisible();
+    // Use .first() to handle multiple toast notifications
+    await expect(this.page.getByText(/organization settings updated/i).first()).toBeVisible();
   }
 
   async expectOrganizationName(name: string) {

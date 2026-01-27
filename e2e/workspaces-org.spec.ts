@@ -27,14 +27,21 @@ rbacTest.describe("Organization Management", () => {
     await adminSettingsPage.goto(rbacOrgSlug);
     await adminSettingsPage.switchToTab("admin");
 
-    // Toggle on
+    // First, ensure we're in a known state by toggling OFF
+    await adminSettingsPage.toggleTimeApproval(false);
+    await expect(adminSettingsPage.requiresTimeApprovalSwitch).toHaveAttribute(
+      "aria-checked",
+      "false",
+    );
+
+    // Now toggle ON
     await adminSettingsPage.toggleTimeApproval(true);
     await expect(adminSettingsPage.requiresTimeApprovalSwitch).toHaveAttribute(
       "aria-checked",
       "true",
     );
 
-    // Toggle off
+    // Toggle OFF again to restore original state
     await adminSettingsPage.toggleTimeApproval(false);
     await expect(adminSettingsPage.requiresTimeApprovalSwitch).toHaveAttribute(
       "aria-checked",

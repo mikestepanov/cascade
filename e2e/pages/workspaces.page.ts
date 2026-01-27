@@ -74,12 +74,30 @@ export class WorkspacesPage extends BasePage {
   }
 
   async createWorkspace(name: string, description?: string) {
-    await this.newWorkspaceButton.click({ force: true });
+    // Wait for page to be stable first
+    await this.page.waitForLoadState("domcontentloaded");
+    await this.page.waitForTimeout(1000);
 
-    // Wait for modal to be stable - description input often loads or re-renders
+    // Wait for button to be ready
+    await this.newWorkspaceButton.waitFor({ state: "visible", timeout: 10000 });
+
+    // Scroll button into view and click using evaluate to bypass any overlays
+    await this.newWorkspaceButton.scrollIntoViewIfNeeded();
+    await this.newWorkspaceButton.click({ timeout: 10000 });
+
+    // Wait for modal dialog to appear
+    const modal = this.page.getByRole("dialog");
+    await modal.waitFor({ state: "visible", timeout: 15000 });
+
+    // Wait for input to be visible and stable
     await this.workspaceNameInput.waitFor({ state: "visible", timeout: 10000 });
+    await this.page.waitForTimeout(500);
 
+    // Fill with name
     await this.workspaceNameInput.fill(name);
+
+    // Verify the value was filled correctly
+    await expect(this.workspaceNameInput).toHaveValue(name, { timeout: 5000 });
 
     if (description) {
       await this.workspaceDescriptionInput.waitFor({ state: "visible", timeout: 10000 });

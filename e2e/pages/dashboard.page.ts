@@ -380,18 +380,23 @@ export class DashboardPage extends BasePage {
   }
 
   async closeGlobalSearch() {
-    await expect(async () => {
-      if (!(await this.globalSearchModal.isVisible())) return;
-      await this.globalSearchInput.click().catch(() => {});
-      await this.page.keyboard.press("Escape");
+    // If modal is not visible, nothing to close
+    if (!(await this.globalSearchModal.isVisible().catch(() => false))) {
+      return;
+    }
 
-      // Fallback: click top-left corner (backdrop) if escape fails
-      if (await this.globalSearchModal.isVisible()) {
-        await this.page.mouse.click(0, 0);
-      }
+    // Try pressing Escape to close
+    await this.page.keyboard.press("Escape");
+    await this.page.waitForTimeout(500);
 
-      await expect(this.globalSearchModal).not.toBeVisible({ timeout: 2000 });
-    }).toPass({ timeout: 10000 });
+    // If still visible, click outside to close
+    if (await this.globalSearchModal.isVisible().catch(() => false)) {
+      await this.page.mouse.click(10, 10);
+      await this.page.waitForTimeout(500);
+    }
+
+    // Verify closed
+    await expect(this.globalSearchModal).not.toBeVisible({ timeout: 5000 });
   }
 
   // ===================
