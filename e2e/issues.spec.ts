@@ -48,12 +48,10 @@ test.describe("Issues", () => {
       // Create a project
       await projectsPage.createProject(`Project ${uniqueId}`, projectKey);
 
-      // Verify board loaded
-      await projectsPage.expectBoardVisible();
+      // Wait for board to be fully interactive
+      await projectsPage.waitForBoardInteractive();
 
       // Create an issue
-      // We need to wait for the board to be fully interactive
-      await page.waitForTimeout(1000);
       await projectsPage.createIssue(issueTitle);
 
       // Verify modal closes
@@ -63,8 +61,8 @@ test.describe("Issues", () => {
       // Switch to Backlog tab to verify
       await projectsPage.switchToTab("backlog");
 
-      // Wait for backlog board to fully render
-      await page.waitForTimeout(2000);
+      // Wait for backlog view to load
+      await projectsPage.waitForBoardInteractive();
 
       // Verify issue appears in backlog
       const issueCard = projectsPage.getIssueCard(issueTitle);
@@ -85,11 +83,10 @@ test.describe("Issues", () => {
       // Create a project
       await projectsPage.createProject(`Project ${uniqueId}`, projectKey);
 
-      // Verify board loaded
-      await projectsPage.expectBoardVisible();
+      // Wait for board to be fully interactive
+      await projectsPage.waitForBoardInteractive();
 
       // Create an issue
-      await page.waitForTimeout(1000);
       await projectsPage.createIssue(issueTitle);
       await expect(projectsPage.createIssueModal).not.toBeVisible({ timeout: 5000 });
 
@@ -100,7 +97,7 @@ test.describe("Issues", () => {
       await expect(projectsPage.issueDetailDialog).toBeVisible({ timeout: 5000 });
     });
 
-    test("issue detail shows timer controls", async ({ projectsPage, page }) => {
+    test("issue detail shows timer controls", async ({ projectsPage }) => {
       // Create project first
       const uniqueId = Date.now().toString();
       const projectKey = `PROJ${uniqueId.slice(-4)}`;
@@ -112,11 +109,10 @@ test.describe("Issues", () => {
       // Create a project
       await projectsPage.createProject(`Project ${uniqueId}`, projectKey);
 
-      // Verify board loaded
-      await projectsPage.expectBoardVisible();
+      // Wait for board to be fully interactive
+      await projectsPage.waitForBoardInteractive();
 
       // Create an issue
-      await page.waitForTimeout(1000);
       await projectsPage.createIssue(issueTitle);
       await expect(projectsPage.createIssueModal).not.toBeVisible({ timeout: 5000 });
 
@@ -125,9 +121,6 @@ test.describe("Issues", () => {
 
       // Verify timer controls
       await expect(projectsPage.startTimerButton).toBeVisible({ timeout: 5000 });
-      await page.waitForTimeout(1000);
-
-      // Timer start button should be visible
     });
   });
 });

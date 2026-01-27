@@ -15,6 +15,7 @@ import { Typography } from "./ui/Typography";
 import { VersionHistory } from "./VersionHistory";
 import "@blocknote/core/fonts/inter.css";
 import "@blocknote/mantine/style.css";
+import { Button } from "@/components/ui/Button";
 import { Flex } from "@/components/ui/Flex";
 
 interface DocumentEditorProps {
@@ -35,7 +36,8 @@ export function DocumentEditor({ documentId }: DocumentEditorProps) {
   const sync = useBlockNoteSync<BlockNoteEditor>(api.prosemirror, documentId);
   const versionCount = useQuery(api.documentVersions.getVersionCount, { documentId });
 
-  if (!(document && userId)) {
+  // Loading state - queries haven't returned yet
+  if (document === undefined || userId === undefined) {
     return (
       <Flex direction="column" className="h-full bg-ui-bg-primary">
         {/* Document Header Skeleton */}
@@ -59,6 +61,36 @@ export function DocumentEditor({ documentId }: DocumentEditorProps) {
             <SkeletonText lines={8} />
           </div>
         </div>
+      </Flex>
+    );
+  }
+
+  // Document not found
+  if (document === null) {
+    return (
+      <Flex align="center" justify="center" className="h-full">
+        <div className="text-center">
+          <Typography variant="h2" className="text-xl font-semibold mb-2">
+            Document Not Found
+          </Typography>
+          <Typography className="text-ui-text-secondary mb-4">
+            This document doesn't exist or you don't have access to it.
+          </Typography>
+          <Button variant="outline" onClick={() => window.history.back()}>
+            Go back
+          </Button>
+        </div>
+      </Flex>
+    );
+  }
+
+  // User not authenticated (shouldn't happen but handle gracefully)
+  if (!userId) {
+    return (
+      <Flex align="center" justify="center" className="h-full">
+        <Typography className="text-ui-text-secondary">
+          Please sign in to view this document.
+        </Typography>
       </Flex>
     );
   }

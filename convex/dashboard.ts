@@ -38,6 +38,11 @@ export const getMyIssues = authenticatedQuery({
     ),
     isDone: v.boolean(),
     continueCursor: v.string(),
+    // Convex pagination internal fields (added in recent versions)
+    pageStatus: v.optional(
+      v.union(v.literal("SplitRecommended"), v.literal("SplitRequired"), v.null()),
+    ),
+    splitCursor: v.optional(v.union(v.string(), v.null())),
   }),
   handler: async (ctx, args) => {
     const paginationOpts = args.paginationOpts || { numItems: 20, cursor: null };
@@ -99,6 +104,9 @@ export const getMyCreatedIssues = authenticatedQuery({
       ...issuesFields,
       _id: v.id("issues"),
       _creationTime: v.number(),
+      projectName: v.string(),
+      projectKey: v.string(),
+      assigneeName: v.string(),
     }),
   ),
   handler: async (ctx) => {

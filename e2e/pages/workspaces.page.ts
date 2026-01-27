@@ -74,13 +74,32 @@ export class WorkspacesPage extends BasePage {
   }
 
   async createWorkspace(name: string, description?: string) {
-    await this.newWorkspaceButton.click({ force: true });
+    // Wait for page to be stable first
+    await this.page.waitForLoadState("domcontentloaded");
 
-    // Wait for modal to be stable - description input often loads or re-renders
+    // Wait for button to be ready - use first() to get the header button (not empty state)
+    const createButton = this.newWorkspaceButton.first();
+    await createButton.waitFor({ state: "visible", timeout: 10000 });
+
+    // Scroll into view
+    await createButton.scrollIntoViewIfNeeded();
+
+    // Use JavaScript click to ensure React event handler fires
+    await createButton.evaluate((el: HTMLElement) => el.click());
+
+    // Wait for modal dialog to appear
+    const modal = this.page.getByRole("dialog");
+    await modal.waitFor({ state: "visible", timeout: 15000 });
+
+    // Wait for input to be visible and stable
     await this.workspaceNameInput.waitFor({ state: "visible", timeout: 10000 });
-    // await this.workspaceDescriptionInput.waitFor({ state: "visible", timeout: 10000 });
+    await this.page.waitForTimeout(500);
 
+    // Fill with name
     await this.workspaceNameInput.fill(name);
+
+    // Verify the value was filled correctly
+    await expect(this.workspaceNameInput).toHaveValue(name, { timeout: 5000 });
 
     if (description) {
       await this.workspaceDescriptionInput.waitFor({ state: "visible", timeout: 10000 });
@@ -90,6 +109,15 @@ export class WorkspacesPage extends BasePage {
     }
 
     await this.submitWorkspaceButton.click({ force: true });
+
+    // Wait for success toast to appear - this confirms the mutation completed
+    // Use .first() to handle multiple matching elements (toast container + text inside)
+    await expect(
+      this.page
+        .getByText(/workspace created/i)
+        .or(this.page.locator("[data-sonner-toast]"))
+        .first(),
+    ).toBeVisible({ timeout: 15000 });
 
     // Wait for modal to close (name input disappears)
     await expect(this.workspaceNameInput).not.toBeVisible({ timeout: 15000 });

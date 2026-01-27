@@ -8,13 +8,14 @@
  * See: https://github.com/get-convex/convex-auth/issues
  */
 
-import type { QueryCtx } from "../_generated/server";
+import type { ActionCtx, QueryCtx } from "../_generated/server";
 
 /**
  * Context type that Convex Auth passes to email provider callbacks.
- * This is effectively a QueryCtx with full database read access.
+ * Despite the QueryCtx type, the actual runtime context is an ActionCtx
+ * (EnrichedActionCtx from convex-auth), which has runMutation capability.
  *
  * The Convex Auth library passes this context to sendVerificationRequest,
  * but the @auth/core types don't include it in the function signature.
  */
-export type ConvexAuthContext = QueryCtx;
+export type ConvexAuthContext = QueryCtx & Partial<Pick<ActionCtx, "runMutation">>;

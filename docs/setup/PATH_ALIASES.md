@@ -19,7 +19,7 @@ We have two path aliases configured in both `tsconfig.app.json` and `vite.config
 // Frontend imports
 import { Button } from "@/components/ui/Button";
 import { ROUTES } from "@/config/routes";
-import { useCompany } from "@/hooks/useCompanyContext";
+import { useOrganization } from "@/hooks/useOrganization";
 import { cn } from "@/lib/utils";
 
 // Backend imports (from frontend)

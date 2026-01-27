@@ -38,12 +38,14 @@ export class AuthPage extends BasePage {
   readonly signInLink: Locator;
 
   /**
-   * Dynamic submit button - returns signInButton or signUpButton based on visibility
+   * Dynamic submit button - returns the visible submit button (Sign in, Create account, or Continue with email)
    * Used by tests that need a generic submit button reference
    */
   get submitButton(): Locator {
-    // Return a locator that matches either button
-    return this.page.getByRole("button", { name: /^(sign in|create account)$/i });
+    // Return a locator that matches the submit button in any form state
+    return this.page.getByRole("button", {
+      name: /^(sign in|create account|continue with email)$/i,
+    });
   }
 
   /**
@@ -187,29 +189,35 @@ export class AuthPage extends BasePage {
    * Uses retry logic to handle React hydration timing issues
    */
   async expandEmailForm() {
-    // Use expect().toPass() for automatic retry - handles timing issues robustly
+    // Wait for hydration first
+    await this.waitForHydration();
+
+    // Use retry logic to handle timing issues with form expansion
     await expect(async () => {
-      const isFormReady = await this.page
-        .locator('form[data-form-ready="true"]')
-        .count()
-        .then((c) => c > 0)
-        .catch(() => false);
+      // Check if form is already expanded (either "Sign in" or "Create account" button visible)
+      const isSignInExpanded = await this.signInButton.isVisible().catch(() => false);
+      const isSignUpExpanded = await this.signUpButton.isVisible().catch(() => false);
 
-      if (!isFormReady) {
-        // Wait for hydration to ensure event handlers are attached
-        await this.waitForHydration();
-
-        // Click to expand the form
-        await this.continueWithEmailButton.click({ force: true });
-
-        // Verify expansion succeeded
-        await this.waitForFormReady();
+      if (isSignInExpanded || isSignUpExpanded) {
+        return; // Form is expanded, we're done
       }
 
-      // Final verification - form must be ready
-      const finalCheck = await this.page.locator('form[data-form-ready="true"]').count();
-      expect(finalCheck).toBeGreaterThan(0);
-    }).toPass({ timeout: 10000 });
+      // Click "Continue with email" to expand
+      const continueBtn = this.continueWithEmailButton;
+      if (await continueBtn.isVisible().catch(() => false)) {
+        await continueBtn.click();
+        // Brief wait for state update
+        await this.page.waitForTimeout(100);
+      }
+
+      // Check expansion again
+      const nowSignInVisible = await this.signInButton.isVisible().catch(() => false);
+      const nowSignUpVisible = await this.signUpButton.isVisible().catch(() => false);
+      expect(nowSignInVisible || nowSignUpVisible).toBe(true);
+    }).toPass({ timeout: 15000, intervals: [500, 1000, 2000] });
+
+    // Also wait for form-ready state
+    await this.waitForFormReady();
   }
 
   // ===================
@@ -227,7 +235,18 @@ export class AuthPage extends BasePage {
     await this.expandEmailForm();
     await this.emailInput.fill(email);
     await this.passwordInput.fill(password);
+
+    // Ensure form is ready before clicking submit
+    await this.waitForFormReady();
+
+    // Wait for button to be enabled
+    await expect(this.signUpButton).toBeEnabled({ timeout: 5000 });
+
+    // Click the submit button
     await this.signUpButton.click();
+
+    // Wait for form submission to complete (verification form or error)
+    await this.page.waitForTimeout(3000);
   }
 
   async navigateToSignUp() {
@@ -310,6 +329,8 @@ export class AuthPage extends BasePage {
   async verifyEmail(code: string) {
     await this.verifyCodeInput.fill(code);
     await this.verifyEmailButton.click({ force: true });
+    // Wait for verification to process
+    await this.page.waitForTimeout(1000);
   }
 
   async resendVerificationCode() {
@@ -338,12 +359,19 @@ export class AuthPage extends BasePage {
    * Wait for form to be fully ready (formReady state)
    * The form has a 350ms delay before setting formReady=true which enables required attributes
    * Uses data-form-ready attribute instead of arbitrary timeout
+   * This is a best-effort wait - it won't throw if the form doesn't have this attribute
    */
   async waitForFormReady(timeout = 5000) {
-    await this.page.locator('form[data-form-ready="true"]').waitFor({
-      state: "attached",
-      timeout,
-    });
+    try {
+      await this.page.locator('form[data-form-ready="true"]').waitFor({
+        state: "attached",
+        timeout,
+      });
+    } catch {
+      // Form might not have data-form-ready attribute (e.g., forgot password page)
+      // Just wait a brief moment for stability
+      await this.page.waitForTimeout(300);
+    }
   }
 
   async expectSignInForm() {

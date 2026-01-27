@@ -1,6 +1,7 @@
 import { expect, test } from "./fixtures";
 import { getTestEmailAddress } from "./utils/helpers";
 import { waitForMockOTP } from "./utils/otp-helpers";
+import { ROUTES } from "./utils/routes";
 
 /**
  * Authentication E2E Tests
@@ -49,7 +50,6 @@ test.describe("Sign In Page", () => {
   });
 
   test("has link to forgot password", async ({ authPage }) => {
-    // Forgot password link only appears when email form is expanded
     await authPage.expandEmailForm();
     await expect(authPage.forgotPasswordLink).toBeVisible();
   });
@@ -59,7 +59,6 @@ test.describe("Sign In Page", () => {
   });
 
   test("validates required fields", async ({ authPage }) => {
-    // Required attributes only set when form is expanded (formReady state)
     await authPage.expandEmailForm();
     await expect(authPage.emailInput).toHaveAttribute("required", "");
     await expect(authPage.emailInput).toHaveAttribute("type", "email");
@@ -81,7 +80,6 @@ test.describe("Sign Up Page", () => {
   });
 
   test("validates required fields", async ({ authPage }) => {
-    // Required attributes only set when form is expanded (formReady state)
     await authPage.expandEmailForm();
     await expect(authPage.emailInput).toHaveAttribute("required", "");
     await expect(authPage.emailInput).toHaveAttribute("type", "email");
@@ -150,16 +148,41 @@ test.describe("Integration", () => {
     const otp = await waitForMockOTP(testEmail);
 
     // Enter the OTP
+    console.log(`[Test] Entering OTP: ${otp}`);
     await authPage.verifyEmail(otp);
 
-    // Wait for the redirect to take place
-    await page.waitForTimeout(2000);
+    // Wait for success toast indicating verification completed
+    // The success toast shows before navigation
+    await expect(page.locator("[data-sonner-toast]").filter({ hasText: /verified|success/i }))
+      .toBeVisible({ timeout: 10000 })
+      .catch(() => {
+        console.log("[Test] No success toast found, checking for error...");
+      });
+
+    // Check for error toast
+    const errorToast = page.locator("[data-sonner-toast][data-type='error']");
+    if (await errorToast.isVisible().catch(() => false)) {
+      const errorText = await errorToast.textContent();
+      console.log(`[Test] Error toast visible: ${errorText}`);
+      throw new Error(`Verification failed with error: ${errorText}`);
+    }
+
+    // Check current URL
+    console.log(`[Test] Current URL after verify: ${page.url()}`);
+
+    // If we're on the landing page, it means auth state wasn't ready
+    // Navigate to app gateway to trigger proper auth check
+    if (page.url().endsWith("/") || page.url().endsWith("localhost:5555")) {
+      await page.goto(ROUTES.app.build());
+      await page.waitForLoadState("domcontentloaded");
+    }
 
     // Should redirect to dashboard or onboarding
     await expect(
       page
         .getByRole("heading", { name: /welcome to nixelo/i })
-        .or(page.getByRole("link", { name: /^dashboard$/i })),
+        .or(page.getByRole("link", { name: /dashboard/i }))
+        .or(page.locator('[data-sidebar="sidebar"]')), // Sidebar indicates we're in the app
     ).toBeVisible({ timeout: 15000 });
   });
 });

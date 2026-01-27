@@ -37,6 +37,13 @@ crons.weekly(
 crons.interval("cleanup test users", { hours: 1 }, internal.e2e.cleanupTestUsersInternal);
 
 /**
+ * Cleanup expired test OTP codes (E2E testing)
+ * Runs every 15 minutes to remove expired plaintext OTPs
+ * Prevents testOtpCodes table from growing indefinitely
+ */
+crons.interval("cleanup expired otps", { minutes: 15 }, internal.e2e.cleanupExpiredOtpsInternal);
+
+/**
  * Auto-retry failed offline sync items
  * Runs every 5 minutes to check for failed items ready to retry
  * Uses exponential backoff: 5min, 15min, 45min, 2h, 6h

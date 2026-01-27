@@ -1630,46 +1630,66 @@ export const verifyTestUserInternal = internalMutation({
 });
 
 /**
- * Get the latest OTP code for a user (email)
- * NOTE: dependent on "authVerificationCodes" table existing from @convex-dev/auth
+ * Store plaintext OTP for test users
+ * Called from OTPVerification.ts when sending verification emails to test users.
+ * The authVerificationCodes table stores hashed codes, making them unreadable.
+ */
+export const storeTestOtp = internalMutation({
+  args: {
+    email: v.string(),
+    code: v.string(),
+  },
+  handler: async (ctx, args) => {
+    // Only allow test emails
+    if (!isTestEmail(args.email)) {
+      throw new Error("Only test emails allowed");
+    }
+
+    // Delete any existing OTP for this email
+    const existingOtp = await ctx.db
+      .query("testOtpCodes")
+      .withIndex("by_email", (q) => q.eq("email", args.email))
+      .first();
+
+    if (existingOtp) {
+      await ctx.db.delete(existingOtp._id);
+    }
+
+    // Store new OTP with 15-minute expiration
+    await ctx.db.insert("testOtpCodes", {
+      email: args.email,
+      code: args.code,
+      expiresAt: Date.now() + 15 * 60 * 1000,
+    });
+  },
+});
+
+/**
+ * Get the latest OTP code for a test user (email)
+ * Reads from testOtpCodes table which stores plaintext codes for E2E testing.
  */
 export const getLatestOTP = internalQuery({
   args: { email: v.string() },
   handler: async (ctx, args) => {
-    // 1. Find the user by email
-    const user = await ctx.db
-      .query("users")
-      .withIndex("email", (q: any) => q.eq("email", args.email))
-      .unique();
-
-    if (!user) return null;
-
-    // 2. Find ANY account for this user (password, google, etc)
-    const accounts = await ctx.db
-      .query("authAccounts")
-      .withIndex("userIdAndProvider", (q: any) => q.eq("userId", user._id))
-      .collect();
-
-    if (accounts.length === 0) return null;
-
-    // 3. Find the latest verification code across all accounts
-    let latestCode: { code: string; _creationTime: number } | null = null;
-
-    for (const account of accounts) {
-      const code = await ctx.db
-        .query("authVerificationCodes")
-        .filter((q) => q.eq(q.field("accountId"), account._id))
-        .order("desc")
-        .first();
-
-      if (code) {
-        if (!latestCode || code._creationTime > latestCode._creationTime) {
-          latestCode = code;
-        }
-      }
+    // Only allow test emails
+    if (!isTestEmail(args.email)) {
+      return null;
     }
 
-    return latestCode?.code ?? null;
+    // Get from testOtpCodes table (plaintext for E2E)
+    const otpRecord = await ctx.db
+      .query("testOtpCodes")
+      .withIndex("by_email", (q) => q.eq("email", args.email))
+      .first();
+
+    if (!otpRecord) return null;
+
+    // Check if expired
+    if (otpRecord.expiresAt < Date.now()) {
+      return null;
+    }
+
+    return otpRecord.code;
   },
 });
 
@@ -2052,17 +2072,17 @@ export const nukeWorkspacesInternal = internalMutation({
 
     let deletedCount = 0;
 
-    // 2. Orphan Cleanup: Delete companies/workspaces matching E2E patterns
+    // 2. Orphan Cleanup: Delete organizations/workspaces matching E2E patterns
     // This catches data where the creator user was already deleted
 
-    // Delete orphan companies by slug/name pattern
-    const orphanCompanies = await ctx.db
+    // Delete orphan organizations by slug/name pattern
+    const orphanOrganizations = await ctx.db
       .query("organizations")
       .withIndex("by_slug")
       .filter((q) => q.or(q.eq(q.field("slug"), "nixelo-e2e"), q.eq(q.field("name"), "Nixelo E2E")))
       .collect();
 
-    // Also check for companies wrapping E2E workspaces if possible?
+    // Also check for organizations wrapping E2E workspaces if possible?
     // Usually workspaces are children of organizations.
     // In the schema, `workspaces` have `organizationId`.
     // We should look for `workspaces` named "E2E Testing Workspace" and delete them + their parent organization if it's test-only?
@@ -2094,12 +2114,12 @@ export const nukeWorkspacesInternal = internalMutation({
 
     // Continue with standard cleanup...
     for (const user of testUsers) {
-      const companies = await ctx.db
+      const organizations = await ctx.db
         .query("organizations")
         .withIndex("by_creator", (q) => q.eq("createdBy", user._id))
         .collect();
 
-      for (const organization of companies) {
+      for (const organization of organizations) {
         // Delete organization members
         const members = await ctx.db
           .query("organizationMembers")
@@ -2223,15 +2243,13 @@ export const resetTestWorkspaceInternal = internalMutation({
       deletedCount++;
     }
 
-    // Also try to find companies (containers) with this name?
-    // "E2E Testing Workspace" is used for the workspace list item, which comes from companies/workspaces.
-    // Let's also check companies just in case
-    const companies = await ctx.db
+    // Also try to find organizations with this name
+    const orgsWithName = await ctx.db
       .query("organizations")
       .filter((q) => q.eq(q.field("name"), args.name))
       .collect();
 
-    for (const organization of companies) {
+    for (const organization of orgsWithName) {
       // Delete children logic similar to nuke
       // ... abbreviated for safety, assume nuke handles big cleanup, this handles targeted test iterations
       // If we are strictly creating a workspace (department), the above workspace deletion is sufficient.
@@ -2429,6 +2447,35 @@ export const nukeAllTestUsersInternal = internalMutation({
       await ctx.db.delete(user._id);
       deletedCount++;
     }
+    return { success: true, deleted: deletedCount };
+  },
+});
+
+/**
+ * Internal mutation to cleanup expired test OTP codes
+ * Called by cron job to prevent testOtpCodes table from growing indefinitely
+ */
+export const cleanupExpiredOtpsInternal = internalMutation({
+  args: {},
+  returns: v.object({
+    success: v.boolean(),
+    deleted: v.number(),
+  }),
+  handler: async (ctx) => {
+    const now = Date.now();
+
+    // Find expired OTP codes using the by_expiry index
+    const expiredOtps = await ctx.db
+      .query("testOtpCodes")
+      .withIndex("by_expiry", (q) => q.lt("expiresAt", now))
+      .collect();
+
+    let deletedCount = 0;
+    for (const otp of expiredOtps) {
+      await ctx.db.delete(otp._id);
+      deletedCount++;
+    }
+
     return { success: true, deleted: deletedCount };
   },
 });

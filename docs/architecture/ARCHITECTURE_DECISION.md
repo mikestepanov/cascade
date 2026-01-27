@@ -1,7 +1,7 @@
 # Architecture Decision: Option B Implementation
 
 **Date**: 2025-12-16
-**Decision**: Implement Linear-style architecture (Company → Workspaces → Teams → Projects)
+**Decision**: Implement Linear-style architecture (Organization → Workspaces → Teams → Projects)
 
 ---
 

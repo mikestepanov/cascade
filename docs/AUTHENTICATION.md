@@ -96,16 +96,16 @@ In the **User Management** interface, you can:
 **Invite Acceptance Flow:**
 
 1. User clicks invite link → navigates to `/invite/:token`
-2. Page displays invite details (inviter, role, company)
+2. Page displays invite details (inviter, role, organization)
 3. User signs up or signs in (if already has account)
 4. After authentication, invite is automatically accepted
-5. User is redirected to the company dashboard via `PostAuthRedirect`
+5. User is redirected to the organization dashboard via `PostAuthRedirect`
 
 **Route:** `src/routes/invite.$token.tsx`
 
 **Components used:**
 
-- `PostAuthRedirect` - handles post-auth navigation to company dashboard
+- `PostAuthRedirect` - handles post-auth navigation to organization dashboard
 - Invite page shows accept button for authenticated users
 
 ### Invitation States

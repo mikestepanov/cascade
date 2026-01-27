@@ -31,18 +31,18 @@ _Multi-tenancy and Access Control._
 
 ```mermaid
 erDiagram
-    COMPANY ||--o{ WORKSPACE : "has depts"
-    COMPANY ||--o{ COMPANY_MEMBER : "staffs"
+    ORGANIZATION ||--o{ WORKSPACE : "has depts"
+    ORGANIZATION ||--o{ ORG_MEMBER : "staffs"
     WORKSPACE ||--o{ TEAM : "organizes"
     TEAM ||--o{ PROJECT : "owns"
 
-    COMPANY {
+    ORGANIZATION {
         id _id PK
         string slug "acme-corp"
         json settings "Billing/Hours"
     }
 
-    COMPANY_MEMBER {
+    ORG_MEMBER {
         id _id PK
         id userId FK "→ User"
         enum role "OWNER|ADMIN|MEMBER"

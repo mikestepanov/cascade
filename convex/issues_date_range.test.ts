@@ -3,8 +3,7 @@ import { describe, expect, it } from "vitest";
 import { api } from "./_generated/api";
 import schema from "./schema";
 import { modules } from "./testSetup.test-helper";
-import { createTestContext, createProjectInOrganization } from "./testUtils";
-import type { Id } from "./_generated/dataModel";
+import { createProjectInOrganization, createTestContext } from "./testUtils";
 
 describe("Issues Date Range", () => {
   it("should list issues by date range and sprint", async () => {
@@ -90,7 +89,7 @@ describe("Issues Date Range", () => {
     // Should find Issue 0, Issue 1 and Issue 3
     expect(issuesByDate).toHaveLength(3);
     expect(issuesByDate.map((i) => i.title).sort()).toEqual(
-      ["In Sprint, Early", "In Sprint, Late", "Out Sprint, In Range"].sort()
+      ["In Sprint, Early", "In Sprint, Late", "Out Sprint, In Range"].sort(),
     );
 
     // Test 2: Query by date range AND sprint

@@ -55,6 +55,7 @@ import { forbidden, notFound, unauthenticated } from "./lib/errors";
 import { getOrganizationRole, isOrganizationAdmin } from "./lib/organizationAccess";
 import { getTeamRole } from "./lib/teamAccess";
 import { getWorkspaceRole } from "./lib/workspaceAccess";
+import { getProjectRole } from "./projectAccess";
 
 // =============================================================================
 // Shared Auth Helper
@@ -484,7 +485,6 @@ export const projectQuery = customQuery(query, {
       throw notFound("project", args.projectId);
     }
 
-    const { getProjectRole } = await import("./projectAccess");
     const role = await getProjectRole(ctx, args.projectId, userId);
     if (!(role || project.isPublic)) {
       throw forbidden();
@@ -510,7 +510,6 @@ export const projectViewerMutation = customMutation(mutation, {
       throw notFound("project", args.projectId);
     }
 
-    const { getProjectRole } = await import("./projectAccess");
     const role = await getProjectRole(ctx, args.projectId, userId);
     requireMinimumRole(role, "viewer");
 
@@ -534,7 +533,6 @@ export const projectEditorMutation = customMutation(mutation, {
       throw notFound("project", args.projectId);
     }
 
-    const { getProjectRole } = await import("./projectAccess");
     const role = await getProjectRole(ctx, args.projectId, userId);
     requireMinimumRole(role, "editor");
 
@@ -558,7 +556,6 @@ export const projectAdminMutation = customMutation(mutation, {
       throw notFound("project", args.projectId);
     }
 
-    const { getProjectRole } = await import("./projectAccess");
     const role = await getProjectRole(ctx, args.projectId, userId);
     requireMinimumRole(role, "admin");
 
@@ -592,7 +589,6 @@ export const issueMutation = customMutation(mutation, {
       throw notFound("project", issue.projectId);
     }
 
-    const { getProjectRole } = await import("./projectAccess");
     const role = await getProjectRole(ctx, issue.projectId, userId);
     requireMinimumRole(role, "editor");
 
@@ -621,7 +617,6 @@ export const issueViewerMutation = customMutation(mutation, {
       throw notFound("project", issue.projectId);
     }
 
-    const { getProjectRole } = await import("./projectAccess");
     const role = await getProjectRole(ctx, issue.projectId, userId);
     requireMinimumRole(role, "viewer");
 
@@ -649,7 +644,6 @@ export const issueQuery = customQuery(query, {
     if (!project) {
       throw notFound("project", issue.projectId);
     }
-    const { getProjectRole } = await import("./projectAccess");
     const role = await getProjectRole(ctx, issue.projectId, userId);
     if (!(role || project.isPublic)) {
       throw forbidden();
@@ -685,7 +679,6 @@ export const sprintQuery = customQuery(query, {
       throw notFound("project", sprint.projectId);
     }
 
-    const { getProjectRole } = await import("./projectAccess");
     const role = await getProjectRole(ctx, sprint.projectId, userId);
     requireMinimumRole(role, "editor");
 
@@ -713,7 +706,6 @@ export const sprintMutation = customMutation(mutation, {
     if (!project) {
       throw notFound("project", sprint.projectId);
     }
-    const { getProjectRole } = await import("./projectAccess");
     const role = await getProjectRole(ctx, sprint.projectId, userId);
     requireMinimumRole(role, "editor");
 

@@ -12,7 +12,7 @@ export class DashboardPage extends BasePage {
   // ===================
   readonly dashboardTab: Locator;
   readonly documentsTab: Locator;
-  readonly projectsTab: Locator;
+  readonly workspacesTab: Locator;
   readonly timesheetTab: Locator;
   readonly calendarTab: Locator;
   readonly settingsTab: Locator;
@@ -51,7 +51,7 @@ export class DashboardPage extends BasePage {
   // Locators - Dashboard Content
   // ===================
   readonly myIssuesSection: Locator;
-  readonly projectsSection: Locator;
+  readonly workspacesSection: Locator;
   readonly recentActivitySection: Locator;
   readonly quickStatsSection: Locator;
   readonly assignedTab: Locator;
@@ -90,27 +90,28 @@ export class DashboardPage extends BasePage {
   constructor(page: Page, orgSlug: string) {
     super(page, orgSlug);
 
-    // Navigation tabs - TanStack Router uses links, not buttons
+    // Navigation tabs - in the org-specific inner sidebar (navigation role)
+    // Use navigation landmark to scope to the correct sidebar
+    const navSidebar = page.getByRole("navigation");
     this.dashboardTab = page
       .locator("[data-tour='nav-dashboard']")
-      .or(page.getByRole("link", { name: /^dashboard$/i }));
+      .or(navSidebar.getByRole("link", { name: /^dashboard$/i }));
     this.documentsTab = page
       .locator("[data-tour='nav-documents']")
-      .or(page.getByRole("link", { name: /^documents$/i }));
-    // Workspaces tab (previously Projects) - matches new UI label
-    this.projectsTab = page
-      .locator("[data-tour='nav-projects']")
-      .or(page.getByRole("link", { name: /^projects$/i }))
-      .or(page.getByRole("link", { name: /^workspaces$/i }));
+      .or(navSidebar.getByRole("link", { name: /^documents$/i }));
+    // Workspaces navigation tab
+    this.workspacesTab = page
+      .locator("[data-tour='nav-workspaces']")
+      .or(navSidebar.getByRole("link", { name: /^workspaces$/i }));
     this.timesheetTab = page
       .locator("[data-tour='nav-timesheet']")
-      .or(page.getByRole("link", { name: /timesheet/i }));
+      .or(navSidebar.getByRole("link", { name: /time tracking/i }));
     this.calendarTab = page
       .locator("[data-tour='nav-calendar']")
-      .or(page.getByRole("link", { name: /calendar/i }));
+      .or(navSidebar.getByRole("link", { name: /^calendar$/i }));
     this.settingsTab = page
       .locator("[data-tour='nav-settings']")
-      .or(page.getByRole("link", { name: /settings/i }));
+      .or(navSidebar.getByRole("link", { name: /^settings$/i }));
 
     // Header actions - using aria-labels for accessibility
     this.mobileMenuButton = page.getByRole("button", { name: /toggle sidebar menu/i });
@@ -118,14 +119,15 @@ export class DashboardPage extends BasePage {
     this.commandPaletteButton = page.getByRole("button", { name: /open command palette/i });
     // Keyboard shortcuts help button (? icon)
     this.shortcutsHelpButton = page.getByRole("button", { name: /keyboard shortcuts/i });
-    this.globalSearchButton = page.getByRole("button", { name: /search/i });
+    // Global search button contains "Search..." text with keyboard shortcut hint "⌘K"
+    this.globalSearchButton = page.locator("button").filter({ hasText: "Search..." });
     // Bell notification icon button - find by the unique bell SVG path (no aria-label in NotificationCenter component)
     this.notificationButton = page.locator("button:has(svg path[d*='M15 17h5'])");
     // "Sign out" text button
     this.signOutButton = page.getByRole("button", { name: /sign out/i });
 
-    // User menu (avatar dropdown in header)
-    this.userMenuButton = page.getByRole("button", { name: "User menu" });
+    // User menu (avatar dropdown - use last() since there may be one in sidebar and one in header)
+    this.userMenuButton = page.getByRole("button", { name: "User menu" }).last();
     this.userMenuSignOutItem = page.getByRole("menuitem", { name: /sign out/i });
 
     // Theme toggle buttons - using aria-labels
@@ -133,14 +135,14 @@ export class DashboardPage extends BasePage {
     this.darkThemeButton = page.getByRole("button", { name: /switch to dark theme/i });
     this.systemThemeButton = page.getByRole("button", { name: /switch to system theme/i });
 
-    // Content areas
-    this.mainContent = page.getByRole("main");
+    // Content areas - use last() to get innermost main element (nested layout)
+    this.mainContent = page.getByRole("main").last();
     this.sidebar = page.locator("[data-tour='sidebar']");
     this.loadingSpinner = page.locator(".animate-spin");
 
     // Dashboard specific content - match actual UI headings
     this.myIssuesSection = page.getByRole("heading", { name: /feed/i }).first();
-    this.projectsSection = page.getByRole("heading", { name: /workspaces/i });
+    this.workspacesSection = page.getByRole("heading", { name: /workspaces/i });
     this.recentActivitySection = page.getByText(/recent activity/i);
     this.quickStatsSection = page.getByText(/quick stats/i);
     // Issue filter tabs: "Assigned (0)" and "Created (0)"
@@ -259,21 +261,18 @@ export class DashboardPage extends BasePage {
       await this.commandPaletteButton.waitFor({ state: "visible", timeout: 45000 });
     }
 
-    // Ensure loading spinner is gone and React is hydrated
     await this.expectLoaded();
     await this.waitForLoad();
-
-    // Explicitly wait for the main content sections to prevent hydration flakes
-    await this.myIssuesSection.waitFor({ state: "visible", timeout: 10000 });
+    await expect(this.myIssuesSection).toBeVisible();
   }
 
   async navigateTo(
-    tab: "dashboard" | "documents" | "projects" | "timesheet" | "calendar" | "settings",
+    tab: "dashboard" | "documents" | "workspaces" | "timesheet" | "calendar" | "settings",
   ) {
     const tabs = {
       dashboard: this.dashboardTab,
       documents: this.documentsTab,
-      projects: this.projectsTab,
+      workspaces: this.workspacesTab,
       timesheet: this.timesheetTab,
       calendar: this.calendarTab,
       settings: this.settingsTab,
@@ -370,23 +369,28 @@ export class DashboardPage extends BasePage {
   }
 
   async openGlobalSearch() {
-    await this.globalSearchButton.click({ force: true });
-    await expect(this.globalSearchModal).toBeVisible({ timeout: 5000 });
+    await this.globalSearchButton.click();
+    await expect(this.globalSearchModal).toBeVisible();
   }
 
   async closeGlobalSearch() {
-    await expect(async () => {
-      if (!(await this.globalSearchModal.isVisible())) return;
-      await this.globalSearchInput.click().catch(() => {});
-      await this.page.keyboard.press("Escape");
+    // If modal is not visible, nothing to close
+    if (!(await this.globalSearchModal.isVisible().catch(() => false))) {
+      return;
+    }
 
-      // Fallback: click top-left corner (backdrop) if escape fails
-      if (await this.globalSearchModal.isVisible()) {
-        await this.page.mouse.click(0, 0);
-      }
+    // Try pressing Escape to close
+    await this.page.keyboard.press("Escape");
+    await this.page.waitForTimeout(500);
 
-      await expect(this.globalSearchModal).not.toBeVisible({ timeout: 2000 });
-    }).toPass({ timeout: 10000 });
+    // If still visible, click outside to close
+    if (await this.globalSearchModal.isVisible().catch(() => false)) {
+      await this.page.mouse.click(10, 10);
+      await this.page.waitForTimeout(500);
+    }
+
+    // Verify closed
+    await expect(this.globalSearchModal).not.toBeVisible({ timeout: 5000 });
   }
 
   // ===================
@@ -426,16 +430,15 @@ export class DashboardPage extends BasePage {
   // ===================
 
   async pressCommandPaletteShortcut() {
-    // Ensure focus is on the page before pressing keys
-    await this.page.click("body").catch(() => {});
-    // Use ControlOrMeta for cross-platform compatibility (Cmd on Mac, Ctrl on Windows/Linux)
+    await this.waitForLoad();
     await this.page.keyboard.press("ControlOrMeta+k");
+    await expect(this.commandPalette).toBeVisible();
   }
 
   async pressShortcutsHelpShortcut() {
-    // Ensure focus is on the page before pressing keys
-    await this.page.click("body").catch(() => {});
+    await this.waitForLoad();
     await this.page.keyboard.press("Shift+?");
+    await expect(this.shortcutsModal).toBeVisible();
   }
 
   // ===================
@@ -448,14 +451,13 @@ export class DashboardPage extends BasePage {
   }
 
   async expectActiveTab(
-    tab: "dashboard" | "documents" | "projects" | "timesheet" | "calendar" | "settings",
+    tab: "dashboard" | "documents" | "workspaces" | "timesheet" | "calendar" | "settings",
   ) {
     // Check URL contains the tab path segment
-    // Note: "projects" tab now uses /projects/ URL path
     const tabPaths = {
       dashboard: /\/dashboard/,
       documents: /\/documents/,
-      projects: /\/workspaces/,
+      workspaces: /\/workspaces/,
       timesheet: /\/timesheet/,
       calendar: /\/calendar/,
       settings: /\/settings/,

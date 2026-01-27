@@ -192,7 +192,7 @@ Test users are configured in `e2e/config.ts`. All use `@inbox.mailtrap.io` for e
 
 **Password:** All test users use `E2ETestPassword123!`
 
-### Test Company
+### Test Organization
 
 All test users share a single organization:
 
