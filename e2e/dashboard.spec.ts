@@ -123,31 +123,27 @@ test.describe("Dashboard Tests", () => {
     });
   });
 
-  // SKIPPED: Flaky modal visibility in serial mode
-  test.describe
-    .skip("Keyboard Shortcuts Help", () => {
-      test("can open and close via button", async ({ dashboardPage }) => {
-        await dashboardPage.goto();
-        await dashboardPage.openShortcutsHelp();
-        await expect(dashboardPage.shortcutsModal).toBeVisible();
-        await dashboardPage.closeShortcutsHelp();
-        await expect(dashboardPage.shortcutsModal).not.toBeVisible();
-      });
-
-      test("can open via keyboard shortcut", async ({ dashboardPage }) => {
-        await dashboardPage.goto();
-        await dashboardPage.pressShortcutsHelpShortcut();
-        await expect(dashboardPage.shortcutsModal).toBeVisible({ timeout: 5000 });
-      });
+  test.describe("Keyboard Shortcuts Help", () => {
+    test("can open and close via button", async ({ dashboardPage }) => {
+      await dashboardPage.goto();
+      await dashboardPage.openShortcutsHelp();
+      await expect(dashboardPage.shortcutsModal).toBeVisible();
+      await dashboardPage.closeShortcutsHelp();
+      await expect(dashboardPage.shortcutsModal).not.toBeVisible();
     });
 
-  // SKIPPED: Flaky locator (img vs svg) and session timing issues in serial mode
-  test.describe
-    .skip("Notifications", () => {
-      test("can open notifications panel", async ({ dashboardPage }) => {
-        await dashboardPage.goto();
-        await dashboardPage.openNotifications();
-        await expect(dashboardPage.notificationPanel).toBeVisible({ timeout: 5000 });
-      });
+    test("can open via keyboard shortcut", async ({ dashboardPage }) => {
+      await dashboardPage.goto();
+      await dashboardPage.pressShortcutsHelpShortcut();
+      await expect(dashboardPage.shortcutsModal).toBeVisible({ timeout: 5000 });
     });
+  });
+
+  test.describe("Notifications", () => {
+    test("can open notifications panel", async ({ dashboardPage }) => {
+      await dashboardPage.goto();
+      await dashboardPage.openNotifications();
+      await expect(dashboardPage.notificationPanel).toBeVisible({ timeout: 5000 });
+    });
+  });
 });
