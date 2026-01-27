@@ -13,7 +13,7 @@ import { Typography } from "@/components/ui/Typography";
 import { useOrganization } from "@/hooks/useOrgContext";
 import { Filter, Plus, Search } from "@/lib/icons";
 
-export const Route = createFileRoute("/_auth/_app/$orgSlug/issues")({
+export const Route = createFileRoute("/_auth/_app/$orgSlug/issues/")({
   component: AllIssuesPage,
 });
 

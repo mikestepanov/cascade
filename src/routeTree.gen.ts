@@ -21,11 +21,11 @@ import { Route as AuthAppAppRouteImport } from './routes/_auth/_app/app'
 import { Route as AuthAppOrgSlugRouteRouteImport } from './routes/_auth/_app/$orgSlug/route'
 import { Route as AuthAppOrgSlugIndexRouteImport } from './routes/_auth/_app/$orgSlug/index'
 import { Route as AuthAppOrgSlugTimeTrackingRouteImport } from './routes/_auth/_app/$orgSlug/time-tracking'
-import { Route as AuthAppOrgSlugIssuesRouteImport } from './routes/_auth/_app/$orgSlug/issues'
 import { Route as AuthAppOrgSlugDashboardRouteImport } from './routes/_auth/_app/$orgSlug/dashboard'
 import { Route as AuthAppOrgSlugWorkspacesIndexRouteImport } from './routes/_auth/_app/$orgSlug/workspaces/index'
 import { Route as AuthAppOrgSlugSettingsIndexRouteImport } from './routes/_auth/_app/$orgSlug/settings/index'
 import { Route as AuthAppOrgSlugProjectsIndexRouteImport } from './routes/_auth/_app/$orgSlug/projects/index'
+import { Route as AuthAppOrgSlugIssuesIndexRouteImport } from './routes/_auth/_app/$orgSlug/issues/index'
 import { Route as AuthAppOrgSlugDocumentsIndexRouteImport } from './routes/_auth/_app/$orgSlug/documents/index'
 import { Route as AuthAppOrgSlugSettingsProfileRouteImport } from './routes/_auth/_app/$orgSlug/settings/profile'
 import { Route as AuthAppOrgSlugIssuesKeyRouteImport } from './routes/_auth/_app/$orgSlug/issues/$key'
@@ -106,11 +106,6 @@ const AuthAppOrgSlugTimeTrackingRoute =
     path: '/time-tracking',
     getParentRoute: () => AuthAppOrgSlugRouteRoute,
   } as any)
-const AuthAppOrgSlugIssuesRoute = AuthAppOrgSlugIssuesRouteImport.update({
-  id: '/issues',
-  path: '/issues',
-  getParentRoute: () => AuthAppOrgSlugRouteRoute,
-} as any)
 const AuthAppOrgSlugDashboardRoute = AuthAppOrgSlugDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
@@ -134,6 +129,12 @@ const AuthAppOrgSlugProjectsIndexRoute =
     path: '/projects/',
     getParentRoute: () => AuthAppOrgSlugRouteRoute,
   } as any)
+const AuthAppOrgSlugIssuesIndexRoute =
+  AuthAppOrgSlugIssuesIndexRouteImport.update({
+    id: '/issues/',
+    path: '/issues/',
+    getParentRoute: () => AuthAppOrgSlugRouteRoute,
+  } as any)
 const AuthAppOrgSlugDocumentsIndexRoute =
   AuthAppOrgSlugDocumentsIndexRouteImport.update({
     id: '/documents/',
@@ -147,9 +148,9 @@ const AuthAppOrgSlugSettingsProfileRoute =
     getParentRoute: () => AuthAppOrgSlugRouteRoute,
   } as any)
 const AuthAppOrgSlugIssuesKeyRoute = AuthAppOrgSlugIssuesKeyRouteImport.update({
-  id: '/$key',
-  path: '/$key',
-  getParentRoute: () => AuthAppOrgSlugIssuesRoute,
+  id: '/issues/$key',
+  path: '/issues/$key',
+  getParentRoute: () => AuthAppOrgSlugRouteRoute,
 } as any)
 const AuthAppOrgSlugDocumentsTemplatesRoute =
   AuthAppOrgSlugDocumentsTemplatesRouteImport.update({
@@ -268,7 +269,6 @@ export interface FileRoutesByFullPath {
   '/$orgSlug': typeof AuthAppOrgSlugRouteRouteWithChildren
   '/app': typeof AuthAppAppRoute
   '/$orgSlug/dashboard': typeof AuthAppOrgSlugDashboardRoute
-  '/$orgSlug/issues': typeof AuthAppOrgSlugIssuesRouteWithChildren
   '/$orgSlug/time-tracking': typeof AuthAppOrgSlugTimeTrackingRoute
   '/$orgSlug/': typeof AuthAppOrgSlugIndexRoute
   '/$orgSlug/projects/$key': typeof AuthAppOrgSlugProjectsKeyRouteRouteWithChildren
@@ -278,6 +278,7 @@ export interface FileRoutesByFullPath {
   '/$orgSlug/issues/$key': typeof AuthAppOrgSlugIssuesKeyRoute
   '/$orgSlug/settings/profile': typeof AuthAppOrgSlugSettingsProfileRoute
   '/$orgSlug/documents/': typeof AuthAppOrgSlugDocumentsIndexRoute
+  '/$orgSlug/issues/': typeof AuthAppOrgSlugIssuesIndexRoute
   '/$orgSlug/projects/': typeof AuthAppOrgSlugProjectsIndexRoute
   '/$orgSlug/settings/': typeof AuthAppOrgSlugSettingsIndexRoute
   '/$orgSlug/workspaces/': typeof AuthAppOrgSlugWorkspacesIndexRoute
@@ -304,7 +305,6 @@ export interface FileRoutesByTo {
   '/invite/$token': typeof InviteTokenRoute
   '/app': typeof AuthAppAppRoute
   '/$orgSlug/dashboard': typeof AuthAppOrgSlugDashboardRoute
-  '/$orgSlug/issues': typeof AuthAppOrgSlugIssuesRouteWithChildren
   '/$orgSlug/time-tracking': typeof AuthAppOrgSlugTimeTrackingRoute
   '/$orgSlug': typeof AuthAppOrgSlugIndexRoute
   '/$orgSlug/documents/$id': typeof AuthAppOrgSlugDocumentsIdRoute
@@ -312,6 +312,7 @@ export interface FileRoutesByTo {
   '/$orgSlug/issues/$key': typeof AuthAppOrgSlugIssuesKeyRoute
   '/$orgSlug/settings/profile': typeof AuthAppOrgSlugSettingsProfileRoute
   '/$orgSlug/documents': typeof AuthAppOrgSlugDocumentsIndexRoute
+  '/$orgSlug/issues': typeof AuthAppOrgSlugIssuesIndexRoute
   '/$orgSlug/projects': typeof AuthAppOrgSlugProjectsIndexRoute
   '/$orgSlug/settings': typeof AuthAppOrgSlugSettingsIndexRoute
   '/$orgSlug/workspaces': typeof AuthAppOrgSlugWorkspacesIndexRoute
@@ -341,7 +342,6 @@ export interface FileRoutesById {
   '/_auth/_app/$orgSlug': typeof AuthAppOrgSlugRouteRouteWithChildren
   '/_auth/_app/app': typeof AuthAppAppRoute
   '/_auth/_app/$orgSlug/dashboard': typeof AuthAppOrgSlugDashboardRoute
-  '/_auth/_app/$orgSlug/issues': typeof AuthAppOrgSlugIssuesRouteWithChildren
   '/_auth/_app/$orgSlug/time-tracking': typeof AuthAppOrgSlugTimeTrackingRoute
   '/_auth/_app/$orgSlug/': typeof AuthAppOrgSlugIndexRoute
   '/_auth/_app/$orgSlug/projects/$key': typeof AuthAppOrgSlugProjectsKeyRouteRouteWithChildren
@@ -351,6 +351,7 @@ export interface FileRoutesById {
   '/_auth/_app/$orgSlug/issues/$key': typeof AuthAppOrgSlugIssuesKeyRoute
   '/_auth/_app/$orgSlug/settings/profile': typeof AuthAppOrgSlugSettingsProfileRoute
   '/_auth/_app/$orgSlug/documents/': typeof AuthAppOrgSlugDocumentsIndexRoute
+  '/_auth/_app/$orgSlug/issues/': typeof AuthAppOrgSlugIssuesIndexRoute
   '/_auth/_app/$orgSlug/projects/': typeof AuthAppOrgSlugProjectsIndexRoute
   '/_auth/_app/$orgSlug/settings/': typeof AuthAppOrgSlugSettingsIndexRoute
   '/_auth/_app/$orgSlug/workspaces/': typeof AuthAppOrgSlugWorkspacesIndexRoute
@@ -380,7 +381,6 @@ export interface FileRouteTypes {
     | '/$orgSlug'
     | '/app'
     | '/$orgSlug/dashboard'
-    | '/$orgSlug/issues'
     | '/$orgSlug/time-tracking'
     | '/$orgSlug/'
     | '/$orgSlug/projects/$key'
@@ -390,6 +390,7 @@ export interface FileRouteTypes {
     | '/$orgSlug/issues/$key'
     | '/$orgSlug/settings/profile'
     | '/$orgSlug/documents/'
+    | '/$orgSlug/issues/'
     | '/$orgSlug/projects/'
     | '/$orgSlug/settings/'
     | '/$orgSlug/workspaces/'
@@ -416,7 +417,6 @@ export interface FileRouteTypes {
     | '/invite/$token'
     | '/app'
     | '/$orgSlug/dashboard'
-    | '/$orgSlug/issues'
     | '/$orgSlug/time-tracking'
     | '/$orgSlug'
     | '/$orgSlug/documents/$id'
@@ -424,6 +424,7 @@ export interface FileRouteTypes {
     | '/$orgSlug/issues/$key'
     | '/$orgSlug/settings/profile'
     | '/$orgSlug/documents'
+    | '/$orgSlug/issues'
     | '/$orgSlug/projects'
     | '/$orgSlug/settings'
     | '/$orgSlug/workspaces'
@@ -452,7 +453,6 @@ export interface FileRouteTypes {
     | '/_auth/_app/$orgSlug'
     | '/_auth/_app/app'
     | '/_auth/_app/$orgSlug/dashboard'
-    | '/_auth/_app/$orgSlug/issues'
     | '/_auth/_app/$orgSlug/time-tracking'
     | '/_auth/_app/$orgSlug/'
     | '/_auth/_app/$orgSlug/projects/$key'
@@ -462,6 +462,7 @@ export interface FileRouteTypes {
     | '/_auth/_app/$orgSlug/issues/$key'
     | '/_auth/_app/$orgSlug/settings/profile'
     | '/_auth/_app/$orgSlug/documents/'
+    | '/_auth/_app/$orgSlug/issues/'
     | '/_auth/_app/$orgSlug/projects/'
     | '/_auth/_app/$orgSlug/settings/'
     | '/_auth/_app/$orgSlug/workspaces/'
@@ -575,13 +576,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthAppOrgSlugTimeTrackingRouteImport
       parentRoute: typeof AuthAppOrgSlugRouteRoute
     }
-    '/_auth/_app/$orgSlug/issues': {
-      id: '/_auth/_app/$orgSlug/issues'
-      path: '/issues'
-      fullPath: '/$orgSlug/issues'
-      preLoaderRoute: typeof AuthAppOrgSlugIssuesRouteImport
-      parentRoute: typeof AuthAppOrgSlugRouteRoute
-    }
     '/_auth/_app/$orgSlug/dashboard': {
       id: '/_auth/_app/$orgSlug/dashboard'
       path: '/dashboard'
@@ -610,6 +604,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthAppOrgSlugProjectsIndexRouteImport
       parentRoute: typeof AuthAppOrgSlugRouteRoute
     }
+    '/_auth/_app/$orgSlug/issues/': {
+      id: '/_auth/_app/$orgSlug/issues/'
+      path: '/issues'
+      fullPath: '/$orgSlug/issues/'
+      preLoaderRoute: typeof AuthAppOrgSlugIssuesIndexRouteImport
+      parentRoute: typeof AuthAppOrgSlugRouteRoute
+    }
     '/_auth/_app/$orgSlug/documents/': {
       id: '/_auth/_app/$orgSlug/documents/'
       path: '/documents'
@@ -626,10 +627,10 @@ declare module '@tanstack/react-router' {
     }
     '/_auth/_app/$orgSlug/issues/$key': {
       id: '/_auth/_app/$orgSlug/issues/$key'
-      path: '/$key'
+      path: '/issues/$key'
       fullPath: '/$orgSlug/issues/$key'
       preLoaderRoute: typeof AuthAppOrgSlugIssuesKeyRouteImport
-      parentRoute: typeof AuthAppOrgSlugIssuesRoute
+      parentRoute: typeof AuthAppOrgSlugRouteRoute
     }
     '/_auth/_app/$orgSlug/documents/templates': {
       id: '/_auth/_app/$orgSlug/documents/templates'
@@ -753,17 +754,6 @@ declare module '@tanstack/react-router' {
   }
 }
 
-interface AuthAppOrgSlugIssuesRouteChildren {
-  AuthAppOrgSlugIssuesKeyRoute: typeof AuthAppOrgSlugIssuesKeyRoute
-}
-
-const AuthAppOrgSlugIssuesRouteChildren: AuthAppOrgSlugIssuesRouteChildren = {
-  AuthAppOrgSlugIssuesKeyRoute: AuthAppOrgSlugIssuesKeyRoute,
-}
-
-const AuthAppOrgSlugIssuesRouteWithChildren =
-  AuthAppOrgSlugIssuesRoute._addFileChildren(AuthAppOrgSlugIssuesRouteChildren)
-
 interface AuthAppOrgSlugProjectsKeyRouteRouteChildren {
   AuthAppOrgSlugProjectsKeyBoardRoute: typeof AuthAppOrgSlugProjectsKeyBoardRoute
   AuthAppOrgSlugProjectsKeyCalendarRoute: typeof AuthAppOrgSlugProjectsKeyCalendarRoute
@@ -839,15 +829,16 @@ const AuthAppOrgSlugWorkspacesWorkspaceSlugRouteRouteWithChildren =
 
 interface AuthAppOrgSlugRouteRouteChildren {
   AuthAppOrgSlugDashboardRoute: typeof AuthAppOrgSlugDashboardRoute
-  AuthAppOrgSlugIssuesRoute: typeof AuthAppOrgSlugIssuesRouteWithChildren
   AuthAppOrgSlugTimeTrackingRoute: typeof AuthAppOrgSlugTimeTrackingRoute
   AuthAppOrgSlugIndexRoute: typeof AuthAppOrgSlugIndexRoute
   AuthAppOrgSlugProjectsKeyRouteRoute: typeof AuthAppOrgSlugProjectsKeyRouteRouteWithChildren
   AuthAppOrgSlugWorkspacesWorkspaceSlugRouteRoute: typeof AuthAppOrgSlugWorkspacesWorkspaceSlugRouteRouteWithChildren
   AuthAppOrgSlugDocumentsIdRoute: typeof AuthAppOrgSlugDocumentsIdRoute
   AuthAppOrgSlugDocumentsTemplatesRoute: typeof AuthAppOrgSlugDocumentsTemplatesRoute
+  AuthAppOrgSlugIssuesKeyRoute: typeof AuthAppOrgSlugIssuesKeyRoute
   AuthAppOrgSlugSettingsProfileRoute: typeof AuthAppOrgSlugSettingsProfileRoute
   AuthAppOrgSlugDocumentsIndexRoute: typeof AuthAppOrgSlugDocumentsIndexRoute
+  AuthAppOrgSlugIssuesIndexRoute: typeof AuthAppOrgSlugIssuesIndexRoute
   AuthAppOrgSlugProjectsIndexRoute: typeof AuthAppOrgSlugProjectsIndexRoute
   AuthAppOrgSlugSettingsIndexRoute: typeof AuthAppOrgSlugSettingsIndexRoute
   AuthAppOrgSlugWorkspacesIndexRoute: typeof AuthAppOrgSlugWorkspacesIndexRoute
@@ -855,7 +846,6 @@ interface AuthAppOrgSlugRouteRouteChildren {
 
 const AuthAppOrgSlugRouteRouteChildren: AuthAppOrgSlugRouteRouteChildren = {
   AuthAppOrgSlugDashboardRoute: AuthAppOrgSlugDashboardRoute,
-  AuthAppOrgSlugIssuesRoute: AuthAppOrgSlugIssuesRouteWithChildren,
   AuthAppOrgSlugTimeTrackingRoute: AuthAppOrgSlugTimeTrackingRoute,
   AuthAppOrgSlugIndexRoute: AuthAppOrgSlugIndexRoute,
   AuthAppOrgSlugProjectsKeyRouteRoute:
@@ -864,8 +854,10 @@ const AuthAppOrgSlugRouteRouteChildren: AuthAppOrgSlugRouteRouteChildren = {
     AuthAppOrgSlugWorkspacesWorkspaceSlugRouteRouteWithChildren,
   AuthAppOrgSlugDocumentsIdRoute: AuthAppOrgSlugDocumentsIdRoute,
   AuthAppOrgSlugDocumentsTemplatesRoute: AuthAppOrgSlugDocumentsTemplatesRoute,
+  AuthAppOrgSlugIssuesKeyRoute: AuthAppOrgSlugIssuesKeyRoute,
   AuthAppOrgSlugSettingsProfileRoute: AuthAppOrgSlugSettingsProfileRoute,
   AuthAppOrgSlugDocumentsIndexRoute: AuthAppOrgSlugDocumentsIndexRoute,
+  AuthAppOrgSlugIssuesIndexRoute: AuthAppOrgSlugIssuesIndexRoute,
   AuthAppOrgSlugProjectsIndexRoute: AuthAppOrgSlugProjectsIndexRoute,
   AuthAppOrgSlugSettingsIndexRoute: AuthAppOrgSlugSettingsIndexRoute,
   AuthAppOrgSlugWorkspacesIndexRoute: AuthAppOrgSlugWorkspacesIndexRoute,

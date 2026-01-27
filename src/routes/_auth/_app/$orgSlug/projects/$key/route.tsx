@@ -20,7 +20,8 @@ function ProjectLayout() {
     project ? { projectId: project._id } : "skip",
   );
 
-  if (project === undefined || userRole === undefined || user === undefined) {
+  // Still loading initial data
+  if (project === undefined || user === undefined) {
     return (
       <Flex align="center" justify="center" className="h-full">
         <LoadingSpinner message="Loading project..." />
@@ -28,7 +29,8 @@ function ProjectLayout() {
     );
   }
 
-  if (!project) {
+  // Project not found - check before userRole since userRole query is skipped when project is null
+  if (project === null) {
     return (
       <Flex align="center" justify="center" className="h-full">
         <div className="text-center">
@@ -39,6 +41,15 @@ function ProjectLayout() {
             The project "{key}" doesn't exist or you don't have access to it.
           </Typography>
         </div>
+      </Flex>
+    );
+  }
+
+  // Wait for user role (only runs after project is confirmed to exist)
+  if (userRole === undefined) {
+    return (
+      <Flex align="center" justify="center" className="h-full">
+        <LoadingSpinner message="Loading project..." />
       </Flex>
     );
   }
