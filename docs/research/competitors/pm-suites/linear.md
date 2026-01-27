@@ -9,6 +9,18 @@
 
 ## Overview
 
+> **Vibe:** "The Ferrari of Issue Tracking" - Fast, opinionated, keyboard-centric.
+
+## 1. Feature Scraping Matrix
+
+| Feature                  | Why it's useful                                  | Nixelo's "Configurable Edge"                                                        |
+| :----------------------- | :----------------------------------------------- | :---------------------------------------------------------------------------------- |
+| **Keyboard Shortcuts**   | Speed. `C` for create, `K` for command.          | **"Vim Mode":** Allow `j/k` navigation but make it toggleable for non-devs.         |
+| **Optimistic UI**        | "Instant" feel even on slow networks.            | **"Convergent Sync":** Show local state immediately, sync in background via Convex. |
+| **Cycles (Not Sprints)** | "Sprint" implies crunch. "Cycle" implies rhythm. | **"Sprints":** Keep the industry standard naming but copy the auto-rollover logic.  |
+
+## 2. Deep Dive: Linear (The Standard)
+
 **Linear** is a modern, high-performance issue tracking tool designed specifically for software development teams. Launched in 2019 by former Uber and Coinbase engineers, Linear has become the go-to tool for fast-moving startups and product teams who prioritize speed, keyboard shortcuts, and elegant UX.
 
 **Market Position:**
