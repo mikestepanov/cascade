@@ -72,14 +72,8 @@ test.describe("Dashboard Tests", () => {
 
     test("can open via keyboard shortcut", async ({ dashboardPage, page }) => {
       await dashboardPage.goto();
-      // Ensure specific focus to capture keyboard events consistently in headless
-      // Ensure application is focused
-      // Ensure specific focus to capture keyboard events consistently
-      // await page.bringToFront(); // Removed as it causes issues in parallel execution
       await page.locator("body").waitFor({ state: "visible" });
       await page.locator("body").click({ force: true });
-
-      // Wait for body to be stable before keyboard shortcut
       await page.locator("body").waitFor({ state: "attached" });
 
       await dashboardPage.pressCommandPaletteShortcut();

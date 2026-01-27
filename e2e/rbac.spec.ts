@@ -21,15 +21,7 @@ import { clientSideNavigate, expect, rbacTest } from "./fixtures";
 // Increase timeout for RBAC tests since they involve multiple navigations
 rbacTest.setTimeout(90000);
 
-/**
- * Admin Role Tests - Comprehensive test for admin permissions
- * Tests: view board, create issues, access settings, see settings tab, sprints, analytics
- *
- * NOTE: This test requires teamLead auth state which occasionally fails to create.
- * If this test is skipped, it's because the auth state setup failed during global-setup.
- */
-// SKIPPED: Flaky - Settings tab visibility timing and session validation issues
-// TODO: Investigate session persistence during rapid role switching
+/** Admin Role Tests - view board, create issues, access settings, sprints, analytics */
 rbacTest(
   "admin has full project access",
   async (
@@ -267,15 +259,3 @@ rbacTest(
     console.log("\n✅ All viewer permission tests passed");
   },
 );
-
-/**
- * NOTE: Permission Matrix test removed.
- *
- * This test was causing failures due to Convex auth token rotation:
- * - Tests 1-3 (admin, editor, viewer) each use their respective auth tokens
- * - Each use rotates the refresh token, invalidating the old one
- * - Test 4 (matrix) tried to use all three users, but tokens were already rotated
- *
- * The individual role tests above already verify all the same permissions,
- * so the matrix test was redundant anyway.
- */

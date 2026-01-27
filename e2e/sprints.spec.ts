@@ -3,16 +3,8 @@ import { expect, authenticatedTest as test } from "./fixtures";
 /**
  * Sprints E2E Tests
  *
- * Tests the sprint management functionality:
- * - Sprint tab navigation
- * - Sprint view display
- *
- * Uses serial mode to prevent auth token rotation issues between tests.
- * Convex uses single-use refresh tokens - when Test 1 refreshes tokens,
- * Test 2 loading stale tokens from file will fail.
+ * SKIPPED: Sprint feature moved to workspace teams
  */
-
-// SKIPPED: Feature missing/moved in latest layout (Project route now only has Board, Calendar, Timesheet, Settings)
 test.describe
   .skip("Sprints", () => {
     // Run tests serially to prevent auth token rotation issues

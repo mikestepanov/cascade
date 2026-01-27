@@ -63,29 +63,16 @@ test.describe("Onboarding Wizard", () => {
     await onboarding.goto();
     await page.waitForLoadState("networkidle");
 
-    // Wait for role selection to appear
     await onboarding.waitForWizard();
-
-    // Click team lead card
     await onboarding.selectTeamLead();
-
-    // Should select the card and advance automatically
-    // (Implicitly verified by selectTeamLead action now)
   });
 
   test("can select team member role", async ({ page }) => {
     const onboarding = new OnboardingPage(page);
     await onboarding.goto();
     await page.waitForLoadState("networkidle");
-
-    // Wait for role selection to appear
     await onboarding.waitForWizard();
-
-    // Click team member card
     await onboarding.selectTeamMember();
-
-    // Should select the card and advance automatically
-    // (Implicitly verified by selectTeamMember action now)
   });
 
   // TODO: Dashboard stuck in loading state after skip - needs investigation

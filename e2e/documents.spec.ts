@@ -3,19 +3,8 @@ import { expect, authenticatedTest as test } from "./fixtures";
 /**
  * Documents E2E Tests
  *
- * Tests the document management functionality:
- * - Document list view
- * - Creating documents
- * - Document editor
- * - Document deletion
- *
- * Uses serial mode to prevent auth token rotation issues between tests.
- * Convex uses single-use refresh tokens - when Test 1 refreshes tokens,
- * Test 2 loading stale tokens from file will fail.
+ * SKIPPED: BlockNote 0.15 incompatible with React 19
  */
-
-// SKIPPED: React 19 dispatcher conflict with BlockNote 0.15
-// TODO: Upgrade BlockNote to a React 19 compatible version
 test.describe
   .skip("Documents", () => {
     // Run tests serially to prevent auth token rotation issues
