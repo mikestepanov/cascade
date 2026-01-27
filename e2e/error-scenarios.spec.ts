@@ -4,43 +4,13 @@ import { authenticatedTest, expect, test } from "./fixtures";
  * Error Scenario E2E Tests
  *
  * Tests error handling and edge cases:
- * - 404 pages for non-existent routes
  * - Access to non-existent resources
  * - Unauthenticated access to protected routes
+ *
+ * Note: Traditional 404 pages for random routes don't exist in this app
+ * because /$orgSlug is a catch-all dynamic route. Invalid org slugs
+ * redirect to landing page instead of showing 404.
  */
-
-test.describe("404 Error Pages", () => {
-  test("shows 404 page for non-existent public route", async ({ page }) => {
-    await page.goto("/this-route-definitely-does-not-exist-12345");
-    await page.waitForLoadState("domcontentloaded");
-
-    // Should show 404 page
-    await expect(page.getByText("404")).toBeVisible({ timeout: 10000 });
-    await expect(page.getByText(/page not found/i)).toBeVisible();
-
-    // Should have link to go home
-    await expect(page.getByRole("link", { name: /go home/i })).toBeVisible();
-  });
-
-  test("can navigate home from 404 page", async ({ page }) => {
-    await page.goto("/non-existent-page-xyz");
-    await page.waitForLoadState("domcontentloaded");
-
-    // Wait for 404 page
-    await expect(page.getByText("404")).toBeVisible({ timeout: 10000 });
-
-    // Click go home link
-    await page.getByRole("link", { name: /go home/i }).click();
-    await page.waitForLoadState("domcontentloaded");
-
-    // Should be on landing page
-    await expect(page).toHaveURL("/");
-    // Landing page should show hero section
-    await expect(page.getByRole("heading", { name: /revolutionize/i })).toBeVisible({
-      timeout: 10000,
-    });
-  });
-});
 
 test.describe("Unauthenticated Access", () => {
   test("redirects to signin when accessing protected route", async ({ page }) => {
