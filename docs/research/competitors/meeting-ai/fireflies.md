@@ -1,49 +1,28 @@
-# Fireflies.ai - Competitor Analysis
+# Competitor Analysis: Fireflies.ai
 
-> **Category:** End-User Meeting Intelligence
-> **Type:** Proprietary SaaS
-> **Website:** https://fireflies.ai
+> **Focus:** Integrations & "Voice Commands"
+> **Vibe:** " The Connecting Glue" - It connects meetings to apps.
 
----
+## 1. Feature Scraping Matrix
 
-## Overview
+| Feature            | Why it's useful                                        | Nixelo's "Configurable Edge"                                                                 |
+| :----------------- | :----------------------------------------------------- | :------------------------------------------------------------------------------------------- |
+| **Voice Commands** | Trigger actions without leaving the conversation.      | **"Magic Words":** "Hey Nixelo, flag this as a blocker" -> Creates high-priority issue.      |
+| **Topic Tracker**  | Track specific keywords (e.g., "Competitor X", "Bug"). | **"Regression Alert":** If "Bug" + "Production" mentioned > 3 times, alert Engineering Lead. |
+| **AskFred**        | ChatGPT wrapper to query meeting history.              | **"Recall":** "When did we decide to use Postgres?" -> Links to specific meeting timestamp.  |
 
-**Fireflies.ai** is a meeting transcription tool known for its extensive integrations and conversational AI search "AskFred".
+## 2. Deep Dive: Fireflies.ai (The "Integrator")
 
-## Platforms
+**Why it wins:** It connects to _everything_ (Zapier, Slack, Asana, Salesforce). It frames itself as an "Workflow Automation" tool, not just a "Recorder".
+**Weakness:** Transcription accuracy can be lower than Otter. UI feels more utilitarian.
 
-- Zoom
-- Google Meet
-- Microsoft Teams
-- Webex
-- RingCentral
-- Aircall
+### Technical Implementation
 
-## Features
+- **Topic Tracker:** Uses keyword extraction + basic NLP to categorize segments.
+- **AskFred:** Built on **OpenAI GPT** models. It indexes transcripts into a vector database for RAG (Retrieval Augmented Generation).
+- **Integration Engines:** Heavy usage of **Webhooks** and middleware (Zapier/Make) to push data out.
 
-- Auto-join meetings from calendar
-- Transcription in 69 languages
-- "AskFred" AI search (query transcripts conversationally)
-- Topic tracking
-- Conversation intelligence
-- API access for custom workflows
-- CRM integrations (Salesforce, HubSpot)
+## 3. Nixelo Strategy
 
-## Pricing
-
-- **Free:** Limited transcription credits
-- **Pro:** $10/user/mo (Unlimited transcription)
-- **Business:** $19/user/mo (+ Analytics, integrations)
-- **Enterprise:** Custom
-
-## Strengths ✅
-
-- Mature product with large user base
-- 69 language support
-- Strong API for developers
-- Affordable pricing
-
-## Weaknesses ❌
-
-- Standalone product - creates another data silo
-- No native project management features (requires integration)
+Fireflies proves that **Voice-to-Action** is valuable.
+**Strategy:** We should implement **Voice Commands** as a primary interface for the "Proof of Work" module. "I'm starting deep work code" (spoken) -> Starts Timer & Slack DND.
