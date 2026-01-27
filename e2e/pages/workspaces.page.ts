@@ -78,7 +78,6 @@ export class WorkspacesPage extends BasePage {
 
     // Wait for modal to be stable - description input often loads or re-renders
     await this.workspaceNameInput.waitFor({ state: "visible", timeout: 10000 });
-    // await this.workspaceDescriptionInput.waitFor({ state: "visible", timeout: 10000 });
 
     await this.workspaceNameInput.fill(name);
 
@@ -90,6 +89,11 @@ export class WorkspacesPage extends BasePage {
     }
 
     await this.submitWorkspaceButton.click({ force: true });
+
+    // Wait for success toast to appear - this confirms the mutation completed
+    await expect(
+      this.page.getByText(/workspace created/i).or(this.page.locator("[data-sonner-toast]")),
+    ).toBeVisible({ timeout: 15000 });
 
     // Wait for modal to close (name input disappears)
     await expect(this.workspaceNameInput).not.toBeVisible({ timeout: 15000 });

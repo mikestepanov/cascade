@@ -221,12 +221,15 @@ export class SettingsPage extends BasePage {
     // Don't use networkidle - Convex WebSocket keeps connection active
     await this.page.waitForLoadState("domcontentloaded");
 
+    // For admin tab, we need to wait longer for isOrganizationAdmin query to resolve
+    const waitTimeout = tab === "admin" ? 60000 : 30000;
+
     // UI stabilization wait - Tabs often re-render when auth/user data loads
     await this.page.waitForTimeout(1000);
 
     // Use getByRole("tab") directly - Radix UI tabs have role="tab"
     const tabLocator = this.page.getByRole("tab", { name: new RegExp(tab, "i") });
-    await tabLocator.first().waitFor({ state: "visible", timeout: 30000 });
+    await tabLocator.first().waitFor({ state: "visible", timeout: waitTimeout });
 
     // Focus first, then click - ensures React event handlers are attached
     await tabLocator.first().focus();

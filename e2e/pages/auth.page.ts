@@ -236,6 +236,8 @@ export class AuthPage extends BasePage {
     await this.emailInput.fill(email);
     await this.passwordInput.fill(password);
     await this.signUpButton.click();
+    // Wait for form submission - button may become disabled or form may transition
+    await this.page.waitForTimeout(1000);
   }
 
   async navigateToSignUp() {

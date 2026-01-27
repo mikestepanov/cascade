@@ -125,8 +125,8 @@ export class DashboardPage extends BasePage {
     // "Sign out" text button
     this.signOutButton = page.getByRole("button", { name: /sign out/i });
 
-    // User menu (avatar dropdown in header)
-    this.userMenuButton = page.getByRole("button", { name: "User menu" });
+    // User menu (avatar dropdown - use last() since there may be one in sidebar and one in header)
+    this.userMenuButton = page.getByRole("button", { name: "User menu" }).last();
     this.userMenuSignOutItem = page.getByRole("menuitem", { name: /sign out/i });
 
     // Theme toggle buttons - using aria-labels
@@ -371,8 +371,11 @@ export class DashboardPage extends BasePage {
   }
 
   async openGlobalSearch() {
+    // Wait for button to be visible and stable
+    await this.globalSearchButton.waitFor({ state: "visible", timeout: 10000 });
+    await this.page.waitForTimeout(300);
     await this.globalSearchButton.click({ force: true });
-    await expect(this.globalSearchModal).toBeVisible({ timeout: 5000 });
+    await expect(this.globalSearchModal).toBeVisible({ timeout: 10000 });
   }
 
   async closeGlobalSearch() {

@@ -1,6 +1,5 @@
 import type { Locator, Page } from "@playwright/test";
 import { expect } from "@playwright/test";
-import { BasePage } from "./base.page";
 
 const TRANSITION_TIMEOUT = 15000;
 
@@ -9,8 +8,12 @@ const TRANSITION_TIMEOUT = 15000;
  * Handles both:
  * - The new onboarding wizard (role selection, features)
  * - The legacy Driver.js welcome tour
+ *
+ * NOTE: Does NOT extend BasePage because onboarding happens BEFORE
+ * the user has an organization. The orgSlug is not available yet.
  */
-export class OnboardingPage extends BasePage {
+export class OnboardingPage {
+  readonly page: Page;
   // ===================
   // Onboarding Wizard Locators
   // ===================
@@ -51,8 +54,8 @@ export class OnboardingPage extends BasePage {
   readonly tourCloseButton: Locator;
   readonly tourProgress: Locator;
 
-  constructor(page: Page, orgSlug: string) {
-    super(page, orgSlug);
+  constructor(page: Page) {
+    this.page = page;
 
     // Onboarding wizard
     this.welcomeHeading = page.getByRole("heading", { name: /welcome to nixelo/i });
@@ -94,6 +97,18 @@ export class OnboardingPage extends BasePage {
   async goto(): Promise<void> {
     // Onboarding shows on /onboarding route for new users
     await this.page.goto("/onboarding");
+  }
+
+  /**
+   * Helper to check if a locator is visible
+   */
+  async isVisible(locator: Locator): Promise<boolean> {
+    try {
+      await expect(locator).toBeVisible({ timeout: 5000 });
+      return true;
+    } catch {
+      return false;
+    }
   }
 
   /**
