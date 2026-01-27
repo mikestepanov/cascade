@@ -29,7 +29,7 @@ test.describe("Integration Workflows", () => {
 
       // Step 1: Navigate to projects
       await projectsPage.goto();
-      await expect(page).toHaveURL(/\/workspaces/);
+      await expect(page).toHaveURL(/\/projects/);
 
       // Step 2: Create a workspace (needed for project)
       await projectsPage.createWorkspace(`Int WS ${timestamp}`);
