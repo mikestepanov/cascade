@@ -41,6 +41,12 @@ vi.mock("@/hooks/useOrgContext", () => ({
     organizationName: "Test organization",
     userRole: "admin",
   }),
+  useOrganizationOptional: () => ({
+    organizationId: "org123",
+    orgSlug: "test-organization",
+    organizationName: "Test organization",
+    userRole: "admin",
+  }),
 }));
 
 // Mock TanStack Router - use importOriginal to preserve all exports

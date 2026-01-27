@@ -461,7 +461,7 @@ export class DashboardPage extends BasePage {
     tab: "dashboard" | "documents" | "projects" | "timesheet" | "calendar" | "settings",
   ) {
     // Check URL contains the tab path segment
-    // Note: "projects" tab now uses /projects/ URL path
+    // Note: "projects" tab uses /workspaces/ URL path
     const tabPaths = {
       dashboard: /\/dashboard/,
       documents: /\/documents/,

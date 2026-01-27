@@ -16,6 +16,7 @@ import {
   urlPatterns,
 } from "../locators";
 import { waitForMockOTP } from "./otp-helpers";
+import { ROUTES } from "./routes";
 import { testUserService } from "./test-user-service";
 import { waitForFormReady } from "./wait-helpers";
 
@@ -256,10 +257,10 @@ export async function trySignInUser(
         },
       );
 
-      // Navigate to /app gateway which handles auth routing to the correct org dashboard
-      await page.goto(`${baseURL}/app`, { waitUntil: "domcontentloaded" });
+      // Navigate to app gateway which handles auth routing to the correct org dashboard
+      await page.goto(`${baseURL}${ROUTES.app.build()}`, { waitUntil: "domcontentloaded" });
 
-      // Wait to confirm we are logged in - /app will redirect to /:orgSlug/dashboard or /onboarding
+      // Wait to confirm we are logged in - app gateway will redirect to /:orgSlug/dashboard or /onboarding
       try {
         await page.waitForURL(urlPatterns.dashboardOrOnboarding, { timeout: 15000 });
         if (await isOnDashboard(page)) {

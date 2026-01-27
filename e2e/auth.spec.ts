@@ -1,6 +1,7 @@
 import { expect, test } from "./fixtures";
 import { getTestEmailAddress } from "./utils/helpers";
 import { waitForMockOTP } from "./utils/otp-helpers";
+import { ROUTES } from "./utils/routes";
 
 /**
  * Authentication E2E Tests
@@ -175,8 +176,8 @@ test.describe("Integration", () => {
     // If we're on the landing page, it means auth state wasn't ready
     // Wait longer and check if we get redirected properly
     if (page.url().endsWith("/") || page.url().endsWith("localhost:5555")) {
-      // Manually navigate to /app to trigger proper auth check
-      await page.goto("/app");
+      // Manually navigate to app gateway to trigger proper auth check
+      await page.goto(ROUTES.app.build());
       await page.waitForTimeout(2000);
     }
 

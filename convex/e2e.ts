@@ -2452,3 +2452,32 @@ export const nukeAllTestUsersInternal = internalMutation({
     return { success: true, deleted: deletedCount };
   },
 });
+
+/**
+ * Internal mutation to cleanup expired test OTP codes
+ * Called by cron job to prevent testOtpCodes table from growing indefinitely
+ */
+export const cleanupExpiredOtpsInternal = internalMutation({
+  args: {},
+  returns: v.object({
+    success: v.boolean(),
+    deleted: v.number(),
+  }),
+  handler: async (ctx) => {
+    const now = Date.now();
+
+    // Find expired OTP codes using the by_expiry index
+    const expiredOtps = await ctx.db
+      .query("testOtpCodes")
+      .withIndex("by_expiry", (q) => q.lt("expiresAt", now))
+      .collect();
+
+    let deletedCount = 0;
+    for (const otp of expiredOtps) {
+      await ctx.db.delete(otp._id);
+      deletedCount++;
+    }
+
+    return { success: true, deleted: deletedCount };
+  },
+});
