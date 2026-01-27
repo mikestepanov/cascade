@@ -32,8 +32,8 @@ test.describe("Dashboard Tests", () => {
     test("can navigate between tabs", async ({ dashboardPage }) => {
       await dashboardPage.goto();
 
-      await dashboardPage.navigateTo("projects");
-      await dashboardPage.expectActiveTab("projects");
+      await dashboardPage.navigateTo("workspaces");
+      await dashboardPage.expectActiveTab("workspaces");
 
       await dashboardPage.navigateTo("documents");
       await dashboardPage.expectActiveTab("documents");
@@ -48,7 +48,7 @@ test.describe("Dashboard Tests", () => {
       await dashboardPage.goto();
       await expect(dashboardPage.mainContent).toBeVisible();
       await expect(dashboardPage.myIssuesSection).toBeVisible();
-      await expect(dashboardPage.projectsSection).toBeVisible();
+      await expect(dashboardPage.workspacesSection).toBeVisible();
     });
 
     test("can filter issues", async ({ dashboardPage }) => {

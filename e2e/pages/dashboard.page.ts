@@ -12,7 +12,7 @@ export class DashboardPage extends BasePage {
   // ===================
   readonly dashboardTab: Locator;
   readonly documentsTab: Locator;
-  readonly projectsTab: Locator;
+  readonly workspacesTab: Locator;
   readonly timesheetTab: Locator;
   readonly calendarTab: Locator;
   readonly settingsTab: Locator;
@@ -51,7 +51,7 @@ export class DashboardPage extends BasePage {
   // Locators - Dashboard Content
   // ===================
   readonly myIssuesSection: Locator;
-  readonly projectsSection: Locator;
+  readonly workspacesSection: Locator;
   readonly recentActivitySection: Locator;
   readonly quickStatsSection: Locator;
   readonly assignedTab: Locator;
@@ -99,9 +99,9 @@ export class DashboardPage extends BasePage {
     this.documentsTab = page
       .locator("[data-tour='nav-documents']")
       .or(navSidebar.getByRole("link", { name: /^documents$/i }));
-    // Projects/Workspaces - the inner nav may have "Workspaces" instead of "Projects"
-    this.projectsTab = page
-      .locator("[data-tour='nav-projects']")
+    // Workspaces navigation tab
+    this.workspacesTab = page
+      .locator("[data-tour='nav-workspaces']")
       .or(navSidebar.getByRole("link", { name: /^workspaces$/i }));
     this.timesheetTab = page
       .locator("[data-tour='nav-timesheet']")
@@ -142,7 +142,7 @@ export class DashboardPage extends BasePage {
 
     // Dashboard specific content - match actual UI headings
     this.myIssuesSection = page.getByRole("heading", { name: /feed/i }).first();
-    this.projectsSection = page.getByRole("heading", { name: /workspaces/i });
+    this.workspacesSection = page.getByRole("heading", { name: /workspaces/i });
     this.recentActivitySection = page.getByText(/recent activity/i);
     this.quickStatsSection = page.getByText(/quick stats/i);
     // Issue filter tabs: "Assigned (0)" and "Created (0)"
@@ -270,12 +270,12 @@ export class DashboardPage extends BasePage {
   }
 
   async navigateTo(
-    tab: "dashboard" | "documents" | "projects" | "timesheet" | "calendar" | "settings",
+    tab: "dashboard" | "documents" | "workspaces" | "timesheet" | "calendar" | "settings",
   ) {
     const tabs = {
       dashboard: this.dashboardTab,
       documents: this.documentsTab,
-      projects: this.projectsTab,
+      workspaces: this.workspacesTab,
       timesheet: this.timesheetTab,
       calendar: this.calendarTab,
       settings: this.settingsTab,
@@ -458,14 +458,13 @@ export class DashboardPage extends BasePage {
   }
 
   async expectActiveTab(
-    tab: "dashboard" | "documents" | "projects" | "timesheet" | "calendar" | "settings",
+    tab: "dashboard" | "documents" | "workspaces" | "timesheet" | "calendar" | "settings",
   ) {
     // Check URL contains the tab path segment
-    // Note: "projects" tab uses /workspaces/ URL path
     const tabPaths = {
       dashboard: /\/dashboard/,
       documents: /\/documents/,
-      projects: /\/workspaces/,
+      workspaces: /\/workspaces/,
       timesheet: /\/timesheet/,
       calendar: /\/calendar/,
       settings: /\/settings/,
