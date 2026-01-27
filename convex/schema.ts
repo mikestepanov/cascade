@@ -1139,7 +1139,7 @@ const applicationTables = {
     .index("by_project", ["projectId"])
     .index("by_organization_status", ["organizationId", "status"]),
 
-  // Companies/Organizations (Multi-tenant support)
+  // Organizations (Multi-tenant support)
   organizations: defineTable({
     name: v.string(), // organization name
     slug: v.string(), // URL-friendly slug: "acme-corp", "example-agency"

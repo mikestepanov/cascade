@@ -2072,17 +2072,17 @@ export const nukeWorkspacesInternal = internalMutation({
 
     let deletedCount = 0;
 
-    // 2. Orphan Cleanup: Delete companies/workspaces matching E2E patterns
+    // 2. Orphan Cleanup: Delete organizations/workspaces matching E2E patterns
     // This catches data where the creator user was already deleted
 
-    // Delete orphan companies by slug/name pattern
-    const orphanCompanies = await ctx.db
+    // Delete orphan organizations by slug/name pattern
+    const orphanOrganizations = await ctx.db
       .query("organizations")
       .withIndex("by_slug")
       .filter((q) => q.or(q.eq(q.field("slug"), "nixelo-e2e"), q.eq(q.field("name"), "Nixelo E2E")))
       .collect();
 
-    // Also check for companies wrapping E2E workspaces if possible?
+    // Also check for organizations wrapping E2E workspaces if possible?
     // Usually workspaces are children of organizations.
     // In the schema, `workspaces` have `organizationId`.
     // We should look for `workspaces` named "E2E Testing Workspace" and delete them + their parent organization if it's test-only?
@@ -2114,12 +2114,12 @@ export const nukeWorkspacesInternal = internalMutation({
 
     // Continue with standard cleanup...
     for (const user of testUsers) {
-      const companies = await ctx.db
+      const organizations = await ctx.db
         .query("organizations")
         .withIndex("by_creator", (q) => q.eq("createdBy", user._id))
         .collect();
 
-      for (const organization of companies) {
+      for (const organization of organizations) {
         // Delete organization members
         const members = await ctx.db
           .query("organizationMembers")
@@ -2243,15 +2243,13 @@ export const resetTestWorkspaceInternal = internalMutation({
       deletedCount++;
     }
 
-    // Also try to find companies (containers) with this name?
-    // "E2E Testing Workspace" is used for the workspace list item, which comes from companies/workspaces.
-    // Let's also check companies just in case
-    const companies = await ctx.db
+    // Also try to find organizations with this name
+    const orgsWithName = await ctx.db
       .query("organizations")
       .filter((q) => q.eq(q.field("name"), args.name))
       .collect();
 
-    for (const organization of companies) {
+    for (const organization of orgsWithName) {
       // Delete children logic similar to nuke
       // ... abbreviated for safety, assume nuke handles big cleanup, this handles targeted test iterations
       // If we are strictly creating a workspace (department), the above workspace deletion is sufficient.

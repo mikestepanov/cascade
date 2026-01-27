@@ -8,12 +8,12 @@ It combines all 9 domains (PM, CRM, AI, Dev, etc.) into one massive Entity Relat
 ```mermaid
 erDiagram
     %% --- Organization Domain ---
-    COMPANY ||--o{ WORKSPACE : "has"
-    COMPANY ||--o{ COMPANY_MEMBER : "staffs"
+    ORGANIZATION ||--o{ WORKSPACE : "has"
+    ORGANIZATION ||--o{ ORG_MEMBER : "staffs"
     WORKSPACE ||--o{ TEAM : "organizes"
     TEAM ||--o{ PROJECT : "owns"
 
-    COMPANY {
+    ORGANIZATION {
         id _id PK
         string slug
     }

@@ -67,7 +67,7 @@ className = "text-ui-text-tertiary dark:text-ui-text-tertiary-dark";
 
 ```tsx
 import { ROUTES } from "@/config/routes";
-<Link to={ROUTES.dashboard(companySlug)}>Dashboard</Link>;
+<Link to={ROUTES.dashboard(orgSlug)}>Dashboard</Link>;
 ```
 
 ❌ **WRONG:**

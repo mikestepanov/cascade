@@ -219,7 +219,7 @@ describe("organizations", () => {
       expect(bySlug).toBeNull();
     });
 
-    it("should list user companies", async () => {
+    it("should list user organizations", async () => {
       const t = convexTest(schema, modules);
       const userId = await createTestUser(t);
       const asUser = asAuthenticatedUser(t, userId);
