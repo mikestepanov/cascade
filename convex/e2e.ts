@@ -1630,46 +1630,66 @@ export const verifyTestUserInternal = internalMutation({
 });
 
 /**
- * Get the latest OTP code for a user (email)
- * NOTE: dependent on "authVerificationCodes" table existing from @convex-dev/auth
+ * Store plaintext OTP for test users
+ * Called from OTPVerification.ts when sending verification emails to test users.
+ * The authVerificationCodes table stores hashed codes, making them unreadable.
+ */
+export const storeTestOtp = internalMutation({
+  args: {
+    email: v.string(),
+    code: v.string(),
+  },
+  handler: async (ctx, args) => {
+    // Only allow test emails
+    if (!isTestEmail(args.email)) {
+      throw new Error("Only test emails allowed");
+    }
+
+    // Delete any existing OTP for this email
+    const existingOtp = await ctx.db
+      .query("testOtpCodes")
+      .withIndex("by_email", (q) => q.eq("email", args.email))
+      .first();
+
+    if (existingOtp) {
+      await ctx.db.delete(existingOtp._id);
+    }
+
+    // Store new OTP with 15-minute expiration
+    await ctx.db.insert("testOtpCodes", {
+      email: args.email,
+      code: args.code,
+      expiresAt: Date.now() + 15 * 60 * 1000,
+    });
+  },
+});
+
+/**
+ * Get the latest OTP code for a test user (email)
+ * Reads from testOtpCodes table which stores plaintext codes for E2E testing.
  */
 export const getLatestOTP = internalQuery({
   args: { email: v.string() },
   handler: async (ctx, args) => {
-    // 1. Find the user by email
-    const user = await ctx.db
-      .query("users")
-      .withIndex("email", (q: any) => q.eq("email", args.email))
-      .unique();
-
-    if (!user) return null;
-
-    // 2. Find ANY account for this user (password, google, etc)
-    const accounts = await ctx.db
-      .query("authAccounts")
-      .withIndex("userIdAndProvider", (q: any) => q.eq("userId", user._id))
-      .collect();
-
-    if (accounts.length === 0) return null;
-
-    // 3. Find the latest verification code across all accounts
-    let latestCode: { code: string; _creationTime: number } | null = null;
-
-    for (const account of accounts) {
-      const code = await ctx.db
-        .query("authVerificationCodes")
-        .filter((q) => q.eq(q.field("accountId"), account._id))
-        .order("desc")
-        .first();
-
-      if (code) {
-        if (!latestCode || code._creationTime > latestCode._creationTime) {
-          latestCode = code;
-        }
-      }
+    // Only allow test emails
+    if (!isTestEmail(args.email)) {
+      return null;
     }
 
-    return latestCode?.code ?? null;
+    // Get from testOtpCodes table (plaintext for E2E)
+    const otpRecord = await ctx.db
+      .query("testOtpCodes")
+      .withIndex("by_email", (q) => q.eq("email", args.email))
+      .first();
+
+    if (!otpRecord) return null;
+
+    // Check if expired
+    if (otpRecord.expiresAt < Date.now()) {
+      return null;
+    }
+
+    return otpRecord.code;
   },
 });
 

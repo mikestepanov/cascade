@@ -329,6 +329,8 @@ export class AuthPage extends BasePage {
   async verifyEmail(code: string) {
     await this.verifyCodeInput.fill(code);
     await this.verifyEmailButton.click({ force: true });
+    // Wait for verification to process
+    await this.page.waitForTimeout(1000);
   }
 
   async resendVerificationCode() {

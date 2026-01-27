@@ -119,7 +119,8 @@ export class DashboardPage extends BasePage {
     this.commandPaletteButton = page.getByRole("button", { name: /open command palette/i });
     // Keyboard shortcuts help button (? icon)
     this.shortcutsHelpButton = page.getByRole("button", { name: /keyboard shortcuts/i });
-    this.globalSearchButton = page.getByRole("button", { name: /search/i });
+    // Global search button contains "Search..." text with keyboard shortcut hint "⌘K"
+    this.globalSearchButton = page.locator("button").filter({ hasText: "Search..." });
     // Bell notification icon button - find by the unique bell SVG path (no aria-label in NotificationCenter component)
     this.notificationButton = page.locator("button:has(svg path[d*='M15 17h5'])");
     // "Sign out" text button

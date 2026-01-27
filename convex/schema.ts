@@ -1525,6 +1525,17 @@ const applicationTables = {
     .index("by_actor", ["actorId"])
     .index("by_target", ["targetId"])
     .index("by_timestamp", ["timestamp"]),
+
+  // E2E Testing: Plaintext OTP codes for test users only
+  // The authVerificationCodes table stores hashed codes, making them unreadable.
+  // For E2E tests, we store plaintext codes here (only for @inbox.mailtrap.io emails)
+  testOtpCodes: defineTable({
+    email: v.string(), // Test user email
+    code: v.string(), // Plaintext OTP code
+    expiresAt: v.number(), // Expiration timestamp
+  })
+    .index("by_email", ["email"])
+    .index("by_expiry", ["expiresAt"]),
 };
 
 export default defineSchema({

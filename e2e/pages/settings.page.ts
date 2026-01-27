@@ -361,6 +361,9 @@ export class SettingsPage extends BasePage {
   }
 
   async toggleTimeApproval(enabled: boolean) {
+    // Wait for the switch to appear - OrganizationSettings component makes its own query
+    await this.requiresTimeApprovalSwitch.waitFor({ state: "visible", timeout: 30000 });
+
     const isChecked = await this.requiresTimeApprovalSwitch.getAttribute("aria-checked");
     if ((isChecked === "true") !== enabled) {
       await this.requiresTimeApprovalSwitch.click();

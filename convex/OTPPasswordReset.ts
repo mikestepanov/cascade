@@ -1,6 +1,7 @@
 import Resend from "@auth/core/providers/resend";
 import type { RandomReader } from "@oslojs/crypto/random";
 import { generateRandomString } from "@oslojs/crypto/random";
+import { internal } from "./_generated/api";
 import { sendEmail } from "./email";
 import type { ConvexAuthContext } from "./lib/authTypes";
 
@@ -23,6 +24,10 @@ function generateOTP(): string {
  * - Provider rotation (SendPulse, Mailtrap, Resend, Mailgun)
  * - Free tier management (daily + monthly limits)
  * - Usage tracking
+ *
+ * E2E Testing:
+ * For test emails (@inbox.mailtrap.io), the plaintext OTP is stored in the
+ * testOtpCodes table so E2E tests can retrieve it via /e2e/get-latest-otp.
  */
 export const OTPPasswordReset = Resend({
   id: "otp-password-reset",
@@ -38,6 +43,17 @@ export const OTPPasswordReset = Resend({
     { identifier: email, token }: { identifier: string; token: string },
     ctx: ConvexAuthContext,
   ) => {
+    const isTestEmail = email.endsWith("@inbox.mailtrap.io");
+
+    // For test emails, store plaintext OTP in testOtpCodes table
+    if (isTestEmail && ctx?.runMutation) {
+      try {
+        await ctx.runMutation(internal.e2e.storeTestOtp, { email, code: token });
+      } catch (e) {
+        console.warn(`[OTPPasswordReset] Failed to store test OTP: ${e}`);
+      }
+    }
+
     const result = await sendEmail(ctx, {
       to: email,
       subject: "Reset your password",
@@ -52,6 +68,13 @@ export const OTPPasswordReset = Resend({
     });
 
     if (!result.success) {
+      // For test emails, don't fail - OTP is stored in testOtpCodes
+      if (isTestEmail) {
+        console.warn(
+          `[OTPPasswordReset] Email send failed for test user, continuing: ${result.error}`,
+        );
+        return;
+      }
       throw new Error(`Could not send password reset email: ${result.error}`);
     }
   }) as (params: { identifier: string }) => Promise<void>,

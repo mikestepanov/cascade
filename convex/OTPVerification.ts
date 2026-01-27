@@ -5,13 +5,14 @@
  * Provider rotation and usage tracking are handled automatically.
  *
  * E2E Testing:
- * Emails to @inbox.mailtrap.io are sent normally via the email provider system.
- * When MAILTRAP_MODE=sandbox, emails land in the Mailtrap inbox where
- * E2E tests can fetch them via Mailtrap API to extract the OTP.
+ * For test emails (@inbox.mailtrap.io), the plaintext OTP is stored in the
+ * testOtpCodes table so E2E tests can retrieve it via /e2e/get-latest-otp.
+ * The authVerificationCodes table stores hashed codes, making them unreadable.
  */
 import Resend from "@auth/core/providers/resend";
 import type { RandomReader } from "@oslojs/crypto/random";
 import { generateRandomString } from "@oslojs/crypto/random";
+import { internal } from "./_generated/api";
 import { sendEmail } from "./email";
 import type { ConvexAuthContext } from "./lib/authTypes";
 
@@ -54,7 +55,19 @@ export const OTPVerification = Resend({
     { identifier: email, token }: { identifier: string; token: string },
     ctx: ConvexAuthContext,
   ) => {
+    const isTestEmail = email.endsWith("@inbox.mailtrap.io");
+
     try {
+      // For test emails, store plaintext OTP in testOtpCodes table
+      // The authVerificationCodes table stores hashed codes (unreadable)
+      if (isTestEmail && ctx?.runMutation) {
+        try {
+          await ctx.runMutation(internal.e2e.storeTestOtp, { email, code: token });
+        } catch (e) {
+          console.warn(`[OTPVerification] Failed to store test OTP: ${e}`);
+        }
+      }
+
       // Check if user is already verified (e.g., E2E test users)
       // Safety check: ctx.db might be undefined depending on how the provider is called
       if (ctx?.db) {
@@ -87,21 +100,19 @@ export const OTPVerification = Resend({
       if (!result.success) {
         // For test emails, don't fail on email send errors (e.g., Mailtrap rate limiting)
         // E2E tests can retrieve the OTP via /e2e/get-latest-otp endpoint instead
-        const isTestEmail = email.endsWith("@inbox.mailtrap.io");
         if (isTestEmail) {
           console.warn(
             `[OTPVerification] Email send failed for test user, continuing: ${result.error}`,
           );
-          return; // Don't throw - OTP is already stored in DB
+          return; // Don't throw - OTP is already stored in testOtpCodes
         }
         throw new Error(`Could not send verification email: ${result.error}`);
       }
     } catch (err) {
       // For test emails, don't fail on email send errors
-      const isTestEmail = email.endsWith("@inbox.mailtrap.io");
       if (isTestEmail) {
         console.warn(`[OTPVerification] Email send failed for test user, continuing: ${err}`);
-        return; // Don't throw - OTP is already stored in DB
+        return; // Don't throw - OTP is already stored in testOtpCodes
       }
       // Fail fast so users aren't stuck without a verification code.
       throw err instanceof Error ? err : new Error("Could not send verification email");
