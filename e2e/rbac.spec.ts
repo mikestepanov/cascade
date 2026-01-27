@@ -91,12 +91,12 @@ rbacTest(
 
     if (await sprintsTab.isVisible().catch(() => false)) {
       await sprintsTab.click();
-      await adminPage.waitForTimeout(500);
+      await adminPage.waitForLoadState("domcontentloaded");
 
       const createSprintButton = adminPage.getByRole("button", {
         name: /create sprint|new sprint/i,
       });
-      await expect(createSprintButton).toBeVisible();
+      await expect(createSprintButton).toBeVisible({ timeout: 10000 });
       console.log("✓ Admin can access sprints and create sprint button");
     }
 
@@ -107,7 +107,7 @@ rbacTest(
 
     if (await analyticsTab.isVisible().catch(() => false)) {
       await analyticsTab.click();
-      await adminPage.waitForTimeout(500);
+      await adminPage.waitForLoadState("domcontentloaded");
 
       const analyticsContent = adminPage.getByText(/overview|metrics|velocity/i);
       await expect(analyticsContent.first()).toBeVisible();
@@ -159,7 +159,6 @@ rbacTest(
 
     await clientSideNavigate(editorPage, `/${rbacOrgSlug}/projects/${rbacProjectKey}/settings`);
     await editorPage.waitForLoadState("domcontentloaded");
-    await editorPage.waitForTimeout(1000);
 
     // Wait for redirect to board
     await editorPage.waitForURL(`**/projects/${rbacProjectKey}/board`, { timeout: 15000 });
@@ -177,7 +176,7 @@ rbacTest(
 
     if (await sprintsTab.isVisible().catch(() => false)) {
       await sprintsTab.click();
-      await editorPage.waitForTimeout(500);
+      await editorPage.waitForLoadState("domcontentloaded");
 
       const createSprintButton = editorPage.getByRole("button", {
         name: /create sprint|new sprint/i,
@@ -193,7 +192,7 @@ rbacTest(
 
     if (await analyticsTab.isVisible().catch(() => false)) {
       await analyticsTab.click();
-      await editorPage.waitForTimeout(500);
+      await editorPage.waitForLoadState("domcontentloaded");
 
       const analyticsContent = editorPage.getByText(/overview|metrics|velocity/i);
       await expect(analyticsContent.first()).toBeVisible();
@@ -241,7 +240,6 @@ rbacTest(
     // 5. Try to access settings directly - should redirect to board
     await clientSideNavigate(viewerPage, `/${rbacOrgSlug}/projects/${rbacProjectKey}/settings`);
     await viewerPage.waitForLoadState("domcontentloaded");
-    await viewerPage.waitForTimeout(1000);
 
     // Wait for redirect to board
     await viewerPage.waitForURL(`**/projects/${rbacProjectKey}/board`, { timeout: 15000 });
@@ -259,7 +257,7 @@ rbacTest(
 
     if (await analyticsTab.isVisible().catch(() => false)) {
       await analyticsTab.click();
-      await viewerPage.waitForTimeout(500);
+      await viewerPage.waitForLoadState("domcontentloaded");
 
       const analyticsContent = viewerPage.getByText(/overview|metrics|velocity/i);
       await expect(analyticsContent.first()).toBeVisible();
