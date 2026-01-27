@@ -174,11 +174,10 @@ test.describe("Integration", () => {
     console.log(`[Test] Current URL after verify: ${page.url()}`);
 
     // If we're on the landing page, it means auth state wasn't ready
-    // Wait longer and check if we get redirected properly
+    // Navigate to app gateway to trigger proper auth check
     if (page.url().endsWith("/") || page.url().endsWith("localhost:5555")) {
-      // Manually navigate to app gateway to trigger proper auth check
       await page.goto(ROUTES.app.build());
-      await page.waitForTimeout(2000);
+      await page.waitForLoadState("domcontentloaded");
     }
 
     // Should redirect to dashboard or onboarding

@@ -240,6 +240,17 @@ export class OnboardingPage {
   }
 
   /**
+   * Wait for role selection cards to be interactive
+   * Use this instead of arbitrary waitForTimeout after reset/navigation
+   */
+  async waitForRoleCardsReady() {
+    await expect(this.teamLeadCard).toBeVisible({ timeout: 10000 });
+    await expect(this.teamMemberCard).toBeVisible({ timeout: 10000 });
+    await expect(this.teamLeadCard).toBeEnabled({ timeout: 5000 });
+    await expect(this.teamMemberCard).toBeEnabled({ timeout: 5000 });
+  }
+
+  /**
    * Select team lead role and verify transition
    */
   async selectTeamLead() {

@@ -57,8 +57,8 @@ export abstract class BasePage {
       { timeout: 30000 },
     );
 
-    // Wait a bit more for event handlers to be fully attached
-    await this.page.waitForTimeout(500);
+    // React fiber check confirms hydration is complete
+    // Event handlers are attached during hydration, no additional wait needed
   }
 
   /**

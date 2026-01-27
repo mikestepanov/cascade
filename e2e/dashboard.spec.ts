@@ -79,8 +79,8 @@ test.describe("Dashboard Tests", () => {
       await page.locator("body").waitFor({ state: "visible" });
       await page.locator("body").click({ force: true });
 
-      // Add small delay to ensure focus applies
-      await page.waitForTimeout(200);
+      // Wait for body to be stable before keyboard shortcut
+      await page.locator("body").waitFor({ state: "attached" });
 
       await dashboardPage.pressCommandPaletteShortcut();
 

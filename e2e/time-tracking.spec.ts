@@ -48,12 +48,10 @@ test.describe("Time Tracking", () => {
 
     await projectsPage.createProject(`Time Tracking ${now}`, projectKey);
 
-    // Verify board
-    await projectsPage.expectBoardVisible();
+    // Wait for board to be fully interactive
+    await projectsPage.waitForBoardInteractive();
 
     // Create Issue
-    // Wait for interactivity
-    await page.waitForTimeout(1000);
     await projectsPage.createIssue(issueTitle);
 
     // Close modal
@@ -63,18 +61,15 @@ test.describe("Time Tracking", () => {
     await projectsPage.openIssueDetail(issueTitle);
 
     // Start timer
-    // Assuming projectsPage has methods for time tracking or we add them
-    // For now using the logic from issues.spec.ts that expects startTimerButton
     await projectsPage.startTimer();
 
-    // Wait a bit
-    await page.waitForTimeout(2000);
+    // Wait for timer to register (check stop button appears)
+    await expect(projectsPage.stopTimerButton).toBeVisible({ timeout: 5000 });
 
     // Stop timer
     await projectsPage.stopTimer();
 
-    // Verify timer started (UI feedback handled in startTimer)
-    // Optional: Stop timer to clean up
-    await projectsPage.stopTimer();
+    // Verify timer stopped (start button should reappear)
+    await expect(projectsPage.startTimerButton).toBeVisible({ timeout: 5000 });
   });
 });

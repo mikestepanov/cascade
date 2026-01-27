@@ -437,6 +437,16 @@ export class ProjectsPage extends BasePage {
     await expect(this.projectBoard).toBeVisible();
   }
 
+  /**
+   * Wait for board to be fully interactive (create issue button enabled)
+   * Use this instead of arbitrary waitForTimeout after board loads
+   */
+  async waitForBoardInteractive() {
+    await expect(this.projectBoard).toBeVisible({ timeout: 10000 });
+    await expect(this.createIssueButton).toBeVisible({ timeout: 10000 });
+    await expect(this.createIssueButton).toBeEnabled({ timeout: 5000 });
+  }
+
   async expectProjectCount(count: number) {
     await expect(this.projectItems).toHaveCount(count);
   }

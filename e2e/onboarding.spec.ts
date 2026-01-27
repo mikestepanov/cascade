@@ -144,11 +144,9 @@ test.describe("Onboarding - Team Lead Flow", () => {
     await onboarding.goto();
     await page.waitForLoadState("networkidle");
 
-    // Wait for role selection to appear
+    // Wait for role selection to appear and be interactive
     await onboarding.waitForWizard();
-
-    // Wait for Convex real-time updates to settle after the DB mutation
-    await page.waitForTimeout(2000);
+    await onboarding.waitForRoleCardsReady();
 
     // Select Team Lead role (this transitions to the features screen)
     await onboarding.selectTeamLead();
@@ -178,11 +176,9 @@ test.describe("Onboarding - Team Member Flow", () => {
     await onboarding.goto();
     await page.waitForLoadState("networkidle");
 
-    // Wait for role selection to appear
+    // Wait for role selection to appear and be interactive
     await onboarding.waitForWizard();
-
-    // Wait for Convex real-time updates to settle after the DB mutation
-    await page.waitForTimeout(2000);
+    await onboarding.waitForRoleCardsReady();
 
     // Select Team Member role (transitions to project naming)
     await onboarding.selectTeamMember();
