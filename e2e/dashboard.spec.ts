@@ -70,18 +70,11 @@ test.describe("Dashboard Tests", () => {
       await expect(dashboardPage.commandPalette).not.toBeVisible();
     });
 
-    test("can open via keyboard shortcut", async ({ dashboardPage, page }) => {
+    test("can open via keyboard shortcut", async ({ dashboardPage }) => {
       await dashboardPage.goto();
-      await page.locator("body").waitFor({ state: "visible" });
-      await page.locator("body").click({ force: true });
-      await page.locator("body").waitFor({ state: "attached" });
-
+      // pressCommandPaletteShortcut includes retry logic and visibility check
       await dashboardPage.pressCommandPaletteShortcut();
-
-      // Use data-testid for robust selection (added in CommandPalette.tsx)
-      await expect(page.getByPlaceholder("Type a command or search...")).toBeVisible({
-        timeout: 30000,
-      });
+      await expect(dashboardPage.commandPalette).toBeVisible();
     });
   });
 

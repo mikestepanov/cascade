@@ -104,6 +104,9 @@ export const getMyCreatedIssues = authenticatedQuery({
       ...issuesFields,
       _id: v.id("issues"),
       _creationTime: v.number(),
+      projectName: v.string(),
+      projectKey: v.string(),
+      assigneeName: v.string(),
     }),
   ),
   handler: async (ctx) => {

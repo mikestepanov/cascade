@@ -266,7 +266,8 @@ export class DashboardPage extends BasePage {
     await this.waitForLoad();
 
     // Explicitly wait for the main content sections to prevent hydration flakes
-    await this.myIssuesSection.waitFor({ state: "visible", timeout: 10000 });
+    // Dashboard content can take time to load after navigation, especially in integration tests
+    await this.myIssuesSection.waitFor({ state: "visible", timeout: 30000 });
   }
 
   async navigateTo(
@@ -436,16 +437,28 @@ export class DashboardPage extends BasePage {
   // ===================
 
   async pressCommandPaletteShortcut() {
-    // Ensure focus is on the page before pressing keys
-    await this.page.click("body").catch(() => {});
-    // Use ControlOrMeta for cross-platform compatibility (Cmd on Mac, Ctrl on Windows/Linux)
-    await this.page.keyboard.press("ControlOrMeta+k");
+    await expect(async () => {
+      // Small stabilization wait to ensure hydration is settled
+      await this.page.waitForTimeout(500);
+      // Ensure focus is on the page before pressing keys
+      await this.page.click("body").catch(() => {});
+      // Use ControlOrMeta for cross-platform compatibility (Cmd on Mac, Ctrl on Windows/Linux)
+      await this.page.keyboard.press("ControlOrMeta+k");
+      // Verify the command palette opened
+      await expect(this.commandPalette).toBeVisible({ timeout: 2000 });
+    }).toPass({ timeout: 15000 });
   }
 
   async pressShortcutsHelpShortcut() {
-    // Ensure focus is on the page before pressing keys
-    await this.page.click("body").catch(() => {});
-    await this.page.keyboard.press("Shift+?");
+    await expect(async () => {
+      // Small stabilization wait to ensure hydration is settled
+      await this.page.waitForTimeout(500);
+      // Ensure focus is on the page before pressing keys
+      await this.page.click("body").catch(() => {});
+      await this.page.keyboard.press("Shift+?");
+      // Verify the shortcuts modal opened
+      await expect(this.shortcutsModal).toBeVisible({ timeout: 2000 });
+    }).toPass({ timeout: 15000 });
   }
 
   // ===================

@@ -32,7 +32,6 @@ test.describe("Time Tracking", () => {
 
     await projectsPage.goto();
     await projectsPage.createWorkspace(`TT WS ${now}`);
-    await projectsPage.createWorkspace(`TT WS ${now}`);
     await projectsPage.goto();
 
     await projectsPage.createProject(`Time Tracking ${now}`, projectKey);

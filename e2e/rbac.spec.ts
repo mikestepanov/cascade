@@ -158,8 +158,7 @@ rbacTest(
     expect(editorPage.url()).not.toContain("/settings");
     console.log("✓ Editor is redirected from settings to board");
 
-    // 6. Check sprints access
-    await clientSideNavigate(editorPage, `/${rbacOrgSlug}/projects/${rbacProjectKey}/board`);
+    // 6. Check sprints access (already on board page after redirect)
     await editorPage.waitForLoadState("domcontentloaded");
 
     const sprintsTab = editorPage
@@ -239,8 +238,7 @@ rbacTest(
     expect(viewerPage.url()).not.toContain("/settings");
     console.log("✓ Viewer is redirected from settings to board");
 
-    // 6. Check analytics access (viewers can view analytics)
-    await clientSideNavigate(viewerPage, `/${rbacOrgSlug}/projects/${rbacProjectKey}/board`);
+    // 6. Check analytics access (viewers can view analytics - already on board page after redirect)
     await viewerPage.waitForLoadState("domcontentloaded");
 
     const analyticsTab = viewerPage

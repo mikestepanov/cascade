@@ -82,20 +82,23 @@ test.describe("Integration Workflows", () => {
       await expect(page).toHaveURL(/\/board/);
       console.log("✓ On board tab");
 
+      // Project tabs are in the Tabs landmark - scope selectors to avoid matching sidebar nav
+      const projectTabs = page.getByLabel("Tabs");
+
       // Switch to Calendar
-      const calendarTab = page.getByRole("link", { name: /calendar/i });
+      const calendarTab = projectTabs.getByRole("link", { name: /calendar/i });
       await calendarTab.click();
       await expect(page).toHaveURL(/\/calendar/, { timeout: 10000 });
       console.log("✓ Navigated to calendar");
 
       // Switch to Timesheet
-      const timesheetTab = page.getByRole("link", { name: /timesheet/i });
+      const timesheetTab = projectTabs.getByRole("link", { name: /timesheet/i });
       await timesheetTab.click();
       await expect(page).toHaveURL(/\/timesheet/, { timeout: 10000 });
       console.log("✓ Navigated to timesheet");
 
       // Switch back to Board
-      const boardTab = page.getByRole("link", { name: /board/i });
+      const boardTab = projectTabs.getByRole("link", { name: /board/i });
       await boardTab.click();
       await expect(page).toHaveURL(/\/board/, { timeout: 10000 });
       console.log("✓ Navigated back to board");
