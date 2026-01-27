@@ -261,13 +261,9 @@ export class DashboardPage extends BasePage {
       await this.commandPaletteButton.waitFor({ state: "visible", timeout: 45000 });
     }
 
-    // Ensure loading spinner is gone and React is hydrated
     await this.expectLoaded();
     await this.waitForLoad();
-
-    // Explicitly wait for the main content sections to prevent hydration flakes
-    // Dashboard content can take time to load after navigation, especially in integration tests
-    await this.myIssuesSection.waitFor({ state: "visible", timeout: 30000 });
+    await expect(this.myIssuesSection).toBeVisible();
   }
 
   async navigateTo(
@@ -373,11 +369,8 @@ export class DashboardPage extends BasePage {
   }
 
   async openGlobalSearch() {
-    // Wait for button to be visible and stable
-    await this.globalSearchButton.waitFor({ state: "visible", timeout: 10000 });
-    await this.page.waitForTimeout(300);
-    await this.globalSearchButton.click({ force: true });
-    await expect(this.globalSearchModal).toBeVisible({ timeout: 10000 });
+    await this.globalSearchButton.click();
+    await expect(this.globalSearchModal).toBeVisible();
   }
 
   async closeGlobalSearch() {
@@ -437,28 +430,15 @@ export class DashboardPage extends BasePage {
   // ===================
 
   async pressCommandPaletteShortcut() {
-    await expect(async () => {
-      // Small stabilization wait to ensure hydration is settled
-      await this.page.waitForTimeout(500);
-      // Ensure focus is on the page before pressing keys
-      await this.page.click("body").catch(() => {});
-      // Use ControlOrMeta for cross-platform compatibility (Cmd on Mac, Ctrl on Windows/Linux)
-      await this.page.keyboard.press("ControlOrMeta+k");
-      // Verify the command palette opened
-      await expect(this.commandPalette).toBeVisible({ timeout: 2000 });
-    }).toPass({ timeout: 15000 });
+    await this.waitForLoad();
+    await this.page.keyboard.press("ControlOrMeta+k");
+    await expect(this.commandPalette).toBeVisible();
   }
 
   async pressShortcutsHelpShortcut() {
-    await expect(async () => {
-      // Small stabilization wait to ensure hydration is settled
-      await this.page.waitForTimeout(500);
-      // Ensure focus is on the page before pressing keys
-      await this.page.click("body").catch(() => {});
-      await this.page.keyboard.press("Shift+?");
-      // Verify the shortcuts modal opened
-      await expect(this.shortcutsModal).toBeVisible({ timeout: 2000 });
-    }).toPass({ timeout: 15000 });
+    await this.waitForLoad();
+    await this.page.keyboard.press("Shift+?");
+    await expect(this.shortcutsModal).toBeVisible();
   }
 
   // ===================
