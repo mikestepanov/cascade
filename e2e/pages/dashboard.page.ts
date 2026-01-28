@@ -245,7 +245,7 @@ export class DashboardPage extends BasePage {
 
     // Wait for dashboard app shell with recovery
     try {
-      await this.commandPaletteButton.waitFor({ state: "visible", timeout: 45000 });
+      await this.commandPaletteButton.waitFor({ state: "visible" });
     } catch (e) {
       // Check again if redirected to landing after timeout
       const currentUrl = this.page.url();
@@ -258,7 +258,7 @@ export class DashboardPage extends BasePage {
       }
       console.log("Dashboard didn't load in time, reloading...");
       await this.page.reload();
-      await this.commandPaletteButton.waitFor({ state: "visible", timeout: 45000 });
+      await this.commandPaletteButton.waitFor({ state: "visible" });
     }
 
     await this.expectLoaded();
@@ -278,7 +278,7 @@ export class DashboardPage extends BasePage {
       settings: this.settingsTab,
     };
     // Wait for tab to be visible and stable
-    await tabs[tab].waitFor({ state: "visible", timeout: 5000 });
+    await tabs[tab].waitFor({ state: "visible" });
 
     // Click and wait for navigation if it's a link-based tab
     const urlBefore = this.page.url();
@@ -339,7 +339,7 @@ export class DashboardPage extends BasePage {
 
   async openShortcutsHelp() {
     await this.shortcutsHelpButton.click({ force: true });
-    await expect(this.shortcutsModal).toBeVisible({ timeout: 5000 });
+    await expect(this.shortcutsModal).toBeVisible();
   }
 
   async closeShortcutsHelp() {
@@ -378,7 +378,7 @@ export class DashboardPage extends BasePage {
   async signOutViaUserMenu() {
     await this.userMenuButton.click();
     // Wait for dropdown content to be visible
-    await this.userMenuSignOutItem.waitFor({ state: "visible", timeout: 5000 });
+    await this.userMenuSignOutItem.waitFor({ state: "visible" });
     await this.userMenuSignOutItem.click();
   }
 
@@ -491,6 +491,6 @@ export class DashboardPage extends BasePage {
 
   async expectLoaded() {
     // Wait longer for organization context to load (auth tokens, organization data)
-    await expect(this.loadingSpinner).not.toBeVisible({ timeout: 15000 });
+    await expect(this.loadingSpinner).not.toBeVisible();
   }
 }
