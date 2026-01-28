@@ -103,6 +103,7 @@ export const updateProfile = authenticatedMutation({
       timezone?: string;
       emailNotifications?: boolean;
       desktopNotifications?: boolean;
+      emailVerificationTime?: number;
     } = {};
 
     if (args.name !== undefined) updates.name = args.name;
@@ -122,7 +123,13 @@ export const updateProfile = authenticatedMutation({
         throw conflict("Email already in use");
       }
 
-      updates.email = args.email;
+      // Check if email actually changed
+      const currentUser = await ctx.db.get(ctx.userId);
+      if (currentUser?.email !== args.email) {
+        updates.email = args.email;
+        // Revoke email verification if email changed
+        updates.emailVerificationTime = undefined;
+      }
     }
 
     if (args.avatar !== undefined) updates.image = args.avatar;

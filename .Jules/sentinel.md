@@ -12,3 +12,8 @@
 **Vulnerability:** The `S3StorageAdapter` was buffering entire file streams into memory (`chunks.push(chunk)`) before uploading to S3. This allowed an attacker to trigger an Out-Of-Memory (OOM) crash by uploading a large file (e.g., 5GB video), causing a Denial of Service.
 **Learning:** Using `Buffer.concat` on streams without size limits is dangerous. Node.js processes have limited memory (default ~2GB). Always assume streams can exceed available memory.
 **Prevention:** Refactored the upload logic to use `@aws-sdk/lib-storage`'s `Upload` class, which streams data directly to S3 using multipart uploads. Added a `PassThrough` stream to track file size without buffering.
+
+## 2025-05-26 - Email Verification Persistence on Change
+**Vulnerability:** Users could change their email address in `updateProfile` without losing their `emailVerificationTime` status. This allowed a verified user to claim any email address (including unowned ones) while appearing "verified" to the system.
+**Learning:** When allowing updates to sensitive identity fields (email, phone), simply validating the format or uniqueness is insufficient. You must also reset any associated trust markers (verification timestamps).
+**Prevention:** Always couple identity updates with a reset of verification state. Added logic to explicitly set `emailVerificationTime` to `undefined` when the email field changes.
