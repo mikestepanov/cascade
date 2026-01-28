@@ -41,11 +41,11 @@ test.describe("Sign Out", () => {
     console.log("  ✓ Sign out clicked, waiting for landing page...");
 
     // Should return to landing page - verify Get Started button is visible
-    await expect(landingPage.heroGetStartedButton).toBeVisible({ timeout: 20000 });
+    await expect(landingPage.heroGetStartedButton).toBeVisible();
 
     // Click 'Log in' from the landing page nav
     await landingPage.clickNavLogin();
-    await page.waitForURL("**/signin*", { timeout: 10000 });
+    await page.waitForURL("**/signin*");
 
     // Sign in back using the same user credentials
     const workerSuffix = `w${testInfo.parallelIndex}`;

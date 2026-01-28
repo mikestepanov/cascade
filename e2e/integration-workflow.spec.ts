@@ -175,29 +175,26 @@ test.describe("Integration Workflows", () => {
       await dashboardPage.goto();
       await dashboardPage.expectLoaded();
 
-      // Open global search
-      await dashboardPage.openGlobalSearch();
-      await expect(dashboardPage.globalSearchModal).toBeVisible();
-      console.log("✓ Global search opened");
-
-      // Type the unique search term and wait for search to complete
-      // Use retry pattern to handle component re-renders during typing
+      // Open global search, type query, and wait for results
+      // Use single retry block to handle modal/input instability from cmdk re-renders
       await expect(async () => {
-        // Wait for input to be stable and fill it
-        await dashboardPage.globalSearchInput.waitFor({ state: "visible" });
+        // Ensure modal is open
+        if (!(await dashboardPage.globalSearchModal.isVisible().catch(() => false))) {
+          await dashboardPage.globalSearchButton.click();
+          await expect(dashboardPage.globalSearchModal).toBeVisible();
+          await expect(dashboardPage.globalSearchInput).toBeVisible();
+        }
+
+        // Fill the search input
         await dashboardPage.globalSearchInput.fill(uniqueSearchTerm);
 
         // Wait for search to process - either results appear or "No results found"
-        // Note: Search requires minimum 2 characters and has debounce
         const noResultsText = page.getByText("No results found");
         const searchResultGroup = page.locator("[cmdk-group]");
-
-        // Wait for either results or "no results" to appear
         await expect(noResultsText.or(searchResultGroup)).toBeVisible();
       }).toPass();
 
-      // Search has completed - either found results or "No results found"
-      console.log("✓ Search query entered and processed");
+      console.log("✓ Global search opened and search query processed");
 
       // Close search
       await dashboardPage.closeGlobalSearch();

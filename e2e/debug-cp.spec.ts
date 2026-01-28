@@ -52,5 +52,5 @@ authenticatedTest("debug command palette visibility", async ({ dashboardPage, pa
     console.log(`CP Input visible: ${await cpInput.isVisible()}`);
   }
 
-  await expect(dashboardPage.commandPalette).toBeVisible({ timeout: 10000 });
+  await expect(dashboardPage.commandPalette).toBeVisible();
 });

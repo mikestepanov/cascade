@@ -33,7 +33,7 @@ export class WorkspacesPage extends BasePage {
     const loadingSpinner = this.page
       .locator(".loading-spinner")
       .or(this.page.getByText(/loading/i));
-    await loadingSpinner.waitFor({ state: "hidden", timeout: 15000 }).catch(() => {});
+    await loadingSpinner.waitFor({ state: "hidden" }).catch(() => {});
   }
 
   async goto() {
@@ -46,7 +46,7 @@ export class WorkspacesPage extends BasePage {
       await this.page
         .getByRole("heading", { name: /workspaces/i })
         .first()
-        .waitFor({ state: "visible", timeout: 15000 });
+        .waitFor({ state: "visible" });
     } catch (e) {
       const currentUrl = this.page.url();
       const bodyText = await this.page
@@ -79,7 +79,7 @@ export class WorkspacesPage extends BasePage {
 
     // Wait for button to be ready - use first() to get the header button (not empty state)
     const createButton = this.newWorkspaceButton.first();
-    await createButton.waitFor({ state: "visible", timeout: 10000 });
+    await createButton.waitFor({ state: "visible" });
 
     // Scroll into view
     await createButton.scrollIntoViewIfNeeded();
@@ -89,20 +89,20 @@ export class WorkspacesPage extends BasePage {
 
     // Wait for modal dialog to appear
     const modal = this.page.getByRole("dialog");
-    await modal.waitFor({ state: "visible", timeout: 15000 });
+    await modal.waitFor({ state: "visible" });
 
     // Wait for input to be visible and stable
-    await this.workspaceNameInput.waitFor({ state: "visible", timeout: 10000 });
+    await this.workspaceNameInput.waitFor({ state: "visible" });
     await this.page.waitForTimeout(500);
 
     // Fill with name
     await this.workspaceNameInput.fill(name);
 
     // Verify the value was filled correctly
-    await expect(this.workspaceNameInput).toHaveValue(name, { timeout: 5000 });
+    await expect(this.workspaceNameInput).toHaveValue(name);
 
     if (description) {
-      await this.workspaceDescriptionInput.waitFor({ state: "visible", timeout: 10000 });
+      await this.workspaceDescriptionInput.waitFor({ state: "visible" });
       // Ensure it's stable
       await this.page.waitForTimeout(500);
       await this.workspaceDescriptionInput.fill(description, { force: true });
@@ -117,10 +117,10 @@ export class WorkspacesPage extends BasePage {
         .getByText(/workspace created/i)
         .or(this.page.locator("[data-sonner-toast]"))
         .first(),
-    ).toBeVisible({ timeout: 15000 });
+    ).toBeVisible();
 
     // Wait for modal to close (name input disappears)
-    await expect(this.workspaceNameInput).not.toBeVisible({ timeout: 15000 });
+    await expect(this.workspaceNameInput).not.toBeVisible();
 
     // Additional wait for list to refresh
     await this.page.waitForTimeout(500);

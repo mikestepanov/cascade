@@ -97,7 +97,7 @@ export class DocumentsPage extends BasePage {
 
   async openTemplateModal() {
     await this.templateButton.evaluate((el: HTMLElement) => el.click());
-    await expect(this.templateModal).toBeVisible({ timeout: 5000 });
+    await expect(this.templateModal).toBeVisible();
   }
 
   async createFromTemplate(template: "blank" | "meeting" | "project") {
@@ -153,7 +153,7 @@ export class DocumentsPage extends BasePage {
 
   async expectEditorVisible() {
     // Wait for React to be ready (avoid dispatcher errors)
-    await this.page.waitForLoadState("networkidle", { timeout: 10000 }).catch(() => {});
+    await this.page.waitForLoadState("networkidle").catch(() => {});
     await this.page.waitForTimeout(500);
 
     // Check for React error boundary
@@ -170,12 +170,12 @@ export class DocumentsPage extends BasePage {
     // Handle "Initialize Document" empty state if present (for new documents)
     const initButton = this.page.getByRole("button", { name: /initialize.*document/i });
     try {
-      await initButton.waitFor({ state: "visible", timeout: 3000 });
+      await initButton.waitFor({ state: "visible" });
       await initButton.click();
     } catch {
       // Button didn't appear, proceed to check for editor
     }
-    await expect(this.editor).toBeVisible({ timeout: 10000 });
+    await expect(this.editor).toBeVisible();
   }
 
   async expectDocumentCount(count: number) {

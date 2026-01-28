@@ -51,9 +51,7 @@ authenticatedTest.describe("Non-existent Resources", () => {
       await page.waitForLoadState("domcontentloaded");
 
       // Should show project not found heading
-      await expect(page.getByRole("heading", { name: /project not found/i })).toBeVisible({
-        timeout: 15000,
-      });
+      await expect(page.getByRole("heading", { name: /project not found/i })).toBeVisible();
     },
   );
 
@@ -71,7 +69,7 @@ authenticatedTest.describe("Non-existent Resources", () => {
       page
         .getByRole("heading", { name: /document not found/i })
         .or(page.getByRole("heading", { name: /something went wrong/i })),
-    ).toBeVisible({ timeout: 15000 });
+    ).toBeVisible();
   });
 
   authenticatedTest(
@@ -90,7 +88,7 @@ authenticatedTest.describe("Non-existent Resources", () => {
         page
           .getByRole("heading", { name: /issue not found/i })
           .or(page.getByRole("heading", { name: /something went wrong/i })),
-      ).toBeVisible({ timeout: 15000 });
+      ).toBeVisible();
     },
   );
 });

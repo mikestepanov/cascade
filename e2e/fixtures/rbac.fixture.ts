@@ -265,23 +265,20 @@ export const rbacTest = base.extend<RbacFixtures>({
 
       // 2. Wait for Convex WebSocket synchronization
       await page
-        .waitForFunction(
-          () => {
-            const convex = (
-              window as Window & {
-                __convex_test_client?: { connectionState: () => { isWebSocketConnected: boolean } };
-              }
-            ).__convex_test_client;
-            return convex?.connectionState().isWebSocketConnected;
-          },
-          { timeout: 15000 },
-        )
+        .waitForFunction(() => {
+          const convex = (
+            window as Window & {
+              __convex_test_client?: { connectionState: () => { isWebSocketConnected: boolean } };
+            }
+          ).__convex_test_client;
+          return convex?.connectionState().isWebSocketConnected;
+        }, {})
         .catch(() => {
           console.warn("⚠️ Convex WebSocket timed out, proceeding anyway...");
         });
 
       // Final check: URL should contain /board
-      await expect(page).toHaveURL(/.*\/board/, { timeout: 15000 });
+      await expect(page).toHaveURL(/.*\/board/);
       console.log(`✓ Navigated to ${page.url()}`);
     };
     await use(goto);

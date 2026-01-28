@@ -49,7 +49,7 @@ test.describe
         await documentsPage.createNewDocument();
 
         // Should navigate to document editor (URL contains /documents/ followed by ID)
-        await page.waitForURL(/\/documents\/[^/]+$/, { timeout: 10000 });
+        await page.waitForURL(/\/documents\/[^/]+$/);
 
         // Editor should be visible
         await documentsPage.expectEditorVisible();
@@ -64,11 +64,11 @@ test.describe
 
         // Create a new document first
         await documentsPage.createNewDocument();
-        await page.waitForURL(/\/documents\/[^/]+$/, { timeout: 10000 });
+        await page.waitForURL(/\/documents\/[^/]+$/);
         await documentsPage.expectEditorVisible();
 
         // The BlockNote editor should be present
-        await expect(documentsPage.editorContent).toBeVisible({ timeout: 10000 });
+        await expect(documentsPage.editorContent).toBeVisible();
       });
     });
   });

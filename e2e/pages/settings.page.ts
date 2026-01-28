@@ -184,10 +184,10 @@ export class SettingsPage extends BasePage {
       await this.page
         .getByRole("heading", { name: /settings/i })
         .first()
-        .waitFor({ state: "visible", timeout: 15000 });
+        .waitFor({ state: "visible" });
 
       // Wait for settings page to load - look for integrations tab (always visible)
-      await this.integrationsTab.first().waitFor({ state: "visible", timeout: 10000 });
+      await this.integrationsTab.first().waitFor({ state: "visible" });
     } catch (e) {
       const currentUrl = this.page.url();
       const bodyText = await this.page
@@ -241,13 +241,13 @@ export class SettingsPage extends BasePage {
     await tabLocator.waitFor({ state: "visible", timeout: waitTimeout });
 
     // Verify tab is selected
-    await expect(tabLocator).toHaveAttribute("aria-selected", "true", { timeout: 10000 });
+    await expect(tabLocator).toHaveAttribute("aria-selected", "true");
 
     // For admin tab, also verify the admin content is actually visible
     if (tab === "admin") {
       await this.page
         .getByRole("heading", { name: /organization settings/i })
-        .waitFor({ state: "visible", timeout: 15000 });
+        .waitFor({ state: "visible" });
     }
 
     await this.waitForLoad();
@@ -309,7 +309,7 @@ export class SettingsPage extends BasePage {
 
     // Use the first "Invite User" button (header one, not empty state one)
     const inviteBtn = this.inviteUserButton.first();
-    await inviteBtn.waitFor({ state: "visible", timeout: 15000 });
+    await inviteBtn.waitFor({ state: "visible" });
 
     // Scroll into view and wait for it to be stable
     await inviteBtn.scrollIntoViewIfNeeded();
@@ -319,7 +319,7 @@ export class SettingsPage extends BasePage {
     await inviteBtn.click();
 
     // Wait for form to appear
-    await expect(this.inviteUserModal).toBeVisible({ timeout: 5000 });
+    await expect(this.inviteUserModal).toBeVisible();
   }
 
   async inviteUser(email: string, role?: string) {
@@ -374,10 +374,10 @@ export class SettingsPage extends BasePage {
 
   async toggleTimeApproval(enabled: boolean) {
     // Wait for the switch to appear - OrganizationSettings component makes its own query
-    await this.requiresTimeApprovalSwitch.waitFor({ state: "visible", timeout: 30000 });
+    await this.requiresTimeApprovalSwitch.waitFor({ state: "visible" });
 
     // Wait for save button to appear (form is loaded)
-    await this.saveSettingsButton.waitFor({ state: "visible", timeout: 10000 });
+    await this.saveSettingsButton.waitFor({ state: "visible" });
 
     // Scroll the switch into view
     await this.requiresTimeApprovalSwitch.scrollIntoViewIfNeeded();
@@ -393,24 +393,22 @@ export class SettingsPage extends BasePage {
     // Click the switch to toggle - verify the aria-checked changes
     await this.requiresTimeApprovalSwitch.click();
     const expectedChecked = enabled ? "true" : "false";
-    await expect(this.requiresTimeApprovalSwitch).toHaveAttribute("aria-checked", expectedChecked, {
-      timeout: 5000,
-    });
+    await expect(this.requiresTimeApprovalSwitch).toHaveAttribute("aria-checked", expectedChecked);
 
     // Wait for save button to be enabled (form has changes)
-    await expect(this.saveSettingsButton).toBeEnabled({ timeout: 10000 });
+    await expect(this.saveSettingsButton).toBeEnabled();
 
     // Click immediately after enabled check passes
     await this.saveSettingsButton.click({ force: true });
 
     // Wait for success toast - use data attribute to be more specific
     await expect(this.page.locator("[data-sonner-toast][data-type='success']").first()).toBeVisible(
-      { timeout: 15000 },
+      {},
     );
   }
 
   async expectOrganizationName(name: string) {
-    await this.organizationNameInput.waitFor({ state: "visible", timeout: 15000 });
-    await expect(this.organizationNameInput).toHaveValue(name, { timeout: 10000 });
+    await this.organizationNameInput.waitFor({ state: "visible" });
+    await expect(this.organizationNameInput).toHaveValue(name);
   }
 }

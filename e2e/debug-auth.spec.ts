@@ -140,9 +140,9 @@ test.skip("debug sign-in flow with full logging", async ({ page, baseURL }) => {
       await page.waitForTimeout(2000);
       throw new Error("Still on Continue button");
     }
-  }).toPass({ timeout: 15000 });
+  }).toPass();
 
-  await expect(submitButton).toHaveText(/Sign In/i, { timeout: 5000 });
+  await expect(submitButton).toHaveText(/Sign In/i);
   const newSubmitText = await submitButton.textContent();
   console.log(`  Button text after transition: "${newSubmitText}"`);
 
@@ -166,7 +166,6 @@ test.skip("debug sign-in flow with full logging", async ({ page, baseURL }) => {
 
   try {
     await page.waitForURL(/\/(onboarding|[^/]+\/dashboard)/, {
-      timeout: 10000,
       waitUntil: "domcontentloaded",
     });
     const urlAfter = page.url();

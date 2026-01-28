@@ -23,8 +23,8 @@ export default defineConfig({
   // Fail build on CI if test.only is left in code
   forbidOnly: !!process.env.CI,
 
-  // Retries: 2 on CI, 1 locally to handle transient flakiness
-  retries: process.env.CI ? 2 : 1,
+  // Retries: 2 on CI only, no retries locally to catch flaky tests early
+  retries: process.env.CI ? 2 : 0,
 
   // Restore to 4 workers as requested
   workers: 4,

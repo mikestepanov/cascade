@@ -63,12 +63,10 @@ rbacTest.describe("Workspace Management", () => {
 
       // After creation, the app navigates to the new workspace detail page
       // Verify we're on the workspace detail page by checking the heading
-      await expect(adminPage.getByRole("heading", { name: wsName1 })).toBeVisible({
-        timeout: 15000,
-      });
+      await expect(adminPage.getByRole("heading", { name: wsName1 })).toBeVisible();
 
       // Verify the workspace name appears on the page (both heading and sidebar)
-      await expect(adminPage.getByText(wsName1).first()).toBeVisible({ timeout: 15000 });
+      await expect(adminPage.getByText(wsName1).first()).toBeVisible();
     },
   );
 });

@@ -40,22 +40,19 @@ export abstract class BasePage {
 
     // Wait for React hydration by checking for __reactFiber on interactive elements
     // This is more reliable than checking body since these elements are interactive
-    await this.page.waitForFunction(
-      () => {
-        const elements = document.querySelectorAll("a, button");
-        if (elements.length === 0) return true; // No interactive elements, assume ready
+    await this.page.waitForFunction(() => {
+      const elements = document.querySelectorAll("a, button");
+      if (elements.length === 0) return true; // No interactive elements, assume ready
 
-        // Check if at least one element has React fiber attached
-        for (const element of elements) {
-          const keys = Object.keys(element);
-          if (keys.some((k) => k.startsWith("__reactFiber") || k.startsWith("__reactProps"))) {
-            return true;
-          }
+      // Check if at least one element has React fiber attached
+      for (const element of elements) {
+        const keys = Object.keys(element);
+        if (keys.some((k) => k.startsWith("__reactFiber") || k.startsWith("__reactProps"))) {
+          return true;
         }
-        return false;
-      },
-      { timeout: 30000 },
-    );
+      }
+      return false;
+    }, {});
 
     // React fiber check confirms hydration is complete
     // Event handlers are attached during hydration, no additional wait needed
@@ -73,7 +70,7 @@ export abstract class BasePage {
    */
   async isVisible(locator: Locator): Promise<boolean> {
     try {
-      await expect(locator).toBeVisible({ timeout: 5000 });
+      await expect(locator).toBeVisible();
       return true;
     } catch {
       return false;

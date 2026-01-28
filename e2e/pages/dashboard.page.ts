@@ -119,8 +119,8 @@ export class DashboardPage extends BasePage {
     this.commandPaletteButton = page.getByRole("button", { name: /open command palette/i });
     // Keyboard shortcuts help button (? icon)
     this.shortcutsHelpButton = page.getByRole("button", { name: /keyboard shortcuts/i });
-    // Global search button contains "Search..." text with keyboard shortcut hint "⌘K"
-    this.globalSearchButton = page.locator("button").filter({ hasText: "Search..." });
+    // Global search button with aria-label "Open search (⌘K)"
+    this.globalSearchButton = page.getByRole("button", { name: /open search/i });
     // Bell notification icon button - find by the unique bell SVG path (no aria-label in NotificationCenter component)
     this.notificationButton = page.locator("button:has(svg path[d*='M15 17h5'])");
     // "Sign out" text button
@@ -383,8 +383,13 @@ export class DashboardPage extends BasePage {
   }
 
   async openGlobalSearch() {
-    await this.globalSearchButton.click();
-    await expect(this.globalSearchModal).toBeVisible();
+    // Use retry pattern - click may not register immediately after page load
+    await expect(async () => {
+      await this.globalSearchButton.click();
+      await expect(this.globalSearchModal).toBeVisible();
+      // Wait for input to be interactive (cmdk library needs time to hydrate)
+      await expect(this.globalSearchInput).toBeVisible();
+    }).toPass();
   }
 
   async closeGlobalSearch() {

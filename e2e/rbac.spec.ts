@@ -38,7 +38,7 @@ rbacTest(
 
     // 2. Verify board is visible - check for board element or project key in URL
     // URL should be like /:orgSlug/projects/:projectKey/board
-    await expect(adminPage).toHaveURL(/\/projects\/.*\/board/, { timeout: 30000 });
+    await expect(adminPage).toHaveURL(/\/projects\/.*\/board/);
     // Wait for the board content to load
     await adminPage.waitForLoadState("domcontentloaded");
     console.log("✓ Admin can view project board");
@@ -50,7 +50,7 @@ rbacTest(
 
     // 4. Verify settings tab is visible
     const settingsTab = adminProjectsPage.getProjectSettingsTab();
-    await expect(settingsTab).toBeVisible({ timeout: 60000 });
+    await expect(settingsTab).toBeVisible();
     console.log("✓ Admin can see settings tab");
 
     // 5. Navigate to settings and verify access
@@ -59,11 +59,9 @@ rbacTest(
 
     // Verify we actually reached the settings page
     try {
-      await expect(adminPage).toHaveURL(/.*\/settings/, { timeout: 10000 });
+      await expect(adminPage).toHaveURL(/.*\/settings/);
       await adminPage.waitForLoadState("domcontentloaded");
-      await expect(adminPage.getByRole("heading", { name: /project settings/i })).toBeVisible({
-        timeout: 10000,
-      });
+      await expect(adminPage.getByRole("heading", { name: /project settings/i })).toBeVisible();
       console.log("✓ Admin can access project settings page");
     } catch (e) {
       console.log(`❌ Admin Settings Navigation Failed. Current URL: ${adminPage.url()}`);
@@ -88,7 +86,7 @@ rbacTest(
       const createSprintButton = adminPage.getByRole("button", {
         name: /create sprint|new sprint/i,
       });
-      await expect(createSprintButton).toBeVisible({ timeout: 10000 });
+      await expect(createSprintButton).toBeVisible();
       console.log("✓ Admin can access sprints and create sprint button");
     }
 
@@ -122,7 +120,7 @@ rbacTest(
     await gotoRbacProject(editorPage);
 
     // 2. Verify board is visible - check for project name heading
-    await expect(editorPage).toHaveURL(/\/projects\/.*\/board/, { timeout: 30000 });
+    await expect(editorPage).toHaveURL(/\/projects\/.*\/board/);
     await editorPage.waitForLoadState("domcontentloaded");
     console.log("✓ Editor can view project board");
 
@@ -153,7 +151,7 @@ rbacTest(
     await editorPage.waitForLoadState("domcontentloaded");
 
     // Wait for redirect to board
-    await editorPage.waitForURL(`**/projects/${rbacProjectKey}/board`, { timeout: 15000 });
+    await editorPage.waitForURL(`**/projects/${rbacProjectKey}/board`);
     expect(editorPage.url()).toContain("/board");
     expect(editorPage.url()).not.toContain("/settings");
     console.log("✓ Editor is redirected from settings to board");
@@ -208,9 +206,7 @@ rbacTest(
     // 2. Verify board is visible - check for project name heading
     await expect(
       viewerPage.getByRole("heading", { name: new RegExp(RBAC_TEST_CONFIG.projectName, "i") }),
-    ).toBeVisible({
-      timeout: 30000,
-    });
+    ).toBeVisible();
     console.log("✓ Viewer can view project board");
 
     // 3. Verify create issue button is NOT visible to viewers
@@ -233,7 +229,7 @@ rbacTest(
     await viewerPage.waitForLoadState("domcontentloaded");
 
     // Wait for redirect to board
-    await viewerPage.waitForURL(`**/projects/${rbacProjectKey}/board`, { timeout: 15000 });
+    await viewerPage.waitForURL(`**/projects/${rbacProjectKey}/board`);
     expect(viewerPage.url()).toContain("/board");
     expect(viewerPage.url()).not.toContain("/settings");
     console.log("✓ Viewer is redirected from settings to board");
