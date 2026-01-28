@@ -21,3 +21,7 @@
 ## 2026-01-24 - Icon-only SDSButtons must have ariaLabel
 **Learning:** Developers use `text=""` on `SDSButton` to create icon-only buttons but often forget `ariaLabel`, leaving the button inaccessible.
 **Action:** When using `SDSButton` with empty text for icon-only usage, always enforce `ariaLabel`. Ideally, prefer `SDSIconButton` which enforces `ariaLabel` via types.
+
+## 2026-02-18 - Replacing Native Title with Tooltips
+**Learning:** Native `title` attributes are problematic for accessibility (inconsistent screen reader support, no mobile support) and UX (delayed appearance, default styling).
+**Action:** Replace `title` attributes on interactive elements with the `Tooltip` component. When doing so on icon-only buttons, ensure an explicit `aria-label` is added if the button relies on the `title` for its accessible name. Update tests to query by accessible name (`getByRole('button', { name: '...' })`) instead of `getByTitle`.
