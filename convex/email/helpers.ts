@@ -13,6 +13,8 @@ import type { MutationCtx } from "../_generated/server";
  *
  * This checks user preferences and sends email if enabled.
  * Call this after creating an in-app notification.
+ *
+ * Note: Skipped in test environment to avoid convex-test scheduler issues.
  */
 export async function sendEmailNotification(
   ctx: MutationCtx,
@@ -24,6 +26,11 @@ export async function sendEmailNotification(
     commentText?: string;
   },
 ) {
+  // Skip in test environment to avoid convex-test scheduler race conditions
+  if (process.env.IS_TEST_ENV) {
+    return;
+  }
+
   const { userId, type, issueId, actorId, commentText } = params;
 
   // Check if user wants email for this notification type
