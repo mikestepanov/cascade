@@ -4,6 +4,7 @@ import { generateRandomString } from "@oslojs/crypto/random";
 import { internal } from "./_generated/api";
 import { sendEmail } from "./email";
 import type { ConvexAuthContext } from "./lib/authTypes";
+import { logger } from "./lib/logger";
 
 /**
  * Generate an 8-digit OTP code
@@ -50,7 +51,7 @@ export const OTPPasswordReset = Resend({
       try {
         await ctx.runMutation(internal.e2e.storeTestOtp, { email, code: token });
       } catch (e) {
-        console.warn(`[OTPPasswordReset] Failed to store test OTP: ${e}`);
+        logger.warn(`[OTPPasswordReset] Failed to store test OTP: ${e}`);
       }
     }
 
@@ -70,7 +71,7 @@ export const OTPPasswordReset = Resend({
     if (!result.success) {
       // For test emails, don't fail - OTP is stored in testOtpCodes
       if (isTestEmail) {
-        console.warn(
+        logger.warn(
           `[OTPPasswordReset] Email send failed for test user, continuing: ${result.error}`,
         );
         return;

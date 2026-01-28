@@ -17,7 +17,7 @@ export function NotificationCenter() {
     {},
     { initialNumItems: 20 },
   );
-  const notifications = notificationsRaw as unknown as NotificationWithActor[];
+  const notifications = notificationsRaw as NotificationWithActor[];
   const unreadCount = useQuery(api.notifications.getUnreadCount, {});
   const markAsRead = useMutation(api.notifications.markAsRead);
   const markAllAsRead = useMutation(api.notifications.markAllAsRead);

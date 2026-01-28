@@ -15,6 +15,7 @@ import { generateRandomString } from "@oslojs/crypto/random";
 import { internal } from "./_generated/api";
 import { sendEmail } from "./email";
 import type { ConvexAuthContext } from "./lib/authTypes";
+import { logger } from "./lib/logger";
 
 /**
  * Generate an 8-digit OTP code
@@ -64,7 +65,7 @@ export const OTPVerification = Resend({
         try {
           await ctx.runMutation(internal.e2e.storeTestOtp, { email, code: token });
         } catch (e) {
-          console.warn(`[OTPVerification] Failed to store test OTP: ${e}`);
+          logger.warn(`[OTPVerification] Failed to store test OTP: ${e}`);
         }
       }
 
@@ -101,7 +102,7 @@ export const OTPVerification = Resend({
         // For test emails, don't fail on email send errors (e.g., Mailtrap rate limiting)
         // E2E tests can retrieve the OTP via /e2e/get-latest-otp endpoint instead
         if (isTestEmail) {
-          console.warn(
+          logger.warn(
             `[OTPVerification] Email send failed for test user, continuing: ${result.error}`,
           );
           return; // Don't throw - OTP is already stored in testOtpCodes
@@ -111,7 +112,7 @@ export const OTPVerification = Resend({
     } catch (err) {
       // For test emails, don't fail on email send errors
       if (isTestEmail) {
-        console.warn(`[OTPVerification] Email send failed for test user, continuing: ${err}`);
+        logger.warn(`[OTPVerification] Email send failed for test user, continuing: ${err}`);
         return; // Don't throw - OTP is already stored in testOtpCodes
       }
       // Fail fast so users aren't stuck without a verification code.

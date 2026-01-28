@@ -1,6 +1,9 @@
 import type { Id } from "@convex/_generated/dataModel";
 import userEvent from "@testing-library/user-event";
+import type { ReactMutation } from "convex/react";
 import { useMutation, useQuery } from "convex/react";
+import type { FunctionReference } from "convex/server";
+import type { Mock } from "vitest";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { render, screen } from "@/test/custom-render";
 import { AttachmentList } from "./AttachmentList";
@@ -18,20 +21,27 @@ vi.mock("@/lib/toast", () => ({
 }));
 
 describe("AttachmentList", () => {
-  const mockRemoveAttachment = vi.fn();
+  const mockRemoveAttachment = Object.assign(vi.fn(), {
+    withOptimisticUpdate: vi.fn().mockReturnThis(),
+  }) as Mock & ReactMutation<FunctionReference<"mutation">>;
   const issueId = "issue-123" as Id<"issues">;
   const attachmentIds = ["storage-1", "storage-2"] as Id<"_storage">[];
 
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.mocked(useMutation).mockReturnValue(mockRemoveAttachment as any);
+    vi.mocked(useMutation).mockReturnValue(
+      mockRemoveAttachment as ReactMutation<FunctionReference<"mutation">>,
+    );
 
     // Loose mock for useQuery to ensure it returns data
-    vi.mocked(useQuery).mockImplementation(((_query: any, args: any) => {
-      if (args && args.storageId === "storage-1") return "https://example.com/file1.png";
-      if (args && args.storageId === "storage-2") return "https://example.com/document.pdf";
+    vi.mocked(useQuery).mockImplementation((...args) => {
+      const qArgs = args[1];
+      if (qArgs === "skip" || !qArgs) return undefined;
+      const storageId = (qArgs as Record<string, unknown>).storageId;
+      if (storageId === "storage-1") return "https://example.com/file1.png";
+      if (storageId === "storage-2") return "https://example.com/document.pdf";
       return undefined;
-    }) as any);
+    });
 
     // Mock confirm dialog
     global.confirm = vi.fn(() => true);

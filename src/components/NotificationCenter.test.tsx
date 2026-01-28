@@ -1,5 +1,8 @@
 import userEvent from "@testing-library/user-event";
+import type { ReactMutation } from "convex/react";
 import { useMutation, usePaginatedQuery, useQuery } from "convex/react";
+import type { FunctionReference } from "convex/server";
+import type { Mock } from "vitest";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { render, screen, waitFor } from "@/test/custom-render";
 import { NotificationCenter } from "./NotificationCenter";
@@ -17,9 +20,15 @@ vi.mock("@/lib/accessibility", () => ({
 }));
 
 describe("NotificationCenter", () => {
-  const mockMarkAsRead = vi.fn();
-  const mockMarkAllAsRead = vi.fn();
-  const mockRemove = vi.fn();
+  const mockMarkAsRead = Object.assign(vi.fn(), {
+    withOptimisticUpdate: vi.fn().mockReturnThis(),
+  }) as Mock & ReactMutation<FunctionReference<"mutation">>;
+  const mockMarkAllAsRead = Object.assign(vi.fn(), {
+    withOptimisticUpdate: vi.fn().mockReturnThis(),
+  }) as Mock & ReactMutation<FunctionReference<"mutation">>;
+  const mockRemove = Object.assign(vi.fn(), {
+    withOptimisticUpdate: vi.fn().mockReturnThis(),
+  }) as Mock & ReactMutation<FunctionReference<"mutation">>;
   let queryCallCount = 0;
   let mutationCallCount = 0;
 
@@ -33,9 +42,9 @@ describe("NotificationCenter", () => {
     // Set up mutation mocks to persist across re-renders
     vi.mocked(useMutation).mockImplementation(() => {
       mutationCallCount++;
-      if (mutationCallCount % 3 === 1) return mockMarkAsRead as any; // 1st, 4th, 7th calls
-      if (mutationCallCount % 3 === 2) return mockMarkAllAsRead as any; // 2nd, 5th, 8th calls
-      return mockRemove as any; // 3rd, 6th, 9th calls
+      if (mutationCallCount % 3 === 1) return mockMarkAsRead; // 1st, 4th, 7th calls
+      if (mutationCallCount % 3 === 2) return mockMarkAllAsRead; // 2nd, 5th, 8th calls
+      return mockRemove; // 3rd, 6th, 9th calls
     });
 
     // Default mock for useQuery

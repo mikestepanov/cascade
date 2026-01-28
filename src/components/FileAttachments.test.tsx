@@ -1,9 +1,24 @@
 import type { Id } from "@convex/_generated/dataModel";
-import userEvent from "@testing-library/user-event";
+import type { ReactMutation } from "convex/react";
 import { useMutation, useQuery } from "convex/react";
+import type { FunctionReference } from "convex/server";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { render, screen } from "@/test/custom-render";
 import { FileAttachments } from "./FileAttachments";
+
+interface Attachment {
+  storageId: Id<"_storage">;
+  filename: string;
+  url: string | null;
+  uploadedAt: number;
+  uploadedBy?: Id<"users">;
+}
+
+interface ConfirmDialogProps {
+  isOpen: boolean;
+  onConfirm: () => void;
+  title: string;
+}
 
 // Mock Convex hooks
 vi.mock("convex/react", () => ({
@@ -19,19 +34,27 @@ vi.mock("@/lib/toast", () => ({
 
 // Mock confirm dialog
 vi.mock("@/components/ui/ConfirmDialog", () => ({
-  ConfirmDialog: ({ isOpen, onConfirm, title }: any) =>
+  ConfirmDialog: ({ isOpen, onConfirm, title }: ConfirmDialogProps) =>
     isOpen ? (
       <div role="dialog">
         <h1>{title}</h1>
-        <button onClick={onConfirm}>Confirm</button>
+        <button type="button" onClick={onConfirm}>
+          Confirm
+        </button>
       </div>
     ) : null,
 }));
 
 describe("FileAttachments", () => {
-  const mockAddAttachment = vi.fn();
-  const mockRemoveAttachment = vi.fn();
-  const mockGenerateUploadUrl = vi.fn();
+  const mockAddAttachment = Object.assign(vi.fn(), {
+    withOptimisticUpdate: vi.fn().mockReturnThis(),
+  }) as ReactMutation<FunctionReference<"mutation">>;
+  const mockRemoveAttachment = Object.assign(vi.fn(), {
+    withOptimisticUpdate: vi.fn().mockReturnThis(),
+  }) as ReactMutation<FunctionReference<"mutation">>;
+  const mockGenerateUploadUrl = Object.assign(vi.fn(), {
+    withOptimisticUpdate: vi.fn().mockReturnThis(),
+  }) as ReactMutation<FunctionReference<"mutation">>;
   const issueId = "issue-123" as Id<"issues">;
 
   const mockAttachments = [
@@ -53,13 +76,13 @@ describe("FileAttachments", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.mocked(useMutation).mockImplementation((apiCall: any) => {
+    vi.mocked(useMutation).mockImplementation(() => {
       // We can't easily check the function reference here without importing api,
       // but for this unit test it's fine to return generic mocks or specific ones if needed.
-      return mockRemoveAttachment as any;
+      return mockRemoveAttachment;
     });
 
-    vi.mocked(useQuery).mockReturnValue(mockAttachments as any);
+    vi.mocked(useQuery).mockReturnValue(mockAttachments);
   });
 
   afterEach(() => {
