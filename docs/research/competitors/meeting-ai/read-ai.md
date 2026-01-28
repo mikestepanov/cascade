@@ -1,54 +1,34 @@
-# Read AI - Competitor Analysis
+# Competitor Analysis: Read AI
 
-> **Category:** End-User Meeting Intelligence
-> **Type:** Proprietary SaaS
-> **Website:** https://www.read.ai
+> **Focus:** Engagement & Wellness
+> **Vibe:** "The Fitbit for Meetings" - Metrics, scores, and health.
 
----
+## 1. Feature Scraping Matrix
 
-## Overview
+| Feature                     | Why it's useful                               | Nixelo's "Configurable Edge"                                                                 |
+| :-------------------------- | :-------------------------------------------- | :------------------------------------------------------------------------------------------- |
+| **Engagement Score**        | Validates if the meeting was a waste of time. | **"Meeting Cost"**: Real-time ticker showing $$$ burn per minute based on attendee salaries. |
+| **Speaker Coach**           | Private feedback to improve soft skills.      | **"Interrupt Blocker":** Private nudge if a Senior Dev keeps interrupting Juniors.           |
+| **For Those Who Missed It** | "What you missed" video clips.                | **"Async Standup":** Auto-post a 30s summary of _your_ update to Slack if you miss standup.  |
 
-**Read AI** is an AI meeting assistant with cross-platform search. It is a primary competitor for meeting intelligence features.
+## 2. Deep Dive: Read AI (The "Metric" Layer)
 
-## Platforms
+**Why it wins:** It gamifies meetings. "Engagement scores" give managers a concrete metric to judge meeting quality.
+**Weakness:** "Privacy creepiness". Users feel judged by the AI.
 
-- Google Meet
-- Zoom
-- Microsoft Teams
+### Technical Implementation
 
-## Features
+- **Engagement Calc:** Weighted formula of: Pacing + Filler Words + Head Movement (Computer Vision) + Eye Contact.
+- **Technicals:**
+  - **Audio:** OpenAI Whisper for text.
+  - **NLP:** SpaCy/NLTK for "hedging language" detection (e.g., "kind of", "maybe").
+  - **Vision:** OpenCV/YOLO for facial sentiment analysis.
+- **Real-Time:** Processes streams to give live feedback (requires low-latency inference).
 
-- Meeting transcription & recording
-- AI-generated summaries
-- Action item extraction
-- Real-time notes during meetings
-- Speaker analytics ("Speaker Coach")
-- Email summaries
-- Cross-platform search (meetings + emails + chats)
-- Chrome extension
-- Desktop apps (Windows, macOS)
-- Mobile apps (iOS, Android)
-- Integrations: Slack, Notion, Salesforce, HubSpot, 20+ others
+## 3. Nixelo Strategy
 
-## Pricing
+We scrap the **"Metrics"** but apply them to **Process**, not **People**.
 
-- **Free:** 5 meetings/month
-- **Pro:** ~$20/user/month (estimated)
-- **Enterprise:** Custom
-
-## Strengths ✅
-
-- Polished consumer product
-- Multi-platform (web, desktop, mobile)
-- Strong integrations ecosystem
-- Speaker analytics unique feature
-
-## Weaknesses ❌
-
-- Standalone tool - doesn't integrate with PM workflows naturally
-- No project management features
-- User data lives in their cloud (privacy concern)
-
-## Nixelo Advantage
-
-Native PM integration - action items identified by AI become issues automatically in Nixelo.
+- Don't score the _person_ ("Mike used 50 filler words").
+- Score the _meeting_ ("This planning session had 80% engagement").
+- **Differentiation:** Focus on **"Wellness"** (preventing burnout) rather than **"Performance"** (policing speech).
