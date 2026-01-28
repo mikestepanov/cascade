@@ -3,7 +3,14 @@ import { describe, expect, it } from "vitest";
 import { api } from "./_generated/api";
 import schema from "./schema";
 import { modules } from "./testSetup.test-helper";
-import { asAuthenticatedUser, createTestProject, createTestUser } from "./testUtils";
+import {
+  asAuthenticatedUser,
+  createProjectInOrganization,
+  createTestContext,
+  createTestIssue,
+  createTestProject,
+  createTestUser,
+} from "./testUtils";
 
 describe("Time Tracking", () => {
   describe("timer management", () => {
@@ -149,6 +156,439 @@ describe("Time Tracking", () => {
       });
       expect(list1).toHaveLength(1);
       expect(list1[0].projectId).toBe(p1);
+    });
+
+    it("should filter by issue", async () => {
+      const t = convexTest(schema, modules);
+      const { userId, organizationId, asUser } = await createTestContext(t);
+
+      const projectId = await createProjectInOrganization(t, userId, organizationId, {
+        name: "Issue Filter Project",
+        key: "IFP",
+      });
+      const issueId = await createTestIssue(t, projectId, userId, { title: "Test Issue" });
+
+      const now = Date.now();
+      await asUser.mutation(api.timeTracking.createTimeEntry, {
+        projectId,
+        issueId,
+        startTime: now - 3600000,
+        endTime: now,
+      });
+      await asUser.mutation(api.timeTracking.createTimeEntry, {
+        projectId,
+        startTime: now - 3600000,
+        endTime: now,
+      });
+
+      const list = await asUser.query(api.timeTracking.listTimeEntries, {
+        issueId,
+      });
+      expect(list).toHaveLength(1);
+      expect(list[0].issueId).toBe(issueId);
+      await t.finishInProgressScheduledFunctions();
+    });
+
+    it("should list entries without filters", async () => {
+      const t = convexTest(schema, modules);
+      const userId = await createTestUser(t);
+      const asUser = asAuthenticatedUser(t, userId);
+
+      const now = Date.now();
+      await asUser.mutation(api.timeTracking.createTimeEntry, {
+        startTime: now - 3600000,
+        endTime: now,
+      });
+      await asUser.mutation(api.timeTracking.createTimeEntry, {
+        startTime: now - 7200000,
+        endTime: now - 3600000,
+      });
+
+      const list = await asUser.query(api.timeTracking.listTimeEntries, {});
+      expect(list).toHaveLength(2);
+      await t.finishInProgressScheduledFunctions();
+    });
+  });
+
+  describe("updateTimeEntry", () => {
+    it("should update time entry fields", async () => {
+      const t = convexTest(schema, modules);
+      const userId = await createTestUser(t);
+      const asUser = asAuthenticatedUser(t, userId);
+
+      const now = Date.now();
+      const entryId = await asUser.mutation(api.timeTracking.createTimeEntry, {
+        startTime: now - 3600000,
+        endTime: now,
+        description: "Original",
+        activity: "Development",
+      });
+
+      await asUser.mutation(api.timeTracking.updateTimeEntry, {
+        entryId,
+        description: "Updated description",
+        activity: "Testing",
+        tags: ["tag1", "tag2"],
+      });
+
+      const entry = await t.run(async (ctx) => ctx.db.get(entryId));
+      expect(entry?.description).toBe("Updated description");
+      expect(entry?.activity).toBe("Testing");
+      expect(entry?.tags).toContain("tag1");
+      await t.finishInProgressScheduledFunctions();
+    });
+
+    it("should recalculate duration when times change", async () => {
+      const t = convexTest(schema, modules);
+      const userId = await createTestUser(t);
+      const asUser = asAuthenticatedUser(t, userId);
+
+      // Set rate first
+      await asUser.mutation(api.timeTracking.setUserRate, {
+        userId,
+        hourlyRate: 50,
+        currency: "USD",
+        rateType: "billable",
+      });
+
+      const now = Date.now();
+      const entryId = await asUser.mutation(api.timeTracking.createTimeEntry, {
+        startTime: now - 3600000, // 1 hour ago
+        endTime: now,
+        billable: true,
+      });
+
+      // Change to 2 hours
+      await asUser.mutation(api.timeTracking.updateTimeEntry, {
+        entryId,
+        startTime: now - 7200000, // 2 hours ago
+      });
+
+      const entry = await t.run(async (ctx) => ctx.db.get(entryId));
+      expect(entry?.duration).toBeGreaterThanOrEqual(7200); // ~2 hours in seconds
+      await t.finishInProgressScheduledFunctions();
+    });
+
+    it("should reject update for locked entries", async () => {
+      const t = convexTest(schema, modules);
+      const userId = await createTestUser(t);
+      const asUser = asAuthenticatedUser(t, userId);
+
+      const now = Date.now();
+      const entryId = await asUser.mutation(api.timeTracking.createTimeEntry, {
+        startTime: now - 3600000,
+        endTime: now,
+      });
+
+      // Lock the entry directly
+      await t.run(async (ctx) => {
+        await ctx.db.patch(entryId, { isLocked: true });
+      });
+
+      await expect(
+        asUser.mutation(api.timeTracking.updateTimeEntry, {
+          entryId,
+          description: "Should fail",
+        }),
+      ).rejects.toThrow(/locked/i);
+      await t.finishInProgressScheduledFunctions();
+    });
+
+    it("should reject update for other users entries", async () => {
+      const t = convexTest(schema, modules);
+      const user1 = await createTestUser(t, { name: "User 1" });
+      const user2 = await createTestUser(t, { name: "User 2" });
+      const asUser1 = asAuthenticatedUser(t, user1);
+      const asUser2 = asAuthenticatedUser(t, user2);
+
+      const now = Date.now();
+      const entryId = await asUser1.mutation(api.timeTracking.createTimeEntry, {
+        startTime: now - 3600000,
+        endTime: now,
+      });
+
+      await expect(
+        asUser2.mutation(api.timeTracking.updateTimeEntry, {
+          entryId,
+          description: "Unauthorized update",
+        }),
+      ).rejects.toThrow();
+      await t.finishInProgressScheduledFunctions();
+    });
+  });
+
+  describe("deleteTimeEntry", () => {
+    it("should delete a time entry", async () => {
+      const t = convexTest(schema, modules);
+      const userId = await createTestUser(t);
+      const asUser = asAuthenticatedUser(t, userId);
+
+      const now = Date.now();
+      const entryId = await asUser.mutation(api.timeTracking.createTimeEntry, {
+        startTime: now - 3600000,
+        endTime: now,
+      });
+
+      await asUser.mutation(api.timeTracking.deleteTimeEntry, { entryId });
+
+      const entry = await t.run(async (ctx) => ctx.db.get(entryId));
+      expect(entry).toBeNull();
+      await t.finishInProgressScheduledFunctions();
+    });
+
+    it("should reject delete for locked entries", async () => {
+      const t = convexTest(schema, modules);
+      const userId = await createTestUser(t);
+      const asUser = asAuthenticatedUser(t, userId);
+
+      const now = Date.now();
+      const entryId = await asUser.mutation(api.timeTracking.createTimeEntry, {
+        startTime: now - 3600000,
+        endTime: now,
+      });
+
+      await t.run(async (ctx) => {
+        await ctx.db.patch(entryId, { isLocked: true });
+      });
+
+      await expect(asUser.mutation(api.timeTracking.deleteTimeEntry, { entryId })).rejects.toThrow(
+        /locked/i,
+      );
+      await t.finishInProgressScheduledFunctions();
+    });
+
+    it("should reject delete for billed entries", async () => {
+      const t = convexTest(schema, modules);
+      const userId = await createTestUser(t);
+      const asUser = asAuthenticatedUser(t, userId);
+
+      const now = Date.now();
+      const entryId = await asUser.mutation(api.timeTracking.createTimeEntry, {
+        startTime: now - 3600000,
+        endTime: now,
+        billable: true,
+      });
+
+      await t.run(async (ctx) => {
+        await ctx.db.patch(entryId, { billed: true });
+      });
+
+      await expect(asUser.mutation(api.timeTracking.deleteTimeEntry, { entryId })).rejects.toThrow(
+        /billed/i,
+      );
+      await t.finishInProgressScheduledFunctions();
+    });
+  });
+
+  describe("createTimeEntry", () => {
+    it("should reject if end time is before start time", async () => {
+      const t = convexTest(schema, modules);
+      const userId = await createTestUser(t);
+      const asUser = asAuthenticatedUser(t, userId);
+
+      const now = Date.now();
+      await expect(
+        asUser.mutation(api.timeTracking.createTimeEntry, {
+          startTime: now,
+          endTime: now - 3600000, // End before start
+        }),
+      ).rejects.toThrow(/End time must be after start time/);
+      await t.finishInProgressScheduledFunctions();
+    });
+
+    it("should track equity hours", async () => {
+      const t = convexTest(schema, modules);
+      const userId = await createTestUser(t);
+      const asUser = asAuthenticatedUser(t, userId);
+
+      const now = Date.now();
+      const entryId = await asUser.mutation(api.timeTracking.createTimeEntry, {
+        startTime: now - 3600000,
+        endTime: now,
+        isEquityHour: true,
+      });
+
+      const entry = await t.run(async (ctx) => ctx.db.get(entryId));
+      expect(entry?.isEquityHour).toBe(true);
+      await t.finishInProgressScheduledFunctions();
+    });
+  });
+
+  describe("startTimer", () => {
+    it("should reject if timer already running", async () => {
+      const t = convexTest(schema, modules);
+      const userId = await createTestUser(t);
+      const asUser = asAuthenticatedUser(t, userId);
+
+      await asUser.mutation(api.timeTracking.startTimer, {
+        description: "First timer",
+      });
+
+      await expect(
+        asUser.mutation(api.timeTracking.startTimer, {
+          description: "Second timer",
+        }),
+      ).rejects.toThrow(/already have a running timer/);
+      await t.finishInProgressScheduledFunctions();
+    });
+
+    it("should track timer with project and issue", async () => {
+      const t = convexTest(schema, modules);
+      const { userId, organizationId, asUser } = await createTestContext(t);
+
+      const projectId = await createProjectInOrganization(t, userId, organizationId, {
+        name: "Timer Project",
+        key: "TIMER",
+      });
+      const issueId = await createTestIssue(t, projectId, userId, { title: "Timer Issue" });
+
+      const entryId = await asUser.mutation(api.timeTracking.startTimer, {
+        projectId,
+        issueId,
+        description: "Working on issue",
+      });
+
+      const entry = await t.run(async (ctx) => ctx.db.get(entryId));
+      expect(entry?.projectId).toBe(projectId);
+      expect(entry?.issueId).toBe(issueId);
+      expect(entry?.description).toBe("Working on issue");
+      await t.finishInProgressScheduledFunctions();
+    });
+  });
+
+  describe("stopTimer", () => {
+    it("should reject if timer already stopped", async () => {
+      const t = convexTest(schema, modules);
+      const userId = await createTestUser(t);
+      const asUser = asAuthenticatedUser(t, userId);
+
+      const entryId = await asUser.mutation(api.timeTracking.startTimer, {});
+      await asUser.mutation(api.timeTracking.stopTimer, { entryId });
+
+      await expect(asUser.mutation(api.timeTracking.stopTimer, { entryId })).rejects.toThrow(
+        /already stopped/i,
+      );
+      await t.finishInProgressScheduledFunctions();
+    });
+
+    it("should reject stopping another users timer", async () => {
+      const t = convexTest(schema, modules);
+      const user1 = await createTestUser(t, { name: "User 1" });
+      const user2 = await createTestUser(t, { name: "User 2" });
+      const asUser1 = asAuthenticatedUser(t, user1);
+      const asUser2 = asAuthenticatedUser(t, user2);
+
+      const entryId = await asUser1.mutation(api.timeTracking.startTimer, {});
+
+      await expect(asUser2.mutation(api.timeTracking.stopTimer, { entryId })).rejects.toThrow();
+      await t.finishInProgressScheduledFunctions();
+    });
+  });
+
+  describe("getRunningTimer", () => {
+    it("should return null when no timer running", async () => {
+      const t = convexTest(schema, modules);
+      const userId = await createTestUser(t);
+      const asUser = asAuthenticatedUser(t, userId);
+
+      const running = await asUser.query(api.timeTracking.getRunningTimer, {});
+      expect(running).toBeNull();
+      await t.finishInProgressScheduledFunctions();
+    });
+
+    it("should include current duration and cost", async () => {
+      const t = convexTest(schema, modules);
+      const userId = await createTestUser(t);
+      const asUser = asAuthenticatedUser(t, userId);
+
+      await asUser.mutation(api.timeTracking.setUserRate, {
+        userId,
+        hourlyRate: 100,
+        currency: "USD",
+        rateType: "billable",
+      });
+
+      const entryId = await asUser.mutation(api.timeTracking.startTimer, {});
+
+      // Patch the start time to 1 hour ago
+      await t.run(async (ctx) => {
+        await ctx.db.patch(entryId, { startTime: Date.now() - 3600000 });
+      });
+
+      const running = await asUser.query(api.timeTracking.getRunningTimer, {});
+      expect(running?.currentDuration).toBeGreaterThanOrEqual(3600);
+      expect(running?.currentCost).toBeGreaterThanOrEqual(100);
+      await t.finishInProgressScheduledFunctions();
+    });
+  });
+
+  describe("getCurrentWeekTimesheet", () => {
+    it("should return empty timesheet for new user", async () => {
+      const t = convexTest(schema, modules);
+      const userId = await createTestUser(t);
+      const asUser = asAuthenticatedUser(t, userId);
+
+      const timesheet = await asUser.query(api.timeTracking.getCurrentWeekTimesheet, {});
+
+      expect(timesheet.totalHours).toBe(0);
+      expect(timesheet.billableHours).toBe(0);
+      expect(timesheet.entries).toBe(0);
+      await t.finishInProgressScheduledFunctions();
+    });
+  });
+
+  describe("setUserRate", () => {
+    it("should allow user to set own rate", async () => {
+      const t = convexTest(schema, modules);
+      const userId = await createTestUser(t);
+      const asUser = asAuthenticatedUser(t, userId);
+
+      await asUser.mutation(api.timeTracking.setUserRate, {
+        userId,
+        hourlyRate: 75,
+        currency: "EUR",
+        rateType: "billable",
+      });
+
+      // Verify rate was set by checking time entries use it
+      const entryId = await asUser.mutation(api.timeTracking.startTimer, {});
+      const entry = await t.run(async (ctx) => ctx.db.get(entryId));
+      expect(entry?.hourlyRate).toBe(75);
+      expect(entry?.currency).toBe("EUR");
+      await t.finishInProgressScheduledFunctions();
+    });
+
+    it("should set project-specific rate", async () => {
+      const t = convexTest(schema, modules);
+      const { userId, organizationId, asUser } = await createTestContext(t);
+
+      const projectId = await createProjectInOrganization(t, userId, organizationId, {
+        name: "Rate Project",
+        key: "RATE",
+      });
+
+      // Set project-specific rate
+      await asUser.mutation(api.timeTracking.setUserRate, {
+        userId,
+        projectId,
+        hourlyRate: 100,
+        currency: "USD",
+        rateType: "billable",
+      });
+
+      // Verify rate is used for project entries
+      const now = Date.now();
+      const entryId = await asUser.mutation(api.timeTracking.createTimeEntry, {
+        projectId,
+        startTime: now - 3600000,
+        endTime: now,
+        billable: true,
+      });
+
+      const entry = await t.run(async (ctx) => ctx.db.get(entryId));
+      expect(entry?.hourlyRate).toBe(100);
+      expect(entry?.totalCost).toBeCloseTo(100, 0); // 1 hour * $100
+      await t.finishInProgressScheduledFunctions();
     });
   });
 });
