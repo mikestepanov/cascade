@@ -35,7 +35,7 @@ const TARGETS = [
   { url: "https://www.atlassian.com/software/jira", competitor: "jira", page: "home" },
 
   // MeetingBaas
-  { url: "https://meetingbaas.com", competitor: "meetingbaas", page: "home" },
+  { url: "https://meetingbaas.com", competitor: "meeting-baas", page: "home" },
 
   // Monday
   { url: "https://monday.com", competitor: "monday", page: "home" },
@@ -44,13 +44,25 @@ const TARGETS = [
   { url: "https://otter.ai", competitor: "otter", page: "home" },
 
   // Read AI
-  { url: "https://read.ai", competitor: "read_ai", page: "home" },
+  { url: "https://read.ai", competitor: "read-ai", page: "home" },
 
   // Recall
-  { url: "https://recall.ai", competitor: "recall", page: "home" },
+  { url: "https://recall.ai", competitor: "recall-ai", page: "home" },
 
   // tl;dv
   { url: "https://tldv.io", competitor: "tldv", page: "home" },
+
+  // PM Tools (New)
+  { url: "https://height.app", competitor: "height", page: "home" },
+  { url: "https://shortcut.com", competitor: "shortcut", page: "home" },
+
+  // Time Tracking (New)
+  { url: "https://clockify.me", competitor: "clockify", page: "home" },
+  { url: "https://jibble.io", competitor: "jibble", page: "home" },
+  { url: "https://toggl.com", competitor: "toggl", page: "home" },
+  { url: "https://timecamp.com", competitor: "timecamp", page: "home" },
+  { url: "https://tmetric.com", competitor: "tmetric", page: "home" },
+  { url: "https://getharvest.com", competitor: "harvest", page: "home" },
 ];
 
 // Run mirror script for each target sequentially
@@ -61,6 +73,7 @@ async function runMirror(target) {
     const child = spawn("node", [scriptPath, target.url, target.competitor, target.page], {
       stdio: "inherit",
       cwd: path.join(__dirname, ".."),
+      shell: true,
     });
 
     child.on("close", (code) => {
@@ -90,9 +103,23 @@ async function main() {
 
   for (let i = 0; i < TARGETS.length; i++) {
     const target = TARGETS[i];
-    console.log(`\n[${i + 1}/${TARGETS.length}] ${target.competitor}/${target.page}`);
-    console.log("-".repeat(40));
-    await runMirror(target);
+
+    try {
+      // Smart Skip: Check if directory exists
+      const outputDir = path.resolve(__dirname, "../docs/research/library", target.competitor);
+      if (fs.existsSync(outputDir) && fs.readdirSync(outputDir).length > 0) {
+        console.log(
+          `\n[${i + 1}/${TARGETS.length}] ${target.competitor}/${target.page} ⏩ Skipped (Exists)`,
+        );
+        continue;
+      }
+
+      console.log(`\n[${i + 1}/${TARGETS.length}] ${target.competitor}/${target.page}`);
+      console.log("-".repeat(40));
+      await runMirror(target);
+    } catch (err) {
+      console.error(`❌ Unexpected error processing ${target.competitor}:`, err);
+    }
   }
 
   const elapsed = ((Date.now() - startTime) / 1000 / 60).toFixed(1);

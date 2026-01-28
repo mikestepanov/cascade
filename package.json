@@ -45,7 +45,8 @@
     "prepare": "husky",
     "dev:purge": "convex run purge:purgeData \"{\\\"confirm\\\": true}\"",
     "mirror": "node scripts/scrape_full_mirror.js",
-    "mirror:batch": "node scripts/mirror_batch.js"
+    "mirror:batch": "node scripts/mirror_batch.js",
+    "inventory": "node scripts/check_inventory.js"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^3.0.23",
