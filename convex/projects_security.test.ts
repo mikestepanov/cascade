@@ -50,4 +50,34 @@ describe("Projects Security", () => {
 
     await t.finishInProgressScheduledFunctions();
   });
+
+  it("should prevent creating project in unauthorized organization", async () => {
+    const t = convexTest(schema, modules);
+
+    // 1. Setup Organization A (Victim)
+    const userA = await createTestUser(t, { name: "Victim Admin" });
+    const {
+      organizationId: orgA,
+      workspaceId: workspaceA,
+    } = await createOrganizationAdmin(t, userA);
+
+    // 2. Setup Attacker User (no access to Org A)
+    const attacker = await createTestUser(t, { name: "Attacker" });
+    const asAttacker = asAuthenticatedUser(t, attacker);
+
+    // 3. Attacker tries to create a project in Organization A
+    await expect(async () => {
+      await asAttacker.mutation(api.projects.createProject, {
+        name: "Malicious Project",
+        key: "HACK",
+        description: "I shouldn't be here",
+        boardType: "kanban",
+        organizationId: orgA,
+        workspaceId: workspaceA,
+        isPublic: true,
+      });
+    }).rejects.toThrow(
+      /You must be an organization admin or workspace member to create a project here/,
+    );
+  });
 });

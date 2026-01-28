@@ -17,3 +17,8 @@
 **Vulnerability:** Users could change their email address in `updateProfile` without losing their `emailVerificationTime` status. This allowed a verified user to claim any email address (including unowned ones) while appearing "verified" to the system.
 **Learning:** When allowing updates to sensitive identity fields (email, phone), simply validating the format or uniqueness is insufficient. You must also reset any associated trust markers (verification timestamps).
 **Prevention:** Always couple identity updates with a reset of verification state. Added logic to explicitly set `emailVerificationTime` to `undefined` when the email field changes.
+
+## 2025-05-27 - Project Creation IDOR via Missing Hierarchy Checks
+**Vulnerability:** The `createProject` mutation accepted `organizationId` and `workspaceId` arguments without verifying the caller's membership in those resources. This allowed any authenticated user to create projects in any organization or workspace by guessing their IDs.
+**Learning:** Relying on `authenticatedMutation` is insufficient for resource creation. You must explicitly verify that the user has write/admin permissions on the *parent* container (Organization/Workspace) where the new resource is being created.
+**Prevention:** Added explicit `getOrganizationRole` and `getWorkspaceRole` checks in the mutation handler to ensure the caller is an organization admin or workspace member.
