@@ -274,6 +274,27 @@ export async function collectInBatches<T>(
   return allItems;
 }
 
+/**
+ * Efficiently counts items in a query.
+ * Uses .count() if available (Convex 1.13+), otherwise falls back to taking a limit.
+ *
+ * This helper is essential for maintaining compatibility with test environments
+ * (e.g. convex-test) that may not fully implement the Query interface, while
+ * leveraging the performance of .count() in production.
+ */
+export async function efficientCount<T>(
+  query: any, // Typed as any to handle test environment differences
+  limit: number = 2000,
+): Promise<number> {
+  if (typeof query.count === "function") {
+    return await query.count();
+  }
+
+  // Fallback for environments where count() is missing (e.g. tests)
+  const items = await query.take(limit);
+  return items.length;
+}
+
 // =============================================================================
 // USAGE GUIDELINES
 // =============================================================================
