@@ -27,7 +27,7 @@ test.describe("Issues", () => {
   });
 
   test.describe("Issue Creation", () => {
-    test("can create an issue from board view", async ({ dashboardPage, projectsPage, page }) => {
+    test("can create an issue from board view", async ({ dashboardPage, projectsPage }) => {
       await dashboardPage.goto();
       await dashboardPage.expectLoaded();
       // Create project first
@@ -71,7 +71,7 @@ test.describe("Issues", () => {
   });
 
   test.describe("Issue Detail", () => {
-    test("can open issue detail dialog", async ({ projectsPage, page }) => {
+    test("can open issue detail dialog", async ({ projectsPage }) => {
       // Create project first
       const uniqueId = Date.now().toString();
       const projectKey = `PROJ${uniqueId.slice(-4)}`;

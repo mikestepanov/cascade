@@ -125,7 +125,7 @@ function AllIssuesPage() {
           {filteredIssues.map((issue) => (
             <IssueCard
               key={issue._id}
-              issue={issue as unknown as Parameters<typeof IssueCard>[0]["issue"]}
+              issue={issue as Parameters<typeof IssueCard>[0]["issue"]}
               onDragStart={() => {
                 /* Dragging not supported in global view */
               }}

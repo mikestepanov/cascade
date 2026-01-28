@@ -108,11 +108,7 @@ test.describe("Integration Workflows", () => {
   });
 
   test.describe("Dashboard Workflow", () => {
-    test("dashboard shows issues after creating them", async ({
-      dashboardPage,
-      projectsPage,
-      page,
-    }) => {
+    test("dashboard shows issues after creating them", async ({ dashboardPage, projectsPage }) => {
       const timestamp = Date.now();
       const projectKey = `DWF${timestamp.toString().slice(-4)}`;
       const issueTitle = `Dashboard WF Issue ${timestamp}`;

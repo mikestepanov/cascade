@@ -1,5 +1,6 @@
 import type { Doc, Id } from "@convex/_generated/dataModel";
 import { memo } from "react";
+import { Button } from "@/components/ui/Button";
 import { Flex } from "@/components/ui/Flex";
 import { Tooltip } from "@/components/ui/Tooltip";
 import { Typography } from "@/components/ui/Typography";
@@ -15,6 +16,9 @@ interface NotificationItemProps {
   onDelete: (id: Id<"notifications">) => void;
 }
 
+/**
+ * Returns the appropriate emoji icon based on the notification type.
+ */
 function getNotificationIcon(type: string): string {
   switch (type) {
     case "issue_assigned":
@@ -34,6 +38,9 @@ function getNotificationIcon(type: string): string {
   }
 }
 
+/**
+ * Formats a timestamp into a relative time string (e.g., "5m ago") or date string.
+ */
 function formatTime(timestamp: number): string {
   const now = Date.now();
   const diff = now - timestamp;
@@ -48,6 +55,10 @@ function formatTime(timestamp: number): string {
   return new Date(timestamp).toLocaleDateString();
 }
 
+/**
+ * A memoized component that renders a single notification item.
+ * Supports "Mark as read" and "Delete" actions.
+ */
 export const NotificationItem = memo(function NotificationItem({
   notification,
   onMarkAsRead,
@@ -56,7 +67,7 @@ export const NotificationItem = memo(function NotificationItem({
   return (
     <div
       className={cn(
-        "p-4 hover:bg-ui-bg-secondary:bg-ui-bg-secondary-dark transition-colors",
+        "p-4 hover:bg-ui-bg-secondary transition-colors",
         !notification.isRead && "bg-status-info-bg",
       )}
     >
@@ -92,10 +103,11 @@ export const NotificationItem = memo(function NotificationItem({
             <Flex gap="xs">
               {!notification.isRead && (
                 <Tooltip content="Mark as read">
-                  <button
-                    type="button"
+                  <Button
+                    variant="ghost"
+                    size="sm"
                     onClick={() => onMarkAsRead(notification._id)}
-                    className="p-1 text-brand-600 hover:bg-brand-100:bg-brand-900/30 rounded"
+                    className="h-6 w-6 p-0 text-brand-600 hover:bg-brand-100 hover:text-brand-700"
                     aria-label="Mark as read"
                   >
                     <svg
@@ -110,14 +122,15 @@ export const NotificationItem = memo(function NotificationItem({
                         clipRule="evenodd"
                       />
                     </svg>
-                  </button>
+                  </Button>
                 </Tooltip>
               )}
               <Tooltip content="Delete">
-                <button
-                  type="button"
+                <Button
+                  variant="ghost"
+                  size="sm"
                   onClick={() => onDelete(notification._id)}
-                  className="p-1 text-ui-text-tertiary hover:text-status-error:text-status-error hover:bg-status-error-bg rounded"
+                  className="h-6 w-6 p-0 text-ui-text-tertiary hover:text-status-error hover:bg-status-error-bg"
                   aria-label="Delete notification"
                 >
                   <svg
@@ -132,7 +145,7 @@ export const NotificationItem = memo(function NotificationItem({
                       clipRule="evenodd"
                     />
                   </svg>
-                </button>
+                </Button>
               </Tooltip>
             </Flex>
           </Flex>

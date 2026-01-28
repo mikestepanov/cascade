@@ -1,6 +1,7 @@
 import type { Id } from "@convex/_generated/dataModel";
 import { memo, useEffect, useRef } from "react";
 import { Flex } from "@/components/ui/Flex";
+import type { IssuePriority, IssueType } from "@/lib/issue-utils";
 import { getPriorityColor, getPriorityIcon, getTypeIcon, getTypeLabel } from "@/lib/issue-utils";
 import { cn } from "@/lib/utils";
 import { Tooltip } from "./ui/Tooltip";
@@ -10,8 +11,8 @@ interface Issue {
   _id: Id<"issues">;
   key: string;
   title: string;
-  type: "task" | "bug" | "story" | "epic" | "subtask";
-  priority: "lowest" | "low" | "medium" | "high" | "highest";
+  type: IssueType;
+  priority: IssuePriority;
   assignee?: {
     _id: Id<"users">;
     name: string;
