@@ -5,6 +5,7 @@ import type { FunctionReference } from "convex/server";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { render, screen } from "@/test/custom-render";
 import { FileAttachments } from "./FileAttachments";
+import { Typography } from "./ui/Typography";
 
 interface Attachment {
   storageId: Id<"_storage">;
@@ -37,7 +38,7 @@ vi.mock("@/components/ui/ConfirmDialog", () => ({
   ConfirmDialog: ({ isOpen, onConfirm, title }: ConfirmDialogProps) =>
     isOpen ? (
       <div role="dialog">
-        <h1>{title}</h1>
+        <Typography variant="h4">{title}</Typography>
         <button type="button" onClick={onConfirm}>
           Confirm
         </button>
