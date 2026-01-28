@@ -297,14 +297,28 @@ export class DashboardPage extends BasePage {
   // ===================
 
   async openCommandPalette() {
+    await this.waitForLoad();
+    // Wait for command palette button to be actionable (indicates React hydration complete)
+    await this.commandPaletteButton.waitFor({ state: "visible" });
+
+    // Use retry pattern - button click may not trigger event handler immediately after hydration
     await expect(async () => {
-      // Small stabilization wait to ensure hydration is settled and listeners are attached
-      await this.page.waitForTimeout(1000);
-      // Remove force: true to allow Playwright to wait for actionability (event handlers attached)
+      // Close any existing command palette first (in case it's in an inconsistent state)
+      if (await this.commandPalette.isVisible().catch(() => false)) {
+        await this.page.keyboard.press("Escape");
+      }
+      // Click to open command palette
       await this.commandPaletteButton.click();
-      await expect(this.commandPalette).toBeVisible({ timeout: 5000 });
-    }).toPass({ timeout: 20000 });
-    await this.page.waitForTimeout(500);
+      // Wait for dialog animation to complete (Radix Dialog has opening animation)
+      await expect(this.commandPalette).toBeVisible();
+      // Verify it stays visible (not immediately closed)
+      await expect(this.commandPaletteInput).toBeVisible();
+    }).toPass();
+
+    // Focus the input to keep the dialog open and stable
+    await this.commandPaletteInput.focus();
+    // Final assertion that palette is still visible after focus
+    await expect(this.commandPalette).toBeVisible();
   }
 
   async closeCommandPalette() {
@@ -319,8 +333,8 @@ export class DashboardPage extends BasePage {
         await this.page.mouse.click(0, 0);
       }
 
-      await expect(this.commandPalette).not.toBeVisible({ timeout: 2000 });
-    }).toPass({ timeout: 10000 });
+      await expect(this.commandPalette).not.toBeVisible();
+    }).toPass();
   }
 
   async openShortcutsHelp() {
@@ -336,8 +350,8 @@ export class DashboardPage extends BasePage {
       if (await this.shortcutsModal.isVisible()) {
         await this.mainContent.click({ force: true, position: { x: 10, y: 10 } }).catch(() => {});
       }
-      await expect(this.shortcutsModal).not.toBeVisible({ timeout: 2000 });
-    }).toPass({ timeout: 10000 });
+      await expect(this.shortcutsModal).not.toBeVisible();
+    }).toPass();
   }
 
   async setTheme(theme: "light" | "dark" | "system") {
@@ -379,18 +393,19 @@ export class DashboardPage extends BasePage {
       return;
     }
 
-    // Try pressing Escape to close
-    await this.page.keyboard.press("Escape");
-    await this.page.waitForTimeout(500);
+    // Use retry pattern to handle timing variability
+    await expect(async () => {
+      // Try pressing Escape to close
+      await this.page.keyboard.press("Escape");
 
-    // If still visible, click outside to close
-    if (await this.globalSearchModal.isVisible().catch(() => false)) {
-      await this.page.mouse.click(10, 10);
-      await this.page.waitForTimeout(500);
-    }
+      // Check if still visible - if so, try clicking outside
+      if (await this.globalSearchModal.isVisible().catch(() => false)) {
+        await this.page.mouse.click(10, 10);
+      }
 
-    // Verify closed
-    await expect(this.globalSearchModal).not.toBeVisible({ timeout: 5000 });
+      // Verify closed
+      await expect(this.globalSearchModal).not.toBeVisible();
+    }).toPass();
   }
 
   // ===================
@@ -431,8 +446,13 @@ export class DashboardPage extends BasePage {
 
   async pressCommandPaletteShortcut() {
     await this.waitForLoad();
-    await this.page.keyboard.press("ControlOrMeta+k");
-    await expect(this.commandPalette).toBeVisible();
+    // Wait for command palette button to be actionable (indicates React hydration complete)
+    await this.commandPaletteButton.waitFor({ state: "visible" });
+    // Use retry logic - keyboard events may not be captured immediately after hydration
+    await expect(async () => {
+      await this.page.keyboard.press("ControlOrMeta+k");
+      await expect(this.commandPalette).toBeVisible();
+    }).toPass();
   }
 
   async pressShortcutsHelpShortcut() {

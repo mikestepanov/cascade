@@ -78,6 +78,9 @@ test.describe("Integration Workflows", () => {
       await projectsPage.goto();
       await projectsPage.createProject(`Nav Test ${timestamp}`, projectKey);
 
+      // Wait for board to be fully loaded before interacting with tabs
+      await projectsPage.waitForBoardInteractive();
+
       // Verify we're on board
       await expect(page).toHaveURL(/\/board/);
       console.log("✓ On board tab");
@@ -85,20 +88,25 @@ test.describe("Integration Workflows", () => {
       // Project tabs are in the Tabs landmark - scope selectors to avoid matching sidebar nav
       const projectTabs = page.getByLabel("Tabs");
 
-      // Switch to Calendar
+      // Switch to Calendar - wait for tab to be visible first
       const calendarTab = projectTabs.getByRole("link", { name: /calendar/i });
+      await calendarTab.waitFor({ state: "visible" });
       await calendarTab.click();
       await expect(page).toHaveURL(/\/calendar/, { timeout: 10000 });
+      await page.waitForLoadState("domcontentloaded");
       console.log("✓ Navigated to calendar");
 
       // Switch to Timesheet
       const timesheetTab = projectTabs.getByRole("link", { name: /timesheet/i });
+      await timesheetTab.waitFor({ state: "visible" });
       await timesheetTab.click();
       await expect(page).toHaveURL(/\/timesheet/, { timeout: 10000 });
+      await page.waitForLoadState("domcontentloaded");
       console.log("✓ Navigated to timesheet");
 
       // Switch back to Board
       const boardTab = projectTabs.getByRole("link", { name: /board/i });
+      await boardTab.waitFor({ state: "visible" });
       await boardTab.click();
       await expect(page).toHaveURL(/\/board/, { timeout: 10000 });
       console.log("✓ Navigated back to board");
@@ -172,15 +180,24 @@ test.describe("Integration Workflows", () => {
       await expect(dashboardPage.globalSearchModal).toBeVisible({ timeout: 5000 });
       console.log("✓ Global search opened");
 
-      // Type the unique search term
-      await dashboardPage.globalSearchInput.fill(uniqueSearchTerm);
+      // Type the unique search term and wait for search to complete
+      // Use retry pattern to handle component re-renders during typing
+      await expect(async () => {
+        // Wait for input to be stable and fill it
+        await dashboardPage.globalSearchInput.waitFor({ state: "visible" });
+        await dashboardPage.globalSearchInput.fill(uniqueSearchTerm);
 
-      // Wait for search results (give time for debounce + API call)
-      await page.waitForTimeout(1000);
+        // Wait for search to process - either results appear or "No results found"
+        // Note: Search requires minimum 2 characters and has debounce
+        const noResultsText = page.getByText("No results found");
+        const searchResultGroup = page.locator("[cmdk-group]");
 
-      // The search should find results (implementation-dependent)
-      // Just verify the search modal is working
-      console.log("✓ Search query entered");
+        // Wait for either results or "no results" to appear
+        await expect(noResultsText.or(searchResultGroup)).toBeVisible();
+      }).toPass();
+
+      // Search has completed - either found results or "No results found"
+      console.log("✓ Search query entered and processed");
 
       // Close search
       await dashboardPage.closeGlobalSearch();
