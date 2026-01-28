@@ -94,7 +94,7 @@ export function CommandPalette({ isOpen, onClose, commands }: CommandPaletteProp
                   key={cmd.id}
                   value={cmd.id}
                   onSelect={() => handleSelect(cmd)}
-                  className="cursor-pointer data-[selected=true]:bg-brand-50[selected=true]:bg-brand-900/30"
+                  className="cursor-pointer data-[selected=true]:bg-brand-50"
                 >
                   {cmd.icon && <span className="text-xl mr-2">{cmd.icon}</span>}
                   <div className="flex-1">

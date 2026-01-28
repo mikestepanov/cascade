@@ -3,6 +3,7 @@ import type { Doc, Id } from "@convex/_generated/dataModel";
 import { useQuery } from "convex/react";
 import { useMemo, useState } from "react";
 import { Flex } from "@/components/ui/Flex";
+import { Tooltip } from "@/components/ui/Tooltip";
 import { getPriorityColor, getTypeIcon } from "@/lib/issue-utils";
 import { cn } from "@/lib/utils";
 import { IssueDetailModal } from "./IssueDetailModal";
@@ -135,20 +136,20 @@ export function IssuesCalendarView({
 
         <div className="space-y-1">
           {(dayIssues ?? []).slice(0, 3).map((issue: Doc<"issues">) => (
-            <button
-              type="button"
-              key={issue._id}
-              onClick={() => setSelectedIssue(issue._id)}
-              className="w-full text-left p-1.5 rounded hover:bg-ui-bg-secondary transition-colors"
-              title={issue.title}
-            >
-              <Flex align="center" gap="xs">
-                <div className={cn("w-2 h-2 rounded-full", getPriorityColor(issue.priority))} />
-                <span className="text-xs truncate flex-1">
-                  {getTypeIcon(issue.type)} {issue.title}
-                </span>
-              </Flex>
-            </button>
+            <Tooltip key={issue._id} content={issue.title}>
+              <button
+                type="button"
+                onClick={() => setSelectedIssue(issue._id)}
+                className="w-full text-left p-1.5 rounded hover:bg-ui-bg-secondary transition-colors"
+              >
+                <Flex align="center" gap="xs">
+                  <div className={cn("w-2 h-2 rounded-full", getPriorityColor(issue.priority))} />
+                  <span className="text-xs truncate flex-1">
+                    {getTypeIcon(issue.type)} {issue.title}
+                  </span>
+                </Flex>
+              </button>
+            </Tooltip>
           ))}
           {dayIssues.length > 3 && (
             <Typography variant="muted" className="text-xs pl-1.5">
@@ -181,27 +182,29 @@ export function IssuesCalendarView({
           justify="between"
           className="sm:gap-4 w-full sm:w-auto sm:justify-start"
         >
-          <button
-            type="button"
-            onClick={previousMonth}
-            className="p-2 hover:bg-ui-bg-secondary rounded-lg transition-colors min-w-11 min-h-11 sm:min-w-0 sm:min-h-0 flex items-center justify-center"
-            aria-label="Previous month"
-          >
-            <svg
-              aria-hidden="true"
-              className="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
+          <Tooltip content="Previous month">
+            <button
+              type="button"
+              onClick={previousMonth}
+              className="p-2 hover:bg-ui-bg-secondary rounded-lg transition-colors min-w-11 min-h-11 sm:min-w-0 sm:min-h-0 flex items-center justify-center"
+              aria-label="Previous month"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M15 19l-7-7 7-7"
-              />
-            </svg>
-          </button>
+              <svg
+                aria-hidden="true"
+                className="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M15 19l-7-7 7-7"
+                />
+              </svg>
+            </button>
+          </Tooltip>
 
           <Typography
             variant="h3"
@@ -210,22 +213,29 @@ export function IssuesCalendarView({
             {currentDate.toLocaleDateString("en-US", { month: "long", year: "numeric" })}
           </Typography>
 
-          <button
-            type="button"
-            onClick={nextMonth}
-            className="p-2 hover:bg-ui-bg-secondary rounded-lg transition-colors min-w-11 min-h-11 sm:min-w-0 sm:min-h-0 flex items-center justify-center"
-            aria-label="Next month"
-          >
-            <svg
-              aria-hidden="true"
-              className="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
+          <Tooltip content="Next month">
+            <button
+              type="button"
+              onClick={nextMonth}
+              className="p-2 hover:bg-ui-bg-secondary rounded-lg transition-colors min-w-11 min-h-11 sm:min-w-0 sm:min-h-0 flex items-center justify-center"
+              aria-label="Next month"
             >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
-          </button>
+              <svg
+                aria-hidden="true"
+                className="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 5l7 7-7 7"
+                />
+              </svg>
+            </button>
+          </Tooltip>
 
           <button
             type="button"
