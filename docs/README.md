@@ -156,16 +156,17 @@ const { page, continueCursor } = await ctx.db
 
 ### Research & Strategy (`research/`)
 
-| File                                        | Description                             |
-| ------------------------------------------- | --------------------------------------- |
-| `research/strategy/NICHE_STRATEGY.md`       | How we win against giants               |
-| `research/strategy/GAPS_vs_Competitors.md`  | Critical missing features (Roadmap)     |
-| `research/strategy/FEATURE_DEEP_DIVE.md`    | Technical analysis of core domains      |
-| `research/INVENTORY.md`                     | **NEW:** Catalog of all collection data |
-| `research/comparisons/pm-architecture.md`   | Jira vs Linear vs ClickUp architecture  |
-| `research/comparisons/meeting-landscape.md` | Overview of the Meeting AI market       |
-| `research/comparisons/feature-matrix.md`    | Detailed comparison matrix              |
-| `research/competitor-tech-stack.md`         | **NEW:** Linear tech stack deep dive    |
+| File                                        | Description                               |
+| ------------------------------------------- | ----------------------------------------- |
+| `research/strategy/SCRAP_STRATEGY.md`       | **NEW:** Master list of features to adopt |
+| `research/strategy/NICHE_STRATEGY.md`       | How we win against giants                 |
+| `research/strategy/GAPS_vs_Competitors.md`  | Critical missing features (Roadmap)       |
+| `research/strategy/FEATURE_DEEP_DIVE.md`    | Technical analysis of core domains        |
+| `research/INVENTORY.md`                     | **NEW:** Catalog of all collection data   |
+| `research/comparisons/pm-architecture.md`   | Jira vs Linear vs ClickUp architecture    |
+| `research/comparisons/meeting-landscape.md` | Overview of the Meeting AI market         |
+| `research/comparisons/feature-matrix.md`    | Detailed comparison matrix                |
+| `research/competitor-tech-stack.md`         | **NEW:** Linear tech stack deep dive      |
 
 **Omega Comparison Library (`research/library/`):**
 
@@ -183,8 +184,9 @@ Automated visual and technical captures of competitor sites. See [library/README
 
 **Competitor Deep Dives:**
 
-- **PM Suites:** [Jira](research/competitors/pm-suites/jira.md), [Linear](research/competitors/pm-suites/linear.md), [Monday](research/competitors/pm-suites/monday.md)
-- **Meeting AI:** [Read AI](research/competitors/meeting-ai/read-ai.md), [Fireflies](research/competitors/meeting-ai/fireflies.md), [Otter](research/competitors/meeting-ai/otter.md)
+- **PM Suites:** [Jira](research/competitors/pm-suites/jira.md), [Linear](research/competitors/pm-suites/linear.md), [Height](research/competitors/pm-suites/height.md), [Shortcut](research/competitors/pm-suites/shortcut.md), [Monday](research/competitors/pm-suites/monday.md), [Asana](research/competitors/pm-suites/asana.md), [ClickUp](research/competitors/pm-suites/clickup.md)
+- **Meeting AI:** [Read AI](research/competitors/meeting-ai/read-ai.md), [Fireflies](research/competitors/meeting-ai/fireflies.md), [Otter](research/competitors/meeting-ai/otter.md), [Gong](research/competitors/meeting-ai/gong.md), [TL;DV](research/competitors/meeting-ai/tldv.md)
+- **Time Tracking:** [Overview](research/competitors/time-tracking/overview.md), [Clockify](research/competitors/time-tracking/clockify.md), [TMetric](research/competitors/time-tracking/tmetric.md), [TimeCamp](research/competitors/time-tracking/timecamp.md), [Jibble](research/competitors/time-tracking/jibble.md), [Toggl](research/competitors/time-tracking/toggl.md)
 - **Infrastructure:** [Recall.ai](research/competitors/infrastructure/recall-ai.md), [Meeting BaaS](research/competitors/infrastructure/meeting-baas.md)
 - **Open Source:** [AppFlowy](research/competitors/open-source/appflowy.md), [Cal.com](research/competitors/open-source/cal-com.md), [Kimai](research/competitors/open-source/kimai.md)
 
