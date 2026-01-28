@@ -15,7 +15,7 @@ describe("Users Security", () => {
       await t.run(async (ctx) => {
         await ctx.db.patch(userId, {
           emailVerificationTime: Date.now(),
-          email: "old@example.com"
+          email: "old@example.com",
         });
       });
 
@@ -47,7 +47,7 @@ describe("Users Security", () => {
       await t.run(async (ctx) => {
         await ctx.db.patch(userId, {
           emailVerificationTime: verifiedTime,
-          email: "same@example.com"
+          email: "same@example.com",
         });
       });
 
