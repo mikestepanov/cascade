@@ -28,17 +28,17 @@ pnpm e2e:debug
 | -------- | ----------------------- | ----------------------- |
 | Base URL | `http://localhost:5555` | `http://localhost:5555` |
 | Browser  | Chromium                | Chromium                |
-| Workers  | Auto                    | 1                       |
+| Workers  | 4                       | 4                       |
 | Retries  | 0                       | 2                       |
-| Parallel | Yes                     | Yes                     |
+| Parallel | Yes (fullyParallel)     | Yes (fullyParallel)     |
 
 ### Timeouts
 
 | Type               | Duration   |
 | ------------------ | ---------- |
-| Test timeout       | 30 seconds |
-| Expect timeout     | 5 seconds  |
-| Action timeout     | 10 seconds |
+| Test timeout       | 60 seconds |
+| Expect timeout     | 10 seconds |
+| Action timeout     | 15 seconds |
 | Navigation timeout | 15 seconds |
 
 ### Debug Artifacts
@@ -56,24 +56,56 @@ e2e/
 ├── fixtures/                   # Test fixtures
 │   ├── index.ts               # Exports all fixtures
 │   ├── test.fixture.ts        # Base fixtures (page objects)
-│   └── auth.fixture.ts        # Authenticated user fixtures
+│   ├── auth.fixture.ts        # Authenticated user fixtures
+│   └── rbac.fixture.ts        # RBAC-specific fixtures (admin/editor/viewer)
 │
 ├── pages/                      # Page Object Models
 │   ├── index.ts               # Exports all pages
 │   ├── base.page.ts           # Base page with common methods
 │   ├── auth.page.ts           # Auth forms (sign in/up, reset)
+│   ├── calendar.page.ts       # Calendar views
 │   ├── dashboard.page.ts      # Main app dashboard
-│   └── landing.page.ts        # Landing page
+│   ├── documents.page.ts      # Document management
+│   ├── landing.page.ts        # Landing page
+│   ├── onboarding.page.ts     # Onboarding flow
+│   ├── projects.page.ts       # Projects, boards, issues
+│   ├── settings.page.ts       # Settings pages
+│   └── workspaces.page.ts     # Workspace management
 │
 ├── utils/                      # Test utilities
-│   ├── index.ts
-│   ├── mailtrap.ts            # Mailtrap API for OTP verification
-│   └── test-helpers.ts        # Helper functions
+│   ├── index.ts               # Exports all utilities
+│   ├── auth-helpers.ts        # Authentication helpers
+│   ├── helpers.ts             # General helpers
+│   ├── otp-helpers.ts         # OTP verification via E2E API
+│   ├── routes.ts              # Route utilities
+│   ├── test-helpers.ts        # Test data helpers
+│   ├── test-user-service.ts   # Test user CRUD service
+│   └── wait-helpers.ts        # Async wait utilities
 │
-├── auth.spec.ts               # Authentication tests
-├── global-setup.ts            # Pre-test setup
+├── settings/                   # Nested spec directories
+│   └── billing.spec.ts        # Billing settings tests
+│
+├── config.ts                   # Test configuration (users, endpoints)
+├── global-setup.ts            # Pre-test setup (creates users, seeds data)
 ├── global-teardown.ts         # Post-test cleanup
-└── setup-auth.ts              # Auth state setup script
+│
+│── # Test specs (20 files)
+├── auth.spec.ts               # Authentication tests
+├── auth-comprehensive.spec.ts # Extended auth flow tests
+├── calendar.spec.ts           # Calendar tests
+├── dashboard.spec.ts          # Dashboard tests
+├── documents.spec.ts          # Document management tests
+├── error-scenarios.spec.ts    # Error handling tests
+├── integration-workflow.spec.ts # Cross-feature workflow tests
+├── invites.spec.ts            # User invitation tests
+├── issues.spec.ts             # Issue management tests
+├── landing.spec.ts            # Landing page tests
+├── onboarding.spec.ts         # Onboarding flow tests
+├── rbac.spec.ts               # Role-based access control tests
+├── signout.spec.ts            # Sign-out flow tests
+├── sprints.spec.ts            # Sprint management tests
+├── time-tracking.spec.ts      # Time tracking tests
+└── workspaces-org.spec.ts     # Workspace/org management tests
 ```
 
 ## Page Object Model
@@ -82,34 +114,47 @@ We use the [Page Object Model](https://playwright.dev/docs/pom) pattern for main
 
 ### Base Page
 
-All page objects extend `BasePage`:
+All page objects extend `BasePage`, which requires an `orgSlug` for multi-tenant URL construction:
 
 ```typescript
 // e2e/pages/base.page.ts
 export abstract class BasePage {
   readonly page: Page;
+  readonly orgSlug: string;
 
-  constructor(page: Page) {
+  constructor(page: Page, orgSlug: string) {
+    if (!orgSlug) {
+      throw new Error("orgSlug is required.");
+    }
     this.page = page;
+    this.orgSlug = orgSlug;
   }
 
   abstract goto(): Promise<void>;
 
+  // Waits for DOM + React hydration (checks __reactFiber on elements)
+  // Uses 'domcontentloaded' instead of 'networkidle' because Convex
+  // keeps WebSocket connections active, preventing networkidle from resolving
   async waitForLoad() {
-    await this.page.waitForLoadState("networkidle");
+    await this.page.waitForLoadState("domcontentloaded");
+    await this.page.waitForLoadState("load");
+    await this.page.waitForFunction(() => {
+      const elements = document.querySelectorAll("a, button");
+      if (elements.length === 0) return true;
+      for (const element of elements) {
+        const keys = Object.keys(element);
+        if (keys.some((k) => k.startsWith("__reactFiber") || k.startsWith("__reactProps"))) {
+          return true;
+        }
+      }
+      return false;
+    }, {});
   }
 
   // Toast helpers (Sonner)
-  getToast(text?: string): Locator {
-    if (text) {
-      return this.page.locator("[data-sonner-toast]").filter({ hasText: text });
-    }
-    return this.page.locator("[data-sonner-toast]");
-  }
-
-  async expectToast(text: string) {
-    await expect(this.getToast(text)).toBeVisible();
-  }
+  getToast(text?: string): Locator { /* ... */ }
+  async expectToast(text: string) { /* ... */ }
+  async dismissToasts() { /* ... */ }
 }
 ```
 
@@ -182,15 +227,18 @@ test("can sign in", async ({ authPage }) => {
 
 ### Test Users
 
-Test users are configured in `e2e/config.ts`. All use `@inbox.mailtrap.io` for email verification.
+Test users are configured in `e2e/config.ts`. All use `@inbox.mailtrap.io` for email verification. Emails include a shard suffix (`-s0` locally, configurable via `SHARD_INDEX` in CI).
 
-| User Key     | Email                            | Role   | Description                       |
-| ------------ | -------------------------------- | ------ | --------------------------------- |
-| `teamLead`   | `e2e-teamlead@inbox.mailtrap.io` | admin  | Default test user, project admin  |
-| `teamMember` | `e2e-member@inbox.mailtrap.io`   | editor | Team member with edit permissions |
-| `viewer`     | `e2e-viewer@inbox.mailtrap.io`   | viewer | Read-only access                  |
+| User Key     | Email Pattern                              | Platform Role | Description                         |
+| ------------ | ------------------------------------------ | ------------- | ----------------------------------- |
+| `admin`      | `e2e-admin-s{SHARD}@inbox.mailtrap.io`     | superAdmin    | Platform admin, full access         |
+| `teamLead`   | `e2e-teamlead-s{SHARD}@inbox.mailtrap.io`  | user          | Default test user, creates projects |
+| `teamMember` | `e2e-member-s{SHARD}@inbox.mailtrap.io`    | user          | Team member, standard access        |
+| `viewer`     | `e2e-viewer-s{SHARD}@inbox.mailtrap.io`    | user          | Read-only project access            |
+| `onboarding` | `e2e-onboarding-s{SHARD}@inbox.mailtrap.io`| user          | Dedicated for onboarding tests      |
 
 **Password:** All test users use `E2ETestPassword123!`
+**Default User:** `teamLead` is used for most authenticated tests.
 
 ### Test Organization
 
@@ -216,11 +264,15 @@ Test users are created automatically by `global-setup.ts` on each run:
 
 ### Auth State Files
 
-| File                           | User                |
-| ------------------------------ | ------------------- |
-| `e2e/.auth/user-teamlead.json` | Team lead (default) |
-| `e2e/.auth/user-member.json`   | Team member         |
-| `e2e/.auth/user-viewer.json`   | Viewer              |
+Auth state files include a worker index suffix for parallel execution:
+
+| File Pattern                              | User                |
+| ----------------------------------------- | ------------------- |
+| `e2e/.auth/user-admin-{workerIndex}.json` | Platform admin      |
+| `e2e/.auth/user-teamlead-{workerIndex}.json` | Team lead (default) |
+| `e2e/.auth/user-member-{workerIndex}.json`   | Team member         |
+| `e2e/.auth/user-viewer-{workerIndex}.json`   | Viewer              |
+| `e2e/.auth/user-onboarding-{workerIndex}.json` | Onboarding user   |
 
 ### IMPORTANT: Convex Auth Token Rotation
 
@@ -304,120 +356,83 @@ export const authenticatedTest = base.extend<AuthFixtures>({
 });
 ```
 
-## Mailtrap OTP Verification
+## OTP Verification via E2E API
 
-For tests requiring email verification (signup, password reset), we use Mailtrap to capture and read OTP codes.
-
-### Setup
-
-1. **Create Mailtrap Account:** [https://mailtrap.io](https://mailtrap.io) (free tier)
-2. **Get Credentials:**
-   - API Token: Settings → API Tokens
-   - Account ID & Inbox ID: From inbox URL
-
-3. **Set Environment Variables:**
-
-```bash
-MAILTRAP_API_TOKEN=your_token
-MAILTRAP_ACCOUNT_ID=your_account_id
-MAILTRAP_INBOX_ID=your_inbox_id
-```
-
-### Mailtrap Utilities
-
-**File:** `e2e/utils/mailtrap.ts`
-
-```typescript
-import { waitForVerificationEmail, clearInbox } from "./utils/mailtrap";
-
-// Clear inbox before test
-await clearInbox();
-
-// Wait for OTP email (polls every 2s, timeout 30s)
-const otp = await waitForVerificationEmail("user@example.com", {
-  timeout: 30000,
-  pollInterval: 2000,
-});
-```
-
-### Available Functions
-
-| Function                                   | Description                    |
-| ------------------------------------------ | ------------------------------ |
-| `waitForVerificationEmail(email, options)` | Polls inbox, returns OTP code  |
-| `clearInbox()`                             | Deletes all messages (cleanup) |
-| `getTestEmailAddress(prefix)`              | Generates unique test email    |
-
-### Example: Signup Test with OTP
-
-```typescript
-import { test, expect } from "./fixtures";
-import { waitForVerificationEmail, clearInbox } from "./utils/mailtrap";
-
-test("complete signup flow with email verification", async ({ authPage }) => {
-  // Setup
-  await clearInbox();
-  const testEmail = `e2e-${Date.now()}@inbox.mailtrap.io`;
-
-  // Start signup
-  await authPage.goto();
-  await authPage.startSignUp(testEmail, "SecurePass123!");
-
-  // Wait for verification email
-  const otp = await waitForVerificationEmail(testEmail);
-
-  // Enter OTP
-  await authPage.enterOTP(otp);
-
-  // Verify success
-  await expect(authPage.page).toHaveURL(/dashboard|onboarding/);
-});
-```
+For tests requiring email verification (signup, password reset), we use dedicated E2E API endpoints on the Convex backend that bypass actual email delivery and return OTP codes directly.
 
 ### How It Works
 
 ```
-┌─────────────┐     ┌─────────────┐     ┌─────────────┐
-│   E2E Test  │     │   Convex    │     │  Mailtrap   │
-│             │     │   Backend   │     │   Sandbox   │
-└──────┬──────┘     └──────┬──────┘     └──────┬──────┘
-       │                   │                   │
-       │ 1. Submit signup  │                   │
-       │──────────────────>│                   │
-       │                   │ 2. Send OTP email │
-       │                   │──────────────────>│
-       │                   │                   │
-       │ 3. Poll for email │                   │
-       │───────────────────────────────────────>
-       │                   │                   │
-       │ 4. Return email   │                   │
-       │<──────────────────────────────────────│
-       │                   │                   │
-       │ 5. Extract OTP    │                   │
-       │ 6. Submit OTP     │                   │
-       │──────────────────>│                   │
-       │                   │                   │
-       │ 7. Verified!      │                   │
-       │<──────────────────│                   │
+┌─────────────┐     ┌─────────────────────┐
+│   E2E Test  │     │   Convex Backend    │
+│             │     │   (E2E endpoints)   │
+└──────┬──────┘     └──────────┬──────────┘
+       │                       │
+       │ 1. Create test user   │
+       │  POST /e2e/create-test-user
+       │──────────────────────>│
+       │                       │
+       │ 2. Request OTP        │
+       │  GET /e2e/get-latest-otp?email=...
+       │──────────────────────>│
+       │                       │
+       │ 3. Return OTP code    │
+       │<──────────────────────│
+       │                       │
+       │ 4. Submit OTP in UI   │
+       │──────────────────────>│
+       │                       │
+       │ 5. Verified!          │
+       │<──────────────────────│
+```
+
+### E2E API Endpoints
+
+Configured in `e2e/config.ts` (`E2E_ENDPOINTS`):
+
+| Endpoint                | Method | Description                            |
+| ----------------------- | ------ | -------------------------------------- |
+| `/e2e/create-test-user` | POST   | Create user (bypasses email verify)    |
+| `/e2e/delete-test-user` | POST   | Delete test user                       |
+| `/e2e/get-latest-otp`   | GET    | Get latest OTP code for email          |
+| `/e2e/login-test-user`  | POST   | Login via API                          |
+| `/e2e/reset-onboarding` | POST   | Reset onboarding state                 |
+| `/e2e/setup-rbac-project` | POST | Set up RBAC test project with roles   |
+| `/e2e/seed-templates`   | POST   | Seed project templates                 |
+| `/e2e/nuke-test-users`  | POST   | Force delete all test users            |
+
+### OTP Utilities
+
+**Files:** `e2e/utils/otp-helpers.ts`, `e2e/utils/helpers.ts`
+
+```typescript
+import { getLatestOTP } from "./utils/otp-helpers";
+
+// Get OTP for a test email via E2E API endpoint
+const otp = await getLatestOTP(testEmail);
+```
+
+### Generating Test Emails
+
+```typescript
+import { generateTestEmail } from "./config";
+
+// Generates: prefix-{timestamp}@inbox.mailtrap.io
+const email = generateTestEmail("signup-test");
 ```
 
 ### Troubleshooting
 
-**OTP email not arriving:**
+**OTP not returned:**
 
-- Check Mailtrap inbox manually
-- Verify `MAILTRAP_API_TOKEN` has correct permissions
-- Check Convex logs for email sending errors
+- Verify the Convex dev server is running
+- Check that E2E API routes are registered (`convex/http.ts`)
+- Verify `VITE_CONVEX_URL` is set in `.env.local`
 
-**Timeout waiting for email:**
+**E2E API returning 401:**
 
-- Increase `timeout` option (default 30s)
-- Check if email provider is configured in Convex
-
-**Cannot extract OTP:**
-
-- OTP pattern expects 8-digit code
-- Check email template format
+- Check `E2E_API_KEY` is set if required
+- Verify the endpoint exists in your Convex deployment
 
 ## Selector Strategy
 
@@ -652,8 +667,10 @@ npx @playwright/mcp@latest
 ### Flaky tests
 
 - Add explicit waits for dynamic content
-- Use `waitForLoadState("networkidle")`
-- Check for race conditions
+- Use `.toPass()` retry pattern for operations that may need retries due to React re-renders
+- Avoid `waitForLoadState("networkidle")` - Convex WebSocket connections prevent it from resolving
+- Use `waitForLoadState("domcontentloaded")` instead
+- Check for race conditions with element detachment (especially with cmdk/dialog components)
 
 ## RBAC Testing
 
@@ -758,4 +775,4 @@ This file is read by `rbac.fixture.ts` to get the correct organization slug for 
 
 ---
 
-_Last Updated: 2025-12-10_
+_Last Updated: 2026-01-28_

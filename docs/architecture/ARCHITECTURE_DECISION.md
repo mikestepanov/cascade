@@ -1,5 +1,7 @@
 # Architecture Decision: Option B Implementation
 
+> **STATUS: PROPOSAL** - This document describes a planned architectural change that has been partially implemented. The current codebase is in a transitional state between the "current" and "target" designs described below. Consult the actual schema (`convex/schema.ts`) and routes (`src/config/routes.ts`) for the ground truth.
+
 **Date**: 2025-12-16
 **Decision**: Implement Linear-style architecture (Organization → Workspaces → Teams → Projects)
 

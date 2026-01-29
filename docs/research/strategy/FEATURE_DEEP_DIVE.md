@@ -616,15 +616,487 @@ Schema:
 
 ---
 
+## 12. Documents
+
+### What It Is
+
+Rich-text document editing integrated within the PM tool, enabling teams to maintain wikis, specs, and meeting notes alongside their issues.
+
+### Competitor Approaches
+
+| Tool        | Editor         | Real-time Collab | Versioning      | Permissions        |
+| ----------- | -------------- | ---------------- | --------------- | ------------------ |
+| **Jira**    | ❌ (Confluence) | ✅ (Confluence)  | ✅ Page history | ✅ Space/page-level |
+| **Linear**  | ❌ None         | ❌               | ❌              | ❌                 |
+| **Asana**   | ❌ (descriptions) | ❌             | ❌              | ❌                 |
+| **ClickUp** | ✅ ClickUp Docs | ✅ Yes          | ⚠️ Basic        | ✅ Doc-level        |
+| **Notion**  | ✅ Block editor | ✅ Yes           | ✅ Page history | ✅ Page-level       |
+
+### Nixelo Implementation
+
+```
+Schema:
+- documents: { title, isPublic, createdBy, organizationId, workspaceId?, projectId?, isDeleted?, deletedAt?, deletedBy? }
+- documentVersions: { documentId, version, snapshot (ProseMirror), title, createdBy, changeDescription? }
+- Real-time sync via ProseMirror Sync protocol over Convex
+```
+
+**Current State:**
+
+- ✅ Full rich-text editor (BlockNote / ProseMirror)
+- ✅ Real-time collaborative editing (ProseMirror Sync)
+- ✅ Version history with snapshots
+- ✅ Public/private document visibility
+- ✅ Organization, workspace, and project scoping
+- ✅ Soft delete with recoverability
+- ✅ Full-text search on titles
+- ❌ No document templates
+- ❌ No export (PDF, Markdown)
+- ❌ No nested page hierarchy (like Notion)
+
+### Gap Analysis
+
+| Feature            | Jira/Confluence | Notion | Nixelo | Gap?            |
+| ------------------ | --------------- | ------ | ------ | --------------- |
+| Rich text editor   | ✅              | ✅     | ✅     | ✅ No gap       |
+| Real-time collab   | ✅              | ✅     | ✅     | ✅ No gap       |
+| Version history    | ✅              | ✅     | ✅     | ✅ No gap       |
+| Templates          | ✅              | ✅     | ❌     | ⚠️ Gap          |
+| Export (PDF/MD)    | ✅              | ✅     | ❌     | ⚠️ Gap          |
+| Nested pages       | ✅              | ✅     | ❌     | ⚠️ Gap          |
+| Inline databases   | ❌              | ✅     | ❌     | Acceptable      |
+
+### Recommendations
+
+1. **Add Document Templates** (P2)
+   - Pre-built templates: Meeting Notes, RFC, Sprint Retro
+   - User-created templates from existing docs
+
+2. **Add Export** (P2)
+   - Markdown and PDF export from ProseMirror content
+   - Important for external sharing
+
+3. **Consider Nested Pages** (P3)
+   - Notion-like page hierarchy for wikis
+   - Add `parentDocumentId` to documents table
+
+---
+
+## 13. Attachments
+
+### What It Is
+
+File attachments on issues, comments, or documents — images, PDFs, design files, logs, etc.
+
+### Competitor Approaches
+
+| Tool        | Where              | Storage        | Inline Preview | Size Limits          |
+| ----------- | ------------------ | -------------- | -------------- | -------------------- |
+| **Jira**    | Issues, comments   | Dedicated      | ✅ Images, PDF | 10MB (free), 250MB+  |
+| **Linear**  | Issues, comments   | Cloudflare R2  | ✅ Images      | Unlimited (paid)     |
+| **Asana**   | Tasks, comments    | Dedicated      | ✅ Images      | 100MB per file       |
+| **ClickUp** | Tasks, docs        | Dedicated      | ✅ Images, PDF | 100MB (free), 5GB+   |
+| **Notion**  | Blocks (inline)    | S3-backed      | ✅ Everything  | 5MB (free), unlimited |
+
+### Nixelo Implementation
+
+```
+Schema:
+- No dedicated attachments table
+- Files embedded inline via ProseMirror blocks (images, file blocks)
+- Convex file storage for uploaded assets
+- Issue descriptions and document content support file embedding
+```
+
+**Current State:**
+
+- ✅ Inline images in documents (ProseMirror)
+- ✅ File uploads via Convex storage
+- ⚠️ No dedicated attachment list per issue
+- ❌ No drag-and-drop file attachment on issues
+- ❌ No attachment previews in issue list view
+- ❌ No file size/type restrictions enforced
+
+### Gap Analysis
+
+| Feature              | Jira | Linear | Nixelo | Gap?         |
+| -------------------- | ---- | ------ | ------ | ------------ |
+| Inline images        | ✅   | ✅     | ✅     | ✅ No gap    |
+| Attachment list      | ✅   | ✅     | ❌     | ⚠️ Gap       |
+| Drag-and-drop upload | ✅   | ✅     | ❌     | ⚠️ Gap       |
+| Preview thumbnails   | ✅   | ✅     | ❌     | ⚠️ Gap       |
+| Storage limits       | ✅   | ✅     | ❌     | ⚠️ Enterprise |
+
+### Recommendations
+
+1. **Add Attachment Section to Issues** (P2)
+   - Dedicated UI section showing all attached files
+   - Drag-and-drop upload zone on issue detail page
+   - Schema: Could add `attachments` array to issues or create `issueAttachments` table
+
+2. **File Preview** (P3)
+   - Thumbnail previews for images, PDFs
+   - Click to expand / download
+
+3. **Storage Limits** (P3, Enterprise)
+   - Per-organization storage quotas
+   - File size limits per upload
+
+---
+
+## 14. Permissions / RBAC
+
+### What It Is
+
+Role-based access control determining who can view, edit, or admin projects and resources.
+
+### Competitor Approaches
+
+| Tool        | Model                     | Granularity          | Custom Roles |
+| ----------- | ------------------------- | -------------------- | ------------ |
+| **Jira**    | Permission schemes        | Field/issue/project  | ✅ Yes       |
+| **Linear**  | Workspace + Team roles    | Team-level           | ❌ No        |
+| **Asana**   | Project-level roles       | Project/task-level   | ❌ No        |
+| **ClickUp** | Space/folder/list roles   | Multi-level          | ✅ Yes       |
+| **Notion**  | Workspace/teamspace/page  | Page-level           | ❌ No        |
+
+### Nixelo Implementation
+
+```
+Schema:
+- convex/rbac.ts: ProjectRole = "admin" | "editor" | "viewer"
+- convex/projectAccess.ts: Access control logic
+- Role hierarchy: viewer (1) < editor (2) < admin (3)
+- projects.members[]: { userId, role } array on project
+- hasMinimumRole(userRole, requiredRole) utility
+```
+
+**Current State:**
+
+- ✅ Three-tier role hierarchy (admin > editor > viewer)
+- ✅ Project-level role assignment
+- ✅ Role check on every query/mutation (getAuthUserId)
+- ✅ Type-safe role definitions
+- ❌ No field-level permissions
+- ❌ No custom roles
+- ❌ No organization-level roles (only project-level)
+- ❌ No SSO/SAML
+
+### Gap Analysis
+
+| Feature              | Jira | Linear | Nixelo | Gap?              |
+| -------------------- | ---- | ------ | ------ | ----------------- |
+| Role hierarchy       | ✅   | ✅     | ✅     | ✅ No gap         |
+| Project-level roles  | ✅   | ✅     | ✅     | ✅ No gap         |
+| Auth on every action | ✅   | ✅     | ✅     | ✅ No gap         |
+| Custom roles         | ✅   | ❌     | ❌     | Acceptable        |
+| Field-level perms    | ✅   | ❌     | ❌     | ⚠️ Enterprise gap |
+| SSO/SAML             | ✅   | ✅     | ❌     | ⚠️ Enterprise gap |
+| Org-level roles      | ✅   | ✅     | ❌     | ⚠️ Gap            |
+
+### Recommendations
+
+1. **Add Organization-Level Roles** (P2)
+   - Org owner / org admin / org member
+   - Controls who can create projects, invite members
+   - Schema: Add role field to organization membership
+
+2. **SSO/SAML** (P3, Enterprise)
+   - Critical for enterprise adoption
+   - Integrate via @convex-dev/auth providers
+
+3. **Defer Custom Roles** (P4)
+   - Three-tier model matches Linear's simplicity
+   - Custom roles add significant complexity
+
+---
+
+## 15. Integrations
+
+### What It Is
+
+Connecting the PM tool with external services (Slack, GitHub, CI/CD, calendars, etc.) for automated workflows.
+
+### Competitor Approaches
+
+| Tool        | Marketplace | Webhooks | Native Integrations | API Triggers |
+| ----------- | ----------- | -------- | ------------------- | ------------ |
+| **Jira**    | 3,000+ apps | ✅       | Bitbucket, Slack    | ✅ Automation |
+| **Linear**  | 30+ native  | ✅       | GitHub, Slack, Figma | ✅ Yes       |
+| **Asana**   | 200+ apps   | ✅       | Slack, Teams, Zapier | ✅ Rules     |
+| **ClickUp** | 100+ apps   | ✅       | GitHub, Slack, Zapier | ✅ Yes      |
+
+### Nixelo Implementation
+
+```
+Schema:
+- webhooks: { projectId, name, url, events[], secret?, isActive, lastTriggered? }
+- webhookExecutions: { webhookId, event, status, requestPayload, responseStatus?, responseBody?, error?, attempts }
+- pumbleWebhooks: { userId, projectId?, name, webhookUrl, events[], isActive, sendMentions, sendAssignments, sendStatusChanges, messagesSent, lastMessageAt?, lastError? }
+```
+
+**Current State:**
+
+- ✅ Outgoing webhooks with HMAC signing
+- ✅ Webhook execution tracking with retry logic
+- ✅ Pumble (Slack-like) integration with granular event subscriptions
+- ✅ Per-event filtering (issue.created, issue.updated, etc.)
+- ✅ Delivery status monitoring
+- ❌ No GitHub/GitLab integration
+- ❌ No Slack native integration (only Pumble)
+- ❌ No calendar sync (Google/Outlook)
+- ❌ No Zapier/Make connector
+
+### Gap Analysis
+
+| Feature            | Jira  | Linear | Nixelo | Gap?         |
+| ------------------ | ----- | ------ | ------ | ------------ |
+| Outgoing webhooks  | ✅    | ✅     | ✅     | ✅ No gap    |
+| Webhook monitoring | ✅    | ⚠️     | ✅     | ✅ No gap    |
+| Chat integration   | ✅    | ✅     | ⚠️     | ⚠️ Pumble only |
+| GitHub integration | ✅    | ✅     | ❌     | ⚠️ Gap       |
+| Calendar sync      | ✅    | ❌     | ❌     | Nice-to-have |
+| Marketplace        | ✅    | ❌     | ❌     | Long-term    |
+
+### Recommendations
+
+1. **Add Slack Integration** (P1)
+   - Extend pumbleWebhooks pattern to Slack incoming webhooks
+   - Slash commands for issue creation
+   - Notification channels per project
+
+2. **Add GitHub Integration** (P2)
+   - PR-to-issue linking
+   - Auto-close issues on merge
+   - Commit references in issue activity
+
+3. **Google Calendar Sync** (P2)
+   - Already have `calendarEvents` table
+   - Bi-directional sync for meetings and deadlines
+
+---
+
+## 16. API
+
+### What It Is
+
+Programmatic access to the platform for automation, custom integrations, and third-party tooling.
+
+### Competitor Approaches
+
+| Tool        | API Type        | Auth Method      | Rate Limits       | Docs Quality |
+| ----------- | --------------- | ---------------- | ----------------- | ------------ |
+| **Jira**    | REST + GraphQL  | OAuth 2.0, API token | Varies by plan | ⭐⭐⭐⭐    |
+| **Linear**  | GraphQL         | OAuth 2.0, API key | 1,500 req/hr   | ⭐⭐⭐⭐⭐  |
+| **Asana**   | REST            | OAuth 2.0, PAT   | 1,500 req/min    | ⭐⭐⭐⭐    |
+| **ClickUp** | REST            | OAuth 2.0, API token | 100 req/min   | ⭐⭐⭐      |
+
+### Nixelo Implementation
+
+```
+Schema:
+- apiKeys: {
+    userId, name, keyHash (SHA-256), keyPrefix (first 8 chars),
+    scopes[] ("issues:read", "issues:write", "projects:read"),
+    projectId? (optional restriction),
+    rateLimit (requests/min, default 100),
+    isActive, lastUsedAt?, usageCount,
+    expiresAt?, rotatedFromId?, rotatedAt?, revokedAt?
+  }
+```
+
+**Current State:**
+
+- ✅ API key generation with SHA-256 hashing
+- ✅ Scoped permissions (issues:read, issues:write, projects:read, etc.)
+- ✅ Per-key rate limiting (configurable requests/min)
+- ✅ Key rotation with grace period
+- ✅ Usage tracking (count, last used)
+- ✅ Optional project restriction
+- ✅ Key expiration support
+- ❌ No OAuth 2.0 flow
+- ❌ No public API documentation
+- ❌ No SDKs (JS, Python, etc.)
+
+### Gap Analysis
+
+| Feature            | Jira | Linear | Nixelo | Gap?            |
+| ------------------ | ---- | ------ | ------ | --------------- |
+| API keys           | ✅   | ✅     | ✅     | ✅ No gap       |
+| Scoped permissions | ✅   | ✅     | ✅     | ✅ No gap       |
+| Rate limiting      | ✅   | ✅     | ✅     | ✅ No gap       |
+| Key rotation       | ✅   | ❌     | ✅     | ✅ Ahead        |
+| OAuth 2.0          | ✅   | ✅     | ❌     | ⚠️ Gap          |
+| API docs           | ✅   | ✅     | ❌     | ⚠️ Gap          |
+| SDKs               | ✅   | ✅     | ❌     | Nice-to-have    |
+
+### Recommendations
+
+1. **Publish API Documentation** (P1)
+   - Auto-generate from Convex function signatures
+   - Include examples for common workflows
+
+2. **Add OAuth 2.0** (P2, Enterprise)
+   - Required for third-party app ecosystem
+   - Authorization code flow for web apps
+
+3. **JavaScript SDK** (P3)
+   - Typed wrapper around API endpoints
+   - npm package for easy integration
+
+---
+
+## 17. Audit Logs
+
+### What It Is
+
+Immutable record of security-relevant actions for compliance, debugging, and accountability.
+
+### Competitor Approaches
+
+| Tool        | Scope            | Retention   | Pricing            | Export       |
+| ----------- | ---------------- | ----------- | ------------------ | ------------ |
+| **Jira**    | Enterprise-only  | 180 days    | Enterprise plan    | ✅ CSV       |
+| **Linear**  | All plans        | 90 days     | Included           | ✅ Yes       |
+| **Asana**   | Enterprise-only  | 1 year      | Enterprise plan    | ✅ Yes       |
+| **ClickUp** | Enterprise-only  | Varies      | Enterprise plan    | ✅ Yes       |
+
+### Nixelo Implementation
+
+```
+Schema:
+- auditLogs: {
+    action (e.g., "team.create", "project.delete", "member.add"),
+    actorId? (userId, optional for system actions),
+    targetId (generic string for mixed types),
+    targetType ("team", "project", "user", "webhook"),
+    metadata? (structured: old values, new values),
+    timestamp
+  }
+- Indexes: by_action, by_actor, by_target, by_timestamp
+```
+
+**Current State:**
+
+- ✅ Audit log table with structured schema
+- ✅ Actor tracking (who did it)
+- ✅ Target tracking (what was affected)
+- ✅ Action categorization (team.create, project.delete, etc.)
+- ✅ Structured metadata (old/new values)
+- ✅ Timestamp indexing for chronological queries
+- ❌ No UI for viewing audit logs
+- ❌ No retention policy
+- ❌ No export functionality
+- ❌ No alerting on suspicious activity
+
+### Gap Analysis
+
+| Feature             | Jira | Linear | Nixelo | Gap?            |
+| ------------------- | ---- | ------ | ------ | --------------- |
+| Action logging      | ✅   | ✅     | ✅     | ✅ No gap       |
+| Actor/target track  | ✅   | ✅     | ✅     | ✅ No gap       |
+| Structured metadata | ✅   | ✅     | ✅     | ✅ No gap       |
+| UI viewer           | ✅   | ✅     | ❌     | ⚠️ Gap          |
+| Export              | ✅   | ✅     | ❌     | ⚠️ Gap          |
+| Retention policy    | ✅   | ✅     | ❌     | ⚠️ Enterprise   |
+| Alerting            | ✅   | ❌     | ❌     | Nice-to-have    |
+
+### Recommendations
+
+1. **Build Audit Log UI** (P2)
+   - Filterable table in org settings
+   - Filter by actor, action, target type, date range
+
+2. **Add CSV Export** (P2)
+   - Required for compliance audits
+   - Filter + export workflow
+
+3. **Retention Policy** (P3, Enterprise)
+   - Configurable retention (30/90/180/365 days)
+   - Auto-archive older entries to cold storage
+
+---
+
+## 18. Automation Rules
+
+### What It Is
+
+If-this-then-that rules that automate repetitive project management actions (status changes, assignments, notifications).
+
+### Competitor Approaches
+
+| Tool        | Builder Type   | Trigger Types          | Action Types                    | Limits           |
+| ----------- | -------------- | ---------------------- | ------------------------------- | ---------------- |
+| **Jira**    | Visual builder | 40+ triggers           | 30+ actions + smart values      | Unlimited (paid) |
+| **Linear**  | Basic rules    | Status/assignee change | Auto-close, auto-assign         | Limited          |
+| **Asana**   | Rules engine   | 20+ triggers           | 15+ actions + custom fields     | 50/project (paid)|
+| **ClickUp** | Automations    | 50+ triggers           | Extensive actions               | 100-25k/mo       |
+
+### Nixelo Implementation
+
+```
+Schema:
+- automationRules: {
+    projectId, name, description?,
+    isActive, trigger, triggerValue?,
+    actionType, actionValue (JSON string),
+    createdBy, updatedAt, executionCount
+  }
+- Triggers: "status_changed", "assignee_changed", etc.
+- Actions: "set_assignee", "add_label", "send_notification", etc.
+- Indexes: by_project, by_active, by_project_active
+```
+
+**Current State:**
+
+- ✅ Rule definition with trigger/action pairs
+- ✅ Per-project scoping
+- ✅ Active/inactive toggle
+- ✅ Execution count tracking
+- ✅ Multiple trigger and action types
+- ❌ No visual rule builder
+- ❌ No multi-step automations (only single trigger → single action)
+- ❌ No conditional logic (if field X = Y, then...)
+- ❌ No scheduled triggers (cron-like)
+
+### Gap Analysis
+
+| Feature             | Jira | Linear | Nixelo | Gap?            |
+| ------------------- | ---- | ------ | ------ | --------------- |
+| Basic rules         | ✅   | ✅     | ✅     | ✅ No gap       |
+| Project-scoped      | ✅   | ✅     | ✅     | ✅ No gap       |
+| Execution tracking  | ✅   | ❌     | ✅     | ✅ Ahead        |
+| Visual builder      | ✅   | ❌     | ❌     | Nice-to-have    |
+| Multi-step chains   | ✅   | ❌     | ❌     | ⚠️ Gap          |
+| Conditional logic   | ✅   | ❌     | ❌     | ⚠️ Gap          |
+| Scheduled triggers  | ✅   | ❌     | ❌     | Nice-to-have    |
+
+### Recommendations
+
+1. **Add Conditional Logic** (P2)
+   - "When status changes to Done AND assignee is X, then add label 'reviewed'"
+   - Store conditions as JSON in a `conditions` field
+
+2. **Add Multi-Step Chains** (P3)
+   - "When issue created → assign to lead → add to sprint → notify channel"
+   - Requires `automationSteps` table or JSON array
+
+3. **Visual Rule Builder** (P3)
+   - Drag-and-drop UI for non-technical users
+   - Monday.com-style "When X happens, do Y"
+
+---
+
 ## Summary: Priority Matrix
 
 ### P1 - Must Have (Next 3 months)
 
 | Feature                   | Current Gap | Effort |
 | ------------------------- | ----------- | ------ |
-| Description search        | ❌          | Low    |
-| Comment reactions         | ❌          | Low    |
-| Verify rich text comments | ⚠️          | Low    |
+| Description search        | ✅ Done     | -      |
+| Comment reactions         | ✅ Done     | -      |
+| Slack integration         | ❌          | Medium |
+| API documentation         | ❌          | Medium |
 
 ### P2 - Should Have (Months 4-6)
 
@@ -633,21 +1105,31 @@ Schema:
 | Label groups             | ❌          | Medium |
 | User picker custom field | ❌          | Medium |
 | Velocity charts          | ❌          | Medium |
-| Timer widget             | ❌          | Medium |
-| Slack integration        | ❌          | Medium |
+| Timer widget             | ✅ Done     | -      |
+| Document templates       | ❌          | Medium |
+| Document export          | ❌          | Medium |
+| Attachment section       | ❌          | Medium |
+| Org-level roles          | ❌          | Medium |
+| GitHub integration       | ❌          | High   |
+| Google Calendar sync     | ❌          | High   |
+| Audit log UI             | ❌          | Medium |
+| Audit log export         | ❌          | Low    |
+| Conditional automations  | ❌          | Medium |
+| OAuth 2.0                | ❌          | High   |
 
 ### P3 - Nice to Have (Months 7-12)
 
-| Feature            | Current Gap | Effort |
-| ------------------ | ----------- | ------ |
-| Label descriptions | ❌          | Low    |
-| Query language     | ❌          | High   |
-| Swimlanes          | ❌          | Medium |
-| WIP limits         | ❌          | Low    |
-| Auto-cycles        | ❌          | Medium |
-
----
-
-_More features to add: Documents, Attachments, Permissions, Integrations, API, Audit Logs, Automation Rules_
-
-**TODO:** Continue deep dive on remaining 7 features.
+| Feature                | Current Gap | Effort |
+| ---------------------- | ----------- | ------ |
+| Label descriptions     | ❌          | Low    |
+| Query language         | ❌          | High   |
+| Swimlanes              | ❌          | Medium |
+| WIP limits             | ❌          | Low    |
+| Auto-cycles            | ❌          | Medium |
+| Nested document pages  | ❌          | High   |
+| File previews          | ❌          | Medium |
+| SSO/SAML               | ❌          | High   |
+| Retention policies     | ❌          | Medium |
+| Multi-step automations | ❌          | High   |
+| Visual rule builder    | ❌          | High   |
+| JavaScript SDK         | ❌          | Medium |
