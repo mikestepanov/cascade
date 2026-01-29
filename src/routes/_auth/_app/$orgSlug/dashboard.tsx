@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Dashboard } from "@/components/Dashboard";
-import { PageLayout } from "@/components/layout";
+import { DashboardCustomizeModal } from "@/components/Dashboard/DashboardCustomizeModal";
+import { PageHeader, PageLayout } from "@/components/layout";
 
 export const Route = createFileRoute("/_auth/_app/$orgSlug/dashboard")({
   component: DashboardPage,
@@ -9,6 +10,7 @@ export const Route = createFileRoute("/_auth/_app/$orgSlug/dashboard")({
 function DashboardPage() {
   return (
     <PageLayout>
+      <PageHeader title="Dashboard" actions={<DashboardCustomizeModal />} />
       <Dashboard />
     </PageLayout>
   );

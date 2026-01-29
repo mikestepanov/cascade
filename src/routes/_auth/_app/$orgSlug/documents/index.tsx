@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { PageContent, PageLayout } from "@/components/layout";
+import { PageContent, PageHeader, PageLayout } from "@/components/layout";
 
 export const Route = createFileRoute("/_auth/_app/$orgSlug/documents/")({
   component: DocumentsListPage,
@@ -8,6 +8,7 @@ export const Route = createFileRoute("/_auth/_app/$orgSlug/documents/")({
 function DocumentsListPage() {
   return (
     <PageLayout>
+      <PageHeader title="Documents" description="Create and manage documents" />
       <PageContent
         isEmpty
         emptyState={{

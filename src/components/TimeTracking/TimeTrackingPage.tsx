@@ -56,17 +56,7 @@ export function TimeTrackingPage({ projectId, userRole, isGlobalAdmin }: TimeTra
   const { startDate, endDate } = ranges[dateRange];
 
   return (
-    <Flex direction="column" gap="xl" className="max-w-7xl mx-auto p-6">
-      {/* Header */}
-      <div>
-        <Typography variant="h1" className="text-2xl font-bold text-ui-text-primary">
-          Time Tracking
-        </Typography>
-        <Typography className="text-sm text-ui-text-secondary mt-1">
-          Track time, analyze costs, and monitor burn rate
-        </Typography>
-      </div>
-
+    <Flex direction="column" gap="xl">
       {/* Tabs */}
       <div className="border-b border-ui-border-primary">
         <nav className="-mb-px flex gap-6">

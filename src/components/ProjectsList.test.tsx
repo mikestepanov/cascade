@@ -44,12 +44,8 @@ vi.mock("@convex/_generated/api", () => ({
   },
 }));
 
-vi.mock("./CreateProjectFromTemplate", () => ({
-  CreateProjectFromTemplate: ({ open }: { open: boolean }) =>
-    open ? <div data-testid="create-project-modal">Create Project Modal</div> : null,
-}));
-
 describe("ProjectsList", () => {
+  const mockOnCreateClick = vi.fn();
   const mockProjects = [
     {
       _id: "p1",
@@ -80,7 +76,7 @@ describe("ProjectsList", () => {
       loadMore: mockLoadMore,
     });
 
-    customRender(<ProjectsList />);
+    customRender(<ProjectsList onCreateClick={mockOnCreateClick} />);
 
     // Look for spinner (assuming LoadingSpinner renders something identifiable or we can check container)
     // The spinner component usually has a specific role or testid, but since we didn't mock it,
@@ -95,7 +91,7 @@ describe("ProjectsList", () => {
       loadMore: mockLoadMore,
     });
 
-    customRender(<ProjectsList />);
+    customRender(<ProjectsList onCreateClick={mockOnCreateClick} />);
 
     expect(screen.getByText("No projects yet")).toBeInTheDocument();
     expect(screen.getByText("Create your first project to organize work")).toBeInTheDocument();
@@ -108,7 +104,7 @@ describe("ProjectsList", () => {
       loadMore: mockLoadMore,
     });
 
-    customRender(<ProjectsList />);
+    customRender(<ProjectsList onCreateClick={mockOnCreateClick} />);
 
     expect(screen.getByText("Project 1")).toBeInTheDocument();
     expect(screen.getByText("PROJ-1")).toBeInTheDocument();
@@ -121,19 +117,19 @@ describe("ProjectsList", () => {
     expect(screen.getByText(/Scrum/)).toBeInTheDocument();
   });
 
-  it("opens create project modal", async () => {
+  it("calls onCreateClick when create button is clicked", () => {
     mockUsePaginatedQuery.mockReturnValue({
       results: [],
       status: "Exhausted",
       loadMore: mockLoadMore,
     });
 
-    customRender(<ProjectsList />);
+    customRender(<ProjectsList onCreateClick={mockOnCreateClick} />);
 
-    const createButtons = screen.getAllByText("+ Create Project");
-    fireEvent.click(createButtons[0]);
+    const createButton = screen.getByText("+ Create Project");
+    fireEvent.click(createButton);
 
-    expect(screen.getByTestId("create-project-modal")).toBeInTheDocument();
+    expect(mockOnCreateClick).toHaveBeenCalledOnce();
   });
 
   it("shows load more button when more items available", () => {
@@ -143,7 +139,7 @@ describe("ProjectsList", () => {
       loadMore: mockLoadMore,
     });
 
-    customRender(<ProjectsList />);
+    customRender(<ProjectsList onCreateClick={mockOnCreateClick} />);
 
     const loadMoreButton = screen.getByText("Load More Projects");
     expect(loadMoreButton).toBeInTheDocument();

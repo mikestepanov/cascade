@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { lazy, Suspense } from "react";
-import { PageContent, PageLayout } from "@/components/layout";
+import { PageContent, PageHeader, PageLayout } from "@/components/layout";
 
 // Lazy load Settings component
 const Settings = lazy(() => import("@/components/Settings").then((m) => ({ default: m.Settings })));
@@ -13,6 +13,10 @@ function SettingsProfilePage() {
   return (
     <Suspense fallback={<PageContent isLoading>{null}</PageContent>}>
       <PageLayout>
+        <PageHeader
+          title="Settings"
+          description="Manage your account, integrations, and preferences"
+        />
         <Settings />
       </PageLayout>
     </Suspense>

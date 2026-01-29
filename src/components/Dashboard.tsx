@@ -7,7 +7,6 @@ import { Flex } from "@/components/ui/Flex";
 import { ROUTES } from "@/config/routes";
 import { useOrganization } from "@/hooks/useOrgContext";
 import { useListNavigation } from "../hooks/useListNavigation";
-import { DashboardCustomizeModal } from "./Dashboard/DashboardCustomizeModal";
 import { FocusZone } from "./Dashboard/FocusZone";
 import { Greeting } from "./Dashboard/Greeting";
 import { MyIssuesList } from "./Dashboard/MyIssuesList";
@@ -70,14 +69,11 @@ export function Dashboard() {
   });
 
   return (
-    <div className="max-w-7xl mx-auto">
-      {/* Header Section */}
-      <Flex justify="between" align="start" className="mb-8">
+    <div>
+      {/* Greeting */}
+      <div className="mb-8">
         <Greeting userName={user?.name} completedCount={stats?.completedThisWeek} />
-        <div className="mt-2">
-          <DashboardCustomizeModal />
-        </div>
-      </Flex>
+      </div>
 
       {/* Top Actionable Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-8">

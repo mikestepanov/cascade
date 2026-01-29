@@ -2,7 +2,7 @@ import { api } from "@convex/_generated/api";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
 import { useEffect } from "react";
-import { PageContent, PageLayout } from "@/components/layout";
+import { PageContent, PageHeader, PageLayout } from "@/components/layout";
 import { TimeTrackingPage } from "@/components/TimeTracking/TimeTrackingPage";
 import { ROUTES } from "@/config/routes";
 
@@ -38,6 +38,10 @@ function TimeTrackingPageRoute() {
   // Platform admin - show all tabs
   return (
     <PageLayout>
+      <PageHeader
+        title="Time Tracking"
+        description="Track time, analyze costs, and monitor burn rate"
+      />
       <TimeTrackingPage isGlobalAdmin />
     </PageLayout>
   );
