@@ -303,6 +303,9 @@ function scan(filePath: string): void {
     STYLE_PROP_RE.lastIndex = 0;
     while ((match = STYLE_PROP_RE.exec(line)) !== null) {
       if (isAllowed(rel, ALLOWLIST_HARDCODED_HEX)) continue;
+      // Skip values that don't look like actual colors (e.g. color: "info" in type annotations)
+      const styleValue = match[0].replace(/.*:\s*["']/, "").replace(/["']$/, "");
+      if (!/^(#|rgb|hsl|transparent|currentColor|inherit|white|black)/.test(styleValue)) continue;
       findings.push({
         file: rel,
         line: lineNum,

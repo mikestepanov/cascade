@@ -16,13 +16,13 @@ const EVENT_COLOR_CLASSES: Record<
   },
   deadline: {
     bg: "bg-status-error-bg",
-    hover: "hover:bg-red-200",
+    hover: "hover:bg-status-error/10",
     border: "border-status-error",
     text: "text-status-error-text",
   },
   timeblock: {
     bg: "bg-status-success-bg",
-    hover: "hover:bg-emerald-200",
+    hover: "hover:bg-status-success/10",
     border: "border-status-success",
     text: "text-status-success-text",
   },
