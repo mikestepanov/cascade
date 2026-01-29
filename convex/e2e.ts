@@ -2927,6 +2927,7 @@ export const seedScreenshotDataInternal = internalMutation({
       eventType: "meeting" | "deadline" | "timeblock" | "personal";
       description?: string;
     }> = [
+      // Today (dayOffset: 0) — 4 events to show overlap handling
       {
         title: "Sprint Planning",
         startHour: 9,
@@ -2958,6 +2959,17 @@ export const seedScreenshotDataInternal = internalMutation({
         description: "Deep focus on critical bug fixes",
       },
       {
+        title: "Standup Check-in",
+        startHour: 16,
+        startMin: 30,
+        endHour: 17,
+        endMin: 0,
+        dayOffset: 0,
+        eventType: "meeting",
+        description: "Quick daily sync with the team",
+      },
+      // Tomorrow (dayOffset: 1)
+      {
         title: "Client Demo",
         startHour: 11,
         startMin: 0,
@@ -2968,6 +2980,80 @@ export const seedScreenshotDataInternal = internalMutation({
         description: "Demo new features to client stakeholders",
       },
       {
+        title: "Architecture Discussion",
+        startHour: 14,
+        startMin: 0,
+        endHour: 15,
+        endMin: 30,
+        dayOffset: 1,
+        eventType: "meeting",
+        description: "Discuss API v2 migration plan",
+      },
+      // Day +2
+      {
+        title: "Code Review Session",
+        startHour: 10,
+        startMin: 0,
+        endHour: 11,
+        endMin: 0,
+        dayOffset: 2,
+        eventType: "meeting",
+        description: "Review open pull requests for the sprint",
+      },
+      {
+        title: "Deep Work: API Integration",
+        startHour: 13,
+        startMin: 0,
+        endHour: 16,
+        endMin: 0,
+        dayOffset: 2,
+        eventType: "timeblock",
+        description: "Focus block for third-party API integration",
+      },
+      // Day +3
+      {
+        title: "Team Retrospective",
+        startHour: 15,
+        startMin: 0,
+        endHour: 16,
+        endMin: 0,
+        dayOffset: 3,
+        eventType: "meeting",
+        description: "Sprint retrospective and improvement planning",
+      },
+      {
+        title: "Gym & Wellness",
+        startHour: 12,
+        startMin: 0,
+        endHour: 13,
+        endMin: 0,
+        dayOffset: 3,
+        eventType: "personal",
+        description: "Lunch break workout",
+      },
+      // Day +4
+      {
+        title: "QA Testing Window",
+        startHour: 9,
+        startMin: 0,
+        endHour: 12,
+        endMin: 0,
+        dayOffset: 4,
+        eventType: "timeblock",
+        description: "End-to-end testing before release",
+      },
+      {
+        title: "Release Review",
+        startHour: 14,
+        startMin: 0,
+        endHour: 15,
+        endMin: 0,
+        dayOffset: 4,
+        eventType: "meeting",
+        description: "Go/no-go decision for v2.1 release",
+      },
+      // Day +5
+      {
         title: "Sprint Deadline",
         startHour: 17,
         startMin: 0,
@@ -2976,6 +3062,27 @@ export const seedScreenshotDataInternal = internalMutation({
         dayOffset: 5,
         eventType: "deadline",
         description: "All sprint items must be completed",
+      },
+      {
+        title: "Knowledge Sharing",
+        startHour: 10,
+        startMin: 0,
+        endHour: 11,
+        endMin: 0,
+        dayOffset: 5,
+        eventType: "meeting",
+        description: "Tech talk: React Server Components deep dive",
+      },
+      // Day +6
+      {
+        title: "Backlog Grooming",
+        startHour: 10,
+        startMin: 0,
+        endHour: 11,
+        endMin: 30,
+        dayOffset: 6,
+        eventType: "meeting",
+        description: "Prioritize and estimate upcoming stories",
       },
     ];
 
@@ -3001,7 +3108,7 @@ export const seedScreenshotDataInternal = internalMutation({
           eventType: cal.eventType,
           organizerId: userId,
           attendeeIds: [userId, ...syntheticUserIds],
-          status: "scheduled",
+          status: "confirmed",
           isRecurring: false,
           isRequired: cal.eventType === "meeting",
           updatedAt: now,

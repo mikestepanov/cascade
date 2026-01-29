@@ -226,6 +226,60 @@ async function screenshotFilled(
         `/${orgSlug}/projects/${projectKey}/${tab}`,
       );
     }
+
+    // Calendar view-mode screenshots (day, week, month)
+    console.log(`\n  Calendar views:\n`);
+    const calendarUrl = `/${orgSlug}/projects/${projectKey}/calendar`;
+    try {
+      await page.goto(`${BASE_URL}${calendarUrl}`, { waitUntil: "networkidle", timeout: 15000 });
+    } catch {
+      // networkidle often times out
+    }
+    await page.waitForTimeout(SETTLE_MS);
+
+    // Calendar view-mode screenshots: day, week, month
+    // Toggle items use value="day"/"week"/"month" on ToggleGroupItem elements.
+    // Only the active mode shows a text label; inactive modes show only icons.
+    // We select by the value attribute on the toggle button.
+    for (const mode of ["day", "week", "month"] as const) {
+      const toggleItem = page.locator(`button[value="${mode}"]`);
+      if ((await toggleItem.count()) > 0) {
+        await toggleItem.first().click();
+        await page.waitForTimeout(SETTLE_MS);
+      }
+      const n = nextIndex(p);
+      const num = String(n).padStart(2, "0");
+      const filename = `${num}-${p}-calendar-${mode}.png`;
+      await page.screenshot({ path: path.join(SCREENSHOT_DIR, filename) });
+      totalScreenshots++;
+      console.log(`  ${num}  [${p}] calendar-${mode}`);
+    }
+
+    // Event details modal screenshot — click first visible calendar event
+    // Switch to day view for best event visibility
+    const dayToggle = page.locator('button[value="day"]');
+    if ((await dayToggle.count()) > 0) {
+      await dayToggle.first().click();
+      await page.waitForTimeout(SETTLE_MS);
+    }
+    // Events are rendered as tabIndex={0} divs with event titles
+    const eventEl = page
+      .locator("[tabindex='0']")
+      .filter({ hasText: /Sprint Planning|Design Review|Focus Time|Standup/i });
+    if ((await eventEl.count()) > 0) {
+      await eventEl.first().click();
+      await page.waitForTimeout(SETTLE_MS);
+      const n = nextIndex(p);
+      const num = String(n).padStart(2, "0");
+      const filename = `${num}-${p}-calendar-event-modal.png`;
+      await page.screenshot({ path: path.join(SCREENSHOT_DIR, filename) });
+      totalScreenshots++;
+      console.log(`  ${num}  [${p}] calendar-event-modal`);
+
+      // Close the modal via Escape
+      await page.keyboard.press("Escape");
+      await page.waitForTimeout(500);
+    }
   }
 
   // Issue detail (deterministic using first seeded issue)
