@@ -2582,7 +2582,7 @@ export const seedScreenshotDataInternal = internalMutation({
       .first();
 
     if (!team) {
-      const teamId = await ctx.db.insert("teams", {
+      const newTeamId = await ctx.db.insert("teams", {
         name: "Engineering",
         slug: "engineering",
         organizationId: orgId,
@@ -2591,23 +2591,28 @@ export const seedScreenshotDataInternal = internalMutation({
         updatedAt: now,
         isPrivate: false,
       });
-      team = await ctx.db.get(teamId);
-
-      // Add user as team admin
-      if (team) {
-        await ctx.db.insert("teamMembers", {
-          teamId: team._id,
-          userId,
-          role: "admin",
-          addedBy: userId,
-        });
-      }
+      team = await ctx.db.get(newTeamId);
     }
 
     if (!team) {
       return { success: false, error: "Failed to create team" };
     }
     const teamId = team._id;
+
+    // Ensure current user is a team member (handles user re-creation between runs)
+    const existingTeamMember = await ctx.db
+      .query("teamMembers")
+      .withIndex("by_team", (q) => q.eq("teamId", teamId))
+      .filter((q) => q.eq(q.field("userId"), userId))
+      .first();
+    if (!existingTeamMember) {
+      await ctx.db.insert("teamMembers", {
+        teamId,
+        userId,
+        role: "admin",
+        addedBy: userId,
+      });
+    }
 
     // 5. Create project (idempotent)
     const projectKey = "DEMO";
@@ -2637,22 +2642,32 @@ export const seedScreenshotDataInternal = internalMutation({
         ],
       });
       project = await ctx.db.get(projId);
-
-      // Add user as project admin
-      if (project) {
-        await ctx.db.insert("projectMembers", {
-          projectId: project._id,
-          userId,
-          role: "admin",
-          addedBy: userId,
-        });
-      }
+    } else {
+      // Update ownership to current user (handles user re-creation between runs)
+      await ctx.db.patch(project._id, { ownerId: userId, updatedAt: now });
     }
 
     if (!project) {
       return { success: false, error: "Failed to create project" };
     }
     const projectId = project._id;
+
+    // Ensure current user is a project member (handles user re-creation between runs)
+    const existingProjectMember = await ctx.db
+      .query("projectMembers")
+      .withIndex("by_project_user", (q) =>
+        q.eq("projectId", projectId).eq("userId", userId),
+      )
+      .filter(notDeleted)
+      .first();
+    if (!existingProjectMember) {
+      await ctx.db.insert("projectMembers", {
+        projectId,
+        userId,
+        role: "admin",
+        addedBy: userId,
+      });
+    }
 
     // 6. Create sprint (idempotent - check by project + name)
     let sprint = await ctx.db
@@ -2775,6 +2790,13 @@ export const seedScreenshotDataInternal = internalMutation({
           attachments: [],
           order: i,
           version: 1,
+        });
+      } else {
+        // Update ownership to current user (handles user re-creation between runs)
+        await ctx.db.patch(existing._id, {
+          reporterId: userId,
+          assigneeId: def.assigned ? userId : undefined,
+          updatedAt: now,
         });
       }
       createdIssueKeys.push(def.key);
