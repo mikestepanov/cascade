@@ -30,7 +30,7 @@ export function IssueDetailLayout({
             issueTitle={issue.title}
             issueDescription={issue.description}
             issueType={issue.type}
-            subtasks={subtasks as Parameters<typeof IssueDetailContent>[0]["subtasks"]}
+            subtasks={subtasks}
             isEditing={detail.isEditing}
             editTitle={detail.title}
             editDescription={detail.description}

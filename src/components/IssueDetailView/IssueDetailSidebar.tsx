@@ -6,6 +6,7 @@ import { IssueMetadataSection } from "@/components/IssueDetail/IssueMetadataSect
 import { IssueWatchers } from "@/components/IssueWatchers";
 import { TimeTracker } from "@/components/TimeTracker";
 import { Typography } from "@/components/ui/Typography";
+import type { LabelInfo } from "../../../convex/lib/issueHelpers";
 
 interface IssueDetailSidebarProps {
   issueId: Id<"issues">;
@@ -15,7 +16,7 @@ interface IssueDetailSidebarProps {
   assignee?: { _id: string; name: string; image?: string } | null;
   reporter?: { _id: string; name: string; image?: string } | null;
   storyPoints?: number;
-  labels?: string[];
+  labels: LabelInfo[];
   estimatedHours?: number;
   billingEnabled: boolean;
 }

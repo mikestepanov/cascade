@@ -1,6 +1,6 @@
 import { api } from "@convex/_generated/api";
 import type { Doc, Id } from "@convex/_generated/dataModel";
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
 import { ExportButton } from "@/components/ExportButton";
 import { KanbanBoard } from "@/components/KanbanBoard";
@@ -30,7 +30,7 @@ export const Route = createFileRoute("/_auth/_app/$orgSlug/projects/$key/board")
 function BoardPage() {
   const { key } = Route.useParams();
   const { sprint: sprintParam } = Route.useSearch();
-  const navigate = useNavigate();
+  const navigate = Route.useNavigate();
 
   const project = useQuery(api.projects.getByKey, { key });
   const sprints = useQuery(
@@ -57,7 +57,7 @@ function BoardPage() {
 
   const handleSprintChange = (value: string) => {
     navigate({
-      search: (prev: BoardSearch) => ({
+      search: (prev) => ({
         ...prev,
         sprint: value === "active" ? undefined : value,
       }),

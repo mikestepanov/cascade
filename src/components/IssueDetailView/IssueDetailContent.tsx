@@ -1,5 +1,5 @@
 import type { Id } from "@convex/_generated/dataModel";
-import type { ReactNode } from "react";
+import type { ComponentProps, ReactNode } from "react";
 import { IssueComments } from "@/components/IssueComments";
 import { SubtasksList } from "@/components/IssueDetail/SubtasksList";
 import { Button } from "@/components/ui/Button";
@@ -8,22 +8,13 @@ import { Input } from "@/components/ui/form/Input";
 import { Textarea } from "@/components/ui/form/Textarea";
 import { Typography } from "@/components/ui/Typography";
 
-interface Subtask {
-  _id: Id<"issues">;
-  key: string;
-  title: string;
-  status: string;
-  priority: string;
-  type: string;
-}
-
 interface IssueDetailContentProps {
   issueId: Id<"issues">;
   projectId: Id<"projects">;
   issueTitle: string;
   issueDescription: string | undefined;
   issueType: string;
-  subtasks: Subtask[] | undefined;
+  subtasks: ComponentProps<typeof SubtasksList>["subtasks"];
   isEditing: boolean;
   editTitle: string;
   editDescription: string;

@@ -15,18 +15,18 @@ export function useIssueDetail(issueId: Id<"issues">) {
   const updateIssue = useMutation(api.issues.update);
 
   useEffect(() => {
-    if (issue) {
+    if (issue && !isEditing) {
       setTitle(issue.title);
       setDescription(issue.description || "");
     }
-  }, [issue]);
+  }, [issue, isEditing]);
 
   const handleSave = async (): Promise<void> => {
     try {
       await updateIssue({
         issueId,
         title: title || undefined,
-        description: description || undefined,
+        description,
       });
       showSuccess("Issue updated");
       setIsEditing(false);
