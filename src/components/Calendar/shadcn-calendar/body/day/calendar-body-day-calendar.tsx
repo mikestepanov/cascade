@@ -1,0 +1,13 @@
+import { Calendar } from "@/components/ui/calendar";
+import { useCalendarContext } from "../../calendar-context";
+
+export function CalendarBodyDayCalendar(): React.ReactElement {
+  const { date, setDate } = useCalendarContext();
+  return (
+    <Calendar
+      selected={date}
+      onSelect={(selected: Date | undefined) => selected && setDate(selected)}
+      mode="single"
+    />
+  );
+}
