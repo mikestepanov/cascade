@@ -4,6 +4,63 @@ import { cn } from "@/lib/utils";
 import { useCalendarContext } from "./calendar-context";
 import type { CalendarEvent as CalendarEventType } from "./calendar-types";
 
+const EVENT_COLOR_CLASSES: Record<
+  string,
+  { bg: string; hover: string; border: string; text: string }
+> = {
+  blue: {
+    bg: "bg-blue-500/10",
+    hover: "hover:bg-blue-500/20",
+    border: "border-blue-500",
+    text: "text-blue-500",
+  },
+  indigo: {
+    bg: "bg-indigo-500/10",
+    hover: "hover:bg-indigo-500/20",
+    border: "border-indigo-500",
+    text: "text-indigo-500",
+  },
+  pink: {
+    bg: "bg-pink-500/10",
+    hover: "hover:bg-pink-500/20",
+    border: "border-pink-500",
+    text: "text-pink-500",
+  },
+  red: {
+    bg: "bg-red-500/10",
+    hover: "hover:bg-red-500/20",
+    border: "border-red-500",
+    text: "text-red-500",
+  },
+  orange: {
+    bg: "bg-orange-500/10",
+    hover: "hover:bg-orange-500/20",
+    border: "border-orange-500",
+    text: "text-orange-500",
+  },
+  amber: {
+    bg: "bg-amber-500/10",
+    hover: "hover:bg-amber-500/20",
+    border: "border-amber-500",
+    text: "text-amber-500",
+  },
+  emerald: {
+    bg: "bg-emerald-500/10",
+    hover: "hover:bg-emerald-500/20",
+    border: "border-emerald-500",
+    text: "text-emerald-500",
+  },
+};
+
+function getColorClasses(color: string): {
+  bg: string;
+  hover: string;
+  border: string;
+  text: string;
+} {
+  return EVENT_COLOR_CLASSES[color] ?? EVENT_COLOR_CLASSES.blue;
+}
+
 interface EventPosition {
   left: string;
   width: string;
@@ -72,6 +129,7 @@ export function CalendarEvent({
 
   const isEventInCurrentMonth = isSameMonth(event.start, date);
   const animationKey = `${event.id}-${isEventInCurrentMonth ? "current" : "adjacent"}`;
+  const colors = getColorClasses(event.color);
 
   return (
     <MotionConfig reducedMotion="user">
@@ -79,7 +137,10 @@ export function CalendarEvent({
         <motion.div
           tabIndex={0}
           className={cn(
-            `px-3 py-1.5 rounded-md truncate cursor-pointer transition-all duration-300 bg-${event.color}-500/10 hover:bg-${event.color}-500/20 border border-${event.color}-500`,
+            "px-3 py-1.5 rounded-lg truncate cursor-pointer transition-all duration-300 border",
+            colors.bg,
+            colors.hover,
+            colors.border,
             !month && "absolute",
             className,
           )}
@@ -129,7 +190,8 @@ export function CalendarEvent({
         >
           <motion.div
             className={cn(
-              `flex flex-col w-full text-${event.color}-500`,
+              "flex flex-col w-full",
+              colors.text,
               month && "flex-row items-center justify-between",
             )}
             layout="position"

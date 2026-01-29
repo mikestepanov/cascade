@@ -15,7 +15,7 @@ export function toCalendarEvent(doc: Doc<"calendarEvents">): NixeloCalendarEvent
     title: doc.title,
     start: new Date(doc.startTime),
     end: new Date(doc.endTime),
-    color: EVENT_TYPE_COLOR[doc.eventType] ?? "blue",
+    color: EVENT_TYPE_COLOR[doc.eventType],
     eventType: doc.eventType,
   };
 }
