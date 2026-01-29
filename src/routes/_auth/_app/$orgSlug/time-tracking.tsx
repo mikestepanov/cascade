@@ -2,8 +2,8 @@ import { api } from "@convex/_generated/api";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
 import { useEffect } from "react";
+import { PageContent, PageLayout } from "@/components/layout";
 import { TimeTrackingPage } from "@/components/TimeTracking/TimeTrackingPage";
-import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { ROUTES } from "@/config/routes";
 
 export const Route = createFileRoute("/_auth/_app/$orgSlug/time-tracking")({
@@ -27,7 +27,7 @@ function TimeTrackingPageRoute() {
 
   // Loading state
   if (isAdmin === undefined) {
-    return <LoadingSpinner size="lg" className="mx-auto mt-8" />;
+    return <PageContent isLoading>{null}</PageContent>;
   }
 
   // Not admin - will redirect
@@ -36,5 +36,9 @@ function TimeTrackingPageRoute() {
   }
 
   // Platform admin - show all tabs
-  return <TimeTrackingPage isGlobalAdmin />;
+  return (
+    <PageLayout>
+      <TimeTrackingPage isGlobalAdmin />
+    </PageLayout>
+  );
 }

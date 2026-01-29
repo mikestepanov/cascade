@@ -2,11 +2,10 @@ import { api } from "@convex/_generated/api";
 import type { Doc } from "@convex/_generated/dataModel";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { usePaginatedQuery, useQuery } from "convex/react";
+import { PageContent, PageHeader, PageLayout } from "@/components/layout";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
-import { EmptyState } from "@/components/ui/EmptyState";
 import { Flex } from "@/components/ui/Flex";
-import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { Typography } from "@/components/ui/Typography";
 import { ROUTES } from "@/config/routes";
 import { useOrganization } from "@/hooks/useOrgContext";
@@ -31,38 +30,26 @@ function TeamsList() {
     loadMore,
   } = usePaginatedQuery(api.teams.getTeams, { organizationId }, { initialNumItems: 20 });
 
-  if (!(workspace && teams)) {
-    return (
-      <Flex direction="column" align="center" justify="center" className="min-h-96">
-        <LoadingSpinner />
-      </Flex>
-    );
-  }
-
   return (
-    <Flex direction="column" gap="lg">
-      {/* Header */}
-      <Flex justify="between" align="center">
-        <div>
-          <Typography variant="h2">Teams</Typography>
-          <Typography variant="p" color="secondary">
-            Organize your workspace into focused teams
-          </Typography>
-        </div>
-        <Button variant="primary">+ Create Team</Button>
-      </Flex>
+    <PageLayout>
+      <PageHeader
+        title="Teams"
+        description="Organize your workspace into focused teams"
+        actions={<Button variant="primary">+ Create Team</Button>}
+      />
 
-      {/* Teams Grid */}
-      {teams.length === 0 ? (
-        <EmptyState
-          icon="👥"
-          title="No teams yet"
-          description="Create your first team to start organizing work"
-          action={<Button variant="primary">+ Create Team</Button>}
-        />
-      ) : (
+      <PageContent
+        isLoading={!(workspace && teams)}
+        isEmpty={teams !== undefined && teams.length === 0}
+        emptyState={{
+          icon: "👥",
+          title: "No teams yet",
+          description: "Create your first team to start organizing work",
+          action: <Button variant="primary">+ Create Team</Button>,
+        }}
+      >
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {teams.map((team: Doc<"teams">) => (
+          {teams?.map((team: Doc<"teams">) => (
             <Link
               key={team._id}
               to={ROUTES.workspaces.teams.detail.path}
@@ -91,15 +78,15 @@ function TeamsList() {
             </Link>
           ))}
         </div>
-      )}
 
-      {status === "CanLoadMore" && (
-        <Flex justify="center" className="mt-8">
-          <Button variant="outline" onClick={() => loadMore(20)}>
-            Load More Teams
-          </Button>
-        </Flex>
-      )}
-    </Flex>
+        {status === "CanLoadMore" && (
+          <Flex justify="center" className="mt-8">
+            <Button variant="outline" onClick={() => loadMore(20)}>
+              Load More Teams
+            </Button>
+          </Flex>
+        )}
+      </PageContent>
+    </PageLayout>
   );
 }

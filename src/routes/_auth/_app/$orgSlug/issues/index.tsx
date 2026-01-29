@@ -6,10 +6,9 @@ import { useMemo, useState } from "react";
 import { CreateIssueModal } from "@/components/CreateIssueModal";
 import { IssueCard } from "@/components/IssueCard";
 import { IssueDetailModal } from "@/components/IssueDetailModal";
+import { PageContent, PageHeader, PageLayout } from "@/components/layout";
 import { Button } from "@/components/ui/Button";
 import { Flex } from "@/components/ui/Flex";
-import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
-import { Typography } from "@/components/ui/Typography";
 import { useOrganization } from "@/hooks/useOrgContext";
 import { Filter, Plus, Search } from "@/lib/icons";
 
@@ -56,20 +55,16 @@ function AllIssuesPage() {
   };
 
   return (
-    <div className="p-6">
-      <Flex align="center" justify="between" className="mb-8">
-        <div>
-          <Typography variant="h1" className="text-2xl font-bold">
-            Issues
-          </Typography>
-          <Typography variant="p" color="secondary">
-            All issues across your organization
-          </Typography>
-        </div>
-        <Button onClick={() => setShowCreateModal(true)} leftIcon={<Plus className="w-4 h-4" />}>
-          Create Issue
-        </Button>
-      </Flex>
+    <PageLayout>
+      <PageHeader
+        title="Issues"
+        description="All issues across your organization"
+        actions={
+          <Button onClick={() => setShowCreateModal(true)} leftIcon={<Plus className="w-4 h-4" />}>
+            Create Issue
+          </Button>
+        }
+      />
 
       {/* Filters & Search */}
       <Flex
@@ -102,25 +97,15 @@ function AllIssuesPage() {
       </Flex>
 
       {/* Content */}
-      {isLoading ? (
-        <Flex align="center" justify="center" className="min-h-[400px]">
-          <LoadingSpinner size="lg" />
-        </Flex>
-      ) : filteredIssues.length === 0 ? (
-        <Flex
-          direction="column"
-          align="center"
-          justify="center"
-          className="min-h-[400px] text-center"
-        >
-          <Typography variant="h3" color="secondary" className="mb-2">
-            No issues found
-          </Typography>
-          <Typography variant="p" color="tertiary">
-            Try adjusting your filters or create a new issue.
-          </Typography>
-        </Flex>
-      ) : (
+      <PageContent
+        isLoading={isLoading}
+        isEmpty={filteredIssues.length === 0}
+        emptyState={{
+          icon: "🔍",
+          title: "No issues found",
+          description: "Try adjusting your filters or create a new issue.",
+        }}
+      >
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {filteredIssues.map((issue) => (
             <IssueCard
@@ -133,7 +118,7 @@ function AllIssuesPage() {
             />
           ))}
         </div>
-      )}
+      </PageContent>
 
       {/* Load More */}
       {status === "CanLoadMore" && (
@@ -153,6 +138,6 @@ function AllIssuesPage() {
           onOpenChange={handleCloseDetail}
         />
       )}
-    </div>
+    </PageLayout>
   );
 }

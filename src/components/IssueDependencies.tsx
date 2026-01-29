@@ -9,8 +9,8 @@ import { cn } from "@/lib/utils";
 import { Badge } from "./ui/Badge";
 import { Button } from "./ui/Button";
 import { ConfirmDialog } from "./ui/ConfirmDialog";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "./ui/Dialog";
 import { Input, Select } from "./ui/form";
+import { Sheet, SheetContent, SheetFooter, SheetHeader, SheetTitle } from "./ui/sheet";
 import { Typography } from "./ui/Typography";
 
 type IssueLinkWithDetails = FunctionReturnType<
@@ -222,8 +222,8 @@ export function IssueDependencies({ issueId, projectId: _workspaceId }: IssueDep
         </div>
       )}
 
-      {/* Add Dependency Dialog */}
-      <Dialog
+      {/* Add Dependency Sheet (side panel to avoid nested dialog issue) */}
+      <Sheet
         open={showAddDialog}
         onOpenChange={(open) => {
           setShowAddDialog(open);
@@ -233,10 +233,10 @@ export function IssueDependencies({ issueId, projectId: _workspaceId }: IssueDep
           }
         }}
       >
-        <DialogContent className="sm:max-w-lg">
-          <DialogHeader>
-            <DialogTitle>Add Dependency</DialogTitle>
-          </DialogHeader>
+        <SheetContent>
+          <SheetHeader>
+            <SheetTitle>Add Dependency</SheetTitle>
+          </SheetHeader>
           <div className="p-6 space-y-4">
             {/* Link Type */}
             <Select
@@ -298,7 +298,7 @@ export function IssueDependencies({ issueId, projectId: _workspaceId }: IssueDep
             )}
 
             {/* Actions */}
-            <DialogFooter>
+            <SheetFooter className="mt-6">
               <Button
                 variant="secondary"
                 onClick={() => {
@@ -312,10 +312,10 @@ export function IssueDependencies({ issueId, projectId: _workspaceId }: IssueDep
               <Button onClick={handleAddLink} disabled={!selectedIssueKey}>
                 Add Dependency
               </Button>
-            </DialogFooter>
+            </SheetFooter>
           </div>
-        </DialogContent>
-      </Dialog>
+        </SheetContent>
+      </Sheet>
 
       {/* Delete Confirmation */}
       <ConfirmDialog

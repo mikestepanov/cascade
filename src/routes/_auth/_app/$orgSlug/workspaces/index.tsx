@@ -4,11 +4,10 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
 import { useState } from "react";
 import { CreateWorkspaceModal } from "@/components/CreateWorkspaceModal";
+import { PageContent, PageHeader, PageLayout } from "@/components/layout";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
-import { EmptyState } from "@/components/ui/EmptyState";
 import { Flex } from "@/components/ui/Flex";
-import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { Typography } from "@/components/ui/Typography";
 import { ROUTES } from "@/config/routes";
 import { useOrganization } from "@/hooks/useOrgContext";
@@ -33,76 +32,68 @@ function WorkspacesList() {
   };
 
   return (
-    <div className="container mx-auto p-6">
-      <Flex direction="column" gap="lg">
-        {/* Header */}
-        <Flex justify="between" align="center">
-          <div>
-            <Typography variant="h1">Workspaces</Typography>
-            <Typography variant="p" color="secondary">
-              Organize your organization into departments and teams
-            </Typography>
-          </div>
+    <PageLayout>
+      <PageHeader
+        title="Workspaces"
+        description="Organize your organization into departments and teams"
+        actions={
           <Button variant="primary" onClick={() => setIsCreateModalOpen(true)}>
             + Create Workspace
           </Button>
-        </Flex>
+        }
+      />
 
-        <CreateWorkspaceModal
-          isOpen={isCreateModalOpen}
-          onClose={() => setIsCreateModalOpen(false)}
-          onCreated={handleWorkspaceCreated}
-        />
+      <CreateWorkspaceModal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+        onCreated={handleWorkspaceCreated}
+      />
 
-        {/* Workspaces List State */}
-        {workspaces === undefined ? (
-          <Flex direction="column" align="center" justify="center" className="min-h-96">
-            <LoadingSpinner />
-          </Flex>
-        ) : workspaces.length === 0 ? (
-          <EmptyState
-            icon="🏢"
-            title="No workspaces yet"
-            description="Create your first workspace to organize teams and projects"
-            action={
-              <Button variant="primary" onClick={() => setIsCreateModalOpen(true)}>
-                + Create Workspace
-              </Button>
-            }
-          />
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {workspaces.map((workspace: Doc<"workspaces">) => (
-              <Link
-                key={workspace._id}
-                to={ROUTES.workspaces.detail.path}
-                params={{ orgSlug, workspaceSlug: workspace.slug }}
-              >
-                <Card className="p-6 hover:shadow-lg transition-shadow cursor-pointer">
-                  <Flex direction="column" gap="md">
-                    <Flex align="center" gap="sm">
-                      {workspace.icon && <span className="text-3xl">{workspace.icon}</span>}
-                      <Typography variant="h3">{workspace.name}</Typography>
-                    </Flex>
-
-                    {workspace.description && (
-                      <Typography variant="p" color="secondary">
-                        {workspace.description}
-                      </Typography>
-                    )}
-
-                    <Flex gap="md" className="text-sm text-ui-text-secondary">
-                      <span>0 teams</span>
-                      <span>•</span>
-                      <span>0 projects</span>
-                    </Flex>
+      <PageContent
+        isLoading={workspaces === undefined}
+        isEmpty={workspaces !== undefined && workspaces.length === 0}
+        emptyState={{
+          icon: "🏢",
+          title: "No workspaces yet",
+          description: "Create your first workspace to organize teams and projects",
+          action: (
+            <Button variant="primary" onClick={() => setIsCreateModalOpen(true)}>
+              + Create Workspace
+            </Button>
+          ),
+        }}
+      >
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {workspaces?.map((workspace: Doc<"workspaces">) => (
+            <Link
+              key={workspace._id}
+              to={ROUTES.workspaces.detail.path}
+              params={{ orgSlug, workspaceSlug: workspace.slug }}
+            >
+              <Card className="p-6 hover:shadow-lg transition-shadow cursor-pointer">
+                <Flex direction="column" gap="md">
+                  <Flex align="center" gap="sm">
+                    {workspace.icon && <span className="text-3xl">{workspace.icon}</span>}
+                    <Typography variant="h3">{workspace.name}</Typography>
                   </Flex>
-                </Card>
-              </Link>
-            ))}
-          </div>
-        )}
-      </Flex>
-    </div>
+
+                  {workspace.description && (
+                    <Typography variant="p" color="secondary">
+                      {workspace.description}
+                    </Typography>
+                  )}
+
+                  <Flex gap="md" className="text-sm text-ui-text-secondary">
+                    <span>0 teams</span>
+                    <span>•</span>
+                    <span>0 projects</span>
+                  </Flex>
+                </Flex>
+              </Card>
+            </Link>
+          ))}
+        </div>
+      </PageContent>
+    </PageLayout>
   );
 }
