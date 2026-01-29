@@ -8,47 +8,29 @@ const EVENT_COLOR_CLASSES: Record<
   string,
   { bg: string; hover: string; border: string; text: string }
 > = {
-  blue: {
-    bg: "bg-blue-500/10",
-    hover: "hover:bg-blue-500/20",
-    border: "border-blue-500",
-    text: "text-blue-500",
+  meeting: {
+    bg: "bg-brand-100",
+    hover: "hover:bg-brand-200",
+    border: "border-brand-500",
+    text: "text-brand-700",
   },
-  indigo: {
-    bg: "bg-indigo-500/10",
-    hover: "hover:bg-indigo-500/20",
-    border: "border-indigo-500",
-    text: "text-indigo-500",
+  deadline: {
+    bg: "bg-status-error-bg",
+    hover: "hover:bg-red-200",
+    border: "border-status-error",
+    text: "text-status-error-text",
   },
-  pink: {
-    bg: "bg-pink-500/10",
-    hover: "hover:bg-pink-500/20",
-    border: "border-pink-500",
-    text: "text-pink-500",
+  timeblock: {
+    bg: "bg-status-success-bg",
+    hover: "hover:bg-emerald-200",
+    border: "border-status-success",
+    text: "text-status-success-text",
   },
-  red: {
-    bg: "bg-red-500/10",
-    hover: "hover:bg-red-500/20",
-    border: "border-red-500",
-    text: "text-red-500",
-  },
-  orange: {
-    bg: "bg-orange-500/10",
-    hover: "hover:bg-orange-500/20",
-    border: "border-orange-500",
-    text: "text-orange-500",
-  },
-  amber: {
-    bg: "bg-amber-500/10",
-    hover: "hover:bg-amber-500/20",
-    border: "border-amber-500",
-    text: "text-amber-500",
-  },
-  emerald: {
-    bg: "bg-emerald-500/10",
-    hover: "hover:bg-emerald-500/20",
-    border: "border-emerald-500",
-    text: "text-emerald-500",
+  personal: {
+    bg: "bg-accent-100",
+    hover: "hover:bg-accent-200",
+    border: "border-accent-500",
+    text: "text-accent-700",
   },
 };
 
@@ -58,7 +40,7 @@ function getColorClasses(color: string): {
   border: string;
   text: string;
 } {
-  return EVENT_COLOR_CLASSES[color] ?? EVENT_COLOR_CLASSES.blue;
+  return EVENT_COLOR_CLASSES[color];
 }
 
 interface EventPosition {
