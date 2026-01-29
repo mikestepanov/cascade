@@ -19,7 +19,7 @@ conversations into predictive deal scores and coaching recommendations.
 **Tagline:** "Revenue AI Operating System"
 
 **Key Stats:**
-- $332.3M ARR (2024), surpassed $300M ARR milestone
+- Surpassed $300M ARR (March 2025 announcement; exact figure not publicly disclosed)
 - 5,000+ enterprise customers
 - $7.25B valuation (Series E, 2021)
 - $583M total funding raised
@@ -132,7 +132,7 @@ conversations into predictive deal scores and coaching recommendations.
 
 2. **Dominant Market Position**
    - ~75% market share in revenue intelligence
-   - $332.3M ARR with strong growth trajectory
+   - Surpassed $300M ARR with strong growth trajectory
    - 2025 Gartner Magic Quadrant Leader (highest in Ability to Execute)
 
 3. **Enterprise Customer Base**
@@ -224,12 +224,12 @@ primarily focused on revenue generation.
 
 - **Market Share:** ~75% of revenue intelligence market
 - **Customers:** 5,000+ companies globally
-- **ARR:** $332.3M (2024), up from $285M (2023)
+- **ARR:** Surpassed $300M (March 2025 announcement), up from $285M (2023)
 - **Valuation:** $7.25B (2021 Series E, implied ~24x current ARR)
 - **Total Funding:** $583M across multiple rounds
 - **Employee Count:** 2,248 employees
 - **Growth:** $6M (2018) -> $32M (2019) -> $60M (2020) -> $120M (2021) -> $178M (2022) ->
-  $285M (2023) -> $332M (2024)
+  $285M (2023) -> $300M+ (2024/2025)
 
 **Notable Users:** Google, LinkedIn, HubSpot, Shopify, PayPal, Twilio, Pinterest, Webflow,
 ServiceTitan, Zillow, Autodesk, Outreach, ZoomInfo, Docusign, ADP, Slack.
@@ -277,7 +277,7 @@ ServiceTitan, Zillow, Autodesk, Outreach, ZoomInfo, Docusign, ADP, Slack.
 - Massive data moat from billions of analyzed interactions
 - Self-tuning models improve accuracy over time
 - Deep CRM integration with bidirectional sync
-- Enterprise trust: $332M ARR, Gartner Leader, near-IPO stability
+- Enterprise trust: $300M+ ARR, Gartner Leader, near-IPO stability
 
 ---
 

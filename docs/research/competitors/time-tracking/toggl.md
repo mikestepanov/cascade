@@ -11,12 +11,11 @@
 
 > **Vibe:** "Developer/Freelancer" - Low friction, trusted reporting, one-click timer. The "friendly" tracker that developers actually use.
 
-Toggl Track is the most well-known time tracking tool in the developer and freelancer community. Founded in 2006 in Tallinn, Estonia, Toggl has grown into a $35M revenue company serving over 70,000 businesses worldwide. Its success is built on a privacy-first, low-friction philosophy: one-click timer, no screenshots, no keystroke monitoring. Toggl proves that developers and knowledge workers will track time voluntarily when the tool is fast, respectful, and beautifully designed. The company also offers Toggl Plan (project management) and Toggl Focus (Pomodoro timer).
+Toggl Track is the most well-known time tracking tool in the developer and freelancer community. Founded in 2006 in Tallinn, Estonia, Toggl reported EUR 17.3M revenue in FY2024 (~$18-19M USD). Its success is built on a privacy-first, low-friction philosophy: one-click timer, no screenshots, no keystroke monitoring. Toggl proves that developers and knowledge workers will track time voluntarily when the tool is fast, respectful, and beautifully designed. The company also offers Toggl Plan (project management) and Toggl Focus (Pomodoro timer).
 
 **Key Stats:**
-- $35M annual revenue (2025 estimate), up from $9M in 2020
-- 70,000+ businesses worldwide
-- 144 employees across 6 continents (fully remote company)
+- EUR 17.3M revenue FY2024 (~$18-19M USD), up from $9M in 2020
+- ~140-146 employees across 6 continents (fully remote company)
 - 100+ integrations with third-party tools
 - Privacy-first: no screenshots, no keystroke monitoring
 - 30-day free trial on paid plans (most generous in the market)
@@ -155,7 +154,7 @@ Toggl Track is the most well-known time tracking tool in the developer and freel
    - Zapier/Make/IFTTT for unlimited custom connections
 
 4. **Strong Revenue & Growth**
-   - $35M ARR (2025), up from $9M in 2020 (~4x growth in 5 years)
+   - EUR 17.3M revenue FY2024 (~$18-19M USD), up from $9M in 2020 (~2x growth in 4 years)
    - 70,000+ businesses worldwide
    - 144 employees, fully remote across 6 continents
    - Profitable and sustainable business model
@@ -263,11 +262,10 @@ Toggl Track is the most well-known time tracking tool in the developer and freel
 ## Market Share & Adoption
 
 **Statistics:**
-- 3.94% market share in Employee Monitoring category
+- 4.89% market share in Employee Monitoring category (6sense, ranked #5)
 - 0.34% market share in Time Clock & Attendance category
-- $35M annual revenue (2025), $32.8M in 2024
-- 70,000+ businesses worldwide
-- 144 employees across 6 continents (fully remote)
+- EUR 17.3M revenue FY2024 (~$18-19M USD)
+- ~140-146 employees across 6 continents (fully remote)
 - Founded 2006, one of the longest-running time tracking SaaS tools
 
 **Notable Industries:**
@@ -331,7 +329,7 @@ Toggl Track is the most well-known time tracking tool in the developer and freel
 3. Browser extension with in-app timer injection is best-in-class
 4. Privacy-first brand trust built over 20 years
 5. Native mobile apps including Apple Watch support
-6. $35M revenue and 70,000+ businesses prove market validation
+6. ~$18-19M USD revenue and strong brand recognition prove market validation
 7. Beautiful, polished UI/UX with exceptional attention to detail
 8. 30-day free trial is the most generous in the market
 
@@ -383,7 +381,7 @@ Toggl Track is the most well-known time tracking tool in the developer and freel
 1. **Brand dominance** -- Toggl is THE name in developer time tracking; 20 years of brand equity
 2. **Integration ecosystem** -- 100+ integrations and best-in-class browser extension are hard to replicate
 3. **UX excellence** -- Beautiful, polished interface sets the bar for design quality
-4. **Revenue and scale** -- $35M ARR and 70,000+ businesses create formidable network effects
+4. **Revenue and scale** -- ~$18-19M USD revenue and strong brand loyalty create formidable network effects
 5. **Privacy brand** -- Developer trust built on no-monitoring stance is deeply defensible
 6. **Toggl Plan convergence** -- If Toggl deeply integrates Track + Plan, the "fragmentation" weakness disappears
 

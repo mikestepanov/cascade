@@ -24,7 +24,7 @@ participation with the launch of AI Meeting Agents.
 - 1+ billion meetings processed
 - ~200 employees ($500K+ revenue per employee)
 - $73M total funding raised (Series B led by Spectrum Equity)
-- HIPAA compliant (July 2025), SOC 2 Type II, GDPR, EU AI Act compliant
+- HIPAA compliant (July 2025, Enterprise plan only, requires signed BAA), SOC 2 Type II, GDPR
 
 ---
 
@@ -38,13 +38,12 @@ participation with the launch of AI Meeting Agents.
 | **Enterprise** | Custom | Custom | 6,000 min | 4 hours |
 
 **Pricing Analysis:**
-- Minute caps create natural upgrade paths. Internal data shows 73% of Pro users hit
-  limits within 4 months, driving conversion to Business tier.
+- Minute caps create natural upgrade paths, driving conversion to Business tier.
 - Free tier is restrictive (300 min/month, 30 min/conversation) compared to Fireflies
-  (800 min) and tl;dv (unlimited recordings).
+  (3,000 min/month transcription) and tl;dv (unlimited recordings).
 - OtterPilot for Sales is locked behind Enterprise tier -- small teams cannot access
   sales-specific features.
-- Business tier at $20/user/month (annual) is competitive but more expensive than
+- Business tier at $19.99/user/month (annual) is competitive but more expensive than
   Fireflies Pro ($10/mo) for similar core features.
 - 20% discount for students/teachers with .edu email on Pro plan.
 

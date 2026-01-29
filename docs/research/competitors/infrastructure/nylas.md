@@ -11,7 +11,7 @@
 
 **Nylas** provides universal APIs for email, calendar, and contacts, enabling developers to integrate communication features into their applications through a single, normalized interface. With the launch of API v3, Nylas has repositioned itself as a stateless gateway that fetches data directly from providers (Google, Microsoft) in real-time rather than mirroring user data in a Nylas-owned database. This architectural shift delivers a 2.5x speed improvement and 10x reliability increase over v2.
 
-Nylas recently expanded its offering with the **Notetaker API** (launched May 2025), which joins meetings on Zoom, Google Meet, and Microsoft Teams to record, transcribe, and deliver structured meeting data. This positions Nylas as both a communications infrastructure provider and a meeting bot competitor. The platform serves as a key reference for Nixelo's calendar integration strategy and could potentially function as an infrastructure provider for both calendar sync and meeting intelligence features.
+Nylas recently expanded its offering with the **Notetaker API** (launched April 30, 2025), which joins meetings on Zoom, Google Meet, and Microsoft Teams to record, transcribe, and deliver structured meeting data. This positions Nylas as both a communications infrastructure provider and a meeting bot competitor. The platform serves as a key reference for Nixelo's calendar integration strategy and could potentially function as an infrastructure provider for both calendar sync and meeting intelligence features.
 
 ---
 

@@ -4,7 +4,7 @@
 > **Category:** AI Meeting Assistant / Workflow Automation
 > **Type:** Proprietary SaaS (Freemium)
 > **Owner:** Fireflies.ai Inc. (Founded 2014, Pleasanton, CA)
-> **Website:** https://fireflies.ai
+> **Website:** [https://fireflies.ai](https://fireflies.ai)
 
 ---
 

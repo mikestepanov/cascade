@@ -36,19 +36,19 @@ TMetric is a cross-platform time tracking and productivity solution developed by
 
 | Plan             | Price (per user/month, annual) | Price (monthly) | Key Features                                        |
 | ---------------- | ------------------------------ | --------------- | --------------------------------------------------- |
-| **Free**         | $0                             | $0              | Unlimited projects/clients, basic tracking, reports  |
-| **Professional** | $3.75                          | $4.99           | Activity monitoring, apps/sites tracking, time off   |
-| **Business**     | $5.25                          | $6.99           | Invoicing, budgeting, labor costs, work scheduling   |
+| **Free**         | $0                             | $0              | Up to 2 users, basic tracking, reports               |
+| **Professional** | $3.75                          | $4.99           | Invoicing, project budgets, billable rates           |
+| **Business**     | $5.25                          | $6.99           | Activity monitoring, apps/sites tracking, time off, work scheduling |
+| **Enterprise**   | Custom                         | Custom          | SSO, priority support, custom SLA                    |
 
 **Pricing Analysis:**
-- Only 3 tiers -- simple and easy to understand
+- 4 tiers including Enterprise with custom pricing
 - Most affordable paid plans in the market ($3.75 and $5.25/user/month)
-- No Enterprise plan with custom pricing (may limit large org adoption)
-- Volume discounts: 10% (40+ users), 20% (100+ users), 30% (200+ users)
-- Free tier includes unlimited projects and clients -- genuinely useful for freelancers
-- Activity monitoring requires Professional plan (no free monitoring)
-- Invoicing and budgeting locked to Business plan
-- No free trial mentioned -- relies on the free tier as the trial experience
+- Volume discounts: 10% (40+ users), 20% (100+ users), 30% (200+ users), 40% (500+ users)
+- Free tier limited to 2 users (not unlimited)
+- 14-day free trial available on paid plans
+- Invoicing and project budgets on Professional plan
+- Activity monitoring and time off locked to Business plan
 
 ---
 
@@ -218,11 +218,11 @@ TMetric proves that **Visualization** helps memory. We scrap their **"Timeline U
    - Task structure is flat (project > task only)
    - Must pair with external PM tool
 
-5. **No Enterprise Tier**
-   - Business plan ($5.25) is the highest tier
-   - No SSO, SAML, or advanced security options
-   - No custom SLA or dedicated support
-   - May not meet compliance requirements for large organizations
+5. **Limited Enterprise Features**
+   - Enterprise tier exists but has limited public documentation
+   - SSO and advanced security details not clearly published
+   - Custom pricing requires contacting sales
+   - May struggle to compete with established enterprise time tracking vendors
 
 6. **Small Market Presence**
    - Relatively unknown compared to Toggl, Clockify, or Harvest

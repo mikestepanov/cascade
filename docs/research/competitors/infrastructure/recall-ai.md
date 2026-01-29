@@ -42,7 +42,7 @@ Recall.ai is Nixelo's **current infrastructure provider** for the Voice AI meeti
 
 ### Pricing Analysis
 
-At $0.50/hour for recording plus $0.15/hour for transcription, a typical meeting costs approximately $0.65/hour in total. At scale, this adds up: 1,000 hours of meetings per month would cost approximately $650/month ($500 recording + $150 transcription). Storage costs compound if recordings are retained beyond 7 days ($0.05/hour/month). Per-second billing proration is a unique advantage that prevents overpaying for short meetings. Enterprise volume discounts are available but require contacting the sales team. Compared to alternatives, Recall.ai is more expensive than Skribby ($0.35/hr all-in) and Meeting BaaS ($0.69/hr hosted but $0.066/hr self-hosted), but the premium covers broader platform support, enterprise compliance, and proven reliability.
+At $0.50/hour for recording plus $0.15/hour for transcription, a typical meeting costs approximately $0.65/hour in total. At scale, this adds up: 1,000 hours of meetings per month would cost approximately $650/month ($500 recording + $150 transcription). Storage costs compound if recordings are retained beyond 7 days ($0.05/hour/month). Per-second billing proration is a unique advantage that prevents overpaying for short meetings. Enterprise volume discounts are available but require contacting the sales team. Compared to alternatives, Recall.ai is more expensive than Skribby (~$0.35/hr recording-only, ~$0.39/hr with transcription) and Meeting BaaS ($0.35-$0.50/hr hosted via token packs, or $0.066/hr self-hosted), but the premium covers broader platform support, enterprise compliance, and proven reliability.
 
 ---
 
@@ -92,7 +92,7 @@ At $0.50/hour for recording plus $0.15/hour for transcription, a typical meeting
 
 1. **Zero Maintenance:** Recall.ai handles all platform UI changes, API updates, and bot infrastructure; no engineering effort required to maintain meeting integrations.
 2. **Broadest Platform Support:** 6 platforms (Zoom, Meet, Teams, Webex, Slack Huddles, GoTo Meeting) covered by a single API.
-3. **Enterprise-Grade Reliability:** 99.9% uptime SLA with proven scale at 300+ enterprise clients including HubSpot, ClickUp, and Rippling.
+3. **Enterprise-Grade Reliability:** Proven scale at 300+ enterprise clients including HubSpot, ClickUp, and Rippling. Uptime SLA available via enterprise Order Forms (no public SLA published).
 4. **Comprehensive Compliance:** SOC2, ISO 27001, GDPR, CCPA, and HIPAA certifications with BAA agreements for healthcare use cases.
 5. **Simple REST API:** Straightforward integration with minimal code required to deploy a meeting bot.
 6. **Dual Recording Modes:** Meeting Bot API for in-call recording plus Desktop Recording SDK for device-level capture without visible bots.
@@ -170,7 +170,7 @@ At $0.50/hour for recording plus $0.15/hour for transcription, a typical meeting
 | Webhook Infra | Svix |
 | Regions | us-west-2, us-east-1, eu-central-1, ap-northeast-1 |
 | Transcription | Built-in + AssemblyAI + Deepgram |
-| Uptime SLA | 99.9% |
+| Uptime SLA | Enterprise Order Forms only (no public SLA) |
 
 ---
 
@@ -179,9 +179,9 @@ At $0.50/hour for recording plus $0.15/hour for transcription, a typical meeting
 | Provider | Price/hr | Platforms | Self-Host | Compliance | Maturity |
 |----------|---------|-----------|-----------|------------|----------|
 | **Recall.ai** | ~$0.65 | 6 | No | SOC2, HIPAA, ISO | Market leader |
-| **Meeting BaaS** | $0.69 (hosted) | 3 | Yes ($0.066/hr) | None | Growing |
-| **Skribby** | $0.35 | 3 | No | None | Startup |
-| **Nylas Notetaker** | $0.70 | 3 | No | SOC2, HIPAA, ISO | New (2025) |
+| **Meeting BaaS** | $0.35-$0.50 (hosted) | 3 | Yes ($0.066/hr) | None | Growing |
+| **Skribby** | ~$0.35 (recording only) | 3 | No | None | Startup |
+| **Nylas Notetaker** | $0.70 | 3 | No | SOC2, ISO; HIPAA (enterprise BAA) | New (2025) |
 
 ---
 
@@ -231,4 +231,4 @@ Recall.ai is Nixelo's **primary meeting bot infrastructure provider** and the be
 
 ## Verdict
 
-Recall.ai is the clear market leader in meeting bot infrastructure, offering the broadest platform coverage, strongest compliance posture, and most proven reliability at enterprise scale. For Nixelo, it remains the correct choice for the cloud-hosted Voice AI tier, backed by $51M in funding, 300+ enterprise clients, and a 99.9% uptime SLA. The primary risk is cost at scale and vendor lock-in. **Recommendation:** Continue using Recall.ai as the primary meeting bot provider; negotiate volume discounts as usage grows; implement Meeting BaaS as a secondary provider for self-hosted deployments; explore the Desktop SDK and Output Media features for expanding Voice AI capabilities beyond passive recording. Too expensive for self-hosted users unless they bring their own API key.
+Recall.ai is the clear market leader in meeting bot infrastructure, offering the broadest platform coverage, strongest compliance posture, and most proven reliability at enterprise scale. For Nixelo, it remains the correct choice for the cloud-hosted Voice AI tier, backed by $51M in funding and 300+ enterprise clients. The primary risk is cost at scale and vendor lock-in. **Recommendation:** Continue using Recall.ai as the primary meeting bot provider; negotiate volume discounts as usage grows; implement Meeting BaaS as a secondary provider for self-hosted deployments; explore the Desktop SDK and Output Media features for expanding Voice AI capabilities beyond passive recording. Too expensive for self-hosted users unless they bring their own API key.

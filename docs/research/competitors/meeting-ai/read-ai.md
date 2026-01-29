@@ -20,9 +20,9 @@ combining audio, NLP, and computer vision.
 **Tagline:** "#1 Enterprise-Grade AI Assistant"
 
 **Key Stats:**
-- Adding 1M+ new users per month, 100,000+ new accounts per week
+- Adding 750K+ new users per month (May 2025 announcement)
 - 75% of Fortune 500 using Read AI products
-- $81M total funding raised ($450M valuation)
+- $71M total funding raised ($21M Series A + $50M Series B), $450M valuation
 - 83-100 employees (expanding rapidly)
 - Zero marketing spend -- entirely organic/PLG growth
 - Named in Brex Benchmark Report alongside OpenAI, Anthropic, Cursor
@@ -230,7 +230,7 @@ monitoring, or teams needing deep workflow automation from meeting insights.
 
 - **Growth Rate:** 1M+ new users/month, 100K+ new accounts/week
 - **Fortune 500:** 75% penetration
-- **Funding:** $81M total ($50M Series B + $21M Series A, 6 months apart)
+- **Funding:** $71M total ($50M Series B + $21M Series A)
 - **Valuation:** $450M (as of Series B, October 2024)
 - **Investors:** Smash Capital, Goodwater Capital, Madrona Venture Group
 - **Employees:** 83-100 (rapidly expanding)

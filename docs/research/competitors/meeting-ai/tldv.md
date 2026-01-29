@@ -19,10 +19,10 @@ identity that contrasts with the utilitarian feel of competitors like Fireflies.
 **Tagline:** "AI Meeting Recorder: Transcribe, Summarize & Take Notes"
 
 **Key Stats:**
-- 2M+ users worldwide, including Fortune 500 companies (Cloudflare, Forbes, Salesforce)
+- 2M+ users worldwide
 - $4.5M revenue (2024), 5x year-over-year growth
 - ~50 employees globally
-- $5.64M total funding raised (Seed round, June 2022)
+- ~$4.6-4.7M USD total funding raised (EUR 4.3M Seed round, June 2022)
 - Backed by K Fund, Seedcamp, Shilling
 - Expanding into Japan (targeting 1.5M users, 100K+ existing)
 - 5,000+ tool integrations via CRM and workflow connectors
@@ -176,7 +176,7 @@ identity that contrasts with the utilitarian feel of competitors like Fireflies.
    - Business tier feels overpriced for the incremental capabilities
 
 7. **Small Funding Base**
-   - Only $5.64M raised (Seed round) vs Otter ($73M) or Read AI ($81M)
+   - Only ~$4.6-4.7M raised (Seed round) vs Otter ($73M) or Read AI ($71M)
    - Limited runway for competing with well-funded competitors
    - May struggle to invest in R&D at the pace needed
 
@@ -207,7 +207,7 @@ best-in-class transcription accuracy, or teams with meetings regularly exceeding
 - **Revenue:** $4.5M (2024), 5x YoY growth, ARR in eight digits
 - **Customers:** Fortune 500 users including Cloudflare, Forbes, Salesforce, HelloFresh,
   Zalando
-- **Funding:** $5.64M total (Seed round, June 2022)
+- **Funding:** ~$4.6-4.7M USD total (EUR 4.3M Seed round, June 2022)
 - **Investors:** K Fund, Seedcamp, Shilling, Oscar Pierre (Glovo founder)
 - **Employees:** ~50 globally
 - **Market Rank:** 39th among 379 active competitors, 12th by total funding

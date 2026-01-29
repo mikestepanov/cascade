@@ -3,7 +3,7 @@
 > **Last Updated:** 2026-01-28
 > **Category:** Infrastructure / Meeting Bot API
 > **Type:** Paid API + Self-Hosted Option (BSL License)
-> **Website:** https://www.meetingbaas.com
+> **Website:** [https://www.meetingbaas.com](https://www.meetingbaas.com)
 
 ---
 
