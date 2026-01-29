@@ -1,3 +1,4 @@
+import type { Id } from "@convex/_generated/dataModel";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { render, screen } from "@/test/custom-render";
@@ -44,10 +45,10 @@ describe("IssueDependencies", () => {
         return {
           outgoing: [
             {
-              _id: "link1",
+              _id: "link1" as Id<"issueLinks">,
               linkType: "blocks",
               issue: {
-                _id: "issue2",
+                _id: "issue2" as Id<"issues">,
                 key: "TEST-2",
                 title: "Blocked Issue",
                 type: "bug",
@@ -60,7 +61,12 @@ describe("IssueDependencies", () => {
       return undefined;
     });
 
-    render(<IssueDependencies issueId="issue1" projectId="project1" />);
+    render(
+      <IssueDependencies
+        issueId={"issue1" as Id<"issues">}
+        projectId={"project1" as Id<"projects">}
+      />,
+    );
 
     // Check if the dependency is rendered
     expect(screen.getByText("Blocked Issue")).toBeInTheDocument();
