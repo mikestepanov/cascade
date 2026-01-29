@@ -1,5 +1,4 @@
 import { api } from "@convex/_generated/api";
-import type { Doc } from "@convex/_generated/dataModel";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
 import { useState } from "react";
@@ -64,7 +63,7 @@ function WorkspacesList() {
         }}
       >
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {workspaces?.map((workspace: Doc<"workspaces">) => (
+          {workspaces?.map((workspace) => (
             <Link
               key={workspace._id}
               to={ROUTES.workspaces.detail.path}
@@ -84,9 +83,14 @@ function WorkspacesList() {
                   )}
 
                   <Flex gap="md" className="text-sm text-ui-text-secondary">
-                    <span>0 teams</span>
+                    <span>
+                      {workspace.teamCount} {workspace.teamCount === 1 ? "team" : "teams"}
+                    </span>
                     <span>•</span>
-                    <span>0 projects</span>
+                    <span>
+                      {workspace.projectCount}{" "}
+                      {workspace.projectCount === 1 ? "project" : "projects"}
+                    </span>
                   </Flex>
                 </Flex>
               </Card>

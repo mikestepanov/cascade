@@ -23,7 +23,9 @@ export function Greeting({ userName, completedCount = 0 }: GreetingProps) {
         <Typography variant="lead" color="secondary" className="max-w-2xl">
           {completedCount > 0 ? (
             <>
-              <span className="font-bold text-ui-text-primary">{completedCount} tasks</span>{" "}
+              <span className="font-bold text-ui-text-primary">
+                {completedCount} {completedCount === 1 ? "task" : "tasks"}
+              </span>{" "}
               completed this week.
             </>
           ) : (

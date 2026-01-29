@@ -25,7 +25,7 @@ import { type SeedScreenshotResult, testUserService } from "./utils/test-user-se
 const BASE_URL = process.env.BASE_URL || "http://localhost:5555";
 const CONVEX_URL = process.env.VITE_CONVEX_URL || "";
 const SCREENSHOT_DIR = path.join(process.cwd(), "e2e", "screenshots");
-const VIEWPORT = { width: 1440, height: 900 };
+const VIEWPORT = { width: 1920, height: 1080 };
 const SETTLE_MS = 2500;
 
 const SCREENSHOT_USER = {
@@ -59,7 +59,7 @@ async function takeScreenshot(
     // networkidle often times out on real-time apps -- page is still usable
   }
   await page.waitForTimeout(SETTLE_MS);
-  await page.screenshot({ path: path.join(SCREENSHOT_DIR, filename), fullPage: true });
+  await page.screenshot({ path: path.join(SCREENSHOT_DIR, filename) });
   totalScreenshots++;
   console.log(`  ${num}  [${prefix}] ${name}`);
 }
@@ -178,10 +178,6 @@ async function screenshotEmpty(page: Page, orgSlug: string): Promise<void> {
   await takeScreenshot(page, p, "time-tracking", `/${orgSlug}/time-tracking`);
   await takeScreenshot(page, p, "settings-profile", `/${orgSlug}/settings/profile`);
 
-  // Public pages (no auth needed)
-  await takeScreenshot(page, p, "landing", "/");
-  await takeScreenshot(page, p, "signin", "/signin");
-
   console.log("");
 }
 
@@ -253,7 +249,7 @@ async function screenshotFilled(
     // Try seed-provided team slug first, fall back to discovery
     const resolvedTeam = teamSlug ?? (await discoverFirstHref(page, /\/teams\/([^/]+)/));
     if (resolvedTeam) {
-      for (const tab of ["board", "backlog", "calendar", "settings"]) {
+      for (const tab of ["board"]) {
         await takeScreenshot(
           page,
           p,
@@ -276,7 +272,7 @@ async function screenshotFilled(
     }
   }
 
-  // Public pages (no auth needed)
+  // Public pages (landing + signin) captured in pre-login phase
   await takeScreenshot(page, p, "landing", "/");
   await takeScreenshot(page, p, "signin", "/signin");
 
@@ -300,6 +296,12 @@ async function run(): Promise<void> {
   const browser = await chromium.launch({ headless });
   const context = await browser.newContext({ viewport: VIEWPORT });
   const page = await context.newPage();
+
+  // Capture public pages before login
+  console.log("--- Pre-login: Public pages ---\n");
+  await takeScreenshot(page, "empty", "landing", "/");
+  await takeScreenshot(page, "empty", "signin", "/signin");
+  console.log("");
 
   // Try automatic login first, fall back to manual
   let orgSlug: string | null = null;
@@ -340,6 +342,17 @@ async function run(): Promise<void> {
       `  Seeded: project=${seedResult.projectKey}, issues=${seedResult.issueKeys?.length ?? 0}\n`,
     );
   }
+
+  // Reload to ensure Convex reactivity has propagated
+  try {
+    await page.goto(`${BASE_URL}/${orgSlug}/dashboard`, {
+      waitUntil: "networkidle",
+      timeout: 15000,
+    });
+  } catch {
+    // networkidle often times out on real-time apps
+  }
+  await page.waitForTimeout(3000);
 
   // Pass 2: Filled state
   await screenshotFilled(page, orgSlug, seedResult);

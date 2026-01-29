@@ -20,6 +20,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/ShadcnTabs";
 const isTestEmail = (email?: string) => email?.endsWith("@inbox.mailtrap.io") ?? false;
 
 const validTabs = [
+  "profile",
+  "notifications",
   "integrations",
   "apikeys",
   "offline",
@@ -40,7 +42,7 @@ export function Settings() {
   const search = useSearch({ strict: false }) as { tab?: string };
   const urlTab = search?.tab;
   const initialTab: TabValue =
-    urlTab && validTabs.includes(urlTab as TabValue) ? (urlTab as TabValue) : "integrations";
+    urlTab && validTabs.includes(urlTab as TabValue) ? (urlTab as TabValue) : "profile";
 
   // Use controlled tabs for URL-based navigation
   const [activeTab, setActiveTab] = useState<TabValue>(initialTab);

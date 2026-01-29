@@ -2531,6 +2531,11 @@ export const seedScreenshotDataInternal = internalMutation({
     const user = users.sort((a, b) => b._creationTime - a._creationTime)[0];
     const userId = user._id;
 
+    // 1b. Set display name if missing
+    if (!user.name) {
+      await ctx.db.patch(userId, { name: "Emily Chen" });
+    }
+
     // 2. Find user's organization
     const membership = await ctx.db
       .query("organizationMembers")
@@ -2549,6 +2554,49 @@ export const seedScreenshotDataInternal = internalMutation({
     const orgId = organization._id;
     const orgSlug = organization.slug;
     const now = Date.now();
+
+    // 2b. Create additional named team members (for project settings, etc.)
+    const syntheticMembers: Array<{ name: string; email: string }> = [
+      { name: "Alex Rivera", email: "alex-rivera-screenshots@inbox.mailtrap.io" },
+      { name: "Sarah Kim", email: "sarah-kim-screenshots@inbox.mailtrap.io" },
+    ];
+    const syntheticUserIds: Array<typeof userId> = [];
+
+    for (const member of syntheticMembers) {
+      let existingUser = await ctx.db
+        .query("users")
+        .filter((q) => q.eq(q.field("email"), member.email))
+        .first();
+
+      if (!existingUser) {
+        const newUserId = await ctx.db.insert("users", {
+          name: member.name,
+          email: member.email,
+        });
+        existingUser = await ctx.db.get(newUserId);
+      } else if (!existingUser.name) {
+        await ctx.db.patch(existingUser._id, { name: member.name });
+      }
+
+      if (!existingUser) continue;
+      syntheticUserIds.push(existingUser._id);
+
+      // Add to organization as member
+      const orgMember = await ctx.db
+        .query("organizationMembers")
+        .withIndex("by_organization_user", (q) =>
+          q.eq("organizationId", orgId).eq("userId", existingUser._id),
+        )
+        .first();
+      if (!orgMember) {
+        await ctx.db.insert("organizationMembers", {
+          organizationId: orgId,
+          userId: existingUser._id,
+          role: "member",
+          addedBy: userId,
+        });
+      }
+    }
 
     // 3. Create workspace (idempotent)
     let workspace = await ctx.db
@@ -2614,6 +2662,23 @@ export const seedScreenshotDataInternal = internalMutation({
       });
     }
 
+    // 4b. Add synthetic members to team
+    for (const memberId of syntheticUserIds) {
+      const existingTm = await ctx.db
+        .query("teamMembers")
+        .withIndex("by_team", (q) => q.eq("teamId", teamId))
+        .filter((q) => q.eq(q.field("userId"), memberId))
+        .first();
+      if (!existingTm) {
+        await ctx.db.insert("teamMembers", {
+          teamId,
+          userId: memberId,
+          role: "member",
+          addedBy: userId,
+        });
+      }
+    }
+
     // 5. Create project (idempotent)
     const projectKey = "DEMO";
     let project = await ctx.db
@@ -2667,6 +2732,23 @@ export const seedScreenshotDataInternal = internalMutation({
       });
     }
 
+    // 5b. Add synthetic members to project
+    for (const memberId of syntheticUserIds) {
+      const existingPm = await ctx.db
+        .query("projectMembers")
+        .withIndex("by_project_user", (q) => q.eq("projectId", projectId).eq("userId", memberId))
+        .filter(notDeleted)
+        .first();
+      if (!existingPm) {
+        await ctx.db.insert("projectMembers", {
+          projectId,
+          userId: memberId,
+          role: "editor",
+          addedBy: userId,
+        });
+      }
+    }
+
     // 6. Create sprint (idempotent - check by project + name)
     let sprint = await ctx.db
       .query("sprints")
@@ -2693,6 +2775,7 @@ export const seedScreenshotDataInternal = internalMutation({
     const sprintId = sprint?._id;
 
     // 7. Create issues (idempotent by key)
+    const DAY_MS = 24 * 60 * 60 * 1000;
     const issueDefinitions: Array<{
       key: string;
       title: string;
@@ -2701,6 +2784,7 @@ export const seedScreenshotDataInternal = internalMutation({
       priority: "lowest" | "low" | "medium" | "high" | "highest";
       assigned: boolean;
       inSprint: boolean;
+      dueDate?: number;
     }> = [
       {
         key: "DEMO-1",
@@ -2710,6 +2794,7 @@ export const seedScreenshotDataInternal = internalMutation({
         priority: "high",
         assigned: true,
         inSprint: true,
+        dueDate: now - 2 * DAY_MS,
       },
       {
         key: "DEMO-2",
@@ -2719,6 +2804,7 @@ export const seedScreenshotDataInternal = internalMutation({
         priority: "highest",
         assigned: true,
         inSprint: true,
+        dueDate: now + 1 * DAY_MS,
       },
       {
         key: "DEMO-3",
@@ -2728,6 +2814,7 @@ export const seedScreenshotDataInternal = internalMutation({
         priority: "medium",
         assigned: true,
         inSprint: true,
+        dueDate: now + 3 * DAY_MS,
       },
       {
         key: "DEMO-4",
@@ -2737,6 +2824,7 @@ export const seedScreenshotDataInternal = internalMutation({
         priority: "medium",
         assigned: false,
         inSprint: false,
+        dueDate: now + 7 * DAY_MS,
       },
       {
         key: "DEMO-5",
@@ -2782,6 +2870,7 @@ export const seedScreenshotDataInternal = internalMutation({
           reporterId: userId,
           assigneeId: def.assigned ? userId : undefined,
           sprintId: def.inSprint && sprintId ? sprintId : undefined,
+          dueDate: def.dueDate,
           updatedAt: now,
           labels: [],
           linkedDocuments: [],
@@ -2823,7 +2912,192 @@ export const seedScreenshotDataInternal = internalMutation({
       }
     }
 
-    // 9. Return result
+    // 9. Create calendar events (idempotent by organizer + title)
+    const todayStart = new Date();
+    todayStart.setHours(0, 0, 0, 0);
+    const todayMs = todayStart.getTime();
+
+    const calendarDefs: Array<{
+      title: string;
+      startHour: number;
+      startMin: number;
+      endHour: number;
+      endMin: number;
+      dayOffset: number;
+      eventType: "meeting" | "deadline" | "timeblock" | "personal";
+      description?: string;
+    }> = [
+      {
+        title: "Sprint Planning",
+        startHour: 9,
+        startMin: 0,
+        endHour: 10,
+        endMin: 0,
+        dayOffset: 0,
+        eventType: "meeting",
+        description: "Review sprint goals and assign tasks",
+      },
+      {
+        title: "Design Review",
+        startHour: 10,
+        startMin: 30,
+        endHour: 11,
+        endMin: 30,
+        dayOffset: 0,
+        eventType: "meeting",
+        description: "Review dashboard mockups with the team",
+      },
+      {
+        title: "Focus Time: Bug Fixes",
+        startHour: 14,
+        startMin: 0,
+        endHour: 16,
+        endMin: 0,
+        dayOffset: 0,
+        eventType: "timeblock",
+        description: "Deep focus on critical bug fixes",
+      },
+      {
+        title: "Client Demo",
+        startHour: 11,
+        startMin: 0,
+        endHour: 12,
+        endMin: 0,
+        dayOffset: 1,
+        eventType: "meeting",
+        description: "Demo new features to client stakeholders",
+      },
+      {
+        title: "Sprint Deadline",
+        startHour: 17,
+        startMin: 0,
+        endHour: 17,
+        endMin: 30,
+        dayOffset: 5,
+        eventType: "deadline",
+        description: "All sprint items must be completed",
+      },
+    ];
+
+    for (const cal of calendarDefs) {
+      const existing = await ctx.db
+        .query("calendarEvents")
+        .withIndex("by_organizer", (q) => q.eq("organizerId", userId))
+        .filter((q) => q.eq(q.field("title"), cal.title))
+        .first();
+
+      if (!existing) {
+        const startTime =
+          todayMs + cal.dayOffset * DAY_MS + cal.startHour * 3600000 + cal.startMin * 60000;
+        const endTime =
+          todayMs + cal.dayOffset * DAY_MS + cal.endHour * 3600000 + cal.endMin * 60000;
+
+        await ctx.db.insert("calendarEvents", {
+          title: cal.title,
+          description: cal.description,
+          startTime,
+          endTime,
+          allDay: false,
+          eventType: cal.eventType,
+          organizerId: userId,
+          attendeeIds: [userId, ...syntheticUserIds],
+          status: "scheduled",
+          isRecurring: false,
+          isRequired: cal.eventType === "meeting",
+          updatedAt: now,
+        });
+      }
+    }
+
+    // 10. Create time entries (idempotent by user + description)
+    const timeEntryDefs: Array<{
+      description: string;
+      dayOffset: number;
+      durationHours: number;
+      activity: string;
+      billable: boolean;
+      hourlyRate?: number;
+    }> = [
+      {
+        description: "CI/CD pipeline setup and configuration",
+        dayOffset: -2,
+        durationHours: 4,
+        activity: "Development",
+        billable: true,
+        hourlyRate: 150,
+      },
+      {
+        description: "Bug investigation: login timeout on mobile",
+        dayOffset: -1,
+        durationHours: 3,
+        activity: "Development",
+        billable: true,
+        hourlyRate: 150,
+      },
+      {
+        description: "Dashboard design review with team",
+        dayOffset: -1,
+        durationHours: 1.5,
+        activity: "Code Review",
+        billable: true,
+        hourlyRate: 150,
+      },
+      {
+        description: "Sprint planning meeting",
+        dayOffset: 0,
+        durationHours: 1,
+        activity: "Meeting",
+        billable: false,
+      },
+      {
+        description: "Mobile login fix implementation",
+        dayOffset: 0,
+        durationHours: 2.5,
+        activity: "Development",
+        billable: true,
+        hourlyRate: 150,
+      },
+    ];
+
+    for (const entry of timeEntryDefs) {
+      const entryDate = todayMs + entry.dayOffset * DAY_MS;
+      const existing = await ctx.db
+        .query("timeEntries")
+        .withIndex("by_user_date", (q) => q.eq("userId", userId).eq("date", entryDate))
+        .filter((q) => q.eq(q.field("description"), entry.description))
+        .first();
+
+      if (!existing) {
+        const durationSeconds = entry.durationHours * 3600;
+        const startTime = entryDate + 9 * 3600000; // 9 AM
+        const endTime = startTime + durationSeconds * 1000;
+        const totalCost =
+          entry.billable && entry.hourlyRate ? entry.durationHours * entry.hourlyRate : undefined;
+
+        await ctx.db.insert("timeEntries", {
+          userId,
+          projectId,
+          startTime,
+          endTime,
+          duration: durationSeconds,
+          date: entryDate,
+          description: entry.description,
+          activity: entry.activity,
+          tags: [],
+          hourlyRate: entry.hourlyRate,
+          totalCost,
+          currency: "USD",
+          billable: entry.billable,
+          billed: false,
+          isEquityHour: false,
+          isLocked: false,
+          isApproved: false,
+          updatedAt: now,
+        });
+      }
+    }
+
+    // 11. Return result
     return {
       success: true,
       orgSlug,

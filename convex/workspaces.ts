@@ -69,7 +69,29 @@ export const list = organizationQuery({
       .withIndex("by_organization", (q) => q.eq("organizationId", ctx.organizationId))
       .take(MAX_PAGE_SIZE);
 
-    return workspaces;
+    const enriched = await Promise.all(
+      workspaces.map(async (ws) => {
+        const teams = await ctx.db
+          .query("teams")
+          .withIndex("by_workspace", (q) => q.eq("workspaceId", ws._id))
+          .filter(notDeleted)
+          .collect();
+
+        const projects = await ctx.db
+          .query("projects")
+          .withIndex("by_workspace", (q) => q.eq("workspaceId", ws._id))
+          .filter(notDeleted)
+          .collect();
+
+        return {
+          ...ws,
+          teamCount: teams.length,
+          projectCount: projects.length,
+        };
+      }),
+    );
+
+    return enriched;
   },
 });
 

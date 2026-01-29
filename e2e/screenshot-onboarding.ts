@@ -16,7 +16,7 @@ async function screenshotOnboarding() {
   await page.waitForTimeout(3000);
 
   // Screenshot landing
-  await page.screenshot({ path: "e2e/screenshots/01-landing.png", fullPage: true });
+  await page.screenshot({ path: "e2e/screenshots/01-landing.png" });
   console.log("Saved: 01-landing.png");
 
   // Wait for user to manually log in, or we can show what we have
