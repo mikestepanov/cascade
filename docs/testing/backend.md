@@ -29,31 +29,26 @@ pnpm test:convex:coverage
 ```
 convex/
 ├── schema.ts              # Database schema
-├── testSetup.ts           # Module exports for convex-test
-├── testUtils.ts           # Test helper functions
-├── rbac.ts                # Example module
-└── rbac.test.ts           # Test file for rbac.ts
+├── testUtils.ts           # Test helper functions (createTestUser, etc.)
+├── vitest.convex.config.ts # Test configuration (separate from frontend)
+├── rbac.ts                # RBAC module (example)
+├── rbac.test.ts           # Test file (example)
+├── issues/
+│   ├── helpers.test.ts    # Issue helper tests
+│   ├── queries.test.ts    # Issue query tests
+│   └── mutations.test.ts  # Issue mutation tests
+├── lib/
+│   ├── encryption.test.ts # Encryption utility tests
+│   ├── errors.test.ts     # Error helper tests
+│   ├── pagination.test.ts # Pagination tests
+│   ├── queryLimits.test.ts # Query limit tests
+│   ├── timeUtils.test.ts  # Time utility tests
+│   ├── constrainedValidators.test.ts # Validator tests
+│   └── softDeleteHelpers.test.ts # Soft delete tests
+└── ... (42 test files total)
 ```
 
 ## Test Setup
-
-### Module Registration
-
-**File:** `convex/testSetup.ts`
-
-```typescript
-/**
- * Export all backend modules for convex-test
- */
-export const modules = {
-  analytics: () => import("./analytics"),
-  apiKeys: () => import("./apiKeys"),
-  documents: () => import("./documents"),
-  issues: () => import("./issues"),
-  projects: () => import("./projects"),
-  // ... all other modules
-};
-```
 
 ### Test Utilities
 
@@ -142,12 +137,11 @@ export async function createTestIssue(
 import { convexTest } from "convex-test";
 import { describe, expect, it } from "vitest";
 import schema from "./schema";
-import { modules } from "./testSetup";
 import { createTestUser, createTestProject } from "./testUtils";
 
 describe("MyModule", () => {
   it("should do something", async () => {
-    const t = convexTest(schema, modules);
+    const t = convexTest(schema);
 
     // Setup test data
     const userId = await createTestUser(t);
@@ -169,7 +163,7 @@ describe("MyModule", () => {
 
 ```typescript
 it("should return project data", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   // Setup
   const userId = await createTestUser(t);
@@ -192,7 +186,7 @@ it("should return project data", async () => {
 
 ```typescript
 it("should update project name", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   // Setup
   const userId = await createTestUser(t);
@@ -230,7 +224,7 @@ describe("RBAC", () => {
   // Integration test (requires database)
   describe("getUserRole", () => {
     it("should return role for project member", async () => {
-      const t = convexTest(schema, modules);
+      const t = convexTest(schema);
 
       const adminId = await createTestUser(t);
       const memberId = await createTestUser(t);
@@ -252,7 +246,7 @@ describe("RBAC", () => {
 
 ```typescript
 it("should reject unauthenticated users", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   // Run without authentication
   await expect(
@@ -264,7 +258,7 @@ it("should reject unauthenticated users", async () => {
 });
 
 it("should allow authenticated users", async () => {
-  const t = convexTest(schema, modules);
+  const t = convexTest(schema);
 
   const userId = await createTestUser(t);
 
@@ -310,7 +304,7 @@ Tests that interact with the database:
 // Requires convexTest and running Convex dev server
 describe("integration", () => {
   it("should create and query data", async () => {
-    const t = convexTest(schema, modules);
+    const t = convexTest(schema);
     // ... test with database
   });
 });
@@ -447,10 +441,16 @@ pnpm test:convex
 
 ## Current Coverage
 
-| Module | Tests | Status |
-|--------|-------|--------|
-| RBAC (`rbac.ts`) | 19 | ✅ 5 pure, ⚠️ 14 integration |
-| Other modules | - | Pending |
+42 test files covering all major backend modules:
+
+| Category | Modules | Examples |
+|----------|---------|----------|
+| Core CRUD | issues, projects, documents, sprints, teams, workspaces, organizations | `issues.test.ts`, `projects.test.ts` |
+| Security | RBAC, auth, API keys, multi-tenant isolation, project/user security | `rbac.test.ts`, `projects_security.test.ts` |
+| Features | calendar events, time tracking, labels, custom fields, reactions, notifications | `calendarEvents.test.ts`, `timeTracking.test.ts` |
+| Integrations | GitHub, webhooks, automation rules, analytics, dashboard | `github.test.ts`, `webhooks.test.ts` |
+| Utilities | encryption, errors, pagination, query limits, time utils, validators, soft delete | `lib/encryption.test.ts`, `lib/pagination.test.ts` |
+| Workflows | sprint workflow (integration), issue queries/mutations/helpers | `sprintWorkflow.integration.test.ts` |
 
 ---
 
@@ -462,4 +462,4 @@ pnpm test:convex
 
 ---
 
-*Last Updated: 2025-11-27*
+*Last Updated: 2026-01-28*

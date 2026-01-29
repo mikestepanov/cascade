@@ -2,7 +2,7 @@
 
 Comprehensive guide for writing Convex code in the Nixelo codebase. Follow these patterns for consistent, performant, and maintainable backend code.
 
-**Last Updated:** 2026-01-19
+**Last Updated:** 2026-01-28
 
 ---
 
@@ -337,10 +337,10 @@ export const create = mutation({
 ### Using Custom Functions (Preferred)
 
 ```typescript
-import { editorMutation } from "./customFunctions";
+import { projectEditorMutation } from "./customFunctions";
 
 // ✅ Cleaner - auth, project load, and role check automatic
-export const create = editorMutation({
+export const create = projectEditorMutation({
   args: { title: v.string() },
   handler: async (ctx, args) => {
     // ctx.userId, ctx.projectId, ctx.project, ctx.role available
@@ -363,9 +363,9 @@ export const create = editorMutation({
 | `authenticatedQuery` | ✅ | - | `userId` |
 | `authenticatedMutation` | ✅ | - | `userId` |
 | `projectQuery` | ✅ | viewer+ | `userId`, `projectId`, `project`, `role` |
-| `viewerMutation` | ✅ | viewer+ | `userId`, `projectId`, `project`, `role` |
-| `editorMutation` | ✅ | editor+ | `userId`, `projectId`, `project`, `role` |
-| `adminMutation` | ✅ | admin | `userId`, `projectId`, `project`, `role` |
+| `projectViewerMutation` | ✅ | viewer+ | `userId`, `projectId`, `project`, `role` |
+| `projectEditorMutation` | ✅ | editor+ | `userId`, `projectId`, `project`, `role` |
+| `projectAdminMutation` | ✅ | admin | `userId`, `projectId`, `project`, `role` |
 | `issueMutation` | ✅ | editor+ | `userId`, `issue`, `project`, `role` |
 
 ### Mutation Rules
@@ -1041,7 +1041,7 @@ export function validateIssueTransition(
 // issues/mutations.ts - Thin wrapper
 import { validateIssueTransition } from "../model/issues";
 
-export const updateStatus = editorMutation({
+export const updateStatus = projectEditorMutation({
   args: { issueId: v.id("issues"), status: v.string() },
   handler: async (ctx, args) => {
     const issue = await ctx.db.get(args.issueId);
@@ -1331,7 +1331,7 @@ import type { Id, Doc } from "./_generated/dataModel";
 import { getAuthUserId } from "@convex-dev/auth/server";
 
 // Custom functions
-import { projectQuery, editorMutation, adminMutation } from "./customFunctions";
+import { projectQuery, projectEditorMutation, projectAdminMutation } from "./customFunctions";
 
 // Helpers
 import { notDeleted, softDeleteFields } from "./lib/softDeleteHelpers";

@@ -96,8 +96,8 @@ import { forbidden, notFound, validation } from "./lib/errors";
 throw forbidden("Not authorized");
 
 // Query limits
-import { QUERY_LIMITS } from "./lib/queryLimits";
-.take(QUERY_LIMITS.DEFAULT); // 100
+import { DEFAULT_PAGE_SIZE, MAX_PAGE_SIZE } from "./lib/queryLimits";
+.take(DEFAULT_PAGE_SIZE); // 50
 
 // Pagination
 const { page, continueCursor } = await ctx.db
@@ -184,11 +184,11 @@ Automated visual and technical captures of competitor sites. See [library/README
 
 **Competitor Deep Dives:**
 
-- **PM Suites:** [Jira](research/competitors/pm-suites/jira.md), [Linear](research/competitors/pm-suites/linear.md), [Height](research/competitors/pm-suites/height.md), [Shortcut](research/competitors/pm-suites/shortcut.md), [Monday](research/competitors/pm-suites/monday.md), [Asana](research/competitors/pm-suites/asana.md), [ClickUp](research/competitors/pm-suites/clickup.md)
+- **PM Suites:** [Jira](research/competitors/pm-suites/jira.md), [Linear](research/competitors/pm-suites/linear.md), [Notion](research/competitors/pm-suites/notion.md), [Height](research/competitors/pm-suites/height.md), [Shortcut](research/competitors/pm-suites/shortcut.md), [Monday](research/competitors/pm-suites/monday.md), [Asana](research/competitors/pm-suites/asana.md), [ClickUp](research/competitors/pm-suites/clickup.md)
 - **Meeting AI:** [Read AI](research/competitors/meeting-ai/read-ai.md), [Fireflies](research/competitors/meeting-ai/fireflies.md), [Otter](research/competitors/meeting-ai/otter.md), [Gong](research/competitors/meeting-ai/gong.md), [TL;DV](research/competitors/meeting-ai/tldv.md)
 - **Time Tracking:** [Overview](research/competitors/time-tracking/overview.md), [Clockify](research/competitors/time-tracking/clockify.md), [TMetric](research/competitors/time-tracking/tmetric.md), [TimeCamp](research/competitors/time-tracking/timecamp.md), [Jibble](research/competitors/time-tracking/jibble.md), [Toggl](research/competitors/time-tracking/toggl.md)
-- **Infrastructure:** [Recall.ai](research/competitors/infrastructure/recall-ai.md), [Meeting BaaS](research/competitors/infrastructure/meeting-baas.md)
-- **Open Source:** [AppFlowy](research/competitors/open-source/appflowy.md), [Cal.com](research/competitors/open-source/cal-com.md), [Kimai](research/competitors/open-source/kimai.md)
+- **Infrastructure:** [Recall.ai](research/competitors/infrastructure/recall-ai.md), [Meeting BaaS](research/competitors/infrastructure/meeting-baas.md), [Nylas](research/competitors/infrastructure/nylas.md), [Skribby](research/competitors/infrastructure/skribby.md)
+- **Open Source:** [AppFlowy](research/competitors/open-source/appflowy.md), [Cal.com](research/competitors/open-source/cal-com.md), [Kimai](research/competitors/open-source/kimai.md), [Canvas LMS](research/competitors/open-source/canvas-lms.md)
 
 **Strategic Goal:**
 Combine **Real-time Issue Tracking** (Linear) + **Integrated Docs** (Notion) + **Meeting Intelligence** (Read AI) + **Open Source** (GitLab) to create a unique value proposition.
@@ -303,4 +303,4 @@ docs/
 
 ---
 
-_Last Updated: 2026-01-24_
+_Last Updated: 2026-01-28_
