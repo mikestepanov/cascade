@@ -2655,9 +2655,7 @@ export const seedScreenshotDataInternal = internalMutation({
     // Ensure current user is a project member (handles user re-creation between runs)
     const existingProjectMember = await ctx.db
       .query("projectMembers")
-      .withIndex("by_project_user", (q) =>
-        q.eq("projectId", projectId).eq("userId", userId),
-      )
+      .withIndex("by_project_user", (q) => q.eq("projectId", projectId).eq("userId", userId))
       .filter(notDeleted)
       .first();
     if (!existingProjectMember) {
