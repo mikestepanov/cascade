@@ -8,9 +8,11 @@ import { batchFetchProjects, batchFetchUsers, getUserName } from "./lib/batchHel
 import { BOUNDED_LIST_LIMIT } from "./lib/boundedQueries";
 import { ARRAY_LIMITS, validate } from "./lib/constrainedValidators";
 import { conflict, forbidden, notFound, validation } from "./lib/errors";
+import { getOrganizationRole } from "./lib/organizationAccess";
 import { fetchPaginatedQuery } from "./lib/queryHelpers";
 import { cascadeSoftDelete } from "./lib/relationships";
 import { notDeleted, softDeleteFields } from "./lib/softDeleteHelpers";
+import { getWorkspaceRole } from "./lib/workspaceAccess";
 import { canAccessProject, getProjectRole } from "./projectAccess";
 import { isTest } from "./testConfig";
 import { boardTypes, projectRoles, workflowCategories } from "./validators";
@@ -64,6 +66,31 @@ export const createProject = authenticatedMutation({
       .first();
 
     if (existingProject) throw conflict("Project key already exists");
+
+    // Validate ownership hierarchy and permissions
+    const workspace = await ctx.db.get(args.workspaceId);
+    if (!workspace) throw notFound("workspace", args.workspaceId);
+
+    // 1. Integrity check: Workspace must belong to Organization
+    if (workspace.organizationId !== args.organizationId) {
+      throw validation(
+        "workspaceId",
+        "Workspace does not belong to the specified organization",
+      );
+    }
+
+    // 2. Permission check: User must be Org Admin OR Workspace Member
+    const orgRole = await getOrganizationRole(ctx, args.organizationId, ctx.userId);
+    const isOrgAdmin = orgRole === "owner" || orgRole === "admin";
+    const workspaceRole = await getWorkspaceRole(ctx, args.workspaceId, ctx.userId);
+
+    // Allow if user is Org Admin OR has any role in the workspace
+    if (!isOrgAdmin && !workspaceRole) {
+      throw forbidden(
+        "member",
+        "You must be an organization admin or workspace member to create a project here",
+      );
+    }
 
     // Validate: if teamId provided, ensure it belongs to the workspace
     if (args.teamId) {
