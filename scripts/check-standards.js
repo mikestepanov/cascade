@@ -130,6 +130,38 @@ function checkFile(filePath) {
     }
   }
 
+  const RAW_TW_COLORS =
+    /\b(?:bg|text|border|ring|shadow|divide|outline|fill|stroke|from|to|via|decoration|placeholder|caret)-(slate|gray|zinc|neutral|stone|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose)-\d{2,3}/;
+
+  function checkRawTailwindColors(node, filePath) {
+    if (!ts.isJsxAttribute(node) || node.name.getText() !== "className") return;
+
+    let classText = "";
+    if (node.initializer && ts.isStringLiteral(node.initializer)) {
+      classText = node.initializer.text;
+    } else if (
+      node.initializer &&
+      ts.isJsxExpression(node.initializer) &&
+      node.initializer.expression &&
+      ts.isStringLiteral(node.initializer.expression)
+    ) {
+      classText = node.initializer.expression.text;
+    }
+
+    const classes = classText.split(/\s+/);
+    for (const cls of classes) {
+      // Strip responsive/state prefixes (hover:, dark:, sm:, etc.)
+      const bare = cls.replace(/^[a-z-]+:/g, "");
+      if (RAW_TW_COLORS.test(bare)) {
+        reportError(
+          filePath,
+          node,
+          `Raw Tailwind color '${cls}' — use semantic tokens (brand-*, status-*, accent-*, ui-*) instead.`,
+        );
+      }
+    }
+  }
+
   const tailwindShorthandMap = {
     "flex-shrink-0": "shrink-0",
     "flex-shrink": "shrink",
@@ -169,6 +201,7 @@ function checkFile(filePath) {
     if (!ts.isJsxAttribute(node) || node.name.getText() !== "className") return;
     checkClassNameConcatenation(node, filePath);
     checkDarkModeStandard(node, filePath);
+    checkRawTailwindColors(node, filePath);
     checkTailwindShorthands(node, filePath);
   }
 
