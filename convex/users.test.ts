@@ -46,7 +46,7 @@ describe("Users", () => {
         asUser.mutation(api.users.updateProfile, {
           email: "invalid-email",
         }),
-      ).rejects.toThrow("Invalid email address");
+      ).rejects.toThrow("Invalid email format");
     });
 
     it("should reject email already in use by another user", async () => {

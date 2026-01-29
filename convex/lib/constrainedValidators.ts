@@ -180,6 +180,18 @@ export const validate = {
     }
   },
 
+  /** Validate a bio/short description field (0-500 chars) */
+  bio: (value: string | undefined, fieldName = "bio") => {
+    if (value !== undefined) {
+      validateStringLength(
+        value,
+        fieldName,
+        STRING_LIMITS.SHORT_DESCRIPTION.min,
+        STRING_LIMITS.SHORT_DESCRIPTION.max,
+      );
+    }
+  },
+
   /** Validate tags array (0-50 items) */
   tags: <T>(value: T[], fieldName = "tags") =>
     validateArrayLength(value, fieldName, ARRAY_LIMITS.TAGS.min, ARRAY_LIMITS.TAGS.max),

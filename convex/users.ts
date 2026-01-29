@@ -3,6 +3,7 @@ import { pruneNull } from "convex-helpers";
 import { internalQuery } from "./_generated/server";
 import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
 import { batchFetchUsers } from "./lib/batchHelpers";
+import { validate } from "./lib/constrainedValidators";
 import { conflict, validation } from "./lib/errors";
 import { MAX_PAGE_SIZE } from "./lib/queryLimits";
 import { notDeleted } from "./lib/softDeleteHelpers";
@@ -12,12 +13,6 @@ import { digestFrequencies } from "./validators";
 // Limits for user stats queries
 const MAX_ISSUES_FOR_STATS = 1000;
 const MAX_COMMENTS_FOR_STATS = 1000;
-
-// Helper: Validate email format
-function isValidEmail(email: string): boolean {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return emailRegex.test(email);
-}
 
 /**
  * Internal query to get user by ID (system use only)
@@ -106,12 +101,13 @@ export const updateProfile = authenticatedMutation({
       emailVerificationTime?: number;
     } = {};
 
-    if (args.name !== undefined) updates.name = args.name;
+    if (args.name !== undefined) {
+      validate.name(args.name);
+      updates.name = args.name;
+    }
 
     if (args.email !== undefined) {
-      if (!isValidEmail(args.email)) {
-        throw validation("email", "Invalid email address");
-      }
+      validate.email(args.email);
 
       // Check if email is already in use by another user
       const existingUser = await ctx.db
@@ -132,8 +128,14 @@ export const updateProfile = authenticatedMutation({
       }
     }
 
-    if (args.avatar !== undefined) updates.image = args.avatar;
-    if (args.bio !== undefined) updates.bio = args.bio;
+    if (args.avatar !== undefined) {
+      validate.url(args.avatar, "avatar");
+      updates.image = args.avatar;
+    }
+    if (args.bio !== undefined) {
+      validate.bio(args.bio);
+      updates.bio = args.bio;
+    }
     if (args.timezone !== undefined) updates.timezone = args.timezone;
     if (args.emailNotifications !== undefined) updates.emailNotifications = args.emailNotifications;
     if (args.desktopNotifications !== undefined)
