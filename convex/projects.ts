@@ -73,10 +73,7 @@ export const createProject = authenticatedMutation({
 
     // 1. Integrity check: Workspace must belong to Organization
     if (workspace.organizationId !== args.organizationId) {
-      throw validation(
-        "workspaceId",
-        "Workspace does not belong to the specified organization",
-      );
+      throw validation("workspaceId", "Workspace does not belong to the specified organization");
     }
 
     // 2. Permission check: User must be Org Admin OR Workspace Member
@@ -85,7 +82,7 @@ export const createProject = authenticatedMutation({
     const workspaceRole = await getWorkspaceRole(ctx, args.workspaceId, ctx.userId);
 
     // Allow if user is Org Admin OR has any role in the workspace
-    if (!isOrgAdmin && !workspaceRole) {
+    if (!(isOrgAdmin || workspaceRole)) {
       throw forbidden(
         "member",
         "You must be an organization admin or workspace member to create a project here",

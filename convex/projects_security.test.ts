@@ -56,10 +56,10 @@ describe("Projects Security", () => {
 
     // 1. Setup Organization A (Victim)
     const userA = await createTestUser(t, { name: "Victim Admin" });
-    const {
-      organizationId: orgA,
-      workspaceId: workspaceA,
-    } = await createOrganizationAdmin(t, userA);
+    const { organizationId: orgA, workspaceId: workspaceA } = await createOrganizationAdmin(
+      t,
+      userA,
+    );
 
     // 2. Setup Attacker User (no access to Org A)
     const attacker = await createTestUser(t, { name: "Attacker" });

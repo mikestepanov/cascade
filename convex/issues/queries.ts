@@ -5,7 +5,12 @@ import type { Doc, Id } from "../_generated/dataModel";
 import { internalQuery, type QueryCtx, query } from "../_generated/server";
 import { authenticatedQuery, organizationQuery, projectQuery } from "../customFunctions";
 import { batchFetchUsers } from "../lib/batchHelpers";
-import { BOUNDED_LIST_LIMIT, BOUNDED_SEARCH_LIMIT, efficientCount, safeCollect } from "../lib/boundedQueries";
+import {
+  BOUNDED_LIST_LIMIT,
+  BOUNDED_SEARCH_LIMIT,
+  efficientCount,
+  safeCollect,
+} from "../lib/boundedQueries";
 import { forbidden, notFound } from "../lib/errors";
 import {
   type EnrichedIssue,
@@ -906,21 +911,25 @@ export const getTeamIssueCounts = authenticatedQuery({
 
           visibleCount = Math.min(visibleIssues.length, DEFAULT_PAGE_SIZE);
 
-            // Fetch total count efficiently
-            totalCount = await efficientCount(
-              ctx.db
-                .query("issues")
-                .withIndex("by_team_status", (q) => q.eq("teamId", args.teamId).eq("status", state.id))
-                .filter(notDeleted),
-            );
+          // Fetch total count efficiently
+          totalCount = await efficientCount(
+            ctx.db
+              .query("issues")
+              .withIndex("by_team_status", (q) =>
+                q.eq("teamId", args.teamId).eq("status", state.id),
+              )
+              .filter(notDeleted),
+          );
         } else {
-            // Non-done columns
-            totalCount = await efficientCount(
-              ctx.db
-                .query("issues")
-                .withIndex("by_team_status", (q) => q.eq("teamId", args.teamId).eq("status", state.id))
-                .filter(notDeleted),
-            );
+          // Non-done columns
+          totalCount = await efficientCount(
+            ctx.db
+              .query("issues")
+              .withIndex("by_team_status", (q) =>
+                q.eq("teamId", args.teamId).eq("status", state.id),
+              )
+              .filter(notDeleted),
+          );
 
           visibleCount = Math.min(totalCount, DEFAULT_PAGE_SIZE);
         }
