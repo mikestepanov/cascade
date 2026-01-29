@@ -31,6 +31,16 @@ export interface RbacProjectResult {
   error?: string;
 }
 
+export interface SeedScreenshotResult {
+  success: boolean;
+  orgSlug?: string;
+  projectKey?: string;
+  issueKeys?: string[];
+  workspaceSlug?: string;
+  teamSlug?: string;
+  error?: string;
+}
+
 /**
  * Service class for E2E test user API operations
  */
@@ -261,6 +271,23 @@ export class TestUserService {
     } catch (error) {
       console.warn(`  ⚠️ Failed to seed templates:`, error);
       return false;
+    }
+  }
+
+  /**
+   * Seed screenshot data (workspace, team, project, sprint, issues, documents)
+   */
+  async seedScreenshotData(email: string): Promise<SeedScreenshotResult> {
+    try {
+      const response = await fetch(E2E_ENDPOINTS.seedScreenshotData, {
+        method: "POST",
+        headers: getE2EHeaders(),
+        body: JSON.stringify({ email }),
+      });
+      return await response.json();
+    } catch (error) {
+      console.warn(`  ⚠️ Failed to seed screenshot data:`, error);
+      return { success: false, error: String(error) };
     }
   }
 }

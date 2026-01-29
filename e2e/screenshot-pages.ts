@@ -1,5 +1,11 @@
 /**
- * Fully automatic visual screenshot tool for reviewing all app pages.
+ * Two-pass visual screenshot tool for reviewing all app pages.
+ *
+ * Pass 1 (empty): Screenshots top-level pages before any data is seeded.
+ * Pass 2 (filled): Seeds data via E2E endpoint, then screenshots all pages + sub-pages.
+ *
+ * Output filenames are prefixed for easy visual comparison:
+ *   01-empty-dashboard.png  vs  01-filled-dashboard.png
  *
  * Usage:
  *   pnpm screenshots
@@ -14,7 +20,7 @@ import * as path from "node:path";
 import { chromium, type Page } from "@playwright/test";
 // Env loaded via --env-file=.env.local in the npm script
 import { TEST_USERS } from "./config";
-import { testUserService } from "./utils/test-user-service";
+import { type SeedScreenshotResult, testUserService } from "./utils/test-user-service";
 
 const BASE_URL = process.env.BASE_URL || "http://localhost:5555";
 const CONVEX_URL = process.env.VITE_CONVEX_URL || "";
@@ -27,12 +33,26 @@ const SCREENSHOT_USER = {
   password: TEST_USERS.teamLead.password,
 };
 
-let index = 0;
+// Per-prefix counters for numbered filenames
+const counters = new Map<string, number>();
 
-async function takeScreenshot(page: Page, name: string, url: string): Promise<void> {
-  index++;
-  const num = String(index).padStart(2, "0");
-  const filename = `${num}-${name}.png`;
+function nextIndex(prefix: string): number {
+  const n = (counters.get(prefix) ?? 0) + 1;
+  counters.set(prefix, n);
+  return n;
+}
+
+let totalScreenshots = 0;
+
+async function takeScreenshot(
+  page: Page,
+  prefix: string,
+  name: string,
+  url: string,
+): Promise<void> {
+  const n = nextIndex(prefix);
+  const num = String(n).padStart(2, "0");
+  const filename = `${num}-${prefix}-${name}.png`;
   try {
     await page.goto(`${BASE_URL}${url}`, { waitUntil: "networkidle", timeout: 15000 });
   } catch {
@@ -40,7 +60,8 @@ async function takeScreenshot(page: Page, name: string, url: string): Promise<vo
   }
   await page.waitForTimeout(SETTLE_MS);
   await page.screenshot({ path: path.join(SCREENSHOT_DIR, filename), fullPage: true });
-  console.log(`  ${num}  ${name}`);
+  totalScreenshots++;
+  console.log(`  ${num}  [${prefix}] ${name}`);
 }
 
 async function discoverFirstHref(page: Page, pattern: RegExp): Promise<string | null> {
@@ -141,6 +162,130 @@ async function manualLogin(page: Page): Promise<string | null> {
   return orgSlug;
 }
 
+// ---------------------------------------------------------------------------
+// Pass 1: Empty state screenshots (top-level pages only, no data seeded)
+// ---------------------------------------------------------------------------
+async function screenshotEmpty(page: Page, orgSlug: string): Promise<void> {
+  const p = "empty";
+  console.log("--- Pass 1: Empty states ---\n");
+
+  await takeScreenshot(page, p, "dashboard", `/${orgSlug}/dashboard`);
+  await takeScreenshot(page, p, "projects", `/${orgSlug}/projects`);
+  await takeScreenshot(page, p, "issues", `/${orgSlug}/issues`);
+  await takeScreenshot(page, p, "documents", `/${orgSlug}/documents`);
+  await takeScreenshot(page, p, "documents-templates", `/${orgSlug}/documents/templates`);
+  await takeScreenshot(page, p, "workspaces", `/${orgSlug}/workspaces`);
+  await takeScreenshot(page, p, "time-tracking", `/${orgSlug}/time-tracking`);
+  await takeScreenshot(page, p, "settings-profile", `/${orgSlug}/settings/profile`);
+
+  // Public pages (no auth needed)
+  await takeScreenshot(page, p, "landing", "/");
+  await takeScreenshot(page, p, "signin", "/signin");
+
+  console.log("");
+}
+
+// ---------------------------------------------------------------------------
+// Pass 2: Filled state screenshots (all pages + sub-pages with seeded data)
+// ---------------------------------------------------------------------------
+async function screenshotFilled(
+  page: Page,
+  orgSlug: string,
+  seed: SeedScreenshotResult,
+): Promise<void> {
+  const p = "filled";
+  console.log("--- Pass 2: Filled states ---\n");
+
+  // Top-level pages
+  await takeScreenshot(page, p, "dashboard", `/${orgSlug}/dashboard`);
+  await takeScreenshot(page, p, "projects", `/${orgSlug}/projects`);
+  await takeScreenshot(page, p, "issues", `/${orgSlug}/issues`);
+  await takeScreenshot(page, p, "documents", `/${orgSlug}/documents`);
+  await takeScreenshot(page, p, "documents-templates", `/${orgSlug}/documents/templates`);
+  await takeScreenshot(page, p, "workspaces", `/${orgSlug}/workspaces`);
+  await takeScreenshot(page, p, "time-tracking", `/${orgSlug}/time-tracking`);
+  await takeScreenshot(page, p, "settings-profile", `/${orgSlug}/settings/profile`);
+
+  // Project sub-pages (deterministic using seed data)
+  const projectKey = seed.projectKey;
+  if (projectKey) {
+    console.log(`\n  Project: ${projectKey}\n`);
+    const tabs = [
+      "board",
+      "backlog",
+      "sprints",
+      "roadmap",
+      "calendar",
+      "activity",
+      "analytics",
+      "billing",
+      "timesheet",
+      "settings",
+    ];
+    for (const tab of tabs) {
+      await takeScreenshot(
+        page,
+        p,
+        `project-${projectKey.toLowerCase()}-${tab}`,
+        `/${orgSlug}/projects/${projectKey}/${tab}`,
+      );
+    }
+  }
+
+  // Issue detail (deterministic using first seeded issue)
+  const firstIssue = seed.issueKeys?.[0];
+  if (firstIssue) {
+    await takeScreenshot(
+      page,
+      p,
+      `issue-${firstIssue.toLowerCase()}`,
+      `/${orgSlug}/issues/${firstIssue}`,
+    );
+  }
+
+  // Workspace & team sub-pages
+  const wsSlug = seed.workspaceSlug;
+  const teamSlug = seed.teamSlug;
+
+  if (wsSlug) {
+    await takeScreenshot(page, p, `workspace-${wsSlug}`, `/${orgSlug}/workspaces/${wsSlug}`);
+
+    // Try seed-provided team slug first, fall back to discovery
+    const resolvedTeam = teamSlug ?? (await discoverFirstHref(page, /\/teams\/([^/]+)/));
+    if (resolvedTeam) {
+      for (const tab of ["board", "backlog", "calendar", "settings"]) {
+        await takeScreenshot(
+          page,
+          p,
+          `team-${resolvedTeam}-${tab}`,
+          `/${orgSlug}/workspaces/${wsSlug}/teams/${resolvedTeam}/${tab}`,
+        );
+      }
+    }
+  } else {
+    // No seed workspace — try discovery
+    await takeScreenshot(page, p, "workspaces-nav", `/${orgSlug}/workspaces`);
+    const discoveredWs = await discoverFirstHref(page, /\/workspaces\/([^/]+)/);
+    if (discoveredWs) {
+      await takeScreenshot(
+        page,
+        p,
+        `workspace-${discoveredWs}`,
+        `/${orgSlug}/workspaces/${discoveredWs}`,
+      );
+    }
+  }
+
+  // Public pages (no auth needed)
+  await takeScreenshot(page, p, "landing", "/");
+  await takeScreenshot(page, p, "signin", "/signin");
+
+  console.log("");
+}
+
+// ---------------------------------------------------------------------------
+// Main
+// ---------------------------------------------------------------------------
 async function run(): Promise<void> {
   // Clean output directory
   if (fs.existsSync(SCREENSHOT_DIR)) {
@@ -173,93 +318,34 @@ async function run(): Promise<void> {
       await fallbackBrowser.close();
       return;
     }
-    // Continue with fallback browser
-    await screenshotAll(fallbackPage, orgSlug);
+    // Fallback: single-pass (filled only) since we can't seed via API without CONVEX_URL
+    console.log("  Manual login — running filled pass only (no seed endpoint available)\n");
+    const emptySeed: SeedScreenshotResult = { success: false };
+    await screenshotFilled(fallbackPage, orgSlug, emptySeed);
     await fallbackBrowser.close();
     return;
   }
 
-  await screenshotAll(page, orgSlug);
-  await browser.close();
-}
+  // Pass 1: Empty state
+  await screenshotEmpty(page, orgSlug);
 
-async function screenshotAll(page: Page, orgSlug: string): Promise<void> {
-  console.log("Taking screenshots...\n");
-
-  // --- Core pages ---
-  await takeScreenshot(page, "dashboard", `/${orgSlug}/dashboard`);
-  await takeScreenshot(page, "projects", `/${orgSlug}/projects`);
-
-  // --- Discover a project key ---
-  const projectKey = await discoverFirstHref(page, /\/projects\/([A-Z0-9_-]+)\//i);
-
-  if (projectKey) {
-    console.log(`\n  Found project: ${projectKey}\n`);
-    const tabs = [
-      "board",
-      "backlog",
-      "sprints",
-      "roadmap",
-      "calendar",
-      "activity",
-      "analytics",
-      "billing",
-      "timesheet",
-      "settings",
-    ];
-    for (const tab of tabs) {
-      await takeScreenshot(
-        page,
-        `project-${projectKey.toLowerCase()}-${tab}`,
-        `/${orgSlug}/projects/${projectKey}/${tab}`,
-      );
-    }
+  // Seed data for filled state
+  console.log("  Seeding screenshot data...");
+  const seedResult = await testUserService.seedScreenshotData(SCREENSHOT_USER.email);
+  if (!seedResult.success) {
+    console.error(`  Seed failed: ${seedResult.error}`);
+    console.log("  Continuing with filled pass anyway (may show empty states)\n");
   } else {
-    console.log("\n  No projects found -- skipping project sub-pages\n");
+    console.log(
+      `  Seeded: project=${seedResult.projectKey}, issues=${seedResult.issueKeys?.length ?? 0}\n`,
+    );
   }
 
-  // --- Issues ---
-  await takeScreenshot(page, "issues", `/${orgSlug}/issues`);
+  // Pass 2: Filled state
+  await screenshotFilled(page, orgSlug, seedResult);
 
-  const issueKey = await discoverFirstHref(page, /\/issues\/([A-Z]+-\d+)/i);
-  if (issueKey) {
-    await takeScreenshot(page, `issue-${issueKey.toLowerCase()}`, `/${orgSlug}/issues/${issueKey}`);
-  }
-
-  // --- Documents ---
-  await takeScreenshot(page, "documents", `/${orgSlug}/documents`);
-  await takeScreenshot(page, "documents-templates", `/${orgSlug}/documents/templates`);
-
-  // --- Workspaces ---
-  await takeScreenshot(page, "workspaces", `/${orgSlug}/workspaces`);
-
-  const wsSlug = await discoverFirstHref(page, /\/workspaces\/([^/]+)/);
-  if (wsSlug) {
-    await takeScreenshot(page, `workspace-${wsSlug}`, `/${orgSlug}/workspaces/${wsSlug}`);
-
-    const teamSlug = await discoverFirstHref(page, /\/teams\/([^/]+)/);
-    if (teamSlug) {
-      for (const tab of ["board", "backlog", "calendar", "settings"]) {
-        await takeScreenshot(
-          page,
-          `team-${teamSlug}-${tab}`,
-          `/${orgSlug}/workspaces/${wsSlug}/teams/${teamSlug}/${tab}`,
-        );
-      }
-    }
-  }
-
-  // --- Time tracking ---
-  await takeScreenshot(page, "time-tracking", `/${orgSlug}/time-tracking`);
-
-  // --- Settings ---
-  await takeScreenshot(page, "settings-profile", `/${orgSlug}/settings/profile`);
-
-  // --- Public pages (no auth needed) ---
-  await takeScreenshot(page, "landing", "/");
-  await takeScreenshot(page, "signin", "/signin");
-
-  console.log(`\nDone! ${index} screenshots saved to e2e/screenshots/\n`);
+  await browser.close();
+  console.log(`Done! ${totalScreenshots} screenshots saved to e2e/screenshots/\n`);
 }
 
 run().catch(console.error);

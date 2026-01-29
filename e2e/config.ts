@@ -236,6 +236,8 @@ export const E2E_ENDPOINTS = {
   seedTemplates: `${CONVEX_SITE_URL}/e2e/seed-templates`,
   // Force delete ALL test users (POST)
   nukeTestUsers: `${CONVEX_SITE_URL}/e2e/nuke-test-users`,
+  // Seed screenshot data (workspace, team, project, issues, documents)
+  seedScreenshotData: `${CONVEX_SITE_URL}/e2e/seed-screenshot-data`,
 };
 
 /**

@@ -2455,6 +2455,366 @@ export const nukeAllTestUsersInternal = internalMutation({
  * Internal mutation to cleanup expired test OTP codes
  * Called by cron job to prevent testOtpCodes table from growing indefinitely
  */
+/**
+ * Seed screenshot data for visual regression testing
+ * POST /e2e/seed-screenshot-data
+ * Body: { email: string }
+ *
+ * Creates workspace, team, project, sprint, issues, and documents
+ * so screenshot pages show filled states.
+ */
+export const seedScreenshotDataEndpoint = httpAction(async (ctx, request) => {
+  const authError = validateE2EApiKey(request);
+  if (authError) return authError;
+
+  try {
+    const body = await request.json();
+    const { email } = body;
+
+    if (!email) {
+      return new Response(JSON.stringify({ error: "Missing email" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    if (!isTestEmail(email)) {
+      return new Response(JSON.stringify({ error: "Only test emails allowed" }), {
+        status: 403,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    const result = await ctx.runMutation(internal.e2e.seedScreenshotDataInternal, { email });
+
+    return new Response(JSON.stringify(result), {
+      status: result.success ? 200 : 500,
+      headers: { "Content-Type": "application/json" },
+    });
+  } catch (e) {
+    return new Response(JSON.stringify({ error: String(e) }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+});
+
+/**
+ * Internal mutation to seed screenshot data
+ */
+export const seedScreenshotDataInternal = internalMutation({
+  args: {
+    email: v.string(),
+  },
+  returns: v.object({
+    success: v.boolean(),
+    orgSlug: v.optional(v.string()),
+    projectKey: v.optional(v.string()),
+    issueKeys: v.optional(v.array(v.string())),
+    workspaceSlug: v.optional(v.string()),
+    teamSlug: v.optional(v.string()),
+    error: v.optional(v.string()),
+  }),
+  handler: async (ctx, args) => {
+    if (!isTestEmail(args.email)) {
+      throw new Error("Only test emails allowed");
+    }
+
+    // 1. Find user by email (latest if duplicates)
+    const users = await ctx.db
+      .query("users")
+      .filter((q) => q.eq(q.field("email"), args.email))
+      .collect();
+    if (users.length === 0) {
+      return { success: false, error: `User not found: ${args.email}` };
+    }
+    const user = users.sort((a, b) => b._creationTime - a._creationTime)[0];
+    const userId = user._id;
+
+    // 2. Find user's organization
+    const membership = await ctx.db
+      .query("organizationMembers")
+      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .first();
+
+    if (!membership) {
+      return { success: false, error: "User has no organization membership" };
+    }
+
+    const organization = await ctx.db.get(membership.organizationId);
+    if (!organization) {
+      return { success: false, error: "Organization not found" };
+    }
+
+    const orgId = organization._id;
+    const orgSlug = organization.slug;
+    const now = Date.now();
+
+    // 3. Create workspace (idempotent)
+    let workspace = await ctx.db
+      .query("workspaces")
+      .withIndex("by_organization", (q) => q.eq("organizationId", orgId))
+      .filter((q) => q.eq(q.field("slug"), "product"))
+      .first();
+
+    if (!workspace) {
+      const wsId = await ctx.db.insert("workspaces", {
+        name: "Product",
+        slug: "product",
+        icon: "📱",
+        organizationId: orgId,
+        createdBy: userId,
+        updatedAt: now,
+      });
+      workspace = await ctx.db.get(wsId);
+    }
+
+    if (!workspace) {
+      return { success: false, error: "Failed to create workspace" };
+    }
+    const workspaceId = workspace._id;
+
+    // 4. Create team (idempotent)
+    let team = await ctx.db
+      .query("teams")
+      .withIndex("by_workspace", (q) => q.eq("workspaceId", workspaceId))
+      .filter((q) => q.eq(q.field("slug"), "engineering"))
+      .first();
+
+    if (!team) {
+      const teamId = await ctx.db.insert("teams", {
+        name: "Engineering",
+        slug: "engineering",
+        organizationId: orgId,
+        workspaceId,
+        createdBy: userId,
+        updatedAt: now,
+        isPrivate: false,
+      });
+      team = await ctx.db.get(teamId);
+
+      // Add user as team admin
+      if (team) {
+        await ctx.db.insert("teamMembers", {
+          teamId: team._id,
+          userId,
+          role: "admin",
+          addedBy: userId,
+        });
+      }
+    }
+
+    if (!team) {
+      return { success: false, error: "Failed to create team" };
+    }
+    const teamId = team._id;
+
+    // 5. Create project (idempotent)
+    const projectKey = "DEMO";
+    let project = await ctx.db
+      .query("projects")
+      .withIndex("by_key", (q) => q.eq("key", projectKey))
+      .filter(notDeleted)
+      .first();
+
+    if (!project) {
+      const projId = await ctx.db.insert("projects", {
+        name: "Demo Project",
+        key: projectKey,
+        description: "Demo project for screenshot visual review",
+        organizationId: orgId,
+        workspaceId,
+        teamId,
+        ownerId: userId,
+        createdBy: userId,
+        updatedAt: now,
+        boardType: "kanban",
+        workflowStates: [
+          { id: "todo", name: "To Do", category: "todo", order: 0 },
+          { id: "in-progress", name: "In Progress", category: "inprogress", order: 1 },
+          { id: "in-review", name: "In Review", category: "inprogress", order: 2 },
+          { id: "done", name: "Done", category: "done", order: 3 },
+        ],
+      });
+      project = await ctx.db.get(projId);
+
+      // Add user as project admin
+      if (project) {
+        await ctx.db.insert("projectMembers", {
+          projectId: project._id,
+          userId,
+          role: "admin",
+          addedBy: userId,
+        });
+      }
+    }
+
+    if (!project) {
+      return { success: false, error: "Failed to create project" };
+    }
+    const projectId = project._id;
+
+    // 6. Create sprint (idempotent - check by project + name)
+    let sprint = await ctx.db
+      .query("sprints")
+      .withIndex("by_project", (q) => q.eq("projectId", projectId))
+      .filter((q) => q.eq(q.field("name"), "Sprint 1"))
+      .filter(notDeleted)
+      .first();
+
+    if (!sprint) {
+      const sevenDaysMs = 7 * 24 * 60 * 60 * 1000;
+      const sprintId = await ctx.db.insert("sprints", {
+        projectId,
+        name: "Sprint 1",
+        goal: "Launch MVP features",
+        status: "active",
+        startDate: now - sevenDaysMs,
+        endDate: now + sevenDaysMs,
+        createdBy: userId,
+        updatedAt: now,
+      });
+      sprint = await ctx.db.get(sprintId);
+    }
+
+    const sprintId = sprint?._id;
+
+    // 7. Create issues (idempotent by key)
+    const issueDefinitions: Array<{
+      key: string;
+      title: string;
+      type: "task" | "bug" | "story" | "epic";
+      status: string;
+      priority: "lowest" | "low" | "medium" | "high" | "highest";
+      assigned: boolean;
+      inSprint: boolean;
+    }> = [
+      {
+        key: "DEMO-1",
+        title: "Set up CI/CD pipeline",
+        type: "task",
+        status: "done",
+        priority: "high",
+        assigned: true,
+        inSprint: true,
+      },
+      {
+        key: "DEMO-2",
+        title: "Fix login timeout on mobile",
+        type: "bug",
+        status: "in-progress",
+        priority: "highest",
+        assigned: true,
+        inSprint: true,
+      },
+      {
+        key: "DEMO-3",
+        title: "Design new dashboard layout",
+        type: "story",
+        status: "in-review",
+        priority: "medium",
+        assigned: true,
+        inSprint: true,
+      },
+      {
+        key: "DEMO-4",
+        title: "Add dark mode support",
+        type: "story",
+        status: "todo",
+        priority: "medium",
+        assigned: false,
+        inSprint: false,
+      },
+      {
+        key: "DEMO-5",
+        title: "Database query optimization",
+        type: "task",
+        status: "in-progress",
+        priority: "high",
+        assigned: true,
+        inSprint: false,
+      },
+      {
+        key: "DEMO-6",
+        title: "User onboarding flow",
+        type: "epic",
+        status: "todo",
+        priority: "low",
+        assigned: false,
+        inSprint: false,
+      },
+    ];
+
+    const createdIssueKeys: string[] = [];
+
+    for (let i = 0; i < issueDefinitions.length; i++) {
+      const def = issueDefinitions[i];
+      const existing = await ctx.db
+        .query("issues")
+        .withIndex("by_key", (q) => q.eq("key", def.key))
+        .filter(notDeleted)
+        .first();
+
+      if (!existing) {
+        await ctx.db.insert("issues", {
+          projectId,
+          organizationId: orgId,
+          workspaceId,
+          teamId,
+          key: def.key,
+          title: def.title,
+          type: def.type,
+          status: def.status,
+          priority: def.priority,
+          reporterId: userId,
+          assigneeId: def.assigned ? userId : undefined,
+          sprintId: def.inSprint && sprintId ? sprintId : undefined,
+          updatedAt: now,
+          labels: [],
+          linkedDocuments: [],
+          attachments: [],
+          order: i,
+          version: 1,
+        });
+      }
+      createdIssueKeys.push(def.key);
+    }
+
+    // 8. Create documents (idempotent by title + org)
+    const docTitles = ["Project Requirements", "Sprint Retrospective Notes"];
+    for (const title of docTitles) {
+      const existingDoc = await ctx.db
+        .query("documents")
+        .withIndex("by_organization", (q) => q.eq("organizationId", orgId))
+        .filter((q) => q.eq(q.field("title"), title))
+        .filter(notDeleted)
+        .first();
+
+      if (!existingDoc) {
+        await ctx.db.insert("documents", {
+          title,
+          isPublic: false,
+          createdBy: userId,
+          updatedAt: now,
+          organizationId: orgId,
+          workspaceId,
+          projectId,
+        });
+      }
+    }
+
+    // 9. Return result
+    return {
+      success: true,
+      orgSlug,
+      projectKey,
+      issueKeys: createdIssueKeys,
+      workspaceSlug: "product",
+      teamSlug: "engineering",
+    };
+  },
+});
+
 export const cleanupExpiredOtpsInternal = internalMutation({
   args: {},
   returns: v.object({
