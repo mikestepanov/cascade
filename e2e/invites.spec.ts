@@ -41,7 +41,7 @@ test.describe("User Invitations", () => {
 
     // 4. Revoke the invite
     // Handle confirmation dialog BEFORE clicking (needs to be registered first)
-    page.on("dialog", (dialog) => dialog.accept());
+    page.once("dialog", (dialog) => dialog.accept());
 
     // Find the row with our test email and click its Revoke button
     const row = page.getByRole("row").filter({ hasText: testEmail });

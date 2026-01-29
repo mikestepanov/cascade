@@ -181,13 +181,9 @@ export class ProjectsPage extends BasePage {
   // ===================
 
   async openCreateProjectForm() {
-    // Wait for React to hydrate before clicking
-    await this.page.waitForLoadState("networkidle");
-    await this.page.waitForTimeout(500);
-
     console.log("Clicking 'Create Project' button...");
 
-    // Robust open: Retry clicking if modal doesn't appear (handles hydration misses)
+    // Robust open: Retry clicking if modal doesn't appear (handles hydration timing)
     await expect(async () => {
       if (!(await this.createProjectForm.isVisible())) {
         await this.newProjectButton.click();
