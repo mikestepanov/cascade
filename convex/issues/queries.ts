@@ -5,7 +5,7 @@ import type { Doc, Id } from "../_generated/dataModel";
 import { internalQuery, type QueryCtx, query } from "../_generated/server";
 import { authenticatedQuery, organizationQuery, projectQuery } from "../customFunctions";
 import { batchFetchUsers } from "../lib/batchHelpers";
-import { BOUNDED_LIST_LIMIT, BOUNDED_SEARCH_LIMIT, safeCollect } from "../lib/boundedQueries";
+import { BOUNDED_LIST_LIMIT, BOUNDED_SEARCH_LIMIT, efficientCount, safeCollect } from "../lib/boundedQueries";
 import { forbidden, notFound } from "../lib/errors";
 import {
   type EnrichedIssue,
@@ -18,8 +18,6 @@ import { notDeleted } from "../lib/softDeleteHelpers";
 import { sanitizeUserForAuth } from "../lib/userUtils";
 import { canAccessProject } from "../projectAccess";
 import { matchesSearchFilters, ROOT_ISSUE_TYPES } from "./helpers";
-
-const ISSUE_COUNT_LIMIT = 2000;
 
 /**
  * Internal query for API usage that accepts explicit userId
@@ -908,24 +906,22 @@ export const getTeamIssueCounts = authenticatedQuery({
 
           visibleCount = Math.min(visibleIssues.length, DEFAULT_PAGE_SIZE);
 
-          // Fetch total count capped at limit
-          const totalIssues = await ctx.db
-            .query("issues")
-            .withIndex("by_team_status", (q) => q.eq("teamId", args.teamId).eq("status", state.id))
-            .filter(notDeleted)
-            .take(ISSUE_COUNT_LIMIT);
-
-          totalCount = totalIssues.length;
+            // Fetch total count efficiently
+            totalCount = await efficientCount(
+              ctx.db
+                .query("issues")
+                .withIndex("by_team_status", (q) => q.eq("teamId", args.teamId).eq("status", state.id))
+                .filter(notDeleted),
+            );
         } else {
-          // Non-done columns: safe to limit by creation time
-          const allIssues = await ctx.db
-            .query("issues")
-            .withIndex("by_team_status", (q) => q.eq("teamId", args.teamId).eq("status", state.id))
-            .order("desc")
-            .filter(notDeleted)
-            .take(ISSUE_COUNT_LIMIT);
+            // Non-done columns
+            totalCount = await efficientCount(
+              ctx.db
+                .query("issues")
+                .withIndex("by_team_status", (q) => q.eq("teamId", args.teamId).eq("status", state.id))
+                .filter(notDeleted),
+            );
 
-          totalCount = allIssues.length;
           visibleCount = Math.min(totalCount, DEFAULT_PAGE_SIZE);
         }
 
@@ -994,28 +990,25 @@ export const getIssueCounts = authenticatedQuery({
 
             visibleCount = Math.min(visibleIssues.length, DEFAULT_PAGE_SIZE);
 
-            // Fetch total count capped at limit
-            const totalIssues = await ctx.db
-              .query("issues")
-              .withIndex("by_project_status", (q) =>
-                q.eq("projectId", args.projectId).eq("status", state.id),
-              )
-              .order("desc")
-              .filter(notDeleted)
-              .take(ISSUE_COUNT_LIMIT);
-
-            totalCount = totalIssues.length;
+            // Fetch total count efficiently
+            totalCount = await efficientCount(
+              ctx.db
+                .query("issues")
+                .withIndex("by_project_status", (q) =>
+                  q.eq("projectId", args.projectId).eq("status", state.id),
+                )
+                .filter(notDeleted),
+            );
           } else {
-            const allIssues = await ctx.db
-              .query("issues")
-              .withIndex("by_project_status", (q) =>
-                q.eq("projectId", args.projectId).eq("status", state.id),
-              )
-              .order("desc")
-              .filter(notDeleted)
-              .take(ISSUE_COUNT_LIMIT);
+            totalCount = await efficientCount(
+              ctx.db
+                .query("issues")
+                .withIndex("by_project_status", (q) =>
+                  q.eq("projectId", args.projectId).eq("status", state.id),
+                )
+                .filter(notDeleted),
+            );
 
-            totalCount = allIssues.length;
             visibleCount = Math.min(totalCount, DEFAULT_PAGE_SIZE);
           }
 
@@ -1108,28 +1101,26 @@ async function getSprintIssueCounts(
 
         visibleCount = Math.min(visibleIssues.length, DEFAULT_PAGE_SIZE);
 
-        // Fetch total count capped at limit
-        const totalIssues = await ctx.db
-          .query("issues")
-          .withIndex("by_project_sprint_status", (q) =>
-            q.eq("projectId", projectId).eq("sprintId", sprintId).eq("status", state.id),
-          )
-          .filter(notDeleted)
-          .take(ISSUE_COUNT_LIMIT);
-
-        totalCount = totalIssues.length;
+        // Fetch total count efficiently
+        totalCount = await efficientCount(
+          ctx.db
+            .query("issues")
+            .withIndex("by_project_sprint_status", (q) =>
+              q.eq("projectId", projectId).eq("sprintId", sprintId).eq("status", state.id),
+            )
+            .filter(notDeleted),
+        );
       } else {
-        // Non-done columns: safe to limit by creation time
-        const allIssues = await ctx.db
-          .query("issues")
-          .withIndex("by_project_sprint_status", (q) =>
-            q.eq("projectId", projectId).eq("sprintId", sprintId).eq("status", state.id),
-          )
-          .order("desc")
-          .filter(notDeleted)
-          .take(ISSUE_COUNT_LIMIT);
+        // Non-done columns
+        totalCount = await efficientCount(
+          ctx.db
+            .query("issues")
+            .withIndex("by_project_sprint_status", (q) =>
+              q.eq("projectId", projectId).eq("sprintId", sprintId).eq("status", state.id),
+            )
+            .filter(notDeleted),
+        );
 
-        totalCount = allIssues.length;
         visibleCount = Math.min(totalCount, DEFAULT_PAGE_SIZE);
       }
 
