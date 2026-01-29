@@ -156,39 +156,54 @@ const { page, continueCursor } = await ctx.db
 
 ### Research & Strategy (`research/`)
 
-| File                                        | Description                               |
-| ------------------------------------------- | ----------------------------------------- |
-| `research/strategy/SCRAP_STRATEGY.md`       | **NEW:** Master list of features to adopt |
-| `research/strategy/NICHE_STRATEGY.md`       | How we win against giants                 |
-| `research/strategy/GAPS_vs_Competitors.md`  | Critical missing features (Roadmap)       |
-| `research/strategy/FEATURE_DEEP_DIVE.md`    | Technical analysis of core domains        |
-| `research/INVENTORY.md`                     | **NEW:** Catalog of all collection data   |
-| `research/comparisons/pm-architecture.md`   | Jira vs Linear vs ClickUp architecture    |
-| `research/comparisons/meeting-landscape.md` | Overview of the Meeting AI market         |
-| `research/comparisons/feature-matrix.md`    | Detailed comparison matrix                |
-| `research/competitor-tech-stack.md`         | **NEW:** Linear tech stack deep dive      |
+Centralized competitor intelligence for Nixelo's product strategy.
 
-**Omega Comparison Library (`research/library/`):**
+```
+research/
+├── INVENTORY.md              ← Live inventory of all research artifacts
+├── assets/                   ← Screenshots and visual evidence
+│
+├── competitors/              ← Individual competitor analyses
+│   ├── pm-suites/            ← Jira, Linear, Asana, ClickUp, Monday, Notion, Height, Shortcut
+│   ├── meeting-ai/           ← Fireflies, Gong, Otter, Read AI, tl;dv
+│   ├── time-tracking/        ← Clockify, Jibble, TimeCamp, TMetric, Toggl + overview
+│   ├── infrastructure/       ← Meeting BaaS, Nylas, Recall.ai, Skribby
+│   └── open-source/          ← AppFlowy, Cal.com, Canvas LMS, Kimai
+│
+├── comparisons/              ← Cross-competitor analysis
+│   ├── feature-matrix.md     ← Comprehensive feature comparison
+│   ├── meeting-landscape.md  ← Meeting AI market landscape
+│   ├── pm-architecture.md    ← PM tool architecture patterns
+│   └── tech-stack-analysis.md ← Linear technical deep dive
+│
+├── strategy/                 ← Strategic planning
+│   ├── FEATURE_DEEP_DIVE.md  ← Feature-by-feature gap analysis (18 features)
+│   ├── SCRAP_STRATEGY.md     ← Master list of features to adopt
+│   ├── NICHE_STRATEGY.md     ← How we win against giants
+│   └── GAPS_vs_Competitors.md ← Critical missing features (Roadmap)
+│
+├── protocols/                ← Research methodology
+│   └── omega-scraping.md     ← Multi-device scraping protocol
+│
+└── library/                  ← Raw research artifacts (screenshots, tech specs)
+    ├── asana/, clickup/, fireflies/, gong/, linear/, notion/
+    └── README.md             ← Library index
+```
 
-Automated visual and technical captures of competitor sites. See [library/README.md](research/library/README.md) for the full index.
+| Category | Purpose | Doc Count |
+|----------|---------|-----------|
+| **PM Suites** | Direct competitors in project management | 8 |
+| **Meeting AI** | Meeting intelligence & transcription tools | 5 |
+| **Time Tracking** | Time tracking & productivity tools | 6 |
+| **Infrastructure** | Backend APIs for meeting bots & comms | 4 |
+| **Open Source** | Open-source benchmark projects | 4 |
+| **Comparisons** | Cross-cutting analysis & matrices | 4 |
+| **Strategy** | Feature gap analysis & roadmap input | 4 |
 
-- **Linear:** Home (Desktop/Tablet/Mobile), Features, Docs + `home.html` (2.5MB DOM) + `home_deep.json` (CSS vars, fonts, network)
-- **ClickUp:** Home, Pricing screenshots + tech summaries
-- **Notion:** Product screenshots + tech summaries
+**Quick Links:**
 
-**Protocols (`research/protocols/`):**
-
-| File                          | Description                                        |
-| ----------------------------- | -------------------------------------------------- |
-| `protocols/omega-scraping.md` | **NEW:** Multi-device scraping protocol for agents |
-
-**Competitor Deep Dives:**
-
-- **PM Suites:** [Jira](research/competitors/pm-suites/jira.md), [Linear](research/competitors/pm-suites/linear.md), [Notion](research/competitors/pm-suites/notion.md), [Height](research/competitors/pm-suites/height.md), [Shortcut](research/competitors/pm-suites/shortcut.md), [Monday](research/competitors/pm-suites/monday.md), [Asana](research/competitors/pm-suites/asana.md), [ClickUp](research/competitors/pm-suites/clickup.md)
-- **Meeting AI:** [Read AI](research/competitors/meeting-ai/read-ai.md), [Fireflies](research/competitors/meeting-ai/fireflies.md), [Otter](research/competitors/meeting-ai/otter.md), [Gong](research/competitors/meeting-ai/gong.md), [TL;DV](research/competitors/meeting-ai/tldv.md)
-- **Time Tracking:** [Overview](research/competitors/time-tracking/overview.md), [Clockify](research/competitors/time-tracking/clockify.md), [TMetric](research/competitors/time-tracking/tmetric.md), [TimeCamp](research/competitors/time-tracking/timecamp.md), [Jibble](research/competitors/time-tracking/jibble.md), [Toggl](research/competitors/time-tracking/toggl.md)
-- **Infrastructure:** [Recall.ai](research/competitors/infrastructure/recall-ai.md), [Meeting BaaS](research/competitors/infrastructure/meeting-baas.md), [Nylas](research/competitors/infrastructure/nylas.md), [Skribby](research/competitors/infrastructure/skribby.md)
-- **Open Source:** [AppFlowy](research/competitors/open-source/appflowy.md), [Cal.com](research/competitors/open-source/cal-com.md), [Kimai](research/competitors/open-source/kimai.md), [Canvas LMS](research/competitors/open-source/canvas-lms.md)
+- [Full Inventory](research/INVENTORY.md) | [Feature Matrix](research/comparisons/feature-matrix.md) | [Feature Deep Dive](research/strategy/FEATURE_DEEP_DIVE.md)
+- **Gold Standards:** [Jira](research/competitors/pm-suites/jira.md) and [Linear](research/competitors/pm-suites/linear.md)
 
 **Strategic Goal:**
 Combine **Real-time Issue Tracking** (Linear) + **Integrated Docs** (Notion) + **Meeting Intelligence** (Read AI) + **Open Source** (GitLab) to create a unique value proposition.
