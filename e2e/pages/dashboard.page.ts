@@ -119,8 +119,8 @@ export class DashboardPage extends BasePage {
     this.commandPaletteButton = page.getByRole("button", { name: /open command palette/i });
     // Keyboard shortcuts help button (? icon)
     this.shortcutsHelpButton = page.getByRole("button", { name: /keyboard shortcuts/i });
-    // Global search button contains "Search..." text with keyboard shortcut hint "⌘K"
-    this.globalSearchButton = page.locator("button").filter({ hasText: "Search..." });
+    // Global search button with aria-label "Open search (⌘K)"
+    this.globalSearchButton = page.getByRole("button", { name: /open search/i });
     // Bell notification icon button - find by the unique bell SVG path (no aria-label in NotificationCenter component)
     this.notificationButton = page.locator("button:has(svg path[d*='M15 17h5'])");
     // "Sign out" text button
@@ -245,7 +245,7 @@ export class DashboardPage extends BasePage {
 
     // Wait for dashboard app shell with recovery
     try {
-      await this.commandPaletteButton.waitFor({ state: "visible", timeout: 45000 });
+      await this.commandPaletteButton.waitFor({ state: "visible" });
     } catch (e) {
       // Check again if redirected to landing after timeout
       const currentUrl = this.page.url();
@@ -258,7 +258,7 @@ export class DashboardPage extends BasePage {
       }
       console.log("Dashboard didn't load in time, reloading...");
       await this.page.reload();
-      await this.commandPaletteButton.waitFor({ state: "visible", timeout: 45000 });
+      await this.commandPaletteButton.waitFor({ state: "visible" });
     }
 
     await this.expectLoaded();
@@ -278,7 +278,7 @@ export class DashboardPage extends BasePage {
       settings: this.settingsTab,
     };
     // Wait for tab to be visible and stable
-    await tabs[tab].waitFor({ state: "visible", timeout: 5000 });
+    await tabs[tab].waitFor({ state: "visible" });
 
     // Click and wait for navigation if it's a link-based tab
     const urlBefore = this.page.url();
@@ -297,14 +297,28 @@ export class DashboardPage extends BasePage {
   // ===================
 
   async openCommandPalette() {
+    await this.waitForLoad();
+    // Wait for command palette button to be actionable (indicates React hydration complete)
+    await this.commandPaletteButton.waitFor({ state: "visible" });
+
+    // Use retry pattern - button click may not trigger event handler immediately after hydration
     await expect(async () => {
-      // Small stabilization wait to ensure hydration is settled and listeners are attached
-      await this.page.waitForTimeout(1000);
-      // Remove force: true to allow Playwright to wait for actionability (event handlers attached)
+      // Close any existing command palette first (in case it's in an inconsistent state)
+      if (await this.commandPalette.isVisible().catch(() => false)) {
+        await this.page.keyboard.press("Escape");
+      }
+      // Click to open command palette
       await this.commandPaletteButton.click();
-      await expect(this.commandPalette).toBeVisible({ timeout: 5000 });
-    }).toPass({ timeout: 20000 });
-    await this.page.waitForTimeout(500);
+      // Wait for dialog animation to complete (Radix Dialog has opening animation)
+      await expect(this.commandPalette).toBeVisible();
+      // Verify it stays visible (not immediately closed)
+      await expect(this.commandPaletteInput).toBeVisible();
+    }).toPass();
+
+    // Focus the input to keep the dialog open and stable
+    await this.commandPaletteInput.focus();
+    // Final assertion that palette is still visible after focus
+    await expect(this.commandPalette).toBeVisible();
   }
 
   async closeCommandPalette() {
@@ -319,13 +333,13 @@ export class DashboardPage extends BasePage {
         await this.page.mouse.click(0, 0);
       }
 
-      await expect(this.commandPalette).not.toBeVisible({ timeout: 2000 });
-    }).toPass({ timeout: 10000 });
+      await expect(this.commandPalette).not.toBeVisible();
+    }).toPass();
   }
 
   async openShortcutsHelp() {
     await this.shortcutsHelpButton.click({ force: true });
-    await expect(this.shortcutsModal).toBeVisible({ timeout: 5000 });
+    await expect(this.shortcutsModal).toBeVisible();
   }
 
   async closeShortcutsHelp() {
@@ -336,8 +350,8 @@ export class DashboardPage extends BasePage {
       if (await this.shortcutsModal.isVisible()) {
         await this.mainContent.click({ force: true, position: { x: 10, y: 10 } }).catch(() => {});
       }
-      await expect(this.shortcutsModal).not.toBeVisible({ timeout: 2000 });
-    }).toPass({ timeout: 10000 });
+      await expect(this.shortcutsModal).not.toBeVisible();
+    }).toPass();
   }
 
   async setTheme(theme: "light" | "dark" | "system") {
@@ -364,13 +378,18 @@ export class DashboardPage extends BasePage {
   async signOutViaUserMenu() {
     await this.userMenuButton.click();
     // Wait for dropdown content to be visible
-    await this.userMenuSignOutItem.waitFor({ state: "visible", timeout: 5000 });
+    await this.userMenuSignOutItem.waitFor({ state: "visible" });
     await this.userMenuSignOutItem.click();
   }
 
   async openGlobalSearch() {
-    await this.globalSearchButton.click();
-    await expect(this.globalSearchModal).toBeVisible();
+    // Use retry pattern - click may not register immediately after page load
+    await expect(async () => {
+      await this.globalSearchButton.click();
+      await expect(this.globalSearchModal).toBeVisible();
+      // Wait for input to be interactive (cmdk library needs time to hydrate)
+      await expect(this.globalSearchInput).toBeVisible();
+    }).toPass();
   }
 
   async closeGlobalSearch() {
@@ -379,18 +398,19 @@ export class DashboardPage extends BasePage {
       return;
     }
 
-    // Try pressing Escape to close
-    await this.page.keyboard.press("Escape");
-    await this.page.waitForTimeout(500);
+    // Use retry pattern to handle timing variability
+    await expect(async () => {
+      // Try pressing Escape to close
+      await this.page.keyboard.press("Escape");
 
-    // If still visible, click outside to close
-    if (await this.globalSearchModal.isVisible().catch(() => false)) {
-      await this.page.mouse.click(10, 10);
-      await this.page.waitForTimeout(500);
-    }
+      // Check if still visible - if so, try clicking outside
+      if (await this.globalSearchModal.isVisible().catch(() => false)) {
+        await this.page.mouse.click(10, 10);
+      }
 
-    // Verify closed
-    await expect(this.globalSearchModal).not.toBeVisible({ timeout: 5000 });
+      // Verify closed
+      await expect(this.globalSearchModal).not.toBeVisible();
+    }).toPass();
   }
 
   // ===================
@@ -431,8 +451,13 @@ export class DashboardPage extends BasePage {
 
   async pressCommandPaletteShortcut() {
     await this.waitForLoad();
-    await this.page.keyboard.press("ControlOrMeta+k");
-    await expect(this.commandPalette).toBeVisible();
+    // Wait for command palette button to be actionable (indicates React hydration complete)
+    await this.commandPaletteButton.waitFor({ state: "visible" });
+    // Use retry logic - keyboard events may not be captured immediately after hydration
+    await expect(async () => {
+      await this.page.keyboard.press("ControlOrMeta+k");
+      await expect(this.commandPalette).toBeVisible();
+    }).toPass();
   }
 
   async pressShortcutsHelpShortcut() {
@@ -471,6 +496,6 @@ export class DashboardPage extends BasePage {
 
   async expectLoaded() {
     // Wait longer for organization context to load (auth tokens, organization data)
-    await expect(this.loadingSpinner).not.toBeVisible({ timeout: 15000 });
+    await expect(this.loadingSpinner).not.toBeVisible();
   }
 }

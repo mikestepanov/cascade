@@ -156,7 +156,7 @@ export class CalendarPage extends BasePage {
 
   async openCreateEventModal() {
     await this.createEventButton.evaluate((el: HTMLElement) => el.click());
-    await expect(this.createEventModal).toBeVisible({ timeout: 5000 });
+    await expect(this.createEventModal).toBeVisible();
   }
 
   async createEvent(

@@ -122,7 +122,7 @@ test.describe("Dashboard Tests", () => {
     test("can open via keyboard shortcut", async ({ dashboardPage }) => {
       await dashboardPage.goto();
       await dashboardPage.pressShortcutsHelpShortcut();
-      await expect(dashboardPage.shortcutsModal).toBeVisible({ timeout: 5000 });
+      await expect(dashboardPage.shortcutsModal).toBeVisible();
     });
   });
 
@@ -130,7 +130,7 @@ test.describe("Dashboard Tests", () => {
     test("can open notifications panel", async ({ dashboardPage }) => {
       await dashboardPage.goto();
       await dashboardPage.openNotifications();
-      await expect(dashboardPage.notificationPanel).toBeVisible({ timeout: 5000 });
+      await expect(dashboardPage.notificationPanel).toBeVisible();
     });
   });
 });

@@ -50,7 +50,7 @@ test.describe("Onboarding Wizard", () => {
     const onboarding = new OnboardingPage(page);
     await onboarding.goto();
     // Use a longer timeout and explicit URL wait to handle slow hydration/Convex updates
-    await page.waitForURL("**/onboarding", { timeout: 15000 });
+    await page.waitForURL("**/onboarding");
     await onboarding.waitForSplashScreen();
     await page.waitForLoadState("networkidle");
 
@@ -85,15 +85,15 @@ test.describe("Onboarding Wizard", () => {
     await onboarding.waitForWizard();
 
     // Find and click skip element
-    await expect(onboarding.skipText).toBeVisible({ timeout: 5000 });
+    await expect(onboarding.skipText).toBeVisible();
     await onboarding.skipOnboarding();
 
     // Wait for navigation to dashboard
-    await page.waitForURL(/\/[^/]+\/dashboard/, { timeout: 15000 });
+    await page.waitForURL(/\/[^/]+\/dashboard/);
     await page.waitForLoadState("domcontentloaded");
 
     // Wait for dashboard to finish loading (spinner disappears)
-    await expect(page.locator(".animate-spin")).not.toBeVisible({ timeout: 15000 });
+    await expect(page.locator(".animate-spin")).not.toBeVisible();
 
     // Should navigate to dashboard
     await onboarding.expectDashboard();
@@ -139,7 +139,7 @@ test.describe("Onboarding - Team Lead Flow", () => {
     await onboarding.selectTeamLead();
 
     // Test back navigation directly from features screen
-    await expect(onboarding.backButton).toBeVisible({ timeout: 5000 });
+    await expect(onboarding.backButton).toBeVisible();
     await onboarding.clickBack();
 
     // Should return to role selection
@@ -184,11 +184,11 @@ test.describe("Onboarding - Team Member Flow", () => {
     await onboarding.goToDashboard();
 
     // Wait for navigation to dashboard
-    await page.waitForURL(/\/[^/]+\/dashboard/, { timeout: 15000 });
+    await page.waitForURL(/\/[^/]+\/dashboard/);
     await page.waitForLoadState("domcontentloaded");
 
     // Wait for dashboard to finish loading (spinner disappears)
-    await expect(page.locator(".animate-spin")).not.toBeVisible({ timeout: 15000 });
+    await expect(page.locator(".animate-spin")).not.toBeVisible();
 
     // Should navigate to dashboard
     await onboarding.expectDashboard();

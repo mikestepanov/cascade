@@ -14,7 +14,7 @@ test.describe("Sign In Form - Elements", () => {
 
   test("displays all sign in form elements", async ({ authPage }) => {
     // Heading - use page object locator
-    await expect(authPage.signInHeading).toBeVisible({ timeout: 30000 });
+    await expect(authPage.signInHeading).toBeVisible();
 
     // Expand form to reveal all elements (required attrs and forgot password only show when expanded)
     await authPage.expandEmailForm();

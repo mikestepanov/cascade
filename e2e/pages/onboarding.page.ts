@@ -104,7 +104,7 @@ export class OnboardingPage {
    */
   async isVisible(locator: Locator): Promise<boolean> {
     try {
-      await expect(locator).toBeVisible({ timeout: 5000 });
+      await expect(locator).toBeVisible();
       return true;
     } catch {
       return false;
@@ -115,7 +115,7 @@ export class OnboardingPage {
    * Wait for the tour to appear (driver.js loads dynamically)
    */
   async waitForTourToAppear() {
-    await expect(this.tourPopover).toBeVisible({ timeout: 10000 });
+    await expect(this.tourPopover).toBeVisible();
   }
 
   /**
@@ -170,7 +170,7 @@ export class OnboardingPage {
     let hasNext = true;
     while (hasNext) {
       try {
-        await expect(this.tourNextButton).toBeVisible({ timeout: 2000 });
+        await expect(this.tourNextButton).toBeVisible();
         await this.tourNextButton.click();
         // Small delay to let animations complete
         await this.page.waitForTimeout(300);
@@ -224,7 +224,7 @@ export class OnboardingPage {
     // The splash screen has a high z-index and is fixed inset-0
     // We use .first() to avoid strict mode violations if multiple exist during transitions
     const splash = this.page.locator(".bg-ui-bg-hero.z-\\[9999\\]").first();
-    await expect(splash).not.toBeVisible({ timeout: 15000 });
+    await expect(splash).not.toBeVisible();
   }
 
   /**
@@ -241,8 +241,8 @@ export class OnboardingPage {
 
   /** Wait for role selection cards to be interactive */
   async waitForRoleCardsReady() {
-    await expect(this.teamLeadCard).toBeEnabled({ timeout: 10000 });
-    await expect(this.teamMemberCard).toBeEnabled({ timeout: 10000 });
+    await expect(this.teamLeadCard).toBeEnabled();
+    await expect(this.teamMemberCard).toBeEnabled();
   }
 
   /**
@@ -260,11 +260,11 @@ export class OnboardingPage {
       await this.waitForSplashScreen();
 
       // The role cards have a small pending state/delay, so we might need to retry click
-      await this.teamLeadCard.click({ force: true, timeout: 2000 });
+      await this.teamLeadCard.click({ force: true });
 
       // Check for the outcome (first screen of lead flow)
-      await expect(this.teamLeadHeading).toBeVisible({ timeout: 5000 });
-    }).toPass({ timeout: 30000 });
+      await expect(this.teamLeadHeading).toBeVisible();
+    }).toPass();
     console.log("Successfully transitioned to Team Lead setup.");
   }
 
@@ -281,13 +281,11 @@ export class OnboardingPage {
 
       await this.waitForSplashScreen();
 
-      await this.teamMemberCard.click({ force: true, timeout: 2000 });
+      await this.teamMemberCard.click({ force: true });
 
       // Check for the outcome (first screen of member flow)
-      await expect(this.page.getByRole("heading", { name: /name your project/i })).toBeVisible({
-        timeout: 5000,
-      });
-    }).toPass({ timeout: 30000 });
+      await expect(this.page.getByRole("heading", { name: /name your project/i })).toBeVisible();
+    }).toPass();
     console.log("Successfully transitioned to Team Member project naming.");
   }
 
@@ -295,7 +293,7 @@ export class OnboardingPage {
    * Click continue button
    */
   async clickContinue() {
-    await expect(this.continueButton).toBeEnabled({ timeout: 5000 });
+    await expect(this.continueButton).toBeEnabled();
     await this.continueButton.click();
   }
 

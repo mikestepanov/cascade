@@ -27,18 +27,17 @@ export async function completeEmailVerification(page: Page, email: string): Prom
   console.log(`  📬 Waiting for verification email for ${email}...`);
   try {
     const otp = await waitForMockOTP(email, {
-      timeout: 15000,
       pollInterval: 500,
     });
     console.log(`  ✓ Retrieved OTP: ${otp}`);
 
     const locators = authFormLocators(page);
-    await locators.verifyCodeInput.waitFor({ state: "visible", timeout: 5000 });
+    await locators.verifyCodeInput.waitFor({ state: "visible" });
     await locators.verifyCodeInput.fill(otp);
 
     await locators.verifyEmailButton.click();
     // Wait for redirect to onboarding or organization dashboard
-    await page.waitForURL(urlPatterns.dashboardOrOnboarding, { timeout: 15000 });
+    await page.waitForURL(urlPatterns.dashboardOrOnboarding);
     return true;
   } catch (verifyError) {
     console.error(`  ❌ Email verification failed for ${email}:`, verifyError);
@@ -112,20 +111,20 @@ export async function clickContinueWithEmail(page: Page): Promise<boolean> {
 
   // Check if continue button exists and is ready
   try {
-    await locators.continueWithEmailButton.waitFor({ state: "visible", timeout: 10000 });
+    await locators.continueWithEmailButton.waitFor({ state: "visible" });
   } catch {
     console.log("❌ Continue button not found");
     return false;
   }
 
   // Click the button
-  await locators.continueWithEmailButton.click({ timeout: 5000 });
+  await locators.continueWithEmailButton.click();
 
   // Wait for form to expand
   try {
     await Promise.race([
-      locators.signInButton.waitFor({ state: "visible", timeout: 5000 }),
-      locators.signUpButton.waitFor({ state: "visible", timeout: 5000 }),
+      locators.signInButton.waitFor({ state: "visible" }),
+      locators.signUpButton.waitFor({ state: "visible" }),
     ]);
     // Wait for form to be ready (SignInForm/SignUpForm have 350ms delay before formReady=true)
     await waitForFormReady(page);
@@ -163,12 +162,12 @@ export async function handleOnboardingOrDashboard(
 
     try {
       // Wait up to 15 seconds for the skip button to appear (queries need to load)
-      await locators.skipButton.waitFor({ state: "visible", timeout: 15000 });
+      await locators.skipButton.waitFor({ state: "visible" });
       console.log("✓ Skip button found, clicking...");
       await locators.skipButton.click();
 
       // Wait for navigation to dashboard
-      await page.waitForURL(urlPatterns.dashboard, { timeout: 10000 });
+      await page.waitForURL(urlPatterns.dashboard);
 
       if (await isOnDashboard(page)) {
         console.log("✓ Successfully skipped to dashboard");
@@ -185,7 +184,7 @@ export async function handleOnboardingOrDashboard(
       try {
         if (await skipElement.isVisible().catch(() => false)) {
           await skipElement.click();
-          await page.waitForURL(urlPatterns.dashboard, { timeout: 10000 }).catch(() => {});
+          await page.waitForURL(urlPatterns.dashboard).catch(() => {});
           if (await isOnDashboard(page)) {
             return true;
           }
@@ -262,7 +261,7 @@ export async function trySignInUser(
 
       // Wait to confirm we are logged in - app gateway will redirect to /:orgSlug/dashboard or /onboarding
       try {
-        await page.waitForURL(urlPatterns.dashboardOrOnboarding, { timeout: 15000 });
+        await page.waitForURL(urlPatterns.dashboardOrOnboarding);
         if (await isOnDashboard(page)) {
           console.log("  ✓ Automatically redirected to dashboard");
           return true;
@@ -304,8 +303,8 @@ export async function trySignInUser(
     try {
       // Wait for EITHER heading OR form (whichever appears first)
       await Promise.race([
-        locators.signInHeading.waitFor({ state: "visible", timeout: 30000 }),
-        page.locator("form").waitFor({ state: "visible", timeout: 30000 }),
+        locators.signInHeading.waitFor({ state: "visible" }),
+        page.locator("form").waitFor({ state: "visible" }),
       ]);
       clearInterval(diagnosticInterval);
       console.log("  ✓ Sign-in page loaded");
@@ -343,7 +342,7 @@ export async function trySignInUser(
           return state.isWebSocketConnected;
         },
         undefined,
-        { timeout: 30000 }, // Wait up to 30s for connection
+        {}, // Wait up to 30s for connection
       )
       .catch(() => {
         console.log("  ⚠️ Convex WebSocket connection timed out, attempting anyway");
@@ -459,9 +458,7 @@ export async function trySignInUser(
 
     try {
       // Wait for redirect - handles both old (/dashboard) and new (/:orgSlug/dashboard) patterns
-      // Timeout: 90s for cold starts (increased from 60s)
       await page.waitForURL(urlPatterns.dashboardOrOnboarding, {
-        timeout: 90000,
         waitUntil: "domcontentloaded",
       });
       console.log("  ✓ Redirected to:", page.url());
@@ -549,7 +546,7 @@ export async function signUpUserViaUI(
     }
 
     const locators = authFormLocators(page);
-    await locators.signUpHeading.waitFor({ state: "visible", timeout: 5000 }).catch(() => {});
+    await locators.signUpHeading.waitFor({ state: "visible" }).catch(() => {});
 
     if (!(await locators.signUpHeading.isVisible().catch(() => false))) {
       return await isOnDashboard(page);
@@ -562,7 +559,7 @@ export async function signUpUserViaUI(
     await locators.passwordInput.fill(user.password);
     await waitForFormReady(page);
 
-    await locators.signUpButton.waitFor({ state: "visible", timeout: 5000 });
+    await locators.signUpButton.waitFor({ state: "visible" });
     console.log(`  📤 Submitting sign-up form for ${user.email}...`);
     await locators.signUpButton.click();
 

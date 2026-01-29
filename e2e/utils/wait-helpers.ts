@@ -69,7 +69,7 @@ export async function waitForReactHydration(page: Page): Promise<void> {
  * Waits for the dropdown to have the expected visible state.
  */
 export async function waitForDropdown(page: Page, dropdownSelector: string): Promise<void> {
-  await page.locator(dropdownSelector).waitFor({ state: "visible", timeout: 5000 });
+  await page.locator(dropdownSelector).waitFor({ state: "visible" });
   await page.waitForTimeout(WAIT_TIMEOUTS.animation);
 }
 
@@ -77,7 +77,7 @@ export async function waitForDropdown(page: Page, dropdownSelector: string): Pro
  * Wait for a modal/dialog to open and be interactive.
  */
 export async function waitForModal(page: Page, modalSelector = '[role="dialog"]'): Promise<void> {
-  await page.locator(modalSelector).waitFor({ state: "visible", timeout: 5000 });
+  await page.locator(modalSelector).waitFor({ state: "visible" });
   await page.waitForTimeout(WAIT_TIMEOUTS.animation);
 }
 
@@ -92,7 +92,7 @@ export async function waitForToast(
 
   try {
     const toast = page.locator(selector).first();
-    await toast.waitFor({ state: "visible", timeout: 5000 });
+    await toast.waitFor({ state: "visible" });
     return await toast.textContent();
   } catch {
     return null;
@@ -105,7 +105,7 @@ export async function waitForToast(
  */
 export async function waitForNavigation(page: Page, urlPattern?: RegExp): Promise<void> {
   if (urlPattern) {
-    await page.waitForURL(urlPattern, { timeout: 10000 });
+    await page.waitForURL(urlPattern);
   }
   await page.waitForLoadState("domcontentloaded");
 }

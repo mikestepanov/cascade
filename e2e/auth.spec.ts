@@ -154,7 +154,7 @@ test.describe("Integration", () => {
     // Wait for success toast indicating verification completed
     // The success toast shows before navigation
     await expect(page.locator("[data-sonner-toast]").filter({ hasText: /verified|success/i }))
-      .toBeVisible({ timeout: 10000 })
+      .toBeVisible()
       .catch(() => {
         console.log("[Test] No success toast found, checking for error...");
       });
@@ -183,6 +183,6 @@ test.describe("Integration", () => {
         .getByRole("heading", { name: /welcome to nixelo/i })
         .or(page.getByRole("link", { name: /dashboard/i }))
         .or(page.locator('[data-sidebar="sidebar"]')), // Sidebar indicates we're in the app
-    ).toBeVisible({ timeout: 15000 });
+    ).toBeVisible();
   });
 });

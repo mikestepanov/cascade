@@ -1,5 +1,7 @@
 # CLAUDE.md - Nixelo Project Guide
 
+**IMPORTANT: You MUST read RULES.md before starting any task. The @RULES.md reference below does not auto-include the file contents.**
+
 @RULES.md
 
 ---

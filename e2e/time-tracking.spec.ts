@@ -43,7 +43,7 @@ test.describe("Time Tracking", () => {
     await projectsPage.createIssue(issueTitle);
 
     // Close modal
-    await expect(projectsPage.createIssueModal).not.toBeVisible({ timeout: 5000 });
+    await expect(projectsPage.createIssueModal).not.toBeVisible();
 
     // Open detail
     await projectsPage.openIssueDetail(issueTitle);
@@ -52,12 +52,12 @@ test.describe("Time Tracking", () => {
     await projectsPage.startTimer();
 
     // Wait for timer to register (check stop button appears)
-    await expect(projectsPage.stopTimerButton).toBeVisible({ timeout: 5000 });
+    await expect(projectsPage.stopTimerButton).toBeVisible();
 
     // Stop timer
     await projectsPage.stopTimer();
 
     // Verify timer stopped (start button should reappear)
-    await expect(projectsPage.startTimerButton).toBeVisible({ timeout: 5000 });
+    await expect(projectsPage.startTimerButton).toBeVisible();
   });
 });

@@ -44,12 +44,12 @@ test.describe("Integration Workflows", () => {
 
       // Step 5: Create an issue
       await projectsPage.createIssue(issueTitle);
-      await expect(projectsPage.createIssueModal).not.toBeVisible({ timeout: 5000 });
+      await expect(projectsPage.createIssueModal).not.toBeVisible();
       console.log("✓ Issue created");
 
       // Step 6: Verify issue appears on board (look in backlog column)
       const issueCard = page.getByText(issueTitle).first();
-      await expect(issueCard).toBeVisible({ timeout: 10000 });
+      await expect(issueCard).toBeVisible();
       console.log("✓ Issue visible on board");
 
       // Step 7: Open issue detail
@@ -57,12 +57,12 @@ test.describe("Integration Workflows", () => {
 
       // Step 8: Verify issue detail panel/modal opens
       const detailPanel = page.getByRole("dialog").or(page.locator("[data-issue-detail]"));
-      await expect(detailPanel).toBeVisible({ timeout: 10000 });
+      await expect(detailPanel).toBeVisible();
       console.log("✓ Issue detail panel opened");
 
       // Step 9: Close issue detail (press Escape or click outside)
       await page.keyboard.press("Escape");
-      await expect(detailPanel).not.toBeVisible({ timeout: 5000 });
+      await expect(detailPanel).not.toBeVisible();
       console.log("✓ Issue detail panel closed");
 
       console.log("\n✅ Project management workflow completed successfully");
@@ -78,6 +78,9 @@ test.describe("Integration Workflows", () => {
       await projectsPage.goto();
       await projectsPage.createProject(`Nav Test ${timestamp}`, projectKey);
 
+      // Wait for board to be fully loaded before interacting with tabs
+      await projectsPage.waitForBoardInteractive();
+
       // Verify we're on board
       await expect(page).toHaveURL(/\/board/);
       console.log("✓ On board tab");
@@ -85,22 +88,27 @@ test.describe("Integration Workflows", () => {
       // Project tabs are in the Tabs landmark - scope selectors to avoid matching sidebar nav
       const projectTabs = page.getByLabel("Tabs");
 
-      // Switch to Calendar
+      // Switch to Calendar - wait for tab to be visible first
       const calendarTab = projectTabs.getByRole("link", { name: /calendar/i });
+      await calendarTab.waitFor({ state: "visible" });
       await calendarTab.click();
-      await expect(page).toHaveURL(/\/calendar/, { timeout: 10000 });
+      await expect(page).toHaveURL(/\/calendar/);
+      await page.waitForLoadState("domcontentloaded");
       console.log("✓ Navigated to calendar");
 
       // Switch to Timesheet
       const timesheetTab = projectTabs.getByRole("link", { name: /timesheet/i });
+      await timesheetTab.waitFor({ state: "visible" });
       await timesheetTab.click();
-      await expect(page).toHaveURL(/\/timesheet/, { timeout: 10000 });
+      await expect(page).toHaveURL(/\/timesheet/);
+      await page.waitForLoadState("domcontentloaded");
       console.log("✓ Navigated to timesheet");
 
       // Switch back to Board
       const boardTab = projectTabs.getByRole("link", { name: /board/i });
+      await boardTab.waitFor({ state: "visible" });
       await boardTab.click();
-      await expect(page).toHaveURL(/\/board/, { timeout: 10000 });
+      await expect(page).toHaveURL(/\/board/);
       console.log("✓ Navigated back to board");
 
       console.log("\n✅ Tab navigation workflow completed successfully");
@@ -120,7 +128,7 @@ test.describe("Integration Workflows", () => {
       await projectsPage.createProject(`Dashboard WF ${timestamp}`, projectKey);
       await projectsPage.waitForBoardInteractive();
       await projectsPage.createIssue(issueTitle);
-      await expect(projectsPage.createIssueModal).not.toBeVisible({ timeout: 5000 });
+      await expect(projectsPage.createIssueModal).not.toBeVisible();
       console.log("✓ Issue created for dashboard workflow test");
 
       // Navigate to dashboard
@@ -160,31 +168,37 @@ test.describe("Integration Workflows", () => {
       await projectsPage.createProject(`Search Test ${timestamp}`, projectKey);
       await projectsPage.waitForBoardInteractive();
       await projectsPage.createIssue(`Issue ${uniqueSearchTerm}`);
-      await expect(projectsPage.createIssueModal).not.toBeVisible({ timeout: 5000 });
+      await expect(projectsPage.createIssueModal).not.toBeVisible();
       console.log("✓ Issue created with unique search term");
 
       // Navigate to dashboard and open global search
       await dashboardPage.goto();
       await dashboardPage.expectLoaded();
 
-      // Open global search
-      await dashboardPage.openGlobalSearch();
-      await expect(dashboardPage.globalSearchModal).toBeVisible({ timeout: 5000 });
-      console.log("✓ Global search opened");
+      // Open global search, type query, and wait for results
+      // Use single retry block to handle modal/input instability from cmdk re-renders
+      await expect(async () => {
+        // Ensure modal is open
+        if (!(await dashboardPage.globalSearchModal.isVisible().catch(() => false))) {
+          await dashboardPage.globalSearchButton.click();
+          await expect(dashboardPage.globalSearchModal).toBeVisible();
+          await expect(dashboardPage.globalSearchInput).toBeVisible();
+        }
 
-      // Type the unique search term
-      await dashboardPage.globalSearchInput.fill(uniqueSearchTerm);
+        // Fill the search input
+        await dashboardPage.globalSearchInput.fill(uniqueSearchTerm);
 
-      // Wait for search results (give time for debounce + API call)
-      await page.waitForTimeout(1000);
+        // Wait for search to process - either results appear or "No results found"
+        const noResultsText = page.getByText("No results found");
+        const searchResultGroup = page.locator("[cmdk-group]");
+        await expect(noResultsText.or(searchResultGroup)).toBeVisible();
+      }).toPass();
 
-      // The search should find results (implementation-dependent)
-      // Just verify the search modal is working
-      console.log("✓ Search query entered");
+      console.log("✓ Global search opened and search query processed");
 
       // Close search
       await dashboardPage.closeGlobalSearch();
-      await expect(dashboardPage.globalSearchModal).not.toBeVisible({ timeout: 5000 });
+      await expect(dashboardPage.globalSearchModal).not.toBeVisible();
       console.log("✓ Global search closed");
 
       console.log("\n✅ Search workflow completed successfully");

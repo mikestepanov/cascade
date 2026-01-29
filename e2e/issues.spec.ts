@@ -55,7 +55,7 @@ test.describe("Issues", () => {
       await projectsPage.createIssue(issueTitle);
 
       // Verify modal closes
-      await expect(projectsPage.createIssueModal).not.toBeVisible({ timeout: 5000 });
+      await expect(projectsPage.createIssueModal).not.toBeVisible();
 
       // For Scrum projects (default template), new issues go to Backlog
       // Switch to Backlog tab to verify
@@ -66,7 +66,7 @@ test.describe("Issues", () => {
 
       // Verify issue appears in backlog
       const issueCard = projectsPage.getIssueCard(issueTitle);
-      await expect(issueCard).toBeVisible({ timeout: 5000 });
+      await expect(issueCard).toBeVisible();
     });
   });
 
@@ -88,13 +88,13 @@ test.describe("Issues", () => {
 
       // Create an issue
       await projectsPage.createIssue(issueTitle);
-      await expect(projectsPage.createIssueModal).not.toBeVisible({ timeout: 5000 });
+      await expect(projectsPage.createIssueModal).not.toBeVisible();
 
       // Open detail dialog
       await projectsPage.openIssueDetail(issueTitle);
 
       // Verify dialog visible
-      await expect(projectsPage.issueDetailDialog).toBeVisible({ timeout: 5000 });
+      await expect(projectsPage.issueDetailDialog).toBeVisible();
     });
 
     test("issue detail shows timer controls", async ({ projectsPage }) => {
@@ -114,13 +114,13 @@ test.describe("Issues", () => {
 
       // Create an issue
       await projectsPage.createIssue(issueTitle);
-      await expect(projectsPage.createIssueModal).not.toBeVisible({ timeout: 5000 });
+      await expect(projectsPage.createIssueModal).not.toBeVisible();
 
       // Open detail dialog
       await projectsPage.openIssueDetail(issueTitle);
 
       // Verify timer controls
-      await expect(projectsPage.startTimerButton).toBeVisible({ timeout: 5000 });
+      await expect(projectsPage.startTimerButton).toBeVisible();
     });
   });
 });

@@ -146,7 +146,7 @@ export class AuthPage extends BasePage {
    */
   async gotoSignIn() {
     await this.page.goto("/signin", { waitUntil: "commit" });
-    await this.signInHeading.waitFor({ state: "visible", timeout: 15000 });
+    await this.signInHeading.waitFor({ state: "visible" });
     // Expand form using robust click logic
     await this.expandEmailForm();
   }
@@ -156,7 +156,7 @@ export class AuthPage extends BasePage {
    */
   async gotoSignUp() {
     await this.page.goto("/signup", { waitUntil: "commit" });
-    await this.signUpHeading.waitFor({ state: "visible", timeout: 15000 });
+    await this.signUpHeading.waitFor({ state: "visible" });
     // Expand form using robust click logic
     await this.expandEmailForm();
   }
@@ -167,8 +167,8 @@ export class AuthPage extends BasePage {
   async gotoForgotPassword() {
     await this.page.goto("/forgot-password");
     await this.page.waitForLoadState("networkidle");
-    await this.forgotPasswordHeading.waitFor({ state: "visible", timeout: 10000 });
-    await this.emailInput.waitFor({ state: "visible", timeout: 5000 });
+    await this.forgotPasswordHeading.waitFor({ state: "visible" });
+    await this.emailInput.waitFor({ state: "visible" });
   }
 
   /**
@@ -214,7 +214,7 @@ export class AuthPage extends BasePage {
       const nowSignInVisible = await this.signInButton.isVisible().catch(() => false);
       const nowSignUpVisible = await this.signUpButton.isVisible().catch(() => false);
       expect(nowSignInVisible || nowSignUpVisible).toBe(true);
-    }).toPass({ timeout: 15000, intervals: [500, 1000, 2000] });
+    }).toPass({ intervals: [500, 1000, 2000] });
 
     // Also wait for form-ready state
     await this.waitForFormReady();
@@ -240,7 +240,7 @@ export class AuthPage extends BasePage {
     await this.waitForFormReady();
 
     // Wait for button to be enabled
-    await expect(this.signUpButton).toBeEnabled({ timeout: 5000 });
+    await expect(this.signUpButton).toBeEnabled();
 
     // Click the submit button
     await this.signUpButton.click();
@@ -251,12 +251,12 @@ export class AuthPage extends BasePage {
 
   async navigateToSignUp() {
     await this.signUpLink.click();
-    await this.signUpHeading.waitFor({ state: "visible", timeout: 10000 });
+    await this.signUpHeading.waitFor({ state: "visible" });
   }
 
   async navigateToSignIn() {
     await this.signInLink.click();
-    await this.signInHeading.waitFor({ state: "visible", timeout: 10000 });
+    await this.signInHeading.waitFor({ state: "visible" });
   }
 
   async switchToSignUp() {
@@ -270,7 +270,7 @@ export class AuthPage extends BasePage {
   }
 
   async signInWithGoogle() {
-    await this.googleSignInButton.waitFor({ state: "visible", timeout: 5000 });
+    await this.googleSignInButton.waitFor({ state: "visible" });
     await this.googleSignInButton.click();
     // Note: Will redirect to Google OAuth
   }
@@ -285,15 +285,15 @@ export class AuthPage extends BasePage {
     // Wait for form to stabilize (formReady state) before clicking
     await this.waitForFormReady();
 
-    await this.forgotPasswordLink.waitFor({ state: "visible", timeout: 10000 });
+    await this.forgotPasswordLink.waitFor({ state: "visible" });
     await expect(this.forgotPasswordLink).toBeEnabled();
 
     // Click with force to bypass actionability checks (button may be styled as link)
     await this.forgotPasswordLink.click({ force: true });
 
     // Wait for navigation to complete
-    await this.page.waitForURL("**/forgot-password*", { timeout: 15000 });
-    await this.forgotPasswordHeading.waitFor({ state: "visible", timeout: 10000 });
+    await this.page.waitForURL("**/forgot-password*");
+    await this.forgotPasswordHeading.waitFor({ state: "visible" });
   }
 
   /**
@@ -315,9 +315,9 @@ export class AuthPage extends BasePage {
   }
 
   async goBackToSignIn() {
-    await this.backToSignInLink.waitFor({ state: "visible", timeout: 10000 });
+    await this.backToSignInLink.waitFor({ state: "visible" });
     await this.backToSignInLink.click();
-    await this.signInHeading.waitFor({ state: "visible", timeout: 10000 });
+    await this.signInHeading.waitFor({ state: "visible" });
     // Expand the form after navigation
     await this.expandEmailForm();
   }
@@ -375,32 +375,32 @@ export class AuthPage extends BasePage {
   }
 
   async expectSignInForm() {
-    await expect(this.signInHeading).toBeVisible({ timeout: 10000 });
+    await expect(this.signInHeading).toBeVisible();
     // Expand form if collapsed (after navigation from forgot-password, form is collapsed)
     await this.expandEmailForm();
-    await expect(this.emailInput).toBeVisible({ timeout: 5000 });
-    await expect(this.passwordInput).toBeVisible({ timeout: 5000 });
-    await expect(this.signInButton).toBeVisible({ timeout: 5000 });
-    await expect(this.googleSignInButton).toBeVisible({ timeout: 5000 });
+    await expect(this.emailInput).toBeVisible();
+    await expect(this.passwordInput).toBeVisible();
+    await expect(this.signInButton).toBeVisible();
+    await expect(this.googleSignInButton).toBeVisible();
   }
 
   async expectSignUpForm() {
-    await expect(this.signUpHeading).toBeVisible({ timeout: 10000 });
+    await expect(this.signUpHeading).toBeVisible();
     // Expand form if collapsed
     await this.expandEmailForm();
-    await expect(this.emailInput).toBeVisible({ timeout: 5000 });
-    await expect(this.passwordInput).toBeVisible({ timeout: 5000 });
-    await expect(this.signUpButton).toBeVisible({ timeout: 5000 });
+    await expect(this.emailInput).toBeVisible();
+    await expect(this.passwordInput).toBeVisible();
+    await expect(this.signUpButton).toBeVisible();
   }
 
   async expectForgotPasswordForm() {
-    await expect(this.forgotPasswordHeading).toBeVisible({ timeout: 10000 });
+    await expect(this.forgotPasswordHeading).toBeVisible();
     await expect(this.emailInput).toBeVisible();
     await expect(this.sendResetCodeButton).toBeVisible();
   }
 
   async expectResetCodeForm() {
-    await expect(this.resetPasswordHeading).toBeVisible({ timeout: 10000 });
+    await expect(this.resetPasswordHeading).toBeVisible();
     await expect(this.codeInput).toBeVisible();
     await expect(this.newPasswordInput).toBeVisible();
     await expect(this.resetPasswordButton).toBeVisible();
@@ -411,9 +411,9 @@ export class AuthPage extends BasePage {
     await this.page.waitForTimeout(1000);
 
     // Wait longer for verification form to appear - server might be slow after sign-up
-    await expect(this.verifyHeading).toBeVisible({ timeout: 15000 });
-    await expect(this.verifyCodeInput).toBeVisible({ timeout: 5000 });
-    await expect(this.verifyEmailButton).toBeVisible({ timeout: 5000 });
+    await expect(this.verifyHeading).toBeVisible();
+    await expect(this.verifyCodeInput).toBeVisible();
+    await expect(this.verifyEmailButton).toBeVisible();
   }
 
   async expectValidationError(field: "email" | "password") {
