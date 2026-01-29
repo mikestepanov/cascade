@@ -238,11 +238,9 @@ async function screenshotFilled(
     await page.waitForTimeout(SETTLE_MS);
 
     // Calendar view-mode screenshots: day, week, month
-    // Toggle items use value="day"/"week"/"month" on ToggleGroupItem elements.
-    // Only the active mode shows a text label; inactive modes show only icons.
-    // We select by the value attribute on the toggle button.
+    // Toggle items have data-testid="calendar-mode-{day|week|month}".
     for (const mode of ["day", "week", "month"] as const) {
-      const toggleItem = page.locator(`button[value="${mode}"]`);
+      const toggleItem = page.getByTestId(`calendar-mode-${mode}`);
       if ((await toggleItem.count()) > 0) {
         await toggleItem.first().click();
         await page.waitForTimeout(SETTLE_MS);
@@ -256,10 +254,10 @@ async function screenshotFilled(
     }
 
     // Event details modal screenshot — click first visible calendar event
-    // Switch to day view for best event visibility
-    const dayToggle = page.locator('button[value="day"]');
-    if ((await dayToggle.count()) > 0) {
-      await dayToggle.first().click();
+    // Switch back to week view for the modal screenshot (events are most visible)
+    const weekToggle = page.getByTestId("calendar-mode-week");
+    if ((await weekToggle.count()) > 0) {
+      await weekToggle.first().click();
       await page.waitForTimeout(SETTLE_MS);
     }
     // Events are rendered as tabIndex={0} divs with event titles

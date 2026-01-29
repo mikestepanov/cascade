@@ -275,20 +275,21 @@ export function EventDetailsModal({ eventId, open, onOpenChange }: EventDetailsM
 
                       {/* Status Dropdown */}
                       <Select
-                        value={attendee.status || ""}
-                        onValueChange={(value) =>
+                        value={attendee.status || "none"}
+                        onValueChange={(value) => {
+                          if (value === "none") return;
                           handleMarkAttendance(
                             attendee.userId as Id<"users">,
                             value as "present" | "tardy" | "absent",
-                          )
-                        }
+                          );
+                        }}
                         disabled={isSavingAttendance}
                       >
                         <SelectTrigger className="text-sm px-2 py-1 border border-ui-border-primary rounded bg-ui-bg-primary text-ui-text-primary">
                           <SelectValue placeholder="Not marked" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="">Not marked</SelectItem>
+                          <SelectItem value="none">Not marked</SelectItem>
                           <SelectItem value="present">✓ Present</SelectItem>
                           <SelectItem value="tardy">⏰ Tardy</SelectItem>
                           <SelectItem value="absent">✗ Absent</SelectItem>
