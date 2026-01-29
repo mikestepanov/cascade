@@ -102,6 +102,11 @@ interface TakeableQuery<T> {
   take(n: number): Promise<T[]>;
 }
 
+/** Minimal query interface for count (to handle both library and test environments) */
+interface CountableQuery<T> extends TakeableQuery<T> {
+  count?: () => Promise<number>;
+}
+
 /** Minimal query interface for collect (to help migration) */
 
 // =============================================================================
@@ -281,11 +286,12 @@ export async function collectInBatches<T>(
  * This helper is essential for maintaining compatibility with test environments
  * (e.g. convex-test) that may not fully implement the Query interface, while
  * leveraging the performance of .count() in production.
+ *
+ * @param query - The Convex query to count items for
+ * @param limit - Fallback limit if .count() is not available (default: 2000)
+ * @returns A promise that resolves to the count of items
  */
-export async function efficientCount<T>(
-  query: any, // Typed as any to handle test environment differences
-  limit: number = 2000,
-): Promise<number> {
+export async function efficientCount<T>(query: CountableQuery<T>, limit = 2000): Promise<number> {
   if (typeof query.count === "function") {
     return await query.count();
   }

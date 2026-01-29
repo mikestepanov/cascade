@@ -15,6 +15,17 @@ interface IssuesCalendarViewProps {
   canEdit?: boolean;
 }
 
+/**
+ * IssuesCalendarView Component
+ *
+ * Renders a full-month calendar view of issues for a project.
+ * Supports navigation between months, highlighting today, and displaying issues
+ * on their respective due dates with priority-colored indicators.
+ *
+ * @param props.projectId - The ID of the project to view issues for
+ * @param props.sprintId - Optional sprint ID to filter issues by sprint
+ * @param props.canEdit - Whether the user has permission to edit issues (default: true)
+ */
 export function IssuesCalendarView({
   projectId,
   sprintId,
