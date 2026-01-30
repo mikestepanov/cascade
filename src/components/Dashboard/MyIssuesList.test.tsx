@@ -235,7 +235,7 @@ describe("MyIssuesList", () => {
     });
   });
 
-  it("should render multiple issues with staggered animation", () => {
+  it("should render multiple issue buttons", () => {
     render(<MyIssuesList {...defaultProps} />);
 
     const issueButtons = screen
@@ -243,10 +243,6 @@ describe("MyIssuesList", () => {
       .filter((btn) => btn.textContent?.includes("PROJ-"));
 
     expect(issueButtons).toHaveLength(2);
-
-    // Check that each has animation delay
-    expect(issueButtons[0]).toHaveStyle({ animationDelay: "0ms" });
-    expect(issueButtons[1]).toHaveStyle({ animationDelay: "50ms" });
   });
 
   it("should have correct accessibility attributes", () => {

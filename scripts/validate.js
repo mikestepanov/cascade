@@ -15,12 +15,12 @@
  *   node scripts/validate.js
  */
 
-import { c } from "./validate/utils.js";
-import { run as runStandardsCheck } from "./validate/check-standards.js";
-import { run as runColorAudit } from "./validate/check-colors.js";
 import { run as runApiCallsCheck } from "./validate/check-api-calls.js";
-import { run as runQueryIssuesCheck } from "./validate/check-queries.js";
 import { run as runArbitraryTailwindCheck } from "./validate/check-arbitrary-tw.js";
+import { run as runColorAudit } from "./validate/check-colors.js";
+import { run as runQueryIssuesCheck } from "./validate/check-queries.js";
+import { run as runStandardsCheck } from "./validate/check-standards.js";
+import { c } from "./validate/utils.js";
 
 const checks = [
   { name: "Standards (AST)", fn: runStandardsCheck },
@@ -51,8 +51,12 @@ for (let i = 0; i < results.length; i++) {
   const result = results[i];
   const idx = `[${i + 1}/${checks.length}]`;
   const dots = ".".repeat(Math.max(1, 30 - result.name.length));
-  const statusColor = !result.passed ? c.red : (result.detail && result.detail.includes("warning") ? c.yellow : c.green);
-  const statusText = !result.passed ? "FAIL" : (result.detail && result.detail.includes("warning") ? "WARN" : "PASS");
+  const statusColor = !result.passed
+    ? c.red
+    : result.detail?.includes("warning")
+      ? c.yellow
+      : c.green;
+  const statusText = !result.passed ? "FAIL" : result.detail?.includes("warning") ? "WARN" : "PASS";
   const detailStr = result.detail ? `  (${result.detail})` : "";
   console.log(`${idx} ${result.name}${dots} ${statusColor}${statusText}${c.reset}${detailStr}`);
 }
@@ -69,7 +73,9 @@ if (failedResults.length > 0) {
 console.log("");
 
 if (totalErrors > 0) {
-  console.log(`${c.red}${c.bold}RESULT: FAIL${c.reset} (${totalErrors} error(s)${totalWarnings > 0 ? `, ${totalWarnings} warning(s)` : ""})`);
+  console.log(
+    `${c.red}${c.bold}RESULT: FAIL${c.reset} (${totalErrors} error(s)${totalWarnings > 0 ? `, ${totalWarnings} warning(s)` : ""})`,
+  );
   process.exit(1);
 } else if (totalWarnings > 0) {
   console.log(`${c.green}${c.bold}RESULT: PASS${c.reset} (0 errors, ${totalWarnings} warning(s))`);

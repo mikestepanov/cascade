@@ -102,8 +102,12 @@ export const updateProfile = authenticatedMutation({
     } = {};
 
     if (args.name !== undefined) {
-      validate.name(args.name);
-      updates.name = args.name;
+      const trimmedName = args.name.trim();
+      if (trimmedName.length === 0) {
+        throw validation("name", "Name cannot be empty or whitespace-only");
+      }
+      validate.name(trimmedName);
+      updates.name = trimmedName;
     }
 
     if (args.email !== undefined) {
@@ -136,7 +140,10 @@ export const updateProfile = authenticatedMutation({
       validate.bio(args.bio);
       updates.bio = args.bio;
     }
-    if (args.timezone !== undefined) updates.timezone = args.timezone;
+    if (args.timezone !== undefined) {
+      validate.timezone(args.timezone);
+      updates.timezone = args.timezone;
+    }
     if (args.emailNotifications !== undefined) updates.emailNotifications = args.emailNotifications;
     if (args.desktopNotifications !== undefined)
       updates.desktopNotifications = args.desktopNotifications;
