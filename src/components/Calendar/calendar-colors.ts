@@ -23,69 +23,71 @@ export const EVENT_TYPE_DEFAULT_COLOR: Record<string, EventColor> = {
   personal: "purple",
 };
 
-/** Full event card styling: bg, hover, border, text */
+/** Full event card styling: bg, hover, border, text.
+ *  Uses opacity-based backgrounds (Google Calendar pattern) instead of
+ *  shade-50 tokens so events are visually distinct and color-coded. */
 export const EVENT_COLOR_CLASSES: Record<
   EventColor,
   { bg: string; hover: string; border: string; text: string }
 > = {
   blue: {
-    bg: "bg-palette-blue-bg",
-    hover: "hover:bg-palette-blue/10",
-    border: "border-palette-blue",
+    bg: "bg-palette-blue/20",
+    hover: "hover:bg-palette-blue/30",
+    border: "border-l-4 border-palette-blue",
     text: "text-palette-blue-text",
   },
   red: {
-    bg: "bg-palette-red-bg",
-    hover: "hover:bg-palette-red/10",
-    border: "border-palette-red",
+    bg: "bg-palette-red/20",
+    hover: "hover:bg-palette-red/30",
+    border: "border-l-4 border-palette-red",
     text: "text-palette-red-text",
   },
   green: {
-    bg: "bg-palette-green-bg",
-    hover: "hover:bg-palette-green/10",
-    border: "border-palette-green",
+    bg: "bg-palette-green/20",
+    hover: "hover:bg-palette-green/30",
+    border: "border-l-4 border-palette-green",
     text: "text-palette-green-text",
   },
   amber: {
-    bg: "bg-palette-amber-bg",
-    hover: "hover:bg-palette-amber/10",
-    border: "border-palette-amber",
+    bg: "bg-palette-amber/20",
+    hover: "hover:bg-palette-amber/30",
+    border: "border-l-4 border-palette-amber",
     text: "text-palette-amber-text",
   },
   orange: {
-    bg: "bg-palette-orange-bg",
-    hover: "hover:bg-palette-orange/10",
-    border: "border-palette-orange",
+    bg: "bg-palette-orange/20",
+    hover: "hover:bg-palette-orange/30",
+    border: "border-l-4 border-palette-orange",
     text: "text-palette-orange-text",
   },
   purple: {
-    bg: "bg-palette-purple-bg",
-    hover: "hover:bg-palette-purple/10",
-    border: "border-palette-purple",
+    bg: "bg-palette-purple/20",
+    hover: "hover:bg-palette-purple/30",
+    border: "border-l-4 border-palette-purple",
     text: "text-palette-purple-text",
   },
   pink: {
-    bg: "bg-palette-pink-bg",
-    hover: "hover:bg-palette-pink/10",
-    border: "border-palette-pink",
+    bg: "bg-palette-pink/20",
+    hover: "hover:bg-palette-pink/30",
+    border: "border-l-4 border-palette-pink",
     text: "text-palette-pink-text",
   },
   teal: {
-    bg: "bg-palette-teal-bg",
-    hover: "hover:bg-palette-teal/10",
-    border: "border-palette-teal",
+    bg: "bg-palette-teal/20",
+    hover: "hover:bg-palette-teal/30",
+    border: "border-l-4 border-palette-teal",
     text: "text-palette-teal-text",
   },
   indigo: {
-    bg: "bg-palette-indigo-bg",
-    hover: "hover:bg-palette-indigo/10",
-    border: "border-palette-indigo",
+    bg: "bg-palette-indigo/20",
+    hover: "hover:bg-palette-indigo/30",
+    border: "border-l-4 border-palette-indigo",
     text: "text-palette-indigo-text",
   },
   gray: {
-    bg: "bg-palette-gray-bg",
-    hover: "hover:bg-palette-gray/10",
-    border: "border-palette-gray",
+    bg: "bg-palette-gray/20",
+    hover: "hover:bg-palette-gray/30",
+    border: "border-l-4 border-palette-gray",
     text: "text-palette-gray-text",
   },
 };
