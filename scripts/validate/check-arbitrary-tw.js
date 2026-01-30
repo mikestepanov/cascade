@@ -42,6 +42,7 @@ export function run() {
   for (const file of files) {
     const content = fs.readFileSync(file, "utf-8");
     const lines = content.split("\n");
+    // biome-ignore lint/style/useForOf: Index needed for line number
     for (let i = 0; i < lines.length; i++) {
       for (const { regex } of patterns) {
         if (regex.test(lines[i])) {

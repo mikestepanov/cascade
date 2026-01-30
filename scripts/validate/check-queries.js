@@ -5,15 +5,19 @@
 
 import fs from "node:fs";
 import path from "node:path";
-import { ROOT, c, relPath, walkDir } from "./utils.js";
+import { c, ROOT, relPath, walkDir } from "./utils.js";
 
 export function run() {
   const convexDir = path.join(ROOT, "convex");
 
   const SEVERITY = { HIGH: "HIGH", MEDIUM: "MEDIUM", LOW: "LOW" };
   const EXCLUDED_FILES = [
-    "boundedQueries.ts", "softDeleteHelpers.ts", "batchHelpers.ts",
-    "purge.ts", "e2e.ts", "testUtils.ts",
+    "boundedQueries.ts",
+    "softDeleteHelpers.ts",
+    "batchHelpers.ts",
+    "purge.ts",
+    "e2e.ts",
+    "testUtils.ts",
   ];
 
   function findTsFiles(dir) {
@@ -64,7 +68,11 @@ export function run() {
         if (braceDepth < loopBraceDepth) {
           inLoopContext = false;
         }
-        if (/\)\s*;?\s*$/.test(line) && braceDepth <= loopBraceDepth && !/^\s*(for|while|if|else)\s*\(/.test(lines[i + 1] || "")) {
+        if (
+          /\)\s*;?\s*$/.test(line) &&
+          braceDepth <= loopBraceDepth &&
+          !/^\s*(for|while|if|else)\s*\(/.test(lines[i + 1] || "")
+        ) {
           const nextLine = lines[i + 1] || "";
           if (!/^\s*\./.test(nextLine)) inLoopContext = false;
         }
@@ -78,21 +86,50 @@ export function run() {
         const contextLines = lines.slice(Math.max(0, i - 5), i + 1).join("\n");
         const hasBound = /\.take\s*\(/.test(contextLines) || /\.first\s*\(/.test(contextLines);
         if (!hasBound) {
-          issues.push({ type: "UNBOUNDED_COLLECT", severity: SEVERITY.HIGH, line: lineNum, code: trimmed, message: "Unbounded .collect() - add .take(BOUNDED_LIST_LIMIT) or use .first()" });
+          issues.push({
+            type: "UNBOUNDED_COLLECT",
+            severity: SEVERITY.HIGH,
+            line: lineNum,
+            code: trimmed,
+            message: "Unbounded .collect() - add .take(BOUNDED_LIST_LIMIT) or use .first()",
+          });
         }
       }
 
       // N+1 queries
       if (inLoopContext) {
         const trimmedLine = line.trim();
-        if (trimmedLine.startsWith("//") || trimmedLine.startsWith("*") || trimmedLine.startsWith("/*")) continue;
+        if (
+          trimmedLine.startsWith("//") ||
+          trimmedLine.startsWith("*") ||
+          trimmedLine.startsWith("/*")
+        )
+          continue;
 
         if (/ctx\.db\.(get|query)\s*\(/.test(line) || /await\s+ctx\.db\.(get|query)/.test(line)) {
-          const surroundingContext = lines.slice(Math.max(0, i - 3), Math.min(lines.length, i + 3)).join("\n");
+          const surroundingContext = lines
+            .slice(Math.max(0, i - 3), Math.min(lines.length, i + 3))
+            .join("\n");
           const functionContext = lines.slice(Math.max(0, i - 40), i + 1).join("\n");
-          const isDeleteHelper = /function\s+delete\w*\s*\(/.test(functionContext) || /async\s+function\s+delete\w*/.test(functionContext) || /\bdelete\w*\s*=\s*async/.test(functionContext);
-          if (!((/Promise\.all/.test(surroundingContext) || /batch/i.test(surroundingContext) || isDeleteHelper))) {
-            issues.push({ type: "N_PLUS_1", severity: SEVERITY.HIGH, line: lineNum, loopLine: loopStartLine, code: trimmedLine, message: `Database query inside loop (loop at line ${loopStartLine})` });
+          const isDeleteHelper =
+            /function\s+delete\w*\s*\(/.test(functionContext) ||
+            /async\s+function\s+delete\w*/.test(functionContext) ||
+            /\bdelete\w*\s*=\s*async/.test(functionContext);
+          if (
+            !(
+              /Promise\.all/.test(surroundingContext) ||
+              /batch/i.test(surroundingContext) ||
+              isDeleteHelper
+            )
+          ) {
+            issues.push({
+              type: "N_PLUS_1",
+              severity: SEVERITY.HIGH,
+              line: lineNum,
+              loopLine: loopStartLine,
+              code: trimmedLine,
+              message: `Database query inside loop (loop at line ${loopStartLine})`,
+            });
           }
         }
       }
@@ -101,20 +138,44 @@ export function run() {
       const loopLine = lines[loopStartLine - 1] || "";
       const isWhileLoop = /\bwhile\s*\(/.test(loopLine);
       const nearbyContext = lines.slice(Math.max(0, i - 10), i + 1).join("\n");
-      const isInSwitch = /switch\s*\([^)]+\)\s*\{/.test(nearbyContext) && /\bcase\s+/.test(nearbyContext);
+      const isInSwitch =
+        /switch\s*\([^)]+\)\s*\{/.test(nearbyContext) && /\bcase\s+/.test(nearbyContext);
       const functionContext = lines.slice(Math.max(0, i - 40), i + 1).join("\n");
-      const isDeleteOrCleanup = /function\s+(delete|cleanup|purge|cascade|handleDelete)\w*/i.test(functionContext) || /async\s+function\s+(cascade|handleDelete)/i.test(functionContext) || /autoRetry/i.test(functionContext);
+      const isDeleteOrCleanup =
+        /function\s+(delete|cleanup|purge|cascade|handleDelete)\w*/i.test(functionContext) ||
+        /async\s+function\s+(cascade|handleDelete)/i.test(functionContext) ||
+        /autoRetry/i.test(functionContext);
 
-      if (inLoopContext && !isWhileLoop && !isInSwitch && !isDeleteOrCleanup && /await\s+/.test(line) && !/Promise\.all/.test(line)) {
+      if (
+        inLoopContext &&
+        !isWhileLoop &&
+        !isInSwitch &&
+        !isDeleteOrCleanup &&
+        /await\s+/.test(line) &&
+        !/Promise\.all/.test(line)
+      ) {
         if (/ctx\.(db|storage|scheduler)/.test(line)) {
-          const surroundingContext = lines.slice(Math.max(0, i - 5), Math.min(lines.length, i + 1)).join("\n");
+          const surroundingContext = lines
+            .slice(Math.max(0, i - 5), Math.min(lines.length, i + 1))
+            .join("\n");
           if (!/Promise\.all/.test(surroundingContext)) {
-            const widerContext = lines.slice(Math.max(0, loopStartLine - 2), Math.min(lines.length, i + 15)).join("\n");
+            const widerContext = lines
+              .slice(Math.max(0, loopStartLine - 2), Math.min(lines.length, i + 15))
+              .join("\n");
             const assignmentMatch = lines[loopStartLine - 1]?.match(/const\s+(\w+)\s*=.*\.map/);
             const variableName = assignmentMatch?.[1];
-            const promiseAllPattern = variableName ? new RegExp(`Promise\\.all\\s*\\(\\s*${variableName}`) : /Promise\.all\s*\(/;
+            const promiseAllPattern = variableName
+              ? new RegExp(`Promise\\.all\\s*\\(\\s*${variableName}`)
+              : /Promise\.all\s*\(/;
             if (!promiseAllPattern.test(widerContext)) {
-              issues.push({ type: "SEQUENTIAL_AWAIT", severity: SEVERITY.MEDIUM, line: lineNum, loopLine: loopStartLine, code: line.trim(), message: "Sequential await in loop - consider Promise.all" });
+              issues.push({
+                type: "SEQUENTIAL_AWAIT",
+                severity: SEVERITY.MEDIUM,
+                line: lineNum,
+                loopLine: loopStartLine,
+                code: line.trim(),
+                message: "Sequential await in loop - consider Promise.all",
+              });
             }
           }
         }
@@ -123,9 +184,16 @@ export function run() {
       // Missing index
       if (/\.query\s*\([^)]+\)/.test(line)) {
         const queryContext = lines.slice(i, Math.min(lines.length, i + 5)).join("\n");
-        const hasIndex = /\.withIndex\s*\(/.test(queryContext) || /\.withSearchIndex\s*\(/.test(queryContext);
+        const hasIndex =
+          /\.withIndex\s*\(/.test(queryContext) || /\.withSearchIndex\s*\(/.test(queryContext);
         if (!hasIndex && /\.filter\s*\(/.test(queryContext)) {
-          issues.push({ type: "MISSING_INDEX", severity: SEVERITY.LOW, line: lineNum, code: line.trim(), message: "Query uses .filter() without .withIndex()" });
+          issues.push({
+            type: "MISSING_INDEX",
+            severity: SEVERITY.LOW,
+            line: lineNum,
+            code: line.trim(),
+            message: "Query uses .filter() without .withIndex()",
+          });
         }
       }
 
@@ -134,7 +202,13 @@ export function run() {
       if (takeMatch) {
         const takeValue = parseInt(takeMatch[1], 10);
         if (takeValue > 1000) {
-          issues.push({ type: "LARGE_TAKE", severity: SEVERITY.MEDIUM, line: lineNum, code: line.trim(), message: `Large .take(${takeValue}) - consider pagination` });
+          issues.push({
+            type: "LARGE_TAKE",
+            severity: SEVERITY.MEDIUM,
+            line: lineNum,
+            code: line.trim(),
+            message: `Large .take(${takeValue}) - consider pagination`,
+          });
         }
       }
     }
@@ -159,7 +233,9 @@ export function run() {
   const messages = [];
   if (highCount > 0) {
     for (const issue of allIssues.filter((i) => i.severity === SEVERITY.HIGH)) {
-      messages.push(`  ${c.red}[HIGH]${c.reset} ${issue.file}:${issue.line} ${issue.type} — ${issue.message}`);
+      messages.push(
+        `  ${c.red}[HIGH]${c.reset} ${issue.file}:${issue.line} ${issue.type} — ${issue.message}`,
+      );
     }
   }
 
