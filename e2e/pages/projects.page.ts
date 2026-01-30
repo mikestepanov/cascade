@@ -326,7 +326,14 @@ export class ProjectsPage extends BasePage {
     };
 
     const tabLocator = tabs[tab];
-    await expect(tabLocator).toBeVisible();
+
+    // Wait for tab to be available - handle potential loading states or animations
+    // Using a more lenient timeout for CI environments where hydration can be slow
+    await expect(tabLocator).toBeVisible({ timeout: 15000 });
+
+    // Ensure the tab is actually clickable before attempting to click
+    await expect(tabLocator).toBeEnabled();
+
     // Use force click to ensure we hit it even if animations are playing
     await tabLocator.click({ force: true });
   }
