@@ -90,7 +90,7 @@ export function VersionHistory({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-2xl max-h-[80vh] flex flex-col">
+      <DialogContent className="sm:max-w-2xl max-h-panel flex flex-col">
         <DialogHeader>
           <Flex align="center" gap="md">
             <History className="w-5 h-5 text-brand" />

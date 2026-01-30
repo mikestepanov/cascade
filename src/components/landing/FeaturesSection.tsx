@@ -103,7 +103,7 @@ function FeatureCard({
         <Flex
           align="center"
           justify="center"
-          className="w-12 h-12 rounded-[10px] bg-ui-bg-elevated"
+          className="w-12 h-12 rounded-feature bg-ui-bg-elevated"
         >
           {icon}
         </Flex>

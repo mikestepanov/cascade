@@ -15,7 +15,7 @@ export function UserProfile({ userId, open, onOpenChange }: UserProfileProps) {
         <DialogHeader className="p-6 pb-2">
           <DialogTitle>User Profile</DialogTitle>
         </DialogHeader>
-        <div className="max-h-[80vh] overflow-y-auto px-6 pb-6">
+        <div className="max-h-panel overflow-y-auto px-6 pb-6">
           {/* We pass a prop to ProfileContent to remove its Card wrapper if we want,
                but ProfileContent currently returns a Card.
                It might be better to modify ProfileContent to accept a className or "variant"

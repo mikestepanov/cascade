@@ -166,6 +166,38 @@
   --color-brand-emerald-border: light-dark(var(--p-emerald-600), var(--p-emerald-400));
   --color-brand-emerald-track: light-dark(var(--p-emerald-100), rgba(6, 78, 59, 0.4));
 
+  /* Scrollable Panel Heights */
+  --max-height-panel: 80vh;
+  --max-height-panel-lg: 85vh;
+  --max-height-panel-sm: 50vh;
+  --max-height-panel-md: 60vh;
+
+  /* Decorative Blur */
+  --blur-glow: 120px;
+
+  /* Toast / System Banner */
+  --z-toast-critical: 9999;
+
+  /* Small Label Text */
+  --text-caption: 10px;
+  --text-calendar-weekday: 0.8rem;
+
+  /* Chat Bubble */
+  --max-width-chat-bubble: 85%;
+  --max-width-chat-bubble-md: 80%;
+
+  /* Feature Card Radius (landing) */
+  --radius-feature: 10px;
+
+  /* Subtle Hover Scale */
+  --scale-hover-subtle: 1.02;
+
+  /* Icon - non-standard (1.2rem = 19.2px) */
+  --spacing-icon-theme-toggle: 1.2rem;
+
+  /* Calendar day row height (33px) */
+  --spacing-calendar-day-margin: 33px;
+
   /* Custom Spacing */
   --spacing-form-field: 16px;
   --spacing-section: 32px;

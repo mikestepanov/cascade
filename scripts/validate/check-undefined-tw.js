@@ -40,8 +40,10 @@ function extractColorNames(obj, prefix = "") {
  * These should NOT be flagged as undefined colors.
  */
 const NON_COLOR = new Set([
-  // text-*
+  // text-* (built-in sizes)
   "xs", "sm", "base", "lg", "xl",
+  // text-* (custom font-size tokens from @theme)
+  "caption", "calendar-weekday",
   "left", "center", "right", "justify", "start", "end",
   "wrap", "nowrap", "truncate", "ellipsis", "clip", "balance", "pretty",
   // border-*

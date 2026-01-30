@@ -79,6 +79,17 @@ Imports should be sorted in this order:
 5. Sibling imports (`./helper`)
 6. Style imports (`*.css`)
 
+### Tailwind Arbitrary Values
+
+- **NEVER** use arbitrary bracket syntax (`w-[Npx]`, `max-h-[Xvh]`) for values
+  used in more than one place. Define a design token in `src/index.css` `@theme`
+  block instead.
+- **Check `constants.ts`** for existing tokens (`ANIMATION`, `DISPLAY_LIMITS`, etc.)
+  before reaching for arbitrary values.
+- The validator (`scripts/validate/check-arbitrary-tw.js`) flags all arbitrary
+  values. If you genuinely need one, add it to the `ALLOWED_PATTERNS` allowlist
+  with a comment explaining why.
+
 ### Export Patterns
 
 ```typescript

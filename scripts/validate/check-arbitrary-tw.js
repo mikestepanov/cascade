@@ -36,6 +36,18 @@ export function run() {
     { regex: /border-\[#/, desc: "border color (hex)" },
   ];
 
+  // Approved arbitrary values that cannot be replaced with design tokens
+  const ALLOWED_PATTERNS = [
+    // CSS calc expressions (responsive safe-area)
+    /max-w-\[calc\(/,
+    // Radix CSS variable bindings
+    /\[var\(--radix-/,
+    // Percentage max-widths for constrained layouts (service worker banners)
+    /max-w-\[90%\]/,
+    // Slide animation offsets (e.g. slide-out-to-top-[48%])
+    /slide-(in|out)[\w-]+-\[\d+%\]/,
+  ];
+
   const files = walkDir(srcDir, { extensions: new Set([".ts", ".tsx", ".js", ".jsx"]) });
   let totalFound = 0;
 
@@ -45,6 +57,10 @@ export function run() {
     for (const line of lines) {
       for (const { regex } of patterns) {
         if (regex.test(line)) {
+          // Skip lines matching approved patterns
+          if (ALLOWED_PATTERNS.some((allowed) => allowed.test(line))) {
+            break;
+          }
           totalFound++;
           break; // count each line only once
         }

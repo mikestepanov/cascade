@@ -52,7 +52,7 @@ export function IssueDetailModal({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        className="sm:max-w-5xl max-h-[85vh] overflow-y-auto p-0"
+        className="sm:max-w-5xl max-h-panel-lg overflow-y-auto p-0"
         data-testid="issue-detail-modal"
       >
         <DialogHeader className="px-6 pt-6 pb-0">
