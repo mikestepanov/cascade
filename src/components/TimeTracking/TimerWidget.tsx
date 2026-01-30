@@ -72,7 +72,7 @@ export function TimerWidget() {
 
           {/* Description or Issue */}
           {(runningTimer.description || runningTimer.issue) && (
-            <span className="text-xs text-brand-indigo-text max-w-[150px] truncate">
+            <span className="text-xs text-brand-indigo-text max-w-37.5 truncate">
               {runningTimer.issue ? runningTimer.issue.key : runningTimer.description}
             </span>
           )}

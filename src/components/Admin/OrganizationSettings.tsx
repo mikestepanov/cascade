@@ -154,7 +154,7 @@ export function OrganizationSettings() {
                 onChange={(e) =>
                   setFormData({ ...formData, defaultMaxHoursPerWeek: Number(e.target.value) })
                 }
-                className="max-w-[120px]"
+                className="max-w-30"
               />
               <Typography variant="muted" className="mt-1 text-sm">
                 Maximum hours a team member can log per week
@@ -178,7 +178,7 @@ export function OrganizationSettings() {
                 onChange={(e) =>
                   setFormData({ ...formData, defaultMaxHoursPerDay: Number(e.target.value) })
                 }
-                className="max-w-[120px]"
+                className="max-w-30"
               />
               <Typography variant="muted" className="mt-1 text-sm">
                 Maximum hours a team member can log per day

@@ -96,7 +96,7 @@ function FeatureCard({
       {/* Icon */}
       <div
         className={cn(
-          "inline-flex p-[2px] rounded-xl mb-5 bg-linear-to-br opacity-80 group-hover:opacity-100 transition-opacity",
+          "inline-flex p-0.5 rounded-xl mb-5 bg-linear-to-br opacity-80 group-hover:opacity-100 transition-opacity",
           gradients[gradient],
         )}
       >

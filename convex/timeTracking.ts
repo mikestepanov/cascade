@@ -755,7 +755,7 @@ export const listUserRates = authenticatedQuery({
           .take(MAX_PAGE_SIZE)
       : await ctx.db
           .query("userRates")
-          .filter((q) => q.eq(q.field("effectiveTo"), undefined))
+          .withIndex("by_effective_to", (q) => q.eq("effectiveTo", undefined))
           .take(MAX_PAGE_SIZE);
 
     // Batch fetch all users (avoid N+1!)

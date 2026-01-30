@@ -26,8 +26,8 @@ export const AI_CONFIG = {
   panel: {
     width: {
       mobile: "w-full",
-      tablet: "sm:w-[480px]",
-      desktop: "md:w-[520px]",
+      tablet: "sm:w-120",
+      desktop: "md:w-130",
     },
     headerHeight: 140, // Used in calc(100vh - 140px)
   },

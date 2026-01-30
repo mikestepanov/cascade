@@ -260,7 +260,7 @@ export function IssuesCalendarView({
 
       {/* Calendar Grid */}
       <div className="overflow-x-auto">
-        <div className="bg-ui-bg rounded-lg border border-ui-border overflow-hidden min-w-[640px]">
+        <div className="bg-ui-bg rounded-lg border border-ui-border overflow-hidden min-w-160">
           {/* Weekday Headers */}
           <div className="grid grid-cols-7 bg-ui-bg-secondary border-b border-ui-border">
             {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (

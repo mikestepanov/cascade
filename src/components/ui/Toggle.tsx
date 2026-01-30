@@ -68,19 +68,19 @@ export function Toggle({
       track: "w-8 h-4",
       thumb: "h-3 w-3",
       translate: "translate-x-4",
-      offset: "top-[2px] start-[2px]",
+      offset: "top-0.5 start-0.5",
     },
     md: {
       track: "w-11 h-6",
       thumb: "h-5 w-5",
       translate: "translate-x-5",
-      offset: "top-[2px] start-[2px]",
+      offset: "top-0.5 start-0.5",
     },
     lg: {
       track: "w-14 h-7",
       thumb: "h-6 w-6",
       translate: "translate-x-7",
-      offset: "top-[2px] start-[2px]",
+      offset: "top-0.5 start-0.5",
     },
   };
 

@@ -40,7 +40,7 @@ export function CalendarHeaderDateChevrons(): React.ReactElement {
         <ChevronLeft className="min-w-5 min-h-5" />
       </Button>
 
-      <span className="min-w-[140px] text-center font-medium">{format(date, "MMMM d, yyyy")}</span>
+      <span className="min-w-35 text-center font-medium">{format(date, "MMMM d, yyyy")}</span>
 
       <Button variant="outline" className="h-7 w-7 p-1" onClick={handleDateForward}>
         <ChevronRight className="min-w-5 min-h-5" />

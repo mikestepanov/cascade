@@ -16,7 +16,7 @@ export function CalendarBodyDay(): React.ReactElement {
           </div>
         </div>
       </div>
-      <div className="lg:flex hidden flex-col flex-grow divide-y divide-ui-border max-w-[276px]">
+      <div className="lg:flex hidden flex-col flex-grow divide-y divide-ui-border max-w-69">
         <CalendarBodyDayCalendar />
         <CalendarBodyDayEvents />
       </div>

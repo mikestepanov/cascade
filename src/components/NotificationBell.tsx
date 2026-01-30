@@ -107,7 +107,7 @@ export function NotificationBell() {
       {isOpen && (
         <Flex
           direction="column"
-          className="absolute right-0 mt-2 w-96 bg-ui-bg rounded-lg shadow-xl border border-ui-border z-50 max-h-[32rem] overflow-hidden"
+          className="absolute right-0 mt-2 w-96 bg-ui-bg rounded-lg shadow-xl border border-ui-border z-50 max-h-128 overflow-hidden"
         >
           {/* Header */}
           <Flex align="center" justify="between" className="px-4 py-3 border-b border-ui-border">

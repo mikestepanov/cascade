@@ -34,7 +34,7 @@ export function ProjectsList({ onCreateClick }: ProjectsListProps) {
 
   if (status === "LoadingFirstPage") {
     return (
-      <Flex direction="column" align="center" justify="center" className="min-h-[400px]">
+      <Flex direction="column" align="center" justify="center" className="min-h-100">
         <LoadingSpinner />
       </Flex>
     );

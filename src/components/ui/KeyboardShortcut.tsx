@@ -47,8 +47,8 @@ export function KeyboardShortcut({
   const keys = shortcut.split("+").map((key) => key.trim());
 
   const sizeClasses = {
-    sm: "text-xs px-1.5 py-0.5 min-w-[20px]",
-    md: "text-sm px-2 py-1 min-w-[24px]",
+    sm: "text-xs px-1.5 py-0.5 min-w-5",
+    md: "text-sm px-2 py-1 min-w-6",
   };
 
   const variantClasses = {

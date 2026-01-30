@@ -12,7 +12,7 @@ export function AppSplashScreen({ message }: { message?: string }) {
     >
       {/* Background Glow */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-landing-accent/10 rounded-full blur-[120px]" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-125 h-125 bg-landing-accent/10 rounded-full blur-[120px]" />
       </div>
 
       <Flex direction="column" align="center" className="relative gap-8">
@@ -32,7 +32,7 @@ export function AppSplashScreen({ message }: { message?: string }) {
           className="animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-300 fill-mode-both"
         >
           {/* Minimal high-end loader - Always show to indicate activity */}
-          <div className="w-32 h-[2px] bg-white/5 rounded-full overflow-hidden">
+          <div className="w-32 h-0.5 bg-white/5 rounded-full overflow-hidden">
             <div
               className="h-full bg-linear-to-r from-landing-accent to-landing-accent-alt w-full -translate-x-full animate-shimmer"
               style={{ animation: "shimmer 1.5s infinite linear" }}
