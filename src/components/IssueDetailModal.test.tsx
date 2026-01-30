@@ -108,6 +108,12 @@ describe("IssueDetailModal", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.mocked(useMutation).mockReturnValue(mockUpdateIssue as any);
+    vi.mocked(useQuery).mockImplementation(((_query: any, args: any) => {
+      // Identify query by unique arguments
+      if (args && "id" in args) return mockIssue;
+      if (args && "parentId" in args) return [];
+      return undefined;
+    }) as any);
   });
 
   it("should show loading state when issue is undefined", () => {
@@ -120,8 +126,6 @@ describe("IssueDetailModal", () => {
   });
 
   it("should render issue details", () => {
-    vi.mocked(useQuery).mockReturnValueOnce(mockIssue).mockReturnValueOnce([]);
-
     renderModal();
 
     expect(screen.getByText("TEST-123")).toBeInTheDocument();
@@ -130,8 +134,6 @@ describe("IssueDetailModal", () => {
   });
 
   it("should display issue metadata", () => {
-    vi.mocked(useQuery).mockReturnValueOnce(mockIssue).mockReturnValueOnce([]);
-
     renderModal();
 
     expect(screen.getByText("John Doe")).toBeInTheDocument();
@@ -140,8 +142,6 @@ describe("IssueDetailModal", () => {
   });
 
   it("should display labels", () => {
-    vi.mocked(useQuery).mockReturnValueOnce(mockIssue).mockReturnValueOnce([]);
-
     renderModal();
 
     expect(screen.getByText("backend")).toBeInTheDocument();
@@ -149,16 +149,12 @@ describe("IssueDetailModal", () => {
   });
 
   it("should show correct type icon", () => {
-    vi.mocked(useQuery).mockReturnValueOnce(mockIssue).mockReturnValueOnce([]);
-
     renderModal();
 
     expect(screen.getByText("🐛")).toBeInTheDocument(); // Bug icon
   });
 
   it("should show priority badge with correct color", () => {
-    vi.mocked(useQuery).mockReturnValueOnce(mockIssue).mockReturnValueOnce([]);
-
     renderModal();
 
     const priorityBadge = screen.getByText("high");
@@ -167,8 +163,6 @@ describe("IssueDetailModal", () => {
   });
 
   it("should render TimeTracker component", () => {
-    vi.mocked(useQuery).mockReturnValueOnce(mockIssue).mockReturnValueOnce([]);
-
     renderModal();
 
     expect(screen.getByText(/Time Tracking/i)).toBeInTheDocument();
@@ -176,8 +170,6 @@ describe("IssueDetailModal", () => {
 
   it("should close modal when close button is clicked", async () => {
     const user = userEvent.setup();
-    vi.mocked(useQuery).mockReturnValueOnce(mockIssue).mockReturnValueOnce([]);
-
     renderModal();
 
     // Radix Dialog provides a close button with "Close" text in sr-only span
@@ -189,8 +181,6 @@ describe("IssueDetailModal", () => {
 
   it("should close modal when close button is clicked via dialog-close", async () => {
     const user = userEvent.setup();
-    vi.mocked(useQuery).mockReturnValueOnce(mockIssue).mockReturnValueOnce([]);
-
     renderModal();
 
     // Radix Dialog uses data-slot="dialog-close" for close buttons
@@ -203,13 +193,6 @@ describe("IssueDetailModal", () => {
 
   it("should enter edit mode when Edit button is clicked", async () => {
     const user = userEvent.setup();
-    let callCount = 0;
-    vi.mocked(useQuery).mockImplementation(() => {
-      callCount++;
-      // Alternate between issue and subtasks: odd calls return issue, even calls return []
-      return callCount % 2 === 1 ? mockIssue : [];
-    });
-
     renderModal();
 
     const editButton = screen.getByRole("button", { name: /Edit/i });
@@ -221,12 +204,6 @@ describe("IssueDetailModal", () => {
 
   it("should allow editing title and description", async () => {
     const user = userEvent.setup();
-    let callCount = 0;
-    vi.mocked(useQuery).mockImplementation(() => {
-      callCount++;
-      return callCount % 2 === 1 ? mockIssue : [];
-    });
-
     renderModal();
 
     const editButton = screen.getByRole("button", { name: /Edit/i });
@@ -251,11 +228,6 @@ describe("IssueDetailModal", () => {
 
   it("should call update mutation when Save is clicked", async () => {
     const user = userEvent.setup();
-    let callCount = 0;
-    vi.mocked(useQuery).mockImplementation(() => {
-      callCount++;
-      return callCount % 2 === 1 ? mockIssue : [];
-    });
     mockUpdateIssue.mockResolvedValue(undefined);
 
     renderModal();
@@ -281,12 +253,6 @@ describe("IssueDetailModal", () => {
 
   it("should exit edit mode when Cancel is clicked", async () => {
     const user = userEvent.setup();
-    let callCount = 0;
-    vi.mocked(useQuery).mockImplementation(() => {
-      callCount++;
-      return callCount % 2 === 1 ? mockIssue : [];
-    });
-
     renderModal();
 
     const editButton = screen.getByRole("button", { name: /Edit/i });
@@ -305,7 +271,11 @@ describe("IssueDetailModal", () => {
 
   it("should show No description provided when description is empty", () => {
     const issueWithoutDescription = { ...mockIssue, description: "" };
-    vi.mocked(useQuery).mockReturnValueOnce(issueWithoutDescription).mockReturnValueOnce([]);
+    vi.mocked(useQuery).mockImplementation(((_query: any, args: any) => {
+      if (args && "id" in args) return issueWithoutDescription;
+      if (args && "parentId" in args) return [];
+      return undefined;
+    }) as any);
 
     renderModal();
 
@@ -314,7 +284,11 @@ describe("IssueDetailModal", () => {
 
   it("should show Unassigned when no assignee", () => {
     const issueWithoutAssignee = { ...mockIssue, assignee: null };
-    vi.mocked(useQuery).mockReturnValueOnce(issueWithoutAssignee).mockReturnValueOnce([]);
+    vi.mocked(useQuery).mockImplementation(((_query: any, args: any) => {
+      if (args && "id" in args) return issueWithoutAssignee;
+      if (args && "parentId" in args) return [];
+      return undefined;
+    }) as any);
 
     renderModal();
 
@@ -323,7 +297,11 @@ describe("IssueDetailModal", () => {
 
   it("should not show Labels section when no labels", () => {
     const issueWithoutLabels = { ...mockIssue, labels: [] };
-    vi.mocked(useQuery).mockReturnValueOnce(issueWithoutLabels).mockReturnValueOnce([]);
+    vi.mocked(useQuery).mockImplementation(((_query: any, args: any) => {
+      if (args && "id" in args) return issueWithoutLabels;
+      if (args && "parentId" in args) return [];
+      return undefined;
+    }) as any);
 
     renderModal();
 
@@ -332,11 +310,6 @@ describe("IssueDetailModal", () => {
 
   it("should handle save error gracefully", async () => {
     const user = userEvent.setup();
-    let callCount = 0;
-    vi.mocked(useQuery).mockImplementation(() => {
-      callCount++;
-      return callCount % 2 === 1 ? mockIssue : [];
-    });
     mockUpdateIssue.mockRejectedValue(new Error("Network error"));
 
     const { showError } = await import("@/lib/toast");
@@ -359,8 +332,6 @@ describe("IssueDetailModal", () => {
   });
 
   it("should display story points in metadata", () => {
-    vi.mocked(useQuery).mockReturnValueOnce(mockIssue).mockReturnValueOnce([]);
-
     renderModal();
 
     expect(screen.getByText("Story Points:")).toBeInTheDocument();
@@ -369,7 +340,11 @@ describe("IssueDetailModal", () => {
 
   it("should show 'Not set' when story points is undefined", () => {
     const issueWithoutStoryPoints = { ...mockIssue, storyPoints: undefined };
-    vi.mocked(useQuery).mockReturnValueOnce(issueWithoutStoryPoints).mockReturnValueOnce([]);
+    vi.mocked(useQuery).mockImplementation(((_query: any, args: any) => {
+      if (args && "id" in args) return issueWithoutStoryPoints;
+      if (args && "parentId" in args) return [];
+      return undefined;
+    }) as any);
 
     renderModal();
 
@@ -379,7 +354,11 @@ describe("IssueDetailModal", () => {
 
   it("should display decimal story points correctly", () => {
     const issueWithDecimalPoints = { ...mockIssue, storyPoints: 3.5 };
-    vi.mocked(useQuery).mockReturnValueOnce(issueWithDecimalPoints).mockReturnValueOnce([]);
+    vi.mocked(useQuery).mockImplementation(((_query: any, args: any) => {
+      if (args && "id" in args) return issueWithDecimalPoints;
+      if (args && "parentId" in args) return [];
+      return undefined;
+    }) as any);
 
     renderModal();
 

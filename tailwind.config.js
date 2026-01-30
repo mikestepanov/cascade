@@ -26,16 +26,56 @@ module.exports = {
 
         // Shared Palette (10 named colors × 3 variants)
         palette: {
-          blue: { DEFAULT: "var(--color-palette-blue)", bg: "var(--color-palette-blue-bg)", text: "var(--color-palette-blue-text)" },
-          red: { DEFAULT: "var(--color-palette-red)", bg: "var(--color-palette-red-bg)", text: "var(--color-palette-red-text)" },
-          green: { DEFAULT: "var(--color-palette-green)", bg: "var(--color-palette-green-bg)", text: "var(--color-palette-green-text)" },
-          amber: { DEFAULT: "var(--color-palette-amber)", bg: "var(--color-palette-amber-bg)", text: "var(--color-palette-amber-text)" },
-          orange: { DEFAULT: "var(--color-palette-orange)", bg: "var(--color-palette-orange-bg)", text: "var(--color-palette-orange-text)" },
-          purple: { DEFAULT: "var(--color-palette-purple)", bg: "var(--color-palette-purple-bg)", text: "var(--color-palette-purple-text)" },
-          pink: { DEFAULT: "var(--color-palette-pink)", bg: "var(--color-palette-pink-bg)", text: "var(--color-palette-pink-text)" },
-          teal: { DEFAULT: "var(--color-palette-teal)", bg: "var(--color-palette-teal-bg)", text: "var(--color-palette-teal-text)" },
-          indigo: { DEFAULT: "var(--color-palette-indigo)", bg: "var(--color-palette-indigo-bg)", text: "var(--color-palette-indigo-text)" },
-          gray: { DEFAULT: "var(--color-palette-gray)", bg: "var(--color-palette-gray-bg)", text: "var(--color-palette-gray-text)" },
+          blue: {
+            DEFAULT: "var(--color-palette-blue)",
+            bg: "var(--color-palette-blue-bg)",
+            text: "var(--color-palette-blue-text)",
+          },
+          red: {
+            DEFAULT: "var(--color-palette-red)",
+            bg: "var(--color-palette-red-bg)",
+            text: "var(--color-palette-red-text)",
+          },
+          green: {
+            DEFAULT: "var(--color-palette-green)",
+            bg: "var(--color-palette-green-bg)",
+            text: "var(--color-palette-green-text)",
+          },
+          amber: {
+            DEFAULT: "var(--color-palette-amber)",
+            bg: "var(--color-palette-amber-bg)",
+            text: "var(--color-palette-amber-text)",
+          },
+          orange: {
+            DEFAULT: "var(--color-palette-orange)",
+            bg: "var(--color-palette-orange-bg)",
+            text: "var(--color-palette-orange-text)",
+          },
+          purple: {
+            DEFAULT: "var(--color-palette-purple)",
+            bg: "var(--color-palette-purple-bg)",
+            text: "var(--color-palette-purple-text)",
+          },
+          pink: {
+            DEFAULT: "var(--color-palette-pink)",
+            bg: "var(--color-palette-pink-bg)",
+            text: "var(--color-palette-pink-text)",
+          },
+          teal: {
+            DEFAULT: "var(--color-palette-teal)",
+            bg: "var(--color-palette-teal-bg)",
+            text: "var(--color-palette-teal-text)",
+          },
+          indigo: {
+            DEFAULT: "var(--color-palette-indigo)",
+            bg: "var(--color-palette-indigo-bg)",
+            text: "var(--color-palette-indigo-text)",
+          },
+          gray: {
+            DEFAULT: "var(--color-palette-gray)",
+            bg: "var(--color-palette-gray-bg)",
+            text: "var(--color-palette-gray-text)",
+          },
         },
 
         // Brand (semantic — no shade numbers)
