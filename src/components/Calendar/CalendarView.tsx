@@ -1,3 +1,4 @@
+import { Flex } from "@/components/ui/Flex";
 import { api } from "@convex/_generated/api";
 import type { Id } from "@convex/_generated/dataModel";
 import { useQuery } from "convex/react";
@@ -56,7 +57,7 @@ export function CalendarView(): React.ReactElement {
   }
 
   return (
-    <div className="flex flex-col h-full">
+    <Flex direction="column" className="h-full">
       <ShadcnCalendar
         events={events}
         mode={mode}
@@ -80,6 +81,6 @@ export function CalendarView(): React.ReactElement {
           onOpenChange={(open) => !open && setSelectedEventId(null)}
         />
       )}
-    </div>
+    </Flex>
   );
 }

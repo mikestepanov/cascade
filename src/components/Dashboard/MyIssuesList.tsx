@@ -71,7 +71,7 @@ export function MyIssuesList({
   const isLoadingMore = status === "LoadingMore";
 
   return (
-    <div className="flex flex-col h-full">
+    <Flex direction="column" className="h-full">
       <div className="p-6 pb-2">
         <Typography variant="h3" className="text-xl font-bold">
           Feed
@@ -194,6 +194,6 @@ export function MyIssuesList({
           </Flex>
         )}
       </Flex>
-    </div>
+    </Flex>
   );
 }

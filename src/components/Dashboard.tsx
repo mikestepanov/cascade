@@ -85,7 +85,7 @@ export function Dashboard() {
         {/* Quick Stats - Span 7 */}
         <div className="lg:col-span-7">
           {showStats && (
-            <div className="h-full flex flex-col justify-end">
+            <Flex direction="column" justify="end" className="h-full">
               <Typography
                 variant="small"
                 color="tertiary"
@@ -94,7 +94,7 @@ export function Dashboard() {
                 Overview
               </Typography>
               <QuickStats stats={stats} />
-            </div>
+            </Flex>
           )}
         </div>
       </div>

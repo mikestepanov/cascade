@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { Flex } from "@/components/ui/Flex";
 import { IssueDetailContent } from "./IssueDetailContent";
 import { IssueDetailSidebar } from "./IssueDetailSidebar";
 import type { useIssueDetail } from "./useIssueDetail";
@@ -19,11 +20,11 @@ export function IssueDetailLayout({
   if (!issue) return null;
 
   return (
-    <div className="flex flex-col h-full bg-ui-bg">
+    <Flex direction="column" className="h-full bg-ui-bg">
       {header}
 
       <div className="flex-1 overflow-auto">
-        <div className="max-w-[1600px] mx-auto flex flex-col md:flex-row">
+        <Flex direction="column" className="max-w-[1600px] mx-auto md:flex-row">
           <IssueDetailContent
             issueId={issue._id}
             projectId={issue.projectId}
@@ -52,8 +53,8 @@ export function IssueDetailLayout({
             estimatedHours={issue.estimatedHours}
             billingEnabled={billingEnabled}
           />
-        </div>
+        </Flex>
       </div>
-    </div>
+    </Flex>
   );
 }
