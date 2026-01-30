@@ -1,19 +1,5 @@
 const { fontFamily } = require("tailwindcss/defaultTheme");
 
-// Shared palette – single source of truth for color hex values
-const palette = {
-  blue: { DEFAULT: "#3B82F6", bg: "#DBEAFE", text: "#1E40AF" },
-  red: { DEFAULT: "#EF4444", bg: "#FEE2E2", text: "#991B1B" },
-  green: { DEFAULT: "#10B981", bg: "#D1FAE5", text: "#065F46" },
-  amber: { DEFAULT: "#F59E0B", bg: "#FEF3C7", text: "#92400E" },
-  orange: { DEFAULT: "#F97316", bg: "#FFEDD5", text: "#9A3412" },
-  purple: { DEFAULT: "#8B5CF6", bg: "#EDE9FE", text: "#5B21B6" },
-  pink: { DEFAULT: "#EC4899", bg: "#FCE7F3", text: "#9D174D" },
-  teal: { DEFAULT: "#14B8A6", bg: "#CCFBF1", text: "#115E59" },
-  indigo: { DEFAULT: "#6366F1", bg: "#E0E7FF", text: "#3730A3" },
-  gray: { DEFAULT: "#6B7280", bg: "#F3F4F6", text: "#374151" },
-};
-
 module.exports = {
   darkMode: "class",
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
@@ -33,144 +19,158 @@ module.exports = {
       },
       colors: {
         // ============================================
-        // SEMANTIC COLOR SYSTEM
+        // TIER 2 SEMANTIC COLOR SYSTEM
+        // All values reference CSS custom properties
+        // defined in index.css via light-dark().
         // ============================================
-        // Use these tokens throughout the app for consistency
-        // and easy theme changes
 
-        // Shared Palette (10 named colors)
-        palette,
+        // Shared Palette (10 named colors × 3 variants)
+        palette: {
+          blue: { DEFAULT: "var(--color-palette-blue)", bg: "var(--color-palette-blue-bg)", text: "var(--color-palette-blue-text)" },
+          red: { DEFAULT: "var(--color-palette-red)", bg: "var(--color-palette-red-bg)", text: "var(--color-palette-red-text)" },
+          green: { DEFAULT: "var(--color-palette-green)", bg: "var(--color-palette-green-bg)", text: "var(--color-palette-green-text)" },
+          amber: { DEFAULT: "var(--color-palette-amber)", bg: "var(--color-palette-amber-bg)", text: "var(--color-palette-amber-text)" },
+          orange: { DEFAULT: "var(--color-palette-orange)", bg: "var(--color-palette-orange-bg)", text: "var(--color-palette-orange-text)" },
+          purple: { DEFAULT: "var(--color-palette-purple)", bg: "var(--color-palette-purple-bg)", text: "var(--color-palette-purple-text)" },
+          pink: { DEFAULT: "var(--color-palette-pink)", bg: "var(--color-palette-pink-bg)", text: "var(--color-palette-pink-text)" },
+          teal: { DEFAULT: "var(--color-palette-teal)", bg: "var(--color-palette-teal-bg)", text: "var(--color-palette-teal-text)" },
+          indigo: { DEFAULT: "var(--color-palette-indigo)", bg: "var(--color-palette-indigo-bg)", text: "var(--color-palette-indigo-text)" },
+          gray: { DEFAULT: "var(--color-palette-gray)", bg: "var(--color-palette-gray-bg)", text: "var(--color-palette-gray-text)" },
+        },
 
-        // Brand Colors (Primary Actions)
+        // Brand (semantic — no shade numbers)
         brand: {
-          50: "#EEF2FF",
-          100: "#E0E7FF",
-          200: "#C7D2FE",
-          300: "#A5B4FC",
-          400: "#818CF8",
-          500: "#6366F1", // Main brand color
-          600: "#4F46E5", // DEFAULT - slightly darker for better contrast
-          700: "#4338CA",
-          800: "#3730A3",
-          900: "#312E81",
-          950: "#1E1B4B",
+          DEFAULT: "var(--color-brand)",
+          foreground: "var(--color-brand-foreground)",
+          hover: "var(--color-brand-hover)",
+          active: "var(--color-brand-active)",
+          subtle: "var(--color-brand-subtle)",
+          "subtle-foreground": "var(--color-brand-subtle-foreground)",
+          muted: "var(--color-brand-muted)",
+          border: "var(--color-brand-border)",
+          ring: "var(--color-brand-ring)",
         },
 
-        // Accent Colors (Secondary Actions, Highlights)
+        // Accent (semantic — no shade numbers)
         accent: {
-          50: "#FAF5FF",
-          100: "#F3E8FF",
-          200: "#E9D5FF",
-          300: "#D8B4FE",
-          400: "#C084FC",
-          500: "#A855F7",
-          600: "#9333EA", // DEFAULT
-          700: "#7E22CE",
-          800: "#6B21A8",
-          900: "#581C87",
-          950: "#3B0764",
+          DEFAULT: "var(--color-accent)",
+          foreground: "var(--color-accent-foreground)",
+          hover: "var(--color-accent-hover)",
+          active: "var(--color-accent-active)",
+          subtle: "var(--color-accent-subtle)",
+          "subtle-foreground": "var(--color-accent-subtle-foreground)",
+          muted: "var(--color-accent-muted)",
+          border: "var(--color-accent-border)",
+          ring: "var(--color-accent-ring)",
         },
 
-        // UI Background Colors
+        // UI Surface
         "ui-bg": {
-          primary: "#FFFFFF",
-          secondary: "#F9FAFB",
-          tertiary: "#F3F4F6",
-          elevated: "#FFFFFF",
-          overlay: "rgba(0, 0, 0, 0.5)",
-          // Dark mode
-          "primary-dark": "#111827",
-          "secondary-dark": "#1F2937",
-          "tertiary-dark": "#374151",
-          "elevated-dark": "#1F2937",
-          "overlay-dark": "rgba(0, 0, 0, 0.75)",
+          DEFAULT: "var(--color-ui-bg)",
+          secondary: "var(--color-ui-bg-secondary)",
+          tertiary: "var(--color-ui-bg-tertiary)",
+          elevated: "var(--color-ui-bg-elevated)",
+          overlay: "var(--color-ui-bg-overlay)",
+          hero: "var(--color-ui-bg-hero)",
         },
 
-        // UI Text Colors
+        // UI Text
         "ui-text": {
-          primary: "#111827",
-          secondary: "#6B7280",
-          tertiary: "#9CA3AF",
-          inverse: "#FFFFFF",
-          // Dark mode
-          "primary-dark": "#F9FAFB",
-          "secondary-dark": "#D1D5DB",
-          "tertiary-dark": "#9CA3AF",
-          "inverse-dark": "#111827",
+          DEFAULT: "var(--color-ui-text)",
+          secondary: "var(--color-ui-text-secondary)",
+          tertiary: "var(--color-ui-text-tertiary)",
+          inverse: "var(--color-ui-text-inverse)",
         },
 
-        // UI Border Colors
+        // UI Border
         "ui-border": {
-          primary: "#E5E7EB",
-          secondary: "#D1D5DB",
-          focus: "#4F46E5",
-          error: "#EF4444",
-          // Dark mode
-          "primary-dark": "#374151",
-          "secondary-dark": "#4B5563",
-          "focus-dark": "#6366F1",
-          "error-dark": "#F87171",
+          DEFAULT: "var(--color-ui-border)",
+          secondary: "var(--color-ui-border-secondary)",
+          focus: "var(--color-ui-border-focus)",
+          error: "var(--color-ui-border-error)",
         },
 
-        // Status Colors (referencing palette)
+        // Status
         status: {
           success: {
-            DEFAULT: palette.green.DEFAULT,
-            bg: palette.green.bg,
-            text: palette.green.text,
-            "bg-dark": "#064E3B",
-            "text-dark": "#6EE7B7",
+            DEFAULT: "var(--color-status-success)",
+            bg: "var(--color-status-success-bg)",
+            text: "var(--color-status-success-text)",
           },
           warning: {
-            DEFAULT: palette.amber.DEFAULT,
-            bg: palette.amber.bg,
-            text: palette.amber.text,
-            "bg-dark": "#78350F",
-            "text-dark": "#FCD34D",
+            DEFAULT: "var(--color-status-warning)",
+            bg: "var(--color-status-warning-bg)",
+            text: "var(--color-status-warning-text)",
           },
           error: {
-            DEFAULT: palette.red.DEFAULT,
-            bg: palette.red.bg,
-            text: palette.red.text,
-            "bg-dark": "#7F1D1D",
-            "text-dark": "#FCA5A5",
+            DEFAULT: "var(--color-status-error)",
+            bg: "var(--color-status-error-bg)",
+            text: "var(--color-status-error-text)",
           },
           info: {
-            DEFAULT: palette.blue.DEFAULT,
-            bg: palette.blue.bg,
-            text: palette.blue.text,
-            "bg-dark": "#1E3A8A",
-            "text-dark": "#93C5FD",
+            DEFAULT: "var(--color-status-info)",
+            bg: "var(--color-status-info-bg)",
+            text: "var(--color-status-info-text)",
           },
         },
 
-        // Issue Priority Colors (referencing palette)
+        // Issue Priority
         priority: {
-          lowest: palette.gray.DEFAULT,
-          low: palette.blue.DEFAULT,
-          medium: palette.amber.DEFAULT,
-          high: palette.orange.DEFAULT,
-          highest: palette.red.DEFAULT,
+          lowest: "var(--color-priority-lowest)",
+          low: "var(--color-priority-low)",
+          medium: "var(--color-priority-medium)",
+          high: "var(--color-priority-high)",
+          highest: "var(--color-priority-highest)",
         },
 
-        // Issue Type Colors (referencing palette)
+        // Issue Type
         "issue-type": {
-          task: palette.blue.DEFAULT,
-          bug: palette.red.DEFAULT,
-          story: palette.purple.DEFAULT,
-          epic: palette.amber.DEFAULT,
-          subtask: palette.gray.DEFAULT,
+          task: "var(--color-issue-type-task)",
+          bug: "var(--color-issue-type-bug)",
+          story: "var(--color-issue-type-story)",
+          epic: "var(--color-issue-type-epic)",
+          subtask: "var(--color-issue-type-subtask)",
         },
 
-        // Legacy support (for gradual migration)
-        // These map to the new system
-        primary: {
-          DEFAULT: "#4F46E5",
-          hover: "#4338CA",
+        // Landing
+        landing: {
+          accent: {
+            DEFAULT: "var(--color-landing-accent)",
+            alt: "var(--color-landing-accent-alt)",
+            teal: "var(--color-landing-accent-teal)",
+          },
         },
-        secondary: {
-          DEFAULT: "#6B7280",
-          hover: "#4B5563",
+
+        // shadcn compatibility alias
+        primary: {
+          DEFAULT: "var(--color-brand)",
+          hover: "var(--color-brand-hover)",
+        },
+
+        // Brand feature accents (time tracking, calendar, onboarding)
+        "brand-cyan": {
+          text: "var(--color-brand-cyan-text)",
+          bg: "var(--color-brand-cyan-bg)",
+          border: "var(--color-brand-cyan-border)",
+          track: "var(--color-brand-cyan-track)",
+        },
+        "brand-indigo": {
+          text: "var(--color-brand-indigo-text)",
+          bg: "var(--color-brand-indigo-bg)",
+          border: "var(--color-brand-indigo-border)",
+          track: "var(--color-brand-indigo-track)",
+        },
+        "brand-teal": {
+          text: "var(--color-brand-teal-text)",
+          bg: "var(--color-brand-teal-bg)",
+          border: "var(--color-brand-teal-border)",
+          track: "var(--color-brand-teal-track)",
+        },
+        "brand-emerald": {
+          text: "var(--color-brand-emerald-text)",
+          bg: "var(--color-brand-emerald-bg)",
+          border: "var(--color-brand-emerald-border)",
+          track: "var(--color-brand-emerald-track)",
         },
       },
       spacing: {

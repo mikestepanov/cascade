@@ -62,7 +62,7 @@ export function CommandPalette({ isOpen, onClose, commands }: CommandPaletteProp
     <CommandDialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <Command
         data-testid="command-palette"
-        className="bg-ui-bg-primary"
+        className="bg-ui-bg"
         filter={(value, search) => {
           const cmd = commands.find((c) => c.id === value);
           if (!cmd) return 0;
@@ -79,7 +79,7 @@ export function CommandPalette({ isOpen, onClose, commands }: CommandPaletteProp
           placeholder="Type a command or search..."
           value={search}
           onValueChange={setSearch}
-          className="text-ui-text-primary"
+          className="text-ui-text"
         />
         <CommandList className="max-h-[50vh] sm:max-h-[60vh]">
           <CommandEmpty className="text-ui-text-secondary">No commands found</CommandEmpty>
@@ -94,11 +94,11 @@ export function CommandPalette({ isOpen, onClose, commands }: CommandPaletteProp
                   key={cmd.id}
                   value={cmd.id}
                   onSelect={() => handleSelect(cmd)}
-                  className="cursor-pointer data-[selected=true]:bg-brand-50"
+                  className="cursor-pointer data-[selected=true]:bg-brand-subtle"
                 >
                   {cmd.icon && <span className="text-xl mr-2">{cmd.icon}</span>}
                   <div className="flex-1">
-                    <div className="font-medium text-ui-text-primary">{cmd.label}</div>
+                    <div className="font-medium text-ui-text">{cmd.label}</div>
                     {cmd.description && (
                       <div className="text-xs text-ui-text-secondary">{cmd.description}</div>
                     )}
@@ -111,22 +111,22 @@ export function CommandPalette({ isOpen, onClose, commands }: CommandPaletteProp
         <Flex
           wrap
           gap="md"
-          className="px-4 py-2 border-t border-ui-border-primary bg-ui-bg-secondary text-xs text-ui-text-secondary sm:gap-4"
+          className="px-4 py-2 border-t border-ui-border bg-ui-bg-secondary text-xs text-ui-text-secondary sm:gap-4"
         >
           <span>
-            <CommandShortcut className="bg-ui-bg-primary border border-ui-border-primary px-2 py-1 rounded text-ui-text-primary">
+            <CommandShortcut className="bg-ui-bg border border-ui-border px-2 py-1 rounded text-ui-text">
               ↑↓
             </CommandShortcut>{" "}
             Navigate
           </span>
           <span>
-            <CommandShortcut className="bg-ui-bg-primary border border-ui-border-primary px-2 py-1 rounded text-ui-text-primary">
+            <CommandShortcut className="bg-ui-bg border border-ui-border px-2 py-1 rounded text-ui-text">
               Enter
             </CommandShortcut>{" "}
             Select
           </span>
           <span>
-            <CommandShortcut className="bg-ui-bg-primary border border-ui-border-primary px-2 py-1 rounded text-ui-text-primary">
+            <CommandShortcut className="bg-ui-bg border border-ui-border px-2 py-1 rounded text-ui-text">
               Esc
             </CommandShortcut>{" "}
             Close

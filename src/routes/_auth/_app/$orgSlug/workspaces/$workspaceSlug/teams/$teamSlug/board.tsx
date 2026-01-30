@@ -37,7 +37,7 @@ function TeamBoardPage() {
 
   return (
     <Flex direction="column" className="h-full">
-      <div className="px-6 py-4 border-b border-ui-border-primary">
+      <div className="px-6 py-4 border-b border-ui-border">
         <PageHeader title={`${team.name} Board`} className="mb-0" />
       </div>
       <KanbanBoard teamId={team._id} />

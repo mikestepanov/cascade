@@ -26,16 +26,16 @@ interface StatCardProps {
 
 const variantStyles = {
   brand: {
-    text: "text-brand-600",
-    bg: "bg-brand-600",
+    text: "text-brand",
+    bg: "bg-brand",
   },
   success: {
     text: "text-status-success",
     bg: "bg-status-success",
   },
   accent: {
-    text: "text-accent-600",
-    bg: "bg-accent-600",
+    text: "text-accent",
+    bg: "bg-accent",
   },
 } as const;
 
@@ -100,7 +100,7 @@ function HighPriorityCard({ count }: { count: number }) {
             variant="h2"
             className={cn(
               "text-3xl font-extrabold",
-              hasHighPriority ? "text-status-warning" : "text-ui-text-primary",
+              hasHighPriority ? "text-status-warning" : "text-ui-text",
             )}
           >
             {count || 0}

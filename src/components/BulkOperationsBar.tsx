@@ -103,7 +103,7 @@ export function BulkOperationsBar({
 
   return (
     <>
-      <div className="fixed bottom-0 left-0 right-0 bg-brand-600 text-white shadow-lg z-30 transition-transform">
+      <div className="fixed bottom-0 left-0 right-0 bg-brand text-white shadow-lg z-30 transition-transform">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <Flex align="center" justify="between" gap="lg">
             {/* Selection Info */}

@@ -93,7 +93,7 @@ export function VersionHistory({
       <DialogContent className="sm:max-w-2xl max-h-[80vh] flex flex-col">
         <DialogHeader>
           <Flex align="center" gap="md">
-            <History className="w-5 h-5 text-brand-600" />
+            <History className="w-5 h-5 text-brand" />
             <DialogTitle>Version History</DialogTitle>
           </Flex>
         </DialogHeader>
@@ -107,7 +107,7 @@ export function VersionHistory({
           ) : versions.length === 0 ? (
             <div className="text-center py-12">
               <Clock className="w-12 h-12 text-ui-text-tertiary mx-auto mb-4" />
-              <Typography variant="h3" className="text-lg font-medium text-ui-text-primary mb-2">
+              <Typography variant="h3" className="text-lg font-medium text-ui-text mb-2">
                 No version history yet
               </Typography>
               <Typography className="text-sm text-ui-text-secondary">
@@ -127,8 +127,8 @@ export function VersionHistory({
                     className={cn(
                       "p-4 rounded-lg border transition-colors",
                       isSelected
-                        ? "border-brand-500 bg-brand-indigo-track"
-                        : "border-ui-border-primary hover:border-ui-border-secondary",
+                        ? "border-brand-ring bg-brand-indigo-track"
+                        : "border-ui-border hover:border-ui-border-secondary",
                     )}
                   >
                     <Flex align="start" justify="between">
@@ -139,9 +139,7 @@ export function VersionHistory({
                               Current
                             </span>
                           )}
-                          <span className="text-sm font-medium text-ui-text-primary">
-                            {version.title}
-                          </span>
+                          <span className="text-sm font-medium text-ui-text">{version.title}</span>
                         </Flex>
                         <Flex align="center" gap="md" className="text-sm text-ui-text-secondary">
                           <span className="flex items-center gap-1">
@@ -177,7 +175,7 @@ export function VersionHistory({
         </div>
 
         {/* Footer */}
-        <div className="pt-4 border-t border-ui-border-primary">
+        <div className="pt-4 border-t border-ui-border">
           <Typography className="text-sm text-ui-text-secondary">
             Tip: Versions are saved automatically every minute when you edit. Up to 50 recent
             versions are kept.

@@ -52,17 +52,17 @@ export function AIAssistantPanel({ projectId, isOpen, onClose }: AIAssistantPane
           AI_CONFIG.panel.width.mobile,
           AI_CONFIG.panel.width.tablet,
           AI_CONFIG.panel.width.desktop,
-          "p-0 flex flex-col bg-ui-bg-primary",
+          "p-0 flex flex-col bg-ui-bg",
         )}
       >
         {/* Header */}
-        <div className="p-4 border-b border-ui-border-primary bg-linear-to-r from-brand-600 to-accent-600">
+        <div className="p-4 border-b border-ui-border bg-linear-to-r from-brand to-accent">
           <SheetHeader className="text-left">
             <Flex align="center" gap="md">
               <div className="text-2xl">🤖</div>
               <div>
                 <SheetTitle className="text-lg font-semibold text-white">AI Assistant</SheetTitle>
-                <SheetDescription className="text-xs text-brand-100">
+                <SheetDescription className="text-xs text-brand-subtle">
                   {projectId ? "Project-specific context" : "General chat"}
                 </SheetDescription>
               </div>
@@ -71,15 +71,15 @@ export function AIAssistantPanel({ projectId, isOpen, onClose }: AIAssistantPane
         </div>
 
         {/* Tabs */}
-        <Flex className="border-b border-ui-border-primary bg-ui-bg-secondary">
+        <Flex className="border-b border-ui-border bg-ui-bg-secondary">
           <button
             type="button"
             onClick={() => handleTabChange("chat")}
             className={cn(
               "flex-1 px-4 py-3 font-medium text-sm transition-colors",
               activeTab === "chat"
-                ? "text-brand-600 border-b-2 border-brand-600 bg-ui-bg-primary"
-                : "text-ui-text-tertiary hover:text-ui-text-primary",
+                ? "text-brand border-b-2 border-brand bg-ui-bg"
+                : "text-ui-text-tertiary hover:text-ui-text",
             )}
           >
             💬 Chat
@@ -95,8 +95,8 @@ export function AIAssistantPanel({ projectId, isOpen, onClose }: AIAssistantPane
             className={cn(
               "flex-1 px-4 py-3 font-medium text-sm transition-colors relative",
               activeTab === "suggestions"
-                ? "text-brand-600 border-b-2 border-brand-600 bg-ui-bg-primary"
-                : "text-ui-text-tertiary hover:text-ui-text-primary",
+                ? "text-brand border-b-2 border-brand bg-ui-bg"
+                : "text-ui-text-tertiary hover:text-ui-text",
             )}
           >
             💡 Suggestions

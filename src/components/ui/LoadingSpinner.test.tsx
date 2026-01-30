@@ -91,7 +91,7 @@ describe("LoadingSpinner", () => {
       const spinner = screen.getByRole("status");
       expect(spinner).toHaveClass("animate-spin");
       expect(spinner).toHaveClass("rounded-full");
-      expect(spinner).toHaveClass("border-ui-text-primary");
+      expect(spinner).toHaveClass("border-ui-text");
       expect(spinner).toHaveClass("border-t-transparent");
     });
 
@@ -228,7 +228,7 @@ describe("LoadingOverlay", () => {
       const overlay = container.querySelector(".absolute");
       expect(overlay).toBeInTheDocument();
       expect(overlay).toHaveClass("inset-0");
-      expect(overlay).toHaveClass("bg-ui-bg-primary");
+      expect(overlay).toHaveClass("bg-ui-bg");
       expect(overlay).toHaveClass("bg-opacity-90");
     });
 

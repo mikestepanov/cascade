@@ -103,8 +103,8 @@ function SearchTab({
       className={cn(
         "pb-2 px-1 text-xs sm:text-sm font-medium border-b-2 transition-colors whitespace-nowrap",
         isActive
-          ? "border-brand-500 text-brand-600"
-          : "border-transparent text-ui-text-secondary hover:text-ui-text-primary",
+          ? "border-brand-ring text-brand"
+          : "border-transparent text-ui-text-secondary hover:text-ui-text",
       )}
     >
       {label} {showCount && <span className="text-xs">({count})</span>}
@@ -143,7 +143,7 @@ function SearchListContent({
   if (isLoading) {
     return (
       <div className="p-8 text-center text-ui-text-secondary">
-        <div className="inline-block w-6 h-6 border-2 border-brand-500 border-t-transparent rounded-full animate-spin mb-2" />
+        <div className="inline-block w-6 h-6 border-2 border-brand-ring border-t-transparent rounded-full animate-spin mb-2" />
         <Typography variant="p" className="text-sm">
           Searching...
         </Typography>
@@ -169,12 +169,12 @@ function SearchListContent({
         </CommandGroup>
       )}
       {hasMore && (
-        <div className="p-4 border-t border-ui-border-primary">
+        <div className="p-4 border-t border-ui-border">
           <Button
             variant="ghost"
             size="sm"
             onClick={onLoadMore}
-            className="w-full text-brand-600 bg-brand-50 hover:bg-brand-100:bg-brand-900/50"
+            className="w-full text-brand bg-brand-subtle hover:bg-brand-subtle:bg-brand-active/50"
           >
             Load More ({totalCount - filteredResults.length} remaining)
           </Button>
@@ -210,7 +210,7 @@ function SearchResultItem({ result, onClose }: { result: SearchResult; onClose: 
           {result.type === "issue" ? (
             <svg
               aria-hidden="true"
-              className="w-5 h-5 text-brand-600"
+              className="w-5 h-5 text-brand"
               fill="currentColor"
               viewBox="0 0 20 20"
             >
@@ -223,7 +223,7 @@ function SearchResultItem({ result, onClose }: { result: SearchResult; onClose: 
           ) : (
             <svg
               aria-hidden="true"
-              className="w-5 h-5 text-accent-600"
+              className="w-5 h-5 text-accent"
               fill="currentColor"
               viewBox="0 0 20 20"
             >
@@ -319,30 +319,23 @@ export function GlobalSearch() {
           />
         </svg>
         <span>Search...</span>
-        <kbd className="hidden sm:inline-block px-2 py-0.5 text-xs font-semibold text-ui-text-secondary bg-ui-bg-primary border border-ui-border-primary rounded">
+        <kbd className="hidden sm:inline-block px-2 py-0.5 text-xs font-semibold text-ui-text-secondary bg-ui-bg border border-ui-border rounded">
           ⌘K
         </kbd>
       </Button>
 
       {/* Search Modal */}
       <CommandDialog open={isOpen} onOpenChange={(open) => !open && setIsOpen(false)}>
-        <Command
-          data-testid="global-search-modal"
-          className="bg-ui-bg-primary"
-          shouldFilter={false}
-        >
+        <Command data-testid="global-search-modal" className="bg-ui-bg" shouldFilter={false}>
           <CommandInput
             placeholder="Search issues and documents..."
             value={query}
             onValueChange={setQuery}
-            className="text-ui-text-primary"
+            className="text-ui-text"
           />
 
           {/* Tabs with counts */}
-          <Flex
-            gap="sm"
-            className="sm:gap-4 px-4 pt-2 border-b border-ui-border-primary overflow-x-auto"
-          >
+          <Flex gap="sm" className="sm:gap-4 px-4 pt-2 border-b border-ui-border overflow-x-auto">
             <SearchTab
               label="All"
               isActive={activeTab === "all"}
@@ -382,7 +375,7 @@ export function GlobalSearch() {
           <Flex
             align="center"
             justify="between"
-            className="p-3 border-t border-ui-border-primary text-xs text-ui-text-secondary"
+            className="p-3 border-t border-ui-border text-xs text-ui-text-secondary"
           >
             <Flex align="center" gap="lg">
               <span>

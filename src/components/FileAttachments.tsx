@@ -141,8 +141,8 @@ export function FileAttachments({ issueId }: FileAttachmentsProps) {
         className={cn(
           "border-2 border-dashed rounded-lg p-6 text-center transition-colors",
           dragOver
-            ? "border-brand-500 bg-brand-50"
-            : "border-ui-border-primary hover:border-ui-border-secondary",
+            ? "border-brand-ring bg-brand-subtle"
+            : "border-ui-border hover:border-ui-border-secondary",
         )}
       >
         <input
@@ -173,7 +173,7 @@ export function FileAttachments({ issueId }: FileAttachmentsProps) {
       {/* Attachments List */}
       {attachments && attachments.length > 0 && (
         <div className="space-y-2">
-          <Typography variant="h4" className="text-sm font-medium text-ui-text-primary">
+          <Typography variant="h4" className="text-sm font-medium text-ui-text">
             Attachments ({attachments.length})
           </Typography>
           {attachments.map((attachment: Attachment) => (
@@ -189,7 +189,7 @@ export function FileAttachments({ issueId }: FileAttachmentsProps) {
                   <a
                     href={attachment.url || "#"}
                     download={attachment.filename}
-                    className="text-sm font-medium text-brand-600 hover:text-brand-700:text-brand-500 truncate block"
+                    className="text-sm font-medium text-brand hover:text-brand-hover:text-brand-ring truncate block"
                   >
                     {attachment.filename}
                   </a>
@@ -203,7 +203,7 @@ export function FileAttachments({ issueId }: FileAttachmentsProps) {
                   <a
                     href={attachment.url || "#"}
                     download={attachment.filename}
-                    className="p-1 text-ui-text-secondary hover:text-brand-600:text-brand-400 rounded"
+                    className="p-1 text-ui-text-secondary hover:text-brand:text-brand-muted rounded"
                   >
                     <span className="sr-only">Download {attachment.filename}</span>
                     <svg

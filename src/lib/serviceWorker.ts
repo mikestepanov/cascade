@@ -75,10 +75,10 @@ function showUpdateNotification() {
   const banner = document.createElement("div");
   banner.id = "sw-update-banner";
   banner.className =
-    "fixed bottom-5 left-1/2 -translate-x-1/2 bg-brand-600 text-ui-text-inverse px-6 py-4 rounded-lg shadow-xl z-[9999] flex items-center gap-4 font-sans max-w-[90%]";
+    "fixed bottom-5 left-1/2 -translate-x-1/2 bg-brand text-ui-text-inverse px-6 py-4 rounded-lg shadow-xl z-[9999] flex items-center gap-4 font-sans max-w-[90%]";
   banner.innerHTML = `
     <span>A new version is available!</span>
-    <button id="sw-update-button" class="bg-ui-bg-primary text-brand-600 border-none px-4 py-2 rounded font-semibold cursor-pointer">Update</button>
+    <button id="sw-update-button" class="bg-ui-bg text-brand border-none px-4 py-2 rounded font-semibold cursor-pointer">Update</button>
     <button id="sw-dismiss-button" class="bg-transparent text-ui-text-inverse border border-ui-text-inverse px-4 py-2 rounded font-semibold cursor-pointer">Dismiss</button>
   `;
 
@@ -144,12 +144,12 @@ function showInstallPrompt(onInstall: () => void) {
   const banner = document.createElement("div");
   banner.id = "pwa-install-banner";
   banner.className =
-    "fixed top-5 left-1/2 -translate-x-1/2 bg-ui-bg-elevated text-ui-text-primary px-6 py-4 rounded-container shadow-xl z-[9999] flex items-center gap-4 font-sans max-w-[90%] border-2 border-brand-600";
+    "fixed top-5 left-1/2 -translate-x-1/2 bg-ui-bg-elevated text-ui-text px-6 py-4 rounded-container shadow-xl z-[9999] flex items-center gap-4 font-sans max-w-[90%] border-2 border-brand";
 
   banner.innerHTML = `
     <span>📱 Install Nixelo for quick access!</span>
-    <button id="pwa-install-button" class="bg-brand-600 text-ui-text-inverse border-none px-4 py-2 rounded font-semibold cursor-pointer">Install</button>
-    <button id="pwa-dismiss-button" class="bg-transparent text-brand-600 border border-brand-600 px-4 py-2 rounded font-semibold cursor-pointer">Not now</button>
+    <button id="pwa-install-button" class="bg-brand text-ui-text-inverse border-none px-4 py-2 rounded font-semibold cursor-pointer">Install</button>
+    <button id="pwa-dismiss-button" class="bg-transparent text-brand border border-brand px-4 py-2 rounded font-semibold cursor-pointer">Not now</button>
   `;
 
   document.body.appendChild(banner);

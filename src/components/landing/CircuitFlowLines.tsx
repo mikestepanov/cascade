@@ -14,13 +14,18 @@ export function CircuitFlowLines() {
             stopColor="currentColor"
             stopOpacity="0.6"
           />
-          <stop offset="100%" className="text-brand-400" stopColor="currentColor" stopOpacity="0" />
+          <stop
+            offset="100%"
+            className="text-brand-muted"
+            stopColor="currentColor"
+            stopOpacity="0"
+          />
         </linearGradient>
         <linearGradient id="flowGrad2" x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop offset="0%" className="text-brand-400" stopColor="currentColor" stopOpacity="0" />
+          <stop offset="0%" className="text-brand-muted" stopColor="currentColor" stopOpacity="0" />
           <stop
             offset="50%"
-            className="text-accent-500"
+            className="text-accent-ring"
             stopColor="currentColor"
             stopOpacity="0.5"
           />
@@ -92,7 +97,7 @@ export function CircuitFlowLines() {
         />
         <path
           d="M800,140 L800,290"
-          className="text-brand-400"
+          className="text-brand-muted"
           stroke="currentColor"
           strokeWidth="1"
           strokeDasharray="4 4"
@@ -100,7 +105,7 @@ export function CircuitFlowLines() {
         />
         <path
           d="M1000,290 L1000,430"
-          className="text-accent-500"
+          className="text-accent-ring"
           stroke="currentColor"
           strokeWidth="1"
           strokeDasharray="4 4"
@@ -134,14 +139,14 @@ export function CircuitFlowLines() {
       </circle>
 
       {/* Animated dots - Middle Line - 3 Dots (Purple/Green) */}
-      <circle r="2.5" className="text-accent-500" fill="currentColor" filter="url(#flowGlow)">
+      <circle r="2.5" className="text-accent-ring" fill="currentColor" filter="url(#flowGlow)">
         <animateMotion
           dur="10s"
           repeatCount="indefinite"
           path="M0,300 Q250,280 500,320 T1000,290 T1500,330 T2000,300"
         />
       </circle>
-      <circle r="2.5" className="text-accent-500" fill="currentColor" filter="url(#flowGlow)">
+      <circle r="2.5" className="text-accent-ring" fill="currentColor" filter="url(#flowGlow)">
         <animateMotion
           dur="10s"
           begin="-4s"
@@ -149,7 +154,7 @@ export function CircuitFlowLines() {
           path="M0,300 Q250,280 500,320 T1000,290 T1500,330 T2000,300"
         />
       </circle>
-      <circle r="2.5" className="text-accent-500" fill="currentColor" filter="url(#flowGlow)">
+      <circle r="2.5" className="text-accent-ring" fill="currentColor" filter="url(#flowGlow)">
         <animateMotion
           dur="10s"
           begin="-7s"

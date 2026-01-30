@@ -70,7 +70,7 @@ export function CustomFieldsManager({ projectId }: CustomFieldsManagerProps) {
       {/* Header */}
       <Flex align="center" justify="between">
         <div>
-          <Typography variant="h2" className="text-xl font-semibold text-ui-text-primary">
+          <Typography variant="h2" className="text-xl font-semibold text-ui-text">
             Custom Fields
           </Typography>
           <Typography variant="p" color="secondary" className="text-sm">

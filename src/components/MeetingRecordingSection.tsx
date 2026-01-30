@@ -34,7 +34,7 @@ const STATUS_BADGE_CONFIG: Record<string, StatusBadgeConfig> = {
   scheduled: {
     icon: <Clock className="w-3 h-3 mr-1" />,
     label: "Scheduled",
-    className: "bg-brand-100 text-brand-800",
+    className: "bg-brand-subtle text-brand-active",
   },
   joining: {
     icon: <Play className="w-3 h-3 mr-1 animate-pulse" />,
@@ -49,17 +49,17 @@ const STATUS_BADGE_CONFIG: Record<string, StatusBadgeConfig> = {
   processing: {
     icon: <LoadingSpinner size="xs" className="mr-1" />,
     label: "Processing...",
-    className: "bg-accent-100 text-accent-800",
+    className: "bg-accent-subtle text-accent-active",
   },
   transcribing: {
     icon: <LoadingSpinner size="xs" className="mr-1" />,
     label: "Processing...",
-    className: "bg-accent-100 text-accent-800",
+    className: "bg-accent-subtle text-accent-active",
   },
   summarizing: {
     icon: <LoadingSpinner size="xs" className="mr-1" />,
     label: "Processing...",
-    className: "bg-accent-100 text-accent-800",
+    className: "bg-accent-subtle text-accent-active",
   },
   completed: {
     icon: <CheckCircle className="w-3 h-3 mr-1" />,
@@ -127,10 +127,10 @@ function NoRecordingState({
 
 function ScheduledState({ onCancel }: { onCancel: () => void }) {
   return (
-    <div className="bg-brand-50 rounded-lg p-4">
+    <div className="bg-brand-subtle rounded-lg p-4">
       <Flex justify="between" align="center">
         <div>
-          <Typography variant="p" className="font-medium text-ui-text-primary">
+          <Typography variant="p" className="font-medium text-ui-text">
             Bot scheduled to join
           </Typography>
           <Typography variant="muted" size="xs">
@@ -169,7 +169,7 @@ function InProgressState({ status }: { status: string }) {
       <Flex gap="md" align="center">
         <LoadingSpinner size="sm" />
         <div>
-          <Typography variant="p" className="font-medium text-ui-text-primary">
+          <Typography variant="p" className="font-medium text-ui-text">
             {message}
           </Typography>
           <Typography variant="muted" size="xs">
@@ -279,7 +279,7 @@ export function MeetingRecordingSection({
   };
 
   return (
-    <div className="border-t border-ui-border-primary pt-4">
+    <div className="border-t border-ui-border pt-4">
       <button
         type="button"
         onClick={() => setIsExpanded(!isExpanded)}
@@ -287,7 +287,7 @@ export function MeetingRecordingSection({
       >
         <Flex gap="sm" align="center">
           <Mic className="w-5 h-5 text-ui-text-tertiary" />
-          <span className="text-sm font-semibold text-ui-text-primary">AI Meeting Notes</span>
+          <span className="text-sm font-semibold text-ui-text">AI Meeting Notes</span>
           {recording && <StatusBadge status={recording.status} />}
         </Flex>
         {isExpanded ? (
@@ -338,7 +338,7 @@ function RecordingResults({ recordingId }: { recordingId: Id<"meetingRecordings"
       {/* Executive Summary */}
       {summary && (
         <div className="bg-ui-bg-secondary rounded-lg p-4">
-          <Typography variant="h4" className="text-sm font-semibold text-ui-text-primary mb-2">
+          <Typography variant="h4" className="text-sm font-semibold text-ui-text mb-2">
             Summary
           </Typography>
           <Typography variant="muted">{summary.executiveSummary}</Typography>
@@ -348,13 +348,13 @@ function RecordingResults({ recordingId }: { recordingId: Id<"meetingRecordings"
       {/* Key Points */}
       {summary && summary.keyPoints.length > 0 && (
         <div>
-          <Typography variant="h4" className="text-sm font-semibold text-ui-text-primary mb-2">
+          <Typography variant="h4" className="text-sm font-semibold text-ui-text mb-2">
             Key Points
           </Typography>
           <ul className="space-y-1">
             {summary.keyPoints.map((point: string) => (
               <li key={point} className="text-sm text-ui-text-secondary flex items-start gap-2">
-                <span className="text-brand-600">•</span>
+                <span className="text-brand">•</span>
                 {point}
               </li>
             ))}
@@ -365,7 +365,7 @@ function RecordingResults({ recordingId }: { recordingId: Id<"meetingRecordings"
       {/* Action Items */}
       {summary && summary.actionItems.length > 0 && (
         <div>
-          <Typography variant="h4" className="text-sm font-semibold text-ui-text-primary mb-2">
+          <Typography variant="h4" className="text-sm font-semibold text-ui-text mb-2">
             Action Items
           </Typography>
           <ul className="space-y-2">
@@ -379,7 +379,7 @@ function RecordingResults({ recordingId }: { recordingId: Id<"meetingRecordings"
                   className="text-sm bg-status-warning-bg rounded p-2"
                 >
                   <Flex justify="between" align="start">
-                    <span className="text-ui-text-primary">{item.description}</span>
+                    <span className="text-ui-text">{item.description}</span>
                     {item.assignee && (
                       <Badge size="sm" className="ml-2 shrink-0">
                         {item.assignee}
@@ -401,7 +401,7 @@ function RecordingResults({ recordingId }: { recordingId: Id<"meetingRecordings"
       {/* Decisions */}
       {summary && summary.decisions.length > 0 && (
         <div>
-          <Typography variant="h4" className="text-sm font-semibold text-ui-text-primary mb-2">
+          <Typography variant="h4" className="text-sm font-semibold text-ui-text mb-2">
             Decisions Made
           </Typography>
           <ul className="space-y-1">
@@ -421,7 +421,7 @@ function RecordingResults({ recordingId }: { recordingId: Id<"meetingRecordings"
           <button
             type="button"
             onClick={() => setShowTranscript(!showTranscript)}
-            className="flex items-center gap-2 text-sm text-brand-600 hover:text-brand-700"
+            className="flex items-center gap-2 text-sm text-brand hover:text-brand-hover"
           >
             <FileText className="w-4 h-4" />
             {showTranscript ? "Hide Transcript" : "Show Full Transcript"}

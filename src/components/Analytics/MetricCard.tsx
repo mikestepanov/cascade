@@ -22,10 +22,7 @@ export const MetricCard = memo(function MetricCard({
 }) {
   return (
     <div
-      className={cn(
-        "bg-ui-bg-primary rounded-lg shadow p-6",
-        highlight && "ring-2 ring-status-warning",
-      )}
+      className={cn("bg-ui-bg rounded-lg shadow p-6", highlight && "ring-2 ring-status-warning")}
     >
       <Flex justify="between" align="center">
         <div>

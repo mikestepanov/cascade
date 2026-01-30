@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 const linkStyles =
-  "text-sm text-brand-500 hover:text-brand-400 hover:underline font-medium cursor-pointer transition-colors";
+  "text-sm text-brand-ring hover:text-brand-muted hover:underline font-medium cursor-pointer transition-colors";
 
 const mutedLinkStyles =
   "text-sm text-ui-text-tertiary hover:text-ui-text-secondary hover:underline cursor-pointer transition-colors";

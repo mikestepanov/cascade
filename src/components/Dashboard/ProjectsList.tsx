@@ -88,7 +88,7 @@ export function WorkspacesList({ projects, projectNavigation }: WorkspacesListPr
                 <Flex justify="between" align="center" gap="sm" className="mb-0.5">
                   <Typography
                     variant="small"
-                    className="font-bold text-ui-text-primary truncate group-hover:text-brand-600:text-brand-400 transition-colors"
+                    className="font-bold text-ui-text truncate group-hover:text-brand:text-brand-muted transition-colors"
                   >
                     {project.name}
                   </Typography>

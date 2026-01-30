@@ -12,7 +12,7 @@ export function SectionErrorFallback({ title, message, onRetry }: Props) {
     <Flex align="center" justify="center" className="h-full p-8">
       <div className="max-w-md w-full text-center">
         <div className="text-status-error text-4xl mb-3">⚠️</div>
-        <Typography variant="h2" className="text-xl font-semibold text-ui-text-primary mb-2">
+        <Typography variant="h2" className="text-xl font-semibold text-ui-text mb-2">
           {title}
         </Typography>
         <Typography className="text-ui-text-secondary mb-4">
@@ -23,7 +23,7 @@ export function SectionErrorFallback({ title, message, onRetry }: Props) {
           <button
             type="button"
             onClick={onRetry}
-            className="px-4 py-2 bg-brand-600 text-white rounded-lg hover:bg-brand-700 transition-colors font-medium"
+            className="px-4 py-2 bg-brand text-white rounded-lg hover:bg-brand-hover transition-colors font-medium"
           >
             Try Again
           </button>

@@ -98,10 +98,10 @@ export function run() {
         const classText = getClassText(node);
         const classes = classText.split(/\s+/);
 
-        // Dark mode redundancy
-        const REDUNDANT_PATTERN = /(bg|text|border)-(ui-bg|ui-text|ui-border|status)-[a-z-]+-dark/;
-        if (classes.some((cls) => cls.includes("dark:") && REDUNDANT_PATTERN.test(cls))) {
-          reportError(filePath, node, "Redundant dark mode class detected. Semantic tokens now handle dark mode automatically in index.css.", "warning");
+        // Dark mode redundancy — semantic tokens use light-dark(), no dark: overrides needed
+        const REDUNDANT_DARK_SEMANTIC = /(bg|text|border|ring)-(ui-bg|ui-text|ui-border|brand|accent|status|palette|priority|issue-type|landing)/;
+        if (classes.some((cls) => cls.startsWith("dark:") && REDUNDANT_DARK_SEMANTIC.test(cls))) {
+          reportError(filePath, node, "Redundant dark: prefix on semantic token. All semantic tokens use light-dark() and handle dark mode automatically.", "warning");
         }
 
         // Raw Tailwind colors

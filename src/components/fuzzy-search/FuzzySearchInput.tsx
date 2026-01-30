@@ -187,7 +187,7 @@ export function FuzzySearchInput<T>({
           aria-controls="fuzzy-search-results"
           aria-expanded={showDropdown}
           className={cn(
-            "w-full px-3 py-2 border border-ui-border-primary rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500",
+            "w-full px-3 py-2 border border-ui-border rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-ring",
             className,
           )}
         />
@@ -195,7 +195,7 @@ export function FuzzySearchInput<T>({
         {/* Loading indicator */}
         {isLoading && (
           <div className="absolute right-10 top-1/2 -translate-y-1/2">
-            <div className="animate-spin h-4 w-4 border-2 border-brand-500 border-t-transparent rounded-full" />
+            <div className="animate-spin h-4 w-4 border-2 border-brand-ring border-t-transparent rounded-full" />
           </div>
         )}
 
@@ -226,7 +226,7 @@ export function FuzzySearchInput<T>({
           ref={dropdownRef}
           id="fuzzy-search-results"
           role="listbox"
-          className="absolute z-50 w-full mt-1 bg-ui-bg-primary border border-ui-border-secondary rounded-lg shadow-lg max-h-60 overflow-y-auto"
+          className="absolute z-50 w-full mt-1 bg-ui-bg border border-ui-border-secondary rounded-lg shadow-lg max-h-60 overflow-y-auto"
         >
           {results.length === 0 ? (
             <div className="px-4 py-3 text-sm text-ui-text-tertiary">

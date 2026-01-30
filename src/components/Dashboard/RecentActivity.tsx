@@ -58,14 +58,14 @@ export function RecentActivity({ activities }: RecentActivityProps) {
               <div key={activity._id} className="relative">
                 {/* Timeline connector */}
                 {activityIndex < activities.length - 1 && (
-                  <div className="absolute left-4 top-8 bottom-0 w-px bg-ui-border-primary" />
+                  <div className="absolute left-4 top-8 bottom-0 w-px bg-ui-border" />
                 )}
 
                 <Flex gap="md" align="start">
                   <Flex
                     align="center"
                     justify="center"
-                    className="shrink-0 w-8 h-8 rounded-full bg-ui-bg-tertiary border border-ui-border-primary relative z-10"
+                    className="shrink-0 w-8 h-8 rounded-full bg-ui-bg-tertiary border border-ui-border relative z-10"
                   >
                     <span
                       className="text-xs font-mono font-bold text-ui-text-secondary"
@@ -77,11 +77,7 @@ export function RecentActivity({ activities }: RecentActivityProps) {
 
                   <div className="flex-1 min-w-0 pb-4">
                     <div className="text-sm">
-                      <Typography
-                        variant="small"
-                        as="span"
-                        className="font-bold text-ui-text-primary"
-                      >
+                      <Typography variant="small" as="span" className="font-bold text-ui-text">
                         {activity.userName}
                       </Typography>{" "}
                       <Typography variant="small" as="span" color="secondary">
@@ -91,7 +87,7 @@ export function RecentActivity({ activities }: RecentActivityProps) {
                     <div className="mt-1">
                       <Badge
                         variant="neutral"
-                        className="font-mono text-[10px] bg-ui-bg-tertiary/50 border-ui-border-primary/50"
+                        className="font-mono text-[10px] bg-ui-bg-tertiary/50 border-ui-border/50"
                       >
                         {activity.issueKey}
                       </Badge>

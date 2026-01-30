@@ -134,7 +134,7 @@ export function TimeEntriesList({
             <span>{formatDurationDisplay(duration)}</span>
           </Flex>
 
-          <div className="bg-ui-bg-primary border border-ui-border-primary rounded-lg divide-y divide-ui-border-primary">
+          <div className="bg-ui-bg border border-ui-border rounded-lg divide-y divide-ui-border">
             {dateEntries.map((entry) => (
               <Flex
                 align="start"
@@ -145,7 +145,7 @@ export function TimeEntriesList({
                 {/* Details */}
                 <div className="flex-1 min-w-0">
                   {entry.description && (
-                    <Typography className="text-sm font-medium text-ui-text-primary">
+                    <Typography className="text-sm font-medium text-ui-text">
                       {entry.description}
                     </Typography>
                   )}
@@ -180,7 +180,7 @@ export function TimeEntriesList({
 
                 {/* Duration and cost */}
                 <div className="shrink-0 text-right">
-                  <div className="text-sm font-semibold text-ui-text-primary">
+                  <div className="text-sm font-semibold text-ui-text">
                     {formatDurationDisplay(entry.duration)}
                   </div>
                   {entry.totalCost !== undefined && entry.totalCost > 0 && (

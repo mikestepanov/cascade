@@ -31,9 +31,9 @@ const fallbackVariants = cva(
         xl: "text-lg",
       },
       variant: {
-        brand: "bg-brand-600 text-white",
-        accent: "bg-accent-600 text-white",
-        neutral: "bg-ui-bg-tertiary text-ui-text-primary",
+        brand: "bg-brand text-white",
+        accent: "bg-accent text-white",
+        neutral: "bg-ui-bg-tertiary text-ui-text",
         success: "bg-status-success text-white",
         warning: "bg-status-warning text-white",
         error: "bg-status-error text-white",
@@ -156,7 +156,7 @@ export function AvatarGroup({ children, max, size = "md", className }: AvatarGro
           <div
             key={key}
             className={cn(
-              "ring-2 ring-ui-bg-primary rounded-full",
+              "ring-2 ring-ui-bg rounded-full",
               index > 0 && overlapClasses[size as keyof typeof overlapClasses],
             )}
           >
@@ -169,7 +169,7 @@ export function AvatarGroup({ children, max, size = "md", className }: AvatarGro
           align="center"
           justify="center"
           className={cn(
-            "rounded-full font-medium bg-ui-bg-tertiary text-ui-text-secondary ring-2 ring-ui-bg-primary",
+            "rounded-full font-medium bg-ui-bg-tertiary text-ui-text-secondary ring-2 ring-ui-bg",
             overlapClasses[(size as keyof typeof overlapClasses) || "md"],
             size === "xs" && "w-5 h-5 text-xs",
             size === "sm" && "w-6 h-6 text-xs",

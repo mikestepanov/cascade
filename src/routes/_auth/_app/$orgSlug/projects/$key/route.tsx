@@ -64,7 +64,7 @@ function ProjectLayout() {
   return (
     <Flex direction="column" className="h-full">
       {/* Tab Navigation */}
-      <div className="border-b border-ui-border-primary bg-ui-bg-primary">
+      <div className="border-b border-ui-border bg-ui-bg">
         <nav className="flex space-x-4 px-4 overflow-x-auto" aria-label="Tabs">
           {tabs.map((tab) => (
             <Link
@@ -77,7 +77,7 @@ function ProjectLayout() {
               }}
               inactiveProps={{
                 className:
-                  "border-transparent text-ui-text-secondary hover:text-ui-text-primary hover:border-ui-border-secondary",
+                  "border-transparent text-ui-text-secondary hover:text-ui-text hover:border-ui-border-secondary",
               }}
             >
               {tab.name}

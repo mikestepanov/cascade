@@ -20,22 +20,22 @@ const toggleGroupVariants = cva(
 );
 
 const toggleGroupItemVariants = cva(
-  "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-ui-bg-primary transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
+  "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-ui-bg transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
   {
     variants: {
       variant: {
         default:
-          "bg-transparent text-ui-text-secondary hover:bg-ui-bg-tertiary hover:text-ui-text-primary data-[state=on]:bg-ui-bg-primary data-[state=on]:text-ui-text-primary data-[state=on]:shadow-sm",
+          "bg-transparent text-ui-text-secondary hover:bg-ui-bg-tertiary hover:text-ui-text data-[state=on]:bg-ui-bg data-[state=on]:text-ui-text data-[state=on]:shadow-sm",
         brand:
-          "bg-transparent text-ui-text-secondary hover:bg-brand-100 hover:text-brand-700 data-[state=on]:bg-brand-600 data-[state=on]:text-white",
+          "bg-transparent text-ui-text-secondary hover:bg-brand-subtle hover:text-brand-hover data-[state=on]:bg-brand data-[state=on]:text-white",
         error:
           "bg-transparent text-ui-text-secondary hover:bg-status-error-bg hover:text-status-error-text data-[state=on]:bg-status-error data-[state=on]:text-white",
         success:
           "bg-transparent text-ui-text-secondary hover:bg-status-success-bg hover:text-status-success-text data-[state=on]:bg-status-success data-[state=on]:text-white",
         accent:
-          "bg-transparent text-ui-text-secondary hover:bg-accent-100 hover:text-accent-700 data-[state=on]:bg-accent-600 data-[state=on]:text-white",
+          "bg-transparent text-ui-text-secondary hover:bg-accent-subtle hover:text-accent-hover data-[state=on]:bg-accent data-[state=on]:text-white",
         outline:
-          "border border-ui-border-primary bg-transparent hover:bg-ui-bg-secondary data-[state=on]:bg-ui-bg-secondary data-[state=on]:border-brand-500",
+          "border border-ui-border bg-transparent hover:bg-ui-bg-secondary data-[state=on]:bg-ui-bg-secondary data-[state=on]:border-brand-ring",
       },
       size: {
         sm: "h-8 px-2.5 text-xs",

@@ -61,7 +61,7 @@ function InviteRoute() {
     return (
       <Flex align="center" justify="center" className="min-h-screen bg-ui-bg-secondary">
         <div className="text-center">
-          <Loader2 className="w-8 h-8 animate-spin text-primary-600 mx-auto mb-4" />
+          <Loader2 className="w-8 h-8 animate-spin text-brand mx-auto mb-4" />
           <Typography className="text-ui-text-secondary">Loading invitation...</Typography>
         </div>
       </Flex>
@@ -169,7 +169,7 @@ function InviteRoute() {
       <header className="p-6 flex items-center justify-center">
         <Flex align="center" gap="sm">
           <Flex align="center" justify="center" className="h-8 w-8 rounded-lg bg-brand-main">
-            <Typography variant="small" className="font-bold text-ui-bg-primary">
+            <Typography variant="small" className="font-bold text-ui-bg">
               N
             </Typography>
           </Flex>
@@ -181,7 +181,7 @@ function InviteRoute() {
       <main className="flex-1 flex items-center justify-center p-6">
         <div className="max-w-md w-full">
           {/* Invitation Card */}
-          <div className="bg-ui-bg-primary rounded-2xl shadow-lg p-8 mb-6">
+          <div className="bg-ui-bg rounded-2xl shadow-lg p-8 mb-6">
             <div className="text-center mb-6">
               <Typography variant="h1" className="text-2xl font-bold mb-2">
                 You're Invited!

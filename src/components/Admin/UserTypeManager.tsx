@@ -311,9 +311,9 @@ export function UserTypeManager() {
   const getTypeColor = (type: EmploymentType) => {
     switch (type) {
       case "employee":
-        return "bg-brand-100 text-brand-700";
+        return "bg-brand-subtle text-brand-hover";
       case "contractor":
-        return "bg-accent-100 text-accent-700";
+        return "bg-accent-subtle text-accent-hover";
       case "intern":
         return "bg-status-success-bg text-status-success-text";
     }
@@ -350,13 +350,13 @@ export function UserTypeManager() {
               {configs.map((config: EmploymentTypeConfig) => (
                 <div
                   key={config.type}
-                  className="p-4 border border-ui-border-primary rounded-lg hover:shadow-md transition-shadow"
+                  className="p-4 border border-ui-border rounded-lg hover:shadow-md transition-shadow"
                 >
                   <Flex justify="between" align="start" className="mb-3">
                     <Flex align="center" gap="sm">
                       <span className="text-2xl">{getTypeIcon(config.type)}</span>
                       <div>
-                        <Typography variant="h3" className="font-semibold text-ui-text-primary">
+                        <Typography variant="h3" className="font-semibold text-ui-text">
                           {config.name}
                         </Typography>
                         <span
@@ -380,25 +380,25 @@ export function UserTypeManager() {
                   <Flex direction="column" gap="sm" className="text-sm">
                     <Flex justify="between">
                       <span className="text-ui-text-secondary">Max hours/week:</span>
-                      <span className="font-medium text-ui-text-primary">
+                      <span className="font-medium text-ui-text">
                         {config.defaultMaxHoursPerWeek}h
                       </span>
                     </Flex>
                     <Flex justify="between">
                       <span className="text-ui-text-secondary">Max hours/day:</span>
-                      <span className="font-medium text-ui-text-primary">
+                      <span className="font-medium text-ui-text">
                         {config.defaultMaxHoursPerDay}h
                       </span>
                     </Flex>
                     <Flex justify="between">
                       <span className="text-ui-text-secondary">Requires approval:</span>
-                      <span className="font-medium text-ui-text-primary">
+                      <span className="font-medium text-ui-text">
                         {config.defaultRequiresApproval ? "Yes" : "No"}
                       </span>
                     </Flex>
                     <Flex justify="between">
                       <span className="text-ui-text-secondary">Can work overtime:</span>
-                      <span className="font-medium text-ui-text-primary">
+                      <span className="font-medium text-ui-text">
                         {config.defaultCanWorkOvertime ? "Yes" : "No"}
                       </span>
                     </Flex>
@@ -438,9 +438,9 @@ export function UserTypeManager() {
                     key={user._id}
                     justify="between"
                     align="center"
-                    className="bg-ui-bg-primary p-2 rounded"
+                    className="bg-ui-bg p-2 rounded"
                   >
-                    <span className="text-sm text-ui-text-primary">
+                    <span className="text-sm text-ui-text">
                       {user.name || user.email || "Unknown User"}
                     </span>
                     <Button size="sm" onClick={() => handleAssignUser(user._id)}>
@@ -471,14 +471,14 @@ export function UserTypeManager() {
               {profiles.map((profile: UserProfileWithUser) => (
                 <div
                   key={profile._id}
-                  className="p-4 border border-ui-border-primary rounded-lg hover:bg-ui-bg-secondary transition-colors"
+                  className="p-4 border border-ui-border rounded-lg hover:bg-ui-bg-secondary transition-colors"
                 >
                   <Flex justify="between" align="start">
                     <div className="flex-1">
                       <Flex gap="md" align="center" className="mb-2">
                         <span className="text-xl">{getTypeIcon(profile.employmentType)}</span>
                         <div>
-                          <Typography variant="h4" className="font-medium text-ui-text-primary">
+                          <Typography variant="h4" className="font-medium text-ui-text">
                             {profile.user?.name || profile.user?.email || "Unknown User"}
                           </Typography>
                           <Flex gap="sm" className="mt-1">
@@ -503,28 +503,24 @@ export function UserTypeManager() {
                         {profile.jobTitle && (
                           <div>
                             <span className="text-ui-text-tertiary text-xs">Job Title:</span>
-                            <div className="font-medium text-ui-text-primary">
-                              {profile.jobTitle}
-                            </div>
+                            <div className="font-medium text-ui-text">{profile.jobTitle}</div>
                           </div>
                         )}
                         {profile.department && (
                           <div>
                             <span className="text-ui-text-tertiary text-xs">Department:</span>
-                            <div className="font-medium text-ui-text-primary">
-                              {profile.department}
-                            </div>
+                            <div className="font-medium text-ui-text">{profile.department}</div>
                           </div>
                         )}
                         <div>
                           <span className="text-ui-text-tertiary text-xs">Max hours/week:</span>
-                          <div className="font-medium text-ui-text-primary">
+                          <div className="font-medium text-ui-text">
                             {profile.maxHoursPerWeek || "Default"}
                           </div>
                         </div>
                         <div>
                           <span className="text-ui-text-tertiary text-xs">Max hours/day:</span>
-                          <div className="font-medium text-ui-text-primary">
+                          <div className="font-medium text-ui-text">
                             {profile.maxHoursPerDay || "Default"}
                           </div>
                         </div>
@@ -718,7 +714,7 @@ export function UserTypeManager() {
               </div>
 
               <div className="p-4 bg-ui-bg-secondary rounded-lg">
-                <Typography variant="h4" className="font-medium text-sm mb-3 text-ui-text-primary">
+                <Typography variant="h4" className="font-medium text-sm mb-3 text-ui-text">
                   Hour Overrides (leave empty to use type defaults)
                 </Typography>
                 <div className="grid grid-cols-2 gap-4">
@@ -762,9 +758,9 @@ export function UserTypeManager() {
 
               {/* Equity Compensation Section (Employees Only) */}
               {profileType === "employee" && (
-                <div className="p-4 bg-brand-50 border border-brand-200 rounded-lg">
+                <div className="p-4 bg-brand-subtle border border-brand-border rounded-lg">
                   <Flex justify="between" align="center" className="mb-3">
-                    <Typography variant="h4" className="font-medium text-sm text-brand-900">
+                    <Typography variant="h4" className="font-medium text-sm text-brand-active">
                       💎 Equity Compensation
                     </Typography>
                     <label>
@@ -775,7 +771,7 @@ export function UserTypeManager() {
                           onChange={(e) => setProfileHasEquity(e.target.checked)}
                           className="w-4 h-4"
                         />
-                        <span className="text-xs font-medium text-brand-900">Has Equity</span>
+                        <span className="text-xs font-medium text-brand-active">Has Equity</span>
                       </Flex>
                     </label>
                   </Flex>
@@ -843,7 +839,7 @@ export function UserTypeManager() {
                         rows={2}
                       />
 
-                      <div className="text-xs text-brand-700 bg-brand-100 p-2 rounded">
+                      <div className="text-xs text-brand-hover bg-brand-subtle p-2 rounded">
                         💡 Tip: Equity hours are non-paid hours compensated with equity. Set
                         required hours/week OR hours/month (not both). Max hours/week prevents
                         overwork.

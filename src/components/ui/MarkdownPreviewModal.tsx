@@ -53,7 +53,7 @@ export function MarkdownPreviewModal({
         {/* File Info */}
         <div className="mb-4 p-3 bg-ui-bg-secondary rounded-lg">
           <Flex align="center" justify="between" className="text-sm">
-            <span className="font-medium text-ui-text-primary">📄 {filename}</span>
+            <span className="font-medium text-ui-text">📄 {filename}</span>
             <span className="text-ui-text-tertiary">
               {lines.length} lines • {headings} headings • {lists} lists • {codeBlocks} code blocks
             </span>
@@ -77,14 +77,14 @@ export function MarkdownPreviewModal({
         </div>
 
         {/* Tab Selector */}
-        <Flex className="border-b border-ui-border-primary mb-4">
+        <Flex className="border-b border-ui-border mb-4">
           <button
             type="button"
             onClick={() => setActiveTab("preview")}
             className={cn(
               "px-4 py-2 text-sm font-medium border-b-2 transition-colors",
               activeTab === "preview"
-                ? "border-brand-500 text-brand-600"
+                ? "border-brand-ring text-brand"
                 : "border-transparent text-ui-text-tertiary hover:text-ui-text-secondary",
             )}
           >
@@ -96,7 +96,7 @@ export function MarkdownPreviewModal({
             className={cn(
               "px-4 py-2 text-sm font-medium border-b-2 transition-colors",
               activeTab === "raw"
-                ? "border-brand-500 text-brand-600"
+                ? "border-brand-ring text-brand"
                 : "border-transparent text-ui-text-tertiary hover:text-ui-text-secondary",
             )}
           >
@@ -105,15 +105,13 @@ export function MarkdownPreviewModal({
         </Flex>
 
         {/* Content */}
-        <div className="max-h-96 overflow-y-auto border border-ui-border-primary rounded-lg">
+        <div className="max-h-96 overflow-y-auto border border-ui-border rounded-lg">
           {activeTab === "preview" ? (
             <div className="p-4 prose max-w-none">
               <ReactMarkdown remarkPlugins={[remarkGfm]}>{markdown}</ReactMarkdown>
             </div>
           ) : (
-            <pre className="p-4 text-sm text-ui-text-primary whitespace-pre-wrap font-mono">
-              {markdown}
-            </pre>
+            <pre className="p-4 text-sm text-ui-text whitespace-pre-wrap font-mono">{markdown}</pre>
           )}
         </div>
 

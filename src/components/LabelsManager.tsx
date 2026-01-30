@@ -26,8 +26,8 @@ interface LabelFormData {
   [key: string]: unknown;
 }
 
-// Default to brand-500 equivalent color
-const DEFAULT_LABEL_COLOR = "#6366F1"; // matches --color-brand-500
+// Default to brand-ring equivalent color
+const DEFAULT_LABEL_COLOR = "#6366F1"; // matches --color-brand-ring
 
 const DEFAULT_FORM: LabelFormData = {
   name: "",
@@ -190,7 +190,7 @@ export function LabelsManager({ projectId }: LabelsManagerProps) {
 
               {/* Preview */}
               <div>
-                <div className="block text-sm font-medium text-ui-text-primary mb-2">Preview</div>
+                <div className="block text-sm font-medium text-ui-text mb-2">Preview</div>
                 <span
                   className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium text-white"
                   style={{ backgroundColor: form.formData.color }}

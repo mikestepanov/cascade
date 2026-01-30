@@ -83,7 +83,7 @@ export function MyIssuesList({
       <Flex
         justify="between"
         align="stretch"
-        className="border-b border-ui-border-primary/50 px-4 bg-ui-bg-primary/20"
+        className="border-b border-ui-border/50 px-4 bg-ui-bg/20"
       >
         <button
           type="button"
@@ -91,8 +91,8 @@ export function MyIssuesList({
           className={cn(
             "py-3 px-2 border-b-2 transition-all font-bold text-xs uppercase tracking-wider",
             issueFilter === "assigned"
-              ? "border-brand-600 text-brand-600"
-              : "border-transparent text-ui-text-tertiary hover:text-ui-text-primary",
+              ? "border-brand text-brand"
+              : "border-transparent text-ui-text-tertiary hover:text-ui-text",
           )}
           aria-label="Filter Assigned"
         >
@@ -105,8 +105,8 @@ export function MyIssuesList({
           className={cn(
             "py-3 px-2 border-b-2 transition-all font-bold text-xs uppercase tracking-wider",
             issueFilter === "created"
-              ? "border-brand-600 text-brand-600"
-              : "border-transparent text-ui-text-tertiary hover:text-ui-text-primary",
+              ? "border-brand text-brand"
+              : "border-transparent text-ui-text-tertiary hover:text-ui-text",
           )}
           aria-label="Filter Created"
         >
@@ -151,7 +151,7 @@ export function MyIssuesList({
                     <Flex gap="sm" align="center" className="mb-1.5">
                       <Typography
                         variant="small"
-                        className="font-mono text-xs text-ui-text-tertiary group-hover:text-brand-600 transition-colors"
+                        className="font-mono text-xs text-ui-text-tertiary group-hover:text-brand transition-colors"
                       >
                         {issue.key}
                       </Typography>
@@ -164,7 +164,7 @@ export function MyIssuesList({
                     </Flex>
                     <Typography
                       variant="h4"
-                      className="font-bold text-ui-text-primary mb-1 group-hover:text-brand-600:text-brand-400 transition-colors"
+                      className="font-bold text-ui-text mb-1 group-hover:text-brand:text-brand-muted transition-colors"
                     >
                       {issue.title}
                     </Typography>

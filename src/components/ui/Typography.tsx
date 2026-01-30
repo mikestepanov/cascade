@@ -2,7 +2,7 @@ import { cva, type VariantProps } from "class-variance-authority";
 import type * as React from "react";
 import { cn } from "@/lib/utils";
 
-const typographyVariants = cva("text-ui-text-primary", {
+const typographyVariants = cva("text-ui-text", {
   variants: {
     variant: {
       h1: "scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl",
@@ -20,15 +20,15 @@ const typographyVariants = cva("text-ui-text-primary", {
       muted: "text-sm text-ui-text-tertiary",
     },
     color: {
-      default: "text-ui-text-primary",
+      default: "text-ui-text",
       secondary: "text-ui-text-secondary",
       tertiary: "text-ui-text-tertiary",
-      primary: "text-brand-600", // Justified exception for brand color unless I use semantic brand token
+      primary: "text-brand", // Justified exception for brand color unless I use semantic brand token
       error: "text-status-error",
       success: "text-status-success",
       warning: "text-status-warning",
       info: "text-status-info",
-      accent: "text-accent-600", // Justified exception for accent
+      accent: "text-accent", // Justified exception for accent
     },
     size: {
       xs: "text-xs",

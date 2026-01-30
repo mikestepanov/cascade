@@ -82,7 +82,7 @@ export function UserRatesManagement() {
       {/* Header */}
       <Flex justify="between" align="center">
         <div>
-          <Typography variant="h2" className="text-lg font-semibold text-ui-text-primary">
+          <Typography variant="h2" className="text-lg font-semibold text-ui-text">
             Hourly Rates
           </Typography>
           <Typography className="text-sm text-ui-text-secondary mt-1">
@@ -98,14 +98,11 @@ export function UserRatesManagement() {
       {userRates && userRates.length > 0 ? (
         <Flex direction="column" gap="md">
           {(userRates as EnrichedUserRate[]).map((rate) => (
-            <div
-              key={rate._id}
-              className="p-4 bg-ui-bg-primary border border-ui-border-primary rounded-lg"
-            >
+            <div key={rate._id} className="p-4 bg-ui-bg border border-ui-border rounded-lg">
               <Flex justify="between" align="start">
                 <div className="flex-1">
                   <Flex align="center" gap="md">
-                    <Typography variant="h3" className="text-sm font-medium text-ui-text-primary">
+                    <Typography variant="h3" className="text-sm font-medium text-ui-text">
                       {rate.user?.name || "Unknown User"}
                     </Typography>
                     <span
@@ -113,7 +110,7 @@ export function UserRatesManagement() {
                         "px-2 py-0.5 text-xs rounded",
                         rate.rateType === "billable"
                           ? "bg-status-success/10 text-status-success"
-                          : "bg-ui-bg-secondary text-ui-text-primary",
+                          : "bg-ui-bg-secondary text-ui-text",
                       )}
                     >
                       {rate.rateType}
@@ -133,7 +130,7 @@ export function UserRatesManagement() {
                   )}
                 </div>
                 <div className="text-right">
-                  <div className="text-2xl font-bold text-ui-text-primary">
+                  <div className="text-2xl font-bold text-ui-text">
                     {formatCurrency(rate.hourlyRate, rate.currency)}
                   </div>
                   <div className="text-xs text-ui-text-tertiary">per hour</div>
@@ -143,7 +140,7 @@ export function UserRatesManagement() {
           ))}
         </Flex>
       ) : (
-        <div className="text-center p-12 bg-ui-bg-secondary rounded-lg border-2 border-dashed border-ui-border-primary">
+        <div className="text-center p-12 bg-ui-bg-secondary rounded-lg border-2 border-dashed border-ui-border">
           <svg
             className="mx-auto h-12 w-12 text-ui-text-tertiary"
             fill="none"
@@ -159,7 +156,7 @@ export function UserRatesManagement() {
               d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
             />
           </svg>
-          <Typography variant="h3" className="mt-2 text-sm font-medium text-ui-text-primary">
+          <Typography variant="h3" className="mt-2 text-sm font-medium text-ui-text">
             No hourly rates set
           </Typography>
           <Typography className="mt-1 text-sm text-ui-text-tertiary">
@@ -182,7 +179,7 @@ export function UserRatesManagement() {
             <div>
               <label
                 htmlFor="rate-apply-to"
-                className="block text-sm font-medium text-ui-text-primary mb-1"
+                className="block text-sm font-medium text-ui-text mb-1"
               >
                 Apply To
               </label>
@@ -211,14 +208,14 @@ export function UserRatesManagement() {
 
             {/* Rate Type */}
             <div>
-              <div className="block text-sm font-medium text-ui-text-primary mb-1">Rate Type</div>
+              <div className="block text-sm font-medium text-ui-text mb-1">Rate Type</div>
               <Flex gap="md">
                 <label
                   className={cn(
                     "cursor-pointer flex-1 p-3 border-2 rounded-lg transition-colors",
                     rateType === "internal"
                       ? "border-brand-indigo-border bg-brand-indigo-track"
-                      : "border-ui-border-primary",
+                      : "border-ui-border",
                   )}
                 >
                   <Flex align="center" gap="sm">
@@ -227,10 +224,10 @@ export function UserRatesManagement() {
                       name="rateType"
                       checked={rateType === "internal"}
                       onChange={() => setRateType("internal")}
-                      className="w-4 h-4 text-brand-600"
+                      className="w-4 h-4 text-brand"
                     />
                     <div className="flex-1">
-                      <div className="text-sm font-medium text-ui-text-primary">Internal Cost</div>
+                      <div className="text-sm font-medium text-ui-text">Internal Cost</div>
                       <div className="text-xs text-ui-text-tertiary">What you pay</div>
                     </div>
                   </Flex>
@@ -240,7 +237,7 @@ export function UserRatesManagement() {
                     "cursor-pointer flex-1 p-3 border-2 rounded-lg transition-colors",
                     rateType === "billable"
                       ? "border-brand-indigo-border bg-brand-indigo-track"
-                      : "border-ui-border-primary",
+                      : "border-ui-border",
                   )}
                 >
                   <Flex align="center" gap="sm">
@@ -249,10 +246,10 @@ export function UserRatesManagement() {
                       name="rateType"
                       checked={rateType === "billable"}
                       onChange={() => setRateType("billable")}
-                      className="w-4 h-4 text-brand-600"
+                      className="w-4 h-4 text-brand"
                     />
                     <div className="flex-1">
-                      <div className="text-sm font-medium text-ui-text-primary">Billable Rate</div>
+                      <div className="text-sm font-medium text-ui-text">Billable Rate</div>
                       <div className="text-xs text-ui-text-tertiary">Charge clients</div>
                     </div>
                   </Flex>
@@ -264,7 +261,7 @@ export function UserRatesManagement() {
             <div>
               <label
                 htmlFor="rate-hourly-rate"
-                className="block text-sm font-medium text-ui-text-primary mb-1"
+                className="block text-sm font-medium text-ui-text mb-1"
               >
                 Hourly Rate
               </label>
@@ -281,7 +278,7 @@ export function UserRatesManagement() {
                     placeholder="0.00"
                     step="0.01"
                     min="0"
-                    className="w-full pl-8 pr-3 py-2 border border-ui-border-primary rounded-lg focus:ring-2 focus:ring-brand-500"
+                    className="w-full pl-8 pr-3 py-2 border border-ui-border rounded-lg focus:ring-2 focus:ring-brand-ring"
                   />
                 </div>
                 <Select value={currency} onValueChange={(value) => setCurrency(value)}>

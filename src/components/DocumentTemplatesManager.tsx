@@ -193,8 +193,8 @@ export function DocumentTemplatesManager({
                 className={cn(
                   "px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors",
                   selectedCategory === cat.value
-                    ? "bg-brand-600 text-white"
-                    : "bg-ui-bg-tertiary text-ui-text-primary hover:bg-ui-bg-secondary",
+                    ? "bg-brand text-white"
+                    : "bg-ui-bg-tertiary text-ui-text hover:bg-ui-bg-secondary",
                 )}
               >
                 {cat.label}
@@ -218,10 +218,7 @@ export function DocumentTemplatesManager({
             {/* Built-in Templates */}
             {builtInTemplates.length > 0 && (
               <div>
-                <Typography
-                  variant="h3"
-                  className="text-sm font-semibold text-ui-text-primary mb-3"
-                >
+                <Typography variant="h3" className="text-sm font-semibold text-ui-text mb-3">
                   Built-in Templates
                 </Typography>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -230,15 +227,12 @@ export function DocumentTemplatesManager({
                       key={template._id}
                       type="button"
                       onClick={() => onSelectTemplate?.(template._id)}
-                      className="p-4 bg-linear-to-br from-brand-50 to-brand-100 rounded-lg hover:shadow-md transition-all text-left border-2 border-transparent hover:border-brand-300:border-brand-700"
+                      className="p-4 bg-linear-to-br from-brand-subtle to-brand-subtle rounded-lg hover:shadow-md transition-all text-left border-2 border-transparent hover:border-brand-muted:border-brand-hover"
                     >
                       <Flex align="start" gap="md">
                         <span className="text-3xl">{template.icon}</span>
                         <div className="flex-1">
-                          <Typography
-                            variant="h4"
-                            className="font-semibold text-ui-text-primary mb-1"
-                          >
+                          <Typography variant="h4" className="font-semibold text-ui-text mb-1">
                             {template.name}
                           </Typography>
                           {template.description && (
@@ -264,17 +258,14 @@ export function DocumentTemplatesManager({
             {/* Custom Templates */}
             {customTemplates.length > 0 && (
               <div>
-                <Typography
-                  variant="h3"
-                  className="text-sm font-semibold text-ui-text-primary mb-3"
-                >
+                <Typography variant="h3" className="text-sm font-semibold text-ui-text mb-3">
                   Custom Templates
                 </Typography>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {customTemplates.map((template: Doc<"documentTemplates">) => (
                     <div
                       key={template._id}
-                      className="p-4 bg-ui-bg-secondary rounded-lg hover:bg-ui-bg-tertiary transition-colors border border-ui-border-primary"
+                      className="p-4 bg-ui-bg-secondary rounded-lg hover:bg-ui-bg-tertiary transition-colors border border-ui-border"
                     >
                       <Flex align="start" gap="md">
                         <button
@@ -284,10 +275,7 @@ export function DocumentTemplatesManager({
                         >
                           <span className="text-2xl">{template.icon}</span>
                           <div className="flex-1">
-                            <Typography
-                              variant="h4"
-                              className="font-medium text-ui-text-primary mb-1"
-                            >
+                            <Typography variant="h4" className="font-medium text-ui-text mb-1">
                               {template.name}
                             </Typography>
                             {template.description && (
@@ -434,9 +422,9 @@ export function DocumentTemplatesManager({
                       checked={field.state.value as boolean}
                       onChange={(e) => field.handleChange(e.target.checked)}
                       onBlur={field.handleBlur}
-                      className="w-4 h-4 text-brand-600 bg-ui-bg-primary border-ui-border-primary rounded focus:ring-brand-500:ring-brand-600 focus:ring-2"
+                      className="w-4 h-4 text-brand bg-ui-bg border-ui-border rounded focus:ring-brand-ring:ring-brand focus:ring-2"
                     />
-                    <label htmlFor="isPublic" className="text-sm font-medium text-ui-text-primary">
+                    <label htmlFor="isPublic" className="text-sm font-medium text-ui-text">
                       Make public (visible to all users)
                     </label>
                   </Flex>

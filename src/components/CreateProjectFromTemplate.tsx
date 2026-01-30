@@ -105,11 +105,11 @@ export function CreateProjectFromTemplate({
   const getCategoryColor = (category: string) => {
     switch (category) {
       case "software":
-        return "bg-brand-100 text-brand-800";
+        return "bg-brand-subtle text-brand-active";
       case "marketing":
-        return "bg-accent-100 text-accent-800";
+        return "bg-accent-subtle text-accent-active";
       case "design":
-        return "bg-accent-100 text-accent-800";
+        return "bg-accent-subtle text-accent-active";
       default:
         return "bg-ui-bg-tertiary text-ui-text-secondary";
     }
@@ -140,14 +140,14 @@ export function CreateProjectFromTemplate({
                     type="button"
                     key={template._id}
                     onClick={() => handleSelectTemplate(template._id)}
-                    className="text-left p-6 border-2 border-ui-border-primary rounded-lg hover:border-brand-500 hover:bg-ui-bg-secondary transition-colors"
+                    className="text-left p-6 border-2 border-ui-border rounded-lg hover:border-brand-ring hover:bg-ui-bg-secondary transition-colors"
                   >
                     <Flex align="start" gap="lg">
                       <div className="text-4xl shrink-0">{template.icon}</div>
                       <div className="flex-1 min-w-0">
                         <Typography
                           variant="h3"
-                          className="text-lg font-semibold text-ui-text-primary mb-1"
+                          className="text-lg font-semibold text-ui-text mb-1"
                         >
                           {template.name}
                         </Typography>
@@ -183,7 +183,7 @@ export function CreateProjectFromTemplate({
                 <Flex align="center" gap="md">
                   <span className="text-3xl">{selectedTemplate.icon}</span>
                   <div>
-                    <Typography variant="h3" className="font-semibold text-ui-text-primary">
+                    <Typography variant="h3" className="font-semibold text-ui-text">
                       {selectedTemplate.name}
                     </Typography>
                     <Typography variant="p" color="secondary" className="text-sm">
@@ -239,7 +239,7 @@ export function CreateProjectFromTemplate({
             {/* Preview */}
             {selectedTemplate && (
               <div>
-                <Typography variant="h4" className="text-sm font-medium text-ui-text-primary mb-3">
+                <Typography variant="h4" className="text-sm font-medium text-ui-text mb-3">
                   What's Included:
                 </Typography>
                 <div className="space-y-2 text-sm">
@@ -256,7 +256,7 @@ export function CreateProjectFromTemplate({
                         clipRule="evenodd"
                       />
                     </svg>
-                    <span className="text-ui-text-primary">
+                    <span className="text-ui-text">
                       {selectedTemplate.workflowStates.length} workflow states
                     </span>
                   </Flex>
@@ -273,7 +273,7 @@ export function CreateProjectFromTemplate({
                         clipRule="evenodd"
                       />
                     </svg>
-                    <span className="text-ui-text-primary">
+                    <span className="text-ui-text">
                       {selectedTemplate.defaultLabels.length} pre-configured labels
                     </span>
                   </Flex>
@@ -290,7 +290,7 @@ export function CreateProjectFromTemplate({
                         clipRule="evenodd"
                       />
                     </svg>
-                    <span className="text-ui-text-primary capitalize">
+                    <span className="text-ui-text capitalize">
                       {selectedTemplate.boardType} board type
                     </span>
                   </Flex>

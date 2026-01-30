@@ -51,7 +51,7 @@ export function UnsubscribePage({ token }: UnsubscribePageProps) {
 
   return (
     <Flex align="center" justify="center" className="min-h-screen bg-ui-bg-secondary">
-      <div className="max-w-md w-full bg-ui-bg-primary rounded-lg shadow-lg p-8">
+      <div className="max-w-md w-full bg-ui-bg rounded-lg shadow-lg p-8">
         {status === "loading" && (
           <div className="text-center">
             <LoadingSpinner size="lg" className="mx-auto mb-4" />

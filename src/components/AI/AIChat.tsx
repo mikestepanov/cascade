@@ -52,9 +52,7 @@ function MessageItem({
       <div
         className={cn(
           "relative max-w-[85%] md:max-w-[80%] rounded-lg px-4 py-3",
-          message.role === "user"
-            ? "bg-brand-600 text-white"
-            : "bg-ui-bg-secondary text-ui-text-primary",
+          message.role === "user" ? "bg-brand text-white" : "bg-ui-bg-secondary text-ui-text",
         )}
       >
         {/* Copy button for assistant messages */}
@@ -63,7 +61,7 @@ function MessageItem({
             variant="ghost"
             size="icon"
             onClick={() => onCopy(message.content, messageId)}
-            className="absolute -right-2 -top-2 h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity shadow-sm hover:shadow-md border border-ui-border-primary bg-ui-bg-primary"
+            className="absolute -right-2 -top-2 h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity shadow-sm hover:shadow-md border border-ui-border bg-ui-bg"
             title="Copy message"
           >
             {isCopied ? (
@@ -159,7 +157,7 @@ export const AIChat = React.memo(function AIChat({
   }
 
   return (
-    <Flex direction="column" className="h-full bg-ui-bg-primary">
+    <Flex direction="column" className="h-full bg-ui-bg">
       {/* Messages Area */}
       <Flex direction="column" gap="lg" className="flex-1 overflow-y-auto p-4">
         {!messages ? (
@@ -172,7 +170,7 @@ export const AIChat = React.memo(function AIChat({
           <Flex align="center" justify="center" className="h-full text-center">
             <div>
               <div className="text-4xl mb-4">🤖</div>
-              <Typography variant="h3" className="text-lg font-semibold text-ui-text-primary mb-2">
+              <Typography variant="h3" className="text-lg font-semibold text-ui-text mb-2">
                 AI Assistant
               </Typography>
               <Typography variant="p" className="text-ui-text-secondary mb-4">
@@ -228,7 +226,7 @@ export const AIChat = React.memo(function AIChat({
       </Flex>
 
       {/* Input Area */}
-      <div className="border-t border-ui-border-primary p-3 sm:p-4 bg-ui-bg-secondary safe-area-inset-bottom">
+      <div className="border-t border-ui-border p-3 sm:p-4 bg-ui-bg-secondary safe-area-inset-bottom">
         <Flex gap="sm" align="end">
           <textarea
             ref={textareaRef}
@@ -237,7 +235,7 @@ export const AIChat = React.memo(function AIChat({
             onKeyPress={handleKeyPress}
             placeholder="Ask me anything about your project..."
             disabled={isSending}
-            className="flex-1 resize-none rounded-lg border border-ui-border-primary bg-ui-bg-primary px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base text-ui-text-primary placeholder-ui-text-tertiary focus:outline-none focus:ring-2 focus:ring-brand-500 disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden transition-all"
+            className="flex-1 resize-none rounded-lg border border-ui-border bg-ui-bg px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base text-ui-text placeholder-ui-text-tertiary focus:outline-none focus:ring-2 focus:ring-brand-ring disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden transition-all"
             rows={1}
             style={{
               minHeight: `${AI_CONFIG.textarea.minHeight}px`,

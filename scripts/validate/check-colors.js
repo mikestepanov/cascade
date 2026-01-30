@@ -48,7 +48,7 @@ export function run() {
     "palette-",
     "brand-", "accent-", "ui-bg-", "ui-text-", "ui-border-",
     "status-success", "status-warning", "status-error", "status-info",
-    "priority-", "issue-type-", "primary", "secondary",
+    "priority-", "issue-type-", "landing-", "primary", "secondary",
   ];
 
   const RAW_COLORS = [

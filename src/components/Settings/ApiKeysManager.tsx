@@ -44,7 +44,7 @@ export function ApiKeysManager() {
         {/* Header */}
         <Flex justify="between" align="center" className="mb-6">
           <div>
-            <Typography variant="h3" className="text-lg font-semibold text-ui-text-primary">
+            <Typography variant="h3" className="text-lg font-semibold text-ui-text">
               <Flex gap="sm" align="center">
                 <Key className="h-5 w-5" />
                 API Keys
@@ -64,9 +64,9 @@ export function ApiKeysManager() {
 
         {/* API Keys List */}
         {!apiKeys || apiKeys.length === 0 ? (
-          <div className="text-center py-12 bg-ui-bg-secondary rounded-lg border-2 border-dashed border-ui-border-primary">
+          <div className="text-center py-12 bg-ui-bg-secondary rounded-lg border-2 border-dashed border-ui-border">
             <Key className="h-12 w-12 text-ui-text-tertiary mx-auto mb-3" />
-            <Typography variant="h4" className="text-sm font-medium text-ui-text-primary mb-1">
+            <Typography variant="h4" className="text-sm font-medium text-ui-text mb-1">
               No API keys yet
             </Typography>
             <Typography className="text-sm text-ui-text-secondary mb-4">
@@ -93,14 +93,14 @@ export function ApiKeysManager() {
         )}
 
         {/* Documentation Link */}
-        <div className="mt-6 p-4 bg-brand-50 rounded-lg border border-brand-200">
-          <Typography className="text-sm text-brand-900">
+        <div className="mt-6 p-4 bg-brand-subtle rounded-lg border border-brand-border">
+          <Typography className="text-sm text-brand-active">
             📚 <strong>Need help?</strong> Check out the{" "}
             <a
               href="/docs/API.md"
               target="_blank"
               rel="noopener noreferrer"
-              className="underline hover:text-brand-700"
+              className="underline hover:text-brand-hover"
             >
               API Documentation
             </a>{" "}
@@ -169,12 +169,12 @@ function ApiKeyCard({ apiKey, onViewStats }: { apiKey: ApiKey; onViewStats: () =
   };
 
   return (
-    <div className="p-4 bg-ui-bg-secondary rounded-lg border border-ui-border-primary">
+    <div className="p-4 bg-ui-bg-secondary rounded-lg border border-ui-border">
       <Flex justify="between" align="start">
         <div className="flex-1">
           {/* Name & Status */}
           <Flex gap="sm" align="center" className="mb-2">
-            <Typography variant="h4" className="font-medium text-ui-text-primary">
+            <Typography variant="h4" className="font-medium text-ui-text">
               {apiKey.name}
             </Typography>
             {apiKey.isActive ? (
@@ -186,7 +186,7 @@ function ApiKeyCard({ apiKey, onViewStats }: { apiKey: ApiKey; onViewStats: () =
 
           {/* Key Prefix */}
           <Flex gap="sm" align="center" className="mb-3">
-            <code className="text-sm font-mono bg-ui-bg-primary px-2 py-1 rounded border border-ui-border-primary">
+            <code className="text-sm font-mono bg-ui-bg px-2 py-1 rounded border border-ui-border">
               {apiKey.keyPrefix}...
             </code>
             <Tooltip content="Copy key prefix">
@@ -205,7 +205,10 @@ function ApiKeyCard({ apiKey, onViewStats }: { apiKey: ApiKey; onViewStats: () =
           {/* Scopes */}
           <Flex className="flex-wrap gap-1 mb-3">
             {apiKey.scopes.map((scope: string) => (
-              <span key={scope} className="px-2 py-0.5 text-xs bg-brand-100 text-brand-800 rounded">
+              <span
+                key={scope}
+                className="px-2 py-0.5 text-xs bg-brand-subtle text-brand-active rounded"
+              >
                 {scope}
               </span>
             ))}
@@ -244,7 +247,7 @@ function ApiKeyCard({ apiKey, onViewStats }: { apiKey: ApiKey; onViewStats: () =
               onClick={onViewStats}
               variant="ghost"
               size="sm"
-              className="p-2 min-w-0 text-ui-text-tertiary hover:text-brand-600:text-brand-400"
+              className="p-2 min-w-0 text-ui-text-tertiary hover:text-brand:text-brand-muted"
               aria-label="View usage statistics"
             >
               <TrendingUp className="h-4 w-4" />
@@ -371,7 +374,7 @@ function GenerateKeyModal({
 
               {/* Scopes */}
               <div>
-                <div className="block text-sm font-medium text-ui-text-primary mb-2">
+                <div className="block text-sm font-medium text-ui-text mb-2">
                   Permissions (Scopes) <span className="text-status-error">*</span>
                 </div>
                 <div className="space-y-2 max-h-64 overflow-y-auto">
@@ -388,7 +391,7 @@ function GenerateKeyModal({
                         className="mt-0.5"
                       />
                       <div className="ml-3">
-                        <Typography className="text-sm font-medium text-ui-text-primary">
+                        <Typography className="text-sm font-medium text-ui-text">
                           {scope.label}
                         </Typography>
                         <Typography className="text-xs text-ui-text-tertiary">
@@ -432,10 +435,7 @@ function GenerateKeyModal({
                 >
                   <Key className="h-6 w-6 text-status-success" />
                 </Flex>
-                <Typography
-                  variant="h3"
-                  className="text-lg font-semibold text-ui-text-primary mb-2"
-                >
+                <Typography variant="h3" className="text-lg font-semibold text-ui-text mb-2">
                   API Key Generated!
                 </Typography>
                 <Typography className="text-sm text-ui-text-secondary mb-6">
@@ -443,7 +443,7 @@ function GenerateKeyModal({
                 </Typography>
 
                 {/* Generated Key Display */}
-                <div className="mb-6 p-4 bg-ui-bg-primary-dark rounded-lg">
+                <div className="mb-6 p-4 bg-ui-bg-tertiary rounded-lg">
                   <code className="text-sm font-mono text-status-success break-all select-all">
                     {generatedKey}
                   </code>
@@ -454,7 +454,7 @@ function GenerateKeyModal({
                   <Typography className="font-medium text-status-info-text mb-2">
                     Usage Example:
                   </Typography>
-                  <code className="block bg-ui-bg-primary p-2 rounded text-xs font-mono">
+                  <code className="block bg-ui-bg p-2 rounded text-xs font-mono">
                     curl -H "Authorization: Bearer {generatedKey.substring(0, 20)}..."
                     https://nixelo.app/api/issues
                   </code>
@@ -514,7 +514,7 @@ function UsageStatsModal({
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
               <div className="p-4 bg-ui-bg-secondary rounded-lg">
                 <Typography className="text-xs text-ui-text-secondary mb-1">Total Calls</Typography>
-                <Typography className="text-2xl font-bold text-ui-text-primary">
+                <Typography className="text-2xl font-bold text-ui-text">
                   {stats.totalCalls.toLocaleString()}
                 </Typography>
               </div>
@@ -522,7 +522,7 @@ function UsageStatsModal({
                 <Typography className="text-xs text-ui-text-secondary mb-1">
                   Last 24 Hours
                 </Typography>
-                <Typography className="text-2xl font-bold text-ui-text-primary">
+                <Typography className="text-2xl font-bold text-ui-text">
                   {stats.last24Hours.toLocaleString()}
                 </Typography>
               </div>
@@ -541,7 +541,7 @@ function UsageStatsModal({
                 <Typography className="text-xs text-ui-text-secondary mb-1">
                   Avg Response
                 </Typography>
-                <Typography className="text-2xl font-bold text-ui-text-primary">
+                <Typography className="text-2xl font-bold text-ui-text">
                   {stats.avgResponseTime}ms
                 </Typography>
               </div>
@@ -549,7 +549,7 @@ function UsageStatsModal({
 
             {/* Recent Requests */}
             <div>
-              <Typography variant="h4" className="text-sm font-semibold text-ui-text-primary mb-3">
+              <Typography variant="h4" className="text-sm font-semibold text-ui-text mb-3">
                 Recent Requests
               </Typography>
               {stats.recentLogs.length === 0 ? (
@@ -565,9 +565,7 @@ function UsageStatsModal({
                     >
                       <Flex justify="between" align="center" className="mb-1">
                         <Flex gap="sm" align="center">
-                          <span className="font-mono font-medium text-ui-text-primary">
-                            {log.method}
-                          </span>
+                          <span className="font-mono font-medium text-ui-text">{log.method}</span>
                           <span className="text-ui-text-secondary">{log.endpoint}</span>
                         </Flex>
                         <span

@@ -133,7 +133,7 @@ export function AdvancedSearchModal({
           {/* Results */}
           <div>
             <Flex align="center" justify="between" className="mb-3">
-              <Typography variant="h3" className="text-sm font-medium text-ui-text-primary">
+              <Typography variant="h3" className="text-sm font-medium text-ui-text">
                 Results {searchQuery.length >= 2 && `(${total} total, showing ${results.length})`}
               </Typography>
               {(selectedType.length > 0 ||
@@ -146,14 +146,14 @@ export function AdvancedSearchModal({
                     setSelectedPriority([]);
                     setSelectedStatus([]);
                   }}
-                  className="text-sm text-brand-600 hover:underline"
+                  className="text-sm text-brand hover:underline"
                 >
                   Clear Filters
                 </button>
               )}
             </Flex>
 
-            <div className="border border-ui-border-primary rounded-lg overflow-hidden">
+            <div className="border border-ui-border rounded-lg overflow-hidden">
               <SearchResultsList
                 searchQuery={searchQuery}
                 results={results}

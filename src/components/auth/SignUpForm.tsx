@@ -78,9 +78,9 @@ export function SignUpForm() {
     <div className="w-full">
       <GoogleAuthButton redirectTo={ROUTES.app.path} text="Sign up with Google" />
       <Flex align="center" justify="center" className="my-4">
-        <hr className="grow border-ui-border-primary" />
+        <hr className="grow border-ui-border" />
         <span className="mx-4 text-ui-text-secondary text-sm">or</span>
-        <hr className="grow border-ui-border-primary" />
+        <hr className="grow border-ui-border" />
       </Flex>
       <form
         className="flex flex-col"

@@ -124,7 +124,7 @@ export function IssueDependencies({ issueId, projectId: _workspaceId }: IssueDep
       {/* Outgoing Links */}
       {links && links.outgoing.length > 0 && (
         <div>
-          <Typography variant="h4" className="text-sm font-medium text-ui-text-primary mb-2">
+          <Typography variant="h4" className="text-sm font-medium text-ui-text mb-2">
             Dependencies
           </Typography>
           <div className="space-y-2">
@@ -170,7 +170,7 @@ export function IssueDependencies({ issueId, projectId: _workspaceId }: IssueDep
       {/* Incoming Links */}
       {links && links.incoming.length > 0 && (
         <div>
-          <Typography variant="h4" className="text-sm font-medium text-ui-text-primary mb-2">
+          <Typography variant="h4" className="text-sm font-medium text-ui-text mb-2">
             Referenced By
           </Typography>
           <div className="space-y-2">
@@ -260,7 +260,7 @@ export function IssueDependencies({ issueId, projectId: _workspaceId }: IssueDep
 
             {/* Search Results - already filtered by backend (excludeIssueId) */}
             {searchResults?.page && searchResults.page.length > 0 && (
-              <div className="max-h-48 overflow-y-auto border border-ui-border-primary rounded-lg">
+              <div className="max-h-48 overflow-y-auto border border-ui-border rounded-lg">
                 {searchResults.page.map((issue: Issue) => (
                   <button
                     type="button"
@@ -271,7 +271,7 @@ export function IssueDependencies({ issueId, projectId: _workspaceId }: IssueDep
                     }}
                     className={cn(
                       "w-full p-3 text-left hover:bg-ui-bg-tertiary border-b border-ui-border-secondary last:border-0",
-                      selectedIssueKey === issue._id && "bg-brand-50",
+                      selectedIssueKey === issue._id && "bg-brand-subtle",
                     )}
                   >
                     <Flex align="center" gap="sm">

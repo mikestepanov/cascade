@@ -23,7 +23,7 @@ export function IssueDetailHeader({
   actions,
 }: IssueDetailHeaderProps): ReactNode {
   return (
-    <div className="border-b border-ui-border-primary px-6 py-3">
+    <div className="border-b border-ui-border px-6 py-3">
       <Flex align="center" justify="between">
         <Flex align="center" gap="md">
           {breadcrumb}

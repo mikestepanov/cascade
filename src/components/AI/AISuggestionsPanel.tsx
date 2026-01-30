@@ -42,14 +42,14 @@ export const AISuggestionsPanel = React.memo(function AISuggestionsPanel({
   }
 
   return (
-    <Flex direction="column" className="h-full bg-ui-bg-primary">
+    <Flex direction="column" className="h-full bg-ui-bg">
       {/* Action Bar */}
-      <div className="p-3 sm:p-4 border-b border-ui-border-primary bg-ui-bg-secondary">
+      <div className="p-3 sm:p-4 border-b border-ui-border bg-ui-bg-secondary">
         <button
           type="button"
           onClick={handleGenerateInsights}
           disabled={isGenerating}
-          className="w-full px-4 py-2.5 sm:py-3 bg-linear-to-r from-brand-600 to-accent-600 text-white rounded-lg text-sm sm:text-base font-medium hover:from-brand-700 hover:to-accent-700 focus:outline-none focus:ring-2 focus:ring-brand-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all touch-manipulation"
+          className="w-full px-4 py-2.5 sm:py-3 bg-linear-to-r from-brand to-accent text-white rounded-lg text-sm sm:text-base font-medium hover:from-brand-hover hover:to-accent-hover focus:outline-none focus:ring-2 focus:ring-brand-ring disabled:opacity-50 disabled:cursor-not-allowed transition-all touch-manipulation"
         >
           <Flex align="center" justify="center" gap="sm">
             {isGenerating ? (
@@ -107,7 +107,7 @@ export const AISuggestionsPanel = React.memo(function AISuggestionsPanel({
               <div className="text-4xl mb-4">🎯</div>
               <Typography
                 variant="h3"
-                className="text-base sm:text-lg font-semibold text-ui-text-primary mb-2"
+                className="text-base sm:text-lg font-semibold text-ui-text mb-2"
               >
                 No Suggestions Yet
               </Typography>
@@ -150,12 +150,12 @@ const SuggestionCard = React.memo(function SuggestionCard({
   const metadata = SUGGESTION_METADATA[suggestion.suggestionType as SuggestionType];
 
   return (
-    <div className="bg-ui-bg-primary border border-ui-border-primary rounded-lg p-3 sm:p-4 shadow-sm hover:shadow-md transition-shadow">
+    <div className="bg-ui-bg border border-ui-border rounded-lg p-3 sm:p-4 shadow-sm hover:shadow-md transition-shadow">
       <Flex align="start" gap="md">
         <div className="text-2xl shrink-0">{metadata?.icon || "💡"}</div>
         <div className="flex-1 min-w-0">
           <Flex align="center" gap="sm" className="mb-2">
-            <span className="text-xs font-medium px-2 py-1 rounded-full bg-brand-100 text-brand-800">
+            <span className="text-xs font-medium px-2 py-1 rounded-full bg-brand-subtle text-brand-active">
               {metadata?.label || suggestion.suggestionType}
             </span>
             <span className="text-xs text-ui-text-tertiary">

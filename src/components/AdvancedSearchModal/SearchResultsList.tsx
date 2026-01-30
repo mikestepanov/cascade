@@ -83,7 +83,7 @@ export function SearchResultsList({
                     {issue.priority}
                   </span>
                 </Flex>
-                <Typography variant="h4" className="text-sm font-medium text-ui-text-primary">
+                <Typography variant="h4" className="text-sm font-medium text-ui-text">
                   {issue.title}
                 </Typography>
               </div>
@@ -93,11 +93,11 @@ export function SearchResultsList({
       </div>
 
       {hasMore && (
-        <div className="p-4 border-t border-ui-border-primary bg-ui-bg-secondary">
+        <div className="p-4 border-t border-ui-border bg-ui-bg-secondary">
           <button
             type="button"
             onClick={onLoadMore}
-            className="w-full px-4 py-2 text-sm font-medium text-brand-600 bg-brand-50 hover:bg-brand-100:bg-brand-900/30 rounded-lg transition-colors"
+            className="w-full px-4 py-2 text-sm font-medium text-brand bg-brand-subtle hover:bg-brand-subtle:bg-brand-active/30 rounded-lg transition-colors"
           >
             Load More ({total - results.length} remaining)
           </button>

@@ -20,8 +20,8 @@ export function RecentActivity({ activities }: { activities: Activity[] | undefi
   }
 
   return (
-    <div className="bg-ui-bg-primary rounded-lg shadow p-6">
-      <Typography variant="h3" className="text-lg font-semibold text-ui-text-primary mb-4">
+    <div className="bg-ui-bg rounded-lg shadow p-6">
+      <Typography variant="h3" className="text-lg font-semibold text-ui-text mb-4">
         Recent Activity
       </Typography>
       <Flex direction="column" gap="md">

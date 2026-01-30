@@ -94,7 +94,7 @@ export function IssueComments({ issueId, projectId }: IssueCommentsProps) {
                 <div className="flex-1 min-w-0">
                   {/* Author and Date */}
                   <Flex align="center" gap="sm" className="mb-2">
-                    <span className="font-medium text-ui-text-primary">
+                    <span className="font-medium text-ui-text">
                       {comment.author?.name || "Unknown User"}
                     </span>
                     <span className="text-xs text-ui-text-secondary">
@@ -134,7 +134,7 @@ export function IssueComments({ issueId, projectId }: IssueCommentsProps) {
 
       {/* Add Comment */}
       <div className="space-y-3">
-        <Typography variant="h4" className="text-sm font-medium text-ui-text-primary">
+        <Typography variant="h4" className="text-sm font-medium text-ui-text">
           Add Comment
         </Typography>
         <MentionInput

@@ -33,11 +33,11 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
             type="checkbox"
             id={checkboxId}
             className={cn(
-              "rounded border-ui-border-primary",
-              "text-brand-600",
+              "rounded border-ui-border",
+              "text-brand",
               "focus:ring-2 focus:ring-ui-border-focus",
               "disabled:opacity-50 disabled:cursor-not-allowed",
-              "bg-ui-bg-primary",
+              "bg-ui-bg",
               error && "border-ui-border-error",
               className,
             )}
@@ -48,10 +48,7 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
             {...props}
           />
           {label && (
-            <label
-              htmlFor={checkboxId}
-              className="text-sm text-ui-text-primary cursor-pointer select-none"
-            >
+            <label htmlFor={checkboxId} className="text-sm text-ui-text cursor-pointer select-none">
               {label}
             </label>
           )}

@@ -107,7 +107,7 @@ export function HourComplianceDashboard() {
       case "over_hours":
         return "bg-status-error/10 text-status-error";
       case "equity_under":
-        return "bg-brand-100 text-brand-700";
+        return "bg-brand-subtle text-brand-hover";
     }
   };
 
@@ -140,7 +140,7 @@ export function HourComplianceDashboard() {
           <Card>
             <CardBody>
               <div className="text-center">
-                <div className="text-2xl font-bold text-ui-text-primary">
+                <div className="text-2xl font-bold text-ui-text">
                   {summary.complianceRate.toFixed(1)}%
                 </div>
                 <div className="text-sm text-ui-text-secondary">Compliance Rate</div>
@@ -178,7 +178,7 @@ export function HourComplianceDashboard() {
           <Card>
             <CardBody>
               <div className="text-center">
-                <div className="text-2xl font-bold text-brand-600">{summary.equityUnder}</div>
+                <div className="text-2xl font-bold text-brand">{summary.equityUnder}</div>
                 <div className="text-sm text-ui-text-secondary">💎 Equity Short</div>
               </div>
             </CardBody>
@@ -246,14 +246,14 @@ export function HourComplianceDashboard() {
               {records?.map((record) => (
                 <div
                   key={record._id}
-                  className="p-4 border border-ui-border-primary rounded-lg hover:bg-ui-bg-tertiary transition-colors"
+                  className="p-4 border border-ui-border rounded-lg hover:bg-ui-bg-tertiary transition-colors"
                 >
                   <Flex justify="between" align="start">
                     <div className="flex-1">
                       <Flex gap="md" align="center" className="mb-2">
                         <span className="text-xl">{getStatusIcon(record.status)}</span>
                         <div>
-                          <Typography variant="h4" className="font-medium text-ui-text-primary">
+                          <Typography variant="h4" className="font-medium text-ui-text">
                             {record.user?.name || record.user?.email || "Unknown User"}
                           </Typography>
                           <Flex gap="sm" className="mt-1">
@@ -265,11 +265,11 @@ export function HourComplianceDashboard() {
                             >
                               {getStatusLabel(record.status)}
                             </span>
-                            <span className="text-xs px-2 py-0.5 bg-ui-bg-tertiary text-ui-text-primary rounded capitalize">
+                            <span className="text-xs px-2 py-0.5 bg-ui-bg-tertiary text-ui-text rounded capitalize">
                               {record.periodType}ly
                             </span>
                             {record.reviewedBy && (
-                              <span className="text-xs px-2 py-0.5 bg-accent-100 text-accent-700 rounded">
+                              <span className="text-xs px-2 py-0.5 bg-accent-subtle text-accent-hover rounded">
                                 Reviewed
                               </span>
                             )}
@@ -280,14 +280,14 @@ export function HourComplianceDashboard() {
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm mt-3">
                         <div>
                           <span className="text-ui-text-tertiary text-xs">Period:</span>
-                          <div className="font-medium text-ui-text-primary">
+                          <div className="font-medium text-ui-text">
                             {formatDate(record.periodStart)} - {formatDate(record.periodEnd)}
                           </div>
                         </div>
 
                         <div>
                           <span className="text-ui-text-tertiary text-xs">Hours Worked:</span>
-                          <div className="font-medium text-ui-text-primary">
+                          <div className="font-medium text-ui-text">
                             {record.totalHoursWorked.toFixed(1)}h
                           </div>
                         </div>
@@ -313,7 +313,7 @@ export function HourComplianceDashboard() {
                         {record.equityHoursDeficit && (
                           <div>
                             <span className="text-ui-text-tertiary text-xs">Equity Short:</span>
-                            <div className="font-medium text-brand-600">
+                            <div className="font-medium text-brand">
                               -{record.equityHoursDeficit.toFixed(1)}h
                             </div>
                           </div>
@@ -322,7 +322,7 @@ export function HourComplianceDashboard() {
                         {record.totalEquityHours && (
                           <div>
                             <span className="text-ui-text-tertiary text-xs">Equity Hours:</span>
-                            <div className="font-medium text-ui-text-primary">
+                            <div className="font-medium text-ui-text">
                               {record.totalEquityHours.toFixed(1)}h
                             </div>
                           </div>
@@ -330,9 +330,9 @@ export function HourComplianceDashboard() {
                       </div>
 
                       {record.reviewNotes && (
-                        <div className="mt-3 p-2 bg-accent-50 rounded text-sm">
-                          <span className="font-medium text-accent-900">Review Notes:</span>{" "}
-                          <span className="text-accent-700">{record.reviewNotes}</span>
+                        <div className="mt-3 p-2 bg-accent-subtle rounded text-sm">
+                          <span className="font-medium text-accent-active">Review Notes:</span>{" "}
+                          <span className="text-accent-hover">{record.reviewNotes}</span>
                         </div>
                       )}
                     </div>

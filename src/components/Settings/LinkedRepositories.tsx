@@ -37,23 +37,20 @@ export function LinkedRepositories() {
 
   return (
     <div>
-      <Typography variant="h4" className="text-sm font-semibold text-ui-text-primary mb-4">
+      <Typography variant="h4" className="text-sm font-semibold text-ui-text mb-4">
         Linked Repositories
       </Typography>
 
       {/* Project selector */}
       <div className="mb-4">
-        <label
-          htmlFor="project-selector"
-          className="block text-sm font-medium text-ui-text-primary mb-2"
-        >
+        <label htmlFor="project-selector" className="block text-sm font-medium text-ui-text mb-2">
           Select Project
         </label>
         <Select
           value={selectedWorkspace || ""}
           onValueChange={(value) => setSelectedWorkspace(value as Id<"projects">)}
         >
-          <SelectTrigger className="w-full px-3 py-2 border border-ui-border-primary rounded-md bg-ui-bg-primary text-ui-text-primary">
+          <SelectTrigger className="w-full px-3 py-2 border border-ui-border rounded-md bg-ui-bg text-ui-text">
             <SelectValue placeholder="-- Select a project --" />
           </SelectTrigger>
           <SelectContent>
@@ -85,7 +82,7 @@ export function LinkedRepositories() {
               <Flex gap="md" align="center">
                 <Github className="h-5 w-5 text-ui-text-tertiary" />
                 <div>
-                  <Typography className="text-sm font-medium text-ui-text-primary">
+                  <Typography className="text-sm font-medium text-ui-text">
                     {repo.repoFullName}
                   </Typography>
                   <Typography className="text-xs text-ui-text-secondary">

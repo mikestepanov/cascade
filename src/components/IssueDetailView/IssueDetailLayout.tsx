@@ -19,7 +19,7 @@ export function IssueDetailLayout({
   if (!issue) return null;
 
   return (
-    <div className="flex flex-col h-full bg-ui-bg-primary">
+    <div className="flex flex-col h-full bg-ui-bg">
       {header}
 
       <div className="flex-1 overflow-auto">

@@ -20,10 +20,10 @@ export function AIErrorFallback({
   message = "Something went wrong with the AI assistant. Please try again.",
 }: AIErrorFallbackProps) {
   return (
-    <Flex align="center" justify="center" className="h-full p-6 bg-ui-bg-primary">
+    <Flex align="center" justify="center" className="h-full p-6 bg-ui-bg">
       <div className="text-center max-w-md">
         <div className="text-6xl mb-4">⚠️</div>
-        <Typography variant="h3" className="text-lg font-semibold text-ui-text-primary mb-2">
+        <Typography variant="h3" className="text-lg font-semibold text-ui-text mb-2">
           {title}
         </Typography>
         <Typography variant="p" className="text-ui-text-secondary mb-4">

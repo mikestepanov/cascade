@@ -17,14 +17,14 @@ export function NavHeader() {
   const { setTheme } = useTheme();
 
   return (
-    <header className="px-6 py-5 sticky top-0 z-50 transition-all duration-300 backdrop-blur-md bg-ui-bg-primary/10 border-b border-ui-border-primary/20">
+    <header className="px-6 py-5 sticky top-0 z-50 transition-all duration-300 backdrop-blur-md bg-ui-bg/10 border-b border-ui-border/20">
       <nav className="max-w-6xl mx-auto flex items-center justify-between relative">
         <Link
           to={ROUTES.home.path}
           className="flex items-center gap-2 hover:opacity-90 transition-opacity"
         >
           <NixeloLogo />
-          <span className="text-xl font-semibold text-ui-text-primary">Nixelo</span>
+          <span className="text-xl font-semibold text-ui-text">Nixelo</span>
         </Link>
 
         <div className="hidden md:flex items-center justify-center gap-8 absolute left-1/2 -translate-x-1/2">
@@ -32,7 +32,7 @@ export function NavHeader() {
             <a
               key={item}
               href={`#${item.toLowerCase()}`}
-              className="text-sm text-ui-text-secondary hover:text-ui-text-primary transition-colors"
+              className="text-sm text-ui-text-secondary hover:text-ui-text transition-colors"
             >
               {item}
             </a>
@@ -67,7 +67,7 @@ export function NavHeader() {
           <Unauthenticated>
             <Link
               to={ROUTES.signin.path}
-              className="text-sm font-medium text-ui-text-secondary hover:text-ui-text-primary transition-colors"
+              className="text-sm font-medium text-ui-text-secondary hover:text-ui-text transition-colors"
             >
               Sign in
             </Link>

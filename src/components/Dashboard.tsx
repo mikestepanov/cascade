@@ -103,7 +103,7 @@ export function Dashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Main Feed/Issues */}
         <Flex className={sidebarVisible ? "lg:col-span-2" : "lg:col-span-3"}>
-          <div className="bg-ui-bg-primary rounded-xl border border-ui-border-primary overflow-hidden">
+          <div className="bg-ui-bg rounded-xl border border-ui-border overflow-hidden">
             <MyIssuesList
               myIssues={myIssues}
               myCreatedIssues={myCreatedIssues}

@@ -86,7 +86,7 @@ export function ImportPanel({ projectId, onImportComplete }: ImportPanelProps) {
   return (
     <Flex direction="column" gap="lg">
       <div>
-        <Typography variant="h3" className="text-sm font-semibold text-ui-text-primary mb-3">
+        <Typography variant="h3" className="text-sm font-semibold text-ui-text mb-3">
           Select Import Format
         </Typography>
         <div className="grid grid-cols-2 gap-3">
@@ -94,15 +94,13 @@ export function ImportPanel({ projectId, onImportComplete }: ImportPanelProps) {
             onClick={() => setImportFormat("csv")}
             className={cn(
               "p-4 cursor-pointer transition-all",
-              importFormat === "csv"
-                ? "ring-2 ring-primary bg-primary/5"
-                : "hover:bg-ui-bg-secondary:bg-ui-bg-secondary-dark",
+              importFormat === "csv" ? "ring-2 ring-brand bg-brand/5" : "hover:bg-ui-bg-secondary",
             )}
           >
             <Flex gap="md" align="center">
               <div className="text-3xl">📊</div>
               <div>
-                <div className="font-semibold text-ui-text-primary">CSV</div>
+                <div className="font-semibold text-ui-text">CSV</div>
                 <div className="text-xs text-ui-text-secondary">Spreadsheet format</div>
               </div>
             </Flex>
@@ -112,15 +110,13 @@ export function ImportPanel({ projectId, onImportComplete }: ImportPanelProps) {
             onClick={() => setImportFormat("json")}
             className={cn(
               "p-4 cursor-pointer transition-all",
-              importFormat === "json"
-                ? "ring-2 ring-primary bg-primary/5"
-                : "hover:bg-ui-bg-secondary:bg-ui-bg-secondary-dark",
+              importFormat === "json" ? "ring-2 ring-brand bg-brand/5" : "hover:bg-ui-bg-secondary",
             )}
           >
             <Flex gap="md" align="center">
               <div className="text-3xl">📄</div>
               <div>
-                <div className="font-semibold text-ui-text-primary">JSON</div>
+                <div className="font-semibold text-ui-text">JSON</div>
                 <div className="text-xs text-ui-text-secondary">Data interchange format</div>
               </div>
             </Flex>
@@ -129,12 +125,12 @@ export function ImportPanel({ projectId, onImportComplete }: ImportPanelProps) {
       </div>
 
       <div>
-        <div className="block text-sm font-medium text-ui-text-primary mb-2">Select File</div>
+        <div className="block text-sm font-medium text-ui-text mb-2">Select File</div>
         <input
           type="file"
           accept={importFormat === "csv" ? ".csv" : ".json"}
           onChange={handleFileChange}
-          className="block w-full text-sm text-ui-text-primary border border-ui-border-primary rounded-lg cursor-pointer bg-ui-bg-secondary focus:outline-none"
+          className="block w-full text-sm text-ui-text border border-ui-border rounded-lg cursor-pointer bg-ui-bg-secondary focus:outline-none"
         />
         {importFile && (
           <Typography variant="muted" className="mt-2">

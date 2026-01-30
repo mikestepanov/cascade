@@ -65,13 +65,12 @@ export function FocusZone({ task }: FocusZoneProps) {
                 {task.title}
               </Typography>
               <Typography variant="muted" className="mt-1">
-                In project:{" "}
-                <span className="font-semibold text-ui-text-primary">{task.projectName}</span>
+                In project: <span className="font-semibold text-ui-text">{task.projectName}</span>
               </Typography>
             </div>
 
             <Flex justify="end">
-              <span className="text-sm font-medium text-brand-600 inline-flex items-center gap-1">
+              <span className="text-sm font-medium text-brand inline-flex items-center gap-1">
                 View Task <span>→</span>
               </span>
             </Flex>

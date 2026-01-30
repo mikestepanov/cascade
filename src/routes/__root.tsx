@@ -66,7 +66,7 @@ function RootComponent() {
               className="min-h-screen bg-ui-bg-secondary p-4"
             >
               <div className="text-center max-w-md">
-                <Typography variant="h1" className="text-2xl font-bold mb-4 text-ui-text-primary">
+                <Typography variant="h1" className="text-2xl font-bold mb-4 text-ui-text">
                   Service Unavailable
                 </Typography>
                 <Typography className="text-ui-text-secondary mb-6">

@@ -84,14 +84,14 @@ export function PreferencesTab() {
     <div className="space-y-6">
       <Card>
         <div className="p-6">
-          <Typography variant="h3" className="text-lg font-semibold text-ui-text-primary mb-4">
+          <Typography variant="h3" className="text-lg font-semibold text-ui-text mb-4">
             Appearance
           </Typography>
 
           <Flex direction="column" gap="lg">
             <Flex align="center" justify="between">
               <div>
-                <Typography className="text-sm font-medium text-ui-text-primary">Theme</Typography>
+                <Typography className="text-sm font-medium text-ui-text">Theme</Typography>
                 <Typography className="text-sm text-ui-text-secondary">
                   Select your preferred interface theme
                 </Typography>
@@ -123,7 +123,7 @@ export function PreferencesTab() {
 
       <Card>
         <div className="p-6">
-          <Typography variant="h3" className="text-lg font-semibold text-ui-text-primary mb-4">
+          <Typography variant="h3" className="text-lg font-semibold text-ui-text mb-4">
             Regional
           </Typography>
           <Flex align="center" justify="between">
@@ -155,7 +155,7 @@ export function PreferencesTab() {
 
       <Card>
         <div className="p-6">
-          <Typography variant="h3" className="text-lg font-semibold text-ui-text-primary mb-4">
+          <Typography variant="h3" className="text-lg font-semibold text-ui-text mb-4">
             Desktop Notifications
           </Typography>
           <Flex align="center" justify="between">

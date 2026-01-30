@@ -35,7 +35,7 @@ export function PageHeader({
                 {crumb.to ? (
                   <Link
                     to={crumb.to}
-                    className="text-sm text-ui-text-secondary hover:text-ui-text-primary transition-colors"
+                    className="text-sm text-ui-text-secondary hover:text-ui-text transition-colors"
                   >
                     {crumb.label}
                   </Link>

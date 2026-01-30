@@ -55,7 +55,7 @@ function TeamLayout() {
         <Link
           to={ROUTES.workspaces.list.path}
           params={{ orgSlug: orgSlug }}
-          className="text-brand-600 hover:underline"
+          className="text-brand hover:underline"
         >
           Workspaces
         </Link>
@@ -65,7 +65,7 @@ function TeamLayout() {
         <Link
           to={ROUTES.workspaces.detail.path}
           params={{ orgSlug: orgSlug, workspaceSlug }}
-          className="text-brand-600 hover:underline"
+          className="text-brand hover:underline"
         >
           {workspace.name}
         </Link>
@@ -91,26 +91,26 @@ function TeamLayout() {
       </div>
 
       {/* Tabs */}
-      <div className="border-b border-ui-border-primary mb-6">
+      <div className="border-b border-ui-border mb-6">
         <nav className="flex gap-6">
           <Link
             to={ROUTES.workspaces.teams.detail.path}
             params={{ orgSlug: orgSlug, workspaceSlug, teamSlug }}
-            className="px-1 py-3 border-b-2 border-brand-600 font-medium text-brand-600"
+            className="px-1 py-3 border-b-2 border-brand font-medium text-brand"
           >
             Projects
           </Link>
           <Link
             to={ROUTES.workspaces.teams.calendar.path}
             params={{ orgSlug: orgSlug, workspaceSlug, teamSlug }}
-            className="px-1 py-3 border-b-2 border-transparent hover:border-ui-border-secondary text-ui-text-secondary hover:text-ui-text-primary"
+            className="px-1 py-3 border-b-2 border-transparent hover:border-ui-border-secondary text-ui-text-secondary hover:text-ui-text"
           >
             Calendar
           </Link>
           <Link
             to={ROUTES.workspaces.teams.settings.path}
             params={{ orgSlug: orgSlug, workspaceSlug, teamSlug }}
-            className="px-1 py-3 border-b-2 border-transparent hover:border-ui-border-secondary text-ui-text-secondary hover:text-ui-text-primary"
+            className="px-1 py-3 border-b-2 border-transparent hover:border-ui-border-secondary text-ui-text-secondary hover:text-ui-text"
           >
             Settings
           </Link>

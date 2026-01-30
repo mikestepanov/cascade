@@ -72,13 +72,13 @@ export function OnboardingChecklist() {
   };
 
   return (
-    <div className="fixed bottom-6 right-6 w-80 bg-ui-bg-primary rounded-lg shadow-xl border border-ui-border-primary z-40">
+    <div className="fixed bottom-6 right-6 w-80 bg-ui-bg rounded-lg shadow-xl border border-ui-border z-40">
       {/* Header */}
-      <Flex justify="between" align="center" className="p-4 border-b border-ui-border-primary">
+      <Flex justify="between" align="center" className="p-4 border-b border-ui-border">
         <Flex gap="sm" align="center">
           <span className="text-lg">🚀</span>
           <div>
-            <Typography variant="h3" className="font-semibold text-ui-text-primary">
+            <Typography variant="h3" className="font-semibold text-ui-text">
               Getting Started
             </Typography>
             <Typography className="text-xs text-ui-text-tertiary">
@@ -132,7 +132,7 @@ export function OnboardingChecklist() {
                 <Typography
                   className={cn(
                     "font-medium text-sm",
-                    item.completed ? "text-ui-text-tertiary line-through" : "text-ui-text-primary",
+                    item.completed ? "text-ui-text-tertiary line-through" : "text-ui-text",
                   )}
                 >
                   {item.title}

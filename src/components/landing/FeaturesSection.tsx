@@ -34,10 +34,7 @@ export function FeaturesSection() {
     <section id="features" className="px-6 py-24 transition-colors">
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-16">
-          <Typography
-            variant="h2"
-            className="text-3xl md:text-4xl font-bold mb-4 text-ui-text-primary"
-          >
+          <Typography variant="h2" className="text-3xl md:text-4xl font-bold mb-4 text-ui-text">
             Stop juggling tools. Start shipping.
           </Typography>
           <Typography variant="lead" className="text-ui-text-secondary max-w-2xl mx-auto">
@@ -113,7 +110,7 @@ function FeatureCard({
       </div>
 
       {/* Content */}
-      <Typography variant="h3" className="text-lg font-semibold mb-2 text-ui-text-primary">
+      <Typography variant="h3" className="text-lg font-semibold mb-2 text-ui-text">
         {title}
       </Typography>
       <Typography variant="p" className="text-ui-text-secondary text-sm leading-relaxed mb-4">

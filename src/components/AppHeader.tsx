@@ -16,7 +16,7 @@ export function AppHeader({ onShowCommandPalette, onShowShortcutsHelp }: AppHead
   const { isMobileOpen, toggleMobile } = useSidebarState();
 
   return (
-    <header className="bg-ui-bg-primary border-b border-ui-border-primary px-4 sm:px-6 py-3 flex justify-between items-center gap-2">
+    <header className="bg-ui-bg border-b border-ui-border px-4 sm:px-6 py-3 flex justify-between items-center gap-2">
       <Flex align="center" gap="sm" className="sm:gap-4">
         {/* Mobile Hamburger Menu */}
         <button
@@ -35,7 +35,7 @@ export function AppHeader({ onShowCommandPalette, onShowShortcutsHelp }: AppHead
           <button
             type="button"
             onClick={onShowCommandPalette}
-            className="flex items-center gap-2 px-2 sm:px-3 py-1.5 text-xs sm:text-sm text-ui-text-secondary bg-ui-bg-tertiary rounded-lg hover:bg-ui-border-primary transition-colors"
+            className="flex items-center gap-2 px-2 sm:px-3 py-1.5 text-xs sm:text-sm text-ui-text-secondary bg-ui-bg-tertiary rounded-lg hover:bg-ui-border transition-colors"
             aria-label="Open command palette"
             data-tour="command-palette"
           >
@@ -54,7 +54,7 @@ export function AppHeader({ onShowCommandPalette, onShowShortcutsHelp }: AppHead
               />
             </svg>
             <span className="hidden sm:inline">Commands</span>
-            <kbd className="hidden lg:inline px-1.5 py-0.5 text-xs bg-ui-bg-primary border border-ui-border-secondary rounded">
+            <kbd className="hidden lg:inline px-1.5 py-0.5 text-xs bg-ui-bg border border-ui-border-secondary rounded">
               ⌘K
             </kbd>
           </button>

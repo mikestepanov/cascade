@@ -28,7 +28,7 @@ export function WebhookCard({ webhook, onEdit, onDelete }: WebhookCardProps) {
       <Flex justify="between" align="start">
         <div className="flex-1">
           <Flex gap="sm" align="center" className="mb-2">
-            <Typography variant="h4" className="font-medium text-ui-text-primary">
+            <Typography variant="h4" className="font-medium text-ui-text">
               {webhook.name}
             </Typography>
             <span
@@ -36,7 +36,7 @@ export function WebhookCard({ webhook, onEdit, onDelete }: WebhookCardProps) {
                 "text-xs px-2 py-0.5 rounded",
                 webhook.isActive
                   ? "bg-status-success/10 text-status-success"
-                  : "bg-ui-bg-tertiary text-ui-text-primary",
+                  : "bg-ui-bg-tertiary text-ui-text",
               )}
             >
               {webhook.isActive ? "Active" : "Inactive"}
@@ -47,7 +47,10 @@ export function WebhookCard({ webhook, onEdit, onDelete }: WebhookCardProps) {
           </Typography>
           <Flex wrap gap="xs">
             {webhook.events.map((event) => (
-              <span key={event} className="text-xs px-2 py-0.5 bg-brand-100 text-brand-700 rounded">
+              <span
+                key={event}
+                className="text-xs px-2 py-0.5 bg-brand-subtle text-brand-hover rounded"
+              >
                 {event}
               </span>
             ))}

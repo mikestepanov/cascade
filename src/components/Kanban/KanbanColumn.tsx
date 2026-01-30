@@ -103,10 +103,10 @@ export const KanbanColumn = memo(function KanbanColumn({
       onDrop={handleDrop}
     >
       {/* Column Header */}
-      <div className="p-3 sm:p-4 border-b border-ui-border-primary bg-ui-bg-primary rounded-t-lg">
+      <div className="p-3 sm:p-4 border-b border-ui-border bg-ui-bg rounded-t-lg">
         <Flex align="center" justify="between" gap="sm">
           <Flex align="center" className="space-x-2 min-w-0">
-            <Typography variant="h3" className="font-medium text-ui-text-primary truncate">
+            <Typography variant="h3" className="font-medium text-ui-text truncate">
               {state.name}
             </Typography>
             <Badge variant="neutral" shape="pill" className="shrink-0">
@@ -118,7 +118,7 @@ export const KanbanColumn = memo(function KanbanColumn({
               <button
                 type="button"
                 onClick={handleCreateIssue}
-                className="text-ui-text-tertiary hover:text-ui-text-primary p-2.5 sm:p-3 shrink-0"
+                className="text-ui-text-tertiary hover:text-ui-text p-2.5 sm:p-3 shrink-0"
                 aria-label={`Add issue to ${state.name}`}
                 {...(columnIndex === 0 ? { "data-tour": "create-issue" } : {})}
               >

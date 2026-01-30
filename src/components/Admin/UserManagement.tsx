@@ -36,12 +36,12 @@ function UserRow({
             <Flex
               align="center"
               justify="center"
-              className="h-8 w-8 rounded-full bg-brand-600 text-white font-semibold mr-3"
+              className="h-8 w-8 rounded-full bg-brand text-white font-semibold mr-3"
             >
               {(user.name || user.email || "?")[0].toUpperCase()}
             </Flex>
           )}
-          <div className="text-sm font-medium text-ui-text-primary">{user.name || "Anonymous"}</div>
+          <div className="text-sm font-medium text-ui-text">{user.name || "Anonymous"}</div>
         </Flex>
       </td>
       <td className="px-6 py-4 whitespace-nowrap text-sm text-ui-text-secondary">
@@ -153,7 +153,7 @@ export function UserManagement() {
       {/* Header */}
       <Flex justify="between" align="center">
         <div>
-          <Typography variant="h2" className="text-2xl font-bold text-ui-text-primary">
+          <Typography variant="h2" className="text-2xl font-bold text-ui-text">
             User Management
           </Typography>
           <Typography variant="p" className="text-ui-text-secondary mt-1">
@@ -166,7 +166,7 @@ export function UserManagement() {
       </Flex>
 
       {/* Tabs */}
-      <div className="border-b border-ui-border-primary">
+      <div className="border-b border-ui-border">
         <nav className="-mb-px flex space-x-8" aria-label="User management tabs">
           <button
             type="button"
@@ -174,8 +174,8 @@ export function UserManagement() {
             className={cn(
               "py-4 px-1 border-b-2 font-medium text-sm transition-colors",
               activeTab === "invites"
-                ? "border-brand-500 text-brand-600"
-                : "border-transparent text-ui-text-secondary hover:text-ui-text-primary hover:border-ui-border-secondary",
+                ? "border-brand-ring text-brand"
+                : "border-transparent text-ui-text-secondary hover:text-ui-text hover:border-ui-border-secondary",
             )}
           >
             Invitations
@@ -186,8 +186,8 @@ export function UserManagement() {
             className={cn(
               "py-4 px-1 border-b-2 font-medium text-sm transition-colors",
               activeTab === "users"
-                ? "border-brand-500 text-brand-600"
-                : "border-transparent text-ui-text-secondary hover:text-ui-text-primary hover:border-ui-border-secondary",
+                ? "border-brand-ring text-brand"
+                : "border-transparent text-ui-text-secondary hover:text-ui-text hover:border-ui-border-secondary",
             )}
           >
             Users
@@ -206,10 +206,7 @@ export function UserManagement() {
             <form onSubmit={handleSendInvite}>
               <Flex direction="column" gap="lg">
                 <div>
-                  <label
-                    htmlFor="email"
-                    className="block text-sm font-medium text-ui-text-primary mb-2"
-                  >
+                  <label htmlFor="email" className="block text-sm font-medium text-ui-text mb-2">
                     Email Address
                   </label>
                   <Input
@@ -224,17 +221,14 @@ export function UserManagement() {
                 </div>
 
                 <div>
-                  <label
-                    htmlFor="role"
-                    className="block text-sm font-medium text-ui-text-primary mb-2"
-                  >
+                  <label htmlFor="role" className="block text-sm font-medium text-ui-text mb-2">
                     Role
                   </label>
                   <Select
                     value={role}
                     onValueChange={(value) => setRole(value as "user" | "superAdmin")}
                   >
-                    <SelectTrigger className="w-full px-3 py-2 border border-ui-border-primary rounded-md bg-ui-bg-primary text-ui-text-primary focus:outline-none focus:ring-2 focus:ring-brand-500">
+                    <SelectTrigger className="w-full px-3 py-2 border border-ui-border rounded-md bg-ui-bg text-ui-text focus:outline-none focus:ring-2 focus:ring-brand-ring">
                       <SelectValue placeholder="Select role" />
                     </SelectTrigger>
                     <SelectContent>
@@ -291,7 +285,7 @@ export function UserManagement() {
             ) : (
               <div className="overflow-x-auto">
                 <table
-                  className="min-w-full divide-y divide-ui-border-primary"
+                  className="min-w-full divide-y divide-ui-border"
                   aria-label="User invitations"
                 >
                   <thead className="bg-ui-bg-secondary">
@@ -340,17 +334,17 @@ export function UserManagement() {
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="bg-ui-bg-primary divide-y divide-ui-border-primary">
+                  <tbody className="bg-ui-bg divide-y divide-ui-border">
                     {invites.map(
                       (
                         invite: Doc<"invites"> & { acceptedByName?: string; inviterName?: string },
                       ) => (
                         <tr key={invite._id}>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-ui-text-primary">
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-ui-text">
                             {invite.email}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm">
-                            <span className="px-2 py-1 rounded text-xs font-medium bg-brand-100 text-brand-800 capitalize">
+                            <span className="px-2 py-1 rounded text-xs font-medium bg-brand-subtle text-brand-active capitalize">
                               {invite.role}
                             </span>
                           </td>
@@ -381,7 +375,7 @@ export function UserManagement() {
                                     onClick={() => handleResendInvite(invite._id)}
                                     variant="ghost"
                                     size="sm"
-                                    className="text-brand-600 hover:text-brand-700:text-brand-300"
+                                    className="text-brand hover:text-brand-hover:text-brand-muted"
                                     aria-label="Resend invitation"
                                   >
                                     Resend
@@ -426,10 +420,7 @@ export function UserManagement() {
               <EmptyState icon="👥" title="No users" description="No users have joined yet" />
             ) : (
               <div className="overflow-x-auto">
-                <table
-                  className="min-w-full divide-y divide-ui-border-primary"
-                  aria-label="Platform users"
-                >
+                <table className="min-w-full divide-y divide-ui-border" aria-label="Platform users">
                   <thead className="bg-ui-bg-secondary">
                     <tr>
                       <th
@@ -464,7 +455,7 @@ export function UserManagement() {
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="bg-ui-bg-primary divide-y divide-ui-border-primary">
+                  <tbody className="bg-ui-bg divide-y divide-ui-border">
                     {users.map((user) => (
                       <UserRow key={user._id} user={user} />
                     ))}

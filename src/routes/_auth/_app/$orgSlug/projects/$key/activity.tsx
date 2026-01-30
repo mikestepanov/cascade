@@ -28,7 +28,7 @@ function ActivityPage() {
 
   return (
     <PageLayout maxWidth="md">
-      <Typography variant="h2" className="text-2xl font-bold mb-6 text-ui-text-primary">
+      <Typography variant="h2" className="text-2xl font-bold mb-6 text-ui-text">
         Project Activity
       </Typography>
       <ActivityFeed projectId={project._id} />

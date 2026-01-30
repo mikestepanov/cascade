@@ -41,8 +41,8 @@ export function CommentReactions({ commentId, reactions, currentUserId }: Commen
             className={cn(
               "inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-medium transition-all border",
               hasReacted
-                ? "bg-brand-50 border-brand-200 text-brand-700"
-                : "bg-ui-bg-secondary border-ui-border-primary text-ui-text-secondary hover:border-ui-border-secondary",
+                ? "bg-brand-subtle border-brand-border text-brand-hover"
+                : "bg-ui-bg-secondary border-ui-border text-ui-text-secondary hover:border-ui-border-secondary",
             )}
           >
             <span>{reaction.emoji}</span>

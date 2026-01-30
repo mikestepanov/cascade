@@ -109,7 +109,7 @@ export function ProjectWizard({
           {/* Progress indicator */}
           <div className="mb-6">
             <Flex justify="between" className="mb-2">
-              <span className="text-sm font-medium text-ui-text-primary">Step {step} of 4</span>
+              <span className="text-sm font-medium text-ui-text">Step {step} of 4</span>
               <span className="text-sm text-ui-text-tertiary">
                 {Math.round((step / 4) * 100)}% complete
               </span>
@@ -120,7 +120,7 @@ export function ProjectWizard({
           {/* Step 1: Project Name & Key */}
           {step === 1 && (
             <div className="space-y-4">
-              <Typography variant="h2" className="text-2xl font-bold text-ui-text-primary">
+              <Typography variant="h2" className="text-2xl font-bold text-ui-text">
                 Create Your First Project
               </Typography>
               <Typography className="text-ui-text-secondary">
@@ -130,7 +130,7 @@ export function ProjectWizard({
               <div>
                 <label
                   htmlFor="project-name"
-                  className="block text-sm font-medium text-ui-text-primary mb-1"
+                  className="block text-sm font-medium text-ui-text mb-1"
                 >
                   Project Name <span className="text-status-error">*</span>
                 </label>
@@ -145,14 +145,14 @@ export function ProjectWizard({
                     }
                   }}
                   placeholder="e.g., Website Redesign, Mobile App, Q1 Planning"
-                  className="w-full px-3 py-2 border border-ui-border-primary rounded-md bg-ui-bg-primary text-ui-text-primary"
+                  className="w-full px-3 py-2 border border-ui-border rounded-md bg-ui-bg text-ui-text"
                 />
               </div>
 
               <div>
                 <label
                   htmlFor="project-key"
-                  className="block text-sm font-medium text-ui-text-primary mb-1"
+                  className="block text-sm font-medium text-ui-text mb-1"
                 >
                   Project Key <span className="text-status-error">*</span>
                 </label>
@@ -162,7 +162,7 @@ export function ProjectWizard({
                   value={projectKey}
                   onChange={(e) => setProjectKey(e.target.value.toUpperCase())}
                   placeholder="e.g., WEB, MOBILE, Q1"
-                  className="w-full px-3 py-2 border border-ui-border-primary rounded-md bg-ui-bg-primary text-ui-text-primary font-mono"
+                  className="w-full px-3 py-2 border border-ui-border rounded-md bg-ui-bg text-ui-text font-mono"
                   maxLength={10}
                 />
                 <Typography className="text-xs text-ui-text-tertiary mt-1">
@@ -184,7 +184,7 @@ export function ProjectWizard({
           {/* Step 2: Board Type */}
           {step === 2 && (
             <div className="space-y-4">
-              <Typography variant="h2" className="text-2xl font-bold text-ui-text-primary">
+              <Typography variant="h2" className="text-2xl font-bold text-ui-text">
                 Choose Your Board Type
               </Typography>
               <Typography className="text-ui-text-secondary">
@@ -198,11 +198,11 @@ export function ProjectWizard({
                   className={cn(
                     "p-6 border-2 rounded-lg text-left transition-all",
                     boardType === "kanban"
-                      ? "border-brand-600 bg-brand-indigo-track"
-                      : "border-ui-border-primary hover:border-brand-400",
+                      ? "border-brand bg-brand-indigo-track"
+                      : "border-ui-border hover:border-brand-muted",
                   )}
                 >
-                  <Typography variant="h3" className="font-bold text-lg mb-2 text-ui-text-primary">
+                  <Typography variant="h3" className="font-bold text-lg mb-2 text-ui-text">
                     📊 Kanban
                   </Typography>
                   <Typography className="text-sm text-ui-text-secondary">
@@ -222,11 +222,11 @@ export function ProjectWizard({
                   className={cn(
                     "p-6 border-2 rounded-lg text-left transition-all",
                     boardType === "scrum"
-                      ? "border-brand-600 bg-brand-indigo-track"
-                      : "border-ui-border-primary hover:border-brand-400",
+                      ? "border-brand bg-brand-indigo-track"
+                      : "border-ui-border hover:border-brand-muted",
                   )}
                 >
-                  <Typography variant="h3" className="font-bold text-lg mb-2 text-ui-text-primary">
+                  <Typography variant="h3" className="font-bold text-lg mb-2 text-ui-text">
                     🏃 Scrum
                   </Typography>
                   <Typography className="text-sm text-ui-text-secondary">
@@ -246,7 +246,7 @@ export function ProjectWizard({
           {/* Step 3: Workflow States */}
           {step === 3 && (
             <div className="space-y-4">
-              <Typography variant="h2" className="text-2xl font-bold text-ui-text-primary">
+              <Typography variant="h2" className="text-2xl font-bold text-ui-text">
                 Customize Your Workflow
               </Typography>
               <Typography className="text-ui-text-secondary">
@@ -268,13 +268,13 @@ export function ProjectWizard({
                         newStates[index].name = e.target.value;
                         setWorkflowStates(newStates);
                       }}
-                      className="flex-1 px-3 py-2 border border-ui-border-primary rounded-md bg-ui-bg-primary text-ui-text-primary"
+                      className="flex-1 px-3 py-2 border border-ui-border rounded-md bg-ui-bg text-ui-text"
                     />
                     <span
                       className={cn(
                         "px-3 py-1 rounded-full text-sm font-medium",
                         state.category === "todo"
-                          ? "bg-ui-bg-tertiary text-ui-text-primary"
+                          ? "bg-ui-bg-tertiary text-ui-text"
                           : state.category === "inprogress"
                             ? "bg-brand-indigo-track text-brand-indigo-text"
                             : "bg-status-success/10 text-status-success",
@@ -315,7 +315,7 @@ export function ProjectWizard({
           {/* Step 4: Summary & Create */}
           {step === 4 && (
             <div className="space-y-4">
-              <Typography variant="h2" className="text-2xl font-bold text-ui-text-primary">
+              <Typography variant="h2" className="text-2xl font-bold text-ui-text">
                 Ready to Create! 🎉
               </Typography>
               <Typography className="text-ui-text-secondary">
@@ -325,19 +325,17 @@ export function ProjectWizard({
               <div className="bg-ui-bg-secondary rounded-lg p-4 space-y-3">
                 <div>
                   <span className="text-sm text-ui-text-tertiary">Project Name:</span>
-                  <Typography className="font-medium text-ui-text-primary">
-                    {projectName}
-                  </Typography>
+                  <Typography className="font-medium text-ui-text">{projectName}</Typography>
                 </div>
                 <div>
                   <span className="text-sm text-ui-text-tertiary">Project Key:</span>
-                  <Typography className="font-mono font-medium text-ui-text-primary">
+                  <Typography className="font-mono font-medium text-ui-text">
                     {projectKey}
                   </Typography>
                 </div>
                 <div>
                   <span className="text-sm text-ui-text-tertiary">Board Type:</span>
-                  <Typography className="font-medium text-ui-text-primary capitalize">
+                  <Typography className="font-medium text-ui-text capitalize">
                     {boardType}
                   </Typography>
                 </div>
@@ -347,7 +345,7 @@ export function ProjectWizard({
                     {workflowStates.map((state) => (
                       <span
                         key={state.id}
-                        className="px-2 py-1 bg-ui-bg-tertiary rounded text-sm text-ui-text-primary"
+                        className="px-2 py-1 bg-ui-bg-tertiary rounded text-sm text-ui-text"
                       >
                         {state.name}
                       </span>

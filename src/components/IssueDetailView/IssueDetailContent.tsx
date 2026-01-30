@@ -40,7 +40,7 @@ export function IssueDetailContent({
   onCancel,
 }: IssueDetailContentProps): ReactNode {
   return (
-    <div className="flex-1 min-w-0 p-6 space-y-8 max-w-4xl border-r border-ui-border-primary">
+    <div className="flex-1 min-w-0 p-6 space-y-8 max-w-4xl border-r border-ui-border">
       {/* Title & Description */}
       <div className="space-y-4">
         {isEditing ? (
@@ -95,7 +95,7 @@ export function IssueDetailContent({
       )}
 
       {/* Comments Section */}
-      <div className="pt-8 border-t border-ui-border-primary">
+      <div className="pt-8 border-t border-ui-border">
         <Typography
           variant="h3"
           className="text-sm font-semibold mb-6 uppercase tracking-wider text-ui-text-tertiary"

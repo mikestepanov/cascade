@@ -154,7 +154,7 @@ export function getWorkflowCategoryColor(
   const normalizedCategory = category.toLowerCase();
   const colors = {
     todo: {
-      border: "border-t-ui-border-primary",
+      border: "border-t-ui-border",
       text: "text-ui-text-tertiary",
       bg: "bg-ui-bg-tertiary",
     },

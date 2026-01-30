@@ -195,7 +195,7 @@ export function NotificationsTab() {
           </Typography>
 
           <div className="space-y-2">
-            <label className="flex items-center gap-3 p-3 rounded-lg border border-ui-border-primary cursor-pointer hover:bg-ui-bg-secondary transition-colors">
+            <label className="flex items-center gap-3 p-3 rounded-lg border border-ui-border cursor-pointer hover:bg-ui-bg-secondary transition-colors">
               <input
                 type="radio"
                 name="digest"
@@ -203,17 +203,17 @@ export function NotificationsTab() {
                 checked={preferences.emailDigest === "none"}
                 onChange={() => handleDigestChange("none")}
                 disabled={isSaving || !preferences.emailEnabled}
-                className="w-4 h-4 text-brand-600 focus:ring-brand-500 focus:ring-2"
+                className="w-4 h-4 text-brand focus:ring-brand-ring focus:ring-2"
               />
               <div>
-                <div className="font-medium text-ui-text-primary">No digest</div>
+                <div className="font-medium text-ui-text">No digest</div>
                 <div className="text-sm text-ui-text-secondary">
                   Receive emails as events happen
                 </div>
               </div>
             </label>
 
-            <label className="flex items-center gap-3 p-3 rounded-lg border border-ui-border-primary cursor-pointer hover:bg-ui-bg-secondary transition-colors">
+            <label className="flex items-center gap-3 p-3 rounded-lg border border-ui-border cursor-pointer hover:bg-ui-bg-secondary transition-colors">
               <input
                 type="radio"
                 name="digest"
@@ -221,17 +221,17 @@ export function NotificationsTab() {
                 checked={preferences.emailDigest === "daily"}
                 onChange={() => handleDigestChange("daily")}
                 disabled={isSaving || !preferences.emailEnabled}
-                className="w-4 h-4 text-brand-600 focus:ring-brand-500 focus:ring-2"
+                className="w-4 h-4 text-brand focus:ring-brand-ring focus:ring-2"
               />
               <div>
-                <div className="font-medium text-ui-text-primary">Daily digest</div>
+                <div className="font-medium text-ui-text">Daily digest</div>
                 <div className="text-sm text-ui-text-secondary">
                   One email per day with all activity (coming soon)
                 </div>
               </div>
             </label>
 
-            <label className="flex items-center gap-3 p-3 rounded-lg border border-ui-border-primary cursor-pointer hover:bg-ui-bg-secondary transition-colors">
+            <label className="flex items-center gap-3 p-3 rounded-lg border border-ui-border cursor-pointer hover:bg-ui-bg-secondary transition-colors">
               <input
                 type="radio"
                 name="digest"
@@ -239,10 +239,10 @@ export function NotificationsTab() {
                 checked={preferences.emailDigest === "weekly"}
                 onChange={() => handleDigestChange("weekly")}
                 disabled={isSaving || !preferences.emailEnabled}
-                className="w-4 h-4 text-brand-600 focus:ring-brand-500 focus:ring-2"
+                className="w-4 h-4 text-brand focus:ring-brand-ring focus:ring-2"
               />
               <div>
-                <div className="font-medium text-ui-text-primary">Weekly digest</div>
+                <div className="font-medium text-ui-text">Weekly digest</div>
                 <div className="text-sm text-ui-text-secondary">
                   One email per week with all activity (coming soon)
                 </div>
@@ -253,14 +253,14 @@ export function NotificationsTab() {
       </Card>
 
       {/* Help Text */}
-      <div className="mt-6 p-4 bg-brand-50 rounded-lg border border-brand-200">
+      <div className="mt-6 p-4 bg-brand-subtle rounded-lg border border-brand-border">
         <Flex gap="md">
-          <span className="text-brand-600 text-xl">ℹ️</span>
+          <span className="text-brand text-xl">ℹ️</span>
           <div className="flex-1">
-            <Typography variant="h4" className="font-medium text-brand-900 mb-1">
+            <Typography variant="h4" className="font-medium text-brand-active mb-1">
               Email Configuration
             </Typography>
-            <Typography variant="p" className="text-sm text-brand-800">
+            <Typography variant="p" className="text-sm text-brand-active">
               Email notifications require Resend API configuration. If you're not receiving emails,
               contact your administrator to set up email notifications.
             </Typography>

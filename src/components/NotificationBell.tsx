@@ -107,15 +107,11 @@ export function NotificationBell() {
       {isOpen && (
         <Flex
           direction="column"
-          className="absolute right-0 mt-2 w-96 bg-ui-bg-primary rounded-lg shadow-xl border border-ui-border-primary z-50 max-h-[32rem] overflow-hidden"
+          className="absolute right-0 mt-2 w-96 bg-ui-bg rounded-lg shadow-xl border border-ui-border z-50 max-h-[32rem] overflow-hidden"
         >
           {/* Header */}
-          <Flex
-            align="center"
-            justify="between"
-            className="px-4 py-3 border-b border-ui-border-primary"
-          >
-            <Typography variant="h3" className="text-lg font-semibold text-ui-text-primary">
+          <Flex align="center" justify="between" className="px-4 py-3 border-b border-ui-border">
+            <Typography variant="h3" className="text-lg font-semibold text-ui-text">
               Notifications
             </Typography>
             {notifications && notifications.length > 0 && (
@@ -123,7 +119,7 @@ export function NotificationBell() {
                 variant="ghost"
                 size="sm"
                 onClick={() => markAllAsRead()}
-                className="text-brand-600 hover:text-brand-700:text-brand-600 min-h-0 p-0"
+                className="text-brand hover:text-brand-hover:text-brand min-h-0 p-0"
               >
                 Mark all read
               </Button>
@@ -154,8 +150,8 @@ export function NotificationBell() {
                       key={notification._id}
                       type="button"
                       className={cn(
-                        "w-full text-left px-4 py-3 hover:bg-ui-bg-secondary cursor-pointer border-b border-ui-border-primary transition-colors",
-                        !notification.isRead && "bg-brand-50",
+                        "w-full text-left px-4 py-3 hover:bg-ui-bg-secondary cursor-pointer border-b border-ui-border transition-colors",
+                        !notification.isRead && "bg-brand-subtle",
                       )}
                       onClick={() =>
                         handleNotificationClick(notification._id, notification.issueId)
@@ -166,7 +162,7 @@ export function NotificationBell() {
                           {getNotificationIcon(notification.type)}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <Typography className="text-sm font-medium text-ui-text-primary">
+                          <Typography className="text-sm font-medium text-ui-text">
                             {notification.title}
                           </Typography>
                           <Typography className="text-sm text-ui-text-secondary mt-1">

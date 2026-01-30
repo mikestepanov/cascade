@@ -96,7 +96,7 @@ export function LeadOnboarding({
         <button
           type="button"
           onClick={onBack}
-          className="flex items-center gap-2 text-ui-text-secondary hover:text-ui-text-primary transition-colors"
+          className="flex items-center gap-2 text-ui-text-secondary hover:text-ui-text transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Back</span>
@@ -104,7 +104,7 @@ export function LeadOnboarding({
 
         {/* Header */}
         <div className="text-center">
-          <Typography variant="h1" className="text-3xl font-bold text-ui-text-primary mb-3">
+          <Typography variant="h1" className="text-3xl font-bold text-ui-text mb-3">
             Perfect for Team Leads
           </Typography>
           <Typography className="text-ui-text-secondary text-lg">
@@ -116,21 +116,21 @@ export function LeadOnboarding({
         <FeatureHighlights />
 
         {/* Additional lead features */}
-        <div className="bg-ui-bg-primary rounded-xl p-6">
-          <Typography variant="h3" className="font-medium text-ui-text-primary mb-4">
+        <div className="bg-ui-bg rounded-xl p-6">
+          <Typography variant="h3" className="font-medium text-ui-text mb-4">
             As a team lead, you can also:
           </Typography>
           <ul className="space-y-3 text-ui-text-secondary">
             <li className="flex items-start gap-3">
-              <UserPlus className="w-5 h-5 text-primary-500 mt-0.5 shrink-0" />
+              <UserPlus className="w-5 h-5 text-brand-ring mt-0.5 shrink-0" />
               <span>Invite team members and manage roles</span>
             </li>
             <li className="flex items-start gap-3">
-              <FolderPlus className="w-5 h-5 text-primary-500 mt-0.5 shrink-0" />
+              <FolderPlus className="w-5 h-5 text-brand-ring mt-0.5 shrink-0" />
               <span>Create and customize project workflows</span>
             </li>
             <li className="flex items-start gap-3">
-              <Sparkles className="w-5 h-5 text-primary-500 mt-0.5 shrink-0" />
+              <Sparkles className="w-5 h-5 text-brand-ring mt-0.5 shrink-0" />
               <span>Use AI to generate issue suggestions and summaries</span>
             </li>
           </ul>
@@ -153,7 +153,7 @@ export function LeadOnboarding({
         <button
           type="button"
           onClick={() => setStep("features")}
-          className="flex items-center gap-2 text-ui-text-secondary hover:text-ui-text-primary transition-colors"
+          className="flex items-center gap-2 text-ui-text-secondary hover:text-ui-text transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Back</span>
@@ -167,7 +167,7 @@ export function LeadOnboarding({
             justify="center"
             className="w-16 h-16 rounded-full bg-brand-indigo-track mb-4"
           >
-            <Building2 className="w-8 h-8 text-primary-600" />
+            <Building2 className="w-8 h-8 text-brand" />
           </Flex>
           <Typography variant="h1" className="text-3xl font-bold mb-3">
             Name Your Project
@@ -224,7 +224,7 @@ export function LeadOnboarding({
         <button
           type="button"
           onClick={() => setStep("project")}
-          className="flex items-center gap-2 text-ui-text-secondary hover:text-ui-text-primary transition-colors"
+          className="flex items-center gap-2 text-ui-text-secondary hover:text-ui-text transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Back</span>
@@ -247,11 +247,11 @@ export function LeadOnboarding({
             type="button"
             onClick={handleCreateSample}
             disabled={isCreating}
-            className="p-6 rounded-xl border-2 border-ui-border-primary bg-ui-bg-primary text-left transition-all hover:border-primary-500 hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
+            className="p-6 rounded-xl border-2 border-ui-border bg-ui-bg text-left transition-all hover:border-brand-ring hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Flex direction="column" gap="lg">
               <div className="p-3 rounded-lg bg-brand-indigo-track w-fit">
-                <Sparkles className="w-6 h-6 text-primary-600" />
+                <Sparkles className="w-6 h-6 text-brand" />
               </div>
               <div>
                 <Typography variant="h3" className="font-semibold mb-1">
@@ -261,7 +261,7 @@ export function LeadOnboarding({
                   Explore Nixelo with pre-filled demo issues and sprints
                 </Typography>
               </div>
-              <span className="text-xs text-primary-600 font-medium">Recommended</span>
+              <span className="text-xs text-brand font-medium">Recommended</span>
             </Flex>
           </button>
 
@@ -270,7 +270,7 @@ export function LeadOnboarding({
             type="button"
             onClick={handleFinishWithoutProject}
             disabled={isCreating}
-            className="p-6 rounded-xl border-2 border-ui-border-primary bg-ui-bg-primary text-left transition-all hover:border-primary-500 hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
+            className="p-6 rounded-xl border-2 border-ui-border bg-ui-bg text-left transition-all hover:border-brand-ring hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Flex direction="column" gap="lg">
               <div className="p-3 rounded-lg bg-ui-bg-tertiary w-fit">

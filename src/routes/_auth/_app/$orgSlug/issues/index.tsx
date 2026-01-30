@@ -67,10 +67,7 @@ function AllIssuesPage() {
       />
 
       {/* Filters & Search */}
-      <Flex
-        gap="md"
-        className="mb-6 bg-ui-bg-primary p-4 rounded-lg border border-ui-border-primary"
-      >
+      <Flex gap="md" className="mb-6 bg-ui-bg p-4 rounded-lg border border-ui-border">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-ui-text-tertiary" />
           <input
@@ -78,7 +75,7 @@ function AllIssuesPage() {
             placeholder="Search issues..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 bg-ui-bg-secondary border border-ui-border-primary rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+            className="w-full pl-10 pr-4 py-2 bg-ui-bg-secondary border border-ui-border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-brand-ring"
           />
         </div>
         <Flex gap="sm" align="center">
@@ -86,7 +83,7 @@ function AllIssuesPage() {
           <select
             value={statusFilter || ""}
             onChange={(e) => setStatusFilter(e.target.value || undefined)}
-            className="bg-ui-bg-secondary border border-ui-border-primary rounded-md px-3 py-2 text-sm focus:outline-none"
+            className="bg-ui-bg-secondary border border-ui-border rounded-md px-3 py-2 text-sm focus:outline-none"
           >
             <option value="">All Statuses</option>
             <option value="todo">To Do</option>

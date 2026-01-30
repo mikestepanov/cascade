@@ -62,7 +62,7 @@ export function SubtasksList({ issueId, projectId, subtasks }: SubtasksListProps
   return (
     <div>
       <Flex justify="between" align="center" className="mb-3">
-        <Typography variant="h3" className="text-sm font-medium text-ui-text-primary">
+        <Typography variant="h3" className="text-sm font-medium text-ui-text">
           Sub-tasks
           {totalSubtasks > 0 && (
             <span className="ml-2 text-xs text-ui-text-tertiary">
@@ -73,7 +73,7 @@ export function SubtasksList({ issueId, projectId, subtasks }: SubtasksListProps
         <button
           type="button"
           onClick={() => setIsCreatingSubtask(true)}
-          className="text-sm text-brand-600 hover:text-brand-700:text-brand-500 font-medium"
+          className="text-sm text-brand hover:text-brand-hover:text-brand-ring font-medium"
         >
           + Add Sub-task
         </button>
@@ -86,7 +86,7 @@ export function SubtasksList({ issueId, projectId, subtasks }: SubtasksListProps
 
       {/* Create sub-task form */}
       {isCreatingSubtask && (
-        <div className="mb-3 p-3 border border-ui-border-primary rounded-lg bg-ui-bg-secondary">
+        <div className="mb-3 p-3 border border-ui-border rounded-lg bg-ui-bg-secondary">
           <Input
             type="text"
             value={subtaskTitle}
@@ -107,7 +107,7 @@ export function SubtasksList({ issueId, projectId, subtasks }: SubtasksListProps
             <button
               type="button"
               onClick={handleCreateSubtask}
-              className="px-3 py-1 bg-brand-main text-ui-bg-primary rounded hover:bg-brand-secondary text-sm"
+              className="px-3 py-1 bg-brand-main text-ui-bg rounded hover:bg-brand-secondary text-sm"
             >
               Add
             </button>
@@ -117,7 +117,7 @@ export function SubtasksList({ issueId, projectId, subtasks }: SubtasksListProps
                 setIsCreatingSubtask(false);
                 setSubtaskTitle("");
               }}
-              className="px-3 py-1 bg-ui-bg-tertiary text-ui-text-primary rounded hover:bg-ui-bg-tertiary text-sm"
+              className="px-3 py-1 bg-ui-bg-tertiary text-ui-text rounded hover:bg-ui-bg-tertiary text-sm"
             >
               Cancel
             </button>
@@ -146,7 +146,7 @@ export function SubtasksList({ issueId, projectId, subtasks }: SubtasksListProps
               <div className="flex-1">
                 <Flex gap="sm" align="center">
                   <span className="text-xs font-mono text-ui-text-tertiary">{subtask.key}</span>
-                  <span className="text-sm text-ui-text-primary">{subtask.title}</span>
+                  <span className="text-sm text-ui-text">{subtask.title}</span>
                 </Flex>
                 {subtask.assignee && (
                   <span className="text-xs text-ui-text-tertiary">

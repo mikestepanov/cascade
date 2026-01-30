@@ -33,7 +33,7 @@ export function AttachmentList({ attachmentIds, issueId, canEdit = false }: Atta
 
   return (
     <div className="space-y-2">
-      <Typography variant="h4" className="text-sm font-medium text-ui-text-primary">
+      <Typography variant="h4" className="text-sm font-medium text-ui-text">
         Attachments ({attachmentIds.length})
       </Typography>
       <div className="grid grid-cols-1 gap-2">
@@ -66,7 +66,7 @@ function AttachmentItem({
       <Flex
         align="center"
         gap="sm"
-        className="p-2 bg-ui-bg-secondary rounded border border-ui-border-primary"
+        className="p-2 bg-ui-bg-secondary rounded border border-ui-border"
       >
         <div className="animate-pulse h-8 w-8 bg-ui-bg-tertiary rounded" />
         <div className="flex-1 animate-pulse h-4 bg-ui-bg-tertiary rounded" />
@@ -81,7 +81,7 @@ function AttachmentItem({
     <Flex
       align="center"
       gap="sm"
-      className="p-2 bg-ui-bg-secondary rounded border border-ui-border-primary hover:bg-ui-bg-tertiary transition-colors"
+      className="p-2 bg-ui-bg-secondary rounded border border-ui-border hover:bg-ui-bg-tertiary transition-colors"
     >
       <div className="text-2xl">{fileIcon}</div>
       <div className="flex-1 min-w-0">
@@ -89,14 +89,14 @@ function AttachmentItem({
           href={url}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-sm font-medium text-brand-600 hover:text-brand-700:text-brand-300 hover:underline truncate block"
+          className="text-sm font-medium text-brand hover:text-brand-hover:text-brand-muted hover:underline truncate block"
         >
           {filename}
         </a>
       </div>
       <Flex gap="xs">
         <Tooltip content="Download attachment">
-          <a href={url} download className="text-ui-text-secondary hover:text-ui-text-primary">
+          <a href={url} download className="text-ui-text-secondary hover:text-ui-text">
             <span className="sr-only">Download attachment</span>
             <svg
               aria-hidden="true"

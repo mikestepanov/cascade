@@ -37,10 +37,10 @@ export class ErrorBoundary extends Component<Props, State> {
 
       return (
         <Flex align="center" justify="center" className="min-h-screen bg-ui-bg-secondary">
-          <div className="max-w-md w-full bg-ui-bg-primary shadow-lg rounded-lg p-8">
+          <div className="max-w-md w-full bg-ui-bg shadow-lg rounded-lg p-8">
             <div className="text-center">
               <div className="text-status-error text-6xl mb-4">⚠️</div>
-              <Typography variant="h1" className="text-2xl font-bold text-ui-text-primary mb-2">
+              <Typography variant="h1" className="text-2xl font-bold text-ui-text mb-2">
                 Something went wrong
               </Typography>
               <Typography variant="muted" className="mb-6">
@@ -48,7 +48,7 @@ export class ErrorBoundary extends Component<Props, State> {
               </Typography>
               {this.state.error && (
                 <details className="text-left mb-6">
-                  <summary className="cursor-pointer text-sm text-ui-text-secondary hover:text-ui-text-primary">
+                  <summary className="cursor-pointer text-sm text-ui-text-secondary hover:text-ui-text">
                     Error details
                   </summary>
                   <pre className="mt-2 text-xs bg-ui-bg-tertiary p-3 rounded overflow-auto max-h-40">

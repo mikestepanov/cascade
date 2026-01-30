@@ -18,12 +18,12 @@ export function Greeting({ userName, completedCount = 0 }: GreetingProps) {
     <div className="mb-8">
       <Flex direction="column" gap="xs">
         <Typography variant="h1" className="text-3xl sm:text-4xl font-extrabold tracking-tight">
-          {greeting}, <span className="text-brand-600">{firstName}</span>.
+          {greeting}, <span className="text-brand">{firstName}</span>.
         </Typography>
         <Typography variant="lead" color="secondary" className="max-w-2xl">
           {completedCount > 0 ? (
             <>
-              <span className="font-bold text-ui-text-primary">
+              <span className="font-bold text-ui-text">
                 {completedCount} {completedCount === 1 ? "task" : "tasks"}
               </span>{" "}
               completed this week.

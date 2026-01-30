@@ -5,15 +5,15 @@ import { cn } from "@/lib/utils";
 const badgeVariants = cva("inline-flex items-center font-medium", {
   variants: {
     variant: {
-      primary: "bg-brand-100 text-brand-800",
-      secondary: "bg-ui-bg-secondary text-ui-text-primary",
+      primary: "bg-brand-subtle text-brand-active",
+      secondary: "bg-ui-bg-secondary text-ui-text",
       success: "bg-status-success-bg text-status-success-text",
       error: "bg-status-error-bg text-status-error-text",
       warning: "bg-status-warning-bg text-status-warning-text",
-      info: "bg-brand-50 text-brand-700",
+      info: "bg-brand-subtle text-brand-hover",
       neutral: "bg-ui-bg-tertiary text-ui-text-secondary",
-      brand: "bg-brand-100 text-brand-800",
-      accent: "bg-accent-100 text-accent-800",
+      brand: "bg-brand-subtle text-brand-active",
+      accent: "bg-accent-subtle text-accent-active",
     },
     size: {
       sm: "text-xs px-2 py-0.5",

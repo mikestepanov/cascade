@@ -100,10 +100,10 @@ export function GitHubIntegration() {
         <Flex justify="between" align="start">
           <Flex gap="lg" align="center">
             <div className="p-3 bg-ui-bg-tertiary rounded-lg">
-              <Github className="h-6 w-6 text-ui-text-primary" />
+              <Github className="h-6 w-6 text-ui-text" />
             </div>
             <div>
-              <Typography variant="h3" className="text-lg font-semibold text-ui-text-primary">
+              <Typography variant="h3" className="text-lg font-semibold text-ui-text">
                 GitHub
               </Typography>
               <Typography className="text-sm text-ui-text-secondary mt-1">
@@ -135,7 +135,7 @@ export function GitHubIntegration() {
         </Flex>
 
         {githubConnection && (
-          <div className="mt-6 pt-6 border-t border-ui-border-primary">
+          <div className="mt-6 pt-6 border-t border-ui-border">
             <LinkedRepositories />
           </div>
         )}

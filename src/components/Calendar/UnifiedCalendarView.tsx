@@ -18,7 +18,7 @@ export function UnifiedCalendarView({ projectId }: UnifiedCalendarViewProps) {
   return (
     <Flex direction="column" className="h-full">
       {/* View Switcher */}
-      <div className="border-b border-ui-border-primary px-3 sm:px-6 py-3 bg-ui-bg-primary">
+      <div className="border-b border-ui-border px-3 sm:px-6 py-3 bg-ui-bg">
         <ToggleGroup
           type="single"
           value={viewType}
