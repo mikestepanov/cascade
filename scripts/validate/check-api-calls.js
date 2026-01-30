@@ -5,7 +5,7 @@
 
 import fs from "node:fs";
 import path from "node:path";
-import { ROOT, c, relPath, walkDir } from "./utils.js";
+import { c, ROOT, relPath, walkDir } from "./utils.js";
 
 export function run() {
   const srcDir = path.join(ROOT, "src");
@@ -69,7 +69,12 @@ export function run() {
   // Top-level convex files
   const convexTopLevel = walkDir(convexDir, { extensions: new Set([".ts"]) }).filter((f) => {
     const rel = path.relative(convexDir, f);
-    return !(rel.includes(path.sep) || rel.includes(".test.") || rel.includes("schema") || rel.includes("config"));
+    return !(
+      rel.includes(path.sep) ||
+      rel.includes(".test.") ||
+      rel.includes("schema") ||
+      rel.includes("config")
+    );
   });
 
   for (const file of convexTopLevel) {
@@ -97,14 +102,21 @@ export function run() {
     if (moduleName === "convex") continue;
     if (call === "pumble.com") continue;
     if (exportedFuncs.has(call)) continue;
-    if (["ai.actions", "ai.mutations", "ai.queries", "email.notifications", "email.helpers"].includes(call)) continue;
+    if (
+      ["ai.actions", "ai.mutations", "ai.queries", "email.notifications", "email.helpers"].includes(
+        call,
+      )
+    )
+      continue;
 
     const moduleFuncs = exportedFuncs.get(moduleName);
     if (!moduleFuncs) {
       errors.push(`  ${c.red}MISSING MODULE${c.reset}: convex/${moduleName}.ts  (api.${call})`);
       found++;
     } else if (!moduleFuncs.has(func)) {
-      errors.push(`  ${c.red}MISSING FUNCTION${c.reset}: api.${call}  in: ${files.slice(0, 3).join(", ")}`);
+      errors.push(
+        `  ${c.red}MISSING FUNCTION${c.reset}: api.${call}  in: ${files.slice(0, 3).join(", ")}`,
+      );
       found++;
     }
   }
