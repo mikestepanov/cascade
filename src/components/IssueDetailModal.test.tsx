@@ -106,7 +106,7 @@ describe("IssueDetailModal", () => {
   };
 
   const setupMockQuery = (overrideIssue?: Partial<typeof mockIssue> | null) => {
-    vi.mocked(useQuery).mockImplementation((queryFn: any, args: any) => {
+    vi.mocked(useQuery).mockImplementation((_queryFn: any, args: any) => {
       // Mock api.issues.get
       if (args && args.id === mockIssueId) {
         return overrideIssue === null ? undefined : { ...mockIssue, ...overrideIssue };

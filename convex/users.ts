@@ -4,7 +4,6 @@ import { internalQuery } from "./_generated/server";
 import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
 import { batchFetchUsers } from "./lib/batchHelpers";
 import { validate } from "./lib/constrainedValidators";
-import { conflict, validation } from "./lib/errors";
 import { MAX_PAGE_SIZE } from "./lib/queryLimits";
 import { notDeleted } from "./lib/softDeleteHelpers";
 import { sanitizeUserForAuth } from "./lib/userUtils";
