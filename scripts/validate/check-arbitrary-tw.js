@@ -42,9 +42,9 @@ export function run() {
   for (const file of files) {
     const content = fs.readFileSync(file, "utf-8");
     const lines = content.split("\n");
-    for (let i = 0; i < lines.length; i++) {
+    for (const line of lines) {
       for (const { regex } of patterns) {
-        if (regex.test(lines[i])) {
+        if (regex.test(line)) {
           totalFound++;
           break; // count each line only once
         }

@@ -48,7 +48,7 @@ describe("customFields", () => {
       const t = convexTest(schema, modules);
       const { projectId, asUser } = await setupProject(t);
 
-      const fieldId = await asUser.mutation(api.customFields.create, {
+      const _fieldId = await asUser.mutation(api.customFields.create, {
         projectId,
         name: "Priority Level",
         fieldKey: "priority_level",

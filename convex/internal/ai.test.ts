@@ -90,7 +90,7 @@ describe("Internal AI", () => {
       // convex-test t.query can run internal queries.
 
       // Add an active sprint
-      const sprintId = await t.run(async (ctx) => {
+      const _sprintId = await t.run(async (ctx) => {
         return await ctx.db.insert("sprints", {
           projectId,
           name: "Active Sprint",
