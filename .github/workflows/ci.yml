@@ -36,7 +36,7 @@ jobs:
         run: pnpm run typecheck
 
       - name: Architectural Checks
-        run: pnpm run check:standards
+        run: pnpm run validate
 
   unit-tests:
     name: Unit Tests

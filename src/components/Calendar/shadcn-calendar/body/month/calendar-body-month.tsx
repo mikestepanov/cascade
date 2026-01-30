@@ -68,8 +68,11 @@ export function CalendarBodyMonth(): React.ReactElement {
             const isCurrentMonth = isSameMonth(day, date);
 
             return (
+              // biome-ignore lint/a11y/useSemanticElements: Complex layout requires div
               <div
                 key={day.toISOString()}
+                role="button"
+                tabIndex={0}
                 className={cn(
                   "relative flex flex-col border-b border-r p-2 min-h-[120px] cursor-pointer hover:bg-muted/30 transition-colors",
                   !isCurrentMonth && "bg-muted/50 hidden md:flex",
