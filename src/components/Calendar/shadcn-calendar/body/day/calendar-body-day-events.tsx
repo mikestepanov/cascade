@@ -1,19 +1,7 @@
 import { isSameDay } from "date-fns";
 import { cn } from "@/lib/utils";
+import { DOT_COLOR_CLASSES } from "../../../calendar-colors";
 import { useCalendarContext } from "../../calendar-context";
-
-const DOT_COLOR_CLASSES: Record<string, string> = {
-  blue: "bg-palette-blue",
-  red: "bg-palette-red",
-  green: "bg-palette-green",
-  amber: "bg-palette-amber",
-  orange: "bg-palette-orange",
-  purple: "bg-palette-purple",
-  pink: "bg-palette-pink",
-  teal: "bg-palette-teal",
-  indigo: "bg-palette-indigo",
-  gray: "bg-palette-gray",
-};
 
 export function CalendarBodyDayEvents(): React.ReactElement {
   const { events, date, onEventClick } = useCalendarContext();

@@ -1,14 +1,6 @@
 import type { Doc, Id } from "@convex/_generated/dataModel";
+import { EVENT_TYPE_DEFAULT_COLOR } from "../calendar-colors";
 import type { NixeloCalendarEvent } from "./calendar-types";
-
-type EventColor = NonNullable<Doc<"calendarEvents">["color"]>;
-
-const EVENT_TYPE_DEFAULT_COLOR: Record<string, EventColor> = {
-  meeting: "blue",
-  deadline: "red",
-  timeblock: "green",
-  personal: "purple",
-};
 
 export function toCalendarEvent(doc: Doc<"calendarEvents">): NixeloCalendarEvent {
   return {
