@@ -81,42 +81,52 @@
   --color-palette-blue: light-dark(var(--p-blue-500), var(--p-blue-400));
   --color-palette-blue-bg: light-dark(var(--p-blue-50), var(--p-blue-950));
   --color-palette-blue-text: light-dark(var(--p-blue-700), var(--p-blue-300));
+  --color-palette-blue-solid: light-dark(var(--p-blue-500), var(--p-blue-600));
 
   --color-palette-red: light-dark(var(--p-red-500), var(--p-red-400));
   --color-palette-red-bg: light-dark(var(--p-red-50), var(--p-red-950));
   --color-palette-red-text: light-dark(var(--p-red-700), var(--p-red-300));
+  --color-palette-red-solid: light-dark(var(--p-red-500), var(--p-red-600));
 
   --color-palette-green: light-dark(var(--p-green-500), var(--p-green-400));
   --color-palette-green-bg: light-dark(var(--p-green-50), var(--p-green-950));
   --color-palette-green-text: light-dark(var(--p-green-700), var(--p-green-300));
+  --color-palette-green-solid: light-dark(var(--p-green-500), var(--p-green-600));
 
   --color-palette-amber: light-dark(var(--p-amber-500), var(--p-amber-400));
   --color-palette-amber-bg: light-dark(var(--p-amber-50), var(--p-amber-950));
   --color-palette-amber-text: light-dark(var(--p-amber-700), var(--p-amber-300));
+  --color-palette-amber-solid: light-dark(var(--p-amber-500), var(--p-amber-600));
 
   --color-palette-orange: light-dark(var(--p-orange-500), var(--p-orange-400));
   --color-palette-orange-bg: light-dark(var(--p-orange-50), var(--p-orange-950));
   --color-palette-orange-text: light-dark(var(--p-orange-700), var(--p-orange-300));
+  --color-palette-orange-solid: light-dark(var(--p-orange-500), var(--p-orange-600));
 
   --color-palette-purple: light-dark(var(--p-purple-500), var(--p-purple-400));
   --color-palette-purple-bg: light-dark(var(--p-purple-50), var(--p-purple-950));
   --color-palette-purple-text: light-dark(var(--p-purple-700), var(--p-purple-300));
+  --color-palette-purple-solid: light-dark(var(--p-purple-500), var(--p-purple-600));
 
   --color-palette-pink: light-dark(var(--p-pink-500), var(--p-pink-400));
   --color-palette-pink-bg: light-dark(var(--p-pink-50), var(--p-pink-950));
   --color-palette-pink-text: light-dark(var(--p-pink-700), var(--p-pink-300));
+  --color-palette-pink-solid: light-dark(var(--p-pink-500), var(--p-pink-600));
 
   --color-palette-teal: light-dark(var(--p-teal-500), var(--p-teal-400));
   --color-palette-teal-bg: light-dark(var(--p-teal-50), var(--p-teal-950));
   --color-palette-teal-text: light-dark(var(--p-teal-700), var(--p-teal-300));
+  --color-palette-teal-solid: light-dark(var(--p-teal-500), var(--p-teal-600));
 
   --color-palette-indigo: light-dark(var(--p-indigo-500), var(--p-indigo-400));
   --color-palette-indigo-bg: light-dark(var(--p-indigo-50), var(--p-indigo-950));
   --color-palette-indigo-text: light-dark(var(--p-indigo-700), var(--p-indigo-300));
+  --color-palette-indigo-solid: light-dark(var(--p-indigo-500), var(--p-indigo-600));
 
   --color-palette-gray: light-dark(var(--p-gray-500), var(--p-gray-400));
   --color-palette-gray-bg: light-dark(var(--p-gray-50), var(--p-gray-800));
   --color-palette-gray-text: light-dark(var(--p-gray-700), var(--p-gray-300));
+  --color-palette-gray-solid: light-dark(var(--p-gray-500), var(--p-gray-600));
 
   /* --- Priority (5 vars) --- */
   --color-priority-lowest: var(--color-palette-gray);
@@ -137,10 +147,6 @@
   --color-landing-accent-alt: light-dark(var(--p-purple-500), var(--p-purple-400));
   --color-landing-accent-teal: light-dark(var(--p-teal-500), var(--p-teal-400));
   --color-ui-bg-hero: var(--p-gray-950);
-
-  /* --- Legacy: shadcn "primary" alias (used by Calendar, BoardToolbar) --- */
-  --color-primary: var(--color-brand);
-  --color-primary-hover: var(--color-brand-hover);
 
   /* --- Brand feature accents (used by time tracking, calendar, onboarding) --- */
   --color-brand-cyan-text: light-dark(var(--p-cyan-600), var(--p-cyan-400));

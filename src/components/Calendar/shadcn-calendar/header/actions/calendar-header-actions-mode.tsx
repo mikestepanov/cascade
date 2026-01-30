@@ -26,7 +26,7 @@ export function CalendarHeaderActionsMode(): React.ReactElement {
             <motion.div
               key={modeValue}
               layout
-              className="flex-1 flex divide-x"
+              className="flex-1 flex divide-x divide-ui-border"
               animate={{ flex: isSelected ? 1.6 : 1 }}
               transition={{
                 flex: {

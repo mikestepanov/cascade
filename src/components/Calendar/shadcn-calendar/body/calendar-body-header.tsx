@@ -19,10 +19,7 @@ export function CalendarBodyHeader({
       </span>
       {!onlyDay && (
         <span
-          className={cn(
-            "text-xs font-medium",
-            isToday ? "text-brand font-bold" : "text-ui-text",
-          )}
+          className={cn("text-xs font-medium", isToday ? "text-brand font-bold" : "text-ui-text")}
         >
           {format(date, "dd")}
         </span>
