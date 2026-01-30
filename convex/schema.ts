@@ -7,6 +7,7 @@ import {
   blockNoteContent,
   boardTypes,
   bookingFieldTypes,
+  calendarEventColors,
   calendarProviders,
   calendarStatuses,
   cancelledByOptions,
@@ -523,6 +524,8 @@ const applicationTables = {
     notes: v.optional(v.string()),
     // Attendance tracking
     isRequired: v.optional(v.boolean()), // Required attendance (for tracking who missed)
+    // Display
+    color: v.optional(calendarEventColors), // Optional palette color override
     // Metadata
     updatedAt: v.number(),
   })

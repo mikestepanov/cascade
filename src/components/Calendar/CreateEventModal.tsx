@@ -20,6 +20,41 @@ import { Typography } from "../ui/Typography";
 
 const eventTypes = ["meeting", "deadline", "timeblock", "personal"] as const;
 
+// Derive palette color type from the schema — single source of truth
+type PaletteColor = NonNullable<Doc<"calendarEvents">["color"]>;
+const paletteColors: PaletteColor[] = [
+  "blue",
+  "red",
+  "green",
+  "amber",
+  "orange",
+  "purple",
+  "pink",
+  "teal",
+  "indigo",
+  "gray",
+];
+
+const EVENT_TYPE_DEFAULT_COLOR: Record<string, PaletteColor> = {
+  meeting: "blue",
+  deadline: "red",
+  timeblock: "green",
+  personal: "purple",
+};
+
+const COLOR_PICKER_CLASSES: Record<PaletteColor, { bg: string; ring: string }> = {
+  blue: { bg: "bg-palette-blue", ring: "ring-palette-blue" },
+  red: { bg: "bg-palette-red", ring: "ring-palette-red" },
+  green: { bg: "bg-palette-green", ring: "ring-palette-green" },
+  amber: { bg: "bg-palette-amber", ring: "ring-palette-amber" },
+  orange: { bg: "bg-palette-orange", ring: "ring-palette-orange" },
+  purple: { bg: "bg-palette-purple", ring: "ring-palette-purple" },
+  pink: { bg: "bg-palette-pink", ring: "ring-palette-pink" },
+  teal: { bg: "bg-palette-teal", ring: "ring-palette-teal" },
+  indigo: { bg: "bg-palette-indigo", ring: "ring-palette-indigo" },
+  gray: { bg: "bg-palette-gray", ring: "ring-palette-gray" },
+};
+
 const createEventSchema = z.object({
   title: z.string().min(1, "Title is required"),
   description: z.string(),
@@ -59,6 +94,7 @@ export function CreateEventModal({
   const [selectedWorkspaceId, setSelectedWorkspaceId] = useState<Id<"projects"> | undefined>(
     projectId,
   );
+  const [selectedColor, setSelectedColor] = useState<PaletteColor | undefined>(undefined);
 
   type CreateEventForm = z.infer<typeof createEventSchema>;
 
@@ -101,6 +137,7 @@ export function CreateEventModal({
           issueId,
           attendeeIds: [],
           isRequired: value.eventType === "meeting" ? value.isRequired : undefined,
+          color: selectedColor,
         });
 
         showSuccess("Event created successfully");
@@ -148,9 +185,12 @@ export function CreateEventModal({
                       <button
                         key={type}
                         type="button"
-                        onClick={() =>
-                          form.setFieldValue("eventType", type as (typeof eventTypes)[number])
-                        }
+                        onClick={() => {
+                          form.setFieldValue("eventType", type as (typeof eventTypes)[number]);
+                          if (!selectedColor) {
+                            setSelectedColor(EVENT_TYPE_DEFAULT_COLOR[type]);
+                          }
+                        }}
                         className={cn(
                           "px-3 py-2 rounded-md text-sm font-medium capitalize",
                           eventType === type
@@ -162,6 +202,33 @@ export function CreateEventModal({
                       </button>
                     ))}
                   </div>
+                </div>
+
+                {/* Color */}
+                <div>
+                  <div className="block text-sm font-medium text-ui-text-primary mb-1">Color</div>
+                  <Flex gap="sm" className="flex-wrap">
+                    {paletteColors.map((color) => {
+                      const isActive =
+                        (selectedColor ?? EVENT_TYPE_DEFAULT_COLOR[eventType as string]) === color;
+                      return (
+                        <button
+                          key={color}
+                          type="button"
+                          onClick={() => setSelectedColor(color)}
+                          className={cn(
+                            "size-7 rounded-full transition-all",
+                            COLOR_PICKER_CLASSES[color].bg,
+                            isActive
+                              ? cn("ring-2 ring-offset-2", COLOR_PICKER_CLASSES[color].ring)
+                              : "hover:scale-110",
+                          )}
+                          title={color}
+                          aria-label={`Select ${color} color`}
+                        />
+                      );
+                    })}
+                  </Flex>
                 </div>
 
                 {/* Date and Time */}

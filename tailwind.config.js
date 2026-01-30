@@ -1,5 +1,19 @@
 const { fontFamily } = require("tailwindcss/defaultTheme");
 
+// Shared palette – single source of truth for color hex values
+const palette = {
+  blue: { DEFAULT: "#3B82F6", bg: "#DBEAFE", text: "#1E40AF" },
+  red: { DEFAULT: "#EF4444", bg: "#FEE2E2", text: "#991B1B" },
+  green: { DEFAULT: "#10B981", bg: "#D1FAE5", text: "#065F46" },
+  amber: { DEFAULT: "#F59E0B", bg: "#FEF3C7", text: "#92400E" },
+  orange: { DEFAULT: "#F97316", bg: "#FFEDD5", text: "#9A3412" },
+  purple: { DEFAULT: "#8B5CF6", bg: "#EDE9FE", text: "#5B21B6" },
+  pink: { DEFAULT: "#EC4899", bg: "#FCE7F3", text: "#9D174D" },
+  teal: { DEFAULT: "#14B8A6", bg: "#CCFBF1", text: "#115E59" },
+  indigo: { DEFAULT: "#6366F1", bg: "#E0E7FF", text: "#3730A3" },
+  gray: { DEFAULT: "#6B7280", bg: "#F3F4F6", text: "#374151" },
+};
+
 module.exports = {
   darkMode: "class",
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
@@ -23,6 +37,9 @@ module.exports = {
         // ============================================
         // Use these tokens throughout the app for consistency
         // and easy theme changes
+
+        // Shared Palette (10 named colors)
+        palette,
 
         // Brand Colors (Primary Actions)
         brand: {
@@ -95,54 +112,54 @@ module.exports = {
           "error-dark": "#F87171",
         },
 
-        // Status Colors
+        // Status Colors (referencing palette)
         status: {
           success: {
-            DEFAULT: "#10B981",
-            bg: "#D1FAE5",
-            text: "#065F46",
+            DEFAULT: palette.green.DEFAULT,
+            bg: palette.green.bg,
+            text: palette.green.text,
             "bg-dark": "#064E3B",
             "text-dark": "#6EE7B7",
           },
           warning: {
-            DEFAULT: "#F59E0B",
-            bg: "#FEF3C7",
-            text: "#92400E",
+            DEFAULT: palette.amber.DEFAULT,
+            bg: palette.amber.bg,
+            text: palette.amber.text,
             "bg-dark": "#78350F",
             "text-dark": "#FCD34D",
           },
           error: {
-            DEFAULT: "#EF4444",
-            bg: "#FEE2E2",
-            text: "#991B1B",
+            DEFAULT: palette.red.DEFAULT,
+            bg: palette.red.bg,
+            text: palette.red.text,
             "bg-dark": "#7F1D1D",
             "text-dark": "#FCA5A5",
           },
           info: {
-            DEFAULT: "#3B82F6",
-            bg: "#DBEAFE",
-            text: "#1E40AF",
+            DEFAULT: palette.blue.DEFAULT,
+            bg: palette.blue.bg,
+            text: palette.blue.text,
             "bg-dark": "#1E3A8A",
             "text-dark": "#93C5FD",
           },
         },
 
-        // Issue Priority Colors
+        // Issue Priority Colors (referencing palette)
         priority: {
-          lowest: "#6B7280",
-          low: "#3B82F6",
-          medium: "#F59E0B",
-          high: "#F97316",
-          highest: "#EF4444",
+          lowest: palette.gray.DEFAULT,
+          low: palette.blue.DEFAULT,
+          medium: palette.amber.DEFAULT,
+          high: palette.orange.DEFAULT,
+          highest: palette.red.DEFAULT,
         },
 
-        // Issue Type Colors
+        // Issue Type Colors (referencing palette)
         "issue-type": {
-          task: "#3B82F6",
-          bug: "#EF4444",
-          story: "#8B5CF6",
-          epic: "#F59E0B",
-          subtask: "#6B7280",
+          task: palette.blue.DEFAULT,
+          bug: palette.red.DEFAULT,
+          story: palette.purple.DEFAULT,
+          epic: palette.amber.DEFAULT,
+          subtask: palette.gray.DEFAULT,
         },
 
         // Legacy support (for gradual migration)

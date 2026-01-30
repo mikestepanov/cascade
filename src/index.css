@@ -81,45 +81,77 @@
   --color-ui-border-focus-dark: #6366F1;
   --color-ui-border-error-dark: #F87171;
 
-  /* Status Colors */
-  --color-status-success: #10B981;
-  --color-status-success-bg: #D1FAE5;
-  --color-status-success-text: #065F46;
+  /* Shared Palette (10 named colors) */
+  --color-palette-blue: #3B82F6;
+  --color-palette-blue-bg: #DBEAFE;
+  --color-palette-blue-text: #1E40AF;
 
-  --color-status-warning: #F59E0B;
-  --color-status-warning-bg: #FEF3C7;
-  --color-status-warning-text: #92400E;
+  --color-palette-red: #EF4444;
+  --color-palette-red-bg: #FEE2E2;
+  --color-palette-red-text: #991B1B;
 
-  --color-status-error: #EF4444;
-  --color-status-error-bg: #FEE2E2;
-  --color-status-error-text: #991B1B;
+  --color-palette-green: #10B981;
+  --color-palette-green-bg: #D1FAE5;
+  --color-palette-green-text: #065F46;
 
-  --color-status-info: #3B82F6;
-  --color-status-info-bg: #DBEAFE;
-  --color-status-info-text: #1E40AF;
+  --color-palette-amber: #F59E0B;
+  --color-palette-amber-bg: #FEF3C7;
+  --color-palette-amber-text: #92400E;
 
+  --color-palette-orange: #F97316;
+  --color-palette-orange-bg: #FFEDD5;
+  --color-palette-orange-text: #9A3412;
 
+  --color-palette-purple: #8B5CF6;
+  --color-palette-purple-bg: #EDE9FE;
+  --color-palette-purple-text: #5B21B6;
 
-  /* Priority Colors */
-  --color-priority-lowest: #6B7280;
-  --color-priority-low: #3B82F6;
-  --color-priority-medium: #F59E0B;
-  --color-priority-high: #F97316;
-  --color-priority-highest: #EF4444;
+  --color-palette-pink: #EC4899;
+  --color-palette-pink-bg: #FCE7F3;
+  --color-palette-pink-text: #9D174D;
 
-  /* Issue Type Colors */
-  --color-issue-type-task: #3B82F6;
-  --color-issue-type-bug: #EF4444;
-  --color-issue-type-story: #8B5CF6;
-  --color-issue-type-epic: #F59E0B;
-  --color-issue-type-subtask: #6B7280;
+  --color-palette-teal: #14B8A6;
+  --color-palette-teal-bg: #CCFBF1;
+  --color-palette-teal-text: #115E59;
 
-  /* Calendar Event Type Colors */
-  --color-event-meeting: #3B82F6;
-  --color-event-deadline: #EF4444;
-  --color-event-timeblock: #10B981;
-  --color-event-personal: #8B5CF6;
-  --color-event-default: #6B7280;
+  --color-palette-indigo: #6366F1;
+  --color-palette-indigo-bg: #E0E7FF;
+  --color-palette-indigo-text: #3730A3;
+
+  --color-palette-gray: #6B7280;
+  --color-palette-gray-bg: #F3F4F6;
+  --color-palette-gray-text: #374151;
+
+  /* Status Colors (referencing palette) */
+  --color-status-success: var(--color-palette-green);
+  --color-status-success-bg: var(--color-palette-green-bg);
+  --color-status-success-text: var(--color-palette-green-text);
+
+  --color-status-warning: var(--color-palette-amber);
+  --color-status-warning-bg: var(--color-palette-amber-bg);
+  --color-status-warning-text: var(--color-palette-amber-text);
+
+  --color-status-error: var(--color-palette-red);
+  --color-status-error-bg: var(--color-palette-red-bg);
+  --color-status-error-text: var(--color-palette-red-text);
+
+  --color-status-info: var(--color-palette-blue);
+  --color-status-info-bg: var(--color-palette-blue-bg);
+  --color-status-info-text: var(--color-palette-blue-text);
+
+  /* Priority Colors (referencing palette) */
+  --color-priority-lowest: var(--color-palette-gray);
+  --color-priority-low: var(--color-palette-blue);
+  --color-priority-medium: var(--color-palette-amber);
+  --color-priority-high: var(--color-palette-orange);
+  --color-priority-highest: var(--color-palette-red);
+
+  /* Issue Type Colors (referencing palette) */
+  --color-issue-type-task: var(--color-palette-blue);
+  --color-issue-type-bug: var(--color-palette-red);
+  --color-issue-type-story: var(--color-palette-purple);
+  --color-issue-type-epic: var(--color-palette-amber);
+  --color-issue-type-subtask: var(--color-palette-gray);
 
   /* Legacy Primary/Secondary */
   --color-primary: #4F46E5;
@@ -211,15 +243,27 @@
   --color-ui-border-focus: var(--color-ui-border-focus-dark);
   --color-ui-border-error: var(--color-ui-border-error-dark);
 
-  /* Status */
-  --color-status-success-bg: #064E3B;
-  --color-status-success-text: #6EE7B7;
-  --color-status-warning-bg: #78350F;
-  --color-status-warning-text: #FCD34D;
-  --color-status-error-bg: #7F1D1D;
-  --color-status-error-text: #FCA5A5;
-  --color-status-info-bg: #1E3A8A;
-  --color-status-info-text: #93C5FD;
+  /* Palette (Dark Mode Overrides) */
+  --color-palette-blue-bg: #1E3A8A;
+  --color-palette-blue-text: #93C5FD;
+  --color-palette-red-bg: #7F1D1D;
+  --color-palette-red-text: #FCA5A5;
+  --color-palette-green-bg: #064E3B;
+  --color-palette-green-text: #6EE7B7;
+  --color-palette-amber-bg: #78350F;
+  --color-palette-amber-text: #FCD34D;
+  --color-palette-orange-bg: #7C2D12;
+  --color-palette-orange-text: #FDBA74;
+  --color-palette-purple-bg: #4C1D95;
+  --color-palette-purple-text: #C4B5FD;
+  --color-palette-pink-bg: #831843;
+  --color-palette-pink-text: #F9A8D4;
+  --color-palette-teal-bg: #134E4A;
+  --color-palette-teal-text: #5EEAD4;
+  --color-palette-indigo-bg: #312E81;
+  --color-palette-indigo-text: #A5B4FC;
+  --color-palette-gray-bg: #1F2937;
+  --color-palette-gray-text: #D1D5DB;
 }
 
 :root {

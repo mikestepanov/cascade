@@ -1,36 +1,75 @@
 import { format, isSameDay, isSameMonth } from "date-fns";
 import { AnimatePresence, MotionConfig, motion } from "framer-motion";
+import type { Doc } from "@convex/_generated/dataModel";
 import { cn } from "@/lib/utils";
 import { useCalendarContext } from "./calendar-context";
 import type { CalendarEvent as CalendarEventType } from "./calendar-types";
 
+type EventColor = NonNullable<Doc<"calendarEvents">["color"]>;
+
 const EVENT_COLOR_CLASSES: Record<
-  string,
+  EventColor,
   { bg: string; hover: string; border: string; text: string }
 > = {
-  meeting: {
-    bg: "bg-brand-100",
-    hover: "hover:bg-brand-200",
-    border: "border-brand-500",
-    text: "text-brand-700",
+  blue: {
+    bg: "bg-palette-blue-bg",
+    hover: "hover:bg-palette-blue/10",
+    border: "border-palette-blue",
+    text: "text-palette-blue-text",
   },
-  deadline: {
-    bg: "bg-status-error-bg",
-    hover: "hover:bg-status-error/10",
-    border: "border-status-error",
-    text: "text-status-error-text",
+  red: {
+    bg: "bg-palette-red-bg",
+    hover: "hover:bg-palette-red/10",
+    border: "border-palette-red",
+    text: "text-palette-red-text",
   },
-  timeblock: {
-    bg: "bg-status-success-bg",
-    hover: "hover:bg-status-success/10",
-    border: "border-status-success",
-    text: "text-status-success-text",
+  green: {
+    bg: "bg-palette-green-bg",
+    hover: "hover:bg-palette-green/10",
+    border: "border-palette-green",
+    text: "text-palette-green-text",
   },
-  personal: {
-    bg: "bg-accent-100",
-    hover: "hover:bg-accent-200",
-    border: "border-accent-500",
-    text: "text-accent-700",
+  amber: {
+    bg: "bg-palette-amber-bg",
+    hover: "hover:bg-palette-amber/10",
+    border: "border-palette-amber",
+    text: "text-palette-amber-text",
+  },
+  orange: {
+    bg: "bg-palette-orange-bg",
+    hover: "hover:bg-palette-orange/10",
+    border: "border-palette-orange",
+    text: "text-palette-orange-text",
+  },
+  purple: {
+    bg: "bg-palette-purple-bg",
+    hover: "hover:bg-palette-purple/10",
+    border: "border-palette-purple",
+    text: "text-palette-purple-text",
+  },
+  pink: {
+    bg: "bg-palette-pink-bg",
+    hover: "hover:bg-palette-pink/10",
+    border: "border-palette-pink",
+    text: "text-palette-pink-text",
+  },
+  teal: {
+    bg: "bg-palette-teal-bg",
+    hover: "hover:bg-palette-teal/10",
+    border: "border-palette-teal",
+    text: "text-palette-teal-text",
+  },
+  indigo: {
+    bg: "bg-palette-indigo-bg",
+    hover: "hover:bg-palette-indigo/10",
+    border: "border-palette-indigo",
+    text: "text-palette-indigo-text",
+  },
+  gray: {
+    bg: "bg-palette-gray-bg",
+    hover: "hover:bg-palette-gray/10",
+    border: "border-palette-gray",
+    text: "text-palette-gray-text",
   },
 };
 
@@ -40,7 +79,7 @@ function getColorClasses(color: string): {
   border: string;
   text: string;
 } {
-  return EVENT_COLOR_CLASSES[color];
+  return EVENT_COLOR_CLASSES[color] ?? EVENT_COLOR_CLASSES.blue;
 }
 
 interface EventPosition {

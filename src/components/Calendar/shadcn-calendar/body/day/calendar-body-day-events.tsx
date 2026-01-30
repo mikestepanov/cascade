@@ -1,11 +1,18 @@
 import { isSameDay } from "date-fns";
+import { cn } from "@/lib/utils";
 import { useCalendarContext } from "../../calendar-context";
 
 const DOT_COLOR_CLASSES: Record<string, string> = {
-  meeting: "bg-brand-500",
-  deadline: "bg-status-error",
-  timeblock: "bg-status-success",
-  personal: "bg-accent-500",
+  blue: "bg-palette-blue",
+  red: "bg-palette-red",
+  green: "bg-palette-green",
+  amber: "bg-palette-amber",
+  orange: "bg-palette-orange",
+  purple: "bg-palette-purple",
+  pink: "bg-palette-pink",
+  teal: "bg-palette-teal",
+  indigo: "bg-palette-indigo",
+  gray: "bg-palette-gray",
 };
 
 export function CalendarBodyDayEvents(): React.ReactElement {
@@ -28,9 +35,7 @@ export function CalendarBodyDayEvents(): React.ReactElement {
             onClick={() => onEventClick(event)}
           >
             <div className="flex items-center gap-2">
-              <div
-                className={`size-2 rounded-full ${DOT_COLOR_CLASSES[event.color]}`}
-              />
+              <div className={cn("size-2 rounded-full", DOT_COLOR_CLASSES[event.color])} />
               <p className="text-muted-foreground text-sm font-medium">{event.title}</p>
             </div>
           </button>

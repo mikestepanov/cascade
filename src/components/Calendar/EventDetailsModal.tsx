@@ -1,5 +1,5 @@
 import { api } from "@convex/_generated/api";
-import type { Id } from "@convex/_generated/dataModel";
+import type { Doc, Id } from "@convex/_generated/dataModel";
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
@@ -80,19 +80,31 @@ export function EventDetailsModal({ eventId, open, onOpenChange }: EventDetailsM
     }
   };
 
+  type EventColor = NonNullable<Doc<"calendarEvents">["color"]>;
+
+  const EVENT_TYPE_DEFAULT_COLOR: Record<string, EventColor> = {
+    meeting: "blue",
+    deadline: "red",
+    timeblock: "green",
+    personal: "purple",
+  };
+
+  const EVENT_COLOR_BADGE: Record<EventColor, string> = {
+    blue: "bg-palette-blue-bg text-palette-blue-text",
+    red: "bg-palette-red-bg text-palette-red-text",
+    green: "bg-palette-green-bg text-palette-green-text",
+    amber: "bg-palette-amber-bg text-palette-amber-text",
+    orange: "bg-palette-orange-bg text-palette-orange-text",
+    purple: "bg-palette-purple-bg text-palette-purple-text",
+    pink: "bg-palette-pink-bg text-palette-pink-text",
+    teal: "bg-palette-teal-bg text-palette-teal-text",
+    indigo: "bg-palette-indigo-bg text-palette-indigo-text",
+    gray: "bg-palette-gray-bg text-palette-gray-text",
+  };
+
   const getEventTypeColor = (eventType: string) => {
-    switch (eventType) {
-      case "meeting":
-        return "bg-brand-100 text-brand-800";
-      case "deadline":
-        return "bg-status-error-bg text-status-error";
-      case "timeblock":
-        return "bg-status-success-bg text-status-success";
-      case "personal":
-        return "bg-accent-100 text-accent-800";
-      default:
-        return "bg-ui-bg-tertiary text-ui-text-secondary";
-    }
+    const color = event.color ?? EVENT_TYPE_DEFAULT_COLOR[eventType] ?? "blue";
+    return EVENT_COLOR_BADGE[color] ?? EVENT_COLOR_BADGE.blue;
   };
 
   const getStatusColor = (status: string) => {
