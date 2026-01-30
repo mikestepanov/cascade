@@ -106,6 +106,7 @@ describe("IssueDetailModal", () => {
   };
 
   const setupMockQuery = (overrideIssue?: Partial<typeof mockIssue> | null) => {
+    // @ts-expect-error - Mock implementation is complex to type perfectly with Convex overloads
     vi.mocked(useQuery).mockImplementation((_queryFn: any, args: any) => {
       // Mock api.issues.get
       if (args && args.id === mockIssueId) {
@@ -309,7 +310,7 @@ describe("IssueDetailModal", () => {
   });
 
   it("should show Unassigned when no assignee", () => {
-    setupMockQuery({ assignee: null });
+    setupMockQuery({ assignee: undefined });
 
     renderModal();
 
