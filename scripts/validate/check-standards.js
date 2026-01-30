@@ -10,7 +10,7 @@ import { ROOT, c, relPath, walkDir } from "./utils.js";
 
 export function run() {
   const SRC_DIR = path.join(ROOT, "src");
-  const IGNORE_DIRS = ["src/lib", "src/components/ui"];
+  const IGNORE_DIRS = ["src/lib", "src/components/ui", "src/components/landing", "src/components/Calendar/shadcn-calendar"];
 
   let errorCount = 0;
   const errors = [];

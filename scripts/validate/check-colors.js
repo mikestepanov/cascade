@@ -83,7 +83,17 @@ export function run() {
     });
   }
 
+  // Deprecated patterns that must NOT pass as SEMANTIC
+  const DEPRECATED_RE = /^(?:brand|accent)-\d{1,3}(?:\/|$)/;        // brand-600, accent-50
+  const DEPRECATED_DARK_RE = /-dark(?:\/|$)/;                        // ui-bg-secondary-dark
+  const DEPRECATED_PRIMARY_RE = /^ui-(?:bg|text|border)-primary(?:\/|$)/; // ui-bg-primary
+
   function classifyTwColor(colorPart) {
+    // Check deprecated patterns BEFORE semantic prefix check
+    if (DEPRECATED_RE.test(colorPart)) return "DEPRECATED";
+    if (DEPRECATED_DARK_RE.test(colorPart)) return "DEPRECATED";
+    if (DEPRECATED_PRIMARY_RE.test(colorPart)) return "DEPRECATED";
+
     for (const prefix of SEMANTIC_PREFIXES) {
       if (colorPart.startsWith(prefix)) return "SEMANTIC";
     }
@@ -113,6 +123,16 @@ export function run() {
       const trimmed = line.trim();
 
       if (trimmed.startsWith("//") || trimmed.startsWith("*") || trimmed.startsWith("/*")) continue;
+
+      // Tier 1 primitive usage (var(--p-*) in component files — index.css defines them, so skip it)
+      if (!rel.endsWith("index.css")) {
+        const TIER1_RE = /var\(--p-[a-z]+-\d+\)/g;
+        TIER1_RE.lastIndex = 0;
+        let t1Match;
+        while ((t1Match = TIER1_RE.exec(line)) !== null) {
+          findings.push({ file: rel, line: lineNum, category: "TIER1", type: "css-var", value: t1Match[0] });
+        }
+      }
 
       // Tailwind color classes
       let match;
@@ -160,7 +180,9 @@ export function run() {
   const files = dirs.flatMap((d) => walkDir(d, { extensions: EXTS }));
   for (const f of files) scan(f);
 
-  const violations = findings.filter((f) => f.category === "RAW" || f.category === "HARDCODED");
+  const violations = findings.filter((f) =>
+    f.category === "RAW" || f.category === "HARDCODED" || f.category === "DEPRECATED" || f.category === "TIER1",
+  );
 
   const messages = [];
   if (violations.length > 0) {

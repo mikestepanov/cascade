@@ -55,7 +55,7 @@ export function PumbleIntegration() {
               <Flex
                 align="center"
                 justify="center"
-                className="w-12 h-12 bg-linear-to-br from-accent-ring to-pink-500 rounded-lg"
+                className="w-12 h-12 bg-linear-to-br from-accent-ring to-palette-pink rounded-lg"
               >
                 <svg
                   className="w-6 h-6 text-white"
