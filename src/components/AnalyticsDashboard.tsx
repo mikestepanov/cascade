@@ -2,6 +2,7 @@ import { api } from "@convex/_generated/api";
 import type { Id } from "@convex/_generated/dataModel";
 import { useQuery } from "convex/react";
 import { useMemo } from "react";
+import { PageHeader } from "@/components/layout";
 import { Flex } from "@/components/ui/Flex";
 import { BarChart } from "./Analytics/BarChart";
 import { ChartCard } from "./Analytics/ChartCard";
@@ -152,14 +153,11 @@ export function AnalyticsDashboard({ projectId }: Props) {
     <div className="p-3 sm:p-6 overflow-y-auto h-full bg-ui-bg-secondary">
       <div className="max-w-7xl mx-auto space-y-4 sm:space-y-6">
         {/* Header */}
-        <div>
-          <Typography variant="h1" className="text-xl sm:text-2xl font-bold">
-            Analytics Dashboard
-          </Typography>
-          <Typography variant="muted" className="mt-1 sm:text-base">
-            Project insights, team velocity, and progress metrics
-          </Typography>
-        </div>
+        <PageHeader
+          title="Analytics Dashboard"
+          description="Project insights, team velocity, and progress metrics"
+          className="mb-0"
+        />
 
         {/* Key Metrics */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">

@@ -16,9 +16,10 @@
 
 | Layer | Technology |
 |-------|------------|
-| Frontend | React 19, Vite 6, TanStack Router, Tailwind CSS 3, BlockNote |
+| Frontend | React 19, Vite 6, TanStack Router, Tailwind CSS 4, BlockNote |
 | Backend | Convex (serverless + real-time DB), @convex-dev/auth |
-| Tools | pnpm, Biome 2.3.5, TypeScript 5.7 |
+| UI Primitives | Radix UI (via shadcn/ui wrapper pattern) |
+| Tools | pnpm, Biome 2.3, TypeScript 5.9, Vitest 4 |
 
 ## Codebase Structure
 
@@ -27,11 +28,16 @@ nixelo/
 ├── src/
 │   ├── routes/           # TanStack Router file-based routes
 │   ├── components/       # React components (ui/, AI/)
-│   ├── lib/utils.ts      # cn() utility
-│   └── config/routes.ts  # ROUTES object - always use this!
+│   │   └── ui/           # shadcn/ui primitives (Radix wrappers)
+│   ├── lib/
+│   │   ├── utils.ts      # cn() utility
+│   │   └── constants.ts  # App-wide constants (ANIMATION, DISPLAY_LIMITS, etc.)
+│   ├── config/routes.ts  # ROUTES object - always use this!
+│   └── index.css         # Design tokens (@theme block) + global styles
 ├── convex/               # Backend functions, schema.ts
 ├── emails/               # React Email templates
 ├── bot-service/          # Voice AI meeting bot
+├── scripts/validate/     # Custom validation checks (run with: node scripts/validate.js)
 └── docs/                 # Feature documentation
 ```
 
@@ -60,6 +66,23 @@ ROUTES.issues.detail(slug, key)     // "/:slug/issues/:key"
 Use components from `src/components/ui/` instead of raw HTML:
 
 `Button`, `Flex`, `Typography`, `Card`, `Input`, `Dialog`, `Tooltip`, `Badge`, `Avatar`, `LoadingSpinner`, `EmptyState`, `DropdownMenu`
+
+**Key rules:**
+- Use `<Flex>` instead of `<div className="flex">` for layout containers. The validator flags raw flex divs.
+- Use `<Typography>` instead of raw `<p>`, `<h1>`–`<h6>` tags.
+- Use `cn()` from `@/lib/utils` for conditional class merging. Never use template literals or string concatenation for className.
+
+## Design Tokens (Tailwind v4)
+
+This project uses **Tailwind CSS v4** with a `@theme` block in `src/index.css` — not a `tailwind.config.js` for theming. All design tokens are CSS custom properties.
+
+**Color system:** Two-tier architecture.
+- **Tier 1** (`:root`): Raw color primitives (`--p-indigo-500`, `--p-gray-200`, etc.). Never use directly in components.
+- **Tier 2** (`@theme`): Semantic tokens (`--color-ui-bg`, `--color-brand`, `--color-status-error`, etc.) using `light-dark()` for automatic dark mode. Use these via Tailwind classes: `bg-ui-bg`, `text-brand`, `border-status-error`.
+
+**Non-color tokens in `@theme`:** Panel heights (`max-h-panel`, `max-h-panel-lg`), blur (`blur-glow`), z-index (`z-toast-critical`), text sizes (`text-caption`), spacing, radius, scale. Check `src/index.css` before adding arbitrary values.
+
+**Rule:** Never use arbitrary bracket syntax (`w-[Npx]`, `max-h-[Xvh]`) for values used in more than one place. Define a token in the `@theme` block instead. The validator will flag violations.
 
 ## Convex Patterns
 
@@ -92,16 +115,30 @@ export const update = mutation({
 
 ```bash
 pnpm dev              # Start frontend + backend
-pnpm run check        # Typecheck + lint + tests
+pnpm run check        # Typecheck + lint + validate + tests (full CI check)
 pnpm run fixme        # Auto-fix lint/format + typecheck (run after big changes)
 pnpm run biome        # Lint with auto-fix
 pnpm run typecheck    # TypeScript check
-pnpm e2e:ui           # E2E tests (interactive)
+pnpm run validate     # Custom validators (colors, arbitrary TW, standards, etc.)
+pnpm run test         # Vitest unit tests
+pnpm e2e:ui           # E2E tests (interactive, Playwright)
 ```
 
 ### AI: When to run `pnpm fixme`
 
 Run `pnpm fixme` after completing a significant chunk of work (new feature, multi-file refactor, major bug fix). Do NOT run it after every small edit — only when a logical unit of work is done and you're ready to validate.
+
+### AI: Custom validator
+
+Run `node scripts/validate.js` to check for:
+1. **Standards** — raw HTML tags, flex divs, className concat, raw TW colors, shorthands
+2. **Color audit** — hardcoded hex/rgb, non-semantic color usage
+3. **API calls** — validates api.X.Y calls match Convex exports
+4. **Query issues** — N+1 queries, unbounded `.collect()`, missing indexes
+5. **Arbitrary Tailwind** — flags bracket syntax; allowlist in `ALLOWED_PATTERNS`
+6. **Undefined TW colors** — classes referencing colors not in the theme
+
+Run this after UI changes. Target: 0 errors, 0 warnings.
 
 ## Deployment
 

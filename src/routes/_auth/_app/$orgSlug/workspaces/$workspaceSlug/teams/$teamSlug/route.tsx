@@ -1,6 +1,7 @@
 import { api } from "@convex/_generated/api";
 import { createFileRoute, Link, Outlet } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
+import { PageHeader, PageLayout } from "@/components/layout";
 import { Flex } from "@/components/ui/Flex";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { Typography } from "@/components/ui/Typography";
@@ -42,74 +43,44 @@ function TeamLayout() {
 
   if (!(workspace && team)) {
     return (
-      <div className="container mx-auto p-6">
+      <PageLayout>
         <Typography variant="h2">Team not found</Typography>
-      </div>
+      </PageLayout>
     );
   }
 
   return (
-    <div className="container mx-auto p-6">
-      {/* Breadcrumb */}
-      <div className="mb-6 text-sm">
-        <Link
-          to={ROUTES.workspaces.list.path}
-          params={{ orgSlug: orgSlug }}
-          className="text-brand hover:underline"
-        >
-          Workspaces
-        </Link>
-        <Typography as="span" variant="muted" className="mx-2">
-          /
-        </Typography>
-        <Link
-          to={ROUTES.workspaces.detail.path}
-          params={{ orgSlug: orgSlug, workspaceSlug }}
-          className="text-brand hover:underline"
-        >
-          {workspace.name}
-        </Link>
-        <Typography as="span" variant="muted" className="mx-2">
-          /
-        </Typography>
-        <Typography as="span" variant="small">
-          {team.name}
-        </Typography>
-      </div>
-
-      {/* Team Header */}
-      <div className="mb-8">
-        <Flex align="center" gap="sm" className="mb-2">
-          {team.icon && <span className="text-4xl">{team.icon}</span>}
-          <Typography variant="h1">{team.name}</Typography>
-        </Flex>
-        {team.description && (
-          <Typography variant="p" color="secondary">
-            {team.description}
-          </Typography>
-        )}
-      </div>
+    <PageLayout>
+      <PageHeader
+        title={team.name}
+        description={team.description ?? undefined}
+        breadcrumbs={[
+          { label: "Workspaces", to: ROUTES.workspaces.list.build(orgSlug) },
+          { label: workspace.name, to: ROUTES.workspaces.detail.build(orgSlug, workspaceSlug) },
+          { label: team.name },
+        ]}
+      />
 
       {/* Tabs */}
       <div className="border-b border-ui-border mb-6">
         <nav className="flex gap-6">
           <Link
             to={ROUTES.workspaces.teams.detail.path}
-            params={{ orgSlug: orgSlug, workspaceSlug, teamSlug }}
+            params={{ orgSlug, workspaceSlug, teamSlug }}
             className="px-1 py-3 border-b-2 border-brand font-medium text-brand"
           >
             Projects
           </Link>
           <Link
             to={ROUTES.workspaces.teams.calendar.path}
-            params={{ orgSlug: orgSlug, workspaceSlug, teamSlug }}
+            params={{ orgSlug, workspaceSlug, teamSlug }}
             className="px-1 py-3 border-b-2 border-transparent hover:border-ui-border-secondary text-ui-text-secondary hover:text-ui-text"
           >
             Calendar
           </Link>
           <Link
             to={ROUTES.workspaces.teams.settings.path}
-            params={{ orgSlug: orgSlug, workspaceSlug, teamSlug }}
+            params={{ orgSlug, workspaceSlug, teamSlug }}
             className="px-1 py-3 border-b-2 border-transparent hover:border-ui-border-secondary text-ui-text-secondary hover:text-ui-text"
           >
             Settings
@@ -119,6 +90,6 @@ function TeamLayout() {
 
       {/* Content */}
       <Outlet />
-    </div>
+    </PageLayout>
   );
 }

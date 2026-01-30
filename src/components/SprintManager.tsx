@@ -8,6 +8,8 @@ import { getStatusColor } from "@/lib/issue-utils";
 import { showError, showSuccess } from "@/lib/toast";
 import { Badge } from "./ui/Badge";
 import { Button } from "./ui/Button";
+import { Card, CardBody } from "./ui/Card";
+import { EmptyState } from "./ui/EmptyState";
 import { Input } from "./ui/form/Input";
 import { Textarea } from "./ui/form/Textarea";
 import { SkeletonProjectCard } from "./ui/Skeleton";
@@ -151,67 +153,76 @@ export function SprintManager({ projectId, canEdit = true }: SprintManagerProps)
       {/* Sprints List */}
       <div className="space-y-4">
         {sprints.length === 0 ? (
-          <div className="text-center py-12 text-ui-text-secondary">
-            No sprints created yet. Create your first sprint to get started.
-          </div>
+          <EmptyState
+            icon="🏃"
+            title="No sprints yet"
+            description="Create a sprint to start planning work"
+            action={
+              canEdit
+                ? { label: "Create Sprint", onClick: () => setShowCreateForm(true) }
+                : undefined
+            }
+          />
         ) : (
           sprints.map((sprint: Doc<"sprints"> & { issueCount: number }) => (
-            <div key={sprint._id} className="bg-ui-bg border border-ui-border rounded-lg p-4">
-              <Flex
-                direction="column"
-                align="start"
-                justify="between"
-                gap="lg"
-                className="sm:flex-row sm:items-center"
-              >
-                <div className="flex-1 w-full sm:w-auto">
-                  <Flex wrap align="center" gap="sm" className="sm:gap-3 mb-2">
-                    <Typography
-                      variant="h3"
-                      className="text-base sm:text-lg font-medium text-ui-text"
-                    >
-                      {sprint.name}
-                    </Typography>
-                    <Badge size="md" className={getStatusColor(sprint.status)}>
-                      {sprint.status}
-                    </Badge>
-                    <span className="text-sm text-ui-text-secondary">
-                      {sprint.issueCount} issues
-                    </span>
-                  </Flex>
-                  {sprint.goal && (
-                    <Typography className="text-ui-text-secondary mb-2">{sprint.goal}</Typography>
-                  )}
-                  {sprint.startDate && sprint.endDate && (
-                    <Typography className="text-sm text-ui-text-secondary">
-                      {formatDate(sprint.startDate)} - {formatDate(sprint.endDate)}
-                    </Typography>
-                  )}
-                </div>
-                {canEdit && (
-                  <Flex direction="column" gap="sm" className="sm:flex-row w-full sm:w-auto">
-                    {sprint.status === "future" && (
-                      <Button
-                        onClick={() => void handleStartSprint(sprint._id)}
-                        variant="success"
-                        size="sm"
+            <Card key={sprint._id}>
+              <CardBody>
+                <Flex
+                  direction="column"
+                  align="start"
+                  justify="between"
+                  gap="lg"
+                  className="sm:flex-row sm:items-center"
+                >
+                  <div className="flex-1 w-full sm:w-auto">
+                    <Flex wrap align="center" gap="sm" className="sm:gap-3 mb-2">
+                      <Typography
+                        variant="h3"
+                        className="text-base sm:text-lg font-medium text-ui-text"
                       >
-                        Start Sprint
-                      </Button>
+                        {sprint.name}
+                      </Typography>
+                      <Badge size="md" className={getStatusColor(sprint.status)}>
+                        {sprint.status}
+                      </Badge>
+                      <span className="text-sm text-ui-text-secondary">
+                        {sprint.issueCount} issues
+                      </span>
+                    </Flex>
+                    {sprint.goal && (
+                      <Typography className="text-ui-text-secondary mb-2">{sprint.goal}</Typography>
                     )}
-                    {sprint.status === "active" && (
-                      <Button
-                        onClick={() => void handleCompleteSprint(sprint._id)}
-                        variant="secondary"
-                        size="sm"
-                      >
-                        Complete Sprint
-                      </Button>
+                    {sprint.startDate && sprint.endDate && (
+                      <Typography className="text-sm text-ui-text-secondary">
+                        {formatDate(sprint.startDate)} - {formatDate(sprint.endDate)}
+                      </Typography>
                     )}
-                  </Flex>
-                )}
-              </Flex>
-            </div>
+                  </div>
+                  {canEdit && (
+                    <Flex direction="column" gap="sm" className="sm:flex-row w-full sm:w-auto">
+                      {sprint.status === "future" && (
+                        <Button
+                          onClick={() => void handleStartSprint(sprint._id)}
+                          variant="success"
+                          size="sm"
+                        >
+                          Start Sprint
+                        </Button>
+                      )}
+                      {sprint.status === "active" && (
+                        <Button
+                          onClick={() => void handleCompleteSprint(sprint._id)}
+                          variant="secondary"
+                          size="sm"
+                        >
+                          Complete Sprint
+                        </Button>
+                      )}
+                    </Flex>
+                  )}
+                </Flex>
+              </CardBody>
+            </Card>
           ))
         )}
       </div>

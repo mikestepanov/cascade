@@ -164,11 +164,19 @@ export function run() {
   const files = walkDir(SRC_DIR, { extensions: new Set([".tsx"]) });
   for (const f of files) checkFile(f);
 
+  const warningCount = errors.length - errorCount;
+  let detail = null;
+  if (errorCount > 0) {
+    detail = `${errorCount} violation(s)${warningCount > 0 ? `, ${warningCount} warning(s)` : ""}`;
+  } else if (warningCount > 0) {
+    detail = `${warningCount} warning(s)`;
+  }
+
   return {
     passed: errorCount === 0,
     errors: errorCount,
-    warnings: errors.length - errorCount,
-    detail: errorCount > 0 ? `${errorCount} violation(s)` : null,
+    warnings: warningCount,
+    detail,
     messages: errors,
   };
 }

@@ -1,6 +1,6 @@
 # RULES.md - Development Rules & Conventions
 
-> **Last Updated:** 2026-01-19
+> **Last Updated:** 2026-01-30
 
 Generic development rules and conventions for AI assistants. Project-specific details are in CLAUDE.md.
 
@@ -50,10 +50,11 @@ if (isUser(body)) {
 
 ### Required Practices
 
-1. **Explicit return types** for functions
-2. **Proper error handling** with typed catches
-3. **No `@ts-ignore` or `@ts-nocheck`** - fix the actual issues
-4. **No `biome-ignore`** unless absolutely necessary with justification
+1. **Explicit types for function parameters** — always type arguments
+2. **Return types** — add explicit return types for exported/public functions. Omit for React components (JSX inference) and Convex handlers (framework inference).
+3. **Proper error handling** with typed catches
+4. **No `@ts-ignore` or `@ts-nocheck`** — fix the actual issues
+5. **No `biome-ignore`** unless absolutely necessary with justification
 
 ---
 
@@ -84,11 +85,17 @@ Imports should be sorted in this order:
 - **NEVER** use arbitrary bracket syntax (`w-[Npx]`, `max-h-[Xvh]`) for values
   used in more than one place. Define a design token in `src/index.css` `@theme`
   block instead.
-- **Check `constants.ts`** for existing tokens (`ANIMATION`, `DISPLAY_LIMITS`, etc.)
-  before reaching for arbitrary values.
+- **Check `src/index.css` `@theme` block** for existing tokens before reaching
+  for arbitrary values. Also check `constants.ts` for JS-side constants.
 - The validator (`scripts/validate/check-arbitrary-tw.js`) flags all arbitrary
   values. If you genuinely need one, add it to the `ALLOWED_PATTERNS` allowlist
   with a comment explaining why.
+
+### Semantic Color System
+
+- **NEVER** use raw Tailwind colors (`bg-blue-500`, `text-gray-700`). Use semantic tokens: `bg-brand`, `text-ui-text-secondary`, `border-status-error`.
+- **NEVER** use hardcoded hex/rgb values in className or inline styles. All colors go through the token system in `src/index.css`.
+- Dark mode is automatic via `light-dark()` in semantic tokens — never add `dark:` variants for semantic color classes.
 
 ### Export Patterns
 
@@ -129,7 +136,7 @@ export default function ComponentName() {}
 ### General Approach
 
 - Write tests alongside code (`.spec.ts` or `.test.ts` files)
-- **NEVER** assume specific test framework - check package.json first
+- This project uses **Vitest** (not Jest) for unit tests and **Playwright** for E2E
 - Run tests before committing significant changes
 
 ### Playwright/E2E Testing
@@ -151,14 +158,14 @@ await page.waitForLoadState('networkidle');
 
 - Use **pnpm** for all package management (unless project specifies otherwise)
 - Use `pnpm` instead of `npm`
-- **NEVER** use `npx` directly - stdout is swallowed in nvm4w + Git Bash
+- **NEVER** use `npx` directly — stdout is swallowed in nvm4w + Git Bash
 - **NOTE**: `pnpm run` also swallows stdout in Claude Code's Git Bash environment
 - For typecheck/biome, use direct node commands: `node node_modules/<pkg>/bin/<cli>`
 - Always check package.json for available scripts before guessing
 
 ---
 
-## 🚨 CRITICAL: Output Verification & Silent Failures
+## CRITICAL: Output Verification & Silent Failures
 
 ### The Problem
 
@@ -166,35 +173,39 @@ Shell shims (`pnpm`, `npm`, `npx`, `.bin/*`) use `exec` which breaks stdout capt
 
 ### HARD RULES
 
-1. **Empty output is NEVER success** - If a command that should produce output returns nothing, this is a CRITICAL FAILURE. Stop and investigate immediately.
+1. **Empty output is NEVER success** — If a command that should produce output returns nothing, this is a CRITICAL FAILURE. Stop and investigate immediately.
 
-2. **Truncated output is a RED FLAG** - If output appears cut off, re-run with different approach before proceeding.
+2. **Truncated output is a RED FLAG** — If output appears cut off, re-run with different approach before proceeding.
 
-3. **MUST see actual verification** - Before claiming tests/lint passed:
+3. **MUST see actual verification** — Before claiming tests/lint passed:
    - Tests: Must see "X passed, Y failed" or equivalent
    - Lint: Must see error count or "no issues"
    - TypeScript: Must see "Found 0 errors" or actual error list
+   - Validator: Must see "RESULT: PASS" or actual error list
    - If you can't see this output, YOU DON'T KNOW IF IT PASSED
 
 4. **When output fails, use direct node**:
    ```bash
    # Instead of: pnpm test
-   node node_modules/jest/bin/jest.js
+   node node_modules/vitest/vitest.mjs
 
    # Instead of: pnpm biome check
    node node_modules/@biomejs/biome/bin/biome check
 
    # Instead of: pnpm tsc
    node node_modules/typescript/bin/tsc
+
+   # Custom validator (always use directly)
+   node scripts/validate.js
    ```
 
-5. **NEVER push without verified output** - If you cannot get command output working, STOP and tell the user. Do not assume success.
+5. **NEVER push without verified output** — If you cannot get command output working, STOP and tell the user. Do not assume success.
 
 ### Response Protocol
 
 When output is empty or cut:
 ```
-⚠️ CRITICAL: Command produced no output. This is NOT success.
+CRITICAL: Command produced no output. This is NOT success.
 - Command: [what you ran]
 - Expected: [what output should look like]
 - Action: Investigating with direct node invocation...
@@ -206,18 +217,18 @@ When output is empty or cut:
 
 ### FORBIDDEN Shortcuts
 
-- ❌ Deleting tests to make CI pass
-- ❌ Adding `@ts-ignore` to hide type errors
-- ❌ Using `any` to bypass type checking
-- ❌ Suppressing lint rules without fixing underlying issue
-- ❌ Assuming empty output means success
+- Deleting tests to make CI pass
+- Adding `@ts-ignore` to hide type errors
+- Using `any` to bypass type checking
+- Suppressing lint rules without fixing underlying issue
+- Assuming empty output means success
 
 ### Required Approach
 
-- ✅ Understand WHY an error occurs before fixing
-- ✅ Fix the root cause, not the symptom
-- ✅ If a test is truly obsolete, explain WHY before deleting
-- ✅ If you can't fix it, tell the user - don't hide it
+- Understand WHY an error occurs before fixing
+- Fix the root cause, not the symptom
+- If a test is truly obsolete, explain WHY before deleting
+- If you can't fix it, tell the user — don't hide it
 
 ---
 
@@ -225,7 +236,7 @@ When output is empty or cut:
 
 ### Before Writing Code
 
-1. **Read the file first** - never propose changes to code you haven't read
+1. **Read the file first** — never propose changes to code you haven't read
 2. **Match existing patterns** in the file you're editing
 3. **Check surrounding context** especially imports
 4. **Verify library usage** in existing codebase
@@ -233,8 +244,9 @@ When output is empty or cut:
 ### After Making Changes
 
 1. After completing a significant chunk of work (new feature, multi-file refactor, major bug fix), run `pnpm fixme` to auto-fix lint/format issues and typecheck. Do NOT run after every small edit.
-2. Run tests if applicable
-3. If unable to find correct command, ask
+2. Run `node scripts/validate.js` after UI changes — target 0 errors, 0 warnings.
+3. Run tests if applicable
+4. If unable to find correct command, ask
 
 ### Avoid Over-Engineering
 

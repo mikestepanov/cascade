@@ -56,10 +56,10 @@ for (let i = 0; i < results.length; i++) {
   const dots = ".".repeat(Math.max(1, 30 - result.name.length));
   const statusColor = !result.passed
     ? c.red
-    : result.detail?.includes("warning")
+    : result.warnings > 0
       ? c.yellow
       : c.green;
-  const statusText = !result.passed ? "FAIL" : result.detail?.includes("warning") ? "WARN" : "PASS";
+  const statusText = !result.passed ? "FAIL" : result.warnings > 0 ? "WARN" : "PASS";
   const detailStr = result.detail ? `  (${result.detail})` : "";
   console.log(`${idx} ${result.name}${dots} ${statusColor}${statusText}${c.reset}${detailStr}`);
 }

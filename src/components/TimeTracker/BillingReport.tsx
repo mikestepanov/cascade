@@ -3,6 +3,7 @@ import type { Id } from "@convex/_generated/dataModel";
 import { useQuery } from "convex/react";
 import { useMemo, useState } from "react";
 import { Clock, DollarSign, Download, TrendingUp, Users } from "@/lib/icons";
+import { Card, CardBody } from "../ui/Card";
 import { Flex } from "../ui/Flex";
 import { LoadingSpinner } from "../ui/LoadingSpinner";
 import { Progress } from "../ui/progress";
@@ -131,103 +132,117 @@ export function BillingReport({ projectId }: BillingReportProps) {
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <div className="bg-ui-bg border border-ui-border rounded-lg p-4">
-          <Flex align="center" gap="sm" className="text-sm text-ui-text-tertiary mb-2">
-            <DollarSign className="w-4 h-4" />
-            Total Revenue
-          </Flex>
-          <div className="text-3xl font-bold text-status-success">
-            {formatCurrency(billing.totalRevenue)}
-          </div>
-          {project.budget && (
-            <div className="text-xs text-ui-text-tertiary mt-1">
-              of {formatCurrency(project.budget)} budget (
-              {((billing.totalRevenue / project.budget) * 100).toFixed(0)}%)
+        <Card>
+          <CardBody>
+            <Flex align="center" gap="sm" className="text-sm text-ui-text-tertiary mb-2">
+              <DollarSign className="w-4 h-4" />
+              Total Revenue
+            </Flex>
+            <div className="text-3xl font-bold text-status-success">
+              {formatCurrency(billing.totalRevenue)}
             </div>
-          )}
-        </div>
+            {project.budget && (
+              <div className="text-xs text-ui-text-tertiary mt-1">
+                of {formatCurrency(project.budget)} budget (
+                {((billing.totalRevenue / project.budget) * 100).toFixed(0)}%)
+              </div>
+            )}
+          </CardBody>
+        </Card>
 
-        <div className="bg-ui-bg border border-ui-border rounded-lg p-4">
-          <Flex align="center" gap="sm" className="text-sm text-ui-text-tertiary mb-2">
-            <Clock className="w-4 h-4" />
-            Billable Hours
-          </Flex>
-          <div className="text-3xl font-bold text-brand">{formatHours(billing.billableHours)}</div>
-          <div className="text-xs text-ui-text-tertiary mt-1">
-            of {formatHours(billing.totalHours)} total hours
-          </div>
-        </div>
+        <Card>
+          <CardBody>
+            <Flex align="center" gap="sm" className="text-sm text-ui-text-tertiary mb-2">
+              <Clock className="w-4 h-4" />
+              Billable Hours
+            </Flex>
+            <div className="text-3xl font-bold text-brand">
+              {formatHours(billing.billableHours)}
+            </div>
+            <div className="text-xs text-ui-text-tertiary mt-1">
+              of {formatHours(billing.totalHours)} total hours
+            </div>
+          </CardBody>
+        </Card>
 
-        <div className="bg-ui-bg border border-ui-border rounded-lg p-4">
-          <Flex align="center" gap="sm" className="text-sm text-ui-text-tertiary mb-2">
-            <TrendingUp className="w-4 h-4" />
-            Utilization Rate
-          </Flex>
-          <div className="text-3xl font-bold text-accent">{utilizationRate.toFixed(0)}%</div>
-          <div className="text-xs text-ui-text-tertiary mt-1">
-            {billing.nonBillableHours.toFixed(2)}h non-billable
-          </div>
-        </div>
+        <Card>
+          <CardBody>
+            <Flex align="center" gap="sm" className="text-sm text-ui-text-tertiary mb-2">
+              <TrendingUp className="w-4 h-4" />
+              Utilization Rate
+            </Flex>
+            <div className="text-3xl font-bold text-accent">{utilizationRate.toFixed(0)}%</div>
+            <div className="text-xs text-ui-text-tertiary mt-1">
+              {billing.nonBillableHours.toFixed(2)}h non-billable
+            </div>
+          </CardBody>
+        </Card>
 
-        <div className="bg-ui-bg border border-ui-border rounded-lg p-4">
-          <Flex align="center" gap="sm" className="text-sm text-ui-text-tertiary mb-2">
-            <DollarSign className="w-4 h-4" />
-            Avg Hourly Rate
-          </Flex>
-          <div className="text-3xl font-bold text-status-warning">
-            {formatCurrency(averageRate)}
-          </div>
-          <div className="text-xs text-ui-text-tertiary mt-1">per billable hour</div>
-        </div>
+        <Card>
+          <CardBody>
+            <Flex align="center" gap="sm" className="text-sm text-ui-text-tertiary mb-2">
+              <DollarSign className="w-4 h-4" />
+              Avg Hourly Rate
+            </Flex>
+            <div className="text-3xl font-bold text-status-warning">
+              {formatCurrency(averageRate)}
+            </div>
+            <div className="text-xs text-ui-text-tertiary mt-1">per billable hour</div>
+          </CardBody>
+        </Card>
       </div>
 
       {/* Team Breakdown */}
-      <div className="bg-ui-bg border border-ui-border rounded-lg p-6">
-        <Flex align="center" gap="sm" className="mb-4">
-          <Users className="w-5 h-5 text-ui-text-tertiary" />
-          <Typography variant="h3" className="text-lg font-semibold text-ui-text">
-            Team Breakdown
-          </Typography>
-        </Flex>
-
-        {sortedUsers.length === 0 ? (
-          <div className="text-center py-8 text-ui-text-tertiary">No time entries recorded yet</div>
-        ) : (
-          <Flex direction="column" gap="md">
-            {sortedUsers.map(([userId, stats]) => {
-              const billingStats = stats as BillingStats;
-              const userUtilization =
-                billingStats.hours > 0
-                  ? (billingStats.billableHours / billingStats.hours) * 100
-                  : 0;
-
-              return (
-                <div key={userId} className="p-4 bg-ui-bg-secondary rounded-lg">
-                  <Flex justify="between" align="center" className="mb-2">
-                    <div>
-                      <div className="font-medium text-ui-text">{billingStats.name}</div>
-                      <div className="text-xs text-ui-text-tertiary">
-                        {formatHours(billingStats.billableHours)} /{" "}
-                        {formatHours(billingStats.hours)} hours ({userUtilization.toFixed(0)}%
-                        billable)
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <div className="text-lg font-bold text-status-success">
-                        {formatCurrency(billingStats.revenue)}
-                      </div>
-                      <div className="text-xs text-ui-text-tertiary">revenue</div>
-                    </div>
-                  </Flex>
-
-                  {/* Progress bar */}
-                  <Progress value={userUtilization} />
-                </div>
-              );
-            })}
+      <Card>
+        <CardBody className="p-6">
+          <Flex align="center" gap="sm" className="mb-4">
+            <Users className="w-5 h-5 text-ui-text-tertiary" />
+            <Typography variant="h3" className="text-lg font-semibold text-ui-text">
+              Team Breakdown
+            </Typography>
           </Flex>
-        )}
-      </div>
+
+          {sortedUsers.length === 0 ? (
+            <div className="text-center py-8 text-ui-text-tertiary">
+              No time entries recorded yet
+            </div>
+          ) : (
+            <Flex direction="column" gap="md">
+              {sortedUsers.map(([userId, stats]) => {
+                const billingStats = stats as BillingStats;
+                const userUtilization =
+                  billingStats.hours > 0
+                    ? (billingStats.billableHours / billingStats.hours) * 100
+                    : 0;
+
+                return (
+                  <div key={userId} className="p-4 bg-ui-bg-secondary rounded-lg">
+                    <Flex justify="between" align="center" className="mb-2">
+                      <div>
+                        <div className="font-medium text-ui-text">{billingStats.name}</div>
+                        <div className="text-xs text-ui-text-tertiary">
+                          {formatHours(billingStats.billableHours)} /{" "}
+                          {formatHours(billingStats.hours)} hours ({userUtilization.toFixed(0)}%
+                          billable)
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-lg font-bold text-status-success">
+                          {formatCurrency(billingStats.revenue)}
+                        </div>
+                        <div className="text-xs text-ui-text-tertiary">revenue</div>
+                      </div>
+                    </Flex>
+
+                    {/* Progress bar */}
+                    <Progress value={userUtilization} />
+                  </div>
+                );
+              })}
+            </Flex>
+          )}
+        </CardBody>
+      </Card>
 
       {/* Quick Stats */}
       <div className="mt-6 grid grid-cols-3 gap-4 text-center">

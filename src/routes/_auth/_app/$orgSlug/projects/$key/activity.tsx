@@ -2,8 +2,7 @@ import { api } from "@convex/_generated/api";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
 import { ActivityFeed } from "@/components/ActivityFeed";
-import { PageContent, PageError, PageLayout } from "@/components/layout";
-import { Typography } from "@/components/ui/Typography";
+import { PageContent, PageError, PageHeader, PageLayout } from "@/components/layout";
 
 export const Route = createFileRoute("/_auth/_app/$orgSlug/projects/$key/activity")({
   component: ActivityPage,
@@ -28,9 +27,7 @@ function ActivityPage() {
 
   return (
     <PageLayout maxWidth="md">
-      <Typography variant="h2" className="text-2xl font-bold mb-6 text-ui-text">
-        Project Activity
-      </Typography>
+      <PageHeader title="Project Activity" />
       <ActivityFeed projectId={project._id} />
     </PageLayout>
   );
