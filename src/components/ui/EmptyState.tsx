@@ -30,7 +30,7 @@ export function EmptyState({ icon, title, description, action }: EmptyStateProps
   return (
     <div className="text-center py-12 px-4">
       <div className="text-6xl mb-3 animate-in fade-in duration-500">{icon}</div>
-      <h3 className="text-lg font-medium text-ui-text-primary mb-1">{title}</h3>
+      <h3 className="text-lg font-medium text-ui-text mb-1">{title}</h3>
       {description && (
         <p className="text-sm text-ui-text-tertiary mb-4 max-w-sm mx-auto">{description}</p>
       )}

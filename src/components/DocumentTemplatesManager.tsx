@@ -10,7 +10,6 @@ import { showError, showSuccess } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 import { Badge } from "./ui/Badge";
 import { Button } from "./ui/Button";
-import { Card, CardBody, CardHeader } from "./ui/Card";
 import { ConfirmDialog } from "./ui/ConfirmDialog";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "./ui/Dialog";
 import { EmptyState } from "./ui/EmptyState";
@@ -33,11 +32,14 @@ const templateSchema = z.object({
 interface DocumentTemplatesManagerProps {
   projectId?: Id<"projects">;
   onSelectTemplate?: (templateId: Id<"documentTemplates">) => void;
+  /** Increment to trigger opening the create modal from outside */
+  createRequested?: number;
 }
 
 export function DocumentTemplatesManager({
   projectId,
   onSelectTemplate,
+  createRequested,
 }: DocumentTemplatesManagerProps) {
   // UI State
   const [showModal, setShowModal] = useState(false);
@@ -136,6 +138,13 @@ export function DocumentTemplatesManager({
     setShowModal(true);
   };
 
+  // Open create modal when requested from parent
+  useEffect(() => {
+    if (createRequested && createRequested > 0) {
+      setShowModal(true);
+    }
+  }, [createRequested]);
+
   // Reset form when modal closes
   useEffect(() => {
     if (!showModal) {
@@ -172,216 +181,174 @@ export function DocumentTemplatesManager({
 
   return (
     <>
-      <Card>
-        <CardHeader
-          title="Document Templates"
-          description="Create documents from pre-built templates"
-          action={
-            <Button
-              onClick={() => setShowModal(true)}
-              leftIcon={
-                <svg
-                  aria-hidden="true"
-                  className="w-4 h-4"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                  />
-                </svg>
-              }
-            >
-              New Template
-            </Button>
-          }
-        />
+      <div>
+        {/* Category Filter */}
+        <div className="mb-6">
+          <Flex gap="sm" className="overflow-x-auto pb-2">
+            {categoryFilters.map((cat) => (
+              <button
+                key={cat.value}
+                type="button"
+                onClick={() => setSelectedCategory(cat.value)}
+                className={cn(
+                  "px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors",
+                  selectedCategory === cat.value
+                    ? "bg-brand text-white"
+                    : "bg-ui-bg-tertiary text-ui-text hover:bg-ui-bg-secondary",
+                )}
+              >
+                {cat.label}
+              </button>
+            ))}
+          </Flex>
+        </div>
 
-        <CardBody>
-          {/* Category Filter */}
-          <div className="mb-6">
-            <Flex gap="sm" className="overflow-x-auto pb-2">
-              {categoryFilters.map((cat) => (
-                <button
-                  key={cat.value}
-                  type="button"
-                  onClick={() => setSelectedCategory(cat.value)}
-                  className={cn(
-                    "px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors",
-                    selectedCategory === cat.value
-                      ? "bg-brand-600 text-white"
-                      : "bg-ui-bg-tertiary text-ui-text-primary hover:bg-ui-bg-secondary",
-                  )}
-                >
-                  {cat.label}
-                </button>
-              ))}
-            </Flex>
-          </div>
+        {!templates || templates.length === 0 ? (
+          <EmptyState
+            icon="📄"
+            title="No templates yet"
+            description="Create templates to speed up document creation"
+            action={{
+              label: "Create Your First Template",
+              onClick: () => setShowModal(true),
+            }}
+          />
+        ) : (
+          <div className="space-y-6">
+            {/* Built-in Templates */}
+            {builtInTemplates.length > 0 && (
+              <div>
+                <Typography variant="h3" className="text-sm font-semibold text-ui-text mb-3">
+                  Built-in Templates
+                </Typography>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {builtInTemplates.map((template: Doc<"documentTemplates">) => (
+                    <button
+                      key={template._id}
+                      type="button"
+                      onClick={() => onSelectTemplate?.(template._id)}
+                      className="p-4 bg-linear-to-br from-brand-subtle to-brand-subtle rounded-lg hover:shadow-md transition-all text-left border-2 border-transparent hover:border-brand-muted:border-brand-hover"
+                    >
+                      <Flex align="start" gap="md">
+                        <span className="text-3xl">{template.icon}</span>
+                        <div className="flex-1">
+                          <Typography variant="h4" className="font-semibold text-ui-text mb-1">
+                            {template.name}
+                          </Typography>
+                          {template.description && (
+                            <Typography variant="muted" className="line-clamp-2">
+                              {template.description}
+                            </Typography>
+                          )}
+                          <Badge
+                            variant="primary"
+                            size="md"
+                            className="inline-block mt-2 capitalize"
+                          >
+                            {template.category}
+                          </Badge>
+                        </div>
+                      </Flex>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
 
-          {!templates || templates.length === 0 ? (
-            <EmptyState
-              icon="📄"
-              title="No templates yet"
-              description="Create templates to speed up document creation"
-              action={{
-                label: "Create Your First Template",
-                onClick: () => setShowModal(true),
-              }}
-            />
-          ) : (
-            <div className="space-y-6">
-              {/* Built-in Templates */}
-              {builtInTemplates.length > 0 && (
-                <div>
-                  <Typography
-                    variant="h3"
-                    className="text-sm font-semibold text-ui-text-primary mb-3"
-                  >
-                    Built-in Templates
-                  </Typography>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {builtInTemplates.map((template: Doc<"documentTemplates">) => (
-                      <button
-                        key={template._id}
-                        type="button"
-                        onClick={() => onSelectTemplate?.(template._id)}
-                        className="p-4 bg-linear-to-br from-brand-50 to-brand-100 rounded-lg hover:shadow-md transition-all text-left border-2 border-transparent hover:border-brand-300:border-brand-700"
-                      >
-                        <Flex align="start" gap="md">
-                          <span className="text-3xl">{template.icon}</span>
+            {/* Custom Templates */}
+            {customTemplates.length > 0 && (
+              <div>
+                <Typography variant="h3" className="text-sm font-semibold text-ui-text mb-3">
+                  Custom Templates
+                </Typography>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {customTemplates.map((template: Doc<"documentTemplates">) => (
+                    <div
+                      key={template._id}
+                      className="p-4 bg-ui-bg-secondary rounded-lg hover:bg-ui-bg-tertiary transition-colors border border-ui-border"
+                    >
+                      <Flex align="start" gap="md">
+                        <button
+                          type="button"
+                          onClick={() => onSelectTemplate?.(template._id)}
+                          className="flex items-start gap-3 flex-1 text-left"
+                        >
+                          <span className="text-2xl">{template.icon}</span>
                           <div className="flex-1">
-                            <Typography
-                              variant="h4"
-                              className="font-semibold text-ui-text-primary mb-1"
-                            >
+                            <Typography variant="h4" className="font-medium text-ui-text mb-1">
                               {template.name}
                             </Typography>
                             {template.description && (
-                              <Typography variant="muted" className="line-clamp-2">
+                              <Typography variant="muted" className="line-clamp-2 mb-2">
                                 {template.description}
                               </Typography>
                             )}
-                            <Badge
-                              variant="primary"
-                              size="md"
-                              className="inline-block mt-2 capitalize"
-                            >
-                              {template.category}
-                            </Badge>
-                          </div>
-                        </Flex>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Custom Templates */}
-              {customTemplates.length > 0 && (
-                <div>
-                  <Typography
-                    variant="h3"
-                    className="text-sm font-semibold text-ui-text-primary mb-3"
-                  >
-                    Custom Templates
-                  </Typography>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {customTemplates.map((template: Doc<"documentTemplates">) => (
-                      <div
-                        key={template._id}
-                        className="p-4 bg-ui-bg-secondary rounded-lg hover:bg-ui-bg-tertiary transition-colors border border-ui-border-primary"
-                      >
-                        <Flex align="start" gap="md">
-                          <button
-                            type="button"
-                            onClick={() => onSelectTemplate?.(template._id)}
-                            className="flex items-start gap-3 flex-1 text-left"
-                          >
-                            <span className="text-2xl">{template.icon}</span>
-                            <div className="flex-1">
-                              <Typography
-                                variant="h4"
-                                className="font-medium text-ui-text-primary mb-1"
-                              >
-                                {template.name}
-                              </Typography>
-                              {template.description && (
-                                <Typography variant="muted" className="line-clamp-2 mb-2">
-                                  {template.description}
-                                </Typography>
-                              )}
-                              <Flex gap="sm">
-                                <Badge variant="neutral" size="md" className="capitalize">
-                                  {template.category}
+                            <Flex gap="sm">
+                              <Badge variant="neutral" size="md" className="capitalize">
+                                {template.category}
+                              </Badge>
+                              {template.isPublic && (
+                                <Badge variant="success" size="md">
+                                  Public
                                 </Badge>
-                                {template.isPublic && (
-                                  <Badge variant="success" size="md">
-                                    Public
-                                  </Badge>
-                                )}
-                              </Flex>
-                            </div>
-                          </button>
+                              )}
+                            </Flex>
+                          </div>
+                        </button>
 
-                          <Flex gap="xs">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => startEdit(template)}
-                              leftIcon={
-                                <svg
-                                  aria-hidden="true"
-                                  className="w-3 h-3"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  viewBox="0 0 24 24"
-                                >
-                                  <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                                  />
-                                </svg>
-                              }
-                            />
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => setDeleteConfirm(template._id)}
-                              leftIcon={
-                                <svg
-                                  aria-hidden="true"
-                                  className="w-3 h-3"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  viewBox="0 0 24 24"
-                                >
-                                  <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                                  />
-                                </svg>
-                              }
-                            />
-                          </Flex>
+                        <Flex gap="xs">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => startEdit(template)}
+                            leftIcon={
+                              <svg
+                                aria-hidden="true"
+                                className="w-3 h-3"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                                />
+                              </svg>
+                            }
+                          />
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setDeleteConfirm(template._id)}
+                            leftIcon={
+                              <svg
+                                aria-hidden="true"
+                                className="w-3 h-3"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                                />
+                              </svg>
+                            }
+                          />
                         </Flex>
-                      </div>
-                    ))}
-                  </div>
+                      </Flex>
+                    </div>
+                  ))}
                 </div>
-              )}
-            </div>
-          )}
-        </CardBody>
-      </Card>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
 
       {/* Create/Edit Modal */}
       <Dialog open={showModal} onOpenChange={(open) => !open && resetForm()}>
@@ -455,9 +422,9 @@ export function DocumentTemplatesManager({
                       checked={field.state.value as boolean}
                       onChange={(e) => field.handleChange(e.target.checked)}
                       onBlur={field.handleBlur}
-                      className="w-4 h-4 text-brand-600 bg-ui-bg-primary border-ui-border-primary rounded focus:ring-brand-500:ring-brand-600 focus:ring-2"
+                      className="w-4 h-4 text-brand bg-ui-bg border-ui-border rounded focus:ring-brand-ring:ring-brand focus:ring-2"
                     />
-                    <label htmlFor="isPublic" className="text-sm font-medium text-ui-text-primary">
+                    <label htmlFor="isPublic" className="text-sm font-medium text-ui-text">
                       Make public (visible to all users)
                     </label>
                   </Flex>

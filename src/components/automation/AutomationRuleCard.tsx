@@ -69,7 +69,7 @@ export function AutomationRuleCard({ rule, onEdit, onDelete }: AutomationRuleCar
       <Flex justify="between" align="start" gap="lg">
         <div className="flex-1 min-w-0">
           <Flex gap="md" align="center" className="mb-2">
-            <Typography variant="h4" className="font-medium text-ui-text-primary">
+            <Typography variant="h4" className="font-medium text-ui-text">
               {rule.name}
             </Typography>
             <Badge variant={rule.isActive ? "success" : "neutral"} size="md">

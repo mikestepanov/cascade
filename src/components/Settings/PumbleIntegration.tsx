@@ -46,16 +46,16 @@ export function PumbleIntegration() {
   const projects: Project[] = projectsResult?.page ?? [];
 
   return (
-    <div className="bg-ui-bg-primary rounded-lg shadow-sm border border-ui-border-primary">
+    <div className="bg-ui-bg rounded-lg shadow-sm border border-ui-border">
       {/* Header */}
-      <div className="p-6 border-b border-ui-border-primary">
+      <div className="p-6 border-b border-ui-border">
         <Flex justify="between" align="start">
           <Flex gap="md" align="center">
             <div className="shrink-0">
               <Flex
                 align="center"
                 justify="center"
-                className="w-12 h-12 bg-linear-to-br from-accent-500 to-pink-500 rounded-lg"
+                className="w-12 h-12 bg-linear-to-br from-accent-ring to-palette-pink rounded-lg"
               >
                 <svg
                   className="w-6 h-6 text-white"
@@ -74,7 +74,7 @@ export function PumbleIntegration() {
               </Flex>
             </div>
             <div>
-              <Typography variant="h3" className="text-lg font-semibold text-ui-text-primary">
+              <Typography variant="h3" className="text-lg font-semibold text-ui-text">
                 Pumble Integration
               </Typography>
               <Typography className="mt-1 text-sm text-ui-text-secondary">
@@ -85,7 +85,7 @@ export function PumbleIntegration() {
           <Button
             onClick={() => setShowAddModal(true)}
             variant="primary"
-            className="bg-accent-600 hover:bg-accent-700"
+            className="bg-accent hover:bg-accent-hover"
           >
             Add Webhook
           </Button>
@@ -109,12 +109,12 @@ export function PumbleIntegration() {
         )}
 
         {/* Documentation Link */}
-        <div className="mt-6 pt-6 border-t border-ui-border-primary">
+        <div className="mt-6 pt-6 border-t border-ui-border">
           <a
             href="https://help.pumble.com/hc/en-us/articles/360041954051-Incoming-webhooks"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-sm text-accent-600 hover:text-accent-700:text-accent-300"
+            className="text-sm text-accent hover:text-accent-hover:text-accent-muted"
           >
             <Flex gap="xs" align="center">
               <span>How to create a Pumble incoming webhook</span>
@@ -153,10 +153,10 @@ function EmptyState({ onAddWebhook }: { onAddWebhook: () => void }) {
       <Flex
         align="center"
         justify="center"
-        className="mx-auto w-16 h-16 bg-accent-100 rounded-full mb-4"
+        className="mx-auto w-16 h-16 bg-accent-subtle rounded-full mb-4"
       >
         <svg
-          className="w-8 h-8 text-accent-600"
+          className="w-8 h-8 text-accent"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -171,18 +171,14 @@ function EmptyState({ onAddWebhook }: { onAddWebhook: () => void }) {
           />
         </svg>
       </Flex>
-      <Typography variant="h3" className="text-lg font-medium text-ui-text-primary mb-2">
+      <Typography variant="h3" className="text-lg font-medium text-ui-text mb-2">
         No Pumble webhooks configured
       </Typography>
       <Typography className="text-sm text-ui-text-secondary mb-6 max-w-md mx-auto">
         Connect Nixelo to Pumble channels to receive notifications when issues are created, updated,
         or assigned.
       </Typography>
-      <Button
-        onClick={onAddWebhook}
-        variant="primary"
-        className="bg-accent-600 hover:bg-accent-700"
-      >
+      <Button onClick={onAddWebhook} variant="primary" className="bg-accent hover:bg-accent-hover">
         Add Your First Webhook
       </Button>
     </div>
@@ -240,11 +236,11 @@ function WebhookCard({ webhook, projects }: WebhookCardProps) {
     : "No URL";
 
   return (
-    <div className="border border-ui-border-primary rounded-lg p-4 hover:border-accent-300:border-accent-700 transition-colors">
+    <div className="border border-ui-border rounded-lg p-4 hover:border-accent-muted:border-accent-hover transition-colors">
       <Flex justify="between" align="start" className="mb-3">
         <div className="flex-1">
           <Flex gap="sm" align="center" className="mb-1">
-            <Typography variant="h4" className="font-medium text-ui-text-primary">
+            <Typography variant="h4" className="font-medium text-ui-text">
               {webhook.name}
             </Typography>
             {webhook.isActive ? (
@@ -252,7 +248,7 @@ function WebhookCard({ webhook, projects }: WebhookCardProps) {
                 Active
               </span>
             ) : (
-              <span className="px-2 py-0.5 text-xs font-medium bg-ui-bg-tertiary text-ui-text-primary rounded">
+              <span className="px-2 py-0.5 text-xs font-medium bg-ui-bg-tertiary text-ui-text rounded">
                 Inactive
               </span>
             )}
@@ -271,7 +267,7 @@ function WebhookCard({ webhook, projects }: WebhookCardProps) {
         {webhook.events.map((event: string) => (
           <span
             key={event}
-            className="px-2 py-0.5 text-xs font-medium bg-accent-100 text-accent-800 rounded"
+            className="px-2 py-0.5 text-xs font-medium bg-accent-subtle text-accent-active rounded"
           >
             {event.replace("issue.", "")}
           </span>
@@ -286,12 +282,12 @@ function WebhookCard({ webhook, projects }: WebhookCardProps) {
       )}
 
       {/* Actions */}
-      <Flex gap="sm" align="center" className="pt-3 border-t border-ui-border-primary">
+      <Flex gap="sm" align="center" className="pt-3 border-t border-ui-border">
         <Button
           onClick={handleTest}
           variant="ghost"
           size="sm"
-          className="text-accent-600 hover:bg-accent-50:bg-accent-900/20"
+          className="text-accent hover:bg-accent-subtle:bg-accent-active/20"
         >
           Test Webhook
         </Button>
@@ -416,10 +412,7 @@ function AddWebhookModal({ open, onOpenChange, projects }: AddWebhookModalProps)
 
           {/* Project */}
           <div>
-            <label
-              htmlFor="project-select"
-              className="block text-sm font-medium text-ui-text-primary mb-1"
-            >
+            <label htmlFor="project-select" className="block text-sm font-medium text-ui-text mb-1">
               Project (Optional)
             </label>
             <select
@@ -428,7 +421,7 @@ function AddWebhookModal({ open, onOpenChange, projects }: AddWebhookModalProps)
               onChange={(e) =>
                 setProjectId(e.target.value ? (e.target.value as Id<"projects">) : undefined)
               }
-              className="w-full px-3 py-2 border border-ui-border-primary rounded-lg bg-ui-bg-primary text-ui-text-primary"
+              className="w-full px-3 py-2 border border-ui-border rounded-lg bg-ui-bg text-ui-text"
             >
               <option value="">All Projects</option>
               {projects?.map((project) => (
@@ -444,7 +437,7 @@ function AddWebhookModal({ open, onOpenChange, projects }: AddWebhookModalProps)
 
           {/* Events */}
           <div>
-            <div className="block text-sm font-medium text-ui-text-primary mb-3">
+            <div className="block text-sm font-medium text-ui-text mb-3">
               Events to Send <span className="text-status-error">*</span>
             </div>
             <div className="grid grid-cols-2 gap-3">
@@ -480,7 +473,7 @@ function AddWebhookModal({ open, onOpenChange, projects }: AddWebhookModalProps)
                   <Button
                     type="submit"
                     variant="primary"
-                    className="bg-accent-600 hover:bg-accent-700"
+                    className="bg-accent hover:bg-accent-hover"
                     isLoading={isSubmitting}
                   >
                     Add Webhook
@@ -586,7 +579,7 @@ function EditWebhookModal({ open, onOpenChange, webhook }: EditWebhookModalProps
 
           {/* Events */}
           <div>
-            <div className="block text-sm font-medium text-ui-text-primary mb-3">
+            <div className="block text-sm font-medium text-ui-text mb-3">
               Events to Send <span className="text-status-error">*</span>
             </div>
             <div className="grid grid-cols-2 gap-3">
@@ -622,7 +615,7 @@ function EditWebhookModal({ open, onOpenChange, webhook }: EditWebhookModalProps
                   <Button
                     type="submit"
                     variant="primary"
-                    className="bg-accent-600 hover:bg-accent-700"
+                    className="bg-accent hover:bg-accent-hover"
                     isLoading={isSubmitting}
                   >
                     Save Changes

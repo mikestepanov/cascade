@@ -82,7 +82,7 @@ export function WebhookLogs({ webhookId, open, onOpenChange }: WebhookLogsProps)
         {!executions || executions.length === 0 ? (
           <div className="text-center py-12">
             <div className="text-4xl mb-3">📊</div>
-            <Typography variant="h3" className="text-lg font-medium text-ui-text-primary mb-1">
+            <Typography variant="h3" className="text-lg font-medium text-ui-text mb-1">
               No delivery logs yet
             </Typography>
             <Typography className="text-sm text-ui-text-secondary">
@@ -99,7 +99,7 @@ export function WebhookLogs({ webhookId, open, onOpenChange }: WebhookLogsProps)
               {executions.map((execution) => (
                 <div
                   key={execution._id}
-                  className="border border-ui-border-primary rounded-lg p-4 hover:border-ui-border-secondary transition-colors"
+                  className="border border-ui-border rounded-lg p-4 hover:border-ui-border-secondary transition-colors"
                 >
                   {/* Header */}
                   <Flex justify="between" align="center" className="mb-3">
@@ -142,15 +142,15 @@ export function WebhookLogs({ webhookId, open, onOpenChange }: WebhookLogsProps)
                   {/* Metadata */}
                   <div className="grid grid-cols-3 gap-4 mb-2">
                     <Typography variant="muted" size="xs">
-                      <span className="font-medium text-ui-text-primary">Attempts:</span>{" "}
+                      <span className="font-medium text-ui-text">Attempts:</span>{" "}
                       {execution.attempts}
                     </Typography>
                     <Typography variant="muted" size="xs">
-                      <span className="font-medium text-ui-text-primary">Duration:</span>{" "}
+                      <span className="font-medium text-ui-text">Duration:</span>{" "}
                       {formatDuration(execution._creationTime, execution.completedAt)}
                     </Typography>
                     <Typography variant="muted" size="xs">
-                      <span className="font-medium text-ui-text-primary">Status:</span>{" "}
+                      <span className="font-medium text-ui-text">Status:</span>{" "}
                       {String(execution.status)}
                     </Typography>
                   </div>
@@ -167,13 +167,13 @@ export function WebhookLogs({ webhookId, open, onOpenChange }: WebhookLogsProps)
 
                   {/* Expandable Details */}
                   {selectedExecution === execution._id && (
-                    <div className="mt-3 pt-3 border-t border-ui-border-primary space-y-3">
+                    <div className="mt-3 pt-3 border-t border-ui-border space-y-3">
                       {/* Request Payload */}
                       <div>
                         <Typography variant="small" className="mb-1">
                           Request Payload:
                         </Typography>
-                        <pre className="bg-ui-bg-secondary border border-ui-border-primary rounded p-3 text-xs overflow-x-auto">
+                        <pre className="bg-ui-bg-secondary border border-ui-border rounded p-3 text-xs overflow-x-auto">
                           {JSON.stringify(JSON.parse(execution.requestPayload), null, 2)}
                         </pre>
                       </div>
@@ -184,7 +184,7 @@ export function WebhookLogs({ webhookId, open, onOpenChange }: WebhookLogsProps)
                           <Typography variant="small" className="mb-1">
                             Response Body:
                           </Typography>
-                          <pre className="bg-ui-bg-secondary border border-ui-border-primary rounded p-3 text-xs overflow-x-auto max-h-48">
+                          <pre className="bg-ui-bg-secondary border border-ui-border rounded p-3 text-xs overflow-x-auto max-h-48">
                             {execution.responseBody}
                           </pre>
                         </div>

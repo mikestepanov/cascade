@@ -166,9 +166,7 @@ export function ActivityFeed({ projectId, limit = 50, compact = false }: Activit
         <Flex
           key={`${activity._id}-${index}`}
           gap="lg"
-          className={
-            compact ? "py-2" : "p-4 bg-ui-bg-primary rounded-lg border border-ui-border-primary"
-          }
+          className={compact ? "py-2" : "p-4 bg-ui-bg rounded-lg border border-ui-border"}
         >
           {/* Timeline dot */}
           <Flex direction="column" align="center" className="shrink-0">
@@ -176,7 +174,7 @@ export function ActivityFeed({ projectId, limit = 50, compact = false }: Activit
               {getActionIcon(activity.action)}
             </div>
             {!compact && index < activities.length - 1 && (
-              <div className="w-0.5 flex-1 bg-ui-border-primary mt-2" />
+              <div className="w-0.5 flex-1 bg-ui-border mt-2" />
             )}
           </Flex>
 

@@ -10,7 +10,7 @@ export function HeroSection() {
       <div className="max-w-4xl mx-auto text-center">
         {/* Tag */}
         <Flex justify="center" className="mb-8">
-          <span className="px-4 py-2 rounded-full border border-ui-border-primary rounded-full text-xs font-medium text-ui-text-tertiary bg-ui-bg-secondary backdrop-blur-sm transition-colors">
+          <span className="px-4 py-2 rounded-full border border-ui-border rounded-full text-xs font-medium text-ui-text-tertiary bg-ui-bg-secondary backdrop-blur-sm transition-colors">
             Project Management · Time Tracking
           </span>
         </Flex>
@@ -18,7 +18,7 @@ export function HeroSection() {
         {/* Headline */}
         <Typography
           variant="h1"
-          className="text-4xl md:text-5xl lg:text-7xl font-bold leading-tight mb-6 tracking-tight text-ui-text-primary"
+          className="text-4xl md:text-5xl lg:text-7xl font-bold leading-tight mb-6 tracking-tight text-ui-text"
         >
           Revolutionize Your Workflow.
           <br />
@@ -48,7 +48,7 @@ export function HeroSection() {
             href="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
             target="_blank"
             rel="noopener noreferrer"
-            className="group px-8 py-3.5 bg-transparent border border-ui-border-secondary rounded-full text-base font-medium text-ui-text-secondary hover:border-ui-border-primary hover:text-ui-text-primary transition-all flex items-center justify-center gap-2 hover:bg-ui-bg-secondary"
+            className="group px-8 py-3.5 bg-transparent border border-ui-border-secondary rounded-full text-base font-medium text-ui-text-secondary hover:border-ui-border hover:text-ui-text transition-all flex items-center justify-center gap-2 hover:bg-ui-bg-secondary"
           >
             Watch Demo
             <PlayIcon className="w-4 h-4 text-cyan-600" />

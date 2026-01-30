@@ -112,9 +112,9 @@ export function RoadmapView({ projectId, sprintId, canEdit = true }: RoadmapView
         <div
           style={style}
           className={cn(
-            "flex items-center p-3 transition-colors border-b border-ui-border-primary",
+            "flex items-center p-3 transition-colors border-b border-ui-border",
             isSelected
-              ? "bg-brand-50/50 ring-1 ring-inset ring-brand-500/50 z-10"
+              ? "bg-brand-subtle/50 ring-1 ring-inset ring-brand-ring/50 z-10"
               : "hover:bg-ui-bg-secondary",
           )}
         >
@@ -128,8 +128,8 @@ export function RoadmapView({ projectId, sprintId, canEdit = true }: RoadmapView
                 className={cn(
                   "text-sm font-medium truncate text-left",
                   isSelected
-                    ? "text-brand-700"
-                    : "text-ui-text-primary hover:text-brand-600:text-brand-400",
+                    ? "text-brand-hover"
+                    : "text-ui-text hover:text-brand:text-brand-muted",
                 )}
               >
                 {issue.key}
@@ -195,10 +195,10 @@ export function RoadmapView({ projectId, sprintId, canEdit = true }: RoadmapView
         {/* Skeleton Timeline */}
         <Flex
           direction="column"
-          className="flex-1 bg-ui-bg-primary rounded-lg border border-ui-border-primary overflow-hidden"
+          className="flex-1 bg-ui-bg rounded-lg border border-ui-border overflow-hidden"
         >
           {/* Skeleton Dates Header */}
-          <div className="border-b border-ui-border-primary bg-ui-bg-secondary p-4 shrink-0">
+          <div className="border-b border-ui-border bg-ui-bg-secondary p-4 shrink-0">
             <Flex>
               <div className="w-64 shrink-0">
                 <Skeleton className="h-5 w-24" />
@@ -214,7 +214,7 @@ export function RoadmapView({ projectId, sprintId, canEdit = true }: RoadmapView
           {/* Skeleton Rows */}
           <div className="flex-1 overflow-auto">
             {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
-              <Flex align="center" className="p-3 border-b border-ui-border-primary" key={i}>
+              <Flex align="center" className="p-3 border-b border-ui-border" key={i}>
                 <div className="w-64 shrink-0 pr-4 space-y-2">
                   <Flex align="center" gap="sm">
                     <Skeleton className="h-4 w-4 rounded-full" />
@@ -262,7 +262,7 @@ export function RoadmapView({ projectId, sprintId, canEdit = true }: RoadmapView
               setFilterEpic(value === "all" ? "all" : (value as Id<"issues">))
             }
           >
-            <SelectTrigger className="px-3 py-2 border border-ui-border-primary rounded-lg bg-ui-bg-primary text-ui-text-primary">
+            <SelectTrigger className="px-3 py-2 border border-ui-border rounded-lg bg-ui-bg text-ui-text">
               <SelectValue placeholder="All Epics" />
             </SelectTrigger>
             <SelectContent>
@@ -291,17 +291,17 @@ export function RoadmapView({ projectId, sprintId, canEdit = true }: RoadmapView
       {/* Timeline Container */}
       <Flex
         direction="column"
-        className="flex-1 bg-ui-bg-primary rounded-lg border border-ui-border-primary overflow-hidden"
+        className="flex-1 bg-ui-bg rounded-lg border border-ui-border overflow-hidden"
       >
         {/* Timeline Header (Fixed) */}
-        <div className="border-b border-ui-border-primary bg-ui-bg-secondary p-4 shrink-0">
+        <div className="border-b border-ui-border bg-ui-bg-secondary p-4 shrink-0">
           <Flex>
-            <div className="w-64 shrink-0 font-medium text-ui-text-primary">Issue</div>
+            <div className="w-64 shrink-0 font-medium text-ui-text">Issue</div>
             <div className="flex-1 grid grid-cols-6">
               {timelineMonths.map((month) => (
                 <div
                   key={month.getTime()}
-                  className="text-center text-sm font-medium text-ui-text-primary border-l border-ui-border-primary px-2"
+                  className="text-center text-sm font-medium text-ui-text border-l border-ui-border px-2"
                 >
                   {month.toLocaleDateString("en-US", { month: "short", year: "numeric" })}
                 </div>

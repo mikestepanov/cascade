@@ -19,10 +19,10 @@ describe("Card", () => {
       const { container } = render(<Card>Content</Card>);
 
       const card = container.firstChild;
-      expect(card).toHaveClass("bg-ui-bg-primary");
+      expect(card).toHaveClass("bg-ui-bg");
       expect(card).toHaveClass("rounded-lg");
       expect(card).toHaveClass("border");
-      expect(card).toHaveClass("border-ui-border-primary");
+      expect(card).toHaveClass("border-ui-border");
     });
 
     it("should not have hover styles by default", () => {
@@ -258,7 +258,7 @@ describe("CardHeader", () => {
       const heading = screen.getByRole("heading");
       expect(heading).toHaveClass("text-lg");
       expect(heading).toHaveClass("font-semibold");
-      expect(heading).toHaveClass("text-ui-text-primary");
+      expect(heading).toHaveClass("text-ui-text");
     });
 
     it("should not render description when not provided", () => {
@@ -361,7 +361,7 @@ describe("CardHeader", () => {
       const header = container.firstChild;
       expect(header).toHaveClass("p-4");
       expect(header).toHaveClass("border-b");
-      expect(header).toHaveClass("border-ui-border-primary");
+      expect(header).toHaveClass("border-ui-border");
       expect(header).toHaveClass("flex");
       expect(header).toHaveClass("items-center");
       expect(header).toHaveClass("justify-between");

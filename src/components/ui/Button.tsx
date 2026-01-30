@@ -9,18 +9,17 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        primary:
-          "bg-brand-600 text-white hover:bg-brand-700 focus-visible:ring-brand-500:bg-brand-600",
+        primary: "bg-brand text-white hover:bg-brand-hover focus-visible:ring-brand-ring:bg-brand",
         secondary:
-          "bg-ui-bg-primary text-ui-text-primary border border-ui-border-primary hover:bg-ui-bg-secondary hover:border-brand-500 focus-visible:ring-brand-500",
+          "bg-ui-bg text-ui-text border border-ui-border hover:bg-ui-bg-secondary hover:border-brand-ring focus-visible:ring-brand-ring",
         success:
           "bg-status-success text-white hover:bg-status-success/90 focus-visible:ring-status-success",
         danger:
           "bg-status-error text-white hover:bg-status-error/90 focus-visible:ring-status-error",
-        ghost: "text-ui-text-secondary hover:bg-ui-bg-secondary focus-visible:ring-brand-500",
-        link: "text-brand-600 underline-offset-4 hover:underline",
+        ghost: "text-ui-text-secondary hover:bg-ui-bg-secondary focus-visible:ring-brand-ring",
+        link: "text-brand underline-offset-4 hover:underline",
         outline:
-          "bg-transparent text-ui-text-primary border border-ui-border-primary hover:bg-ui-bg-secondary focus-visible:ring-brand-500",
+          "bg-transparent text-ui-text border border-ui-border hover:bg-ui-bg-secondary focus-visible:ring-brand-ring",
       },
       size: {
         sm: "h-9 px-3 text-sm",

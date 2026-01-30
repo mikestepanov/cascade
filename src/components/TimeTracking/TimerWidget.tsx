@@ -61,8 +61,8 @@ export function TimerWidget() {
         <Flex align="center" gap="sm">
           {/* Pulsing dot */}
           <div className="relative">
-            <div className="w-2 h-2 bg-brand-600 rounded-full" />
-            <div className="absolute inset-0 w-2 h-2 bg-brand-600 rounded-full animate-ping" />
+            <div className="w-2 h-2 bg-brand rounded-full" />
+            <div className="absolute inset-0 w-2 h-2 bg-brand rounded-full animate-ping" />
           </div>
 
           {/* Timer display */}

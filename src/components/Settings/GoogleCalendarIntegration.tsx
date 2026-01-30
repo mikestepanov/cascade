@@ -122,11 +122,11 @@ export function GoogleCalendarIntegration() {
       <div className="p-6">
         <Flex justify="between" align="start">
           <Flex gap="lg" align="center">
-            <div className="p-3 bg-brand-500 rounded-lg">
+            <div className="p-3 bg-brand-ring rounded-lg">
               <Calendar className="h-6 w-6 text-white" />
             </div>
             <div>
-              <Typography variant="h3" className="text-lg font-semibold text-ui-text-primary">
+              <Typography variant="h3" className="text-lg font-semibold text-ui-text">
                 Google Calendar
               </Typography>
               <Typography className="text-sm text-ui-text-secondary mt-1">
@@ -165,11 +165,11 @@ export function GoogleCalendarIntegration() {
         </Flex>
 
         {calendarConnection && (
-          <Flex direction="column" gap="xl" className="mt-6 pt-6 border-t border-ui-border-primary">
+          <Flex direction="column" gap="xl" className="mt-6 pt-6 border-t border-ui-border">
             {/* Sync Toggle */}
             <Flex justify="between" align="center">
               <div>
-                <Typography variant="h4" className="text-sm font-semibold text-ui-text-primary">
+                <Typography variant="h4" className="text-sm font-semibold text-ui-text">
                   Enable Sync
                 </Typography>
                 <Typography className="text-sm text-ui-text-secondary mt-1">
@@ -186,10 +186,7 @@ export function GoogleCalendarIntegration() {
             {/* Sync Direction */}
             {calendarConnection.syncEnabled && (
               <div>
-                <Typography
-                  variant="h4"
-                  className="text-sm font-semibold text-ui-text-primary mb-3"
-                >
+                <Typography variant="h4" className="text-sm font-semibold text-ui-text mb-3">
                   Sync Direction
                 </Typography>
                 <Flex direction="column" gap="sm">
@@ -201,10 +198,10 @@ export function GoogleCalendarIntegration() {
                         checked={calendarConnection.syncDirection === "bidirectional"}
                         onChange={() => handleChangeSyncDirection("bidirectional")}
                         disabled={isSaving}
-                        className="h-4 w-4 text-brand-600"
+                        className="h-4 w-4 text-brand"
                       />
                       <div>
-                        <Typography className="text-sm font-medium text-ui-text-primary">
+                        <Typography className="text-sm font-medium text-ui-text">
                           Bidirectional
                         </Typography>
                         <Typography className="text-xs text-ui-text-tertiary">
@@ -222,10 +219,10 @@ export function GoogleCalendarIntegration() {
                         checked={calendarConnection.syncDirection === "import"}
                         onChange={() => handleChangeSyncDirection("import")}
                         disabled={isSaving}
-                        className="h-4 w-4 text-brand-600"
+                        className="h-4 w-4 text-brand"
                       />
                       <div>
-                        <Typography className="text-sm font-medium text-ui-text-primary">
+                        <Typography className="text-sm font-medium text-ui-text">
                           Import Only
                         </Typography>
                         <Typography className="text-xs text-ui-text-tertiary">
@@ -243,10 +240,10 @@ export function GoogleCalendarIntegration() {
                         checked={calendarConnection.syncDirection === "export"}
                         onChange={() => handleChangeSyncDirection("export")}
                         disabled={isSaving}
-                        className="h-4 w-4 text-brand-600"
+                        className="h-4 w-4 text-brand"
                       />
                       <div>
-                        <Typography className="text-sm font-medium text-ui-text-primary">
+                        <Typography className="text-sm font-medium text-ui-text">
                           Export Only
                         </Typography>
                         <Typography className="text-xs text-ui-text-tertiary">

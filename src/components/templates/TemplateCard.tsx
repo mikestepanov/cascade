@@ -44,13 +44,13 @@ export function TemplateCard({ template, onEdit, onDelete }: TemplateCardProps) 
         <div className="flex-1">
           <Flex gap="sm" align="center" className="mb-2">
             <span className="text-lg">{getTypeIcon(template.type)}</span>
-            <Typography variant="h4" className="font-medium text-ui-text-primary">
+            <Typography variant="h4" className="font-medium text-ui-text">
               {template.name}
             </Typography>
-            <span className="text-xs px-2 py-0.5 bg-ui-bg-tertiary text-ui-text-primary rounded capitalize">
+            <span className="text-xs px-2 py-0.5 bg-ui-bg-tertiary text-ui-text rounded capitalize">
               {template.type}
             </span>
-            <span className="text-xs px-2 py-0.5 bg-brand-100 text-brand-700 rounded capitalize">
+            <span className="text-xs px-2 py-0.5 bg-brand-subtle text-brand-hover rounded capitalize">
               {template.defaultPriority}
             </span>
           </Flex>
@@ -67,7 +67,7 @@ export function TemplateCard({ template, onEdit, onDelete }: TemplateCardProps) 
               {template.defaultLabels.map((label) => (
                 <span
                   key={label}
-                  className="text-xs px-2 py-0.5 bg-ui-bg-primary border border-ui-border-primary rounded"
+                  className="text-xs px-2 py-0.5 bg-ui-bg border border-ui-border rounded"
                 >
                   {label}
                 </span>

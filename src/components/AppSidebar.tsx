@@ -165,8 +165,8 @@ export function AppSidebar() {
       <aside
         className={cn(
           "fixed lg:relative z-50 lg:z-auto h-screen overflow-hidden",
-          "bg-ui-bg-primary",
-          "border-r border-ui-border-primary",
+          "bg-ui-bg",
+          "border-r border-ui-border",
           "transition-all duration-200 ease-in-out",
           isCollapsed ? "w-16" : "w-64",
           isMobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0",
@@ -174,7 +174,7 @@ export function AppSidebar() {
       >
         <Flex direction="column" className="h-full">
           {/* Header with organization name and collapse toggle */}
-          <Flex align="center" justify="between" className="p-4 border-b border-ui-border-primary">
+          <Flex align="center" justify="between" className="p-4 border-b border-ui-border">
             {!isCollapsed && (
               <Link to={ROUTES.dashboard.path} params={{ orgSlug }} onClick={handleNavClick}>
                 <Typography variant="h3" className="text-lg font-bold truncate max-w-40">
@@ -256,7 +256,7 @@ export function AppSidebar() {
                 onClick={handleNavClick}
                 icon={Copy}
               />
-              <div className="h-px bg-ui-border-primary my-1 mx-2" />
+              <div className="h-px bg-ui-border my-1 mx-2" />
               {(documents ?? []).slice(0, 10).map((doc: Doc<"documents">) => (
                 <NavSubItem
                   key={doc._id}
@@ -362,7 +362,7 @@ export function AppSidebar() {
           </Flex>
 
           {/* Bottom section - Settings */}
-          <div className="p-2 border-t border-ui-border-primary">
+          <div className="p-2 border-t border-ui-border">
             <NavItem
               to={ROUTES.settings.profile.path}
               params={{ orgSlug }}
@@ -423,7 +423,7 @@ function NavItem({
         "text-sm font-medium",
         isActive
           ? "bg-brand-indigo-track text-brand-indigo-text"
-          : "text-ui-text-secondary hover:bg-ui-bg-secondary hover:text-ui-text-primary",
+          : "text-ui-text-secondary hover:bg-ui-bg-secondary hover:text-ui-text",
         isCollapsed && "justify-center px-2",
       )}
     >
@@ -607,7 +607,7 @@ function NavSubItem({
         "flex items-center gap-2 px-3 py-1.5 rounded-md text-sm truncate transition-colors",
         isActive
           ? "bg-brand-indigo-track text-brand-indigo-text"
-          : "text-ui-text-secondary hover:bg-ui-bg-secondary hover:text-ui-text-primary",
+          : "text-ui-text-secondary hover:bg-ui-bg-secondary hover:text-ui-text",
       )}
     >
       {Icon && <Icon className="w-4 h-4 shrink-0" />}

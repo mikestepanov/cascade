@@ -3,13 +3,13 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 
 const inputVariants = cva(
-  "flex w-full rounded-lg border transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-ui-text-tertiary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
+  "flex w-full rounded-lg border transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-ui-text-tertiary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
   {
     variants: {
       variant: {
-        default: "bg-ui-bg-primary text-ui-text-primary border-ui-border-base",
-        search: "bg-ui-bg-secondary text-ui-text-primary pl-9 border-ui-border-base",
-        ghost: "border-transparent bg-transparent text-ui-text-primary hover:bg-ui-bg-secondary",
+        default: "bg-ui-bg text-ui-text border-ui-border-base",
+        search: "bg-ui-bg-secondary text-ui-text pl-9 border-ui-border-base",
+        ghost: "border-transparent bg-transparent text-ui-text hover:bg-ui-bg-secondary",
         error: "border-status-error focus-visible:ring-status-error",
       },
       inputSize: {

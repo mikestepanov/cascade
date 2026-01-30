@@ -65,7 +65,7 @@ export function IssueWatchers({ issueId }: IssueWatchersProps) {
       {/* Watchers List */}
       {watchers && watchers.length > 0 && (
         <div>
-          <Typography variant="h4" className="text-sm font-medium text-ui-text-primary mb-2">
+          <Typography variant="h4" className="text-sm font-medium text-ui-text mb-2">
             Watchers ({watchers.length})
           </Typography>
           <div className="space-y-2">

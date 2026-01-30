@@ -105,8 +105,8 @@ describe("CommentRenderer", () => {
 
       const badge = screen.getByText("@User");
       expect(badge).toHaveClass("inline-flex");
-      expect(badge).toHaveClass("bg-brand-100");
-      expect(badge).toHaveClass("text-brand-800");
+      expect(badge).toHaveClass("bg-brand-subtle");
+      expect(badge).toHaveClass("text-brand-active");
     });
 
     it("should have title attribute with @username", () => {
@@ -242,7 +242,7 @@ describe("CommentRenderer", () => {
       const { container } = render(<CommentRenderer content="Test" />);
 
       const commentDiv = container.firstChild;
-      expect(commentDiv).toHaveClass("text-ui-text-primary");
+      expect(commentDiv).toHaveClass("text-ui-text");
       expect(commentDiv).toHaveClass("whitespace-pre-wrap");
       expect(commentDiv).toHaveClass("break-words");
     });

@@ -7,7 +7,6 @@ import { Flex } from "@/components/ui/Flex";
 import { ROUTES } from "@/config/routes";
 import { useOrganization } from "@/hooks/useOrgContext";
 import { useListNavigation } from "../hooks/useListNavigation";
-import { DashboardCustomizeModal } from "./Dashboard/DashboardCustomizeModal";
 import { FocusZone } from "./Dashboard/FocusZone";
 import { Greeting } from "./Dashboard/Greeting";
 import { MyIssuesList } from "./Dashboard/MyIssuesList";
@@ -70,76 +69,66 @@ export function Dashboard() {
   });
 
   return (
-    <div className="min-h-screen bg-ui-bg-secondary relative overflow-hidden">
-      {/* Premium Background Elements */}
-      <div className="absolute top-0 left-0 w-full h-96 bg-linear-to-b from-brand-600/5 to-transparent pointer-events-none" />
-      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-brand-600/10 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-[-10%] right-[-10%] w-[30%] h-[30%] bg-accent-600/10 rounded-full blur-[100px] pointer-events-none" />
+    <div>
+      {/* Greeting */}
+      <div className="mb-8">
+        <Greeting userName={user?.name} completedCount={stats?.completedThisWeek} />
+      </div>
 
-      <div className="relative z-10 max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
-        {/* Header Section */}
-        <Flex justify="between" align="start" className="mb-8">
-          <Greeting userName={user?.name} completedCount={stats?.completedThisWeek} />
-          <div className="mt-2">
-            <DashboardCustomizeModal />
+      {/* Top Actionable Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-8">
+        {/* Focus Zone - Span 5 */}
+        <div className="lg:col-span-5">
+          <FocusZone task={focusTask} />
+        </div>
+
+        {/* Quick Stats - Span 7 */}
+        <div className="lg:col-span-7">
+          {showStats && (
+            <Flex direction="column" justify="end" className="h-full">
+              <Typography
+                variant="small"
+                color="tertiary"
+                className="uppercase tracking-widest mb-2 font-bold"
+              >
+                Overview
+              </Typography>
+              <QuickStats stats={stats} />
+            </Flex>
+          )}
+        </div>
+      </div>
+
+      {/* Main Workspace Content */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Main Feed/Issues */}
+        <Flex className={sidebarVisible ? "lg:col-span-2" : "lg:col-span-3"}>
+          <div className="bg-ui-bg rounded-xl border border-ui-border overflow-hidden">
+            <MyIssuesList
+              myIssues={myIssues}
+              myCreatedIssues={myCreatedIssues}
+              displayIssues={displayIssues}
+              issueFilter={issueFilter}
+              onFilterChange={setIssueFilter}
+              issueNavigation={issueNavigation}
+              loadMore={loadMoreMyIssues}
+              status={myIssuesStatus}
+            />
           </div>
         </Flex>
 
-        {/* Top Actionable Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-8">
-          {/* Focus Zone - Span 5 */}
-          <div className="lg:col-span-5">
-            <FocusZone task={focusTask} />
-          </div>
-
-          {/* Quick Stats - Span 7 */}
-          <div className="lg:col-span-7">
-            {showStats && (
-              <div className="h-full flex flex-col justify-end">
-                <Typography
-                  variant="small"
-                  color="tertiary"
-                  className="uppercase tracking-widest mb-2 font-bold"
-                >
-                  Overview
-                </Typography>
-                <QuickStats stats={stats} />
-              </div>
+        {/* Sidebars */}
+        {sidebarVisible && (
+          <div className="space-y-8">
+            {/* My Workspaces */}
+            {showWorkspaces && (
+              <WorkspacesList projects={myProjects} projectNavigation={projectNavigation} />
             )}
+
+            {/* Recent Activity */}
+            {showRecentActivity && <RecentActivity activities={recentActivity} />}
           </div>
-        </div>
-
-        {/* Main Workspace Content */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Main Feed/Issues */}
-          <Flex className={sidebarVisible ? "lg:col-span-2" : "lg:col-span-3"}>
-            <div className="bg-ui-bg-primary/40 backdrop-blur-md rounded-xl border border-ui-border-primary/50 overflow-hidden shadow-sm">
-              <MyIssuesList
-                myIssues={myIssues}
-                myCreatedIssues={myCreatedIssues}
-                displayIssues={displayIssues}
-                issueFilter={issueFilter}
-                onFilterChange={setIssueFilter}
-                issueNavigation={issueNavigation}
-                loadMore={loadMoreMyIssues}
-                status={myIssuesStatus}
-              />
-            </div>
-          </Flex>
-
-          {/* Sidebars */}
-          {sidebarVisible && (
-            <div className="space-y-8">
-              {/* My Workspaces */}
-              {showWorkspaces && (
-                <WorkspacesList projects={myProjects} projectNavigation={projectNavigation} />
-              )}
-
-              {/* Recent Activity */}
-              {showRecentActivity && <RecentActivity activities={recentActivity} />}
-            </div>
-          )}
-        </div>
+        )}
       </div>
     </div>
   );

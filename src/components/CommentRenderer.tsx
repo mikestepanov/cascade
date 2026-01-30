@@ -39,9 +39,7 @@ export function CommentRenderer({ content, mentions: _mentions = [] }: CommentRe
     return parts.length > 0 ? parts : content;
   };
 
-  return (
-    <div className="text-ui-text-primary whitespace-pre-wrap break-words">{renderContent()}</div>
-  );
+  return <div className="text-ui-text whitespace-pre-wrap break-words">{renderContent()}</div>;
 }
 
 interface MentionBadgeProps {
@@ -52,7 +50,7 @@ interface MentionBadgeProps {
 function MentionBadge({ userName }: MentionBadgeProps) {
   return (
     <span
-      className="inline-flex items-center px-2 py-0.5 rounded bg-brand-100 text-brand-800 font-medium hover:bg-brand-200:bg-brand-800 transition-colors cursor-default"
+      className="inline-flex items-center px-2 py-0.5 rounded bg-brand-subtle text-brand-active font-medium hover:bg-brand-border:bg-brand-active transition-colors cursor-default"
       title={`@${userName}`}
     >
       @{userName}

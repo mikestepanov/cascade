@@ -313,7 +313,7 @@ describe("useListNavigation", () => {
       });
 
       const props = result.current.getItemProps(1);
-      expect(props.className).toBe("ring-2 ring-primary");
+      expect(props.className).toBe("ring-2 ring-brand");
 
       // Other items should not have selected class
       const otherProps = result.current.getItemProps(0);

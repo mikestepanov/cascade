@@ -9,8 +9,8 @@ import { cn } from "@/lib/utils";
 import { Badge } from "./ui/Badge";
 import { Button } from "./ui/Button";
 import { ConfirmDialog } from "./ui/ConfirmDialog";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "./ui/Dialog";
 import { Input, Select } from "./ui/form";
+import { Sheet, SheetContent, SheetFooter, SheetHeader, SheetTitle } from "./ui/sheet";
 import { Typography } from "./ui/Typography";
 
 type IssueLinkWithDetails = FunctionReturnType<
@@ -124,7 +124,7 @@ export function IssueDependencies({ issueId, projectId: _workspaceId }: IssueDep
       {/* Outgoing Links */}
       {links && links.outgoing.length > 0 && (
         <div>
-          <Typography variant="h4" className="text-sm font-medium text-ui-text-primary mb-2">
+          <Typography variant="h4" className="text-sm font-medium text-ui-text mb-2">
             Dependencies
           </Typography>
           <div className="space-y-2">
@@ -170,7 +170,7 @@ export function IssueDependencies({ issueId, projectId: _workspaceId }: IssueDep
       {/* Incoming Links */}
       {links && links.incoming.length > 0 && (
         <div>
-          <Typography variant="h4" className="text-sm font-medium text-ui-text-primary mb-2">
+          <Typography variant="h4" className="text-sm font-medium text-ui-text mb-2">
             Referenced By
           </Typography>
           <div className="space-y-2">
@@ -222,8 +222,8 @@ export function IssueDependencies({ issueId, projectId: _workspaceId }: IssueDep
         </div>
       )}
 
-      {/* Add Dependency Dialog */}
-      <Dialog
+      {/* Add Dependency Sheet (side panel to avoid nested dialog issue) */}
+      <Sheet
         open={showAddDialog}
         onOpenChange={(open) => {
           setShowAddDialog(open);
@@ -233,10 +233,10 @@ export function IssueDependencies({ issueId, projectId: _workspaceId }: IssueDep
           }
         }}
       >
-        <DialogContent className="sm:max-w-lg">
-          <DialogHeader>
-            <DialogTitle>Add Dependency</DialogTitle>
-          </DialogHeader>
+        <SheetContent>
+          <SheetHeader>
+            <SheetTitle>Add Dependency</SheetTitle>
+          </SheetHeader>
           <div className="p-6 space-y-4">
             {/* Link Type */}
             <Select
@@ -260,7 +260,7 @@ export function IssueDependencies({ issueId, projectId: _workspaceId }: IssueDep
 
             {/* Search Results - already filtered by backend (excludeIssueId) */}
             {searchResults?.page && searchResults.page.length > 0 && (
-              <div className="max-h-48 overflow-y-auto border border-ui-border-primary rounded-lg">
+              <div className="max-h-48 overflow-y-auto border border-ui-border rounded-lg">
                 {searchResults.page.map((issue: Issue) => (
                   <button
                     type="button"
@@ -271,7 +271,7 @@ export function IssueDependencies({ issueId, projectId: _workspaceId }: IssueDep
                     }}
                     className={cn(
                       "w-full p-3 text-left hover:bg-ui-bg-tertiary border-b border-ui-border-secondary last:border-0",
-                      selectedIssueKey === issue._id && "bg-brand-50",
+                      selectedIssueKey === issue._id && "bg-brand-subtle",
                     )}
                   >
                     <Flex align="center" gap="sm">
@@ -298,7 +298,7 @@ export function IssueDependencies({ issueId, projectId: _workspaceId }: IssueDep
             )}
 
             {/* Actions */}
-            <DialogFooter>
+            <SheetFooter className="mt-6">
               <Button
                 variant="secondary"
                 onClick={() => {
@@ -312,10 +312,10 @@ export function IssueDependencies({ issueId, projectId: _workspaceId }: IssueDep
               <Button onClick={handleAddLink} disabled={!selectedIssueKey}>
                 Add Dependency
               </Button>
-            </DialogFooter>
+            </SheetFooter>
           </div>
-        </DialogContent>
-      </Dialog>
+        </SheetContent>
+      </Sheet>
 
       {/* Delete Confirmation */}
       <ConfirmDialog

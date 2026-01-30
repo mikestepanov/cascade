@@ -77,7 +77,7 @@ export function SprintManager({ projectId, canEdit = true }: SprintManagerProps)
     return (
       <div className="p-3 sm:p-6">
         <Flex align="center" justify="between" className="mb-6">
-          <Typography variant="h2" className="text-xl font-semibold text-ui-text-primary">
+          <Typography variant="h2" className="text-xl font-semibold text-ui-text">
             Sprint Management
           </Typography>
         </Flex>
@@ -99,7 +99,7 @@ export function SprintManager({ projectId, canEdit = true }: SprintManagerProps)
         gap="md"
         className="sm:flex-row sm:items-center mb-6"
       >
-        <Typography variant="h2" className="text-xl font-semibold text-ui-text-primary">
+        <Typography variant="h2" className="text-xl font-semibold text-ui-text">
           Sprint Management
         </Typography>
         {canEdit && (
@@ -112,7 +112,7 @@ export function SprintManager({ projectId, canEdit = true }: SprintManagerProps)
 
       {/* Create Sprint Form */}
       {showCreateForm && (
-        <div className="bg-ui-bg-secondary p-4 rounded-lg mb-6 border border-ui-border-primary">
+        <div className="bg-ui-bg-secondary p-4 rounded-lg mb-6 border border-ui-border">
           <form onSubmit={(e) => void handleCreateSprint(e)} className="space-y-4">
             <Input
               label="Sprint Name"
@@ -156,10 +156,7 @@ export function SprintManager({ projectId, canEdit = true }: SprintManagerProps)
           </div>
         ) : (
           sprints.map((sprint: Doc<"sprints"> & { issueCount: number }) => (
-            <div
-              key={sprint._id}
-              className="bg-ui-bg-primary border border-ui-border-primary rounded-lg p-4"
-            >
+            <div key={sprint._id} className="bg-ui-bg border border-ui-border rounded-lg p-4">
               <Flex
                 direction="column"
                 align="start"
@@ -171,7 +168,7 @@ export function SprintManager({ projectId, canEdit = true }: SprintManagerProps)
                   <Flex wrap align="center" gap="sm" className="sm:gap-3 mb-2">
                     <Typography
                       variant="h3"
-                      className="text-base sm:text-lg font-medium text-ui-text-primary"
+                      className="text-base sm:text-lg font-medium text-ui-text"
                     >
                       {sprint.name}
                     </Typography>

@@ -31,7 +31,7 @@ export function OfflineTab() {
               )}
             </div>
             <div>
-              <Typography variant="h3" className="text-lg font-semibold text-ui-text-primary">
+              <Typography variant="h3" className="text-lg font-semibold text-ui-text">
                 Connection Status
               </Typography>
               <Typography
@@ -45,25 +45,23 @@ export function OfflineTab() {
             </div>
           </Flex>
 
-          <div className="mt-6 pt-6 border-t border-ui-border-primary">
+          <div className="mt-6 pt-6 border-t border-ui-border">
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div className="p-4 bg-ui-bg-secondary rounded-lg">
                 <Typography className="text-sm text-ui-text-secondary">Pending Changes</Typography>
-                <Typography className="text-2xl font-bold text-ui-text-primary mt-1">
+                <Typography className="text-2xl font-bold text-ui-text mt-1">
                   {isLoading ? "..." : count}
                 </Typography>
               </div>
               <div className="p-4 bg-ui-bg-secondary rounded-lg">
                 <Typography className="text-sm text-ui-text-secondary">Sync Status</Typography>
-                <Typography className="text-2xl font-bold text-ui-text-primary mt-1">
+                <Typography className="text-2xl font-bold text-ui-text mt-1">
                   {isOnline ? "Ready" : "Paused"}
                 </Typography>
               </div>
               <div className="p-4 bg-ui-bg-secondary rounded-lg">
                 <Typography className="text-sm text-ui-text-secondary">Storage</Typography>
-                <Typography className="text-2xl font-bold text-ui-text-primary mt-1">
-                  IndexedDB
-                </Typography>
+                <Typography className="text-2xl font-bold text-ui-text mt-1">IndexedDB</Typography>
               </div>
             </div>
           </div>
@@ -73,14 +71,14 @@ export function OfflineTab() {
       {/* Offline Features */}
       <Card>
         <div className="p-6">
-          <Typography variant="h3" className="text-lg font-semibold text-ui-text-primary mb-4">
+          <Typography variant="h3" className="text-lg font-semibold text-ui-text mb-4">
             Offline Features
           </Typography>
           <Flex direction="column" gap="lg">
             <Flex gap="md" align="start">
               <div className="mt-0.5">✓</div>
               <div>
-                <Typography className="text-sm font-medium text-ui-text-primary">
+                <Typography className="text-sm font-medium text-ui-text">
                   View Cached Content
                 </Typography>
                 <Typography className="text-sm text-ui-text-secondary">
@@ -91,9 +89,7 @@ export function OfflineTab() {
             <Flex gap="md" align="start">
               <div className="mt-0.5">✓</div>
               <div>
-                <Typography className="text-sm font-medium text-ui-text-primary">
-                  Offline Edits
-                </Typography>
+                <Typography className="text-sm font-medium text-ui-text">Offline Edits</Typography>
                 <Typography className="text-sm text-ui-text-secondary">
                   Make changes offline - they'll sync automatically when you're back online
                 </Typography>
@@ -102,7 +98,7 @@ export function OfflineTab() {
             <Flex gap="md" align="start">
               <div className="mt-0.5">✓</div>
               <div>
-                <Typography className="text-sm font-medium text-ui-text-primary">
+                <Typography className="text-sm font-medium text-ui-text">
                   Background Sync
                 </Typography>
                 <Typography className="text-sm text-ui-text-secondary">
@@ -113,9 +109,7 @@ export function OfflineTab() {
             <Flex gap="md" align="start">
               <div className="mt-0.5">✓</div>
               <div>
-                <Typography className="text-sm font-medium text-ui-text-primary">
-                  Install as App
-                </Typography>
+                <Typography className="text-sm font-medium text-ui-text">Install as App</Typography>
                 <Typography className="text-sm text-ui-text-secondary">
                   Install Nixelo as a standalone app on your device
                 </Typography>
@@ -130,7 +124,7 @@ export function OfflineTab() {
         <Card>
           <div className="p-6">
             <Flex justify="between" align="center" className="mb-4">
-              <Typography variant="h3" className="text-lg font-semibold text-ui-text-primary">
+              <Typography variant="h3" className="text-lg font-semibold text-ui-text">
                 Pending Sync Queue
               </Typography>
               <Button
@@ -151,7 +145,7 @@ export function OfflineTab() {
                   className="p-3 bg-ui-bg-secondary rounded-lg"
                 >
                   <div>
-                    <Typography className="text-sm font-medium text-ui-text-primary">
+                    <Typography className="text-sm font-medium text-ui-text">
                       {item.mutationType}
                     </Typography>
                     <Typography className="text-xs text-ui-text-tertiary">

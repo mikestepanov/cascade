@@ -79,7 +79,7 @@ export const NotificationItem = memo(function NotificationItem({
         <div className="flex-1 min-w-0">
           <Flex align="start" justify="between" gap="sm">
             <div className="flex-1">
-              <Typography className="text-sm font-medium text-ui-text-primary">
+              <Typography className="text-sm font-medium text-ui-text">
                 {notification.title}
               </Typography>
               <Typography className="text-sm text-ui-text-secondary mt-1">
@@ -107,7 +107,7 @@ export const NotificationItem = memo(function NotificationItem({
                     variant="ghost"
                     size="sm"
                     onClick={() => onMarkAsRead(notification._id)}
-                    className="h-6 w-6 p-0 text-brand-600 hover:bg-brand-100 hover:text-brand-700"
+                    className="h-6 w-6 p-0 text-brand hover:bg-brand-subtle hover:text-brand-hover"
                     aria-label="Mark as read"
                   >
                     <svg

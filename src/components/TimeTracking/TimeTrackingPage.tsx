@@ -56,19 +56,9 @@ export function TimeTrackingPage({ projectId, userRole, isGlobalAdmin }: TimeTra
   const { startDate, endDate } = ranges[dateRange];
 
   return (
-    <Flex direction="column" gap="xl" className="max-w-7xl mx-auto p-6">
-      {/* Header */}
-      <div>
-        <Typography variant="h1" className="text-2xl font-bold text-ui-text-primary">
-          Time Tracking
-        </Typography>
-        <Typography className="text-sm text-ui-text-secondary mt-1">
-          Track time, analyze costs, and monitor burn rate
-        </Typography>
-      </div>
-
+    <Flex direction="column" gap="xl">
       {/* Tabs */}
-      <div className="border-b border-ui-border-primary">
+      <div className="border-b border-ui-border">
         <nav className="-mb-px flex gap-6">
           <button
             type="button"
@@ -77,7 +67,7 @@ export function TimeTrackingPage({ projectId, userRole, isGlobalAdmin }: TimeTra
               "pb-3 px-1 text-sm font-medium border-b-2 transition-colors",
               activeTab === "entries"
                 ? "border-brand-indigo-border text-brand-indigo-text"
-                : "border-transparent text-ui-text-secondary hover:text-ui-text-primary",
+                : "border-transparent text-ui-text-secondary hover:text-ui-text",
             )}
           >
             Time Entries
@@ -91,7 +81,7 @@ export function TimeTrackingPage({ projectId, userRole, isGlobalAdmin }: TimeTra
                   "pb-3 px-1 text-sm font-medium border-b-2 transition-colors",
                   activeTab === "burn-rate"
                     ? "border-brand-indigo-border text-brand-indigo-text"
-                    : "border-transparent text-ui-text-secondary hover:text-ui-text-primary",
+                    : "border-transparent text-ui-text-secondary hover:text-ui-text",
                 )}
               >
                 Burn Rate & Costs
@@ -103,7 +93,7 @@ export function TimeTrackingPage({ projectId, userRole, isGlobalAdmin }: TimeTra
                   "pb-3 px-1 text-sm font-medium border-b-2 transition-colors",
                   activeTab === "rates"
                     ? "border-brand-indigo-border text-brand-indigo-text"
-                    : "border-transparent text-ui-text-secondary hover:text-ui-text-primary",
+                    : "border-transparent text-ui-text-secondary hover:text-ui-text",
                 )}
               >
                 Hourly Rates
@@ -120,7 +110,7 @@ export function TimeTrackingPage({ projectId, userRole, isGlobalAdmin }: TimeTra
           <div>
             <label
               htmlFor="tracking-project-filter"
-              className="block text-xs font-medium text-ui-text-primary mb-1"
+              className="block text-xs font-medium text-ui-text mb-1"
             >
               Project
             </label>
@@ -150,7 +140,7 @@ export function TimeTrackingPage({ projectId, userRole, isGlobalAdmin }: TimeTra
           <div>
             <label
               htmlFor="tracking-date-range"
-              className="block text-xs font-medium text-ui-text-primary mb-1"
+              className="block text-xs font-medium text-ui-text mb-1"
             >
               Date Range
             </label>
@@ -204,7 +194,7 @@ export function TimeTrackingPage({ projectId, userRole, isGlobalAdmin }: TimeTra
                 d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
               />
             </svg>
-            <Typography variant="h3" className="mt-2 text-sm font-medium text-ui-text-primary">
+            <Typography variant="h3" className="mt-2 text-sm font-medium text-ui-text">
               Select a project
             </Typography>
             <Typography className="mt-1 text-sm text-ui-text-tertiary">

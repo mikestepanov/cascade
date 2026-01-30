@@ -17,12 +17,7 @@ export function Skeleton({ className }: SkeletonProps) {
  */
 export function SkeletonCard({ className }: SkeletonProps) {
   return (
-    <div
-      className={cn(
-        "animate-pulse bg-ui-bg-primary border border-ui-border-primary rounded-lg p-4",
-        className,
-      )}
-    >
+    <div className={cn("animate-pulse bg-ui-bg border border-ui-border rounded-lg p-4", className)}>
       <Flex direction="column" gap="md">
         <Skeleton className="h-4 w-3/4" />
         <Skeleton className="h-4 w-1/2" />
@@ -117,7 +112,7 @@ export function SkeletonList({ items = 5 }: { items?: number }) {
  */
 export function SkeletonStatCard() {
   return (
-    <div className="bg-ui-bg-primary border border-ui-border-primary rounded-lg p-4">
+    <div className="bg-ui-bg border border-ui-border rounded-lg p-4">
       <Flex direction="column" gap="md" className="text-center">
         <Skeleton className="h-3 w-24 mx-auto" />
         <Skeleton className="h-10 w-16 mx-auto" />
@@ -132,11 +127,7 @@ export function SkeletonStatCard() {
  */
 export function SkeletonKanbanCard() {
   return (
-    <Flex
-      direction="column"
-      gap="sm"
-      className="bg-ui-bg-primary border border-ui-border-primary rounded-lg p-3"
-    >
+    <Flex direction="column" gap="sm" className="bg-ui-bg border border-ui-border rounded-lg p-3">
       <Flex align="center" gap="sm">
         <Skeleton className="h-3 w-16" />
         <Skeleton className="h-3 w-12" />

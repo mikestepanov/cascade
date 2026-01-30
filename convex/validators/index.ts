@@ -40,6 +40,18 @@ export const sprintStatuses = literals("future", "active", "completed");
 export const webhookStatuses = literals("success", "failed", "retrying");
 export const webhookResultStatuses = literals("success", "failed"); // For execution results
 export const calendarStatuses = literals("confirmed", "tentative", "cancelled");
+export const calendarEventColors = literals(
+  "blue",
+  "red",
+  "green",
+  "amber",
+  "orange",
+  "purple",
+  "pink",
+  "teal",
+  "indigo",
+  "gray",
+);
 export const attendanceStatuses = literals("present", "tardy", "absent");
 export const prStates = literals("open", "closed", "merged");
 export const ciStatuses = literals("pending", "success", "failure");
@@ -246,4 +258,5 @@ export type BlockNoteContent = Infer<typeof blockNoteContent>;
 export type DashboardWidget = Infer<typeof dashboardWidget>;
 export type DashboardLayout = Infer<typeof dashboardLayout>;
 export type AuditMetadata = Infer<typeof auditMetadata>;
+export type CalendarEventColor = Infer<typeof calendarEventColors>;
 export type GoogleCalendarEvent = Infer<typeof googleCalendarEvent>;

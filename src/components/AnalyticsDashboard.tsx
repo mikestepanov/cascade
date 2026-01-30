@@ -126,19 +126,19 @@ export function AnalyticsDashboard({ projectId }: Props) {
 
           {/* Charts Skeleton */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
-            <div className="bg-ui-bg-primary rounded-lg shadow p-4 sm:p-6">
+            <div className="bg-ui-bg rounded-lg shadow p-4 sm:p-6">
               <Skeleton className="h-5 sm:h-6 w-36 sm:w-48 mb-4" />
               <Skeleton className="h-48 sm:h-64 w-full" />
             </div>
-            <div className="bg-ui-bg-primary rounded-lg shadow p-4 sm:p-6">
+            <div className="bg-ui-bg rounded-lg shadow p-4 sm:p-6">
               <Skeleton className="h-5 sm:h-6 w-36 sm:w-48 mb-4" />
               <Skeleton className="h-48 sm:h-64 w-full" />
             </div>
-            <div className="bg-ui-bg-primary rounded-lg shadow p-4 sm:p-6">
+            <div className="bg-ui-bg rounded-lg shadow p-4 sm:p-6">
               <Skeleton className="h-5 sm:h-6 w-36 sm:w-48 mb-4" />
               <Skeleton className="h-48 sm:h-64 w-full" />
             </div>
-            <div className="bg-ui-bg-primary rounded-lg shadow p-4 sm:p-6">
+            <div className="bg-ui-bg rounded-lg shadow p-4 sm:p-6">
               <Skeleton className="h-5 sm:h-6 w-36 sm:w-48 mb-4" />
               <Skeleton className="h-48 sm:h-64 w-full" />
             </div>
@@ -199,7 +199,7 @@ export function AnalyticsDashboard({ projectId }: Props) {
           {/* Team Velocity */}
           <ChartCard title="Team Velocity (Last 10 Sprints)">
             {velocityChartData.length > 0 ? (
-              <BarChart data={velocityChartData} color="bg-accent-600" />
+              <BarChart data={velocityChartData} color="bg-accent" />
             ) : (
               <Flex align="center" justify="center" className="h-full text-ui-text-secondary">
                 <Typography variant="p">No completed sprints yet</Typography>
@@ -211,7 +211,7 @@ export function AnalyticsDashboard({ projectId }: Props) {
         {/* Issues by Assignee */}
         {assigneeChartData.length > 0 && (
           <ChartCard title="Issues by Assignee">
-            <BarChart data={assigneeChartData} color="bg-brand-600" />
+            <BarChart data={assigneeChartData} color="bg-brand" />
           </ChartCard>
         )}
 

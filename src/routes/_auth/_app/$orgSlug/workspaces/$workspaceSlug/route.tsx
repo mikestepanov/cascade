@@ -43,7 +43,7 @@ function WorkspaceLayout() {
         <Link
           to={ROUTES.workspaces.list.path}
           params={{ orgSlug }}
-          className="text-brand-600 hover:underline"
+          className="text-brand hover:underline"
         >
           Workspaces
         </Link>
@@ -69,19 +69,19 @@ function WorkspaceLayout() {
       </div>
 
       {/* Tabs */}
-      <div className="border-b border-ui-border-primary mb-6">
+      <div className="border-b border-ui-border mb-6">
         <nav className="flex gap-6">
           <Link
             to={ROUTES.workspaces.detail.path}
             params={{ orgSlug, workspaceSlug }}
-            className="px-1 py-3 border-b-2 border-brand-600 font-medium text-brand-600"
+            className="px-1 py-3 border-b-2 border-brand font-medium text-brand"
           >
             Teams
           </Link>
           <Link
             to={ROUTES.workspaces.settings.path}
             params={{ orgSlug, workspaceSlug }}
-            className="px-1 py-3 border-b-2 border-transparent hover:border-ui-border-secondary text-ui-text-secondary hover:text-ui-text-primary"
+            className="px-1 py-3 border-b-2 border-transparent hover:border-ui-border-secondary text-ui-text-secondary hover:text-ui-text"
           >
             Settings
           </Link>

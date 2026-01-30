@@ -80,11 +80,11 @@ export function FilterBar({ projectId, onFilterChange }: FilterBarProps) {
   const hasActiveFilters = Object.keys(activeFilters).length > 0;
 
   return (
-    <div className="bg-ui-bg-secondary border-b border-ui-border-primary p-4">
+    <div className="bg-ui-bg-secondary border-b border-ui-border p-4">
       <Flex align="center" gap="md" className="flex-wrap">
         {/* Saved Filters Dropdown */}
         <Flex align="center" gap="sm">
-          <label htmlFor="savedFilters" className="text-sm font-medium text-ui-text-primary">
+          <label htmlFor="savedFilters" className="text-sm font-medium text-ui-text">
             Saved Filters:
           </label>
           <Select
@@ -98,7 +98,7 @@ export function FilterBar({ projectId, onFilterChange }: FilterBarProps) {
               }
             }}
           >
-            <SelectTrigger className="px-3 py-1.5 border border-ui-border-primary rounded-lg bg-ui-bg-primary text-sm">
+            <SelectTrigger className="px-3 py-1.5 border border-ui-border rounded-lg bg-ui-bg text-sm">
               <SelectValue placeholder="Select a filter..." />
             </SelectTrigger>
             <SelectContent>
@@ -191,14 +191,14 @@ export function FilterBar({ projectId, onFilterChange }: FilterBarProps) {
               inline
               align="center"
               gap="sm"
-              className="px-3 py-1 bg-ui-bg-primary border border-ui-border-primary rounded-full text-sm"
+              className="px-3 py-1 bg-ui-bg border border-ui-border rounded-full text-sm"
               key={filter._id}
             >
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => handleLoadFilter(filter.filters)}
-                className="p-0 min-h-0 hover:text-brand-600"
+                className="p-0 min-h-0 hover:text-brand"
               >
                 {filter.name}
               </Button>

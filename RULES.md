@@ -221,10 +221,9 @@ When output is empty or cut:
 
 ### After Making Changes
 
-1. Run linting: `pnpm lint` or `pnpm biome`
-2. Run type checking: `pnpm typecheck`
-3. Run tests if applicable
-4. If unable to find correct command, ask
+1. After completing a significant chunk of work (new feature, multi-file refactor, major bug fix), run `pnpm fixme` to auto-fix lint/format issues and typecheck. Do NOT run after every small edit.
+2. Run tests if applicable
+3. If unable to find correct command, ask
 
 ### Avoid Over-Engineering
 

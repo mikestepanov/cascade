@@ -58,7 +58,7 @@ export function DocumentHeader({
   };
 
   return (
-    <div className="border-b border-ui-border-primary p-3 sm:p-6">
+    <div className="border-b border-ui-border p-3 sm:p-6">
       <Flex
         direction="column"
         align="start"
@@ -74,14 +74,14 @@ export function DocumentHeader({
               onChange={(e) => setTitleValue(e.target.value)}
               onBlur={() => void handleTitleSave()}
               onKeyDown={handleTitleKeyDown}
-              className="text-xl sm:text-2xl font-bold bg-transparent border-none outline-none focus:ring-2 focus:ring-brand-500 rounded px-2 py-1 text-ui-text-primary"
+              className="text-xl sm:text-2xl font-bold bg-transparent border-none outline-none focus:ring-2 focus:ring-brand-ring rounded px-2 py-1 text-ui-text"
             />
           ) : (
             <Typography
               variant="h1"
               role={document.isOwner ? "button" : undefined}
               tabIndex={document.isOwner ? 0 : undefined}
-              className="text-xl sm:text-2xl font-bold text-ui-text-primary cursor-pointer hover:bg-ui-bg-secondary rounded px-2 py-1 transition-colors"
+              className="text-xl sm:text-2xl font-bold text-ui-text cursor-pointer hover:bg-ui-bg-secondary rounded px-2 py-1 transition-colors"
               onClick={document.isOwner ? handleTitleEdit : undefined}
               onKeyDown={
                 document.isOwner
@@ -108,7 +108,7 @@ export function DocumentHeader({
             variant="ghost"
             size="sm"
             onClick={onShowVersionHistory}
-            className="px-2 sm:px-3 py-1 bg-ui-bg-tertiary text-ui-text-primary hover:bg-ui-bg-secondary min-h-0"
+            className="px-2 sm:px-3 py-1 bg-ui-bg-tertiary text-ui-text hover:bg-ui-bg-secondary min-h-0"
             title="View version history"
             aria-label="Version history"
           >
@@ -190,7 +190,7 @@ export function DocumentHeader({
                 "px-2 sm:px-3 py-1 min-h-0",
                 document.isPublic
                   ? "bg-status-success-bg text-status-success-text hover:opacity-80"
-                  : "bg-ui-bg-tertiary text-ui-text-primary hover:bg-ui-bg-secondary",
+                  : "bg-ui-bg-tertiary text-ui-text hover:bg-ui-bg-secondary",
               )}
             >
               {document.isPublic ? "Public" : "Private"}

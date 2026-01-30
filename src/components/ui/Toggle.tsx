@@ -108,13 +108,13 @@ export function Toggle({
           // Base styles
           "rounded-full peer transition-colors duration-200 ease-in-out",
           // Focus ring
-          "peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-brand-500/20",
+          "peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-brand-ring/20",
           // Track background
-          checked ? "bg-brand-600" : "bg-ui-bg-tertiary",
+          checked ? "bg-brand" : "bg-ui-bg-tertiary",
           // Thumb pseudo-element
           "after:content-[''] after:absolute after:rounded-full after:transition-all after:duration-200 after:ease-in-out",
-          "after:bg-ui-bg-primary",
-          "after:border after:border-ui-border-primary",
+          "after:bg-ui-bg",
+          "after:border after:border-ui-border",
           // Size-specific
           sizes.track,
           sizes.offset,
@@ -158,7 +158,7 @@ export function ToggleField({
 }: ToggleFieldProps) {
   const labelContent = (
     <div className={cn("flex-1", labelPosition === "right" && "order-2")}>
-      <div className="font-medium text-ui-text-primary">{label}</div>
+      <div className="font-medium text-ui-text">{label}</div>
       {description && <div className="text-sm text-ui-text-secondary mt-1">{description}</div>}
     </div>
   );

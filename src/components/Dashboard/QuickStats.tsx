@@ -26,31 +26,27 @@ interface StatCardProps {
 
 const variantStyles = {
   brand: {
-    text: "text-brand-600",
-    bg: "bg-brand-600",
+    text: "text-brand",
+    bg: "bg-brand",
   },
   success: {
     text: "text-status-success",
     bg: "bg-status-success",
   },
   accent: {
-    text: "text-accent-600",
-    bg: "bg-accent-600",
+    text: "text-accent",
+    bg: "bg-accent",
   },
 } as const;
 
 /**
- * Individual stat card component with glassmorphism
+ * Individual stat card component
  */
 function StatCard({ title, value, subtitle, variant, progressValue }: StatCardProps) {
   const styles = variantStyles[variant];
 
   return (
-    <Card
-      className={cn(
-        "bg-ui-bg-primary/40 backdrop-blur-md border-ui-border-primary/50 group hover:bg-ui-bg-primary/60 transition-all duration-300 shadow-sm hover:shadow-lg animate-in fade-in zoom-in",
-      )}
-    >
+    <Card>
       <CardBody className="p-5">
         <Typography
           variant="small"
@@ -83,20 +79,13 @@ function StatCard({ title, value, subtitle, variant, progressValue }: StatCardPr
 }
 
 /**
- * High priority stat card with high-impact styling
+ * High priority stat card
  */
 function HighPriorityCard({ count }: { count: number }) {
   const hasHighPriority = count > 0;
   return (
-    <Card
-      className={cn(
-        "relative overflow-hidden transition-all duration-500 shadow-sm hover:shadow-xl animate-in fade-in zoom-in",
-        hasHighPriority
-          ? "bg-gradient-to-br from-status-warning-bg/40 to-status-warning-bg/10 backdrop-blur-md border-status-warning/30"
-          : "bg-ui-bg-primary/40 backdrop-blur-md border-ui-border-primary/50",
-      )}
-    >
-      <CardBody className="p-5 relative z-10">
+    <Card className={cn("relative overflow-hidden", hasHighPriority && "border-status-warning/30")}>
+      <CardBody className="p-5">
         <Typography
           variant="small"
           className={cn(
@@ -111,7 +100,7 @@ function HighPriorityCard({ count }: { count: number }) {
             variant="h2"
             className={cn(
               "text-3xl font-extrabold",
-              hasHighPriority ? "text-status-warning" : "text-ui-text-primary",
+              hasHighPriority ? "text-status-warning" : "text-ui-text",
             )}
           >
             {count || 0}
@@ -125,10 +114,6 @@ function HighPriorityCard({ count }: { count: number }) {
           <div className="absolute right-0 top-0 h-full w-1.5 bg-status-warning" />
         )}
       </CardBody>
-
-      {hasHighPriority && (
-        <div className="absolute -right-4 -bottom-4 w-16 h-16 bg-status-warning/10 rounded-full blur-xl" />
-      )}
     </Card>
   );
 }

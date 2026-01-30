@@ -81,7 +81,7 @@ export function BurnRateDashboard({ projectId }: BurnRateDashboardProps) {
     <Flex direction="column" gap="xl">
       {/* Header with date range selector */}
       <Flex justify="between" align="center">
-        <Typography variant="h2" className="text-lg font-semibold text-ui-text-primary">
+        <Typography variant="h2" className="text-lg font-semibold text-ui-text">
           Burn Rate & Team Costs
         </Typography>
 
@@ -94,8 +94,8 @@ export function BurnRateDashboard({ projectId }: BurnRateDashboardProps) {
               className={cn(
                 "px-3 py-1 text-sm font-medium rounded-lg transition-colors",
                 dateRange === range
-                  ? "bg-brand-600 text-white"
-                  : "bg-ui-bg-tertiary text-ui-text-primary hover:bg-ui-bg-secondary",
+                  ? "bg-brand text-white"
+                  : "bg-ui-bg-tertiary text-ui-text hover:bg-ui-bg-secondary",
               )}
             >
               {ranges[range].label}
@@ -134,20 +134,18 @@ export function BurnRateDashboard({ projectId }: BurnRateDashboardProps) {
 
       {/* Hours Breakdown */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="p-4 bg-ui-bg-primary border border-ui-border-primary rounded-lg">
-          <Typography variant="h3" className="text-sm font-medium text-ui-text-primary mb-2">
+        <div className="p-4 bg-ui-bg border border-ui-border rounded-lg">
+          <Typography variant="h3" className="text-sm font-medium text-ui-text mb-2">
             Total Hours
           </Typography>
-          <div className="text-3xl font-bold text-ui-text-primary">
-            {formatHours(burnRate.totalHours)}h
-          </div>
+          <div className="text-3xl font-bold text-ui-text">{formatHours(burnRate.totalHours)}h</div>
           <Typography className="text-xs text-ui-text-tertiary mt-1">
             {burnRate.entriesCount} time entries
           </Typography>
         </div>
 
-        <div className="p-4 bg-ui-bg-primary border border-ui-border-primary rounded-lg">
-          <Typography variant="h3" className="text-sm font-medium text-ui-text-primary mb-2">
+        <div className="p-4 bg-ui-bg border border-ui-border rounded-lg">
+          <Typography variant="h3" className="text-sm font-medium text-ui-text mb-2">
             Billable Hours
           </Typography>
           <div className="text-3xl font-bold text-status-success">
@@ -161,7 +159,7 @@ export function BurnRateDashboard({ projectId }: BurnRateDashboardProps) {
 
       {/* Team Costs Breakdown */}
       <div>
-        <Typography variant="h3" className="text-sm font-semibold text-ui-text-primary mb-3">
+        <Typography variant="h3" className="text-sm font-semibold text-ui-text mb-3">
           Team Costs Breakdown
         </Typography>
 
@@ -180,7 +178,7 @@ export function BurnRateDashboard({ projectId }: BurnRateDashboardProps) {
               return (
                 <div
                   key={member.user?._id || "unknown"}
-                  className="p-4 bg-ui-bg-primary border border-ui-border-primary rounded-lg"
+                  className="p-4 bg-ui-bg border border-ui-border rounded-lg"
                 >
                   <div className="mb-2">
                     <Flex justify="between" align="center">
@@ -201,7 +199,7 @@ export function BurnRateDashboard({ projectId }: BurnRateDashboardProps) {
                           </Flex>
                         )}
                         <div>
-                          <div className="text-sm font-medium text-ui-text-primary">
+                          <div className="text-sm font-medium text-ui-text">
                             {member.user?.name || "Unknown"}
                           </div>
                           <div className="text-xs text-ui-text-tertiary">
@@ -212,13 +210,13 @@ export function BurnRateDashboard({ projectId }: BurnRateDashboardProps) {
                       </Flex>
 
                       <Flex direction="column" align="end">
-                        <div className="py-2 text-right text-sm font-medium text-ui-text-primary">
+                        <div className="py-2 text-right text-sm font-medium text-ui-text">
                           {formatHours(member.hours)}
                         </div>
-                        <div className="py-2 text-right text-sm font-medium text-ui-text-primary">
+                        <div className="py-2 text-right text-sm font-medium text-ui-text">
                           {formatHours(member.billableHours)}
                         </div>
-                        <div className="text-sm font-semibold text-ui-text-primary">
+                        <div className="text-sm font-semibold text-ui-text">
                           {formatCurrency(member.cost)}
                         </div>
                         <div className="text-xs text-ui-text-tertiary">
@@ -251,7 +249,7 @@ function MetricCard({ label, value, icon, color }: MetricCardProps) {
   const colorClasses = {
     info: "bg-status-info-bg border-status-info/30",
     success: "bg-status-success-bg border-status-success/30",
-    accent: "bg-accent-50 border-accent-200",
+    accent: "bg-accent-subtle border-accent-border",
     warning: "bg-status-warning-bg border-status-warning/30",
   };
 
@@ -261,7 +259,7 @@ function MetricCard({ label, value, icon, color }: MetricCardProps) {
         <span className="text-2xl">{icon}</span>
         <span className="text-xs font-medium text-ui-text-secondary">{label}</span>
       </Flex>
-      <div className="text-2xl font-bold text-ui-text-primary">{value}</div>
+      <div className="text-2xl font-bold text-ui-text">{value}</div>
     </div>
   );
 }

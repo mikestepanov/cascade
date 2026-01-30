@@ -17,140 +17,153 @@
   --shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
   --shadow-hover: 0 2px 8px rgba(0, 0, 0, 0.12);
 
-  /* Brand Colors */
-  --color-brand-50: #EEF2FF;
-  --color-brand-100: #E0E7FF;
-  --color-brand-200: #C7D2FE;
-  --color-brand-300: #A5B4FC;
-  --color-brand-400: #818CF8;
-  --color-brand-500: #6366F1;
-  --color-brand-600: #4F46E5;
-  --color-brand-700: #4338CA;
-  --color-brand-800: #3730A3;
-  --color-brand-900: #312E81;
-  --color-brand-950: #1E1B4B;
+  /* ============================================================
+   * TIER 2 — Semantic tokens (what components use)
+   * All defined via light-dark() so dark mode is automatic.
+   * ============================================================ */
 
-  /* Accent Colors */
-  --color-accent-50: #FAF5FF;
-  --color-accent-100: #F3E8FF;
-  --color-accent-200: #E9D5FF;
-  --color-accent-300: #D8B4FE;
-  --color-accent-400: #C084FC;
-  --color-accent-500: #A855F7;
-  --color-accent-600: #9333EA;
-  --color-accent-700: #7E22CE;
-  --color-accent-800: #6B21A8;
-  --color-accent-900: #581C87;
-  --color-accent-950: #3B0764;
+  /* --- Surface (5 vars) --- */
+  --color-ui-bg: light-dark(var(--p-white), var(--p-gray-900));
+  --color-ui-bg-secondary: light-dark(var(--p-gray-50), var(--p-gray-800));
+  --color-ui-bg-tertiary: light-dark(var(--p-gray-100), var(--p-gray-700));
+  --color-ui-bg-elevated: light-dark(var(--p-white), var(--p-gray-800));
+  --color-ui-bg-overlay: light-dark(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.75));
 
-  /* UI Background Colors */
-  --color-ui-bg-primary: #FFFFFF;
-  --color-ui-bg-secondary: #F9FAFB;
-  --color-ui-bg-tertiary: #F3F4F6;
-  --color-ui-bg-elevated: #FFFFFF;
-  --color-ui-bg-overlay: rgba(0, 0, 0, 0.5);
-  --color-ui-bg-primary-dark: #111827;
-  --color-ui-bg-secondary-dark: #1F2937;
-  --color-ui-bg-tertiary-dark: #374151;
-  --color-ui-bg-elevated-dark: #1F2937;
-  --color-ui-bg-overlay-dark: rgba(0, 0, 0, 0.75);
+  /* --- Text (4 vars) --- */
+  --color-ui-text: light-dark(var(--p-gray-900), var(--p-gray-50));
+  --color-ui-text-secondary: light-dark(var(--p-gray-500), var(--p-gray-300));
+  --color-ui-text-tertiary: light-dark(var(--p-gray-400), var(--p-gray-400));
+  --color-ui-text-inverse: light-dark(var(--p-white), var(--p-gray-900));
 
-  /* Landing/Hero Specific (Persistent Dark) */
-  --color-ui-bg-hero: #0a0e17;
-  --color-landing-accent: #22d3ee;
-  --color-landing-accent-alt: #a855f7;
-  --color-landing-accent-teal: #14b8a6;
+  /* --- Border (4 vars) --- */
+  --color-ui-border: light-dark(var(--p-gray-200), var(--p-gray-700));
+  --color-ui-border-secondary: light-dark(var(--p-gray-300), var(--p-gray-600));
+  --color-ui-border-focus: light-dark(var(--p-indigo-600), var(--p-indigo-400));
+  --color-ui-border-error: light-dark(var(--p-red-500), var(--p-red-400));
 
-  /* UI Text Colors */
-  --color-ui-text-primary: #111827;
-  --color-ui-text-secondary: #6B7280;
-  --color-ui-text-tertiary: #9CA3AF;
-  --color-ui-text-inverse: #FFFFFF;
-  --color-ui-text-primary-dark: #F9FAFB;
-  --color-ui-text-secondary-dark: #D1D5DB;
-  --color-ui-text-tertiary-dark: #9CA3AF;
-  --color-ui-text-inverse-dark: #111827;
+  /* --- Brand (9 vars) --- */
+  --color-brand: light-dark(var(--p-indigo-600), var(--p-indigo-400));
+  --color-brand-foreground: light-dark(var(--p-white), var(--p-white));
+  --color-brand-hover: light-dark(var(--p-indigo-700), var(--p-indigo-300));
+  --color-brand-active: light-dark(var(--p-indigo-800), var(--p-indigo-200));
+  --color-brand-subtle: light-dark(var(--p-indigo-50), var(--p-indigo-950));
+  --color-brand-subtle-foreground: light-dark(var(--p-indigo-600), var(--p-indigo-300));
+  --color-brand-muted: light-dark(var(--p-indigo-400), var(--p-indigo-500));
+  --color-brand-border: light-dark(var(--p-indigo-200), var(--p-indigo-800));
+  --color-brand-ring: light-dark(var(--p-indigo-400), var(--p-indigo-500));
 
-  /* UI Border Colors */
-  --color-ui-border-primary: #E5E7EB;
-  --color-ui-border-secondary: #D1D5DB;
-  --color-ui-border-focus: #4F46E5;
-  --color-ui-border-error: #EF4444;
-  --color-ui-border-primary-dark: #374151;
-  --color-ui-border-secondary-dark: #4B5563;
-  --color-ui-border-focus-dark: #6366F1;
-  --color-ui-border-error-dark: #F87171;
+  /* --- Accent (9 vars) --- */
+  --color-accent: light-dark(var(--p-purple-600), var(--p-purple-400));
+  --color-accent-foreground: light-dark(var(--p-white), var(--p-white));
+  --color-accent-hover: light-dark(var(--p-purple-700), var(--p-purple-300));
+  --color-accent-active: light-dark(var(--p-purple-800), var(--p-purple-200));
+  --color-accent-subtle: light-dark(var(--p-purple-50), var(--p-purple-950));
+  --color-accent-subtle-foreground: light-dark(var(--p-purple-600), var(--p-purple-300));
+  --color-accent-muted: light-dark(var(--p-purple-400), var(--p-purple-500));
+  --color-accent-border: light-dark(var(--p-purple-200), var(--p-purple-800));
+  --color-accent-ring: light-dark(var(--p-purple-400), var(--p-purple-500));
 
-  /* Status Colors */
-  --color-status-success: #10B981;
-  --color-status-success-bg: #D1FAE5;
-  --color-status-success-text: #065F46;
+  /* --- Status (12 vars) --- */
+  --color-status-success: light-dark(var(--p-green-500), var(--p-green-400));
+  --color-status-success-bg: light-dark(var(--p-green-50), var(--p-green-950));
+  --color-status-success-text: light-dark(var(--p-green-700), var(--p-green-300));
+  --color-status-warning: light-dark(var(--p-amber-500), var(--p-amber-400));
+  --color-status-warning-bg: light-dark(var(--p-amber-50), var(--p-amber-950));
+  --color-status-warning-text: light-dark(var(--p-amber-700), var(--p-amber-300));
+  --color-status-error: light-dark(var(--p-red-500), var(--p-red-400));
+  --color-status-error-bg: light-dark(var(--p-red-50), var(--p-red-950));
+  --color-status-error-text: light-dark(var(--p-red-700), var(--p-red-300));
+  --color-status-info: light-dark(var(--p-blue-500), var(--p-blue-400));
+  --color-status-info-bg: light-dark(var(--p-blue-50), var(--p-blue-950));
+  --color-status-info-text: light-dark(var(--p-blue-700), var(--p-blue-300));
 
-  --color-status-warning: #F59E0B;
-  --color-status-warning-bg: #FEF3C7;
-  --color-status-warning-text: #92400E;
+  /* --- Palette (30 vars: 10 colors × 3 variants) --- */
+  --color-palette-blue: light-dark(var(--p-blue-500), var(--p-blue-400));
+  --color-palette-blue-bg: light-dark(var(--p-blue-50), var(--p-blue-950));
+  --color-palette-blue-text: light-dark(var(--p-blue-700), var(--p-blue-300));
 
-  --color-status-error: #EF4444;
-  --color-status-error-bg: #FEE2E2;
-  --color-status-error-text: #991B1B;
+  --color-palette-red: light-dark(var(--p-red-500), var(--p-red-400));
+  --color-palette-red-bg: light-dark(var(--p-red-50), var(--p-red-950));
+  --color-palette-red-text: light-dark(var(--p-red-700), var(--p-red-300));
 
-  --color-status-info: #3B82F6;
-  --color-status-info-bg: #DBEAFE;
-  --color-status-info-text: #1E40AF;
+  --color-palette-green: light-dark(var(--p-green-500), var(--p-green-400));
+  --color-palette-green-bg: light-dark(var(--p-green-50), var(--p-green-950));
+  --color-palette-green-text: light-dark(var(--p-green-700), var(--p-green-300));
 
+  --color-palette-amber: light-dark(var(--p-amber-500), var(--p-amber-400));
+  --color-palette-amber-bg: light-dark(var(--p-amber-50), var(--p-amber-950));
+  --color-palette-amber-text: light-dark(var(--p-amber-700), var(--p-amber-300));
 
+  --color-palette-orange: light-dark(var(--p-orange-500), var(--p-orange-400));
+  --color-palette-orange-bg: light-dark(var(--p-orange-50), var(--p-orange-950));
+  --color-palette-orange-text: light-dark(var(--p-orange-700), var(--p-orange-300));
 
-  /* Priority Colors */
-  --color-priority-lowest: #6B7280;
-  --color-priority-low: #3B82F6;
-  --color-priority-medium: #F59E0B;
-  --color-priority-high: #F97316;
-  --color-priority-highest: #EF4444;
+  --color-palette-purple: light-dark(var(--p-purple-500), var(--p-purple-400));
+  --color-palette-purple-bg: light-dark(var(--p-purple-50), var(--p-purple-950));
+  --color-palette-purple-text: light-dark(var(--p-purple-700), var(--p-purple-300));
 
-  /* Issue Type Colors */
-  --color-issue-type-task: #3B82F6;
-  --color-issue-type-bug: #EF4444;
-  --color-issue-type-story: #8B5CF6;
-  --color-issue-type-epic: #F59E0B;
-  --color-issue-type-subtask: #6B7280;
+  --color-palette-pink: light-dark(var(--p-pink-500), var(--p-pink-400));
+  --color-palette-pink-bg: light-dark(var(--p-pink-50), var(--p-pink-950));
+  --color-palette-pink-text: light-dark(var(--p-pink-700), var(--p-pink-300));
 
-  /* Calendar Event Type Colors */
-  --color-event-meeting: #3B82F6;
-  --color-event-deadline: #EF4444;
-  --color-event-timeblock: #10B981;
-  --color-event-personal: #8B5CF6;
-  --color-event-default: #6B7280;
+  --color-palette-teal: light-dark(var(--p-teal-500), var(--p-teal-400));
+  --color-palette-teal-bg: light-dark(var(--p-teal-50), var(--p-teal-950));
+  --color-palette-teal-text: light-dark(var(--p-teal-700), var(--p-teal-300));
 
-  /* Legacy Primary/Secondary */
-  --color-primary: #4F46E5;
-  --color-primary-hover: #4338CA;
-  --color-secondary: #6B7280;
-  --color-secondary-hover: #4B5563;
+  --color-palette-indigo: light-dark(var(--p-indigo-500), var(--p-indigo-400));
+  --color-palette-indigo-bg: light-dark(var(--p-indigo-50), var(--p-indigo-950));
+  --color-palette-indigo-text: light-dark(var(--p-indigo-700), var(--p-indigo-300));
+
+  --color-palette-gray: light-dark(var(--p-gray-500), var(--p-gray-400));
+  --color-palette-gray-bg: light-dark(var(--p-gray-50), var(--p-gray-800));
+  --color-palette-gray-text: light-dark(var(--p-gray-700), var(--p-gray-300));
+
+  /* --- Priority (5 vars) --- */
+  --color-priority-lowest: var(--color-palette-gray);
+  --color-priority-low: var(--color-palette-blue);
+  --color-priority-medium: var(--color-palette-amber);
+  --color-priority-high: var(--color-palette-orange);
+  --color-priority-highest: var(--color-palette-red);
+
+  /* --- Issue Type (5 vars) --- */
+  --color-issue-type-task: var(--color-palette-blue);
+  --color-issue-type-bug: var(--color-palette-red);
+  --color-issue-type-story: var(--color-palette-purple);
+  --color-issue-type-epic: var(--color-palette-amber);
+  --color-issue-type-subtask: var(--color-palette-gray);
+
+  /* --- Landing (4 vars) --- */
+  --color-landing-accent: light-dark(var(--p-cyan-500), var(--p-cyan-400));
+  --color-landing-accent-alt: light-dark(var(--p-purple-500), var(--p-purple-400));
+  --color-landing-accent-teal: light-dark(var(--p-teal-500), var(--p-teal-400));
+  --color-ui-bg-hero: var(--p-gray-950);
+
+  /* --- Legacy: shadcn "primary" alias (used by Calendar, BoardToolbar) --- */
+  --color-primary: var(--color-brand);
+  --color-primary-hover: var(--color-brand-hover);
+
+  /* --- Brand feature accents (used by time tracking, calendar, onboarding) --- */
+  --color-brand-cyan-text: light-dark(var(--p-cyan-600), var(--p-cyan-400));
+  --color-brand-cyan-bg: light-dark(var(--p-cyan-500), var(--p-cyan-400));
+  --color-brand-cyan-border: light-dark(var(--p-cyan-600), var(--p-cyan-400));
+  --color-brand-cyan-track: light-dark(var(--p-cyan-100), rgba(8, 145, 178, 0.4));
+  --color-brand-indigo-text: light-dark(var(--p-indigo-600), var(--p-indigo-400));
+  --color-brand-indigo-bg: light-dark(var(--p-indigo-500), var(--p-indigo-400));
+  --color-brand-indigo-border: light-dark(var(--p-indigo-600), var(--p-indigo-400));
+  --color-brand-indigo-track: light-dark(var(--p-indigo-100), rgba(49, 46, 129, 0.4));
+  --color-brand-teal-text: light-dark(var(--p-teal-600), var(--p-teal-400));
+  --color-brand-teal-bg: light-dark(var(--p-teal-500), var(--p-teal-400));
+  --color-brand-teal-border: light-dark(var(--p-teal-600), var(--p-teal-400));
+  --color-brand-teal-track: light-dark(var(--p-teal-100), rgba(19, 78, 74, 0.4));
+  --color-brand-emerald-text: light-dark(var(--p-emerald-600), var(--p-emerald-400));
+  --color-brand-emerald-bg: light-dark(var(--p-emerald-500), var(--p-emerald-400));
+  --color-brand-emerald-border: light-dark(var(--p-emerald-600), var(--p-emerald-400));
+  --color-brand-emerald-track: light-dark(var(--p-emerald-100), rgba(6, 78, 59, 0.4));
 
   /* Custom Spacing */
   --spacing-form-field: 16px;
   --spacing-section: 32px;
-  /* Semantic Brand Palette (Auto-switching) */
-  --color-brand-cyan-text: #0891b2; /* cyan-600 */
-  --color-brand-cyan-bg: #06b6d4; /* cyan-500 */
-  --color-brand-cyan-border: #0891b2; /* cyan-600 */
-  --color-brand-cyan-track: #cffafe; /* cyan-100 */
 
-  --color-brand-indigo-text: #4f46e5; /* indigo-600 */
-  --color-brand-indigo-bg: #6366f1; /* indigo-500 */
-  --color-brand-indigo-border: #4f46e5; /* indigo-600 */
-  --color-brand-indigo-track: #e0e7ff; /* indigo-100 */
-
-  --color-brand-teal-text: #0d9488; /* teal-600 */
-  --color-brand-teal-bg: #14b8a6; /* teal-500 */
-  --color-brand-teal-border: #0d9488; /* teal-600 */
-  --color-brand-teal-track: #ccfbf1; /* teal-100 */
-
-  --color-brand-emerald-text: #059669; /* emerald-600 */
-  --color-brand-emerald-bg: #10b981; /* emerald-500 */
-  --color-brand-emerald-border: #059669; /* emerald-600 */
-  --color-brand-emerald-track: #d1fae5; /* emerald-100 */
-  
   /* Project Animations */
   @keyframes fade-in {
     from { opacity: 0; }
@@ -170,76 +183,187 @@
   --animation-scale-in: scale-in 0.2s ease-out;
 }
 
-.dark {
-  /* Semantic Brand Palette (Dark Mode Overrides) */
-  --color-brand-cyan-text: #22d3ee; /* cyan-400 */
-  --color-brand-cyan-bg: #22d3ee; /* cyan-400 */
-  --color-brand-cyan-border: #22d3ee; /* cyan-400 */
-  --color-brand-cyan-track: rgba(8, 145, 178, 0.4); /* cyan-950/40 approx */
-
-  --color-brand-indigo-text: #818cf8; /* indigo-400 */
-  --color-brand-indigo-bg: #818cf8; /* indigo-400 */
-  --color-brand-indigo-border: #818cf8; /* indigo-400 */
-  --color-brand-indigo-track: rgba(49, 46, 129, 0.4); /* indigo-950/40 approx */
-
-  --color-brand-teal-text: #2dd4bf; /* teal-400 */
-  --color-brand-teal-bg: #2dd4bf; /* teal-400 */
-  --color-brand-teal-border: #2dd4bf; /* teal-400 */
-  --color-brand-teal-track: rgba(19, 78, 74, 0.4); /* teal-950/40 approx */
-
-  --color-brand-emerald-text: #34d399; /* emerald-400 */
-  --color-brand-emerald-bg: #34d399; /* emerald-400 */
-  --color-brand-emerald-border: #34d399; /* emerald-400 */
-  --color-brand-emerald-track: rgba(6, 78, 59, 0.4); /* emerald-950/40 approx */
-
-  /* UI Backgrounds */
-  --color-ui-bg-primary: var(--color-ui-bg-primary-dark);
-  --color-ui-bg-secondary: var(--color-ui-bg-secondary-dark);
-  --color-ui-bg-tertiary: var(--color-ui-bg-tertiary-dark);
-  --color-ui-bg-elevated: var(--color-ui-bg-elevated-dark);
-  --color-ui-bg-overlay: var(--color-ui-bg-overlay-dark);
-
-  /* UI Text */
-  --color-ui-text-primary: var(--color-ui-text-primary-dark);
-  --color-ui-text-secondary: var(--color-ui-text-secondary-dark);
-  --color-ui-text-tertiary: var(--color-ui-text-tertiary-dark);
-  --color-ui-text-inverse: var(--color-ui-text-inverse-dark);
-
-  /* UI Borders */
-  --color-ui-border-primary: var(--color-ui-border-primary-dark);
-  --color-ui-border-secondary: var(--color-ui-border-secondary-dark);
-  --color-ui-border-focus: var(--color-ui-border-focus-dark);
-  --color-ui-border-error: var(--color-ui-border-error-dark);
-
-  /* Status */
-  --color-status-success-bg: #064E3B;
-  --color-status-success-text: #6EE7B7;
-  --color-status-warning-bg: #78350F;
-  --color-status-warning-text: #FCD34D;
-  --color-status-error-bg: #7F1D1D;
-  --color-status-error-text: #FCA5A5;
-  --color-status-info-bg: #1E3A8A;
-  --color-status-info-text: #93C5FD;
-}
-
+/* ============================================================
+ * TIER 1 — Color Primitives
+ * Raw hue values. Never used directly in components.
+ * Defined on :root so Tier 2 can reference them.
+ * ============================================================ */
 :root {
+  color-scheme: light dark;
+
+  /* White / Black */
+  --p-white: #FFFFFF;
+  --p-black: #000000;
+
+  /* Gray */
+  --p-gray-50: #F9FAFB;
+  --p-gray-100: #F3F4F6;
+  --p-gray-200: #E5E7EB;
+  --p-gray-300: #D1D5DB;
+  --p-gray-400: #9CA3AF;
+  --p-gray-500: #6B7280;
+  --p-gray-600: #4B5563;
+  --p-gray-700: #374151;
+  --p-gray-800: #1F2937;
+  --p-gray-900: #111827;
+  --p-gray-950: #030712;
+
+  /* Indigo (Brand) */
+  --p-indigo-50: #EEF2FF;
+  --p-indigo-100: #E0E7FF;
+  --p-indigo-200: #C7D2FE;
+  --p-indigo-300: #A5B4FC;
+  --p-indigo-400: #818CF8;
+  --p-indigo-500: #6366F1;
+  --p-indigo-600: #4F46E5;
+  --p-indigo-700: #4338CA;
+  --p-indigo-800: #3730A3;
+  --p-indigo-900: #312E81;
+  --p-indigo-950: #1E1B4B;
+
+  /* Purple (Accent) */
+  --p-purple-50: #FAF5FF;
+  --p-purple-100: #F3E8FF;
+  --p-purple-200: #E9D5FF;
+  --p-purple-300: #D8B4FE;
+  --p-purple-400: #C084FC;
+  --p-purple-500: #A855F7;
+  --p-purple-600: #9333EA;
+  --p-purple-700: #7E22CE;
+  --p-purple-800: #6B21A8;
+  --p-purple-900: #581C87;
+  --p-purple-950: #3B0764;
+
+  /* Blue */
+  --p-blue-50: #EFF6FF;
+  --p-blue-100: #DBEAFE;
+  --p-blue-200: #BFDBFE;
+  --p-blue-300: #93C5FD;
+  --p-blue-400: #60A5FA;
+  --p-blue-500: #3B82F6;
+  --p-blue-600: #2563EB;
+  --p-blue-700: #1D4ED8;
+  --p-blue-800: #1E40AF;
+  --p-blue-900: #1E3A8A;
+  --p-blue-950: #172554;
+
+  /* Red */
+  --p-red-50: #FEF2F2;
+  --p-red-100: #FEE2E2;
+  --p-red-200: #FECACA;
+  --p-red-300: #FCA5A5;
+  --p-red-400: #F87171;
+  --p-red-500: #EF4444;
+  --p-red-600: #DC2626;
+  --p-red-700: #B91C1C;
+  --p-red-800: #991B1B;
+  --p-red-900: #7F1D1D;
+  --p-red-950: #450A0A;
+
+  /* Green */
+  --p-green-50: #F0FDF4;
+  --p-green-100: #DCFCE7;
+  --p-green-200: #BBF7D0;
+  --p-green-300: #86EFAC;
+  --p-green-400: #4ADE80;
+  --p-green-500: #22C55E;
+  --p-green-600: #16A34A;
+  --p-green-700: #15803D;
+  --p-green-800: #166534;
+  --p-green-900: #14532D;
+  --p-green-950: #052E16;
+
+  /* Amber */
+  --p-amber-50: #FFFBEB;
+  --p-amber-100: #FEF3C7;
+  --p-amber-200: #FDE68A;
+  --p-amber-300: #FCD34D;
+  --p-amber-400: #FBBF24;
+  --p-amber-500: #F59E0B;
+  --p-amber-600: #D97706;
+  --p-amber-700: #B45309;
+  --p-amber-800: #92400E;
+  --p-amber-900: #78350F;
+  --p-amber-950: #451A03;
+
+  /* Orange */
+  --p-orange-50: #FFF7ED;
+  --p-orange-100: #FFEDD5;
+  --p-orange-200: #FED7AA;
+  --p-orange-300: #FDBA74;
+  --p-orange-400: #FB923C;
+  --p-orange-500: #F97316;
+  --p-orange-600: #EA580C;
+  --p-orange-700: #C2410C;
+  --p-orange-800: #9A3412;
+  --p-orange-900: #7C2D12;
+  --p-orange-950: #431407;
+
+  /* Pink */
+  --p-pink-50: #FDF2F8;
+  --p-pink-100: #FCE7F3;
+  --p-pink-200: #FBCFE8;
+  --p-pink-300: #F9A8D4;
+  --p-pink-400: #F472B6;
+  --p-pink-500: #EC4899;
+  --p-pink-600: #DB2777;
+  --p-pink-700: #BE185D;
+  --p-pink-800: #9D174D;
+  --p-pink-900: #831843;
+  --p-pink-950: #500724;
+
+  /* Teal */
+  --p-teal-50: #F0FDFA;
+  --p-teal-100: #CCFBF1;
+  --p-teal-200: #99F6E4;
+  --p-teal-300: #5EEAD4;
+  --p-teal-400: #2DD4BF;
+  --p-teal-500: #14B8A6;
+  --p-teal-600: #0D9488;
+  --p-teal-700: #0F766E;
+  --p-teal-800: #115E59;
+  --p-teal-900: #134E4A;
+  --p-teal-950: #042F2E;
+
+  /* Cyan */
+  --p-cyan-50: #ECFEFF;
+  --p-cyan-100: #CFFAFE;
+  --p-cyan-200: #A5F3FC;
+  --p-cyan-300: #67E8F9;
+  --p-cyan-400: #22D3EE;
+  --p-cyan-500: #06B6D4;
+  --p-cyan-600: #0891B2;
+  --p-cyan-700: #0E7490;
+  --p-cyan-800: #155E75;
+  --p-cyan-900: #164E63;
+  --p-cyan-950: #083344;
+
+  /* Emerald */
+  --p-emerald-50: #ECFDF5;
+  --p-emerald-100: #D1FAE5;
+  --p-emerald-200: #A7F3D0;
+  --p-emerald-300: #6EE7B7;
+  --p-emerald-400: #34D399;
+  --p-emerald-500: #10B981;
+  --p-emerald-600: #059669;
+  --p-emerald-700: #047857;
+  --p-emerald-800: #065F46;
+  --p-emerald-900: #064E3B;
+  --p-emerald-950: #022C22;
+
+  /* Legacy compat */
   --color-light: #ffffff;
   --color-dark: #171717;
 }
 
 /* Consistent focus indicators for accessibility */
 *:focus-visible {
-  outline: 2px solid #3b82f6;
+  outline: 2px solid var(--color-ui-border-focus);
   outline-offset: 2px;
 }
 
-/* Dark mode focus indicator */
-.dark *:focus-visible {
-  outline-color: #60a5fa;
-}
-
 .accent-text {
-  @apply text-slate-600;
+  @apply text-ui-text-secondary;
 }
 
 body {
@@ -259,14 +383,8 @@ body {
     "Segoe UI Emoji",
     "Segoe UI Symbol",
     "Noto Color Emoji";
-  color: var(--color-dark);
-  background: var(--color-light);
-}
-
-/* Dark mode body styles */
-.dark body {
-  color: #f3f4f6;
-  background: #111827;
+  color: var(--color-ui-text);
+  background: var(--color-ui-bg);
 }
 
 /* Base button styles - Tailwind v4 removed cursor:pointer from buttons by default */
@@ -279,17 +397,17 @@ body {
 
 /* BlockNote editor customizations for minimal design */
 .bn-container {
-  @apply bg-ui-bg-primary;
+  @apply bg-ui-bg;
 }
 
 .bn-editor {
-  @apply text-ui-text-primary;
+  @apply text-ui-text;
   font-size: 16px;
   line-height: 1.6;
 }
 
 .bn-block-content {
-  @apply text-ui-text-primary;
+  @apply text-ui-text;
 }
 
 /* Customize the editor to have more whitespace and minimal styling */
@@ -303,15 +421,15 @@ body {
 }
 
 .ProseMirror h1 {
-  @apply text-3xl font-bold mb-6 mt-8 text-ui-text-primary;
+  @apply text-3xl font-bold mb-6 mt-8 text-ui-text;
 }
 
 .ProseMirror h2 {
-  @apply text-2xl font-semibold mb-4 mt-6 text-ui-text-primary;
+  @apply text-2xl font-semibold mb-4 mt-6 text-ui-text;
 }
 
 .ProseMirror h3 {
-  @apply text-xl font-medium mb-3 mt-5 text-ui-text-primary;
+  @apply text-xl font-medium mb-3 mt-5 text-ui-text;
 }
 
 .ProseMirror ul, .ProseMirror ol {
@@ -327,7 +445,7 @@ body {
 }
 
 .ProseMirror code {
-  @apply bg-ui-bg-tertiary px-2 py-1 rounded text-sm font-mono text-ui-text-primary;
+  @apply bg-ui-bg-tertiary px-2 py-1 rounded text-sm font-mono text-ui-text;
 }
 
 .ProseMirror pre {
@@ -352,13 +470,8 @@ body {
 }
 
 .drag-over {
-  background-color: #f3f4f6;
-  border: 2px dashed #9ca3af;
-}
-
-.dark .drag-over {
-  background-color: #374151;
-  border-color: #6b7280;
+  background-color: var(--color-ui-bg-tertiary);
+  border: 2px dashed var(--color-ui-text-tertiary);
 }
 
 /* Onboarding spotlight effect */

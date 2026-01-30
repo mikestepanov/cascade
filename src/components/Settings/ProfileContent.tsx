@@ -35,23 +35,23 @@ export function UserStatsCards({ stats }: { stats: UserStats }) {
   return (
     <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
       <div className="bg-ui-bg-secondary rounded-lg p-4 text-center">
-        <div className="text-2xl font-bold text-brand-600">{stats.projects}</div>
+        <div className="text-2xl font-bold text-brand">{stats.projects}</div>
         <div className="text-sm text-ui-text-secondary">Workspaces</div>
       </div>
       <div className="bg-ui-bg-secondary rounded-lg p-4 text-center">
-        <div className="text-2xl font-bold text-brand-600">{stats.issuesCreated}</div>
+        <div className="text-2xl font-bold text-brand">{stats.issuesCreated}</div>
         <div className="text-sm text-ui-text-secondary">Created</div>
       </div>
       <div className="bg-ui-bg-secondary rounded-lg p-4 text-center">
-        <div className="text-2xl font-bold text-brand-600">{stats.issuesAssigned}</div>
+        <div className="text-2xl font-bold text-brand">{stats.issuesAssigned}</div>
         <div className="text-sm text-ui-text-secondary">Assigned</div>
       </div>
       <div className="bg-ui-bg-secondary rounded-lg p-4 text-center">
-        <div className="text-2xl font-bold text-brand-600">{stats.issuesCompleted}</div>
+        <div className="text-2xl font-bold text-brand">{stats.issuesCompleted}</div>
         <div className="text-sm text-ui-text-secondary">Completed</div>
       </div>
       <div className="bg-ui-bg-secondary rounded-lg p-4 text-center">
-        <div className="text-2xl font-bold text-brand-600">{stats.comments}</div>
+        <div className="text-2xl font-bold text-brand">{stats.comments}</div>
         <div className="text-sm text-ui-text-secondary">Comments</div>
       </div>
     </div>
@@ -63,18 +63,18 @@ export function UserStatsCards({ stats }: { stats: UserStats }) {
  */
 export function AccountInfo({ user }: { user: ProfileUser & { _creationTime: number } }) {
   return (
-    <div className="border-t border-ui-border-primary pt-6">
-      <Typography variant="h3" className="text-lg font-semibold mb-4 text-ui-text-primary">
+    <div className="border-t border-ui-border pt-6">
+      <Typography variant="h3" className="text-lg font-semibold mb-4 text-ui-text">
         Account Information
       </Typography>
       <div className="space-y-3 text-sm">
         <Flex justify="between">
           <span className="text-ui-text-secondary">User ID:</span>
-          <span className="font-mono text-ui-text-primary">{user._id}</span>
+          <span className="font-mono text-ui-text">{user._id}</span>
         </Flex>
         <Flex justify="between">
           <span className="text-ui-text-secondary">Email Verified:</span>
-          <span className="text-ui-text-primary">{user.emailVerificationTime ? "Yes" : "No"}</span>
+          <span className="text-ui-text">{user.emailVerificationTime ? "Yes" : "No"}</span>
         </Flex>
       </div>
     </div>
@@ -117,7 +117,7 @@ export function ProfileHeader({
           <Flex
             align="center"
             justify="center"
-            className="w-24 h-24 rounded-full bg-brand-600 text-white text-3xl font-bold"
+            className="w-24 h-24 rounded-full bg-brand text-white text-3xl font-bold"
           >
             {(user.name || user.email || "?").charAt(0).toUpperCase()}
           </Flex>
@@ -152,7 +152,7 @@ export function ProfileHeader({
           </div>
         ) : (
           <>
-            <Typography variant="h2" className="text-2xl font-bold text-ui-text-primary">
+            <Typography variant="h2" className="text-2xl font-bold text-ui-text">
               {user.name || "Anonymous User"}
             </Typography>
             <Typography className="text-ui-text-secondary">{user.email}</Typography>

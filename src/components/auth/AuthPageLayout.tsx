@@ -18,7 +18,7 @@ export function AuthPageLayout({ title, subtitle, children }: AuthPageLayoutProp
         <div className="mb-4">
           <Link
             to={ROUTES.home.path}
-            className="inline-flex items-center gap-2 text-ui-text-tertiary hover:text-ui-text-primary transition-colors text-sm"
+            className="inline-flex items-center gap-2 text-ui-text-tertiary hover:text-ui-text transition-colors text-sm"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -37,7 +37,7 @@ export function AuthPageLayout({ title, subtitle, children }: AuthPageLayoutProp
             Back to Home
           </Link>
         </div>
-        <div className="bg-ui-bg-primary border border-ui-border-primary rounded-2xl p-8 backdrop-blur-sm">
+        <div className="bg-ui-bg border border-ui-border rounded-2xl p-8 backdrop-blur-sm">
           <Flex direction="column" align="center" className="mb-6">
             <Link to={ROUTES.home.path} className="hover:opacity-80 transition-opacity">
               <NixeloLogo size={48} />

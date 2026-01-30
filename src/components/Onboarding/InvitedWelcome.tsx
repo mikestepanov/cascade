@@ -14,42 +14,41 @@ export function InvitedWelcome({ inviterName, onStartTour, onSkip }: InvitedWelc
     <div className="text-center space-y-8">
       {/* Icon */}
       <Flex justify="center">
-        <div className="p-6 rounded-full bg-primary-100">
-          <PartyPopper className="w-16 h-16 text-primary-600" />
+        <div className="p-6 rounded-full bg-brand-subtle">
+          <PartyPopper className="w-16 h-16 text-brand" />
         </div>
       </Flex>
 
       {/* Welcome Message */}
       <div className="space-y-3">
-        <Typography variant="h1" className="text-3xl font-bold text-ui-text-primary">
+        <Typography variant="h1" className="text-3xl font-bold text-ui-text">
           Welcome to Nixelo!
         </Typography>
         <Typography className="text-lg text-ui-text-secondary">
-          <span className="font-medium text-ui-text-primary">{inviterName}</span> invited you to
-          collaborate
+          <span className="font-medium text-ui-text">{inviterName}</span> invited you to collaborate
         </Typography>
       </div>
 
       {/* Brief Description */}
-      <div className="bg-ui-bg-primary rounded-xl p-6 text-left">
-        <Typography variant="h3" className="font-medium text-ui-text-primary mb-3">
+      <div className="bg-ui-bg rounded-xl p-6 text-left">
+        <Typography variant="h3" className="font-medium text-ui-text mb-3">
           What you can do in Nixelo:
         </Typography>
         <ul className="space-y-2 text-ui-text-secondary">
           <li className="flex items-center gap-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-primary-500" />
+            <span className="w-1.5 h-1.5 rounded-full bg-brand-ring" />
             View and work on project issues assigned to you
           </li>
           <li className="flex items-center gap-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-primary-500" />
+            <span className="w-1.5 h-1.5 rounded-full bg-brand-ring" />
             Collaborate on documents in real-time
           </li>
           <li className="flex items-center gap-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-primary-500" />
+            <span className="w-1.5 h-1.5 rounded-full bg-brand-ring" />
             Track time and participate in sprints
           </li>
           <li className="flex items-center gap-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-primary-500" />
+            <span className="w-1.5 h-1.5 rounded-full bg-brand-ring" />
             Get notifications for mentions and updates
           </li>
         </ul>

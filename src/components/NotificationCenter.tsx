@@ -68,7 +68,7 @@ export function NotificationCenter() {
           {/* Notification Bell Button */}
           <button
             type="button"
-            className="relative p-2 text-ui-text-secondary hover:text-ui-text-primary hover:bg-ui-bg-secondary rounded-lg transition-colors"
+            className="relative p-2 text-ui-text-secondary hover:text-ui-text hover:bg-ui-bg-secondary rounded-lg transition-colors"
             aria-label={dynamicLabel}
           >
             <svg
@@ -97,13 +97,13 @@ export function NotificationCenter() {
 
       <PopoverContent
         align="end"
-        className="w-full sm:w-96 max-w-[calc(100vw-2rem)] p-0 bg-ui-bg-primary border-ui-border-primary max-h-[80vh] flex flex-col"
+        className="w-full sm:w-96 max-w-[calc(100vw-2rem)] p-0 bg-ui-bg border-ui-border max-h-[80vh] flex flex-col"
       >
         {/* Header */}
         <Flex
           align="center"
           justify="between"
-          className="p-4 border-b border-ui-border-primary sticky top-0 bg-ui-bg-primary rounded-t-lg"
+          className="p-4 border-b border-ui-border sticky top-0 bg-ui-bg rounded-t-lg"
         >
           <Typography variant="h3" className="text-lg font-semibold">
             Notifications
@@ -113,7 +113,7 @@ export function NotificationCenter() {
               type="button"
               onClick={handleMarkAllAsRead}
               disabled={isLoading}
-              className="text-sm text-brand-600 hover:text-brand-700 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+              className="text-sm text-brand hover:text-brand-hover font-medium disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isLoading ? "Marking..." : "Mark all read"}
             </button>
@@ -128,7 +128,7 @@ export function NotificationCenter() {
               <Typography>No notifications</Typography>
             </div>
           ) : (
-            <div className="divide-y divide-ui-border-primary">
+            <div className="divide-y divide-ui-border">
               {notifications.map((notification) => (
                 <NotificationItem
                   key={notification._id}

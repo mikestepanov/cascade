@@ -262,7 +262,7 @@ describe("ColorPicker", () => {
 
       const label = container.querySelector(".text-sm.font-medium");
       expect(label).toBeInTheDocument();
-      expect(label).toHaveClass("text-ui-text-primary");
+      expect(label).toHaveClass("text-ui-text");
     });
   });
 

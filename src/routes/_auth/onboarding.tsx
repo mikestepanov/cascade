@@ -122,7 +122,7 @@ function OnboardingPage() {
           </Flex>
           <Typography
             variant="h3"
-            className="text-xl font-bold tracking-tight bg-clip-text text-ui-text-primary"
+            className="text-xl font-bold tracking-tight bg-clip-text text-ui-text"
           >
             Nixelo
           </Typography>
@@ -132,7 +132,7 @@ function OnboardingPage() {
             variant="ghost"
             size="sm"
             onClick={handleSkip}
-            className="text-ui-text-secondary hover:text-ui-text-primary hover:bg-ui-bg-tertiary transition-all"
+            className="text-ui-text-secondary hover:text-ui-text hover:bg-ui-bg-tertiary transition-all"
           >
             Skip for now
           </Button>
@@ -200,7 +200,7 @@ function OnboardingPage() {
       <footer className="p-6 text-center">
         <Typography className="text-sm text-ui-text-tertiary">
           Need help?{" "}
-          <a href="mailto:support@nixelo.com" className="text-primary-600 hover:underline">
+          <a href="mailto:support@nixelo.com" className="text-brand hover:underline">
             Contact support
           </a>
         </Typography>

@@ -59,15 +59,15 @@ export function EmailVerificationRequired() {
 
   return (
     <Flex align="center" justify="center" className="min-h-screen bg-ui-bg-secondary p-4">
-      <div className="w-full max-w-md bg-ui-bg-primary rounded-xl shadow-lg p-8">
+      <div className="w-full max-w-md bg-ui-bg rounded-xl shadow-lg p-8">
         <div className="text-center mb-6">
           <Flex
             align="center"
             justify="center"
-            className="w-16 h-16 bg-brand-100 rounded-full mx-auto mb-4"
+            className="w-16 h-16 bg-brand-subtle rounded-full mx-auto mb-4"
           >
             <svg
-              className="w-8 h-8 text-brand-600"
+              className="w-8 h-8 text-brand"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -86,7 +86,7 @@ export function EmailVerificationRequired() {
             Verify your email
           </Typography>
           <Typography variant="p" color="secondary">
-            We sent a verification code to <strong className="text-ui-text-primary">{email}</strong>
+            We sent a verification code to <strong className="text-ui-text">{email}</strong>
           </Typography>
         </div>
 

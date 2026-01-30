@@ -72,7 +72,7 @@ export function MemberOnboarding({
         <button
           type="button"
           onClick={onBack}
-          className="flex items-center gap-2 text-ui-text-secondary hover:text-ui-text-primary transition-colors"
+          className="flex items-center gap-2 text-ui-text-secondary hover:text-ui-text transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Back</span>
@@ -86,7 +86,7 @@ export function MemberOnboarding({
             justify="center"
             className="w-16 h-16 rounded-full bg-brand-indigo-track mb-4"
           >
-            <Building2 className="w-8 h-8 text-primary-600" />
+            <Building2 className="w-8 h-8 text-brand" />
           </Flex>
           <Typography variant="h1" className="text-3xl font-bold mb-3">
             Name Your Project
@@ -142,7 +142,7 @@ export function MemberOnboarding({
       <button
         type="button"
         onClick={() => setStep("project")}
-        className="flex items-center gap-2 text-ui-text-secondary hover:text-ui-text-primary transition-colors"
+        className="flex items-center gap-2 text-ui-text-secondary hover:text-ui-text transition-colors"
       >
         <ArrowLeft className="w-4 h-4" />
         <span>Back</span>
@@ -158,15 +158,15 @@ export function MemberOnboarding({
 
       {/* What you can do */}
       <div className="space-y-4">
-        <Typography variant="h3" className="font-medium text-ui-text-primary">
+        <Typography variant="h3" className="font-medium text-ui-text">
           Here's what you can do in Nixelo:
         </Typography>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <Flex align="start" gap="md" className="p-4 rounded-lg bg-ui-bg-primary">
+          <Flex align="start" gap="md" className="p-4 rounded-lg bg-ui-bg">
             <Kanban className="w-5 h-5 text-priority-low mt-0.5 shrink-0" />
             <div>
-              <Typography variant="h4" className="font-medium text-ui-text-primary text-sm">
+              <Typography variant="h4" className="font-medium text-ui-text text-sm">
                 Work on Issues
               </Typography>
               <Typography className="text-xs text-ui-text-secondary">
@@ -175,10 +175,10 @@ export function MemberOnboarding({
             </div>
           </Flex>
 
-          <Flex align="start" gap="md" className="p-4 rounded-lg bg-ui-bg-primary">
+          <Flex align="start" gap="md" className="p-4 rounded-lg bg-ui-bg">
             <FileText className="w-5 h-5 text-status-success mt-0.5 shrink-0" />
             <div>
-              <Typography variant="h4" className="font-medium text-ui-text-primary text-sm">
+              <Typography variant="h4" className="font-medium text-ui-text text-sm">
                 Collaborate on Docs
               </Typography>
               <Typography className="text-xs text-ui-text-secondary">
@@ -187,10 +187,10 @@ export function MemberOnboarding({
             </div>
           </Flex>
 
-          <Flex align="start" gap="md" className="p-4 rounded-lg bg-ui-bg-primary">
+          <Flex align="start" gap="md" className="p-4 rounded-lg bg-ui-bg">
             <Clock className="w-5 h-5 text-status-warning mt-0.5 shrink-0" />
             <div>
-              <Typography variant="h4" className="font-medium text-ui-text-primary text-sm">
+              <Typography variant="h4" className="font-medium text-ui-text text-sm">
                 Track Time
               </Typography>
               <Typography className="text-xs text-ui-text-secondary">
@@ -199,10 +199,10 @@ export function MemberOnboarding({
             </div>
           </Flex>
 
-          <Flex align="start" gap="md" className="p-4 rounded-lg bg-ui-bg-primary">
+          <Flex align="start" gap="md" className="p-4 rounded-lg bg-ui-bg">
             <Bell className="w-5 h-5 text-issue-type-story mt-0.5 shrink-0" />
             <div>
-              <Typography variant="h4" className="font-medium text-ui-text-primary text-sm">
+              <Typography variant="h4" className="font-medium text-ui-text text-sm">
                 Stay Updated
               </Typography>
               <Typography className="text-xs text-ui-text-secondary">
@@ -214,7 +214,7 @@ export function MemberOnboarding({
       </div>
 
       {/* Keyboard shortcuts tip */}
-      <div className="bg-ui-bg-primary rounded-xl p-4 text-center">
+      <div className="bg-ui-bg rounded-xl p-4 text-center">
         <Typography className="text-sm text-ui-text-secondary">
           <span className="font-medium">Pro tip:</span> Press{" "}
           <kbd className="px-2 py-0.5 rounded bg-ui-bg-tertiary text-xs font-mono">Ctrl+K</kbd> or{" "}

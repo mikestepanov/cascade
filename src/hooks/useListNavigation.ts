@@ -105,7 +105,7 @@ export function useListNavigation<T>({
     listRef,
     getItemProps: (index: number) => ({
       "data-list-index": index,
-      className: selectedIndex === index ? "ring-2 ring-primary" : "",
+      className: selectedIndex === index ? "ring-2 ring-brand" : "",
       onMouseEnter: () => setSelectedIndex(index),
     }),
   };

@@ -102,9 +102,9 @@ export function RoadmapView({ projectId }: RoadmapViewProps) {
   };
 
   return (
-    <Flex direction="column" className="h-full bg-ui-bg-primary">
+    <Flex direction="column" className="h-full bg-ui-bg">
       {/* Header */}
-      <div className="border-b border-ui-border-primary p-3 sm:p-4">
+      <div className="border-b border-ui-border p-3 sm:p-4">
         <Flex
           direction="column"
           gap="md"
@@ -114,7 +114,7 @@ export function RoadmapView({ projectId }: RoadmapViewProps) {
             <button
               type="button"
               onClick={handleToday}
-              className="px-2 sm:px-3 py-1.5 text-xs sm:text-sm border border-ui-border-primary rounded-md hover:bg-ui-bg-tertiary"
+              className="px-2 sm:px-3 py-1.5 text-xs sm:text-sm border border-ui-border rounded-md hover:bg-ui-bg-tertiary"
             >
               Today
             </button>
@@ -138,22 +138,22 @@ export function RoadmapView({ projectId }: RoadmapViewProps) {
             </Flex>
             <Typography
               variant="h2"
-              className="text-base sm:text-lg font-semibold text-ui-text-primary truncate"
+              className="text-base sm:text-lg font-semibold text-ui-text truncate"
             >
               {getHeaderText()}
             </Typography>
           </Flex>
 
           {/* Time Scale Toggle */}
-          <Flex className="border border-ui-border-primary rounded-md shrink-0">
+          <Flex className="border border-ui-border rounded-md shrink-0">
             <button
               type="button"
               onClick={() => setTimeScale("week")}
               className={cn(
                 "px-2 sm:px-3 py-1.5 text-xs sm:text-sm rounded-l-md",
                 timeScale === "week"
-                  ? "bg-brand-600 text-white"
-                  : "bg-ui-bg-primary text-ui-text-primary hover:bg-ui-bg-tertiary",
+                  ? "bg-brand text-white"
+                  : "bg-ui-bg text-ui-text hover:bg-ui-bg-tertiary",
               )}
             >
               <span className="sm:hidden">W</span>
@@ -163,10 +163,10 @@ export function RoadmapView({ projectId }: RoadmapViewProps) {
               type="button"
               onClick={() => setTimeScale("month")}
               className={cn(
-                "px-2 sm:px-3 py-1.5 text-xs sm:text-sm border-l border-ui-border-primary",
+                "px-2 sm:px-3 py-1.5 text-xs sm:text-sm border-l border-ui-border",
                 timeScale === "month"
-                  ? "bg-brand-600 text-white"
-                  : "bg-ui-bg-primary text-ui-text-primary hover:bg-ui-bg-tertiary",
+                  ? "bg-brand text-white"
+                  : "bg-ui-bg text-ui-text hover:bg-ui-bg-tertiary",
               )}
             >
               <span className="sm:hidden">M</span>
@@ -176,10 +176,10 @@ export function RoadmapView({ projectId }: RoadmapViewProps) {
               type="button"
               onClick={() => setTimeScale("quarter")}
               className={cn(
-                "px-2 sm:px-3 py-1.5 text-xs sm:text-sm rounded-r-md border-l border-ui-border-primary",
+                "px-2 sm:px-3 py-1.5 text-xs sm:text-sm rounded-r-md border-l border-ui-border",
                 timeScale === "quarter"
-                  ? "bg-brand-600 text-white"
-                  : "bg-ui-bg-primary text-ui-text-primary hover:bg-ui-bg-tertiary",
+                  ? "bg-brand text-white"
+                  : "bg-ui-bg text-ui-text hover:bg-ui-bg-tertiary",
               )}
             >
               <span className="sm:hidden">Q</span>
@@ -193,16 +193,16 @@ export function RoadmapView({ projectId }: RoadmapViewProps) {
       <div className="flex-1 overflow-auto">
         <div className="min-w-max">
           {/* Timeline Header */}
-          <div className="sticky top-0 z-10 bg-ui-bg-secondary border-b border-ui-border-primary">
+          <div className="sticky top-0 z-10 bg-ui-bg-secondary border-b border-ui-border">
             <Flex>
-              <div className="w-40 sm:w-48 md:w-64 shrink-0 p-2 sm:p-3 border-r border-ui-border-primary font-medium text-xs sm:text-sm text-ui-text-primary">
+              <div className="w-40 sm:w-48 md:w-64 shrink-0 p-2 sm:p-3 border-r border-ui-border font-medium text-xs sm:text-sm text-ui-text">
                 Item
               </div>
               <Flex className="flex-1">
                 {columns.map((col) => (
                   <div
                     key={col.date.getTime()}
-                    className="flex-1 p-2 sm:p-3 border-r border-ui-border-primary text-center text-xs sm:text-sm font-medium text-ui-text-primary"
+                    className="flex-1 p-2 sm:p-3 border-r border-ui-border text-center text-xs sm:text-sm font-medium text-ui-text"
                   >
                     {col.label}
                   </div>
@@ -219,9 +219,9 @@ export function RoadmapView({ projectId }: RoadmapViewProps) {
           ) : (
             <div>
               {sortedItems.map((item) => (
-                <Flex className="border-b border-ui-border-primary" key={`${item.type}-${item.id}`}>
+                <Flex className="border-b border-ui-border" key={`${item.type}-${item.id}`}>
                   {/* Item Info */}
-                  <div className="w-40 sm:w-48 md:w-64 shrink-0 p-2 sm:p-3 border-r border-ui-border-primary">
+                  <div className="w-40 sm:w-48 md:w-64 shrink-0 p-2 sm:p-3 border-r border-ui-border">
                     <Flex gap="sm" align="center" className="gap-1 sm:gap-2">
                       {item.type === "sprint" ? (
                         <Badge variant="accent" size="md">
@@ -233,7 +233,7 @@ export function RoadmapView({ projectId }: RoadmapViewProps) {
                         </Badge>
                       )}
                     </Flex>
-                    <div className="text-xs sm:text-sm font-medium text-ui-text-primary mt-1 truncate">
+                    <div className="text-xs sm:text-sm font-medium text-ui-text mt-1 truncate">
                       {item.title}
                     </div>
                   </div>
@@ -244,7 +244,7 @@ export function RoadmapView({ projectId }: RoadmapViewProps) {
                       {columns.map((col) => (
                         <div
                           key={col.date.getTime()}
-                          className="flex-1 border-r border-ui-border-primary"
+                          className="flex-1 border-r border-ui-border"
                         />
                       ))}
                     </Flex>
@@ -291,12 +291,12 @@ function renderDateBar(
 
   const color =
     item.type === "sprint"
-      ? "bg-accent-500"
+      ? "bg-accent-ring"
       : item.priority === "highest" || item.priority === "high"
         ? "bg-status-error"
         : item.priority === "medium"
           ? "bg-status-warning"
-          : "bg-brand-500";
+          : "bg-brand-ring";
 
   return (
     <div

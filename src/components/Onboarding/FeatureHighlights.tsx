@@ -11,10 +11,10 @@ interface FeatureCardProps {
 function FeatureCard({ icon, title, description }: FeatureCardProps) {
   return (
     <div className="text-center p-4">
-      <Flex inline className="p-3 rounded-lg bg-ui-bg-primary mb-3">
+      <Flex inline className="p-3 rounded-lg bg-ui-bg mb-3">
         {icon}
       </Flex>
-      <Typography variant="h3" className="font-semibold text-ui-text-primary mb-1">
+      <Typography variant="h3" className="font-semibold text-ui-text mb-1">
         {title}
       </Typography>
       <Typography className="text-sm text-ui-text-secondary">{description}</Typography>

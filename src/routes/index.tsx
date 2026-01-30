@@ -14,10 +14,10 @@ export const Route = createFileRoute("/")({
 
 function LandingPage() {
   return (
-    <div className="min-h-screen w-full bg-ui-bg-primary text-ui-text-primary overflow-x-hidden transition-colors duration-300">
+    <div className="min-h-screen w-full bg-ui-bg text-ui-text overflow-x-hidden transition-colors duration-300">
       {/* Ambient background glows */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute top-20 left-1/4 w-96 h-96 rounded-full blur-[120px] bg-brand-500 opacity-10" />
+        <div className="absolute top-20 left-1/4 w-96 h-96 rounded-full blur-[120px] bg-brand-ring opacity-10" />
         <div className="absolute top-1/2 right-1/4 w-96 h-96 rounded-full blur-[120px] bg-status-info-text opacity-10" />
         <div className="absolute bottom-20 left-1/3 w-64 h-64 rounded-full blur-[120px] bg-status-success-text opacity-10" />
       </div>

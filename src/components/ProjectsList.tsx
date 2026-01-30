@@ -1,8 +1,7 @@
 import { api } from "@convex/_generated/api";
-import { Link, useNavigate } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import { usePaginatedQuery } from "convex/react";
 import type { FunctionReference } from "convex/server";
-import { useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { EmptyState } from "@/components/ui/EmptyState";
@@ -11,15 +10,16 @@ import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { Typography } from "@/components/ui/Typography";
 import { ROUTES } from "@/config/routes";
 import { useOrganization } from "@/hooks/useOrgContext";
-import { CreateProjectFromTemplate } from "./CreateProjectFromTemplate";
 
 // Type helper for paginated queries with custom return types
 type PaginatedQuery = FunctionReference<"query", "public">;
 
-export function ProjectsList() {
+interface ProjectsListProps {
+  onCreateClick: () => void;
+}
+
+export function ProjectsList({ onCreateClick }: ProjectsListProps) {
   const { organizationId, orgSlug } = useOrganization();
-  const navigate = useNavigate();
-  const [isCreateOpen, setIsCreateOpen] = useState(false);
 
   // Paginated projects list
   const {
@@ -32,14 +32,6 @@ export function ProjectsList() {
     { initialNumItems: 20 },
   );
 
-  const handleProjectCreated = async (_projectId: string, projectKey: string) => {
-    setIsCreateOpen(false);
-    await navigate({
-      to: ROUTES.projects.board.path,
-      params: { orgSlug, key: projectKey },
-    });
-  };
-
   if (status === "LoadingFirstPage") {
     return (
       <Flex direction="column" align="center" justify="center" className="min-h-[400px]">
@@ -50,19 +42,6 @@ export function ProjectsList() {
 
   return (
     <Flex direction="column" gap="lg">
-      {/* Header */}
-      <Flex justify="between" align="center">
-        <div>
-          <Typography variant="h2">Projects</Typography>
-          <Typography variant="p" color="secondary">
-            Manage your projects and initiatives
-          </Typography>
-        </div>
-        <Button variant="primary" onClick={() => setIsCreateOpen(true)}>
-          + Create Project
-        </Button>
-      </Flex>
-
       {/* Projects Grid */}
       {projects.length === 0 ? (
         <EmptyState
@@ -70,7 +49,7 @@ export function ProjectsList() {
           title="No projects yet"
           description="Create your first project to organize work"
           action={
-            <Button variant="primary" onClick={() => setIsCreateOpen(true)}>
+            <Button variant="primary" onClick={onCreateClick}>
               + Create Project
             </Button>
           }
@@ -114,12 +93,6 @@ export function ProjectsList() {
           </Button>
         </Flex>
       )}
-
-      <CreateProjectFromTemplate
-        open={isCreateOpen}
-        onOpenChange={setIsCreateOpen}
-        onProjectCreated={handleProjectCreated}
-      />
     </Flex>
   );
 }

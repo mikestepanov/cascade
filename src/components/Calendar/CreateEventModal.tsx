@@ -13,6 +13,12 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "
 import { Flex } from "../ui/Flex";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/Select";
 import { Typography } from "../ui/Typography";
+import {
+  COLOR_PICKER_CLASSES,
+  EVENT_TYPE_DEFAULT_COLOR,
+  type EventColor,
+  PALETTE_COLORS,
+} from "./calendar-colors";
 
 // =============================================================================
 // Schema
@@ -59,6 +65,7 @@ export function CreateEventModal({
   const [selectedWorkspaceId, setSelectedWorkspaceId] = useState<Id<"projects"> | undefined>(
     projectId,
   );
+  const [selectedColor, setSelectedColor] = useState<EventColor | undefined>(undefined);
 
   type CreateEventForm = z.infer<typeof createEventSchema>;
 
@@ -101,6 +108,7 @@ export function CreateEventModal({
           issueId,
           attendeeIds: [],
           isRequired: value.eventType === "meeting" ? value.isRequired : undefined,
+          color: selectedColor,
         });
 
         showSuccess("Event created successfully");
@@ -140,28 +148,56 @@ export function CreateEventModal({
 
                 {/* Event Type */}
                 <div>
-                  <div className="block text-sm font-medium text-ui-text-primary mb-1">
-                    Event Type
-                  </div>
+                  <div className="block text-sm font-medium text-ui-text mb-1">Event Type</div>
                   <div className="grid grid-cols-4 gap-2">
                     {eventTypes.map((type) => (
                       <button
                         key={type}
                         type="button"
-                        onClick={() =>
-                          form.setFieldValue("eventType", type as (typeof eventTypes)[number])
-                        }
+                        onClick={() => {
+                          form.setFieldValue("eventType", type as (typeof eventTypes)[number]);
+                          if (!selectedColor) {
+                            setSelectedColor(EVENT_TYPE_DEFAULT_COLOR[type]);
+                          }
+                        }}
                         className={cn(
                           "px-3 py-2 rounded-md text-sm font-medium capitalize",
                           eventType === type
-                            ? "bg-brand-600 text-white"
-                            : "bg-ui-bg-secondary text-ui-text-primary hover:bg-ui-bg-tertiary",
+                            ? "bg-brand text-white"
+                            : "bg-ui-bg-secondary text-ui-text hover:bg-ui-bg-tertiary",
                         )}
                       >
                         {type}
                       </button>
                     ))}
                   </div>
+                </div>
+
+                {/* Color */}
+                <div>
+                  <div className="block text-sm font-medium text-ui-text mb-1">Color</div>
+                  <Flex gap="sm" className="flex-wrap">
+                    {PALETTE_COLORS.map((color) => {
+                      const isActive =
+                        (selectedColor ?? EVENT_TYPE_DEFAULT_COLOR[eventType as string]) === color;
+                      return (
+                        <button
+                          key={color}
+                          type="button"
+                          onClick={() => setSelectedColor(color)}
+                          className={cn(
+                            "size-7 rounded-full transition-all",
+                            COLOR_PICKER_CLASSES[color].bg,
+                            isActive
+                              ? cn("ring-2 ring-offset-2", COLOR_PICKER_CLASSES[color].ring)
+                              : "hover:scale-110",
+                          )}
+                          title={color}
+                          aria-label={`Select ${color} color`}
+                        />
+                      );
+                    })}
+                  </Flex>
                 </div>
 
                 {/* Date and Time */}
@@ -172,7 +208,7 @@ export function CreateEventModal({
                         <div>
                           <label
                             htmlFor="event-date"
-                            className="block text-sm font-medium text-ui-text-primary mb-1"
+                            className="block text-sm font-medium text-ui-text mb-1"
                           >
                             <Calendar className="w-4 h-4 inline mr-1" />
                             Date *
@@ -184,7 +220,7 @@ export function CreateEventModal({
                             onChange={(e) => field.handleChange(e.target.value)}
                             onBlur={field.handleBlur}
                             required
-                            className="w-full px-3 py-2 border border-ui-border-primary rounded-md bg-ui-bg-primary text-ui-text-primary"
+                            className="w-full px-3 py-2 border border-ui-border rounded-md bg-ui-bg text-ui-text"
                           />
                         </div>
                       )}
@@ -196,7 +232,7 @@ export function CreateEventModal({
                         <div>
                           <label
                             htmlFor="event-start-time"
-                            className="block text-sm font-medium text-ui-text-primary mb-1"
+                            className="block text-sm font-medium text-ui-text mb-1"
                           >
                             <Clock className="w-4 h-4 inline mr-1" />
                             Start Time
@@ -208,7 +244,7 @@ export function CreateEventModal({
                             onChange={(e) => field.handleChange(e.target.value)}
                             onBlur={field.handleBlur}
                             disabled={allDay as boolean}
-                            className="w-full px-3 py-2 border border-ui-border-primary rounded-md bg-ui-bg-primary text-ui-text-primary disabled:opacity-50"
+                            className="w-full px-3 py-2 border border-ui-border rounded-md bg-ui-bg text-ui-text disabled:opacity-50"
                           />
                         </div>
                       )}
@@ -220,7 +256,7 @@ export function CreateEventModal({
                         <div>
                           <label
                             htmlFor="event-end-time"
-                            className="block text-sm font-medium text-ui-text-primary mb-1"
+                            className="block text-sm font-medium text-ui-text mb-1"
                           >
                             End Time
                           </label>
@@ -231,7 +267,7 @@ export function CreateEventModal({
                             onChange={(e) => field.handleChange(e.target.value)}
                             onBlur={field.handleBlur}
                             disabled={allDay as boolean}
-                            className="w-full px-3 py-2 border border-ui-border-primary rounded-md bg-ui-bg-primary text-ui-text-primary disabled:opacity-50"
+                            className="w-full px-3 py-2 border border-ui-border rounded-md bg-ui-bg text-ui-text disabled:opacity-50"
                           />
                         </div>
                       )}
@@ -249,9 +285,9 @@ export function CreateEventModal({
                             type="checkbox"
                             checked={field.state.value as boolean}
                             onChange={(e) => field.handleChange(e.target.checked)}
-                            className="w-4 h-4 text-brand-600 rounded focus:ring-2 focus:ring-brand-500"
+                            className="w-4 h-4 text-brand rounded focus:ring-2 focus:ring-brand-ring"
                           />
-                          <span className="text-sm text-ui-text-primary">All day event</span>
+                          <span className="text-sm text-ui-text">All day event</span>
                         </Flex>
                       </label>
                     </div>
@@ -269,9 +305,9 @@ export function CreateEventModal({
                               type="checkbox"
                               checked={field.state.value as boolean}
                               onChange={(e) => field.handleChange(e.target.checked)}
-                              className="w-4 h-4 text-brand-600 rounded focus:ring-2 focus:ring-brand-500"
+                              className="w-4 h-4 text-brand rounded focus:ring-2 focus:ring-brand-ring"
                             />
-                            <span className="text-sm text-ui-text-primary">
+                            <span className="text-sm text-ui-text">
                               Required attendance (track who attends)
                             </span>
                           </Flex>
@@ -304,7 +340,7 @@ export function CreateEventModal({
                     <div>
                       <label
                         htmlFor="event-location"
-                        className="block text-sm font-medium text-ui-text-primary mb-1"
+                        className="block text-sm font-medium text-ui-text mb-1"
                       >
                         <MapPin className="w-4 h-4 inline mr-1" />
                         Location
@@ -315,7 +351,7 @@ export function CreateEventModal({
                         value={(field.state.value as string) ?? ""}
                         onChange={(e) => field.handleChange(e.target.value)}
                         onBlur={field.handleBlur}
-                        className="w-full px-3 py-2 border border-ui-border-primary rounded-md bg-ui-bg-primary text-ui-text-primary"
+                        className="w-full px-3 py-2 border border-ui-border rounded-md bg-ui-bg text-ui-text"
                         placeholder="Office, Zoom, Google Meet, etc."
                       />
                     </div>
@@ -329,7 +365,7 @@ export function CreateEventModal({
                       <div>
                         <label
                           htmlFor="event-meeting-url"
-                          className="block text-sm font-medium text-ui-text-primary mb-1"
+                          className="block text-sm font-medium text-ui-text mb-1"
                         >
                           <LinkIcon className="w-4 h-4 inline mr-1" />
                           Meeting Link
@@ -340,7 +376,7 @@ export function CreateEventModal({
                           value={(field.state.value as string) ?? ""}
                           onChange={(e) => field.handleChange(e.target.value)}
                           onBlur={field.handleBlur}
-                          className="w-full px-3 py-2 border border-ui-border-primary rounded-md bg-ui-bg-primary text-ui-text-primary"
+                          className="w-full px-3 py-2 border border-ui-border rounded-md bg-ui-bg text-ui-text"
                           placeholder="https://zoom.us/j/..."
                         />
                       </div>
@@ -352,7 +388,7 @@ export function CreateEventModal({
                 <div>
                   <label
                     htmlFor="event-project"
-                    className="block text-sm font-medium text-ui-text-primary mb-1"
+                    className="block text-sm font-medium text-ui-text mb-1"
                   >
                     Link to Project (optional)
                   </label>
@@ -364,7 +400,7 @@ export function CreateEventModal({
                       )
                     }
                   >
-                    <SelectTrigger className="w-full px-3 py-2 border border-ui-border-primary rounded-md bg-ui-bg-primary text-ui-text-primary">
+                    <SelectTrigger className="w-full px-3 py-2 border border-ui-border rounded-md bg-ui-bg text-ui-text">
                       <SelectValue placeholder="No project" />
                     </SelectTrigger>
                     <SelectContent>
@@ -379,7 +415,7 @@ export function CreateEventModal({
                 </div>
 
                 {/* Actions */}
-                <DialogFooter className="pt-4 border-t border-ui-border-primary">
+                <DialogFooter className="pt-4 border-t border-ui-border">
                   <form.Subscribe selector={(state) => state.isSubmitting}>
                     {(isSubmitting) => (
                       <>

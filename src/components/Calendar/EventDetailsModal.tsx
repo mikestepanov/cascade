@@ -14,6 +14,7 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "
 import { Flex } from "../ui/Flex";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/Select";
 import { Typography } from "../ui/Typography";
+import { getEventBadgeClass } from "./calendar-colors";
 
 interface AttendanceParticipant {
   userId: string;
@@ -80,19 +81,8 @@ export function EventDetailsModal({ eventId, open, onOpenChange }: EventDetailsM
     }
   };
 
-  const getEventTypeColor = (eventType: string) => {
-    switch (eventType) {
-      case "meeting":
-        return "bg-brand-100 text-brand-800";
-      case "deadline":
-        return "bg-status-error-bg text-status-error";
-      case "timeblock":
-        return "bg-status-success-bg text-status-success";
-      case "personal":
-        return "bg-accent-100 text-accent-800";
-      default:
-        return "bg-ui-bg-tertiary text-ui-text-secondary";
-    }
+  const getEventTypeColor = (eventType: string): string => {
+    return getEventBadgeClass(eventType, event.color);
   };
 
   const getStatusColor = (status: string) => {
@@ -131,7 +121,7 @@ export function EventDetailsModal({ eventId, open, onOpenChange }: EventDetailsM
             <Flex gap="md" align="start">
               <Calendar className="w-5 h-5 text-ui-text-tertiary mt-0.5" />
               <div>
-                <div className="font-medium text-ui-text-primary">
+                <div className="font-medium text-ui-text">
                   {formatDate(event.startTime, {
                     weekday: "long",
                     month: "long",
@@ -157,13 +147,13 @@ export function EventDetailsModal({ eventId, open, onOpenChange }: EventDetailsM
               <Flex
                 align="center"
                 justify="center"
-                className="w-5 h-5 bg-brand-600 rounded-full text-white text-xs font-bold mt-0.5"
+                className="w-5 h-5 bg-brand rounded-full text-white text-xs font-bold mt-0.5"
               >
                 {event.organizerName?.[0]?.toUpperCase()}
               </Flex>
               <div>
                 <div className="text-sm text-ui-text-secondary">Organizer</div>
-                <div className="font-medium text-ui-text-primary">{event.organizerName}</div>
+                <div className="font-medium text-ui-text">{event.organizerName}</div>
                 {event.organizerEmail && (
                   <div className="text-sm text-ui-text-secondary">{event.organizerEmail}</div>
                 )}
@@ -172,8 +162,8 @@ export function EventDetailsModal({ eventId, open, onOpenChange }: EventDetailsM
 
             {/* Description */}
             {event.description && (
-              <div className="border-t border-ui-border-primary pt-4">
-                <div className="text-sm font-medium text-ui-text-primary mb-2">Description</div>
+              <div className="border-t border-ui-border pt-4">
+                <div className="text-sm font-medium text-ui-text mb-2">Description</div>
                 <div className="text-ui-text-secondary whitespace-pre-wrap">
                   {event.description}
                 </div>
@@ -182,18 +172,18 @@ export function EventDetailsModal({ eventId, open, onOpenChange }: EventDetailsM
 
             {/* Location */}
             {event.location && (
-              <Flex gap="md" align="start" className="border-t border-ui-border-primary pt-4">
+              <Flex gap="md" align="start" className="border-t border-ui-border pt-4">
                 <MapPin className="w-5 h-5 text-ui-text-tertiary mt-0.5" />
                 <div>
                   <div className="text-sm text-ui-text-secondary">Location</div>
-                  <div className="font-medium text-ui-text-primary">{event.location}</div>
+                  <div className="font-medium text-ui-text">{event.location}</div>
                 </div>
               </Flex>
             )}
 
             {/* Meeting URL */}
             {event.meetingUrl && (
-              <Flex gap="md" align="start" className="border-t border-ui-border-primary pt-4">
+              <Flex gap="md" align="start" className="border-t border-ui-border pt-4">
                 <LinkIcon className="w-5 h-5 text-ui-text-tertiary mt-0.5" />
                 <div>
                   <div className="text-sm text-ui-text-secondary">Meeting Link</div>
@@ -201,7 +191,7 @@ export function EventDetailsModal({ eventId, open, onOpenChange }: EventDetailsM
                     href={event.meetingUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="font-medium text-brand-600 hover:text-brand-700:text-brand-300"
+                    className="font-medium text-brand hover:text-brand-hover:text-brand-muted"
                   >
                     Join Meeting
                   </a>
@@ -211,15 +201,15 @@ export function EventDetailsModal({ eventId, open, onOpenChange }: EventDetailsM
 
             {/* Notes */}
             {event.notes && (
-              <div className="border-t border-ui-border-primary pt-4">
-                <div className="text-sm font-medium text-ui-text-primary mb-2">Notes</div>
+              <div className="border-t border-ui-border pt-4">
+                <div className="text-sm font-medium text-ui-text mb-2">Notes</div>
                 <div className="text-ui-text-secondary whitespace-pre-wrap">{event.notes}</div>
               </div>
             )}
 
             {/* Recurring */}
             {event.isRecurring && (
-              <div className="border-t border-ui-border-primary pt-4">
+              <div className="border-t border-ui-border pt-4">
                 <Flex gap="sm" align="center">
                   <Clock className="w-4 h-4 text-ui-text-tertiary" />
                   <span className="text-sm text-ui-text-secondary">Recurring event</span>
@@ -239,9 +229,9 @@ export function EventDetailsModal({ eventId, open, onOpenChange }: EventDetailsM
 
             {/* Attendance Tracking (only for required meetings, only visible to organizer) */}
             {event.isRequired && attendance && (
-              <div className="border-t border-ui-border-primary pt-4">
+              <div className="border-t border-ui-border pt-4">
                 <Flex justify="between" align="center" className="mb-3">
-                  <Typography variant="h4" className="text-sm font-semibold text-ui-text-primary">
+                  <Typography variant="h4" className="text-sm font-semibold text-ui-text">
                     Attendance ({attendance.markedCount}/{attendance.totalAttendees} marked)
                   </Typography>
                 </Flex>
@@ -268,27 +258,28 @@ export function EventDetailsModal({ eventId, open, onOpenChange }: EventDetailsM
                         {!attendee.status && <div className="w-4 h-4" />}
 
                         {/* Attendee Name */}
-                        <span className="text-sm font-medium text-ui-text-primary">
+                        <span className="text-sm font-medium text-ui-text">
                           {attendee.userName}
                         </span>
                       </Flex>
 
                       {/* Status Dropdown */}
                       <Select
-                        value={attendee.status || ""}
-                        onValueChange={(value) =>
+                        value={attendee.status || "none"}
+                        onValueChange={(value) => {
+                          if (value === "none") return;
                           handleMarkAttendance(
                             attendee.userId as Id<"users">,
                             value as "present" | "tardy" | "absent",
-                          )
-                        }
+                          );
+                        }}
                         disabled={isSavingAttendance}
                       >
-                        <SelectTrigger className="text-sm px-2 py-1 border border-ui-border-primary rounded bg-ui-bg-primary text-ui-text-primary">
+                        <SelectTrigger className="text-sm px-2 py-1 border border-ui-border rounded bg-ui-bg text-ui-text">
                           <SelectValue placeholder="Not marked" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="">Not marked</SelectItem>
+                          <SelectItem value="none">Not marked</SelectItem>
                           <SelectItem value="present">✓ Present</SelectItem>
                           <SelectItem value="tardy">⏰ Tardy</SelectItem>
                           <SelectItem value="absent">✗ Absent</SelectItem>

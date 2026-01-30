@@ -140,9 +140,33 @@ export const ROUTES = {
       path: "/$orgSlug/projects/$key/board" as const,
       build: (orgSlug: string, key: string) => `/${orgSlug}/projects/${key}/board`,
     },
+    backlog: {
+      path: "/$orgSlug/projects/$key/backlog" as const,
+      build: (orgSlug: string, key: string) => `/${orgSlug}/projects/${key}/backlog`,
+    },
+    sprints: {
+      path: "/$orgSlug/projects/$key/sprints" as const,
+      build: (orgSlug: string, key: string) => `/${orgSlug}/projects/${key}/sprints`,
+    },
+    roadmap: {
+      path: "/$orgSlug/projects/$key/roadmap" as const,
+      build: (orgSlug: string, key: string) => `/${orgSlug}/projects/${key}/roadmap`,
+    },
     calendar: {
       path: "/$orgSlug/projects/$key/calendar" as const,
       build: (orgSlug: string, key: string) => `/${orgSlug}/projects/${key}/calendar`,
+    },
+    activity: {
+      path: "/$orgSlug/projects/$key/activity" as const,
+      build: (orgSlug: string, key: string) => `/${orgSlug}/projects/${key}/activity`,
+    },
+    analytics: {
+      path: "/$orgSlug/projects/$key/analytics" as const,
+      build: (orgSlug: string, key: string) => `/${orgSlug}/projects/${key}/analytics`,
+    },
+    billing: {
+      path: "/$orgSlug/projects/$key/billing" as const,
+      build: (orgSlug: string, key: string) => `/${orgSlug}/projects/${key}/billing`,
     },
     timesheet: {
       path: "/$orgSlug/projects/$key/timesheet" as const,

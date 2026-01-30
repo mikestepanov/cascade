@@ -93,10 +93,15 @@ export const update = mutation({
 ```bash
 pnpm dev              # Start frontend + backend
 pnpm run check        # Typecheck + lint + tests
+pnpm run fixme        # Auto-fix lint/format + typecheck (run after big changes)
 pnpm run biome        # Lint with auto-fix
 pnpm run typecheck    # TypeScript check
 pnpm e2e:ui           # E2E tests (interactive)
 ```
+
+### AI: When to run `pnpm fixme`
+
+Run `pnpm fixme` after completing a significant chunk of work (new feature, multi-file refactor, major bug fix). Do NOT run it after every small edit — only when a logical unit of work is done and you're ready to validate.
 
 ## Deployment
 

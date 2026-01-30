@@ -55,7 +55,7 @@ function TimeProgress({
           <div
             className={cn(
               "h-2 rounded-full transition-all duration-300",
-              isOverEstimate ? "bg-status-error" : "bg-brand-600",
+              isOverEstimate ? "bg-status-error" : "bg-brand",
             )}
             style={{
               width: `${Math.min((totalLoggedHours / estimatedHours) * 100, 100)}%`,
@@ -87,19 +87,16 @@ function TimeEntriesList({
   entries: (Doc<"timeEntries"> & { totalCost?: number })[];
 }) {
   return (
-    <div className="p-4 border-t border-ui-border-primary bg-ui-bg-secondary space-y-2">
+    <div className="p-4 border-t border-ui-border bg-ui-bg-secondary space-y-2">
       {entries.map((entry) => {
         const hours = formatHours(entry.duration);
         const entryDate = formatDate(entry.date);
 
         return (
-          <div
-            key={entry._id}
-            className="bg-ui-bg-primary border border-ui-border-primary rounded-lg p-3"
-          >
+          <div key={entry._id} className="bg-ui-bg border border-ui-border rounded-lg p-3">
             <Flex align="start" justify="between">
               <div>
-                <div className="font-semibold text-ui-text-primary">{hours}h</div>
+                <div className="font-semibold text-ui-text">{hours}h</div>
                 {entry.description && (
                   <Typography className="text-sm text-ui-text-secondary mt-1">
                     {entry.description}
@@ -112,7 +109,7 @@ function TimeEntriesList({
                 </Flex>
               </div>
               {entry.totalCost && (
-                <div className="text-sm font-medium text-ui-text-primary">
+                <div className="text-sm font-medium text-ui-text">
                   {formatCurrency(entry.totalCost)}
                 </div>
               )}
@@ -176,9 +173,9 @@ export function TimeTracker({
   };
 
   return (
-    <div className="border border-ui-border-primary rounded-lg">
+    <div className="border border-ui-border rounded-lg">
       {/* Header */}
-      <div className="p-4 border-b border-ui-border-primary">
+      <div className="p-4 border-b border-ui-border">
         <Flex align="center" justify="between" className="mb-3">
           <Typography variant="h3" className="text-sm font-semibold">
             Time Tracking

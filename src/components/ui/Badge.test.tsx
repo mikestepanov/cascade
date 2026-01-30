@@ -36,7 +36,7 @@ describe("Badge", () => {
         </Badge>,
       );
       const badge = screen.getByTestId("badge");
-      expect(badge.className).toContain("bg-brand-100");
+      expect(badge.className).toContain("bg-brand-subtle");
     });
 
     it("applies success variant", () => {

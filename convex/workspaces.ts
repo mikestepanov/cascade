@@ -17,6 +17,7 @@ import {
 import { conflict, forbidden, notFound } from "./lib/errors";
 import { isOrganizationAdmin } from "./lib/organizationAccess";
 import { MAX_PAGE_SIZE } from "./lib/queryLimits";
+import { BOUNDED_LIST_LIMIT } from "./lib/boundedQueries";
 import { notDeleted } from "./lib/softDeleteHelpers";
 import { workspaceRoles } from "./validators";
 
@@ -69,7 +70,29 @@ export const list = organizationQuery({
       .withIndex("by_organization", (q) => q.eq("organizationId", ctx.organizationId))
       .take(MAX_PAGE_SIZE);
 
-    return workspaces;
+    const enriched = await Promise.all(
+      workspaces.map(async (ws) => {
+        const teams = await ctx.db
+          .query("teams")
+          .withIndex("by_workspace", (q) => q.eq("workspaceId", ws._id))
+          .filter(notDeleted)
+          .take(BOUNDED_LIST_LIMIT);
+
+        const projects = await ctx.db
+          .query("projects")
+          .withIndex("by_workspace", (q) => q.eq("workspaceId", ws._id))
+          .filter(notDeleted)
+          .take(BOUNDED_LIST_LIMIT);
+
+        return {
+          ...ws,
+          teamCount: teams.length,
+          projectCount: projects.length,
+        };
+      }),
+    );
+
+    return enriched;
   },
 });
 

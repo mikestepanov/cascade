@@ -3,7 +3,7 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 import { Flex } from "./Flex";
 
-const cardVariants = cva("bg-ui-bg-primary rounded-lg border border-ui-border-primary", {
+const cardVariants = cva("bg-ui-bg rounded-lg border border-ui-border", {
   variants: {
     hoverable: {
       true: "hover:shadow-md transition-shadow cursor-pointer",
@@ -83,11 +83,11 @@ const CardHeader = React.forwardRef<HTMLDivElement, CardHeaderProps>(
         ref={ref}
         align="center"
         justify="between"
-        className={cn("p-4 border-b border-ui-border-primary", className)}
+        className={cn("p-4 border-b border-ui-border", className)}
         {...props}
       >
         <div>
-          {title && <h3 className="text-lg font-semibold text-ui-text-primary">{title}</h3>}
+          {title && <h3 className="text-lg font-semibold text-ui-text">{title}</h3>}
           {description && <p className="text-sm text-ui-text-secondary mt-1">{description}</p>}
         </div>
         {action && <div>{action}</div>}
@@ -101,10 +101,7 @@ const CardTitle = React.forwardRef<HTMLParagraphElement, React.HTMLAttributes<HT
   ({ className, ...props }, ref) => (
     <h3
       ref={ref}
-      className={cn(
-        "text-lg font-semibold text-ui-text-primary leading-none tracking-tight",
-        className,
-      )}
+      className={cn("text-lg font-semibold text-ui-text leading-none tracking-tight", className)}
       {...props}
     />
   ),

@@ -47,7 +47,7 @@ export function BoardToolbar({
               >
                 <svg
                   aria-hidden="true"
-                  className="w-4 h-4 sm:w-5 sm:h-5 text-ui-text-primary"
+                  className="w-4 h-4 sm:w-5 sm:h-5 text-ui-text"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -71,7 +71,7 @@ export function BoardToolbar({
               >
                 <svg
                   aria-hidden="true"
-                  className="w-4 h-4 sm:w-5 sm:h-5 text-ui-text-primary"
+                  className="w-4 h-4 sm:w-5 sm:h-5 text-ui-text"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -95,7 +95,7 @@ export function BoardToolbar({
               "px-2 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm rounded-lg transition-colors",
               selectionMode
                 ? "bg-primary text-white"
-                : "bg-ui-bg-secondary text-ui-text-primary hover:bg-ui-bg-tertiary",
+                : "bg-ui-bg-secondary text-ui-text hover:bg-ui-bg-tertiary",
             )}
             aria-label={selectionMode ? "Exit selection mode" : "Enable selection mode"}
           >

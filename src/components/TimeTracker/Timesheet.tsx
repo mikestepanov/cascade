@@ -79,7 +79,7 @@ export function Timesheet() {
       <div className="mb-6">
         <Flex justify="between" align="center" className="mb-4">
           <div>
-            <Typography variant="h2" className="text-2xl font-bold text-ui-text-primary">
+            <Typography variant="h2" className="text-2xl font-bold text-ui-text">
               My Timesheet
             </Typography>
             <Typography className="text-sm text-ui-text-tertiary">
@@ -89,7 +89,7 @@ export function Timesheet() {
           <Flex gap="lg">
             <div className="text-right">
               <div className="text-sm text-ui-text-tertiary">Total Hours</div>
-              <div className="text-2xl font-bold text-ui-text-primary">
+              <div className="text-2xl font-bold text-ui-text">
                 {formatHours(timesheet.totalHours)}
               </div>
             </div>
@@ -102,9 +102,7 @@ export function Timesheet() {
             {billableRevenue > 0 && (
               <div className="text-right">
                 <div className="text-sm text-ui-text-tertiary">Revenue</div>
-                <div className="text-2xl font-bold text-brand-600">
-                  ${billableRevenue.toFixed(2)}
-                </div>
+                <div className="text-2xl font-bold text-brand">${billableRevenue.toFixed(2)}</div>
               </div>
             )}
           </Flex>
@@ -131,19 +129,17 @@ export function Timesheet() {
               key={day.dayKey}
               className={cn(
                 "border rounded-lg p-3",
-                isToday
-                  ? "border-brand-500 bg-brand-50"
-                  : "border-ui-border-primary bg-ui-bg-primary",
+                isToday ? "border-brand-ring bg-brand-subtle" : "border-ui-border bg-ui-bg",
               )}
             >
               {/* Day header */}
               <div className="mb-2">
-                <div className="font-semibold text-ui-text-primary">
+                <div className="font-semibold text-ui-text">
                   {day.date.toLocaleDateString("en-US", { weekday: "short" })}
                 </div>
                 <div className="text-xs text-ui-text-tertiary">{day.date.getDate()}</div>
                 {dayHours > 0 && (
-                  <div className="text-xs font-medium text-brand-600 mt-1">
+                  <div className="text-xs font-medium text-brand mt-1">
                     {formatHours(dayHours)}h
                   </div>
                 )}
@@ -154,11 +150,11 @@ export function Timesheet() {
                 {day.entries.map((entry: TimeEntryWithHours) => (
                   <div
                     key={entry._id}
-                    className="p-2 bg-ui-bg-secondary rounded border border-ui-border-primary"
+                    className="p-2 bg-ui-bg-secondary rounded border border-ui-border"
                   >
                     <Flex justify="between" align="start" className="mb-1">
                       <div className="flex-1 min-w-0">
-                        <div className="text-xs font-mono font-medium text-ui-text-primary truncate">
+                        <div className="text-xs font-mono font-medium text-ui-text truncate">
                           {entry.projectKey}
                         </div>
                         <div className="text-xs text-ui-text-secondary truncate">
@@ -170,7 +166,7 @@ export function Timesheet() {
                       )}
                     </Flex>
                     <Flex justify="between" align="center">
-                      <span className="text-sm font-medium text-ui-text-primary">
+                      <span className="text-sm font-medium text-ui-text">
                         {formatHours(entry.hours)}h
                       </span>
                       <button

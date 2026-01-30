@@ -2455,6 +2455,767 @@ export const nukeAllTestUsersInternal = internalMutation({
  * Internal mutation to cleanup expired test OTP codes
  * Called by cron job to prevent testOtpCodes table from growing indefinitely
  */
+/**
+ * Seed screenshot data for visual regression testing
+ * POST /e2e/seed-screenshot-data
+ * Body: { email: string }
+ *
+ * Creates workspace, team, project, sprint, issues, and documents
+ * so screenshot pages show filled states.
+ */
+export const seedScreenshotDataEndpoint = httpAction(async (ctx, request) => {
+  const authError = validateE2EApiKey(request);
+  if (authError) return authError;
+
+  try {
+    const body = await request.json();
+    const { email } = body;
+
+    if (!email) {
+      return new Response(JSON.stringify({ error: "Missing email" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    if (!isTestEmail(email)) {
+      return new Response(JSON.stringify({ error: "Only test emails allowed" }), {
+        status: 403,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    const result = await ctx.runMutation(internal.e2e.seedScreenshotDataInternal, { email });
+
+    return new Response(JSON.stringify(result), {
+      status: result.success ? 200 : 500,
+      headers: { "Content-Type": "application/json" },
+    });
+  } catch (e) {
+    return new Response(JSON.stringify({ error: String(e) }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+});
+
+/**
+ * Internal mutation to seed screenshot data
+ */
+export const seedScreenshotDataInternal = internalMutation({
+  args: {
+    email: v.string(),
+  },
+  returns: v.object({
+    success: v.boolean(),
+    orgSlug: v.optional(v.string()),
+    projectKey: v.optional(v.string()),
+    issueKeys: v.optional(v.array(v.string())),
+    workspaceSlug: v.optional(v.string()),
+    teamSlug: v.optional(v.string()),
+    error: v.optional(v.string()),
+  }),
+  handler: async (ctx, args) => {
+    if (!isTestEmail(args.email)) {
+      throw new Error("Only test emails allowed");
+    }
+
+    // 1. Find user by email (latest if duplicates)
+    const users = await ctx.db
+      .query("users")
+      .filter((q) => q.eq(q.field("email"), args.email))
+      .collect();
+    if (users.length === 0) {
+      return { success: false, error: `User not found: ${args.email}` };
+    }
+    const user = users.sort((a, b) => b._creationTime - a._creationTime)[0];
+    const userId = user._id;
+
+    // 1b. Set display name if missing
+    if (!user.name) {
+      await ctx.db.patch(userId, { name: "Emily Chen" });
+    }
+
+    // 2. Find user's organization
+    const membership = await ctx.db
+      .query("organizationMembers")
+      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .first();
+
+    if (!membership) {
+      return { success: false, error: "User has no organization membership" };
+    }
+
+    const organization = await ctx.db.get(membership.organizationId);
+    if (!organization) {
+      return { success: false, error: "Organization not found" };
+    }
+
+    const orgId = organization._id;
+    const orgSlug = organization.slug;
+    const now = Date.now();
+
+    // 2b. Create additional named team members (for project settings, etc.)
+    const syntheticMembers: Array<{ name: string; email: string }> = [
+      { name: "Alex Rivera", email: "alex-rivera-screenshots@inbox.mailtrap.io" },
+      { name: "Sarah Kim", email: "sarah-kim-screenshots@inbox.mailtrap.io" },
+    ];
+    const syntheticUserIds: Array<typeof userId> = [];
+
+    for (const member of syntheticMembers) {
+      let existingUser = await ctx.db
+        .query("users")
+        .filter((q) => q.eq(q.field("email"), member.email))
+        .first();
+
+      if (!existingUser) {
+        const newUserId = await ctx.db.insert("users", {
+          name: member.name,
+          email: member.email,
+        });
+        existingUser = await ctx.db.get(newUserId);
+      } else if (!existingUser.name) {
+        await ctx.db.patch(existingUser._id, { name: member.name });
+      }
+
+      if (!existingUser) continue;
+      syntheticUserIds.push(existingUser._id);
+
+      // Add to organization as member
+      const orgMember = await ctx.db
+        .query("organizationMembers")
+        .withIndex("by_organization_user", (q) =>
+          q.eq("organizationId", orgId).eq("userId", existingUser._id),
+        )
+        .first();
+      if (!orgMember) {
+        await ctx.db.insert("organizationMembers", {
+          organizationId: orgId,
+          userId: existingUser._id,
+          role: "member",
+          addedBy: userId,
+        });
+      }
+    }
+
+    // 3. Create workspace (idempotent)
+    let workspace = await ctx.db
+      .query("workspaces")
+      .withIndex("by_organization", (q) => q.eq("organizationId", orgId))
+      .filter((q) => q.eq(q.field("slug"), "product"))
+      .first();
+
+    if (!workspace) {
+      const wsId = await ctx.db.insert("workspaces", {
+        name: "Product",
+        slug: "product",
+        icon: "📱",
+        organizationId: orgId,
+        createdBy: userId,
+        updatedAt: now,
+      });
+      workspace = await ctx.db.get(wsId);
+    }
+
+    if (!workspace) {
+      return { success: false, error: "Failed to create workspace" };
+    }
+    const workspaceId = workspace._id;
+
+    // 4. Create team (idempotent)
+    let team = await ctx.db
+      .query("teams")
+      .withIndex("by_workspace", (q) => q.eq("workspaceId", workspaceId))
+      .filter((q) => q.eq(q.field("slug"), "engineering"))
+      .first();
+
+    if (!team) {
+      const newTeamId = await ctx.db.insert("teams", {
+        name: "Engineering",
+        slug: "engineering",
+        organizationId: orgId,
+        workspaceId,
+        createdBy: userId,
+        updatedAt: now,
+        isPrivate: false,
+      });
+      team = await ctx.db.get(newTeamId);
+    }
+
+    if (!team) {
+      return { success: false, error: "Failed to create team" };
+    }
+    const teamId = team._id;
+
+    // Ensure current user is a team member (handles user re-creation between runs)
+    const existingTeamMember = await ctx.db
+      .query("teamMembers")
+      .withIndex("by_team", (q) => q.eq("teamId", teamId))
+      .filter((q) => q.eq(q.field("userId"), userId))
+      .first();
+    if (!existingTeamMember) {
+      await ctx.db.insert("teamMembers", {
+        teamId,
+        userId,
+        role: "admin",
+        addedBy: userId,
+      });
+    }
+
+    // 4b. Add synthetic members to team
+    for (const memberId of syntheticUserIds) {
+      const existingTm = await ctx.db
+        .query("teamMembers")
+        .withIndex("by_team", (q) => q.eq("teamId", teamId))
+        .filter((q) => q.eq(q.field("userId"), memberId))
+        .first();
+      if (!existingTm) {
+        await ctx.db.insert("teamMembers", {
+          teamId,
+          userId: memberId,
+          role: "member",
+          addedBy: userId,
+        });
+      }
+    }
+
+    // 5. Create project (idempotent)
+    const projectKey = "DEMO";
+    let project = await ctx.db
+      .query("projects")
+      .withIndex("by_key", (q) => q.eq("key", projectKey))
+      .filter(notDeleted)
+      .first();
+
+    if (!project) {
+      const projId = await ctx.db.insert("projects", {
+        name: "Demo Project",
+        key: projectKey,
+        description: "Demo project for screenshot visual review",
+        organizationId: orgId,
+        workspaceId,
+        teamId,
+        ownerId: userId,
+        createdBy: userId,
+        updatedAt: now,
+        boardType: "kanban",
+        workflowStates: [
+          { id: "todo", name: "To Do", category: "todo", order: 0 },
+          { id: "in-progress", name: "In Progress", category: "inprogress", order: 1 },
+          { id: "in-review", name: "In Review", category: "inprogress", order: 2 },
+          { id: "done", name: "Done", category: "done", order: 3 },
+        ],
+      });
+      project = await ctx.db.get(projId);
+    } else {
+      // Update ownership to current user (handles user re-creation between runs)
+      await ctx.db.patch(project._id, { ownerId: userId, updatedAt: now });
+    }
+
+    if (!project) {
+      return { success: false, error: "Failed to create project" };
+    }
+    const projectId = project._id;
+
+    // Ensure current user is a project member (handles user re-creation between runs)
+    const existingProjectMember = await ctx.db
+      .query("projectMembers")
+      .withIndex("by_project_user", (q) => q.eq("projectId", projectId).eq("userId", userId))
+      .filter(notDeleted)
+      .first();
+    if (!existingProjectMember) {
+      await ctx.db.insert("projectMembers", {
+        projectId,
+        userId,
+        role: "admin",
+        addedBy: userId,
+      });
+    }
+
+    // 5b. Add synthetic members to project
+    for (const memberId of syntheticUserIds) {
+      const existingPm = await ctx.db
+        .query("projectMembers")
+        .withIndex("by_project_user", (q) => q.eq("projectId", projectId).eq("userId", memberId))
+        .filter(notDeleted)
+        .first();
+      if (!existingPm) {
+        await ctx.db.insert("projectMembers", {
+          projectId,
+          userId: memberId,
+          role: "editor",
+          addedBy: userId,
+        });
+      }
+    }
+
+    // 6. Create sprint (idempotent - check by project + name)
+    let sprint = await ctx.db
+      .query("sprints")
+      .withIndex("by_project", (q) => q.eq("projectId", projectId))
+      .filter((q) => q.eq(q.field("name"), "Sprint 1"))
+      .filter(notDeleted)
+      .first();
+
+    if (!sprint) {
+      const sevenDaysMs = 7 * 24 * 60 * 60 * 1000;
+      const sprintId = await ctx.db.insert("sprints", {
+        projectId,
+        name: "Sprint 1",
+        goal: "Launch MVP features",
+        status: "active",
+        startDate: now - sevenDaysMs,
+        endDate: now + sevenDaysMs,
+        createdBy: userId,
+        updatedAt: now,
+      });
+      sprint = await ctx.db.get(sprintId);
+    }
+
+    const sprintId = sprint?._id;
+
+    // 7. Create issues (idempotent by key)
+    const DAY_MS = 24 * 60 * 60 * 1000;
+    const issueDefinitions: Array<{
+      key: string;
+      title: string;
+      type: "task" | "bug" | "story" | "epic";
+      status: string;
+      priority: "lowest" | "low" | "medium" | "high" | "highest";
+      assigned: boolean;
+      inSprint: boolean;
+      dueDate?: number;
+    }> = [
+      {
+        key: "DEMO-1",
+        title: "Set up CI/CD pipeline",
+        type: "task",
+        status: "done",
+        priority: "high",
+        assigned: true,
+        inSprint: true,
+        dueDate: now - 2 * DAY_MS,
+      },
+      {
+        key: "DEMO-2",
+        title: "Fix login timeout on mobile",
+        type: "bug",
+        status: "in-progress",
+        priority: "highest",
+        assigned: true,
+        inSprint: true,
+        dueDate: now + 1 * DAY_MS,
+      },
+      {
+        key: "DEMO-3",
+        title: "Design new dashboard layout",
+        type: "story",
+        status: "in-review",
+        priority: "medium",
+        assigned: true,
+        inSprint: true,
+        dueDate: now + 3 * DAY_MS,
+      },
+      {
+        key: "DEMO-4",
+        title: "Add dark mode support",
+        type: "story",
+        status: "todo",
+        priority: "medium",
+        assigned: false,
+        inSprint: false,
+        dueDate: now + 7 * DAY_MS,
+      },
+      {
+        key: "DEMO-5",
+        title: "Database query optimization",
+        type: "task",
+        status: "in-progress",
+        priority: "high",
+        assigned: true,
+        inSprint: false,
+      },
+      {
+        key: "DEMO-6",
+        title: "User onboarding flow",
+        type: "epic",
+        status: "todo",
+        priority: "low",
+        assigned: false,
+        inSprint: false,
+      },
+    ];
+
+    const createdIssueKeys: string[] = [];
+
+    for (let i = 0; i < issueDefinitions.length; i++) {
+      const def = issueDefinitions[i];
+      const existing = await ctx.db
+        .query("issues")
+        .withIndex("by_key", (q) => q.eq("key", def.key))
+        .filter(notDeleted)
+        .first();
+
+      if (!existing) {
+        await ctx.db.insert("issues", {
+          projectId,
+          organizationId: orgId,
+          workspaceId,
+          teamId,
+          key: def.key,
+          title: def.title,
+          type: def.type,
+          status: def.status,
+          priority: def.priority,
+          reporterId: userId,
+          assigneeId: def.assigned ? userId : undefined,
+          sprintId: def.inSprint && sprintId ? sprintId : undefined,
+          dueDate: def.dueDate,
+          updatedAt: now,
+          labels: [],
+          linkedDocuments: [],
+          attachments: [],
+          order: i,
+          version: 1,
+        });
+      } else {
+        // Update ownership to current user (handles user re-creation between runs)
+        await ctx.db.patch(existing._id, {
+          reporterId: userId,
+          assigneeId: def.assigned ? userId : undefined,
+          updatedAt: now,
+        });
+      }
+      createdIssueKeys.push(def.key);
+    }
+
+    // 8. Create documents (idempotent by title + org)
+    const docTitles = ["Project Requirements", "Sprint Retrospective Notes"];
+    for (const title of docTitles) {
+      const existingDoc = await ctx.db
+        .query("documents")
+        .withIndex("by_organization", (q) => q.eq("organizationId", orgId))
+        .filter((q) => q.eq(q.field("title"), title))
+        .filter(notDeleted)
+        .first();
+
+      if (!existingDoc) {
+        await ctx.db.insert("documents", {
+          title,
+          isPublic: false,
+          createdBy: userId,
+          updatedAt: now,
+          organizationId: orgId,
+          workspaceId,
+          projectId,
+        });
+      }
+    }
+
+    // 9. Create calendar events (idempotent by organizer + title)
+    const todayStart = new Date();
+    todayStart.setHours(0, 0, 0, 0);
+    const todayMs = todayStart.getTime();
+
+    const calendarDefs: Array<{
+      title: string;
+      startHour: number;
+      startMin: number;
+      endHour: number;
+      endMin: number;
+      dayOffset: number;
+      eventType: "meeting" | "deadline" | "timeblock" | "personal";
+      description?: string;
+    }> = [
+      // Today (dayOffset: 0) — 4 events to show overlap handling
+      {
+        title: "Sprint Planning",
+        startHour: 9,
+        startMin: 0,
+        endHour: 10,
+        endMin: 0,
+        dayOffset: 0,
+        eventType: "meeting",
+        description: "Review sprint goals and assign tasks",
+      },
+      {
+        title: "Design Review",
+        startHour: 10,
+        startMin: 30,
+        endHour: 11,
+        endMin: 30,
+        dayOffset: 0,
+        eventType: "meeting",
+        description: "Review dashboard mockups with the team",
+      },
+      {
+        title: "Focus Time: Bug Fixes",
+        startHour: 14,
+        startMin: 0,
+        endHour: 16,
+        endMin: 0,
+        dayOffset: 0,
+        eventType: "timeblock",
+        description: "Deep focus on critical bug fixes",
+      },
+      {
+        title: "Standup Check-in",
+        startHour: 16,
+        startMin: 30,
+        endHour: 17,
+        endMin: 0,
+        dayOffset: 0,
+        eventType: "meeting",
+        description: "Quick daily sync with the team",
+      },
+      // Tomorrow (dayOffset: 1)
+      {
+        title: "Client Demo",
+        startHour: 11,
+        startMin: 0,
+        endHour: 12,
+        endMin: 0,
+        dayOffset: 1,
+        eventType: "meeting",
+        description: "Demo new features to client stakeholders",
+      },
+      {
+        title: "Architecture Discussion",
+        startHour: 14,
+        startMin: 0,
+        endHour: 15,
+        endMin: 30,
+        dayOffset: 1,
+        eventType: "meeting",
+        description: "Discuss API v2 migration plan",
+      },
+      // Day +2
+      {
+        title: "Code Review Session",
+        startHour: 10,
+        startMin: 0,
+        endHour: 11,
+        endMin: 0,
+        dayOffset: 2,
+        eventType: "meeting",
+        description: "Review open pull requests for the sprint",
+      },
+      {
+        title: "Deep Work: API Integration",
+        startHour: 13,
+        startMin: 0,
+        endHour: 16,
+        endMin: 0,
+        dayOffset: 2,
+        eventType: "timeblock",
+        description: "Focus block for third-party API integration",
+      },
+      // Day +3
+      {
+        title: "Team Retrospective",
+        startHour: 15,
+        startMin: 0,
+        endHour: 16,
+        endMin: 0,
+        dayOffset: 3,
+        eventType: "meeting",
+        description: "Sprint retrospective and improvement planning",
+      },
+      {
+        title: "Gym & Wellness",
+        startHour: 12,
+        startMin: 0,
+        endHour: 13,
+        endMin: 0,
+        dayOffset: 3,
+        eventType: "personal",
+        description: "Lunch break workout",
+      },
+      // Day +4
+      {
+        title: "QA Testing Window",
+        startHour: 9,
+        startMin: 0,
+        endHour: 12,
+        endMin: 0,
+        dayOffset: 4,
+        eventType: "timeblock",
+        description: "End-to-end testing before release",
+      },
+      {
+        title: "Release Review",
+        startHour: 14,
+        startMin: 0,
+        endHour: 15,
+        endMin: 0,
+        dayOffset: 4,
+        eventType: "meeting",
+        description: "Go/no-go decision for v2.1 release",
+      },
+      // Day +5
+      {
+        title: "Sprint Deadline",
+        startHour: 17,
+        startMin: 0,
+        endHour: 17,
+        endMin: 30,
+        dayOffset: 5,
+        eventType: "deadline",
+        description: "All sprint items must be completed",
+      },
+      {
+        title: "Knowledge Sharing",
+        startHour: 10,
+        startMin: 0,
+        endHour: 11,
+        endMin: 0,
+        dayOffset: 5,
+        eventType: "meeting",
+        description: "Tech talk: React Server Components deep dive",
+      },
+      // Day +6
+      {
+        title: "Backlog Grooming",
+        startHour: 10,
+        startMin: 0,
+        endHour: 11,
+        endMin: 30,
+        dayOffset: 6,
+        eventType: "meeting",
+        description: "Prioritize and estimate upcoming stories",
+      },
+    ];
+
+    for (const cal of calendarDefs) {
+      const existing = await ctx.db
+        .query("calendarEvents")
+        .withIndex("by_organizer", (q) => q.eq("organizerId", userId))
+        .filter((q) => q.eq(q.field("title"), cal.title))
+        .first();
+
+      if (!existing) {
+        const startTime =
+          todayMs + cal.dayOffset * DAY_MS + cal.startHour * 3600000 + cal.startMin * 60000;
+        const endTime =
+          todayMs + cal.dayOffset * DAY_MS + cal.endHour * 3600000 + cal.endMin * 60000;
+
+        await ctx.db.insert("calendarEvents", {
+          title: cal.title,
+          description: cal.description,
+          startTime,
+          endTime,
+          allDay: false,
+          eventType: cal.eventType,
+          organizerId: userId,
+          attendeeIds: [userId, ...syntheticUserIds],
+          status: "confirmed",
+          isRecurring: false,
+          isRequired: cal.eventType === "meeting",
+          updatedAt: now,
+        });
+      }
+    }
+
+    // 10. Create time entries (idempotent by user + description)
+    const timeEntryDefs: Array<{
+      description: string;
+      dayOffset: number;
+      durationHours: number;
+      activity: string;
+      billable: boolean;
+      hourlyRate?: number;
+    }> = [
+      {
+        description: "CI/CD pipeline setup and configuration",
+        dayOffset: -2,
+        durationHours: 4,
+        activity: "Development",
+        billable: true,
+        hourlyRate: 150,
+      },
+      {
+        description: "Bug investigation: login timeout on mobile",
+        dayOffset: -1,
+        durationHours: 3,
+        activity: "Development",
+        billable: true,
+        hourlyRate: 150,
+      },
+      {
+        description: "Dashboard design review with team",
+        dayOffset: -1,
+        durationHours: 1.5,
+        activity: "Code Review",
+        billable: true,
+        hourlyRate: 150,
+      },
+      {
+        description: "Sprint planning meeting",
+        dayOffset: 0,
+        durationHours: 1,
+        activity: "Meeting",
+        billable: false,
+      },
+      {
+        description: "Mobile login fix implementation",
+        dayOffset: 0,
+        durationHours: 2.5,
+        activity: "Development",
+        billable: true,
+        hourlyRate: 150,
+      },
+    ];
+
+    for (const entry of timeEntryDefs) {
+      const entryDate = todayMs + entry.dayOffset * DAY_MS;
+      const existing = await ctx.db
+        .query("timeEntries")
+        .withIndex("by_user_date", (q) => q.eq("userId", userId).eq("date", entryDate))
+        .filter((q) => q.eq(q.field("description"), entry.description))
+        .first();
+
+      if (!existing) {
+        const durationSeconds = entry.durationHours * 3600;
+        const startTime = entryDate + 9 * 3600000; // 9 AM
+        const endTime = startTime + durationSeconds * 1000;
+        const totalCost =
+          entry.billable && entry.hourlyRate ? entry.durationHours * entry.hourlyRate : undefined;
+
+        await ctx.db.insert("timeEntries", {
+          userId,
+          projectId,
+          startTime,
+          endTime,
+          duration: durationSeconds,
+          date: entryDate,
+          description: entry.description,
+          activity: entry.activity,
+          tags: [],
+          hourlyRate: entry.hourlyRate,
+          totalCost,
+          currency: "USD",
+          billable: entry.billable,
+          billed: false,
+          isEquityHour: false,
+          isLocked: false,
+          isApproved: false,
+          updatedAt: now,
+        });
+      }
+    }
+
+    // 11. Return result
+    return {
+      success: true,
+      orgSlug,
+      projectKey,
+      issueKeys: createdIssueKeys,
+      workspaceSlug: "product",
+      teamSlug: "engineering",
+    };
+  },
+});
+
 export const cleanupExpiredOtpsInternal = internalMutation({
   args: {},
   returns: v.object({

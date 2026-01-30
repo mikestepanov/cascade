@@ -169,7 +169,7 @@ export function CustomFieldValues({ issueId, projectId }: CustomFieldValuesProps
             href={value}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-brand-600 hover:underline"
+            className="text-brand hover:underline"
           >
             {value}
           </a>
@@ -184,7 +184,7 @@ export function CustomFieldValues({ issueId, projectId }: CustomFieldValuesProps
             {value.split(",").map((option) => (
               <span
                 key={option.trim()}
-                className="text-xs px-2 py-1 bg-brand-100 text-brand-800 rounded"
+                className="text-xs px-2 py-1 bg-brand-subtle text-brand-active rounded"
               >
                 {option.trim()}
               </span>
@@ -193,7 +193,7 @@ export function CustomFieldValues({ issueId, projectId }: CustomFieldValuesProps
         );
 
       default:
-        return <span className="text-ui-text-primary">{value}</span>;
+        return <span className="text-ui-text">{value}</span>;
     }
   };
 
@@ -201,7 +201,7 @@ export function CustomFieldValues({ issueId, projectId }: CustomFieldValuesProps
     <div className="space-y-3">
       <Typography
         variant="h3"
-        className="text-sm font-semibold text-ui-text-primary uppercase tracking-wide"
+        className="text-sm font-semibold text-ui-text uppercase tracking-wide"
       >
         Custom Fields
       </Typography>
@@ -215,7 +215,7 @@ export function CustomFieldValues({ issueId, projectId }: CustomFieldValuesProps
             <Flex align="start" justify="between" className="mb-2">
               <div className="flex-1">
                 <Flex align="center" gap="sm">
-                  <div className="text-sm font-medium text-ui-text-primary">{field.name}</div>
+                  <div className="text-sm font-medium text-ui-text">{field.name}</div>
                   {field.isRequired && <span className="text-status-error text-xs">*</span>}
                 </Flex>
                 {field.description && (

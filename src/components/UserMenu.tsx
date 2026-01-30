@@ -34,7 +34,7 @@ export function UserMenu() {
       <DropdownMenuTrigger asChild>
         <button
           type="button"
-          className="rounded-full focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2"
+          className="rounded-full focus:outline-none focus:ring-2 focus:ring-brand-ring focus:ring-offset-2"
           aria-label="User menu"
         >
           <Avatar name={user.name} email={user.email} src={user.image} size="md" variant="brand" />

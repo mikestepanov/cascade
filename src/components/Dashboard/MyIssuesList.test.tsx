@@ -136,14 +136,14 @@ describe("MyIssuesList", () => {
     render(<MyIssuesList {...defaultProps} issueFilter="assigned" />);
 
     const assignedTab = screen.getByLabelText("Filter Assigned");
-    expect(assignedTab).toHaveClass("border-brand-600");
+    expect(assignedTab).toHaveClass("border-brand");
   });
 
   it("should highlight active tab (created)", () => {
     render(<MyIssuesList {...defaultProps} issueFilter="created" />);
 
     const createdTab = screen.getByLabelText("Filter Created");
-    expect(createdTab).toHaveClass("border-brand-600");
+    expect(createdTab).toHaveClass("border-brand");
   });
 
   it("should call onFilterChange when switching to assigned tab", async () => {

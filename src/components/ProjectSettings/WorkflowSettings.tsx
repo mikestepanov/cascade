@@ -23,7 +23,7 @@ const CATEGORY_OPTIONS = [
 ];
 
 const CATEGORY_COLORS: Record<string, string> = {
-  todo: "bg-ui-bg-tertiary text-ui-text-primary",
+  todo: "bg-ui-bg-tertiary text-ui-text",
   inprogress: "bg-status-info/20 text-status-info",
   done: "bg-status-success/20 text-status-success",
 };
@@ -213,7 +213,7 @@ export function WorkflowSettings({ projectId, workflowStates }: WorkflowSettings
               + Add State
             </Button>
 
-            <Flex gap="sm" className="pt-4 border-t border-ui-border-primary">
+            <Flex gap="sm" className="pt-4 border-t border-ui-border">
               <Button onClick={handleSave} disabled={isSaving}>
                 {isSaving ? "Saving..." : "Save Changes"}
               </Button>

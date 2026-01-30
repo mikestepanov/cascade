@@ -75,12 +75,12 @@ export const IssueCard = memo(function IssueCard({
       onDragStart={canEdit && !selectionMode ? (e) => onDragStart(e, issue._id) : undefined}
       onClick={handleClick}
       className={cn(
-        "w-full text-left bg-ui-bg-primary p-2 sm:p-3 rounded-lg border-2 shadow-sm hover:shadow-md hover:scale-[1.02] transition-all duration-200 cursor-pointer",
+        "w-full text-left bg-ui-bg p-2 sm:p-3 rounded-lg border-2 shadow-sm hover:shadow-md hover:scale-[1.02] transition-all duration-200 cursor-pointer",
         isSelected
           ? "border-brand-indigo-border bg-brand-indigo-track"
           : isFocused
             ? "border-ui-border-focus ring-2 ring-ui-border-focus/50"
-            : "border-ui-border-primary",
+            : "border-ui-border",
       )}
     >
       {/* Header */}
@@ -94,7 +94,7 @@ export const IssueCard = memo(function IssueCard({
               checked={isSelected}
               onChange={handleCheckboxClick}
               onClick={handleCheckboxClick}
-              className="w-4 h-4 text-brand-600 border-ui-border-primary rounded focus:ring-brand-500 cursor-pointer"
+              className="w-4 h-4 text-brand border-ui-border rounded focus:ring-brand-ring cursor-pointer"
             />
           )}
           <Tooltip content={getTypeLabel(issue.type)}>
@@ -149,7 +149,7 @@ export const IssueCard = memo(function IssueCard({
               <span
                 tabIndex={0}
                 role="button"
-                className="inline-flex rounded-md focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-brand-500"
+                className="inline-flex rounded-md focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-brand-ring"
               >
                 <Typography
                   variant="small"

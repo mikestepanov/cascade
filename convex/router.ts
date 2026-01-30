@@ -15,6 +15,7 @@ import {
   nukeTimersEndpoint,
   resetOnboardingEndpoint,
   resetTestWorkspaceEndpoint,
+  seedScreenshotDataEndpoint,
   seedTemplatesEndpoint,
   setupRbacProjectEndpoint,
   updateOrganizationSettingsEndpoint,
@@ -199,6 +200,13 @@ http.route({
   path: "/e2e/reset-workspace",
   method: "POST",
   handler: resetTestWorkspaceEndpoint,
+});
+
+// Seed screenshot data (workspace, team, project, issues, documents)
+http.route({
+  path: "/e2e/seed-screenshot-data",
+  method: "POST",
+  handler: seedScreenshotDataEndpoint,
 });
 
 export default http;

@@ -52,7 +52,7 @@ export function KeyboardShortcut({
   };
 
   const variantClasses = {
-    default: "bg-ui-bg-primary border border-ui-border-primary text-ui-text-primary shadow-sm",
+    default: "bg-ui-bg border border-ui-border text-ui-text shadow-sm",
     subtle: "bg-ui-bg-secondary text-ui-text-secondary",
   };
 

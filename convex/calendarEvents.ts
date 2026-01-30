@@ -5,7 +5,7 @@ import { batchFetchUsers } from "./lib/batchHelpers";
 import { forbidden, notFound, validation } from "./lib/errors";
 import { MAX_PAGE_SIZE } from "./lib/queryLimits";
 import { DAY, WEEK } from "./lib/timeUtils";
-import { calendarStatuses } from "./validators";
+import { type CalendarEventColor, calendarEventColors, calendarStatuses } from "./validators";
 
 /**
  * Calendar Events - CRUD operations for internal calendar
@@ -44,6 +44,7 @@ function buildEventUpdateObject(args: {
   recurrenceRule?: string;
   meetingUrl?: string;
   notes?: string;
+  color?: CalendarEventColor;
 }): Record<string, unknown> {
   const updates: Record<string, unknown> = { updatedAt: Date.now() };
 
@@ -66,6 +67,7 @@ function buildEventUpdateObject(args: {
   addFieldIfDefined(updates, "recurrenceRule", args.recurrenceRule);
   addFieldIfDefined(updates, "meetingUrl", args.meetingUrl);
   addFieldIfDefined(updates, "notes", args.notes);
+  addFieldIfDefined(updates, "color", args.color);
 
   return updates;
 }
@@ -95,6 +97,7 @@ export const create = authenticatedMutation({
     meetingUrl: v.optional(v.string()),
     notes: v.optional(v.string()),
     isRequired: v.optional(v.boolean()),
+    color: v.optional(calendarEventColors),
   },
   handler: async (ctx, args) => {
     // Validate times
@@ -123,6 +126,7 @@ export const create = authenticatedMutation({
       meetingUrl: args.meetingUrl,
       notes: args.notes,
       isRequired: args.isRequired ?? false,
+      color: args.color,
       updatedAt: now,
     });
 
@@ -297,6 +301,7 @@ export const update = authenticatedMutation({
     recurrenceRule: v.optional(v.string()),
     meetingUrl: v.optional(v.string()),
     notes: v.optional(v.string()),
+    color: v.optional(calendarEventColors),
   },
   handler: async (ctx, args) => {
     const event = await ctx.db.get(args.id);

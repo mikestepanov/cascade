@@ -174,7 +174,7 @@ export function MentionInput({
         onKeyDown={handleKeyDown}
         placeholder={placeholder}
         className={cn(
-          "w-full px-3 py-2 border border-ui-border-primary rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 bg-ui-bg-primary text-ui-text-primary resize-none overflow-hidden",
+          "w-full px-3 py-2 border border-ui-border rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-ring bg-ui-bg text-ui-text resize-none overflow-hidden",
           className,
         )}
         rows={3}
@@ -182,7 +182,7 @@ export function MentionInput({
 
       {/* Mention Suggestions Dropdown */}
       {showSuggestions && filteredMembers.length > 0 && (
-        <div className="absolute bottom-full left-0 mb-2 w-64 bg-ui-bg-primary border border-ui-border-primary rounded-lg shadow-lg max-h-48 overflow-y-auto z-50">
+        <div className="absolute bottom-full left-0 mb-2 w-64 bg-ui-bg border border-ui-border rounded-lg shadow-lg max-h-48 overflow-y-auto z-50">
           {filteredMembers.map((member, index: number) => (
             <button
               type="button"

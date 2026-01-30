@@ -36,7 +36,7 @@ describe("Button", () => {
     it("applies primary variant by default", () => {
       render(<Button data-testid="btn">Primary</Button>);
       const btn = screen.getByTestId("btn");
-      expect(btn.className).toContain("bg-brand-600");
+      expect(btn.className).toContain("bg-brand");
     });
 
     it("applies secondary variant", () => {
@@ -47,7 +47,7 @@ describe("Button", () => {
       );
       const btn = screen.getByTestId("btn");
       expect(btn.className).toContain("border");
-      expect(btn.className).toContain("bg-ui-bg-primary");
+      expect(btn.className).toContain("bg-ui-bg");
     });
 
     it("applies ghost variant", () => {
@@ -87,7 +87,7 @@ describe("Button", () => {
         </Button>,
       );
       const btn = screen.getByTestId("btn");
-      expect(btn.className).toContain("text-brand-600");
+      expect(btn.className).toContain("text-brand");
       expect(btn.className).toContain("underline-offset-4");
     });
 
@@ -303,7 +303,7 @@ describe("Button", () => {
 
     it("returns default classes when no options provided", () => {
       const classes = buttonVariants();
-      expect(classes).toContain("bg-brand-600");
+      expect(classes).toContain("bg-brand");
       expect(classes).toContain("h-10");
     });
   });

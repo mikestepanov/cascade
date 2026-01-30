@@ -420,18 +420,34 @@ export const getFocusTask = authenticatedQuery({
       return b.updatedAt - a.updatedAt; // Newest first for same priority
     })[0];
 
+    // Pick only the fields declared in the return validator
+    const picked = {
+      _id: focusTask._id,
+      _creationTime: focusTask._creationTime,
+      title: focusTask.title,
+      key: focusTask.key,
+      status: focusTask.status,
+      priority: focusTask.priority,
+      projectId: focusTask.projectId,
+      assigneeId: focusTask.assigneeId,
+      reporterId: focusTask.reporterId,
+      description: focusTask.description,
+      updatedAt: focusTask.updatedAt,
+      isDeleted: focusTask.isDeleted,
+    };
+
     // Enrich with project details
     if (focusTask.projectId) {
       const project = await ctx.db.get(focusTask.projectId);
       return {
-        ...focusTask,
+        ...picked,
         projectName: project?.name || "Unknown",
         projectKey: project?.key || "???",
       };
     }
 
     return {
-      ...focusTask,
+      ...picked,
       projectName: "Unknown",
       projectKey: "???",
     };

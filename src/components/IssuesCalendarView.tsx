@@ -123,8 +123,8 @@ export function IssuesCalendarView({
       <div
         key={day}
         className={cn(
-          "min-h-32 md:min-h-24 border border-ui-border-primary p-2",
-          isTodayDate ? "bg-brand-indigo-track" : "bg-ui-bg-primary",
+          "min-h-32 md:min-h-24 border border-ui-border p-2",
+          isTodayDate ? "bg-brand-indigo-track" : "bg-ui-bg",
         )}
       >
         <Flex align="center" justify="between" className="mb-1">
@@ -132,14 +132,14 @@ export function IssuesCalendarView({
             className={cn(
               "text-sm font-medium",
               isTodayDate
-                ? "bg-brand-600 text-white w-6 h-6 rounded-full flex items-center justify-center"
-                : "text-ui-text-primary",
+                ? "bg-brand text-white w-6 h-6 rounded-full flex items-center justify-center"
+                : "text-ui-text",
             )}
           >
             {day}
           </span>
           {dayIssues.length > 0 && (
-            <span className="text-xs bg-ui-bg-tertiary text-ui-text-primary px-1.5 py-0.5 rounded">
+            <span className="text-xs bg-ui-bg-tertiary text-ui-text px-1.5 py-0.5 rounded">
               {dayIssues.length}
             </span>
           )}
@@ -260,11 +260,11 @@ export function IssuesCalendarView({
 
       {/* Calendar Grid */}
       <div className="overflow-x-auto">
-        <div className="bg-ui-bg-primary rounded-lg border border-ui-border-primary overflow-hidden min-w-[640px]">
+        <div className="bg-ui-bg rounded-lg border border-ui-border overflow-hidden min-w-[640px]">
           {/* Weekday Headers */}
-          <div className="grid grid-cols-7 bg-ui-bg-secondary border-b border-ui-border-primary">
+          <div className="grid grid-cols-7 bg-ui-bg-secondary border-b border-ui-border">
             {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
-              <div key={day} className="p-2 text-center text-sm font-semibold text-ui-text-primary">
+              <div key={day} className="p-2 text-center text-sm font-semibold text-ui-text">
                 {day}
               </div>
             ))}
@@ -286,11 +286,11 @@ export function IssuesCalendarView({
           <span className="text-ui-text-secondary">High</span>
         </Flex>
         <Flex align="center" gap="sm">
-          <div className="w-3 h-3 rounded-full bg-accent-500" />
+          <div className="w-3 h-3 rounded-full bg-accent-ring" />
           <span className="text-ui-text-secondary">Medium</span>
         </Flex>
         <Flex align="center" gap="sm">
-          <div className="w-3 h-3 rounded-full bg-brand-500" />
+          <div className="w-3 h-3 rounded-full bg-brand-ring" />
           <span className="text-ui-text-secondary">Low</span>
         </Flex>
         <Flex align="center" gap="sm">

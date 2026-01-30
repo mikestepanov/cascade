@@ -15,20 +15,21 @@ export function Greeting({ userName, completedCount = 0 }: GreetingProps) {
   const firstName = userName?.split(" ")[0] || "there";
 
   return (
-    <div className="mb-8 animate-in fade-in slide-in-from-top-4 duration-700">
+    <div className="mb-8">
       <Flex direction="column" gap="xs">
         <Typography variant="h1" className="text-3xl sm:text-4xl font-extrabold tracking-tight">
-          {greeting}, <span className="text-brand-600">{firstName}</span>.
+          {greeting}, <span className="text-brand">{firstName}</span>.
         </Typography>
         <Typography variant="lead" color="secondary" className="max-w-2xl">
           {completedCount > 0 ? (
             <>
-              You've crushed{" "}
-              <span className="font-bold text-ui-text-primary">{completedCount} tasks</span> this
-              week. Keep that momentum going! 🚀
+              <span className="font-bold text-ui-text">
+                {completedCount} {completedCount === 1 ? "task" : "tasks"}
+              </span>{" "}
+              completed this week.
             </>
           ) : (
-            "Ready to tackle your goals for today? Let's make it productive!"
+            "Here's your overview for today."
           )}
         </Typography>
       </Flex>

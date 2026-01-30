@@ -2,9 +2,8 @@ import { api } from "@convex/_generated/api";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
 import { KanbanBoard } from "@/components/KanbanBoard";
+import { PageContent, PageHeader } from "@/components/layout";
 import { Flex } from "@/components/ui/Flex";
-import { Skeleton } from "@/components/ui/Skeleton";
-import { Typography } from "@/components/ui/Typography";
 import { useOrganization } from "@/hooks/useOrgContext";
 
 export const Route = createFileRoute(
@@ -33,24 +32,13 @@ function TeamBoardPage() {
   );
 
   if (!team) {
-    return (
-      <div className="p-6">
-        <Skeleton className="h-8 w-48 mb-6" />
-        <Flex gap="lg">
-          <Skeleton className="h-96 w-72" />
-          <Skeleton className="h-96 w-72" />
-          <Skeleton className="h-96 w-72" />
-        </Flex>
-      </div>
-    );
+    return <PageContent isLoading>{null}</PageContent>;
   }
 
   return (
     <Flex direction="column" className="h-full">
-      <div className="px-6 py-4 border-b border-ui-border-primary">
-        <Typography variant="h1" className="text-2xl font-semibold text-ui-text-primary">
-          {team.name} Board
-        </Typography>
+      <div className="px-6 py-4 border-b border-ui-border">
+        <PageHeader title={`${team.name} Board`} className="mb-0" />
       </div>
       <KanbanBoard teamId={team._id} />
     </Flex>

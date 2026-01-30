@@ -54,7 +54,7 @@ export function CustomFieldCard({ field, onEdit, onDelete }: CustomFieldCardProp
           <div className="text-2xl">{getFieldTypeIcon(field.fieldType)}</div>
           <div className="flex-1">
             <Flex gap="sm" align="center">
-              <Typography variant="h3" className="font-semibold text-ui-text-primary">
+              <Typography variant="h3" className="font-semibold text-ui-text">
                 {field.name}
               </Typography>
               {field.isRequired && <Badge variant="error">Required</Badge>}

@@ -39,9 +39,9 @@ export function DocumentEditor({ documentId }: DocumentEditorProps) {
   // Loading state - queries haven't returned yet
   if (document === undefined || userId === undefined) {
     return (
-      <Flex direction="column" className="h-full bg-ui-bg-primary">
+      <Flex direction="column" className="h-full bg-ui-bg">
         {/* Document Header Skeleton */}
-        <div className="border-b border-ui-border-primary p-6">
+        <div className="border-b border-ui-border p-6">
           <Flex align="center" justify="between" className="mb-4">
             <Skeleton className="h-8 w-1/2" />
             <Flex align="center" className="space-x-4">
@@ -175,7 +175,7 @@ export function DocumentEditor({ documentId }: DocumentEditorProps) {
   };
 
   return (
-    <Flex direction="column" className="h-full bg-ui-bg-primary">
+    <Flex direction="column" className="h-full bg-ui-bg">
       {/* Document Header */}
       <DocumentHeader
         document={document}
@@ -216,7 +216,7 @@ export function DocumentEditor({ documentId }: DocumentEditorProps) {
               <button
                 type="button"
                 onClick={() => void sync.create({ type: "doc", content: [] })}
-                className="px-3 sm:px-4 py-1.5 sm:py-2 text-sm sm:text-base bg-brand-600 text-white rounded-md hover:bg-brand-700 transition-colors"
+                className="px-3 sm:px-4 py-1.5 sm:py-2 text-sm sm:text-base bg-brand text-white rounded-md hover:bg-brand-hover transition-colors"
               >
                 Initialize Document
               </button>

@@ -47,7 +47,7 @@ export function DevToolsTab() {
       </div>
 
       {/* Onboarding Section */}
-      <div className="bg-ui-bg-primary rounded-lg border border-ui-border-primary p-6">
+      <div className="bg-ui-bg rounded-lg border border-ui-border p-6">
         <Typography variant="h3" className="mb-2">
           Onboarding
         </Typography>
@@ -70,7 +70,7 @@ export function DevToolsTab() {
       </div>
 
       {/* User Info Section */}
-      <div className="bg-ui-bg-primary rounded-lg border border-ui-border-primary p-6">
+      <div className="bg-ui-bg rounded-lg border border-ui-border p-6">
         <Typography variant="h3" className="mb-2">
           Current User Info
         </Typography>
@@ -80,15 +80,15 @@ export function DevToolsTab() {
               <Typography variant="small" color="secondary">
                 ID:
               </Typography>
-              <code className="text-ui-text-primary font-mono">{currentUser._id}</code>
+              <code className="text-ui-text font-mono">{currentUser._id}</code>
             </Flex>
             <Flex gap="sm">
               <span className="text-ui-text-secondary">Email:</span>
-              <code className="text-ui-text-primary font-mono">{currentUser.email}</code>
+              <code className="text-ui-text font-mono">{currentUser.email}</code>
             </Flex>
             <Flex gap="sm">
               <span className="text-ui-text-secondary">Test User:</span>
-              <code className="text-ui-text-primary font-mono">
+              <code className="text-ui-text font-mono">
                 {currentUser.isTestUser ? "Yes" : "No"}
               </code>
             </Flex>

@@ -111,10 +111,7 @@ export function OrganizationSettings() {
         <CardBody>
           <Flex direction="column" gap="lg">
             <div>
-              <label
-                htmlFor="orgName"
-                className="block text-sm font-medium text-ui-text-primary mb-2"
-              >
+              <label htmlFor="orgName" className="block text-sm font-medium text-ui-text mb-2">
                 Organization Name
               </label>
               <Input
@@ -144,7 +141,7 @@ export function OrganizationSettings() {
             <div>
               <label
                 htmlFor="maxHoursPerWeek"
-                className="block text-sm font-medium text-ui-text-primary mb-2"
+                className="block text-sm font-medium text-ui-text mb-2"
               >
                 Default Max Hours Per Week
               </label>
@@ -168,7 +165,7 @@ export function OrganizationSettings() {
             <div>
               <label
                 htmlFor="maxHoursPerDay"
-                className="block text-sm font-medium text-ui-text-primary mb-2"
+                className="block text-sm font-medium text-ui-text mb-2"
               >
                 Default Max Hours Per Day
               </label>

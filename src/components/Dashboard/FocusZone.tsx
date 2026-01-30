@@ -34,7 +34,7 @@ export function FocusZone({ task }: FocusZoneProps) {
   };
 
   return (
-    <div className="mb-8 animate-in fade-in zoom-in duration-500 delay-200">
+    <div className="mb-8">
       <Typography
         variant="small"
         color="tertiary"
@@ -49,42 +49,33 @@ export function FocusZone({ task }: FocusZoneProps) {
         tabIndex={0}
         role="button"
         aria-label={`Focus task: ${task.title}`}
-        className="relative overflow-hidden group border-none shadow-xl bg-gradient-to-br from-brand-600 to-accent-600 text-white p-1"
+        className="group"
       >
-        <CardBody className="bg-ui-bg-primary/95 backdrop-blur-sm rounded-md p-6">
+        <CardBody className="p-6">
           <Flex direction="column" gap="md">
             <Flex justify="between" align="center">
-              <Badge variant="primary" className="bg-brand-600 text-white border-none">
-                {task.priority.toUpperCase()}
-              </Badge>
+              <Badge variant="primary">{task.priority.toUpperCase()}</Badge>
               <Typography variant="small" color="secondary" className="font-mono">
                 {task.key}
               </Typography>
             </Flex>
 
             <div>
-              <Typography
-                variant="h3"
-                className="text-xl sm:text-2xl font-bold group-hover:text-brand-600:text-brand-400 transition-colors"
-              >
+              <Typography variant="h3" className="text-xl sm:text-2xl font-bold">
                 {task.title}
               </Typography>
               <Typography variant="muted" className="mt-1">
-                In project:{" "}
-                <span className="font-semibold text-ui-text-primary">{task.projectName}</span>
+                In project: <span className="font-semibold text-ui-text">{task.projectName}</span>
               </Typography>
             </div>
 
             <Flex justify="end">
-              <span className="text-sm font-medium text-brand-600 group-hover:translate-x-1 transition-transform inline-flex items-center gap-1">
+              <span className="text-sm font-medium text-brand inline-flex items-center gap-1">
                 View Task <span>→</span>
               </span>
             </Flex>
           </Flex>
         </CardBody>
-
-        {/* Subtle decorative glow */}
-        <div className="absolute -right-8 -top-8 w-32 h-32 bg-white/10 rounded-full blur-2xl group-hover:bg-white/20 transition-colors" />
       </Card>
     </div>
   );

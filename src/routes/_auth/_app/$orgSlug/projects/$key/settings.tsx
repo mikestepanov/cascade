@@ -1,9 +1,8 @@
 import { api } from "@convex/_generated/api";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
+import { PageContent, PageLayout } from "@/components/layout";
 import { ProjectSettings } from "@/components/ProjectSettings";
-import { Flex } from "@/components/ui/Flex";
-import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { ROUTES } from "@/config/routes";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 
@@ -22,11 +21,7 @@ function SettingsPage() {
   );
 
   if (project === undefined || userRole === undefined) {
-    return (
-      <Flex align="center" justify="center" className="h-full">
-        <LoadingSpinner message="Loading project settings..." />
-      </Flex>
-    );
+    return <PageContent isLoading>{null}</PageContent>;
   }
 
   if (!project) {
@@ -54,7 +49,7 @@ function SettingsPage() {
   const safeWorkflowStates = project.workflowStates ?? [];
 
   return (
-    <div className="p-6">
+    <PageLayout>
       <ProjectSettings
         projectId={project._id}
         name={project.name}
@@ -67,6 +62,6 @@ function SettingsPage() {
         isOwner={project.ownerId === user?._id || project.createdBy === user?._id}
         orgSlug={orgSlug}
       />
-    </div>
+    </PageLayout>
   );
 }

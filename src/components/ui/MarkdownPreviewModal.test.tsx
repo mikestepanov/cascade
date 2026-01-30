@@ -67,7 +67,7 @@ print("hello")
     await user.click(rawTab);
 
     // Raw tab should now be active (has border color)
-    expect(rawTab).toHaveClass("border-brand-500");
+    expect(rawTab).toHaveClass("border-brand-ring");
   });
 
   it("should display raw markdown in Raw tab", async () => {

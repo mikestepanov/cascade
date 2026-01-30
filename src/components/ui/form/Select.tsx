@@ -29,7 +29,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
     return (
       <div className="w-full">
         {label && (
-          <label htmlFor={selectId} className="block text-sm font-medium text-ui-text-primary mb-1">
+          <label htmlFor={selectId} className="block text-sm font-medium text-ui-text mb-1">
             {label}
           </label>
         )}
@@ -38,11 +38,11 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
           id={selectId}
           className={cn(
             "w-full px-3 py-2 border rounded-md text-sm",
-            "bg-ui-bg-primary",
-            "text-ui-text-primary",
+            "bg-ui-bg",
+            "text-ui-text",
             "focus:outline-none focus:ring-2 focus:ring-ui-border-focus focus:border-transparent",
             "disabled:opacity-50 disabled:cursor-not-allowed",
-            error ? "border-ui-border-error" : "border-ui-border-primary",
+            error ? "border-ui-border-error" : "border-ui-border",
             className,
           )}
           aria-invalid={error ? "true" : "false"}

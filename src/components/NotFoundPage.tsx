@@ -11,7 +11,7 @@ export function NotFoundPage() {
       justify="center"
       className="min-h-screen bg-ui-bg-secondary"
     >
-      <Typography variant="h1" className="text-6xl text-ui-text-primary">
+      <Typography variant="h1" className="text-6xl text-ui-text">
         404
       </Typography>
       <Typography variant="lead" className="mt-4">

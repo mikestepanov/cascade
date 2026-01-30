@@ -52,7 +52,7 @@ export function WorkspacesList({ projects, projectNavigation }: WorkspacesListPr
   const workspacesLabel = count === 1 ? "project" : "projects";
 
   return (
-    <Card className="bg-ui-bg-primary/40 backdrop-blur-md border-ui-border-primary/50">
+    <Card>
       <CardHeader title="Workspaces" description={`${count} active ${workspacesLabel}`} />
       <CardBody>
         {!projects ? (
@@ -81,15 +81,14 @@ export function WorkspacesList({ projects, projectNavigation }: WorkspacesListPr
                 onClick={() => navigateToWorkspace(project.key)}
                 {...projectNavigation.getItemProps(index)}
                 className={cn(
-                  "w-full text-left p-3 bg-ui-bg-secondary/20 hover:bg-ui-bg-secondary/40 rounded-lg group cursor-pointer transition-all hover:shadow-sm animate-in fade-in slide-in-from-right-2 duration-500",
+                  "w-full text-left p-3 bg-ui-bg-secondary/20 hover:bg-ui-bg-secondary/40 rounded-lg group cursor-pointer transition-colors",
                   projectNavigation.getItemProps(index).className,
                 )}
-                style={{ animationDelay: `${index * 50}ms` }}
               >
                 <Flex justify="between" align="center" gap="sm" className="mb-0.5">
                   <Typography
                     variant="small"
-                    className="font-bold text-ui-text-primary truncate group-hover:text-brand-600:text-brand-400 transition-colors"
+                    className="font-bold text-ui-text truncate group-hover:text-brand:text-brand-muted transition-colors"
                   >
                     {project.name}
                   </Typography>

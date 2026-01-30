@@ -4,14 +4,14 @@ import { NixeloLogo } from "./icons";
 
 export function Footer() {
   return (
-    <footer className="px-6 py-16 border-t border-ui-border-primary/20 bg-transparent transition-colors">
+    <footer className="px-6 py-16 border-t border-ui-border/20 bg-transparent transition-colors">
       <div className="max-w-6xl mx-auto">
         <div className="grid md:grid-cols-5 gap-8 mb-12">
           {/* Brand */}
           <div className="md:col-span-2">
             <Flex align="center" gap="sm" className="mb-4">
               <NixeloLogo />
-              <span className="text-xl font-semibold text-ui-text-primary">nixelo</span>
+              <span className="text-xl font-semibold text-ui-text">nixelo</span>
             </Flex>
             <Typography variant="muted" className="max-w-xs text-ui-text-secondary">
               Revolutionizing project management with intelligent automation and seamless
@@ -21,7 +21,7 @@ export function Footer() {
 
           {/* Links */}
           <div>
-            <Typography variant="h4" className="font-semibold mb-4 text-ui-text-primary">
+            <Typography variant="h4" className="font-semibold mb-4 text-ui-text">
               Product
             </Typography>
             <ul className="space-y-2">
@@ -29,7 +29,7 @@ export function Footer() {
                 <li key={item}>
                   <a
                     href="#"
-                    className="text-ui-text-tertiary hover:text-ui-text-primary text-sm transition-colors"
+                    className="text-ui-text-tertiary hover:text-ui-text text-sm transition-colors"
                   >
                     {item}
                   </a>
@@ -39,7 +39,7 @@ export function Footer() {
           </div>
 
           <div>
-            <Typography variant="h4" className="font-semibold mb-4 text-ui-text-primary">
+            <Typography variant="h4" className="font-semibold mb-4 text-ui-text">
               organization
             </Typography>
             <ul className="space-y-2">
@@ -47,7 +47,7 @@ export function Footer() {
                 <li key={item}>
                   <a
                     href="#"
-                    className="text-ui-text-tertiary hover:text-ui-text-primary text-sm transition-colors"
+                    className="text-ui-text-tertiary hover:text-ui-text text-sm transition-colors"
                   >
                     {item}
                   </a>
@@ -57,7 +57,7 @@ export function Footer() {
           </div>
 
           <div>
-            <Typography variant="h4" className="font-semibold mb-4 text-ui-text-primary">
+            <Typography variant="h4" className="font-semibold mb-4 text-ui-text">
               Resources
             </Typography>
             <ul className="space-y-2">
@@ -65,7 +65,7 @@ export function Footer() {
                 <li key={item}>
                   <a
                     href="#"
-                    className="text-ui-text-tertiary hover:text-ui-text-primary text-sm transition-colors"
+                    className="text-ui-text-tertiary hover:text-ui-text text-sm transition-colors"
                   >
                     {item}
                   </a>
@@ -80,7 +80,7 @@ export function Footer() {
           justify="between"
           align="center"
           gap="lg"
-          className="pt-8 border-t border-ui-border-primary/20 sm:flex-row"
+          className="pt-8 border-t border-ui-border/20 sm:flex-row"
         >
           <Typography variant="muted" className="text-ui-text-secondary">
             © 2026 Nixelo. All rights reserved.
@@ -91,7 +91,7 @@ export function Footer() {
               href="https://www.facebook.com/nixeloapp/"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-ui-text-tertiary hover:text-ui-text-primary transition-colors"
+              className="text-ui-text-tertiary hover:text-ui-text transition-colors"
             >
               <span className="sr-only">Follow us on Facebook</span>
               <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -102,7 +102,7 @@ export function Footer() {
               href="https://www.tiktok.com/@nixeloapp"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-ui-text-tertiary hover:text-ui-text-primary transition-colors"
+              className="text-ui-text-tertiary hover:text-ui-text transition-colors"
             >
               <span className="sr-only">Follow us on TikTok</span>
               <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -113,7 +113,7 @@ export function Footer() {
               href="https://www.patreon.com/nixelo"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-ui-text-tertiary hover:text-ui-text-primary transition-colors"
+              className="text-ui-text-tertiary hover:text-ui-text transition-colors"
             >
               <span className="sr-only">Support us on Patreon</span>
               <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -123,19 +123,19 @@ export function Footer() {
             <div className="h-4 w-px bg-ui-border-secondary" />
             <a
               href="#"
-              className="text-ui-text-secondary hover:text-ui-text-primary text-sm transition-colors"
+              className="text-ui-text-secondary hover:text-ui-text text-sm transition-colors"
             >
               Privacy
             </a>
             <a
               href="#"
-              className="text-ui-text-secondary hover:text-ui-text-primary text-sm transition-colors"
+              className="text-ui-text-secondary hover:text-ui-text text-sm transition-colors"
             >
               Terms
             </a>
             <a
               href="#"
-              className="text-ui-text-secondary hover:text-ui-text-primary text-sm transition-colors"
+              className="text-ui-text-secondary hover:text-ui-text text-sm transition-colors"
             >
               Cookies
             </a>

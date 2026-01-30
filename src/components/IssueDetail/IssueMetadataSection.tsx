@@ -29,31 +29,31 @@ export function IssueMetadataSection({
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 bg-ui-bg-secondary rounded-lg">
         <div>
           <span className="text-sm text-ui-text-tertiary">Status:</span>
-          <Typography variant="p" className="font-medium text-ui-text-primary">
+          <Typography variant="p" className="font-medium text-ui-text">
             {status}
           </Typography>
         </div>
         <div>
           <span className="text-sm text-ui-text-tertiary">Type:</span>
-          <Typography variant="p" className="font-medium capitalize text-ui-text-primary">
+          <Typography variant="p" className="font-medium capitalize text-ui-text">
             {type}
           </Typography>
         </div>
         <div>
           <span className="text-sm text-ui-text-tertiary">Assignee:</span>
-          <Typography variant="p" className="font-medium text-ui-text-primary">
+          <Typography variant="p" className="font-medium text-ui-text">
             {assignee?.name || "Unassigned"}
           </Typography>
         </div>
         <div>
           <span className="text-sm text-ui-text-tertiary">Reporter:</span>
-          <Typography variant="p" className="font-medium text-ui-text-primary">
+          <Typography variant="p" className="font-medium text-ui-text">
             {reporter?.name || "Unknown"}
           </Typography>
         </div>
         <div>
           <span className="text-sm text-ui-text-tertiary">Story Points:</span>
-          <Typography variant="p" className="font-medium text-ui-text-primary">
+          <Typography variant="p" className="font-medium text-ui-text">
             {storyPoints ?? "Not set"}
           </Typography>
         </div>
@@ -62,7 +62,7 @@ export function IssueMetadataSection({
       {/* Labels */}
       {labels.length > 0 && (
         <div>
-          <Typography variant="h3" className="text-sm font-medium text-ui-text-primary mb-2">
+          <Typography variant="h3" className="text-sm font-medium text-ui-text mb-2">
             Labels
           </Typography>
           <Flex wrap gap="sm">

@@ -71,12 +71,9 @@ export function MyIssuesList({
   const isLoadingMore = status === "LoadingMore";
 
   return (
-    <div className="flex flex-col h-full animate-in fade-in duration-700">
+    <Flex direction="column" className="h-full">
       <div className="p-6 pb-2">
-        <Typography
-          variant="h3"
-          className="text-xl font-bold bg-gradient-to-r from-brand-600 to-accent-600 bg-clip-text text-transparent"
-        >
+        <Typography variant="h3" className="text-xl font-bold">
           Feed
         </Typography>
         <Typography variant="small" color="tertiary" className="text-sm mt-1">
@@ -86,7 +83,7 @@ export function MyIssuesList({
       <Flex
         justify="between"
         align="stretch"
-        className="border-b border-ui-border-primary/50 px-4 bg-ui-bg-primary/20"
+        className="border-b border-ui-border/50 px-4 bg-ui-bg/20"
       >
         <button
           type="button"
@@ -94,8 +91,8 @@ export function MyIssuesList({
           className={cn(
             "py-3 px-2 border-b-2 transition-all font-bold text-xs uppercase tracking-wider",
             issueFilter === "assigned"
-              ? "border-brand-600 text-brand-600"
-              : "border-transparent text-ui-text-tertiary hover:text-ui-text-primary",
+              ? "border-brand text-brand"
+              : "border-transparent text-ui-text-tertiary hover:text-ui-text",
           )}
           aria-label="Filter Assigned"
         >
@@ -108,8 +105,8 @@ export function MyIssuesList({
           className={cn(
             "py-3 px-2 border-b-2 transition-all font-bold text-xs uppercase tracking-wider",
             issueFilter === "created"
-              ? "border-brand-600 text-brand-600"
-              : "border-transparent text-ui-text-tertiary hover:text-ui-text-primary",
+              ? "border-brand text-brand"
+              : "border-transparent text-ui-text-tertiary hover:text-ui-text",
           )}
           aria-label="Filter Created"
         >
@@ -145,17 +142,16 @@ export function MyIssuesList({
                 onClick={() => navigateToWorkspace(issue.projectKey)}
                 {...issueNavigation.getItemProps(index)}
                 className={cn(
-                  "w-full text-left p-3 bg-ui-bg-secondary/20 hover:bg-ui-bg-secondary/40 rounded-lg group cursor-pointer transition-all hover:shadow-sm animate-in fade-in slide-in-from-left-2 duration-500",
+                  "w-full text-left p-3 bg-ui-bg-secondary/20 hover:bg-ui-bg-secondary/40 rounded-lg group cursor-pointer transition-colors",
                   issueNavigation.getItemProps(index).className,
                 )}
-                style={{ animationDelay: `${index * 50}ms` }}
               >
                 <Flex justify="between" align="start">
                   <div className="flex-1">
                     <Flex gap="sm" align="center" className="mb-1.5">
                       <Typography
                         variant="small"
-                        className="font-mono text-xs text-ui-text-tertiary group-hover:text-brand-600 transition-colors"
+                        className="font-mono text-xs text-ui-text-tertiary group-hover:text-brand transition-colors"
                       >
                         {issue.key}
                       </Typography>
@@ -168,7 +164,7 @@ export function MyIssuesList({
                     </Flex>
                     <Typography
                       variant="h4"
-                      className="font-bold text-ui-text-primary mb-1 group-hover:text-brand-600:text-brand-400 transition-colors"
+                      className="font-bold text-ui-text mb-1 group-hover:text-brand:text-brand-muted transition-colors"
                     >
                       {issue.title}
                     </Typography>
@@ -198,6 +194,6 @@ export function MyIssuesList({
           </Flex>
         )}
       </Flex>
-    </div>
+    </Flex>
   );
 }
