@@ -2,8 +2,10 @@ import { api } from "@convex/_generated/api";
 import type { Id } from "@convex/_generated/dataModel";
 import { useMutation, useQuery } from "convex/react";
 import type { FunctionReturnType } from "convex/server";
+import { X } from "lucide-react";
 import { useState } from "react";
 import { Flex } from "@/components/ui/Flex";
+import { Tooltip } from "@/components/ui/Tooltip";
 import { showError, showSuccess } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 import { Badge } from "./ui/Badge";
@@ -153,14 +155,17 @@ export function IssueDependencies({ issueId, projectId: _workspaceId }: IssueDep
                     </Flex>
                   )}
                 </Flex>
-                <button
-                  type="button"
-                  onClick={() => setDeleteConfirm(link._id)}
-                  className="text-ui-text-tertiary hover:text-status-error p-1"
-                  title="Remove dependency"
-                >
-                  ✕
-                </button>
+                <Tooltip content="Remove dependency">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-6 w-6 text-ui-text-tertiary hover:text-status-error"
+                    onClick={() => setDeleteConfirm(link._id)}
+                    aria-label="Remove dependency"
+                  >
+                    <X className="h-3.5 w-3.5" />
+                  </Button>
+                </Tooltip>
               </Flex>
             ))}
           </div>
@@ -199,14 +204,17 @@ export function IssueDependencies({ issueId, projectId: _workspaceId }: IssueDep
                     </Flex>
                   )}
                 </Flex>
-                <button
-                  type="button"
-                  onClick={() => setDeleteConfirm(link._id)}
-                  className="text-ui-text-tertiary hover:text-status-error p-1"
-                  title="Remove dependency"
-                >
-                  ✕
-                </button>
+                <Tooltip content="Remove dependency">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-6 w-6 text-ui-text-tertiary hover:text-status-error"
+                    onClick={() => setDeleteConfirm(link._id)}
+                    aria-label="Remove dependency"
+                  >
+                    <X className="h-3.5 w-3.5" />
+                  </Button>
+                </Tooltip>
               </Flex>
             ))}
           </div>
