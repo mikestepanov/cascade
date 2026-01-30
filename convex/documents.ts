@@ -98,7 +98,7 @@ export const list = authenticatedQuery({
     // If organizationId is provided, filter by it
     let privateDocumentsQuery = ctx.db
       .query("documents")
-      .withIndex("by_creator", (q) => q.eq("createdBy", ctx.userId))
+      .withIndex("by_creator_updated", (q) => q.eq("createdBy", ctx.userId))
       .filter((q) => q.eq(q.field("isPublic"), false));
 
     if (args.organizationId) {
