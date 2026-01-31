@@ -9,6 +9,7 @@ import type { Id } from "../_generated/dataModel";
 import { internalAction, internalMutation, internalQuery } from "../_generated/server";
 import { getVoyageApiKey } from "../lib/env";
 import { notFound, validation } from "../lib/errors";
+import { assertCanAccessProject } from "../projectAccess";
 import { chatRoles } from "../validators";
 
 /**
@@ -135,8 +136,11 @@ export const addMessage = internalMutation({
 export const getProjectContext = internalQuery({
   args: {
     projectId: v.id("projects"),
+    userId: v.id("users"),
   },
   handler: async (ctx, args) => {
+    await assertCanAccessProject(ctx, args.projectId, args.userId);
+
     const project = await ctx.db.get(args.projectId);
     if (!project) return "";
 

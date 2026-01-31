@@ -1,0 +1,33 @@
+{
+  "body": "🚨 Severity: HIGH\n💡 Vulnerability: Insecure Direct Object Reference (IDOR) in `getProjectContext`.\n🎯 Impact: Unauthorized users could retrieve sensitive project information (sprints, issue stats) by manipulating the `projectId` passed to the AI chat.\n🔧 Fix: Updated `convex/internal/ai.ts` to require `userId` and use `assertCanAccessProject` to verify permissions before returning context.\n✅ Verification: Ran updated tests in `convex/internal/ai.test.ts` which now includes a test case for unauthorized access.\n\n---\n*PR created automatically by Jules for task [18083600182291721379](https://jules.google.com/task/18083600182291721379) started by @mikestepanov*\n\n<!-- This is an auto-generated comment: release notes by coderabbit.ai -->\n## Summary by CodeRabbit\n\n* **New Features**\n  * Project context retrieval now requires a user identity; requests without matching user access will error.\n\n* **Accessibility**\n  * Calendar day cells are keyboard-focusable and exposed as interactive elements.\n\n* **Tests**\n  * Tests updated to cover user-scoped project access and unauthorized access denial; several tests were renamed, removed, or consolidated with shared mock helpers.\n\n* **Chores**\n  * Linting/formatting and validation scripts refined for clearer rules and safer output handling.\n\n<sub>✏️ Tip: You can customize this high-level summary in your review settings.</sub>\n<!-- end of auto-generated comment: release notes by coderabbit.ai -->",
+  "files": [
+    { "path": "biome.json", "additions": 87, "deletions": 161 },
+    { "path": "convex/ai/chat.ts", "additions": 1, "deletions": 0 },
+    { "path": "convex/customFields.test.ts", "additions": 1, "deletions": 1 },
+    { "path": "convex/e2e.ts", "additions": 3, "deletions": 3 },
+    { "path": "convex/internal/ai.test.ts", "additions": 15, "deletions": 3 },
+    { "path": "convex/internal/ai.ts", "additions": 4, "deletions": 0 },
+    { "path": "convex/invites.test.ts", "additions": 2, "deletions": 1 },
+    { "path": "convex/lib/softDeleteHelpers.test.ts", "additions": 1, "deletions": 1 },
+    { "path": "convex/users.ts", "additions": 1, "deletions": 1 },
+    { "path": "convex/workspaces.ts", "additions": 1, "deletions": 1 },
+    { "path": "scripts/validate.js", "additions": 13, "deletions": 7 },
+    { "path": "scripts/validate/check-api-calls.js", "additions": 16, "deletions": 4 },
+    { "path": "scripts/validate/check-arbitrary-tw.js", "additions": 2, "deletions": 2 },
+    { "path": "scripts/validate/check-colors.js", "additions": 144, "deletions": 36 },
+    { "path": "scripts/validate/check-queries.js", "additions": 97, "deletions": 21 },
+    { "path": "scripts/validate/check-standards.js", "additions": 45, "deletions": 10 },
+    { "path": "src/components/Calendar/CalendarView.tsx", "additions": 1, "deletions": 1 },
+    {
+      "path": "src/components/Calendar/shadcn-calendar/body/month/calendar-body-month.tsx",
+      "additions": 2,
+      "deletions": 0
+    },
+    { "path": "src/components/Dashboard/MyIssuesList.test.tsx", "additions": 0, "deletions": 14 },
+    { "path": "src/components/Dashboard/ProjectsList.test.tsx", "additions": 0, "deletions": 15 },
+    { "path": "src/components/IssueDetailModal.test.tsx", "additions": 30, "deletions": 40 },
+    { "path": "tailwind.config.js", "additions": 50, "deletions": 10 }
+  ],
+  "title": "🛡️ Sentinel: [HIGH] Fix IDOR in AI project context retrieval",
+  "url": "https://github.com/NixeloApp/cascade/pull/139"
+}

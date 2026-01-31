@@ -1195,7 +1195,7 @@ export const setupRbacProjectInternal = internalMutation({
     // =========================================================================
     // Step 5: Add/update project members with roles for all projects
     // =========================================================================
-    const projectId = project._id;
+    const _projectId = project._id;
     const memberConfigs = [
       { userId: adminUser._id, role: "admin" as const },
       { userId: editorUser._id, role: "editor" as const },
@@ -1323,7 +1323,7 @@ export const cleanupRbacProjectInternal = internalMutation({
 
     // Capture workspace ID before deleting project
     const workspaceId = project.workspaceId;
-    const teamId = project.teamId;
+    const _teamId = project.teamId;
 
     // Delete all project members
     const members = await ctx.db
@@ -2077,7 +2077,7 @@ export const nukeWorkspacesInternal = internalMutation({
     // This catches data where the creator user was already deleted
 
     // Delete orphan organizations by slug/name pattern
-    const orphanOrganizations = await ctx.db
+    const _orphanOrganizations = await ctx.db
       .query("organizations")
       .withIndex("by_slug")
       .filter((q) => q.or(q.eq(q.field("slug"), "nixelo-e2e"), q.eq(q.field("name"), "Nixelo E2E")))

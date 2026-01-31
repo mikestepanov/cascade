@@ -6,209 +6,135 @@
     "useIgnoreFile": true
   },
   "files": {
-    "ignoreUnknown": true,
-    "includes": ["**", "!!**/*.css"]
+    "ignoreUnknown": false,
+    "includes": [
+      "**",
+      "!**/convex/_generated",
+      "!**/dist",
+      "!**/coverage",
+      "!**/src/routeTree.gen.ts",
+      "!**/routeTree.gen.ts",
+      "!**/.vinxi",
+      "!**/.output",
+      "!**/node_modules"
+    ]
   },
-  "overrides": [
-    {
-      "includes": ["convex/lib/logger.ts", "src/components/ErrorBoundary.tsx"],
-      "linter": {
-        "rules": {
-          "suspicious": { "noConsole": "off" }
-        }
-      }
-    },
-
-    {
-      "includes": ["convex/_generated/**", "src/routeTree.gen.ts"],
-      "linter": { "enabled": false },
-      "formatter": { "enabled": false },
-      "assist": { "enabled": false }
-    },
-    {
-      "includes": [
-        "**/*.test.ts",
-        "**/*.test.tsx",
-        "**/*.spec.ts",
-        "**/*.spec.tsx",
-        "e2e/**",
-        "convex/e2e.ts"
-      ],
-      "linter": {
-        "rules": {
-          "suspicious": {
-            "noExplicitAny": "off",
-            "noConsole": "off",
-            "noEmptyBlockStatements": "off",
-            "useAwait": "off"
-          },
-          "correctness": {
-            "noUnusedVariables": "off",
-            "noEmptyPattern": "off"
-          },
-          "complexity": {
-            "noExcessiveCognitiveComplexity": "off"
-          }
-        }
-      }
-    },
-    {
-      "includes": ["bot-service/**"],
-      "linter": {
-        "rules": {
-          "suspicious": {
-            "noEmptyBlockStatements": "off",
-            "useAwait": "off"
-          },
-          "style": {
-            "noNonNullAssertion": "off"
-          },
-          "complexity": {
-            "noExcessiveCognitiveComplexity": "off"
-          }
-        }
-      }
-    },
-    {
-      "includes": ["**/*.css"],
-      "linter": { "enabled": false }
-    },
-    {
-      "includes": ["src/components/landing/**"],
-      "linter": {
-        "rules": {
-          "a11y": {
-            "noSvgWithoutTitle": "off",
-            "useValidAnchor": "off"
-          }
-        }
-      }
-    },
-    {
-      "includes": ["scripts/**", "scripts/**/*.mjs"],
-      "linter": {
-        "rules": {
-          "suspicious": {
-            "noConsole": "off",
-            "useIterableCallbackReturn": "off"
-          },
-          "style": {
-            "useNodejsImportProtocol": "off",
-            "useTemplate": "off"
-          },
-          "complexity": {
-            "noExcessiveCognitiveComplexity": "off"
-          }
-        }
-      }
-    }
-  ],
   "formatter": {
     "enabled": true,
     "indentStyle": "space",
     "indentWidth": 2,
-    "lineWidth": 100,
-    "lineEnding": "lf"
+    "lineWidth": 100
+  },
+  "assist": {
+    "actions": {
+      "source": {
+        "organizeImports": "on"
+      }
+    }
   },
   "linter": {
     "enabled": true,
     "rules": {
       "recommended": true,
-      "a11y": {
-        "noAccessKey": "error",
-        "noAutofocus": "warn",
-        "noPositiveTabindex": "error",
-        "noRedundantAlt": "error",
-        "noStaticElementInteractions": "warn",
-        "useAltText": "error",
-        "useAnchorContent": "error",
-        "useButtonType": "error",
-        "useHeadingContent": "error",
-        "useHtmlLang": "error",
-        "useIframeTitle": "error",
-        "useKeyWithClickEvents": "warn",
-        "useKeyWithMouseEvents": "warn",
-        "useValidAnchor": "error"
+      "style": {
+        "noNonNullAssertion": "warn"
       },
       "complexity": {
-        "noExcessiveCognitiveComplexity": "warn",
-        "noForEach": "off",
-        "noUselessFragments": "error",
-        "noUselessTernary": "error",
-        "useOptionalChain": "error",
-        "useSimplifiedLogicExpression": "error"
+        "noExcessiveCognitiveComplexity": "warn"
       },
-      "correctness": {
-        "noChildrenProp": "error",
-        "noUnreachable": "error",
-        "noUnusedVariables": "error",
-        "noVoidElementsWithChildren": "error",
-        "useExhaustiveDependencies": "warn",
-        "useHookAtTopLevel": "error"
-      },
-      "performance": {
-        "noAccumulatingSpread": "warn",
-        "noDelete": "warn"
-      },
-      "security": {
-        "noDangerouslySetInnerHtml": "warn"
-      },
-      "style": {
-        "noDefaultExport": "off",
-        "noInferrableTypes": "warn",
-        "noNonNullAssertion": "warn",
-        "noParameterAssign": "error",
-        "useConst": "error",
-        "useExportType": "warn",
-        "useForOf": "warn",
-        "useFragmentSyntax": "error",
-        "useImportType": "warn",
-        "useSelfClosingElements": "error",
-        "useTemplate": "warn"
+      "a11y": {
+        "useSemanticElements": "warn",
+        "noStaticElementInteractions": "warn",
+        "useKeyWithClickEvents": "warn"
       },
       "suspicious": {
-        "noArrayIndexKey": "warn",
-        "noConsole": "warn",
-        "noDebugger": "warn",
-        "noDoubleEquals": "error",
-        "noDuplicateJsxProps": "error",
-        "noEmptyBlockStatements": "warn",
-        "noExplicitAny": "warn",
-        "noFallthroughSwitchClause": "error",
-        "useAwait": "warn"
+        "noExplicitAny": "warn"
       },
-      "nursery": {
-        "useExhaustiveSwitchCases": "warn"
+      "correctness": {
+        "noUnusedVariables": "warn"
       }
     }
   },
   "javascript": {
     "formatter": {
-      "quoteStyle": "double",
-      "jsxQuoteStyle": "double",
-      "trailingCommas": "all",
-      "semicolons": "always",
-      "arrowParentheses": "always",
-      "bracketSpacing": true,
-      "bracketSameLine": false
-    }
-  },
-  "json": {
-    "formatter": {
-      "enabled": true
-    },
-    "parser": {
-      "allowComments": true
+      "quoteStyle": "double"
     }
   },
   "css": {
     "parser": {
-      "cssModules": false,
-      "allowWrongLineComments": true,
-      "tailwindDirectives": true
-    },
-    "formatter": {
-      "enabled": false
+      "cssModules": true
     }
-  }
+  },
+  "overrides": [
+    {
+      "includes": ["**/convex/schema.ts"],
+      "linter": {
+        "rules": {
+          "complexity": {
+            "noExcessiveCognitiveComplexity": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": ["**/convex/projects.ts"],
+      "linter": {
+        "rules": {
+          "complexity": {
+            "noExcessiveCognitiveComplexity": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": ["**/src/components/Calendar/shadcn-calendar/**"],
+      "linter": {
+        "rules": {
+          "a11y": {
+            "useSemanticElements": "off",
+            "noStaticElementInteractions": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": ["**/src/index.css"],
+      "linter": {
+        "enabled": false
+      }
+    },
+    {
+      "includes": ["**/convex/e2e.ts"],
+      "linter": {
+        "rules": {
+          "complexity": {
+            "noExcessiveCognitiveComplexity": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": ["**/bot-service/src/services/transcription-providers/*.ts"],
+      "linter": {
+        "rules": {
+          "complexity": {
+            "noExcessiveCognitiveComplexity": "off"
+          },
+          "style": {
+            "noNonNullAssertion": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": ["**/bot-service/src/utils/retry.ts"],
+      "linter": {
+        "rules": {
+          "complexity": {
+            "noExcessiveCognitiveComplexity": "off"
+          }
+        }
+      }
+    }
+  ]
 }

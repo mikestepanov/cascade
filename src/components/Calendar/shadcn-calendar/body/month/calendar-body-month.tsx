@@ -70,6 +70,8 @@ export function CalendarBodyMonth(): React.ReactElement {
             return (
               <div
                 key={day.toISOString()}
+                role="button"
+                tabIndex={0}
                 className={cn(
                   "relative flex flex-col border-b border-r border-ui-border p-2 min-h-30 cursor-pointer hover:bg-ui-bg-tertiary/30 transition-colors",
                   !isCurrentMonth && "bg-ui-bg-tertiary/50 hidden md:flex",

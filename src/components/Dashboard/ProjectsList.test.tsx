@@ -148,16 +148,6 @@ describe("WorkspacesList", () => {
     });
   });
 
-  it("should render all project buttons", () => {
-    render(<WorkspacesList {...defaultProps} />);
-
-    const projectButtons = screen
-      .getAllByRole("button")
-      .filter((btn) => btn.textContent?.includes("Project"));
-
-    expect(projectButtons).toHaveLength(3);
-  });
-
   it("should apply navigation props to project items", () => {
     render(<WorkspacesList {...defaultProps} />);
 

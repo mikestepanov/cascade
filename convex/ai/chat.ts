@@ -110,6 +110,7 @@ export const chat = action({
     if (args.projectId) {
       context = await ctx.runQuery(internal.internal.ai.getProjectContext, {
         projectId: args.projectId,
+        userId,
       });
     }
 

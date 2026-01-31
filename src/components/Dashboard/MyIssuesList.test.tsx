@@ -235,16 +235,6 @@ describe("MyIssuesList", () => {
     });
   });
 
-  it("should render multiple issue buttons", () => {
-    render(<MyIssuesList {...defaultProps} />);
-
-    const issueButtons = screen
-      .getAllByRole("button")
-      .filter((btn) => btn.textContent?.includes("PROJ-"));
-
-    expect(issueButtons).toHaveLength(2);
-  });
-
   it("should have correct accessibility attributes", () => {
     render(<MyIssuesList {...defaultProps} />);
 

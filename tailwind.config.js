@@ -30,61 +30,51 @@ module.exports = {
             DEFAULT: "var(--color-palette-blue)",
             bg: "var(--color-palette-blue-bg)",
             text: "var(--color-palette-blue-text)",
-            solid: "var(--color-palette-blue-solid)",
           },
           red: {
             DEFAULT: "var(--color-palette-red)",
             bg: "var(--color-palette-red-bg)",
             text: "var(--color-palette-red-text)",
-            solid: "var(--color-palette-red-solid)",
           },
           green: {
             DEFAULT: "var(--color-palette-green)",
             bg: "var(--color-palette-green-bg)",
             text: "var(--color-palette-green-text)",
-            solid: "var(--color-palette-green-solid)",
           },
           amber: {
             DEFAULT: "var(--color-palette-amber)",
             bg: "var(--color-palette-amber-bg)",
             text: "var(--color-palette-amber-text)",
-            solid: "var(--color-palette-amber-solid)",
           },
           orange: {
             DEFAULT: "var(--color-palette-orange)",
             bg: "var(--color-palette-orange-bg)",
             text: "var(--color-palette-orange-text)",
-            solid: "var(--color-palette-orange-solid)",
           },
           purple: {
             DEFAULT: "var(--color-palette-purple)",
             bg: "var(--color-palette-purple-bg)",
             text: "var(--color-palette-purple-text)",
-            solid: "var(--color-palette-purple-solid)",
           },
           pink: {
             DEFAULT: "var(--color-palette-pink)",
             bg: "var(--color-palette-pink-bg)",
             text: "var(--color-palette-pink-text)",
-            solid: "var(--color-palette-pink-solid)",
           },
           teal: {
             DEFAULT: "var(--color-palette-teal)",
             bg: "var(--color-palette-teal-bg)",
             text: "var(--color-palette-teal-text)",
-            solid: "var(--color-palette-teal-solid)",
           },
           indigo: {
             DEFAULT: "var(--color-palette-indigo)",
             bg: "var(--color-palette-indigo-bg)",
             text: "var(--color-palette-indigo-text)",
-            solid: "var(--color-palette-indigo-solid)",
           },
           gray: {
             DEFAULT: "var(--color-palette-gray)",
             bg: "var(--color-palette-gray-bg)",
             text: "var(--color-palette-gray-text)",
-            solid: "var(--color-palette-gray-solid)",
           },
         },
 
@@ -189,6 +179,12 @@ module.exports = {
             alt: "var(--color-landing-accent-alt)",
             teal: "var(--color-landing-accent-teal)",
           },
+        },
+
+        // shadcn compatibility alias
+        primary: {
+          DEFAULT: "var(--color-brand)",
+          hover: "var(--color-brand-hover)",
         },
 
         // Brand feature accents (time tracking, calendar, onboarding)

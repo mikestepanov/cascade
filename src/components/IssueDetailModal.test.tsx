@@ -78,6 +78,7 @@ vi.mock("./IssueWatchers", () => ({
 
 describe("IssueDetailModal", () => {
   const mockUpdateIssue = vi.fn();
+  const _mockCreateIssue = vi.fn();
   const mockOnOpenChange = vi.fn();
   const mockIssueId = "issue-123" as Id<"issues">;
 
@@ -104,21 +105,21 @@ describe("IssueDetailModal", () => {
     projectId: "project-123" as Id<"projects">,
   };
 
-  // Helper: stable mock that survives React re-renders.
-  // useIssueDetail calls useQuery twice per render (issue + subtasks).
-  // Odd calls return issue data, even calls return [] (subtasks).
-  function mockQueries(issueData: unknown = mockIssue): void {
-    let callCount = 0;
-    vi.mocked(useQuery).mockImplementation(() => {
-      callCount++;
-      return callCount % 2 === 1 ? issueData : [];
-    });
-  }
-
   beforeEach(() => {
     vi.clearAllMocks();
     vi.mocked(useMutation).mockReturnValue(mockUpdateIssue as any);
   });
+
+  const setupMockQuery = (issueData: any = mockIssue, subtasksData: any = []) => {
+    vi.mocked(useQuery).mockImplementation((_query: any, args: any) => {
+      // Identify query by arguments
+      if (args && args.id === mockIssueId) return issueData;
+      if (args && args.parentId === mockIssueId) return subtasksData;
+
+      // Fallback to undefined (loading)
+      return undefined;
+    });
+  };
 
   it("should show loading state when issue is undefined", () => {
     vi.mocked(useQuery).mockReturnValue(undefined);
@@ -130,7 +131,7 @@ describe("IssueDetailModal", () => {
   });
 
   it("should render issue details", () => {
-    mockQueries();
+    setupMockQuery();
 
     renderModal();
 
@@ -140,7 +141,7 @@ describe("IssueDetailModal", () => {
   });
 
   it("should display issue metadata", () => {
-    mockQueries();
+    setupMockQuery();
 
     renderModal();
 
@@ -150,7 +151,7 @@ describe("IssueDetailModal", () => {
   });
 
   it("should display labels", () => {
-    mockQueries();
+    setupMockQuery();
 
     renderModal();
 
@@ -159,7 +160,7 @@ describe("IssueDetailModal", () => {
   });
 
   it("should show correct type icon", () => {
-    mockQueries();
+    setupMockQuery();
 
     renderModal();
 
@@ -167,7 +168,7 @@ describe("IssueDetailModal", () => {
   });
 
   it("should show priority badge with correct color", () => {
-    mockQueries();
+    setupMockQuery();
 
     renderModal();
 
@@ -177,7 +178,7 @@ describe("IssueDetailModal", () => {
   });
 
   it("should render TimeTracker component", () => {
-    mockQueries();
+    setupMockQuery();
 
     renderModal();
 
@@ -186,7 +187,7 @@ describe("IssueDetailModal", () => {
 
   it("should close modal when close button is clicked", async () => {
     const user = userEvent.setup();
-    mockQueries();
+    setupMockQuery();
 
     renderModal();
 
@@ -199,7 +200,7 @@ describe("IssueDetailModal", () => {
 
   it("should close modal when close button is clicked via dialog-close", async () => {
     const user = userEvent.setup();
-    mockQueries();
+    setupMockQuery();
 
     renderModal();
 
@@ -213,12 +214,7 @@ describe("IssueDetailModal", () => {
 
   it("should enter edit mode when Edit button is clicked", async () => {
     const user = userEvent.setup();
-    let callCount = 0;
-    vi.mocked(useQuery).mockImplementation(() => {
-      callCount++;
-      // Alternate between issue and subtasks: odd calls return issue, even calls return []
-      return callCount % 2 === 1 ? mockIssue : [];
-    });
+    setupMockQuery();
 
     renderModal();
 
@@ -231,11 +227,7 @@ describe("IssueDetailModal", () => {
 
   it("should allow editing title and description", async () => {
     const user = userEvent.setup();
-    let callCount = 0;
-    vi.mocked(useQuery).mockImplementation(() => {
-      callCount++;
-      return callCount % 2 === 1 ? mockIssue : [];
-    });
+    setupMockQuery();
 
     renderModal();
 
@@ -261,11 +253,7 @@ describe("IssueDetailModal", () => {
 
   it("should call update mutation when Save is clicked", async () => {
     const user = userEvent.setup();
-    let callCount = 0;
-    vi.mocked(useQuery).mockImplementation(() => {
-      callCount++;
-      return callCount % 2 === 1 ? mockIssue : [];
-    });
+    setupMockQuery();
     mockUpdateIssue.mockResolvedValue(undefined);
 
     renderModal();
@@ -291,11 +279,7 @@ describe("IssueDetailModal", () => {
 
   it("should exit edit mode when Cancel is clicked", async () => {
     const user = userEvent.setup();
-    let callCount = 0;
-    vi.mocked(useQuery).mockImplementation(() => {
-      callCount++;
-      return callCount % 2 === 1 ? mockIssue : [];
-    });
+    setupMockQuery();
 
     renderModal();
 
@@ -314,7 +298,8 @@ describe("IssueDetailModal", () => {
   });
 
   it("should show No description provided when description is empty", () => {
-    mockQueries({ ...mockIssue, description: "" });
+    const issueWithoutDescription = { ...mockIssue, description: "" };
+    setupMockQuery(issueWithoutDescription);
 
     renderModal();
 
@@ -322,7 +307,8 @@ describe("IssueDetailModal", () => {
   });
 
   it("should show Unassigned when no assignee", () => {
-    mockQueries({ ...mockIssue, assignee: null });
+    const issueWithoutAssignee = { ...mockIssue, assignee: null };
+    setupMockQuery(issueWithoutAssignee);
 
     renderModal();
 
@@ -330,7 +316,8 @@ describe("IssueDetailModal", () => {
   });
 
   it("should not show Labels section when no labels", () => {
-    mockQueries({ ...mockIssue, labels: [] });
+    const issueWithoutLabels = { ...mockIssue, labels: [] };
+    setupMockQuery(issueWithoutLabels);
 
     renderModal();
 
@@ -339,11 +326,7 @@ describe("IssueDetailModal", () => {
 
   it("should handle save error gracefully", async () => {
     const user = userEvent.setup();
-    let callCount = 0;
-    vi.mocked(useQuery).mockImplementation(() => {
-      callCount++;
-      return callCount % 2 === 1 ? mockIssue : [];
-    });
+    setupMockQuery();
     mockUpdateIssue.mockRejectedValue(new Error("Network error"));
 
     const { showError } = await import("@/lib/toast");
@@ -366,7 +349,7 @@ describe("IssueDetailModal", () => {
   });
 
   it("should display story points in metadata", () => {
-    mockQueries();
+    setupMockQuery();
 
     renderModal();
 
@@ -375,7 +358,8 @@ describe("IssueDetailModal", () => {
   });
 
   it("should show 'Not set' when story points is undefined", () => {
-    mockQueries({ ...mockIssue, storyPoints: undefined });
+    const issueWithoutStoryPoints = { ...mockIssue, storyPoints: undefined };
+    setupMockQuery(issueWithoutStoryPoints);
 
     renderModal();
 
@@ -384,7 +368,8 @@ describe("IssueDetailModal", () => {
   });
 
   it("should display decimal story points correctly", () => {
-    mockQueries({ ...mockIssue, storyPoints: 3.5 });
+    const issueWithDecimalPoints = { ...mockIssue, storyPoints: 3.5 };
+    setupMockQuery(issueWithDecimalPoints);
 
     renderModal();
 

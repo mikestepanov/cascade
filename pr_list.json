@@ -1,0 +1,35 @@
+[
+  {
+    "author": {
+      "id": "MDQ6VXNlcjI2ODEyNDY4",
+      "is_bot": false,
+      "login": "mikestepanov",
+      "name": "Mikhail Stepanov"
+    },
+    "number": 139,
+    "title": "🛡️ Sentinel: [HIGH] Fix IDOR in AI project context retrieval",
+    "url": "https://github.com/NixeloApp/cascade/pull/139"
+  },
+  {
+    "author": {
+      "id": "MDQ6VXNlcjI2ODEyNDY4",
+      "is_bot": false,
+      "login": "mikestepanov",
+      "name": "Mikhail Stepanov"
+    },
+    "number": 138,
+    "title": "🎨 Palette: Add focus styles and refactor buttons",
+    "url": "https://github.com/NixeloApp/cascade/pull/138"
+  },
+  {
+    "author": {
+      "id": "MDQ6VXNlcjI2ODEyNDY4",
+      "is_bot": false,
+      "login": "mikestepanov",
+      "name": "Mikhail Stepanov"
+    },
+    "number": 137,
+    "title": "⚡ Bolt: Optimize status counts with covering indexes",
+    "url": "https://github.com/NixeloApp/cascade/pull/137"
+  }
+]

@@ -179,24 +179,47 @@ export function run() {
       // Tier 1 primitive usage (var(--p-*) in component files — index.css defines them, so skip it)
       if (!rel.endsWith("index.css")) {
         const TIER1_RE = /var\(--p-[a-z]+-\d+\)/g;
+<<<<<<< HEAD
         for (const t1Match of line.matchAll(TIER1_RE)) {
-          findings.push({
+=======
+        TIER1_RE.lastIndex = 0;
+        const t1Match = TIER1_RE.exec(line);
+        while (t1Match !== null) {
+>>>>>>> origin/sentinel-fix-idor-ai-chat-18083600182291721379
+          findings.push(
             file: rel,
             line: lineNum,
             category: "TIER1",
             type: "css-var",
-            value: t1Match[0],
-          });
+            value: t1Match[0],);
+<<<<<<< HEAD
+=======
+          t1Match = TIER1_RE.exec(line);
+>>>>>>> origin/sentinel-fix-idor-ai-chat-18083600182291721379
         }
       }
 
       // Tailwind color classes
+<<<<<<< HEAD
       for (const twMatch of line.matchAll(TW_COLOR_RE)) {
         const category = classifyTwColor(twMatch[1]);
+=======
+      let match;
+      TW_COLOR_RE.lastIndex = 0;
+      match = TW_COLOR_RE.exec(line);
+      while (match !== null) {
+        const category = classifyTwColor(match[1]);
+>>>>>>> origin/sentinel-fix-idor-ai-chat-18083600182291721379
         if (category === "SEMANTIC" || category === "SHADCN" || category === "UNKNOWN") {
           if (category === "SEMANTIC") semanticCount++;
+          match = TW_COLOR_RE.exec(line);
           continue;
         }
+        if (category === "RAW" && isAllowed(rel, ALLOWLIST_RAW_TAILWIND)) {
+          match = TW_COLOR_RE.exec(line);
+          continue;
+        }
+<<<<<<< HEAD
         if (category === "RAW" && isAllowed(rel, ALLOWLIST_RAW_TAILWIND)) continue;
         findings.push({ file: rel, line: lineNum, category, type: "tw-class", value: twMatch[0] });
       }
@@ -207,17 +230,52 @@ export function run() {
         const hex = hexMatch[0].toLowerCase();
         if (hex.length < 4) continue;
         if (isAllowed(rel, ALLOWLIST_HARDCODED_HEX)) continue;
-        findings.push({ file: rel, line: lineNum, category: "HARDCODED", type: "hex", value: hex });
+=======
+        findings.push(file: rel, line: lineNum, category, type: "tw-class", value: match[0] );
+        match = TW_COLOR_RE.exec(line);
+      }
+
+      // Hex colors
+      HEX_RE.lastIndex = 0;
+      match = HEX_RE.exec(line);
+      while (match !== null) {
+        if (trimmed.startsWith("import ")) {
+          match = HEX_RE.exec(line);
+          continue;
+        }
+        const hex = match[0].toLowerCase();
+        if (hex.length < 4) {
+          match = HEX_RE.exec(line);
+          continue;
+        }
+        if (isAllowed(rel, ALLOWLIST_HARDCODED_HEX)) {
+          match = HEX_RE.exec(line);
+          continue;
+        }
+>>>>>>> origin/sentinel-fix-idor-ai-chat-18083600182291721379
+        findings.push(file: rel, line: lineNum, category: "HARDCODED", type: "hex", value: hex );
+        match = HEX_RE.exec(line);
       }
 
       // rgb/rgba/hsl/hsla
+<<<<<<< HEAD
       for (const funcMatch of line.matchAll(FUNC_COLOR_RE)) {
         if (isAllowed(rel, ALLOWLIST_HARDCODED_HEX)) continue;
-        findings.push({
+=======
+      FUNC_COLOR_RE.lastIndex = 0;
+      match = FUNC_COLOR_RE.exec(line);
+      while (match !== null) {
+        if (isAllowed(rel, ALLOWLIST_HARDCODED_HEX)) {
+          match = FUNC_COLOR_RE.exec(line);
+          continue;
+        }
+>>>>>>> origin/sentinel-fix-idor-ai-chat-18083600182291721379
+        findings.push(
           file: rel,
           line: lineNum,
           category: "HARDCODED",
           type: "func",
+<<<<<<< HEAD
           value: funcMatch[0],
         });
       }
@@ -227,13 +285,39 @@ export function run() {
         if (isAllowed(rel, ALLOWLIST_HARDCODED_HEX)) continue;
         const styleValue = styleMatch[0].replace(/.*:\s*["']/, "").replace(/["']$/, "");
         if (!/^(#|rgb|hsl|transparent|currentColor|inherit|white|black)/.test(styleValue)) continue;
+=======
+          value: match[0],
+        });
+        match = FUNC_COLOR_RE.exec(line);
+      }
+
+      // Style object color properties
+      STYLE_PROP_RE.lastIndex = 0;
+      match = STYLE_PROP_RE.exec(line);
+      while (match !== null) {
+        if (isAllowed(rel, ALLOWLIST_HARDCODED_HEX)) {
+          match = STYLE_PROP_RE.exec(line);
+          continue;
+        }
+        const styleValue = match[0].replace(/.*:\s*["']/, "").replace(/["']$/, "");
+        if (!/^(#|rgb|hsl|transparent|currentColor|inherit|white|black)/.test(styleValue)) {
+          match = STYLE_PROP_RE.exec(line);
+          continue;
+        }
+>>>>>>> origin/sentinel-fix-idor-ai-chat-18083600182291721379
         findings.push({
           file: rel,
           line: lineNum,
           category: "HARDCODED",
           type: "style-prop",
+<<<<<<< HEAD
           value: styleMatch[0],
         });
+=======
+          value: match[0],
+        });
+        match = STYLE_PROP_RE.exec(line);
+>>>>>>> origin/sentinel-fix-idor-ai-chat-18083600182291721379
       }
     }
   }

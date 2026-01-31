@@ -90,7 +90,7 @@ describe("Internal AI", () => {
       // convex-test t.query can run internal queries.
 
       // Add an active sprint
-      const sprintId = await t.run(async (ctx) => {
+      const _sprintId = await t.run(async (ctx) => {
         return await ctx.db.insert("sprints", {
           projectId,
           name: "Active Sprint",
@@ -144,7 +144,7 @@ describe("Internal AI", () => {
         });
       });
 
-      const context = await t.query(internal.internal.ai.getProjectContext, { projectId });
+      const context = await t.query(internal.internal.ai.getProjectContext, { projectId, userId });
 
       expect(context).toContain("Project: Context Project (CTX)");
       expect(context).toContain("Active Sprint: Active Sprint");
@@ -158,9 +158,21 @@ describe("Internal AI", () => {
       const userId = await createTestUser(t);
       const projectId = await createTestProject(t, userId);
 
-      const context = await t.query(internal.internal.ai.getProjectContext, { projectId });
+      const context = await t.query(internal.internal.ai.getProjectContext, { projectId, userId });
       expect(context).toContain("Active Sprint: None");
       expect(context).toContain("Total Issues: 0");
+    });
+
+    it("should throw if user does not have access", async () => {
+      const t = convexTest(schema, modules);
+      const ownerId = await createTestUser(t);
+      const projectId = await createTestProject(t, ownerId);
+
+      const otherUserId = await createTestUser(t);
+
+      await expect(async () => {
+        await t.query(internal.internal.ai.getProjectContext, { projectId, userId: otherUserId });
+      }).rejects.toThrow();
     });
   });
 });
