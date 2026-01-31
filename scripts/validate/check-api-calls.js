@@ -38,7 +38,7 @@ export function run() {
   function resolveSubPath(basePath, relativePath) {
     const subPath = path.join(path.dirname(basePath), relativePath);
     if (!subPath.endsWith(".ts")) {
-      if (fs.existsSync(subPath + ".ts")) return subPath + ".ts";
+      if (fs.existsSync(`${subPath}.ts`)) return `${subPath}.ts`;
       if (fs.existsSync(path.join(subPath, "index.ts"))) return path.join(subPath, "index.ts");
     }
     return subPath;

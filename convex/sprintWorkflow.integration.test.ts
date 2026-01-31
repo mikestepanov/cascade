@@ -64,7 +64,7 @@ describe("Sprint Workflow Integration", () => {
         storyPoints: 5,
       });
 
-      const issue2Id = await asUser.mutation(api.issues.mutations.create, {
+      const _issue2Id = await asUser.mutation(api.issues.mutations.create, {
         projectId,
         title: "Add login form",
         type: "task",
@@ -73,7 +73,7 @@ describe("Sprint Workflow Integration", () => {
         storyPoints: 3,
       });
 
-      const issue3Id = await asUser.mutation(api.issues.mutations.create, {
+      const _issue3Id = await asUser.mutation(api.issues.mutations.create, {
         projectId,
         title: "Fix security vulnerability",
         type: "bug",

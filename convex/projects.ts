@@ -43,7 +43,6 @@ export const createProject = authenticatedMutation({
     isPublic: v.optional(v.boolean()), // Visible to all organization members
     sharedWithTeamIds: v.optional(v.array(v.id("teams"))), // Share with specific teams
   },
-  // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: Mutation logic requires sequential checks
   handler: async (ctx, args) => {
     // Validate input constraints
     validate.name(args.name, "name");

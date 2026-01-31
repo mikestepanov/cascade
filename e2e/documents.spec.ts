@@ -18,8 +18,8 @@ test.describe
     test.describe("Documents Navigation", () => {
       test("can navigate to documents page", async ({ dashboardPage }) => {
         await dashboardPage.goto();
-        const uniqueId = Date.now();
-        const projectKey = `DOC${Math.floor(Math.random() * 10000)
+        const _uniqueId = Date.now();
+        const _projectKey = `DOC${Math.floor(Math.random() * 10000)
           .toString()
           .padStart(4, "0")}`;
         await dashboardPage.expectLoaded();

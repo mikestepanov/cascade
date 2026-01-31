@@ -28,7 +28,7 @@ export function Footer() {
               {["Features", "Pricing", "Integrations", "Changelog"].map((item) => (
                 <li key={item}>
                   <a
-                    href="#"
+                    href="/"
                     className="text-ui-text-tertiary hover:text-ui-text text-sm transition-colors"
                   >
                     {item}
@@ -46,7 +46,7 @@ export function Footer() {
               {["About", "Blog", "Careers", "Contact"].map((item) => (
                 <li key={item}>
                   <a
-                    href="#"
+                    href="/"
                     className="text-ui-text-tertiary hover:text-ui-text text-sm transition-colors"
                   >
                     {item}
@@ -64,7 +64,7 @@ export function Footer() {
               {["Documentation", "Help Center", "API Reference", "Status"].map((item) => (
                 <li key={item}>
                   <a
-                    href="#"
+                    href="/"
                     className="text-ui-text-tertiary hover:text-ui-text text-sm transition-colors"
                   >
                     {item}
@@ -122,19 +122,19 @@ export function Footer() {
             </a>
             <div className="h-4 w-px bg-ui-border-secondary" />
             <a
-              href="#"
+              href="/"
               className="text-ui-text-secondary hover:text-ui-text text-sm transition-colors"
             >
               Privacy
             </a>
             <a
-              href="#"
+              href="/"
               className="text-ui-text-secondary hover:text-ui-text text-sm transition-colors"
             >
               Terms
             </a>
             <a
-              href="#"
+              href="/"
               className="text-ui-text-secondary hover:text-ui-text text-sm transition-colors"
             >
               Cookies

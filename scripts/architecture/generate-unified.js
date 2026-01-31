@@ -1,5 +1,5 @@
-import * as fs from "fs";
-import process from "process";
+import * as fs from "node:fs";
+import process from "node:process";
 
 // Usage: node generate-unified.js <input-md-file> <output-mmd-file>
 const inputFile = process.argv[2];
@@ -35,7 +35,7 @@ try {
       // Indent for readability
       combinedGraph += body
         .split("\n")
-        .map((line) => "    " + line)
+        .map((line) => `    ${line}`)
         .join("\n");
       combinedGraph += "\n\n";
     }

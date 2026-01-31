@@ -1,9 +1,9 @@
-import fs from "fs";
-import http from "http";
-import https from "https";
-import path from "path";
+import fs from "node:fs";
+import http from "node:http";
+import https from "node:https";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { chromium } from "playwright";
-import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -22,7 +22,6 @@ if (!(targetUrl && competitor && pageName)) {
 }
 
 // Helper: Download a file
-// biome-ignore lint/suspicious/useAwait: returns Promise constructor
 async function downloadFile(url, destPath) {
   return new Promise((resolve, reject) => {
     const protocol = url.startsWith("https") ? https : http;
@@ -184,9 +183,9 @@ const THEMES = ["light", "dark"];
 
     const fonts = [];
     try {
-      document.fonts.forEach((f) =>
-        fonts.push({ family: f.family, status: f.status, style: f.style, weight: f.weight }),
-      );
+      document.fonts.forEach((f) => {
+        fonts.push({ family: f.family, status: f.status, style: f.style, weight: f.weight });
+      });
     } catch (_e) {
       // ignore
     }
