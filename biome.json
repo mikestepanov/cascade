@@ -16,7 +16,8 @@
       "!**/routeTree.gen.ts",
       "!**/.vinxi",
       "!**/.output",
-      "!**/node_modules"
+      "!**/node_modules",
+      "!**/src/index.css"
     ]
   },
   "formatter": {
@@ -132,6 +133,36 @@
         "rules": {
           "complexity": {
             "noExcessiveCognitiveComplexity": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": ["**/scripts/**", "**/e2e/**"],
+      "linter": {
+        "rules": {
+          "complexity": {
+            "noExcessiveCognitiveComplexity": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": ["**/src/components/landing/icons.tsx"],
+      "linter": {
+        "rules": {
+          "a11y": {
+            "noSvgWithoutTitle": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": ["**/*.test.tsx", "**/*.test.ts", "**/*.spec.ts"],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noExplicitAny": "off"
           }
         }
       }

@@ -246,7 +246,7 @@ export class DashboardPage extends BasePage {
     // Wait for dashboard app shell with recovery
     try {
       await this.commandPaletteButton.waitFor({ state: "visible" });
-    } catch (e) {
+    } catch (_e) {
       // Check again if redirected to landing after timeout
       const currentUrl = this.page.url();
       if (

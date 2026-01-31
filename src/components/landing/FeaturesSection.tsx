@@ -119,7 +119,7 @@ function FeatureCard({
 
       {/* Link */}
       <a
-        href="#"
+        href="#learn-more"
         className={cn(
           "inline-flex items-center gap-2 text-sm font-medium transition-colors",
           linkColors[gradient],

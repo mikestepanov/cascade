@@ -146,7 +146,7 @@ export function run() {
       if (colorPart.startsWith(prefix)) return "SEMANTIC";
     }
     for (const raw of RAW_COLORS) {
-      if (colorPart.startsWith(raw + "-") || colorPart === raw) return "RAW";
+      if (colorPart.startsWith(`${raw}-`) || colorPart === raw) return "RAW";
     }
     if (
       /^(muted|foreground|background|border|input|ring|card|popover|destructive|accent|primary|secondary)/.test(

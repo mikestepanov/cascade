@@ -379,7 +379,7 @@ export class ProjectsPage extends BasePage {
       try {
         // Try standard click first (most realistic)
         await this.startTimerButton.click();
-      } catch (e) {
+      } catch (_e) {
         console.log("Standard click failed/timed out, trying force click...");
         await this.startTimerButton.click({ force: true });
       }
