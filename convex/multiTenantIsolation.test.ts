@@ -135,7 +135,6 @@ describe("Multi-Tenant Isolation", () => {
 
       const { organizationId: orgA, workspaceId: wsA } = await createOrganizationAdmin(t, userOrgA);
       await createOrganizationAdmin(t, userOrgB);
-      await createOrganizationAdmin(t, userOrgB);
 
       // User A creates a project
       const asUserA = asAuthenticatedUser(t, userOrgA);
@@ -165,7 +164,7 @@ describe("Multi-Tenant Isolation", () => {
       const userOrgB = await createTestUser(t, { name: "User Org B" });
 
       const { organizationId: orgA, workspaceId: wsA } = await createOrganizationAdmin(t, userOrgA);
-      const { organizationId: orgB, workspaceId: wsB } = await createOrganizationAdmin(t, userOrgB);
+      await createOrganizationAdmin(t, userOrgB);
 
       // User A creates a project
       const asUserA = asAuthenticatedUser(t, userOrgA);
@@ -277,7 +276,6 @@ describe("Multi-Tenant Isolation", () => {
       const userOrgB = await createTestUser(t, { name: "User Org B" });
 
       const { organizationId: orgA, workspaceId: wsA } = await createOrganizationAdmin(t, userOrgA);
-      await createOrganizationAdmin(t, userOrgB);
       await createOrganizationAdmin(t, userOrgB);
 
       // User A creates a project
