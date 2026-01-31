@@ -1,6 +1,6 @@
-import { spawn } from "child_process";
-import path from "path";
-import { fileURLToPath } from "url";
+import { spawn } from "node:child_process";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -66,7 +66,6 @@ const TARGETS = [
 ];
 
 // Run mirror script for each target sequentially
-// biome-ignore lint/suspicious/useAwait: returns Promise constructor
 async function runMirror(target) {
   return new Promise((resolve, _reject) => {
     const scriptPath = path.join(__dirname, "scrape_full_mirror.js");
@@ -97,7 +96,7 @@ async function main() {
   console.log(
     `   Capturing ${TARGETS.length} pages from ${[...new Set(TARGETS.map((t) => t.competitor))].length} competitors\n`,
   );
-  console.log("=".repeat(60) + "\n");
+  console.log(`${"=".repeat(60)}\n`);
 
   const startTime = Date.now();
 
@@ -123,7 +122,7 @@ async function main() {
   }
 
   const elapsed = ((Date.now() - startTime) / 1000 / 60).toFixed(1);
-  console.log("\n" + "=".repeat(60));
+  console.log(`\n${"=".repeat(60)}`);
   console.log(`\n✅ BATCH COMPLETE in ${elapsed} minutes`);
   console.log(`   Captured ${TARGETS.length} pages\n`);
 }

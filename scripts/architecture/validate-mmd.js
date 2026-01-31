@@ -1,4 +1,4 @@
-const fs = require("fs");
+const fs = require("node:fs");
 
 const inputFile = process.argv[2];
 
@@ -43,7 +43,9 @@ try {
     console.error(
       `❌ Validation Failed: The following entities are used in relationships but NOT defined:`,
     );
-    missing.forEach((m) => console.error(`   - ${m}`));
+    missing.forEach((m) => {
+      console.error(`   - ${m}`);
+    });
     process.exit(1);
   } else {
     console.log(`✅ Validation Passed: All ${definedEntities.size} entities are fully defined.`);

@@ -184,7 +184,7 @@ export function run() {
         // The regex might grab a subset — check if any valid color starts with this name
         let isPrefix = false;
         for (const vc of validColors) {
-          if (vc.startsWith(colorName + "-") || colorName.startsWith(vc)) {
+          if (vc.startsWith(`${colorName}-`) || colorName.startsWith(vc)) {
             isPrefix = true;
             break;
           }

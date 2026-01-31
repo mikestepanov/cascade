@@ -29,11 +29,11 @@ describe("NotificationCenter", () => {
   const mockRemove = Object.assign(vi.fn(), {
     withOptimisticUpdate: vi.fn().mockReturnThis(),
   }) as Mock & ReactMutation<FunctionReference<"mutation">>;
-  let queryCallCount = 0;
+  let _queryCallCount = 0;
   let mutationCallCount = 0;
 
   beforeEach(async () => {
-    queryCallCount = 0;
+    _queryCallCount = 0;
     mutationCallCount = 0;
     mockMarkAsRead.mockReset();
     mockMarkAllAsRead.mockReset();

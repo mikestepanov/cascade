@@ -57,7 +57,7 @@ rbacTest.describe("Workspace Management", () => {
       await adminWorkspacesPage.goto(rbacOrgSlug);
 
       const wsName1 = `WS Alpha ${Date.now()}`;
-      const wsName2 = `WS Beta ${Date.now()}`;
+      const _wsName2 = `WS Beta ${Date.now()}`;
 
       await adminWorkspacesPage.createWorkspace(wsName1);
 

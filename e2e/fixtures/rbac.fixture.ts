@@ -25,7 +25,7 @@ function getRbacConfig(workerIndex = 0): { projectKey: string; orgSlug: string }
   return { projectKey: RBAC_TEST_CONFIG.projectKey, orgSlug: RBAC_TEST_CONFIG.orgSlug };
 }
 
-function getAuthPath(role: UserRole, workerIndex = 0): string {
+function _getAuthPath(role: UserRole, workerIndex = 0): string {
   const paths: Record<UserRole, string> = {
     admin: AUTH_PATHS.teamLead(workerIndex),
     editor: AUTH_PATHS.teamMember(workerIndex),
@@ -235,11 +235,11 @@ export const rbacTest = base.extend<RbacFixtures>({
     await use(new SettingsPage(viewerPage, rbacOrgSlug));
   },
 
-  rbacProjectKey: async ({}, use, testInfo) => {
+  rbacProjectKey: async (_, use, testInfo) => {
     await use(getRbacConfig(testInfo.parallelIndex).projectKey);
   },
 
-  rbacOrgSlug: async ({}, use, testInfo) => {
+  rbacOrgSlug: async (_, use, testInfo) => {
     await use(getRbacConfig(testInfo.parallelIndex).orgSlug);
   },
   rbacProjectUrl: async ({ rbacOrgSlug, rbacProjectKey }, use) => {

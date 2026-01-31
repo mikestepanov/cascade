@@ -47,13 +47,13 @@ vi.mock("@/components/ui/ConfirmDialog", () => ({
 }));
 
 describe("FileAttachments", () => {
-  const mockAddAttachment = Object.assign(vi.fn(), {
+  const _mockAddAttachment = Object.assign(vi.fn(), {
     withOptimisticUpdate: vi.fn().mockReturnThis(),
   }) as ReactMutation<FunctionReference<"mutation">>;
   const mockRemoveAttachment = Object.assign(vi.fn(), {
     withOptimisticUpdate: vi.fn().mockReturnThis(),
   }) as ReactMutation<FunctionReference<"mutation">>;
-  const mockGenerateUploadUrl = Object.assign(vi.fn(), {
+  const _mockGenerateUploadUrl = Object.assign(vi.fn(), {
     withOptimisticUpdate: vi.fn().mockReturnThis(),
   }) as ReactMutation<FunctionReference<"mutation">>;
   const issueId = "issue-123" as Id<"issues">;

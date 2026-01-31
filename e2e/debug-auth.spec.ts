@@ -170,7 +170,7 @@ test.skip("debug sign-in flow with full logging", async ({ page, baseURL }) => {
     });
     const urlAfter = page.url();
     console.log(`  ✅ Redirected to: ${urlAfter}`);
-  } catch (error) {
+  } catch (_error) {
     const urlAfter = page.url();
     console.log(`  ❌ Redirect timeout! Still at: ${urlAfter}`);
 

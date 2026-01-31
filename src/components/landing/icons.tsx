@@ -7,6 +7,8 @@ export function NixeloLogo({ size = 28, className }: { size?: number; className?
       fill="none"
       style={{ overflow: "visible" }}
       className={className}
+      role="img"
+      aria-label="Nixelo Logo"
     >
       <defs>
         <linearGradient id="nixeloGrad" x1="0%" y1="100%" x2="100%" y2="0%">
@@ -33,6 +35,7 @@ export function NixeloLogo({ size = 28, className }: { size?: number; className?
 export function WorkflowIcon() {
   return (
     <svg
+      aria-hidden="true"
       width="24"
       height="24"
       viewBox="0 0 24 24"
@@ -71,6 +74,7 @@ export function WorkflowIcon() {
 export function TimeIcon() {
   return (
     <svg
+      aria-hidden="true"
       width="24"
       height="24"
       viewBox="0 0 24 24"
@@ -89,6 +93,7 @@ export function TimeIcon() {
 export function CollabIcon() {
   return (
     <svg
+      aria-hidden="true"
       width="24"
       height="24"
       viewBox="0 0 24 24"
@@ -113,6 +118,7 @@ export function CollabIcon() {
 export function ClarityIcon() {
   return (
     <svg
+      aria-hidden="true"
       width="24"
       height="24"
       viewBox="0 0 24 24"
@@ -132,6 +138,7 @@ export function ClarityIcon() {
 export function ArrowIcon({ className }: { className?: string }) {
   return (
     <svg
+      aria-hidden="true"
       className={className}
       viewBox="0 0 16 16"
       fill="none"
@@ -145,7 +152,7 @@ export function ArrowIcon({ className }: { className?: string }) {
 
 export function PlayIcon({ className }: { className?: string }) {
   return (
-    <svg className={className} viewBox="0 0 16 16" fill="currentColor">
+    <svg aria-hidden="true" className={className} viewBox="0 0 16 16" fill="currentColor">
       <path d="M4 3l10 5-10 5V3z" />
     </svg>
   );
@@ -155,6 +162,7 @@ export function PlayIcon({ className }: { className?: string }) {
 export function SecurityIcon() {
   return (
     <svg
+      aria-hidden="true"
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
@@ -171,6 +179,7 @@ export function SecurityIcon() {
 export function CloudIcon() {
   return (
     <svg
+      aria-hidden="true"
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
@@ -187,6 +196,7 @@ export function CloudIcon() {
 export function SettingsIcon() {
   return (
     <svg
+      aria-hidden="true"
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
@@ -210,6 +220,7 @@ export function SettingsIcon() {
 export function PeopleIcon() {
   return (
     <svg
+      aria-hidden="true"
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
@@ -228,6 +239,7 @@ export function PeopleIcon() {
 export function CodeIcon() {
   return (
     <svg
+      aria-hidden="true"
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
@@ -245,6 +257,7 @@ export function CodeIcon() {
 export function StackIcon() {
   return (
     <svg
+      aria-hidden="true"
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
@@ -263,6 +276,7 @@ export function StackIcon() {
 export function BellIcon() {
   return (
     <svg
+      aria-hidden="true"
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
@@ -280,6 +294,7 @@ export function BellIcon() {
 export function FileIcon() {
   return (
     <svg
+      aria-hidden="true"
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
@@ -298,6 +313,7 @@ export function FileIcon() {
 export function LinkIcon() {
   return (
     <svg
+      aria-hidden="true"
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
