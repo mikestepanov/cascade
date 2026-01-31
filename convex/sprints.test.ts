@@ -229,7 +229,7 @@ describe("Sprints", () => {
       const t = convexTest(schema, modules);
       const owner = await createTestUser(t, { name: "Owner" });
       const organizationMember = await createTestUser(t, { name: "organization Member" });
-      const { organizationId, workspaceId, teamId } = await createOrganizationAdmin(t, owner);
+      const { organizationId, workspaceId } = await createOrganizationAdmin(t, owner);
 
       // Add organization member (not project member)
       const now = Date.now();

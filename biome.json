@@ -19,7 +19,8 @@
       "!**/src/index.css",
       "!**/.vinxi",
       "!**/.output",
-      "!**/node_modules"
+      "!**/node_modules",
+      "!**/src/index.css"
     ]
   },
   "formatter": {
