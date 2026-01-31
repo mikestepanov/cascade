@@ -200,6 +200,17 @@ describe("Button", () => {
       const spinner = btn.querySelector(".animate-spin");
       expect(spinner).toBeInTheDocument();
     });
+
+    it("does not render loading text when size is icon", () => {
+      render(
+        <Button isLoading size="icon">
+          <Plus />
+        </Button>,
+      );
+      expect(screen.queryByText("Loading...")).not.toBeInTheDocument();
+      const spinner = document.querySelector(".animate-spin");
+      expect(spinner).toBeInTheDocument();
+    });
   });
 
   describe("icons", () => {
