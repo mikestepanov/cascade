@@ -17,6 +17,24 @@ async function hashApiKey(key: string): Promise<string> {
   return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
 }
 
+/**
+ * Constant-time string comparison to prevent timing attacks.
+ * Returns true if strings are equal, false otherwise.
+ *
+ * This function takes the same amount of time regardless of where the mismatch occurs,
+ * preventing attackers from guessing the string character by character.
+ */
+export function constantTimeEqual(a: string, b: string): boolean {
+  if (a.length !== b.length) {
+    return false;
+  }
+  let result = 0;
+  for (let i = 0; i < a.length; i++) {
+    result |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  }
+  return result === 0;
+}
+
 export interface ApiAuthContext {
   userId: Id<"users">;
   keyId: Id<"apiKeys">;

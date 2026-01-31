@@ -16,6 +16,7 @@ import { Scrypt } from "lucia";
 import { internal } from "./_generated/api";
 import type { Doc, Id } from "./_generated/dataModel";
 import { type ActionCtx, httpAction, internalMutation, internalQuery } from "./_generated/server";
+import { constantTimeEqual } from "./lib/apiAuth";
 import { notDeleted } from "./lib/softDeleteHelpers";
 import type { CalendarEventColor } from "./validators";
 
@@ -55,7 +56,7 @@ function validateE2EApiKey(request: Request): Response | null {
   }
 
   const providedKey = request.headers.get("x-e2e-api-key");
-  if (providedKey !== apiKey) {
+  if (!providedKey || !constantTimeEqual(providedKey, apiKey)) {
     return new Response(JSON.stringify({ error: "Invalid or missing E2E API key" }), {
       status: 401,
       headers: { "Content-Type": "application/json" },
