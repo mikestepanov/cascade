@@ -41,40 +41,74 @@ function extractColorNames(obj, prefix = "") {
  */
 const NON_COLOR = new Set([
   // text-* (built-in sizes)
-  "xs", "sm", "base", "lg", "xl",
+  "xs",
+  "sm",
+  "base",
+  "lg",
+  "xl",
   // text-* (custom font-size tokens from @theme)
-  "caption", "calendar-weekday",
-  "left", "center", "right", "justify", "start", "end",
-  "wrap", "nowrap", "truncate", "ellipsis", "clip", "balance", "pretty",
+  "caption",
+  "calendar-weekday",
+  "left",
+  "center",
+  "right",
+  "justify",
+  "start",
+  "end",
+  "wrap",
+  "nowrap",
+  "truncate",
+  "ellipsis",
+  "clip",
+  "balance",
+  "pretty",
   // border-*
-  "solid", "dashed", "dotted", "double", "hidden", "none", "collapse", "separate",
+  "solid",
+  "dashed",
+  "dotted",
+  "double",
+  "hidden",
+  "none",
+  "collapse",
+  "separate",
   // bg-*
-  "fixed", "local", "scroll", "auto", "contain", "cover", "center",
-  "bottom", "top", "clip", "origin", "repeat", "gradient",
+  "fixed",
+  "local",
+  "scroll",
+  "auto",
+  "contain",
+  "cover",
+  "center",
+  "bottom",
+  "top",
+  "clip",
+  "origin",
+  "repeat",
+  "gradient",
   // ring/outline-*
   "inset",
   // generic
-  "transparent", "current", "inherit",
+  "transparent",
+  "current",
+  "inherit",
 ]);
 
 /** Prefixes for non-color compound utilities (gradients, clips, animation, etc.) */
 const NON_COLOR_PREFIXES = [
-  "linear-to-",  // bg-linear-to-r, bg-linear-to-br (Tailwind v4 gradients)
+  "linear-to-", // bg-linear-to-r, bg-linear-to-br (Tailwind v4 gradients)
   "gradient-to-", // bg-gradient-to-r (Tailwind v3 gradients)
-  "clip-",        // bg-clip-text, bg-clip-border
-  "mode-",        // fill-mode-both (animation)
-  "blend-",       // bg-blend-multiply
-  "size-",        // bg-size-*
-  "position-",    // bg-position-*
-  "repeat-",      // bg-repeat-*
-  "origin-",      // bg-origin-*
-  "attachment-",  // bg-attachment-*
+  "clip-", // bg-clip-text, bg-clip-border
+  "mode-", // fill-mode-both (animation)
+  "blend-", // bg-blend-multiply
+  "size-", // bg-size-*
+  "position-", // bg-position-*
+  "repeat-", // bg-repeat-*
+  "origin-", // bg-origin-*
+  "attachment-", // bg-attachment-*
 ];
 
 /** Built-in Tailwind color names always valid */
-const BUILTIN_COLORS = new Set([
-  "transparent", "current", "inherit", "white", "black",
-]);
+const BUILTIN_COLORS = new Set(["transparent", "current", "inherit", "white", "black"]);
 
 export function run() {
   // Step 1 — Load tailwind config, extract valid color names
@@ -106,7 +140,9 @@ export function run() {
   const COLOR_CLASS_RE = new RegExp(
     "(?:^|\\s|[\"'`])" +
       "(?:(?:[a-z][a-z0-9-]*):)*" + // variants (hover:, dark:, etc.)
-      "(" + UTILITY_PREFIXES + ")" +
+      "(" +
+      UTILITY_PREFIXES +
+      ")" +
       "-" +
       "([a-z][a-z-]*[a-z])" + // color name (2+ chars, letter-bounded)
       "(?:\\/\\d+)?" + // optional opacity modifier

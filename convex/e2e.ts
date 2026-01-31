@@ -17,6 +17,7 @@ import { internal } from "./_generated/api";
 import type { Doc, Id } from "./_generated/dataModel";
 import { type ActionCtx, httpAction, internalMutation, internalQuery } from "./_generated/server";
 import { notDeleted } from "./lib/softDeleteHelpers";
+import type { CalendarEventColor } from "./validators";
 
 // Test user expiration (1 hour - for garbage collection)
 const TEST_USER_EXPIRATION_MS = 60 * 60 * 1000;
@@ -2925,7 +2926,7 @@ export const seedScreenshotDataInternal = internalMutation({
       endMin: number;
       dayOffset: number;
       eventType: "meeting" | "deadline" | "timeblock" | "personal";
-      color: "blue" | "red" | "green" | "amber" | "orange" | "purple" | "pink" | "teal" | "indigo" | "gray";
+      color: CalendarEventColor;
       description?: string;
     }> = [
       // Today (dayOffset: 0) — 4 events to show overlap handling

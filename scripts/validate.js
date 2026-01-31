@@ -54,11 +54,7 @@ for (let i = 0; i < results.length; i++) {
   const result = results[i];
   const idx = `[${i + 1}/${checks.length}]`;
   const dots = ".".repeat(Math.max(1, 30 - result.name.length));
-  const statusColor = !result.passed
-    ? c.red
-    : result.warnings > 0
-      ? c.yellow
-      : c.green;
+  const statusColor = !result.passed ? c.red : result.warnings > 0 ? c.yellow : c.green;
   const statusText = !result.passed ? "FAIL" : result.warnings > 0 ? "WARN" : "PASS";
   const detailStr = result.detail ? `  (${result.detail})` : "";
   console.log(`${idx} ${result.name}${dots} ${statusColor}${statusText}${c.reset}${detailStr}`);
