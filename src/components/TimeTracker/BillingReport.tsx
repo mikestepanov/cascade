@@ -89,7 +89,7 @@ export function BillingReport({ projectId }: BillingReportProps) {
   }
 
   return (
-    <div className="p-6">
+    <div>
       {/* Header */}
       <Flex justify="between" align="center" className="mb-6">
         <div>

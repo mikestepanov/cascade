@@ -4,6 +4,7 @@ import { useQuery } from "convex/react";
 import type { FunctionReturnType } from "convex/server";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { List, type ListImperativeAPI } from "react-window";
+import { PageLayout } from "@/components/layout";
 import { Flex } from "@/components/ui/Flex";
 import { useListNavigation } from "@/hooks/useListNavigation";
 import { formatDate } from "@/lib/dates";
@@ -179,172 +180,176 @@ export function RoadmapView({ projectId, sprintId, canEdit = true }: RoadmapView
   // Loading State
   if (!(project && filteredIssues && epics)) {
     return (
-      <Flex direction="column" className="flex-1 overflow-hidden p-6 h-full">
-        {/* Skeleton Header */}
+      <PageLayout fullHeight className="overflow-hidden">
+        <Flex direction="column" className="h-full">
+          {/* Skeleton Header */}
+          <Flex align="center" justify="between" className="mb-6 shrink-0">
+            <div>
+              <Skeleton className="h-8 w-48 mb-2" />
+              <Skeleton className="h-4 w-64" />
+            </div>
+            <Flex gap="md">
+              <Skeleton className="h-10 w-32 rounded-lg" />
+              <Skeleton className="h-8 w-32 rounded-lg" />
+            </Flex>
+          </Flex>
+
+          {/* Skeleton Timeline */}
+          <Flex
+            direction="column"
+            className="flex-1 bg-ui-bg rounded-lg border border-ui-border overflow-hidden"
+          >
+            {/* Skeleton Dates Header */}
+            <div className="border-b border-ui-border bg-ui-bg-secondary p-4 shrink-0">
+              <Flex>
+                <div className="w-64 shrink-0">
+                  <Skeleton className="h-5 w-24" />
+                </div>
+                <div className="flex-1 grid grid-cols-6 gap-2">
+                  {[1, 2, 3, 4, 5, 6].map((id) => (
+                    <Skeleton key={id} className="h-5 w-full" />
+                  ))}
+                </div>
+              </Flex>
+            </div>
+
+            {/* Skeleton Rows */}
+            <div className="flex-1 overflow-auto">
+              {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+                <Flex align="center" className="p-3 border-b border-ui-border" key={i}>
+                  <div className="w-64 shrink-0 pr-4 space-y-2">
+                    <Flex align="center" gap="sm">
+                      <Skeleton className="h-4 w-4 rounded-full" />
+                      <Skeleton className="h-4 w-16" />
+                    </Flex>
+                    <Skeleton className="h-3 w-32" />
+                  </div>
+                  <div className="flex-1 relative h-8">
+                    <div
+                      className="absolute h-6"
+                      style={{
+                        left: `${(i * 13) % 70}%`, // Deterministic position
+                        width: `${10 + ((i * 3) % 10)}%`,
+                      }}
+                    >
+                      <Skeleton className="h-full w-full rounded-full opacity-50" />
+                    </div>
+                  </div>
+                </Flex>
+              ))}
+            </div>
+          </Flex>
+        </Flex>
+      </PageLayout>
+    );
+  }
+
+  return (
+    <PageLayout fullHeight className="overflow-hidden">
+      <Flex direction="column" className="h-full">
+        {/* Header */}
         <Flex align="center" justify="between" className="mb-6 shrink-0">
           <div>
-            <Skeleton className="h-8 w-48 mb-2" />
-            <Skeleton className="h-4 w-64" />
+            <Typography variant="h2" className="text-2xl font-bold">
+              Roadmap
+            </Typography>
+            <Typography variant="muted" className="mt-1">
+              Visualize issue timeline and dependencies
+            </Typography>
           </div>
+
           <Flex gap="md">
-            <Skeleton className="h-10 w-32 rounded-lg" />
-            <Skeleton className="h-8 w-32 rounded-lg" />
+            {/* Epic Filter */}
+            <Select
+              value={filterEpic === "all" ? "all" : filterEpic}
+              onValueChange={(value) =>
+                setFilterEpic(value === "all" ? "all" : (value as Id<"issues">))
+              }
+            >
+              <SelectTrigger className="px-3 py-2 border border-ui-border rounded-lg bg-ui-bg text-ui-text">
+                <SelectValue placeholder="All Epics" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Epics</SelectItem>
+                {epics?.map((epic: Epic) => (
+                  <SelectItem key={epic._id} value={epic._id}>
+                    {epic.title}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            {/* View Mode Toggle */}
+            <ToggleGroup
+              type="single"
+              value={viewMode}
+              onValueChange={(value) => value && setViewMode(value as "months" | "weeks")}
+              size="sm"
+            >
+              <ToggleGroupItem value="months">Months</ToggleGroupItem>
+              <ToggleGroupItem value="weeks">Weeks</ToggleGroupItem>
+            </ToggleGroup>
           </Flex>
         </Flex>
 
-        {/* Skeleton Timeline */}
+        {/* Timeline Container */}
         <Flex
           direction="column"
           className="flex-1 bg-ui-bg rounded-lg border border-ui-border overflow-hidden"
         >
-          {/* Skeleton Dates Header */}
+          {/* Timeline Header (Fixed) */}
           <div className="border-b border-ui-border bg-ui-bg-secondary p-4 shrink-0">
             <Flex>
-              <div className="w-64 shrink-0">
-                <Skeleton className="h-5 w-24" />
-              </div>
-              <div className="flex-1 grid grid-cols-6 gap-2">
-                {[1, 2, 3, 4, 5, 6].map((id) => (
-                  <Skeleton key={id} className="h-5 w-full" />
+              <div className="w-64 shrink-0 font-medium text-ui-text">Issue</div>
+              <div className="flex-1 grid grid-cols-6">
+                {timelineMonths.map((month) => (
+                  <div
+                    key={month.getTime()}
+                    className="text-center text-sm font-medium text-ui-text border-l border-ui-border px-2"
+                  >
+                    {month.toLocaleDateString("en-US", { month: "short", year: "numeric" })}
+                  </div>
                 ))}
               </div>
             </Flex>
           </div>
 
-          {/* Skeleton Rows */}
-          <div className="flex-1 overflow-auto">
-            {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
-              <Flex align="center" className="p-3 border-b border-ui-border" key={i}>
-                <div className="w-64 shrink-0 pr-4 space-y-2">
-                  <Flex align="center" gap="sm">
-                    <Skeleton className="h-4 w-4 rounded-full" />
-                    <Skeleton className="h-4 w-16" />
-                  </Flex>
-                  <Skeleton className="h-3 w-32" />
-                </div>
-                <div className="flex-1 relative h-8">
-                  <div
-                    className="absolute h-6"
-                    style={{
-                      left: `${(i * 13) % 70}%`, // Deterministic position
-                      width: `${10 + ((i * 3) % 10)}%`,
-                    }}
-                  >
-                    <Skeleton className="h-full w-full rounded-full opacity-50" />
-                  </div>
-                </div>
-              </Flex>
-            ))}
+          {/* Timeline Body (Virtualized) */}
+          <div className="flex-1">
+            {filteredIssues.length === 0 ? (
+              <div className="p-12 text-center text-ui-text-secondary">
+                <Typography>No issues with due dates to display</Typography>
+                <Typography className="text-sm mt-1">
+                  Add due dates to issues to see them on the roadmap
+                </Typography>
+              </div>
+            ) : (
+              <List<RowData>
+                listRef={listRef}
+                style={{ height: 600, width: "100%" }}
+                rowCount={filteredIssues.length}
+                rowHeight={56}
+                rowProps={{ issues: filteredIssues, selectedIndex }}
+                rowComponent={Row}
+              />
+            )}
           </div>
         </Flex>
+
+        {/* Issue Detail Modal */}
+        {selectedIssue && (
+          <IssueDetailModal
+            issueId={selectedIssue}
+            open={true}
+            onOpenChange={(open) => {
+              if (!open) {
+                setSelectedIssue(null);
+              }
+            }}
+            canEdit={canEdit}
+          />
+        )}
       </Flex>
-    );
-  }
-
-  return (
-    <Flex direction="column" className="flex-1 overflow-hidden p-6 h-full">
-      {/* Header */}
-      <Flex align="center" justify="between" className="mb-6 shrink-0">
-        <div>
-          <Typography variant="h2" className="text-2xl font-bold">
-            Roadmap
-          </Typography>
-          <Typography variant="muted" className="mt-1">
-            Visualize issue timeline and dependencies
-          </Typography>
-        </div>
-
-        <Flex gap="md">
-          {/* Epic Filter */}
-          <Select
-            value={filterEpic === "all" ? "all" : filterEpic}
-            onValueChange={(value) =>
-              setFilterEpic(value === "all" ? "all" : (value as Id<"issues">))
-            }
-          >
-            <SelectTrigger className="px-3 py-2 border border-ui-border rounded-lg bg-ui-bg text-ui-text">
-              <SelectValue placeholder="All Epics" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Epics</SelectItem>
-              {epics?.map((epic: Epic) => (
-                <SelectItem key={epic._id} value={epic._id}>
-                  {epic.title}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-
-          {/* View Mode Toggle */}
-          <ToggleGroup
-            type="single"
-            value={viewMode}
-            onValueChange={(value) => value && setViewMode(value as "months" | "weeks")}
-            size="sm"
-          >
-            <ToggleGroupItem value="months">Months</ToggleGroupItem>
-            <ToggleGroupItem value="weeks">Weeks</ToggleGroupItem>
-          </ToggleGroup>
-        </Flex>
-      </Flex>
-
-      {/* Timeline Container */}
-      <Flex
-        direction="column"
-        className="flex-1 bg-ui-bg rounded-lg border border-ui-border overflow-hidden"
-      >
-        {/* Timeline Header (Fixed) */}
-        <div className="border-b border-ui-border bg-ui-bg-secondary p-4 shrink-0">
-          <Flex>
-            <div className="w-64 shrink-0 font-medium text-ui-text">Issue</div>
-            <div className="flex-1 grid grid-cols-6">
-              {timelineMonths.map((month) => (
-                <div
-                  key={month.getTime()}
-                  className="text-center text-sm font-medium text-ui-text border-l border-ui-border px-2"
-                >
-                  {month.toLocaleDateString("en-US", { month: "short", year: "numeric" })}
-                </div>
-              ))}
-            </div>
-          </Flex>
-        </div>
-
-        {/* Timeline Body (Virtualized) */}
-        <div className="flex-1">
-          {filteredIssues.length === 0 ? (
-            <div className="p-12 text-center text-ui-text-secondary">
-              <Typography>No issues with due dates to display</Typography>
-              <Typography className="text-sm mt-1">
-                Add due dates to issues to see them on the roadmap
-              </Typography>
-            </div>
-          ) : (
-            <List<RowData>
-              listRef={listRef}
-              style={{ height: 600, width: "100%" }}
-              rowCount={filteredIssues.length}
-              rowHeight={56}
-              rowProps={{ issues: filteredIssues, selectedIndex }}
-              rowComponent={Row}
-            />
-          )}
-        </div>
-      </Flex>
-
-      {/* Issue Detail Modal */}
-      {selectedIssue && (
-        <IssueDetailModal
-          issueId={selectedIssue}
-          open={true}
-          onOpenChange={(open) => {
-            if (!open) {
-              setSelectedIssue(null);
-            }
-          }}
-          canEdit={canEdit}
-        />
-      )}
-    </Flex>
+    </PageLayout>
   );
 }

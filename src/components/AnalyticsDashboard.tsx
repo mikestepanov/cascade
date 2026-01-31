@@ -2,7 +2,7 @@ import { api } from "@convex/_generated/api";
 import type { Id } from "@convex/_generated/dataModel";
 import { useQuery } from "convex/react";
 import { useMemo } from "react";
-import { PageHeader } from "@/components/layout";
+import { PageHeader, PageLayout } from "@/components/layout";
 import { Flex } from "@/components/ui/Flex";
 import { BarChart } from "./Analytics/BarChart";
 import { ChartCard } from "./Analytics/ChartCard";
@@ -109,7 +109,7 @@ export function AnalyticsDashboard({ projectId }: Props) {
 
   if (!(analytics && velocity)) {
     return (
-      <div className="p-3 sm:p-6 overflow-y-auto h-full bg-ui-bg-secondary">
+      <PageLayout fullHeight className="bg-ui-bg-secondary">
         <div className="max-w-7xl mx-auto space-y-4 sm:space-y-6">
           {/* Header Skeleton */}
           <div>
@@ -145,12 +145,12 @@ export function AnalyticsDashboard({ projectId }: Props) {
             </div>
           </div>
         </div>
-      </div>
+      </PageLayout>
     );
   }
 
   return (
-    <div className="p-3 sm:p-6 overflow-y-auto h-full bg-ui-bg-secondary">
+    <PageLayout fullHeight className="bg-ui-bg-secondary">
       <div className="max-w-7xl mx-auto space-y-4 sm:space-y-6">
         {/* Header */}
         <PageHeader
@@ -216,6 +216,6 @@ export function AnalyticsDashboard({ projectId }: Props) {
         {/* Recent Activity */}
         <RecentActivity activities={recentActivity} />
       </div>
-    </div>
+    </PageLayout>
   );
 }

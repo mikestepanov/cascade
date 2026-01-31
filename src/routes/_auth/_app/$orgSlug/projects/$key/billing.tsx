@@ -1,7 +1,7 @@
 import { api } from "@convex/_generated/api";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
-import { PageContent, PageError } from "@/components/layout";
+import { PageContent, PageError, PageLayout } from "@/components/layout";
 import { BillingReport } from "@/components/TimeTracker/BillingReport";
 
 export const Route = createFileRoute("/_auth/_app/$orgSlug/projects/$key/billing")({
@@ -25,5 +25,9 @@ function BillingPage() {
     );
   }
 
-  return <BillingReport projectId={project._id} />;
+  return (
+    <PageLayout>
+      <BillingReport projectId={project._id} />
+    </PageLayout>
+  );
 }

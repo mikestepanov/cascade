@@ -15,9 +15,26 @@ const maxWidthClasses: Record<MaxWidth, string> = {
 interface PageLayoutProps {
   children: ReactNode;
   maxWidth?: MaxWidth;
+  fullHeight?: boolean;
   className?: string;
 }
 
-export function PageLayout({ children, maxWidth = "full", className }: PageLayoutProps): ReactNode {
-  return <div className={cn("p-6", maxWidthClasses[maxWidth], className)}>{children}</div>;
+export function PageLayout({
+  children,
+  maxWidth = "full",
+  fullHeight = false,
+  className,
+}: PageLayoutProps): ReactNode {
+  return (
+    <div
+      className={cn(
+        "p-6",
+        maxWidthClasses[maxWidth],
+        fullHeight && "h-full overflow-y-auto",
+        className,
+      )}
+    >
+      {children}
+    </div>
+  );
 }

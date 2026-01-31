@@ -77,7 +77,7 @@ export function SprintManager({ projectId, canEdit = true }: SprintManagerProps)
 
   if (!sprints) {
     return (
-      <div className="p-3 sm:p-6">
+      <div>
         <Flex align="center" justify="between" className="mb-6">
           <Typography variant="h2" className="text-xl font-semibold text-ui-text">
             Sprint Management
@@ -93,7 +93,7 @@ export function SprintManager({ projectId, canEdit = true }: SprintManagerProps)
   }
 
   return (
-    <div className="p-3 sm:p-6">
+    <div>
       <Flex
         direction="column"
         align="start"

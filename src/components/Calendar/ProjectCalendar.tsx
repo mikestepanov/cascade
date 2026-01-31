@@ -1,14 +1,15 @@
+import type { Id } from "@convex/_generated/dataModel";
 import { CalendarView } from "./CalendarView";
 
 interface ProjectCalendarProps {
-  projectKey: string;
+  projectId: Id<"projects">;
 }
 
 /**
  * Project-specific calendar view
  * Wraps the unified CalendarView.
- * TODO: Pass projectKey filter to CalendarView once supported by backend
+ * TODO: Pass projectId filter to CalendarView once supported by backend
  */
-export function ProjectCalendar({ projectKey: _projectKey }: ProjectCalendarProps) {
+export function ProjectCalendar({ projectId: _projectId }: ProjectCalendarProps) {
   return <CalendarView />;
 }
