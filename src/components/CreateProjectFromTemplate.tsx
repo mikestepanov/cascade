@@ -216,6 +216,7 @@ export function CreateProjectFromTemplate({
                 onChange={(e) => setProjectName(e.target.value)}
                 placeholder="My Awesome Project"
                 required
+                data-testid="project-name-input"
               />
 
               <Input
@@ -225,6 +226,7 @@ export function CreateProjectFromTemplate({
                 placeholder="MAP"
                 required
                 helperText="Short code for issue keys (e.g., MAP-123)"
+                data-testid="project-key-input"
               />
 
               <Textarea
