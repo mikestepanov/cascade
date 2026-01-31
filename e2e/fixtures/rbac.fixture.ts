@@ -235,11 +235,11 @@ export const rbacTest = base.extend<RbacFixtures>({
     await use(new SettingsPage(viewerPage, rbacOrgSlug));
   },
 
-  rbacProjectKey: async ({}, use, testInfo) => {
+  rbacProjectKey: async (_, use, testInfo) => {
     await use(getRbacConfig(testInfo.parallelIndex).projectKey);
   },
 
-  rbacOrgSlug: async ({}, use, testInfo) => {
+  rbacOrgSlug: async (_, use, testInfo) => {
     await use(getRbacConfig(testInfo.parallelIndex).orgSlug);
   },
   rbacProjectUrl: async ({ rbacOrgSlug, rbacProjectKey }, use) => {

@@ -109,13 +109,7 @@
       }
     },
     {
-      "includes": ["**/src/index.css"],
-      "linter": {
-        "enabled": false
-      }
-    },
-    {
-      "includes": ["**/convex/e2e.ts"],
+      "includes": ["**/convex/e2e.ts", "e2e/**", "scripts/**"],
       "linter": {
         "rules": {
           "complexity": {
@@ -148,16 +142,6 @@
       }
     },
     {
-      "includes": ["**/scripts/**", "**/e2e/**"],
-      "linter": {
-        "rules": {
-          "complexity": {
-            "noExcessiveCognitiveComplexity": "off"
-          }
-        }
-      }
-    },
-    {
       "includes": ["**/src/components/landing/icons.tsx"],
       "linter": {
         "rules": {
@@ -168,9 +152,12 @@
       }
     },
     {
-      "includes": ["**/*.test.tsx", "**/*.test.ts", "**/*.spec.ts"],
+      "includes": ["**/*.test.ts", "**/*.test.tsx", "**/convex/*.test.ts", "**/*.spec.ts"],
       "linter": {
         "rules": {
+          "correctness": {
+            "noUnusedVariables": "off"
+          },
           "suspicious": {
             "noExplicitAny": "off"
           }

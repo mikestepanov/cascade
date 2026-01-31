@@ -1,7 +1,7 @@
 import { isSameDay } from "date-fns";
 import { cn } from "@/lib/utils";
-import type { EventColor } from "../../../calendar-colors";
-import { DOT_COLOR_CLASSES } from "../../../calendar-colors";
+import { DOT_COLOR_CLASSES, type EventColor } from "../../../calendar-colors";
+
 import { useCalendarContext } from "../../calendar-context";
 
 export function CalendarBodyDayEvents(): React.ReactElement {
