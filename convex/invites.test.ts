@@ -36,7 +36,7 @@ describe("Invites", () => {
   describe("sendInvite", () => {
     it("should send a platform invite from admin", { timeout: 15000 }, async () => {
       const t = convexTest(schema, modules);
-      const { userId: adminId, organizationId, asUser: asAdmin } = await createTestContext(t);
+      const { organizationId, asUser: asAdmin } = await createTestContext(t);
 
       const { inviteId, token } = await asAdmin.mutation(api.invites.sendInvite, {
         email: "newuser@example.com",

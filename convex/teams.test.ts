@@ -9,12 +9,7 @@ describe("Teams", () => {
   describe("createTeam", () => {
     it("should create a team for organization members", async () => {
       const t = convexTest(schema, modules);
-      const {
-        userId: ownerId,
-        organizationId,
-        workspaceId,
-        asUser: asOwner,
-      } = await createTestContext(t);
+      const { organizationId, workspaceId, asUser: asOwner } = await createTestContext(t);
 
       const { teamId, slug } = await asOwner.mutation(api.teams.createTeam, {
         organizationId,

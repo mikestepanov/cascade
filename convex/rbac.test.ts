@@ -127,7 +127,7 @@ describe("RBAC Utilities", () => {
 
       const creatorId = await createTestUser(t, { name: "Creator" });
       const organizationMemberId = await createTestUser(t, { name: "organization Member" });
-      const { organizationId, workspaceId, teamId } = await createOrganizationAdmin(t, creatorId);
+      const { organizationId, workspaceId } = await createOrganizationAdmin(t, creatorId);
 
       // Add organization member (not project member)
       const now = Date.now();
