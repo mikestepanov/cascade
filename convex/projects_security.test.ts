@@ -11,23 +11,18 @@ describe("Projects Security", () => {
 
     // 1. Setup Organization A and User A
     const userA = await createTestUser(t, { name: "User A" });
-    const {
-      organizationId: orgA,
-      workspaceId: workspaceA,
-      teamId: teamA,
-    } = await createOrganizationAdmin(t, userA);
+    const { organizationId: orgA, workspaceId: workspaceA } = await createOrganizationAdmin(
+      t,
+      userA,
+    );
 
     // 2. Setup Organization B and User B
     const userB = await createTestUser(t, { name: "User B" });
-    const {
-      organizationId: orgB,
-      workspaceId: workspaceB,
-      teamId: teamB,
-    } = await createOrganizationAdmin(t, userB);
+    await createOrganizationAdmin(t, userB);
 
     // 3. User A creates a project in Workspace A (orphaned from team, directly in workspace)
     const asUserA = asAuthenticatedUser(t, userA);
-    const projectA = await asUserA.mutation(api.projects.createProject, {
+    await asUserA.mutation(api.projects.createProject, {
       name: "Secret Project A",
       key: "SEC",
       isPublic: false,

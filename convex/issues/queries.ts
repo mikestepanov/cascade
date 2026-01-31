@@ -421,7 +421,10 @@ export const listTeamIssues = authenticatedQuery({
           return db
             .query("issues")
             .withIndex("by_team_status", (q) =>
-              q.eq("teamId", args.teamId).eq("status", args.status as string).lt("isDeleted", true),
+              q
+                .eq("teamId", args.teamId)
+                .eq("status", args.status as string)
+                .lt("isDeleted", true),
             )
             .order("desc");
         }
@@ -744,15 +747,13 @@ export const listByProjectSmart = projectQuery({
                 .filter(notDeleted);
             }
 
-            return ctx.db
-              .query("issues")
-              .withIndex("by_project_sprint_status", (q) =>
-                q
-                  .eq("projectId", ctx.project._id)
-                  .eq("sprintId", args.sprintId as Id<"sprints">)
-                  .eq("status", state.id)
-                  .lt("isDeleted", true),
-              );
+            return ctx.db.query("issues").withIndex("by_project_sprint_status", (q) =>
+              q
+                .eq("projectId", ctx.project._id)
+                .eq("sprintId", args.sprintId as Id<"sprints">)
+                .eq("status", state.id)
+                .lt("isDeleted", true),
+            );
             //.filter(notDeleted); // Optimization: handled by index
           }
 

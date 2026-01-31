@@ -16,7 +16,8 @@
       "!**/routeTree.gen.ts",
       "!**/.vinxi",
       "!**/.output",
-      "!**/node_modules"
+      "!**/node_modules",
+      "!**/src/index.css"
     ]
   },
   "formatter": {
