@@ -284,24 +284,15 @@ export function CreateIssueModal({
 
           {/* AI Suggestions Button */}
           <Flex align="center" gap="sm" className="pb-2">
-            <button
+            <Button
               type="button"
               onClick={handleGenerateAISuggestions}
-              disabled={isGeneratingAI}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-linear-to-r from-brand to-accent text-white text-sm font-medium rounded-lg hover:from-brand-hover hover:to-accent-hover focus:outline-none focus:ring-2 focus:ring-brand-ring disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+              isLoading={isGeneratingAI}
+              className="bg-linear-to-r from-brand to-accent hover:from-brand-hover hover:to-accent-hover text-white border-0"
+              leftIcon={<span>✨</span>}
             >
-              {isGeneratingAI ? (
-                <>
-                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                  <span>Generating...</span>
-                </>
-              ) : (
-                <>
-                  <span>✨</span>
-                  <span>Get AI Suggestions</span>
-                </>
-              )}
-            </button>
+              Get AI Suggestions
+            </Button>
             {showAISuggestions && (
               <Flex
                 align="center"
@@ -394,7 +385,7 @@ export function CreateIssueModal({
                     onClick={() => toggleLabel(label._id)}
                     aria-pressed={selectedLabels.includes(label._id)}
                     className={cn(
-                      "inline-flex items-center px-3 py-1 rounded-full text-sm font-medium text-white transition-opacity",
+                      "inline-flex items-center px-3 py-1 rounded-full text-sm font-medium text-white transition-opacity focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand-ring",
                       selectedLabels.includes(label._id)
                         ? "opacity-100 ring-2 ring-offset-2 ring-brand"
                         : "opacity-60 hover:opacity-80",

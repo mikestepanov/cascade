@@ -68,6 +68,7 @@ export function CalendarBodyMonth(): React.ReactElement {
             const isCurrentMonth = isSameMonth(day, date);
 
             return (
+              // biome-ignore lint/a11y/noStaticElementInteractions: Calendar day interaction
               <div
                 key={day.toISOString()}
                 role="button"
