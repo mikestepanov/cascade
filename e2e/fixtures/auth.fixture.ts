@@ -62,7 +62,7 @@ export type AuthFixtures = {
 export const authenticatedTest = base.extend<AuthFixtures>({
   // Disable storageState loading to force fresh login per test
   // This prevents "Invalid refresh token" errors caused by token reuse across parallel workers
-  storageState: async (_, use) => {
+  storageState: async ({}, use) => {
     await use(undefined);
   },
 
@@ -103,11 +103,11 @@ export const authenticatedTest = base.extend<AuthFixtures>({
   },
 
   // Disable saving state to disk to prevent race conditions
-  saveAuthState: async (_, use) => {
+  saveAuthState: async ({}, use) => {
     await use(async () => {});
   },
 
-  orgSlug: async (_, use, testInfo) => {
+  orgSlug: async ({}, use, testInfo) => {
     const config = loadDashboardConfig(testInfo.parallelIndex);
     if (!config?.orgSlug) {
       throw new Error(
@@ -165,7 +165,7 @@ export const authenticatedTest = base.extend<AuthFixtures>({
 
 export const onboardingTest = base.extend<AuthFixtures>({
   // Disable storageState loading
-  storageState: async (_, use) => {
+  storageState: async ({}, use) => {
     await use(undefined);
   },
 
@@ -205,11 +205,11 @@ export const onboardingTest = base.extend<AuthFixtures>({
   },
 
   // Disable saving state
-  saveAuthState: async (_, use) => {
+  saveAuthState: async ({}, use) => {
     await use(async () => {});
   },
 
-  orgSlug: async (_, use) => {
+  orgSlug: async ({}, use) => {
     // Onboarding user doesn't have an organization yet
     await use("");
   },

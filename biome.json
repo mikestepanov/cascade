@@ -78,6 +78,16 @@
       }
     },
     {
+      "includes": ["**/e2e/fixtures/**"],
+      "linter": {
+        "rules": {
+          "correctness": {
+            "noEmptyPattern": "off"
+          }
+        }
+      }
+    },
+    {
       "includes": ["**/convex/projects.ts"],
       "linter": {
         "rules": {

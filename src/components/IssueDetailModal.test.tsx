@@ -111,7 +111,6 @@ describe("IssueDetailModal", () => {
   });
 
   const setupMockQuery = (issueData: any = mockIssue, subtasksData: any = []) => {
-    // biome-ignore lint/suspicious/noExplicitAny: Mocking query with any args
     (vi.mocked(useQuery) as any).mockImplementation((_query: any, args: any) => {
       // Identify query by arguments
       if (args && args.id === mockIssueId) return issueData;
