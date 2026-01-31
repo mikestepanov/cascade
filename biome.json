@@ -9,14 +9,11 @@
     "ignoreUnknown": false,
     "includes": [
       "**",
-      "!src/index.css",
-      "!**/src/index.css",
       "!**/convex/_generated",
       "!**/dist",
       "!**/coverage",
       "!**/src/routeTree.gen.ts",
       "!**/routeTree.gen.ts",
-      "!**/src/index.css",
       "!**/.vinxi",
       "!**/.output",
       "!**/node_modules",
@@ -81,6 +78,16 @@
       }
     },
     {
+      "includes": ["**/e2e/fixtures/**"],
+      "linter": {
+        "rules": {
+          "correctness": {
+            "noEmptyPattern": "off"
+          }
+        }
+      }
+    },
+    {
       "includes": ["**/convex/projects.ts"],
       "linter": {
         "rules": {
@@ -135,7 +142,17 @@
       }
     },
     {
-      "includes": ["**/*.test.ts", "**/*.test.tsx", "**/convex/*.test.ts"],
+      "includes": ["**/src/components/landing/icons.tsx"],
+      "linter": {
+        "rules": {
+          "a11y": {
+            "noSvgWithoutTitle": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": ["**/*.test.ts", "**/*.test.tsx", "**/convex/*.test.ts", "**/*.spec.ts"],
       "linter": {
         "rules": {
           "correctness": {

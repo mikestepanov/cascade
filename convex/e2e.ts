@@ -832,7 +832,6 @@ export const seedTemplatesEndpoint = httpAction(async (ctx, request) => {
   try {
     const result = await ctx.runMutation(
       // biome-ignore lint/suspicious/noExplicitAny: Internal API usage
-
       (internal as any).projectTemplates.initializeBuiltInTemplates,
       {},
     );

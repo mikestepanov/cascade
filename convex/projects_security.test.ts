@@ -23,7 +23,6 @@ describe("Projects Security", () => {
     // 3. User A creates a project in Workspace A (orphaned from team, directly in workspace)
     const asUserA = asAuthenticatedUser(t, userA);
     const _projectA = await asUserA.mutation(api.projects.createProject, {
-
       name: "Secret Project A",
       key: "SEC",
       isPublic: false,

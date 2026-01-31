@@ -247,22 +247,19 @@ export const AIChat = React.memo(function AIChat({
             size="icon"
             onClick={handleSendMessage}
             disabled={!inputMessage.trim() || isSending}
+            isLoading={isSending}
             aria-label="Send message"
             className="shrink-0"
           >
-            {isSending ? (
-              <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-            ) : (
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <title>Send</title>
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
-                />
-              </svg>
-            )}
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <title>Send</title>
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
+              />
+            </svg>
           </Button>
         </Flex>
         <Typography variant="muted" className="text-xs mt-2 hidden sm:block">

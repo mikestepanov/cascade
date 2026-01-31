@@ -1,6 +1,7 @@
 import { isSameDay } from "date-fns";
 import { cn } from "@/lib/utils";
 import { DOT_COLOR_CLASSES, type EventColor } from "../../../calendar-colors";
+
 import { useCalendarContext } from "../../calendar-context";
 
 export function CalendarBodyDayEvents(): React.ReactElement {
@@ -24,7 +25,10 @@ export function CalendarBodyDayEvents(): React.ReactElement {
           >
             <div className="flex items-center gap-2">
               <div
-                className={cn("size-2 rounded-full", DOT_COLOR_CLASSES[event.color as EventColor])}
+                className={cn(
+                  "size-2 rounded-full",
+                  DOT_COLOR_CLASSES[event.color as EventColor] || DOT_COLOR_CLASSES.blue,
+                )}
               />
               <p className="text-ui-text-secondary text-sm font-medium">{event.title}</p>
             </div>
