@@ -81,7 +81,8 @@ export function CalendarEvent({
         <motion.div
           tabIndex={0}
           className={cn(
-            "px-3 py-1.5 rounded-lg truncate cursor-pointer transition-all duration-300 border",
+            month ? "px-2 py-0.5 rounded-secondary" : "px-3 py-1.5 rounded-lg",
+            "truncate cursor-pointer transition-all duration-300",
             colors.bg,
             colors.hover,
             colors.border,

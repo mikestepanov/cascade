@@ -62,7 +62,7 @@ export function DashboardCustomizeModal() {
           <Flex align="center" justify="between" className="space-x-2">
             <Label htmlFor="show-stats" className="flex flex-col space-y-1">
               <span>Quick Stats</span>
-              <span className="font-normal text-xs text-muted-foreground">
+              <span className="font-normal text-xs text-ui-text-secondary">
                 Show issue and project counts
               </span>
             </Label>
@@ -76,7 +76,7 @@ export function DashboardCustomizeModal() {
           <Flex align="center" justify="between" className="space-x-2">
             <Label htmlFor="show-activity" className="flex flex-col space-y-1">
               <span>Recent Activity</span>
-              <span className="font-normal text-xs text-muted-foreground">
+              <span className="font-normal text-xs text-ui-text-secondary">
                 Show your latest actions and history
               </span>
             </Label>
@@ -90,7 +90,7 @@ export function DashboardCustomizeModal() {
           <Flex align="center" justify="between" className="space-x-2">
             <Label htmlFor="show-workspaces" className="flex flex-col space-y-1">
               <span>My Workspaces</span>
-              <span className="font-normal text-xs text-muted-foreground">
+              <span className="font-normal text-xs text-ui-text-secondary">
                 Show list of projects you belong to
               </span>
             </Label>

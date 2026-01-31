@@ -102,8 +102,12 @@ export const updateProfile = authenticatedMutation({
     } = {};
 
     if (args.name !== undefined) {
-      validate.name(args.name);
-      updates.name = args.name;
+      const trimmedName = args.name.trim();
+      if (trimmedName.length === 0) {
+        throw validation("name", "Name cannot be empty or whitespace-only");
+      }
+      validate.name(trimmedName);
+      updates.name = trimmedName;
     }
 
     if (args.email !== undefined) {
@@ -136,7 +140,10 @@ export const updateProfile = authenticatedMutation({
       validate.bio(args.bio);
       updates.bio = args.bio;
     }
-    if (args.timezone !== undefined) updates.timezone = args.timezone;
+    if (args.timezone !== undefined) {
+      validate.timezone(args.timezone);
+      updates.timezone = args.timezone;
+    }
     if (args.emailNotifications !== undefined) updates.emailNotifications = args.emailNotifications;
     if (args.desktopNotifications !== undefined)
       updates.desktopNotifications = args.desktopNotifications;
@@ -279,9 +286,12 @@ export const listWithDigestPreference = internalQuery({
     }),
   ),
   handler: async (ctx, args) => {
-    // Bounded query for notification preferences
+    // Bounded query for notification preferences (all prefs are loaded, then filtered in JS below)
     const prefs = await ctx.db.query("notificationPreferences").take(1000);
 
+    // Filter in-memory for active email preferences matching the requested digest frequency.
+    // Only include users who have email enabled and match the requested frequency.
+    // This is a JS array filter on pre-fetched results, not a DB-level filter.
     const filtered = prefs.filter(
       (pref) => pref.emailEnabled && pref.emailDigest === args.frequency,
     );

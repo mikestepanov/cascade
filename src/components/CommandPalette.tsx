@@ -81,7 +81,7 @@ export function CommandPalette({ isOpen, onClose, commands }: CommandPaletteProp
           onValueChange={setSearch}
           className="text-ui-text"
         />
-        <CommandList className="max-h-[50vh] sm:max-h-[60vh]">
+        <CommandList className="max-h-panel-sm sm:max-h-panel-md">
           <CommandEmpty className="text-ui-text-secondary">No commands found</CommandEmpty>
           {Object.entries(groupedCommands).map(([group, cmds]) => (
             <CommandGroup

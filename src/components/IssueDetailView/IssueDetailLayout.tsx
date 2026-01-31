@@ -24,7 +24,7 @@ export function IssueDetailLayout({
       {header}
 
       <div className="flex-1 overflow-auto">
-        <Flex direction="column" className="max-w-[1600px] mx-auto md:flex-row">
+        <Flex direction="column" className="max-w-400 mx-auto md:flex-row">
           <IssueDetailContent
             issueId={issue._id}
             projectId={issue.projectId}

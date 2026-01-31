@@ -6,11 +6,16 @@
 import fs from "node:fs";
 import path from "node:path";
 import ts from "typescript";
-import { ROOT, c, relPath, walkDir } from "./utils.js";
+import { c, ROOT, relPath, walkDir } from "./utils.js";
 
 export function run() {
   const SRC_DIR = path.join(ROOT, "src");
-  const IGNORE_DIRS = ["src/lib", "src/components/ui", "src/components/landing", "src/components/Calendar/shadcn-calendar"];
+  const IGNORE_DIRS = [
+    "src/lib",
+    "src/components/ui",
+    "src/components/landing",
+    "src/components/Calendar/shadcn-calendar",
+  ];
 
   let errorCount = 0;
   const errors = [];
@@ -19,7 +24,9 @@ export function run() {
     const { line, character } = node.getSourceFile().getLineAndCharacterOfPosition(node.getStart());
     const rel = relPath(filePath);
     const color = level === "error" ? c.red : c.yellow;
-    errors.push(`  ${color}${level.toUpperCase()}${c.reset} ${rel}:${line + 1}:${character + 1} - ${message}`);
+    errors.push(
+      `  ${color}${level.toUpperCase()}${c.reset} ${rel}:${line + 1}:${character + 1} - ${message}`,
+    );
     if (level === "error") errorCount++;
   }
 
@@ -73,14 +80,23 @@ export function run() {
       if (ts.isJsxOpeningElement(node) || ts.isJsxSelfClosingElement(node)) {
         const tagName = node.tagName.getText();
         if (["p", "h1", "h2", "h3", "h4", "h5", "h6"].includes(tagName)) {
-          reportError(filePath, node, `Use <Typography> component instead of raw <${tagName}> tags.`);
+          reportError(
+            filePath,
+            node,
+            `Use <Typography> component instead of raw <${tagName}> tags.`,
+          );
         }
         // Flex standard
         if (tagName === "div") {
           const classText = getClassNameText(node);
           const classes = classText.split(/\s+/);
           if (classes.includes("flex") || classes.includes("inline-flex")) {
-            reportError(filePath, node, 'Use <Flex> component instead of <div className="flex"> for one-dimensional layouts.', "warning");
+            reportError(
+              filePath,
+              node,
+              'Use <Flex> component instead of <div className="flex"> for one-dimensional layouts.',
+              "warning",
+            );
           }
         }
       }
@@ -91,7 +107,11 @@ export function run() {
         if (node.initializer && ts.isJsxExpression(node.initializer)) {
           const expr = node.initializer.expression;
           if (expr && (ts.isTemplateExpression(expr) || ts.isBinaryExpression(expr))) {
-            reportError(filePath, node, "Avoid manual string concatenation in className. Use cn() utility instead.");
+            reportError(
+              filePath,
+              node,
+              "Avoid manual string concatenation in className. Use cn() utility instead.",
+            );
           }
         }
 
@@ -99,23 +119,38 @@ export function run() {
         const classes = classText.split(/\s+/);
 
         // Dark mode redundancy — semantic tokens use light-dark(), no dark: overrides needed
-        const REDUNDANT_DARK_SEMANTIC = /(bg|text|border|ring)-(ui-bg|ui-text|ui-border|brand|accent|status|palette|priority|issue-type|landing)/;
+        const REDUNDANT_DARK_SEMANTIC =
+          /(bg|text|border|ring)-(ui-bg|ui-text|ui-border|brand|accent|status|palette|priority|issue-type|landing)/;
         if (classes.some((cls) => cls.startsWith("dark:") && REDUNDANT_DARK_SEMANTIC.test(cls))) {
-          reportError(filePath, node, "Redundant dark: prefix on semantic token. All semantic tokens use light-dark() and handle dark mode automatically.", "warning");
+          reportError(
+            filePath,
+            node,
+            "Redundant dark: prefix on semantic token. All semantic tokens use light-dark() and handle dark mode automatically.",
+            "warning",
+          );
         }
 
         // Raw Tailwind colors
         for (const cls of classes) {
           const bare = cls.replace(/^[a-z-]+:/g, "");
           if (RAW_TW_COLORS.test(bare)) {
-            reportError(filePath, node, `Raw Tailwind color '${cls}' — use semantic tokens (brand-*, status-*, accent-*, ui-*) instead.`);
+            reportError(
+              filePath,
+              node,
+              `Raw Tailwind color '${cls}' — use semantic tokens (brand-*, status-*, accent-*, ui-*) instead.`,
+            );
           }
         }
 
         // Shorthands
         for (const cls of classes) {
           if (tailwindShorthandMap[cls]) {
-            reportError(filePath, node, `Non-canonical Tailwind class: '${cls}'. Use '${tailwindShorthandMap[cls]}' instead.`, "warning");
+            reportError(
+              filePath,
+              node,
+              `Non-canonical Tailwind class: '${cls}'. Use '${tailwindShorthandMap[cls]}' instead.`,
+              "warning",
+            );
           }
         }
       }
@@ -129,11 +164,19 @@ export function run() {
   const files = walkDir(SRC_DIR, { extensions: new Set([".tsx"]) });
   for (const f of files) checkFile(f);
 
+  const warningCount = errors.length - errorCount;
+  let detail = null;
+  if (errorCount > 0) {
+    detail = `${errorCount} violation(s)${warningCount > 0 ? `, ${warningCount} warning(s)` : ""}`;
+  } else if (warningCount > 0) {
+    detail = `${warningCount} warning(s)`;
+  }
+
   return {
     passed: errorCount === 0,
     errors: errorCount,
-    warnings: errors.length - errorCount,
-    detail: errorCount > 0 ? `${errorCount} violation(s)` : null,
+    warnings: warningCount,
+    detail,
     messages: errors,
   };
 }

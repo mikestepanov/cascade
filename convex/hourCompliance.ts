@@ -305,7 +305,7 @@ async function sendComplianceNotifications(
   // 2. Get project members with admin role
   const adminMembers = await ctx.db
     .query("projectMembers")
-    .filter((q) => q.eq(q.field("role"), "admin"))
+    .withIndex("by_role", (q) => q.eq("role", "admin"))
     .take(500);
   const adminMemberIds = new Set(adminMembers.map((m) => m.userId));
 
@@ -494,8 +494,9 @@ export const getComplianceSummary = authenticatedQuery({
 
     let records = await ctx.db.query("hourComplianceRecords").order("desc").take(1000); // Get recent records
 
-    // Filter by date range
+    // Filter by date range (JS array filter, not a DB query filter)
     if (args.startDate || args.endDate) {
+      // Apply date bounds to in-memory results
       records = records.filter((r) => {
         if (args.startDate && r.periodStart < args.startDate) return false;
         if (args.endDate && r.periodEnd > args.endDate) return false;

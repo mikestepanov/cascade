@@ -195,7 +195,7 @@ export function DocumentEditor({ documentId }: DocumentEditorProps) {
           {sync.isLoading ? (
             <SkeletonText lines={8} />
           ) : sync.editor ? (
-            <div className="relative min-h-[500px]">
+            <div className="relative min-h-125">
               <ErrorBoundary
                 fallback={
                   <div className="p-4 border border-status-error/20 bg-status-error/5 rounded-md text-status-error text-center">

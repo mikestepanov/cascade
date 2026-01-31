@@ -141,10 +141,25 @@ export function validateEmail(email: string): void {
  */
 export function validateUrl(url: string, fieldName = "url"): void {
   validateStringLength(url, fieldName, 1, STRING_LIMITS.URL.max);
+  let parsed: URL;
   try {
-    new URL(url);
+    parsed = new URL(url);
   } catch {
     throw new Error(`${fieldName} must be a valid URL`);
+  }
+  if (parsed.protocol !== "http:" && parsed.protocol !== "https:") {
+    throw new Error(`${fieldName} must use http or https protocol`);
+  }
+}
+
+/**
+ * Validate an IANA timezone string.
+ */
+export function validateTimezone(timezone: string): void {
+  try {
+    Intl.DateTimeFormat(undefined, { timeZone: timezone });
+  } catch {
+    throw new Error("Invalid IANA timezone (e.g., America/New_York)");
   }
 }
 
@@ -212,4 +227,7 @@ export const validate = {
 
   /** Validate slug */
   slug: (value: string, fieldName = "slug") => validateSlug(value, fieldName),
+
+  /** Validate IANA timezone */
+  timezone: (value: string) => validateTimezone(value),
 };

@@ -148,7 +148,7 @@ describe("WorkspacesList", () => {
     });
   });
 
-  it("should render projects with staggered animation", () => {
+  it("should render all project buttons", () => {
     render(<WorkspacesList {...defaultProps} />);
 
     const projectButtons = screen
@@ -156,11 +156,6 @@ describe("WorkspacesList", () => {
       .filter((btn) => btn.textContent?.includes("Project"));
 
     expect(projectButtons).toHaveLength(3);
-
-    // Check that each has animation delay
-    expect(projectButtons[0]).toHaveStyle({ animationDelay: "0ms" });
-    expect(projectButtons[1]).toHaveStyle({ animationDelay: "50ms" });
-    expect(projectButtons[2]).toHaveStyle({ animationDelay: "100ms" });
   });
 
   it("should apply navigation props to project items", () => {

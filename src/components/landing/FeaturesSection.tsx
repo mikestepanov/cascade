@@ -96,14 +96,14 @@ function FeatureCard({
       {/* Icon */}
       <div
         className={cn(
-          "inline-flex p-[2px] rounded-xl mb-5 bg-linear-to-br opacity-80 group-hover:opacity-100 transition-opacity",
+          "inline-flex p-0.5 rounded-xl mb-5 bg-linear-to-br opacity-80 group-hover:opacity-100 transition-opacity",
           gradients[gradient],
         )}
       >
         <Flex
           align="center"
           justify="center"
-          className="w-12 h-12 rounded-[10px] bg-ui-bg-elevated"
+          className="w-12 h-12 rounded-feature bg-ui-bg-elevated"
         >
           {icon}
         </Flex>

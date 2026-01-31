@@ -6,7 +6,7 @@ export function CalendarHeaderActionsAdd(): React.ReactElement {
   const { onAddEvent } = useCalendarContext();
   return (
     <Button
-      className="flex items-center gap-1 bg-primary text-background"
+      className="flex items-center gap-1 bg-brand text-brand-foreground"
       onClick={() => onAddEvent()}
     >
       <Plus />

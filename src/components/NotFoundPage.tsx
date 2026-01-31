@@ -19,7 +19,7 @@ export function NotFoundPage() {
       </Typography>
       <Link
         to={ROUTES.home.path}
-        className="mt-8 rounded-lg bg-ui-brand px-6 py-3 text-white transition-colors hover:bg-ui-brand-hover"
+        className="mt-8 rounded-lg bg-brand px-6 py-3 text-brand-foreground transition-colors hover:bg-brand-hover"
       >
         Go home
       </Link>

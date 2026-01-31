@@ -8,7 +8,7 @@ export function CalendarBodyDayEvents(): React.ReactElement {
   const dayEvents = events.filter((event) => isSameDay(event.start, date));
 
   if (!dayEvents.length) {
-    return <div className="p-2 text-muted-foreground">No events today...</div>;
+    return <div className="p-2 text-ui-text-secondary">No events today...</div>;
   }
 
   return (
@@ -24,7 +24,7 @@ export function CalendarBodyDayEvents(): React.ReactElement {
           >
             <div className="flex items-center gap-2">
               <div className={cn("size-2 rounded-full", DOT_COLOR_CLASSES[event.color])} />
-              <p className="text-muted-foreground text-sm font-medium">{event.title}</p>
+              <p className="text-ui-text-secondary text-sm font-medium">{event.title}</p>
             </div>
           </button>
         ))}

@@ -1,7 +1,7 @@
 import { api } from "@convex/_generated/api";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
-import { PageContent, PageLayout } from "@/components/layout";
+import { PageContent, PageError, PageLayout } from "@/components/layout";
 import { ProjectSettings } from "@/components/ProjectSettings";
 import { ROUTES } from "@/config/routes";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
@@ -25,11 +25,12 @@ function SettingsPage() {
   }
 
   if (!project) {
-    navigate({
-      to: ROUTES.projects.board.path,
-      params: { orgSlug, key },
-    });
-    return null;
+    return (
+      <PageError
+        title="Project Not Found"
+        message={`The project "${key}" doesn't exist or you don't have access to it.`}
+      />
+    );
   }
 
   // Check if user is admin (via role OR ownership)

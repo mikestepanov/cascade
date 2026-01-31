@@ -23,70 +23,72 @@ export const EVENT_TYPE_DEFAULT_COLOR: Record<string, EventColor> = {
   personal: "purple",
 };
 
-/** Full event card styling: bg, hover, border, text */
+/** Full event card styling: bg, hover, border, text.
+ *  Solid colored backgrounds with white text (Google Calendar pattern).
+ *  Amber uses dark text for contrast on its light-colored background. */
 export const EVENT_COLOR_CLASSES: Record<
   EventColor,
   { bg: string; hover: string; border: string; text: string }
 > = {
   blue: {
-    bg: "bg-palette-blue-bg",
-    hover: "hover:bg-palette-blue/10",
-    border: "border-palette-blue",
-    text: "text-palette-blue-text",
+    bg: "bg-palette-blue-solid",
+    hover: "hover:bg-palette-blue-solid/85",
+    border: "",
+    text: "text-white",
   },
   red: {
-    bg: "bg-palette-red-bg",
-    hover: "hover:bg-palette-red/10",
-    border: "border-palette-red",
-    text: "text-palette-red-text",
+    bg: "bg-palette-red-solid",
+    hover: "hover:bg-palette-red-solid/85",
+    border: "",
+    text: "text-white",
   },
   green: {
-    bg: "bg-palette-green-bg",
-    hover: "hover:bg-palette-green/10",
-    border: "border-palette-green",
-    text: "text-palette-green-text",
+    bg: "bg-palette-green-solid",
+    hover: "hover:bg-palette-green-solid/85",
+    border: "",
+    text: "text-white",
   },
   amber: {
-    bg: "bg-palette-amber-bg",
-    hover: "hover:bg-palette-amber/10",
-    border: "border-palette-amber",
-    text: "text-palette-amber-text",
+    bg: "bg-palette-amber-solid",
+    hover: "hover:bg-palette-amber-solid/85",
+    border: "",
+    text: "text-ui-text",
   },
   orange: {
-    bg: "bg-palette-orange-bg",
-    hover: "hover:bg-palette-orange/10",
-    border: "border-palette-orange",
-    text: "text-palette-orange-text",
+    bg: "bg-palette-orange-solid",
+    hover: "hover:bg-palette-orange-solid/85",
+    border: "",
+    text: "text-white",
   },
   purple: {
-    bg: "bg-palette-purple-bg",
-    hover: "hover:bg-palette-purple/10",
-    border: "border-palette-purple",
-    text: "text-palette-purple-text",
+    bg: "bg-palette-purple-solid",
+    hover: "hover:bg-palette-purple-solid/85",
+    border: "",
+    text: "text-white",
   },
   pink: {
-    bg: "bg-palette-pink-bg",
-    hover: "hover:bg-palette-pink/10",
-    border: "border-palette-pink",
-    text: "text-palette-pink-text",
+    bg: "bg-palette-pink-solid",
+    hover: "hover:bg-palette-pink-solid/85",
+    border: "",
+    text: "text-white",
   },
   teal: {
-    bg: "bg-palette-teal-bg",
-    hover: "hover:bg-palette-teal/10",
-    border: "border-palette-teal",
-    text: "text-palette-teal-text",
+    bg: "bg-palette-teal-solid",
+    hover: "hover:bg-palette-teal-solid/85",
+    border: "",
+    text: "text-white",
   },
   indigo: {
-    bg: "bg-palette-indigo-bg",
-    hover: "hover:bg-palette-indigo/10",
-    border: "border-palette-indigo",
-    text: "text-palette-indigo-text",
+    bg: "bg-palette-indigo-solid",
+    hover: "hover:bg-palette-indigo-solid/85",
+    border: "",
+    text: "text-white",
   },
   gray: {
-    bg: "bg-palette-gray-bg",
-    hover: "hover:bg-palette-gray/10",
-    border: "border-palette-gray",
-    text: "text-palette-gray-text",
+    bg: "bg-palette-gray-solid",
+    hover: "hover:bg-palette-gray-solid/85",
+    border: "",
+    text: "text-white",
   },
 };
 

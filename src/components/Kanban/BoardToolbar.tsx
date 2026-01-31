@@ -94,7 +94,7 @@ export function BoardToolbar({
             className={cn(
               "px-2 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm rounded-lg transition-colors",
               selectionMode
-                ? "bg-primary text-white"
+                ? "bg-brand text-brand-foreground"
                 : "bg-ui-bg-secondary text-ui-text hover:bg-ui-bg-tertiary",
             )}
             aria-label={selectionMode ? "Exit selection mode" : "Enable selection mode"}

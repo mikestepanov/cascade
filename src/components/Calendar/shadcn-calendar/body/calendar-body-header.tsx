@@ -11,18 +11,15 @@ export function CalendarBodyHeader({
   const isToday = isSameDay(date, new Date());
 
   return (
-    <div className="flex items-center justify-center gap-1 py-2 w-full sticky top-0 bg-background z-10 border-b">
+    <div className="flex items-center justify-center gap-1 py-2 w-full sticky top-0 bg-ui-bg z-10 border-b border-ui-border">
       <span
-        className={cn("text-xs font-medium", isToday ? "text-primary" : "text-muted-foreground")}
+        className={cn("text-xs font-medium", isToday ? "text-brand" : "text-ui-text-secondary")}
       >
         {format(date, "EEE")}
       </span>
       {!onlyDay && (
         <span
-          className={cn(
-            "text-xs font-medium",
-            isToday ? "text-primary font-bold" : "text-foreground",
-          )}
+          className={cn("text-xs font-medium", isToday ? "text-brand font-bold" : "text-ui-text")}
         >
           {format(date, "dd")}
         </span>

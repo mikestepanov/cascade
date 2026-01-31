@@ -87,7 +87,7 @@ export function RecentActivity({ activities }: RecentActivityProps) {
                     <div className="mt-1">
                       <Badge
                         variant="neutral"
-                        className="font-mono text-[10px] bg-ui-bg-tertiary/50 border-ui-border/50"
+                        className="font-mono text-caption bg-ui-bg-tertiary/50 border-ui-border/50"
                       >
                         {activity.issueKey}
                       </Badge>
@@ -95,7 +95,7 @@ export function RecentActivity({ activities }: RecentActivityProps) {
                     <Flex
                       gap="xs"
                       align="center"
-                      className="mt-1.5 text-[10px] text-ui-text-tertiary uppercase tracking-wider font-bold"
+                      className="mt-1.5 text-caption text-ui-text-tertiary uppercase tracking-wider font-bold"
                     >
                       <span>{activity.projectName}</span>
                       <span>•</span>

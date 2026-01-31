@@ -36,6 +36,7 @@ vi.mock("@/lib/toast", () => ({
 describe("IssueDependencies", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockUseMutation.mockReturnValue(vi.fn());
   });
 
   it("renders dependencies and remove buttons with tooltips", async () => {

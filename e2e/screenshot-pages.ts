@@ -8,7 +8,10 @@
  *   01-empty-dashboard.png  vs  01-filled-dashboard.png
  *
  * Usage:
- *   pnpm screenshots
+ *   pnpm screenshots                # auto-detect color scheme
+ *   pnpm screenshots:light-mode     # force light mode
+ *   pnpm screenshots -- --light     # force light mode (explicit)
+ *   pnpm screenshots -- --headed    # visible browser
  *
  * Requires dev server running (pnpm dev).
  * Automatically creates a test user, logs in via API, and screenshots every page.
@@ -27,6 +30,13 @@ const CONVEX_URL = process.env.VITE_CONVEX_URL || "";
 const SCREENSHOT_DIR = path.join(process.cwd(), "e2e", "screenshots");
 const VIEWPORT = { width: 1920, height: 1080 };
 const SETTLE_MS = 2500;
+
+// CLI flags
+const COLOR_SCHEME: "light" | "dark" | "no-preference" = process.argv.includes("--light")
+  ? "light"
+  : process.argv.includes("--dark")
+    ? "dark"
+    : "no-preference";
 
 const SCREENSHOT_USER = {
   email: TEST_USERS.teamLead.email.replace("@", "-screenshots@"),
@@ -176,6 +186,7 @@ async function screenshotEmpty(page: Page, orgSlug: string): Promise<void> {
   await takeScreenshot(page, p, "documents-templates", `/${orgSlug}/documents/templates`);
   await takeScreenshot(page, p, "workspaces", `/${orgSlug}/workspaces`);
   await takeScreenshot(page, p, "time-tracking", `/${orgSlug}/time-tracking`);
+  await takeScreenshot(page, p, "settings", `/${orgSlug}/settings`);
   await takeScreenshot(page, p, "settings-profile", `/${orgSlug}/settings/profile`);
 
   console.log("");
@@ -200,6 +211,7 @@ async function screenshotFilled(
   await takeScreenshot(page, p, "documents-templates", `/${orgSlug}/documents/templates`);
   await takeScreenshot(page, p, "workspaces", `/${orgSlug}/workspaces`);
   await takeScreenshot(page, p, "time-tracking", `/${orgSlug}/time-tracking`);
+  await takeScreenshot(page, p, "settings", `/${orgSlug}/settings`);
   await takeScreenshot(page, p, "settings-profile", `/${orgSlug}/settings/profile`);
 
   // Project sub-pages (deterministic using seed data)
@@ -296,18 +308,19 @@ async function screenshotFilled(
   const teamSlug = seed.teamSlug;
 
   if (wsSlug) {
-    await takeScreenshot(page, p, `workspace-${wsSlug}`, `/${orgSlug}/workspaces/${wsSlug}`);
+    const wsBase = `/${orgSlug}/workspaces/${wsSlug}`;
+    await takeScreenshot(page, p, `workspace-${wsSlug}`, wsBase);
+    await takeScreenshot(page, p, `workspace-${wsSlug}-settings`, `${wsBase}/settings`);
 
     // Try seed-provided team slug first, fall back to discovery
     const resolvedTeam = teamSlug ?? (await discoverFirstHref(page, /\/teams\/([^/]+)/));
     if (resolvedTeam) {
-      for (const tab of ["board"]) {
-        await takeScreenshot(
-          page,
-          p,
-          `team-${resolvedTeam}-${tab}`,
-          `/${orgSlug}/workspaces/${wsSlug}/teams/${resolvedTeam}/${tab}`,
-        );
+      const teamBase = `${wsBase}/teams/${resolvedTeam}`;
+      const teamTabs = ["board", "calendar", "settings"] as const;
+      // Team index (projects list)
+      await takeScreenshot(page, p, `team-${resolvedTeam}`, teamBase);
+      for (const tab of teamTabs) {
+        await takeScreenshot(page, p, `team-${resolvedTeam}-${tab}`, `${teamBase}/${tab}`);
       }
     }
   } else {
@@ -322,6 +335,19 @@ async function screenshotFilled(
         `/${orgSlug}/workspaces/${discoveredWs}`,
       );
     }
+  }
+
+  // Document editor (discover first document link from the documents page)
+  await page
+    .goto(`${BASE_URL}/${orgSlug}/documents`, {
+      waitUntil: "domcontentloaded",
+      timeout: 15000,
+    })
+    .catch(() => {});
+  await page.waitForTimeout(SETTLE_MS);
+  const docId = await discoverFirstHref(page, /\/documents\/([a-z0-9]+)/);
+  if (docId) {
+    await takeScreenshot(page, p, "document-editor", `/${orgSlug}/documents/${docId}`);
   }
 
   // Public pages (landing + signin) captured in pre-login phase
@@ -341,12 +367,13 @@ async function run(): Promise<void> {
   }
   fs.mkdirSync(SCREENSHOT_DIR, { recursive: true });
 
-  console.log(`\n  Base URL:    ${BASE_URL}`);
-  console.log(`  Output dir:  ${SCREENSHOT_DIR}\n`);
+  console.log(`\n  Base URL:       ${BASE_URL}`);
+  console.log(`  Output dir:    ${SCREENSHOT_DIR}`);
+  console.log(`  Color scheme:  ${COLOR_SCHEME}\n`);
 
   const headless = !process.argv.includes("--headed");
   const browser = await chromium.launch({ headless });
-  const context = await browser.newContext({ viewport: VIEWPORT });
+  const context = await browser.newContext({ viewport: VIEWPORT, colorScheme: COLOR_SCHEME });
   const page = await context.newPage();
 
   // Capture public pages before login
@@ -364,7 +391,10 @@ async function run(): Promise<void> {
     // Reopen headed so user can interact
     await browser.close();
     const fallbackBrowser = await chromium.launch({ headless: false });
-    const fallbackContext = await fallbackBrowser.newContext({ viewport: VIEWPORT });
+    const fallbackContext = await fallbackBrowser.newContext({
+      viewport: VIEWPORT,
+      colorScheme: COLOR_SCHEME,
+    });
     const fallbackPage = await fallbackContext.newPage();
     orgSlug = await manualLogin(fallbackPage);
     if (!orgSlug) {

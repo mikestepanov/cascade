@@ -167,6 +167,7 @@ const applicationTables = {
     .index("by_project", ["projectId"])
     .index("by_user", ["userId"])
     .index("by_project_user", ["projectId", "userId"])
+    .index("by_role", ["role"])
     .index("by_deleted", ["isDeleted"]),
 
   issues: defineTable(issuesFields)
@@ -1009,6 +1010,7 @@ const applicationTables = {
     .index("by_project", ["projectId"])
     .index("by_user_project", ["userId", "projectId"])
     .index("by_effective_from", ["effectiveFrom"])
+    .index("by_effective_to", ["effectiveTo"])
     .index("by_rate_type", ["rateType"]),
 
   // User Employment Types & Work Hour Configuration

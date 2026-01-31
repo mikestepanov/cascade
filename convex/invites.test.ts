@@ -355,7 +355,8 @@ describe("Invites", () => {
       await asAdmin.mutation(api.invites.resendInvite, { inviteId });
 
       const inviteAfter = await t.run(async (ctx) => ctx.db.get(inviteId));
-      expect(inviteAfter?.expiresAt).toBeGreaterThan(originalExpiry!);
+      expect(originalExpiry).toBeDefined();
+      expect(inviteAfter?.expiresAt).toBeGreaterThan(originalExpiry as number);
       expect(inviteAfter?.status).toBe("pending");
     });
 

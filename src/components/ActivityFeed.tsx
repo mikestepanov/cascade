@@ -3,6 +3,7 @@ import type { Id } from "@convex/_generated/dataModel";
 import { useQuery } from "convex/react";
 import { formatRelativeTime } from "@/lib/dates";
 import { cn } from "@/lib/utils";
+import { EmptyState } from "./ui/EmptyState";
 import { Flex } from "./ui/Flex";
 import { SkeletonList } from "./ui/Skeleton";
 import { Typography, type TypographyProps } from "./ui/Typography";
@@ -135,28 +136,11 @@ export function ActivityFeed({ projectId, limit = 50, compact = false }: Activit
 
   if (activities.length === 0) {
     return (
-      <div className="text-center py-12 text-ui-text-secondary">
-        <svg
-          aria-hidden="true"
-          className="w-16 h-16 mx-auto mb-4 text-ui-text-tertiary"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-          />
-        </svg>
-        <Typography variant="p" className="mb-0">
-          No activity yet
-        </Typography>
-        <Typography variant="muted" className="mt-1">
-          Activity will appear here as work progresses
-        </Typography>
-      </div>
+      <EmptyState
+        icon="🕐"
+        title="No activity yet"
+        description="Activity will appear here as work progresses"
+      />
     );
   }
 

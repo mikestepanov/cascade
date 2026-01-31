@@ -1,6 +1,7 @@
 import { api } from "@convex/_generated/api";
 import { createFileRoute, Link, Outlet } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
+import { PageHeader, PageLayout } from "@/components/layout";
 import { Flex } from "@/components/ui/Flex";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { Typography } from "@/components/ui/Typography";
@@ -30,43 +31,22 @@ function WorkspaceLayout() {
 
   if (workspace === null) {
     return (
-      <div className="container mx-auto p-6">
+      <PageLayout>
         <Typography variant="h2">Workspace not found</Typography>
-      </div>
+      </PageLayout>
     );
   }
 
   return (
-    <div className="container mx-auto p-6">
-      {/* Breadcrumb */}
-      <div className="mb-6 text-sm">
-        <Link
-          to={ROUTES.workspaces.list.path}
-          params={{ orgSlug }}
-          className="text-brand hover:underline"
-        >
-          Workspaces
-        </Link>
-        <Typography as="span" variant="muted" className="mx-2">
-          /
-        </Typography>
-        <Typography as="span" variant="small">
-          {workspace.name}
-        </Typography>
-      </div>
-
-      {/* Workspace Header */}
-      <div className="mb-8">
-        <Flex align="center" gap="sm" className="mb-2">
-          {workspace.icon && <span className="text-4xl">{workspace.icon}</span>}
-          <Typography variant="h1">{workspace.name}</Typography>
-        </Flex>
-        {workspace.description && (
-          <Typography variant="p" color="secondary">
-            {workspace.description}
-          </Typography>
-        )}
-      </div>
+    <PageLayout>
+      <PageHeader
+        title={workspace.name}
+        description={workspace.description ?? undefined}
+        breadcrumbs={[
+          { label: "Workspaces", to: ROUTES.workspaces.list.build(orgSlug) },
+          { label: workspace.name },
+        ]}
+      />
 
       {/* Tabs */}
       <div className="border-b border-ui-border mb-6">
@@ -90,6 +70,6 @@ function WorkspaceLayout() {
 
       {/* Content */}
       <Outlet />
-    </div>
+    </PageLayout>
   );
 }

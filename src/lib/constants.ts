@@ -56,40 +56,6 @@ export const BREAKPOINTS = {
 } as const;
 
 /**
- * Modal and dialog sizes
- */
-export const MODAL_SIZES = {
-  /** Small modal (max-width) */
-  sm: "max-w-md",
-  /** Medium modal (max-width) */
-  md: "max-w-lg",
-  /** Large modal (max-width) */
-  lg: "max-w-2xl",
-  /** Extra large modal (max-width) */
-  xl: "max-w-4xl",
-  /** Full screen modal on mobile */
-  fullscreen: "max-w-full",
-} as const;
-
-/**
- * Z-index layers
- */
-export const Z_INDEX = {
-  /** Base content */
-  base: 0,
-  /** Dropdowns */
-  dropdown: 10,
-  /** Sticky headers */
-  sticky: 20,
-  /** Modals */
-  modal: 50,
-  /** Toasts/notifications */
-  toast: 100,
-  /** Tooltips */
-  tooltip: 200,
-} as const;
-
-/**
  * Form field sizes
  */
 export const INPUT_SIZES = {

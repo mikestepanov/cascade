@@ -75,7 +75,7 @@ export const IssueCard = memo(function IssueCard({
       onDragStart={canEdit && !selectionMode ? (e) => onDragStart(e, issue._id) : undefined}
       onClick={handleClick}
       className={cn(
-        "w-full text-left bg-ui-bg p-2 sm:p-3 rounded-lg border-2 shadow-sm hover:shadow-md hover:scale-[1.02] transition-all duration-200 cursor-pointer",
+        "w-full text-left bg-ui-bg p-2 sm:p-3 rounded-lg border-2 shadow-sm hover:shadow-md hover:scale-hover-subtle transition-all duration-200 cursor-pointer",
         isSelected
           ? "border-brand-indigo-border bg-brand-indigo-track"
           : isFocused

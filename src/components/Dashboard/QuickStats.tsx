@@ -51,7 +51,7 @@ function StatCard({ title, value, subtitle, variant, progressValue }: StatCardPr
         <Typography
           variant="small"
           color="tertiary"
-          className="text-[10px] uppercase tracking-wider mb-2 font-bold"
+          className="text-caption uppercase tracking-wider mb-2 font-bold"
         >
           {title}
         </Typography>
@@ -89,7 +89,7 @@ function HighPriorityCard({ count }: { count: number }) {
         <Typography
           variant="small"
           className={cn(
-            "text-[10px] uppercase tracking-wider mb-2 font-bold",
+            "text-caption uppercase tracking-wider mb-2 font-bold",
             hasHighPriority ? "text-status-warning" : "text-ui-text-tertiary",
           )}
         >

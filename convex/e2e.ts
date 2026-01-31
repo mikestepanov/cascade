@@ -17,6 +17,7 @@ import { internal } from "./_generated/api";
 import type { Doc, Id } from "./_generated/dataModel";
 import { type ActionCtx, httpAction, internalMutation, internalQuery } from "./_generated/server";
 import { notDeleted } from "./lib/softDeleteHelpers";
+import type { CalendarEventColor } from "./validators";
 
 // Test user expiration (1 hour - for garbage collection)
 const TEST_USER_EXPIRATION_MS = 60 * 60 * 1000;
@@ -2925,6 +2926,7 @@ export const seedScreenshotDataInternal = internalMutation({
       endMin: number;
       dayOffset: number;
       eventType: "meeting" | "deadline" | "timeblock" | "personal";
+      color: CalendarEventColor;
       description?: string;
     }> = [
       // Today (dayOffset: 0) — 4 events to show overlap handling
@@ -2936,6 +2938,7 @@ export const seedScreenshotDataInternal = internalMutation({
         endMin: 0,
         dayOffset: 0,
         eventType: "meeting",
+        color: "blue",
         description: "Review sprint goals and assign tasks",
       },
       {
@@ -2946,6 +2949,7 @@ export const seedScreenshotDataInternal = internalMutation({
         endMin: 30,
         dayOffset: 0,
         eventType: "meeting",
+        color: "purple",
         description: "Review dashboard mockups with the team",
       },
       {
@@ -2956,6 +2960,7 @@ export const seedScreenshotDataInternal = internalMutation({
         endMin: 0,
         dayOffset: 0,
         eventType: "timeblock",
+        color: "green",
         description: "Deep focus on critical bug fixes",
       },
       {
@@ -2966,6 +2971,7 @@ export const seedScreenshotDataInternal = internalMutation({
         endMin: 0,
         dayOffset: 0,
         eventType: "meeting",
+        color: "teal",
         description: "Quick daily sync with the team",
       },
       // Tomorrow (dayOffset: 1)
@@ -2977,6 +2983,7 @@ export const seedScreenshotDataInternal = internalMutation({
         endMin: 0,
         dayOffset: 1,
         eventType: "meeting",
+        color: "orange",
         description: "Demo new features to client stakeholders",
       },
       {
@@ -2987,6 +2994,7 @@ export const seedScreenshotDataInternal = internalMutation({
         endMin: 30,
         dayOffset: 1,
         eventType: "meeting",
+        color: "indigo",
         description: "Discuss API v2 migration plan",
       },
       // Day +2
@@ -2998,6 +3006,7 @@ export const seedScreenshotDataInternal = internalMutation({
         endMin: 0,
         dayOffset: 2,
         eventType: "meeting",
+        color: "amber",
         description: "Review open pull requests for the sprint",
       },
       {
@@ -3008,6 +3017,7 @@ export const seedScreenshotDataInternal = internalMutation({
         endMin: 0,
         dayOffset: 2,
         eventType: "timeblock",
+        color: "green",
         description: "Focus block for third-party API integration",
       },
       // Day +3
@@ -3019,6 +3029,7 @@ export const seedScreenshotDataInternal = internalMutation({
         endMin: 0,
         dayOffset: 3,
         eventType: "meeting",
+        color: "blue",
         description: "Sprint retrospective and improvement planning",
       },
       {
@@ -3029,6 +3040,7 @@ export const seedScreenshotDataInternal = internalMutation({
         endMin: 0,
         dayOffset: 3,
         eventType: "personal",
+        color: "pink",
         description: "Lunch break workout",
       },
       // Day +4
@@ -3040,6 +3052,7 @@ export const seedScreenshotDataInternal = internalMutation({
         endMin: 0,
         dayOffset: 4,
         eventType: "timeblock",
+        color: "green",
         description: "End-to-end testing before release",
       },
       {
@@ -3050,6 +3063,7 @@ export const seedScreenshotDataInternal = internalMutation({
         endMin: 0,
         dayOffset: 4,
         eventType: "meeting",
+        color: "red",
         description: "Go/no-go decision for v2.1 release",
       },
       // Day +5
@@ -3061,6 +3075,7 @@ export const seedScreenshotDataInternal = internalMutation({
         endMin: 30,
         dayOffset: 5,
         eventType: "deadline",
+        color: "red",
         description: "All sprint items must be completed",
       },
       {
@@ -3071,6 +3086,7 @@ export const seedScreenshotDataInternal = internalMutation({
         endMin: 0,
         dayOffset: 5,
         eventType: "meeting",
+        color: "purple",
         description: "Tech talk: React Server Components deep dive",
       },
       // Day +6
@@ -3082,6 +3098,7 @@ export const seedScreenshotDataInternal = internalMutation({
         endMin: 30,
         dayOffset: 6,
         eventType: "meeting",
+        color: "indigo",
         description: "Prioritize and estimate upcoming stories",
       },
     ];
@@ -3106,6 +3123,7 @@ export const seedScreenshotDataInternal = internalMutation({
           endTime,
           allDay: false,
           eventType: cal.eventType,
+          color: cal.color,
           organizerId: userId,
           attendeeIds: [userId, ...syntheticUserIds],
           status: "confirmed",

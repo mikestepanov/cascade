@@ -135,7 +135,7 @@ export function PreferencesTab() {
                 Your timestamp display preference
               </Typography>
             </div>
-            <div className="w-[240px]">
+            <div className="w-60">
               <Select value={selectedTimezone} onValueChange={handleTimezoneChange}>
                 <SelectTrigger id="timezone">
                   <SelectValue placeholder="Select timezone" />

@@ -7,16 +7,16 @@ import { CalendarBodyMarginDayMargin } from "./calendar-body-margin-day-margin";
 export function CalendarBodyDay(): React.ReactElement {
   const { date } = useCalendarContext();
   return (
-    <div className="flex divide-x flex-grow overflow-hidden">
-      <div className="flex flex-col flex-grow divide-y overflow-hidden">
+    <div className="flex divide-x divide-ui-border flex-grow overflow-hidden">
+      <div className="flex flex-col flex-grow divide-y divide-ui-border overflow-hidden">
         <div className="flex flex-col flex-1 overflow-y-auto">
-          <div className="relative flex flex-1 divide-x">
+          <div className="relative flex flex-1 divide-x divide-ui-border">
             <CalendarBodyMarginDayMargin />
             <CalendarBodyDayContent date={date} />
           </div>
         </div>
       </div>
-      <div className="lg:flex hidden flex-col flex-grow divide-y max-w-[276px]">
+      <div className="lg:flex hidden flex-col flex-grow divide-y divide-ui-border max-w-69">
         <CalendarBodyDayCalendar />
         <CalendarBodyDayEvents />
       </div>
