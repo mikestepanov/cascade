@@ -248,8 +248,7 @@ export const RBAC_TEST_CONFIG = {
   projectName: "RBAC Test Project",
   /**
    * Organization slug for URL paths.
-   * Uses "dashboard" because that's the auto-created organization when test users first log in.
-   * The RBAC setup will use this existing organization instead of creating a new one.
+   * The RBAC setup will use the existing organization created during login.
    */
   orgSlug: TEST_ORG_SLUG,
 };

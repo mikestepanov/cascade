@@ -44,7 +44,18 @@ function extractOrganizationSlug(url: string): string | undefined {
     const match = urlObj.pathname.match(
       /^\/([^/]+)\/(dashboard|settings|projects|documents|issues)/,
     );
-    return match?.[1];
+    const slug = match?.[1];
+
+    if (slug === "dashboard") {
+      console.warn(`  ⚠️  Warning: extractOrganizationSlug found "dashboard" as slug in URL ${url}`);
+      return undefined;
+    }
+
+    if (slug) {
+      console.log(`  👉 Extracted slug: "${slug}" from URL ${url}`);
+    }
+
+    return slug;
   } catch {
     return undefined;
   }
