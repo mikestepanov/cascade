@@ -182,15 +182,15 @@ const applicationTables = {
     .index("by_sprint", ["sprintId"])
     .index("by_epic", ["epicId"])
     .index("by_parent", ["parentId"])
-    .index("by_project_status", ["projectId", "status"])
+    .index("by_project_status", ["projectId", "status", "isDeleted"])
     .index("by_project_status_updated", ["projectId", "status", "updatedAt"])
-    .index("by_project_sprint_status", ["projectId", "sprintId", "status"]) // Optimized for sprint board counts
+    .index("by_project_sprint_status", ["projectId", "sprintId", "status", "isDeleted"]) // Optimized for sprint board counts
     .index("by_project_sprint_status_updated", ["projectId", "sprintId", "status", "updatedAt"]) // NEW OPTIMIZATION
     .index("by_project_updated", ["projectId", "updatedAt"])
     .index("by_project_due_date", ["projectId", "dueDate"])
-    .index("by_organization_status", ["organizationId", "status"]) // NEW
-    .index("by_workspace_status", ["workspaceId", "status"]) // Standardized
-    .index("by_team_status", ["teamId", "status"]) // NEW
+    .index("by_organization_status", ["organizationId", "status", "isDeleted"]) // NEW
+    .index("by_workspace_status", ["workspaceId", "status", "isDeleted"]) // Standardized
+    .index("by_team_status", ["teamId", "status", "isDeleted"]) // NEW
     .index("by_team_status_updated", ["teamId", "status", "updatedAt"]) // NEW OPTIMIZATION
     .index("by_deleted", ["isDeleted"]) // Soft delete index
     .index("by_project_deleted", ["projectId", "isDeleted"]) // Project trash view
