@@ -747,6 +747,7 @@ export const listByProjectSmart = projectQuery({
                 .filter(notDeleted);
             }
 
+            // Promise.all handles parallelism
             return ctx.db.query("issues").withIndex("by_project_sprint_status", (q) =>
               q
                 .eq("projectId", ctx.project._id)
