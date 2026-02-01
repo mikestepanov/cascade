@@ -172,7 +172,7 @@ jobs:
         env:
           CONVEX_NONINTERACTIVE: 1
         run: |
-          npx convex dev --configure --dev-deployment local --until-success &
+          npx convex dev --local --until-success &
           npx wait-on http://localhost:3211 -t 60000
 
       - name: Run E2E tests
