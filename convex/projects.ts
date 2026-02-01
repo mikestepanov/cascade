@@ -5,7 +5,7 @@ import { internal } from "./_generated/api";
 import type { Doc } from "./_generated/dataModel";
 import { authenticatedMutation, authenticatedQuery, projectAdminMutation } from "./customFunctions";
 import { batchFetchProjects, batchFetchUsers, getUserName } from "./lib/batchHelpers";
-import { BOUNDED_LIST_LIMIT } from "./lib/boundedQueries";
+import { BOUNDED_LIST_LIMIT, efficientCount } from "./lib/boundedQueries";
 import { ARRAY_LIMITS, validate } from "./lib/constrainedValidators";
 import { conflict, forbidden, notFound, validation } from "./lib/errors";
 import { getOrganizationRole } from "./lib/organizationAccess";
@@ -186,13 +186,13 @@ export const getCurrentUserProjects = authenticatedQuery({
     // Fetch issue counts
     const MAX_ISSUE_COUNT = 1000;
     const issueCountsPromises = projectIds.map(async (projectId) => {
-      const issues = await ctx.db
-        .query("issues")
-        .withIndex("by_project", (q) => q.eq("projectId", projectId))
-        .take(MAX_ISSUE_COUNT + 1);
+      const count = await efficientCount(
+        ctx.db.query("issues").withIndex("by_project", (q) => q.eq("projectId", projectId)),
+        MAX_ISSUE_COUNT,
+      );
       return {
         projectId,
-        count: Math.min(issues.length, MAX_ISSUE_COUNT),
+        count,
       };
     });
     const issueCounts = await Promise.all(issueCountsPromises);

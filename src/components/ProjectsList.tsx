@@ -76,7 +76,7 @@ export function ProjectsList({ onCreateClick }: ProjectsListProps) {
                   )}
 
                   <Typography variant="muted" className="text-sm">
-                    {project.myIssues || 0} issues •{" "}
+                    {project.issueCount || 0} issues •{" "}
                     {project.boardType === "kanban" ? "Kanban" : "Scrum"}
                   </Typography>
                 </Flex>
