@@ -29,6 +29,19 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Convex codegen
+        run: npx convex codegen
+
+      - name: Check Convex generated files are up to date
+        run: |
+          if [ -n "$(git status --porcelain convex/_generated/)" ]; then
+            echo "❌ Convex generated files are out of date!"
+            echo "Run 'npx convex codegen' locally and commit the changes."
+            git diff convex/_generated/
+            exit 1
+          fi
+          echo "✅ Convex generated files are up to date"
+
       - name: Biome
         run: pnpm run biome:check
 
