@@ -255,12 +255,12 @@ export class ProjectsPage extends BasePage {
         throw e;
       }
 
-      // Wait for navigation to the new project page
-      // This is more robust than waiting for modal close, which can race with navigation
-      await this.page.waitForURL(/\/projects\/[A-Z0-9-]+/);
+      // Wait for navigation to the new project's board page
+      // The app redirects to /projects/[KEY]/board after creation
+      await this.page.waitForURL(/\/projects\/[A-Z0-9-]+\/board/);
 
-      // Wait for the new page to stabilize - relying on waitForURL is sufficient as subsequent actions will auto-wait
-      // await this.page.waitForLoadState("networkidle"); // Removed: Flaky with persistent connections
+      // Wait for board to be fully interactive before returning
+      await this.waitForBoardInteractive();
     } catch (e) {
       console.error("Failed to create project from template:", e);
       // Log the current URL to help debugging
