@@ -174,7 +174,7 @@ jobs:
           CONVEX_AGENT_MODE: anonymous
         run: |
           npx convex dev --local --until-success &
-          npx wait-on http://127.0.0.1:3211 -t 60000
+          npx wait-on http://127.0.0.1:3211 -t 300000
 
       - name: Run E2E tests
         # Use 2 workers per shard on standard GitHub runners to avoid choking
