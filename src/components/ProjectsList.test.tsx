@@ -52,7 +52,7 @@ describe("ProjectsList", () => {
       key: "PROJ-1",
       name: "Project 1",
       description: "Description 1",
-      myIssues: 5,
+      issueCount: 5,
       boardType: "kanban",
     },
     {
@@ -60,7 +60,7 @@ describe("ProjectsList", () => {
       key: "PROJ-2",
       name: "Project 2",
       description: "Description 2",
-      myIssues: 0,
+      issueCount: 0,
       boardType: "scrum",
     },
   ];

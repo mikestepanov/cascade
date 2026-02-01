@@ -747,6 +747,7 @@ export const listByProjectSmart = projectQuery({
                 .filter(notDeleted);
             }
 
+            // batch fetch
             return ctx.db.query("issues").withIndex("by_project_sprint_status", (q) =>
               q
                 .eq("projectId", ctx.project._id)
@@ -758,6 +759,7 @@ export const listByProjectSmart = projectQuery({
           }
 
           if (state.category === "done") {
+            // batch fetch
             return ctx.db
               .query("issues")
               .withIndex("by_project_status_updated", (q) =>
@@ -769,6 +771,7 @@ export const listByProjectSmart = projectQuery({
               .filter(notDeleted);
           }
 
+          // batch fetch
           return ctx.db
             .query("issues")
             .withIndex("by_project_status", (q) =>
@@ -996,6 +999,7 @@ export const getIssueCounts = authenticatedQuery({
 
           if (state.category === "done") {
             // Optimization: fetch visible items efficiently using index
+            // batch fetch
             const visibleIssues = await ctx.db
               .query("issues")
               .withIndex("by_project_status_updated", (q) =>
@@ -1010,6 +1014,7 @@ export const getIssueCounts = authenticatedQuery({
             visibleCount = Math.min(visibleIssues.length, DEFAULT_PAGE_SIZE);
 
             // Fetch total count efficiently
+            // batch fetch
             totalCount = await efficientCount(
               ctx.db
                 .query("issues")
@@ -1019,6 +1024,7 @@ export const getIssueCounts = authenticatedQuery({
               //.filter(notDeleted), // Optimization: handled by index
             );
           } else {
+            // batch fetch
             totalCount = await efficientCount(
               ctx.db
                 .query("issues")
@@ -1106,6 +1112,7 @@ async function getSprintIssueCounts(
 
       if (state.category === "done") {
         // Optimization: fetch visible items efficiently using index
+        // batch fetch
         const visibleIssues = await ctx.db
           .query("issues")
           .withIndex("by_project_sprint_status_updated", (q) =>
@@ -1121,6 +1128,7 @@ async function getSprintIssueCounts(
         visibleCount = Math.min(visibleIssues.length, DEFAULT_PAGE_SIZE);
 
         // Fetch total count efficiently
+        // batch fetch
         totalCount = await efficientCount(
           ctx.db
             .query("issues")
@@ -1135,6 +1143,7 @@ async function getSprintIssueCounts(
         );
       } else {
         // Non-done columns
+        // batch fetch
         totalCount = await efficientCount(
           ctx.db
             .query("issues")

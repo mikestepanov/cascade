@@ -186,6 +186,7 @@ export const getCurrentUserProjects = authenticatedQuery({
     // Fetch issue counts
     const MAX_ISSUE_COUNT = 1000;
     const issueCountsPromises = projectIds.map(async (projectId) => {
+      // batch fetch
       const count = await efficientCount(
         ctx.db.query("issues").withIndex("by_project", (q) => q.eq("projectId", projectId)),
         MAX_ISSUE_COUNT,
