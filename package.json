@@ -12,10 +12,10 @@
     ]
   },
   "scripts": {
-    "dev": "VITE_CONVEX_URL=http://127.0.0.1:3211 npm-run-all --parallel dev:frontend dev:backend",
+    "dev": "npm-run-all --parallel dev:frontend dev:backend",
     "dev:cloud": "npm-run-all --parallel dev:frontend dev:backend:cloud",
     "dev:frontend": "vite",
-    "dev:backend": "convex dev --local",
+    "dev:backend": "CONVEX_AGENT_MODE=anonymous convex dev --local",
     "dev:backend:cloud": "convex dev",
     "build": "convex codegen --typecheck disable && vite build",
     "biome": "biome check --write .",
