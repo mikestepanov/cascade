@@ -62,5 +62,47 @@ describe("Users Security", () => {
       expect(user?.email).toBe("same@example.com");
       expect(user?.emailVerificationTime).toBe(verifiedTime);
     });
+
+    it("should synchronize email change to authAccounts", async () => {
+      const t = convexTest(schema, modules);
+      const userId = await createTestUser(t);
+      const oldEmail = "old@example.com";
+      const newEmail = "new@example.com";
+
+      // Set initial email
+      await t.run(async (ctx) => {
+        await ctx.db.patch(userId, {
+          email: oldEmail,
+          emailVerificationTime: Date.now(),
+        });
+
+        // Create authAccount
+        await ctx.db.insert("authAccounts", {
+          userId,
+          provider: "password",
+          providerAccountId: oldEmail,
+          secret: "hashedpassword",
+          emailVerified: new Date().toISOString(),
+        });
+      });
+
+      const asUser = asAuthenticatedUser(t, userId);
+
+      // Change email via updateProfile
+      await asUser.mutation(api.users.updateProfile, {
+        email: newEmail,
+      });
+
+      // Verify authAccount state
+      const authAccount = await t.run(async (ctx) => {
+        return await ctx.db
+          .query("authAccounts")
+          .withIndex("userIdAndProvider", (q) => q.eq("userId", userId).eq("provider", "password"))
+          .first();
+      });
+
+      expect(authAccount?.providerAccountId).toBe(newEmail);
+      expect(authAccount?.emailVerified).toBeUndefined();
+    });
   });
 });
