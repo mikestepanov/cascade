@@ -1,8 +1,8 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
-import { DocumentHeader } from "./DocumentHeader";
 import type { Doc } from "@convex/_generated/dataModel";
+import { render, screen } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
 import { TooltipProvider } from "@/components/ui/Tooltip";
+import { DocumentHeader } from "./DocumentHeader";
 
 // Mock PresenceIndicator
 vi.mock("./PresenceIndicator", () => ({
@@ -37,7 +37,7 @@ describe("DocumentHeader", () => {
           onShowVersionHistory={vi.fn()}
           editorReady={true}
         />
-      </TooltipProvider>
+      </TooltipProvider>,
     );
     expect(screen.getByText("Test Document")).toBeInTheDocument();
   });
@@ -56,7 +56,7 @@ describe("DocumentHeader", () => {
           onShowVersionHistory={vi.fn()}
           editorReady={true}
         />
-      </TooltipProvider>
+      </TooltipProvider>,
     );
     expect(screen.getByRole("button", { name: "Version history" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Import from Markdown" })).toBeInTheDocument();
