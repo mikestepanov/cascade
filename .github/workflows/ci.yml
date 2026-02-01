@@ -171,6 +171,7 @@ jobs:
         if: github.ref != 'refs/heads/main'
         env:
           CONVEX_NONINTERACTIVE: 1
+          CONVEX_AGENT_MODE: anonymous
         run: |
           npx convex dev --local --until-success &
           npx wait-on http://localhost:3211 -t 60000
