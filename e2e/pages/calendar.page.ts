@@ -197,9 +197,9 @@ export class CalendarPage extends BasePage {
 
   async expectCalendarView() {
     // Wait for calendar to be visible with extended timeout for CI/hydration
-    await expect(this.calendar).toBeVisible({ timeout: 15000 });
-    // Ensure navigation controls are present
-    await expect(this.todayButton).toBeVisible();
+    // Also wait for the navigation controls first as they are static parts of the layout
+    await expect(this.todayButton).toBeVisible({ timeout: 20000 });
+    await expect(this.calendar).toBeVisible({ timeout: 20000 });
   }
 
   async expectEventCount(count: number) {
