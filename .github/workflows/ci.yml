@@ -169,7 +169,11 @@ jobs:
 
       - name: Start Local Convex Backend
         if: github.ref != 'refs/heads/main'
-        run: npx convex dev --configure --dev-deployment local --until-success &
+        env:
+          CONVEX_NONINTERACTIVE: 1
+        run: |
+          npx convex dev --configure --dev-deployment local --until-success &
+          npx wait-on http://localhost:3211 -t 60000
 
       - name: Run E2E tests
         # Use 2 workers per shard on standard GitHub runners to avoid choking
