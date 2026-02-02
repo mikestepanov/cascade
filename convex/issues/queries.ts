@@ -755,16 +755,7 @@ export const listByProjectSmart = projectQuery({
                 .eq("sprintId", args.sprintId as Id<"sprints">)
                 .eq("status", state.id)
                 .lt("isDeleted", true),
-            return ctx.db.query("issues").withIndex(
-              // batch
-              "by_project_sprint_status",
-              (q) =>
-                q
-                  .eq("projectId", ctx.project._id)
-                  .eq("sprintId", args.sprintId as Id<"sprints">)
-                  .eq("status", state.id)
-                  .lt("isDeleted", true),
-);
+            );
           }
 
           if (state.category === "done") {
