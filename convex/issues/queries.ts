@@ -748,7 +748,6 @@ export const listByProjectSmart = projectQuery({
                 .filter(notDeleted);
             }
 
-<<<<<<< HEAD
             // Batch query: Promise.all handles parallelism
             return ctx.db.query("issues").withIndex("by_project_sprint_status", (q) =>
               q
@@ -756,7 +755,6 @@ export const listByProjectSmart = projectQuery({
                 .eq("sprintId", args.sprintId as Id<"sprints">)
                 .eq("status", state.id)
                 .lt("isDeleted", true),
-=======
             return ctx.db.query("issues").withIndex(
               // batch
               "by_project_sprint_status",
@@ -766,9 +764,7 @@ export const listByProjectSmart = projectQuery({
                   .eq("sprintId", args.sprintId as Id<"sprints">)
                   .eq("status", state.id)
                   .lt("isDeleted", true),
->>>>>>> main
-            );
-            //.filter(notDeleted); // Optimization: handled by index
+);
           }
 
           if (state.category === "done") {
