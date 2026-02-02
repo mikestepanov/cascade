@@ -1,6 +1,7 @@
 import { convexTest } from "convex-test";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { api } from "./_generated/api";
+import type { Id } from "./_generated/dataModel";
 import schema from "./schema";
 import { modules } from "./testSetup.test-helper";
 import {
@@ -13,13 +14,13 @@ import {
 // Helper to extract inviteId and token from sendInvite result (handles union type)
 function expectInviteCreated(
   result:
-    | { inviteId: string; token: string }
-    | { success: boolean; addedDirectly: boolean; userId: string },
-): { inviteId: string; token: string } {
+    | { inviteId: Id<"invites">; token: string }
+    | { success: boolean; addedDirectly: boolean; userId: Id<"users"> },
+): { inviteId: Id<"invites">; token: string } {
   if (!("inviteId" in result)) {
     throw new Error("Expected invite to be created, but user was added directly");
   }
-  return result as { inviteId: string; token: string };
+  return result;
 }
 
 describe("Invites", () => {
