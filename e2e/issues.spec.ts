@@ -65,21 +65,35 @@ test.describe("Issues", () => {
   });
 
   test.describe("Issue Detail", () => {
-    test("can open issue detail dialog", async ({ projectsPage }) => {
+    test("can open issue detail dialog", async ({ projectsPage, page }) => {
       // Create project first
       const uniqueId = Date.now().toString();
       const projectKey = `PROJ${uniqueId.slice(-4)}`;
       const issueTitle = "Detail Test Issue";
 
-      // Use direct URL navigation to projects page to access Create Project functionality
+      // Navigate to projects page
+      await projectsPage.goto();
+
+      // Create a unique workspace for this test to ensure isolation
+      await projectsPage.createWorkspace(`Detail WS ${uniqueId}`);
+
+      // Go back to projects page after workspace creation
       await projectsPage.goto();
 
       // Create a project (waits for board to be interactive)
       await projectsPage.createProject(`Project ${uniqueId}`, projectKey);
 
+      // Verify we're on the board page before proceeding
+      await expect(page).toHaveURL(/\/projects\/.*\/board/);
+      console.log(`✓ On board page: ${page.url()}`);
+
       // Create an issue
       await projectsPage.createIssue(issueTitle);
       await expect(projectsPage.createIssueModal).not.toBeVisible();
+
+      // For Scrum projects (default template), new issues go to Backlog
+      // Switch to Backlog tab to find the issue
+      await projectsPage.switchToTab("backlog");
 
       // Open detail dialog
       await projectsPage.openIssueDetail(issueTitle);
@@ -88,21 +102,35 @@ test.describe("Issues", () => {
       await expect(projectsPage.issueDetailDialog).toBeVisible();
     });
 
-    test("issue detail shows timer controls", async ({ projectsPage }) => {
+    test("issue detail shows timer controls", async ({ projectsPage, page }) => {
       // Create project first
       const uniqueId = Date.now().toString();
       const projectKey = `PROJ${uniqueId.slice(-4)}`;
       const issueTitle = "Timer Test Issue";
 
-      // Use direct URL navigation to projects page to access Create Project functionality
+      // Navigate to projects page
+      await projectsPage.goto();
+
+      // Create a unique workspace for this test to ensure isolation
+      await projectsPage.createWorkspace(`Timer WS ${uniqueId}`);
+
+      // Go back to projects page after workspace creation
       await projectsPage.goto();
 
       // Create a project (waits for board to be interactive)
       await projectsPage.createProject(`Project ${uniqueId}`, projectKey);
 
+      // Verify we're on the board page before proceeding
+      await expect(page).toHaveURL(/\/projects\/.*\/board/);
+      console.log(`✓ On board page: ${page.url()}`);
+
       // Create an issue
       await projectsPage.createIssue(issueTitle);
       await expect(projectsPage.createIssueModal).not.toBeVisible();
+
+      // For Scrum projects (default template), new issues go to Backlog
+      // Switch to Backlog tab to find the issue
+      await projectsPage.switchToTab("backlog");
 
       // Open detail dialog
       await projectsPage.openIssueDetail(issueTitle);

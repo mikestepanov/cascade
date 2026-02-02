@@ -57,33 +57,48 @@ test.describe("Calendar", () => {
       await calendarPage.goToToday();
     });
 
-    test("can switch calendar views", async ({ dashboardPage, calendarPage }) => {
+    test("can switch calendar views", async ({ dashboardPage, calendarPage, page }) => {
       await dashboardPage.goto();
       await dashboardPage.expectLoaded();
       await dashboardPage.navigateTo("calendar");
       await calendarPage.expectCalendarView();
 
-      // Try to switch views if buttons are available
-      // These are optional as not all calendar implementations have all views
+      // Check which view buttons are available
       const monthViewVisible = await calendarPage.monthViewButton.isVisible().catch(() => false);
       const weekViewVisible = await calendarPage.weekViewButton.isVisible().catch(() => false);
       const dayViewVisible = await calendarPage.dayViewButton.isVisible().catch(() => false);
 
+      // Track if at least one view switch succeeded
+      let switchedViews = 0;
+
       if (monthViewVisible) {
         await calendarPage.switchToMonthView();
+        switchedViews++;
       }
 
       if (weekViewVisible) {
         await calendarPage.switchToWeekView();
+        switchedViews++;
       }
 
       if (dayViewVisible) {
         await calendarPage.switchToDayView();
+        switchedViews++;
       }
 
       // Switch back to month view if available
       if (monthViewVisible) {
         await calendarPage.switchToMonthView();
+      }
+
+      // Ensure at least one view button exists - if none exist, test should fail
+      // as the calendar UI is incomplete
+      if (switchedViews === 0) {
+        // Take screenshot for debugging
+        await page.screenshot({ path: "e2e/artifacts/calendar-no-view-buttons.png" });
+        throw new Error(
+          "No calendar view buttons found (month/week/day). Calendar UI may be incomplete or loading failed.",
+        );
       }
     });
   });

@@ -348,6 +348,10 @@ export class ProjectsPage extends BasePage {
       })
       .first();
     await expect(timeTrackingHeader).toBeVisible();
+
+    // Wait for timer button to be fully rendered (fixes flaky timer control tests)
+    // The button may appear slightly after the header due to React hydration
+    await expect(this.startTimerButton.or(this.stopTimerButton)).toBeVisible();
   }
 
   /**

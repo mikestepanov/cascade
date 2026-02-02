@@ -127,11 +127,9 @@ export class LandingPage extends BasePage {
   // ===================
 
   async clickGetStarted() {
-    // Wait for button to be ready
+    // Wait for button to be ready and stable (handles React hydration)
     await this.heroGetStartedButton.waitFor({ state: "visible" });
-
-    // Short wait for React hydration (don't use networkidle - Convex WebSockets keep it active)
-    await this.page.waitForTimeout(500);
+    await expect(this.heroGetStartedButton).toBeEnabled();
 
     // Click the button to navigate to signup page
     await this.heroGetStartedButton.click();
@@ -139,9 +137,8 @@ export class LandingPage extends BasePage {
     // Wait for signup page to load (URL changes to /signup)
     await this.page.waitForURL("**/signup");
 
-    // Wait for signup heading to appear and stabilize
+    // Wait for signup heading to appear and be stable
     await this.signUpHeading.waitFor({ state: "visible" });
-    await this.page.waitForTimeout(300); // Let React finish rendering
   }
 
   async clickNavLogin() {
@@ -150,7 +147,6 @@ export class LandingPage extends BasePage {
     // Wait for signin page to load
     await this.page.waitForURL("**/signin");
     await this.signInHeading.waitFor({ state: "visible" });
-    await this.page.waitForTimeout(300);
   }
 
   async clickNavGetStarted() {
@@ -159,7 +155,6 @@ export class LandingPage extends BasePage {
     // Wait for signup page to load
     await this.page.waitForURL("**/signup");
     await this.signUpHeading.waitFor({ state: "visible" });
-    await this.page.waitForTimeout(300);
   }
 
   /**

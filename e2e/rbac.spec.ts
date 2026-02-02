@@ -79,7 +79,8 @@ rbacTest(
       .getByRole("tab", { name: /sprint/i })
       .or(adminPage.getByRole("link", { name: /sprint/i }));
 
-    if (await sprintsTab.isVisible().catch(() => false)) {
+    const sprintsTabCount = await sprintsTab.count();
+    if (sprintsTabCount > 0) {
       await sprintsTab.click();
       await adminPage.waitForLoadState("domcontentloaded");
 
@@ -88,6 +89,8 @@ rbacTest(
       });
       await expect(createSprintButton).toBeVisible();
       console.log("✓ Admin can access sprints and create sprint button");
+    } else {
+      console.log("⚠ Sprints tab not present (project may not support sprints)");
     }
 
     // 7. Check analytics access
@@ -95,13 +98,16 @@ rbacTest(
       .getByRole("tab", { name: /analytics/i })
       .or(adminPage.getByRole("link", { name: /analytics/i }));
 
-    if (await analyticsTab.isVisible().catch(() => false)) {
+    const analyticsTabCount = await analyticsTab.count();
+    if (analyticsTabCount > 0) {
       await analyticsTab.click();
       await adminPage.waitForLoadState("domcontentloaded");
 
       const analyticsContent = adminPage.getByText(/overview|metrics|velocity/i);
       await expect(analyticsContent.first()).toBeVisible();
       console.log("✓ Admin can view analytics");
+    } else {
+      console.log("⚠ Analytics tab not present (feature may be disabled)");
     }
 
     console.log("\n✅ All admin permission tests passed");
@@ -163,7 +169,8 @@ rbacTest(
       .getByRole("tab", { name: /sprint/i })
       .or(editorPage.getByRole("link", { name: /sprint/i }));
 
-    if (await sprintsTab.isVisible().catch(() => false)) {
+    const sprintsTabCount = await sprintsTab.count();
+    if (sprintsTabCount > 0) {
       await sprintsTab.click();
       await editorPage.waitForLoadState("domcontentloaded");
 
@@ -172,6 +179,8 @@ rbacTest(
       });
       await expect(createSprintButton).toBeVisible();
       console.log("✓ Editor can access sprints and create sprint button");
+    } else {
+      console.log("⚠ Sprints tab not present (project may not support sprints)");
     }
 
     // 7. Check analytics access
@@ -179,13 +188,16 @@ rbacTest(
       .getByRole("tab", { name: /analytics/i })
       .or(editorPage.getByRole("link", { name: /analytics/i }));
 
-    if (await analyticsTab.isVisible().catch(() => false)) {
+    const analyticsTabCount = await analyticsTab.count();
+    if (analyticsTabCount > 0) {
       await analyticsTab.click();
       await editorPage.waitForLoadState("domcontentloaded");
 
       const analyticsContent = editorPage.getByText(/overview|metrics|velocity/i);
       await expect(analyticsContent.first()).toBeVisible();
       console.log("✓ Editor can view analytics");
+    } else {
+      console.log("⚠ Analytics tab not present (feature may be disabled)");
     }
 
     console.log("\n✅ All editor permission tests passed");
@@ -241,13 +253,16 @@ rbacTest(
       .getByRole("tab", { name: /analytics/i })
       .or(viewerPage.getByRole("link", { name: /analytics/i }));
 
-    if (await analyticsTab.isVisible().catch(() => false)) {
+    const analyticsTabCount = await analyticsTab.count();
+    if (analyticsTabCount > 0) {
       await analyticsTab.click();
       await viewerPage.waitForLoadState("domcontentloaded");
 
       const analyticsContent = viewerPage.getByText(/overview|metrics|velocity/i);
       await expect(analyticsContent.first()).toBeVisible();
       console.log("✓ Viewer can view analytics");
+    } else {
+      console.log("⚠ Analytics tab not present (feature may be disabled)");
     }
 
     console.log("\n✅ All viewer permission tests passed");
