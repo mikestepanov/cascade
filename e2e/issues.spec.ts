@@ -45,11 +45,8 @@ test.describe("Issues", () => {
       // Go back to projects page as createWorkspace navigates away
       await projectsPage.goto();
 
-      // Create a project
+      // Create a project (waits for board to be interactive)
       await projectsPage.createProject(`Project ${uniqueId}`, projectKey);
-
-      // Wait for board to be fully interactive
-      await projectsPage.waitForBoardInteractive();
 
       // Create an issue
       await projectsPage.createIssue(issueTitle);
@@ -60,9 +57,6 @@ test.describe("Issues", () => {
       // For Scrum projects (default template), new issues go to Backlog
       // Switch to Backlog tab to verify
       await projectsPage.switchToTab("backlog");
-
-      // Wait for backlog view to load
-      await projectsPage.waitForBoardInteractive();
 
       // Verify issue appears in backlog
       const issueCard = projectsPage.getIssueCard(issueTitle);
@@ -80,11 +74,8 @@ test.describe("Issues", () => {
       // Use direct URL navigation to projects page to access Create Project functionality
       await projectsPage.goto();
 
-      // Create a project
+      // Create a project (waits for board to be interactive)
       await projectsPage.createProject(`Project ${uniqueId}`, projectKey);
-
-      // Wait for board to be fully interactive
-      await projectsPage.waitForBoardInteractive();
 
       // Create an issue
       await projectsPage.createIssue(issueTitle);
@@ -106,11 +97,8 @@ test.describe("Issues", () => {
       // Use direct URL navigation to projects page to access Create Project functionality
       await projectsPage.goto();
 
-      // Create a project
+      // Create a project (waits for board to be interactive)
       await projectsPage.createProject(`Project ${uniqueId}`, projectKey);
-
-      // Wait for board to be fully interactive
-      await projectsPage.waitForBoardInteractive();
 
       // Create an issue
       await projectsPage.createIssue(issueTitle);

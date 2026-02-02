@@ -130,6 +130,7 @@ window.addEventListener('message', async (message) => {
   },
   preview: {
     port: 5555,
+    host: "127.0.0.1",
   },
   resolve: {
     alias: {

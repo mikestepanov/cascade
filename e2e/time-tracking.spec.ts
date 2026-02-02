@@ -34,10 +34,8 @@ test.describe("Time Tracking", () => {
     await projectsPage.createWorkspace(`TT WS ${now}`);
     await projectsPage.goto();
 
+    // Create a project (waits for board to be interactive)
     await projectsPage.createProject(`Time Tracking ${now}`, projectKey);
-
-    // Wait for board to be fully interactive
-    await projectsPage.waitForBoardInteractive();
 
     // Create Issue
     await projectsPage.createIssue(issueTitle);

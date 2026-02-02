@@ -34,12 +34,9 @@ test.describe("Integration Workflows", () => {
       // Step 2: Create a workspace (needed for project)
       await projectsPage.createWorkspace(`Int WS ${timestamp}`);
 
-      // Step 3: Go back to projects and create a new project
+      // Step 3: Go back to projects and create a new project (waits for board)
       await projectsPage.goto();
       await projectsPage.createProject(projectName, projectKey);
-
-      // Step 4: Verify board is visible
-      await projectsPage.waitForBoardInteractive();
       console.log("✓ Project created and board visible");
 
       // Step 5: Create an issue
@@ -72,14 +69,11 @@ test.describe("Integration Workflows", () => {
       const timestamp = Date.now();
       const projectKey = `NAV${timestamp.toString().slice(-4)}`;
 
-      // Create project
+      // Create project (waits for board to be interactive)
       await projectsPage.goto();
       await projectsPage.createWorkspace(`Nav WS ${timestamp}`);
       await projectsPage.goto();
       await projectsPage.createProject(`Nav Test ${timestamp}`, projectKey);
-
-      // Wait for board to be fully loaded before interacting with tabs
-      await projectsPage.waitForBoardInteractive();
 
       // Verify we're on board
       await expect(page).toHaveURL(/\/board/);

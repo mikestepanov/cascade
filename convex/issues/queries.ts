@@ -741,7 +741,6 @@ export const listByProjectSmart = projectQuery({
                 .filter(notDeleted);
             }
 
-            // batch fetch
             return ctx.db
               .query("issues")
               .withIndex("by_project_sprint_status", (q) =>
