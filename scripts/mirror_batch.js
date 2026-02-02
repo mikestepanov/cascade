@@ -1,9 +1,15 @@
 import { spawn } from "node:child_process";
+import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+// Config
+const args = process.argv.slice(2);
+const FORCE = args.includes("--force");
+const FRESHNESS_DAYS = parseInt(args.find((a) => a.startsWith("--days="))?.split("=")[1], 10) || 7;
 
 // Define all target pages to mirror
 const TARGETS = [
@@ -69,7 +75,14 @@ const TARGETS = [
 async function runMirror(target) {
   return new Promise((resolve, _reject) => {
     const scriptPath = path.join(__dirname, "scrape_full_mirror.js");
-    const child = spawn("node", [scriptPath, target.url, target.competitor, target.page], {
+    const args = [scriptPath, target.url, target.competitor, target.page];
+    if (FORCE) args.push("--force");
+    if (target.auth) {
+      args.push("--auth");
+      args.push(target.auth);
+    }
+
+    const child = spawn("node", args, {
       stdio: "inherit",
       cwd: path.join(__dirname, ".."),
       shell: true,
@@ -104,11 +117,39 @@ async function main() {
     const target = TARGETS[i];
 
     try {
-      // Smart Skip: Check if directory exists
+      // Smart Skip & Staleness Check
       const outputDir = path.resolve(__dirname, "../docs/research/library", target.competitor);
-      if (fs.existsSync(outputDir) && fs.readdirSync(outputDir).length > 0) {
+      const deepDataPath = path.join(outputDir, `${target.page}_deep.json`);
+
+      let shouldSkip = false;
+      let reason = "";
+
+      if (!FORCE && fs.existsSync(deepDataPath)) {
+        try {
+          const deepData = JSON.parse(fs.readFileSync(deepDataPath, "utf-8"));
+          if (deepData.scrapedAt) {
+            const lastScrape = new Date(deepData.scrapedAt);
+            const now = new Date();
+            const diffDays = (now - lastScrape) / (1000 * 60 * 60 * 24);
+
+            if (diffDays < FRESHNESS_DAYS) {
+              shouldSkip = true;
+              reason = `Fresh (${Math.floor(diffDays)}d ago)`;
+            }
+          } else {
+            // If no timestamp but file exists, treat as "old" but not necessarily stale
+            // unless we want to be strict. For now, let's just skip if it exists at all.
+            shouldSkip = true;
+            reason = "Exists";
+          }
+        } catch (_e) {
+          // ignore parse error, re-scrape
+        }
+      }
+
+      if (shouldSkip) {
         console.log(
-          `\n[${i + 1}/${TARGETS.length}] ${target.competitor}/${target.page} ⏩ Skipped (Exists)`,
+          `\n[${i + 1}/${TARGETS.length}] ${target.competitor}/${target.page} ⏩ Skipped (${reason})`,
         );
         continue;
       }

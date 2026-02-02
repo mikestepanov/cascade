@@ -10,14 +10,14 @@ For every target URL, the full mirror captures **6 viewports x 2 themes = 12 scr
 
 ### Viewports
 
-| Name | Resolution | Use Case |
-|------|-----------|----------|
-| **Desktop** | `1920x1080` | Standard workstation, dashboards, complex tables |
-| **Laptop** | `1366x768` | Most common laptop screen, compact layouts |
-| **Phablet** | `768x1024` | Small tablet / large phone, breakpoint testing |
-| **Tablet** | `1024x1366` | iPad-class, hybrid nav patterns |
-| **Mobile** | `375x667` | iPhone SE/8 class, stacked layouts, touch targets |
-| **Ultrawide** | `3440x1440` | Widescreen monitors, max-width behavior |
+| Name          | Resolution  | Use Case                                          |
+| ------------- | ----------- | ------------------------------------------------- |
+| **Desktop**   | `1920x1080` | Standard workstation, dashboards, complex tables  |
+| **Laptop**    | `1366x768`  | Most common laptop screen, compact layouts        |
+| **Phablet**   | `768x1024`  | Small tablet / large phone, breakpoint testing    |
+| **Tablet**    | `1024x1366` | iPad-class, hybrid nav patterns                   |
+| **Mobile**    | `375x667`   | iPhone SE/8 class, stacked layouts, touch targets |
+| **Ultrawide** | `3440x1440` | Widescreen monitors, max-width behavior           |
 
 ### Themes
 
@@ -44,6 +44,12 @@ For every page, the scraper extracts deep technical metadata:
 - **Keyframes** — all `@keyframes` animation definitions
 - **Fonts** — loaded font families, weights, styles, status
 - **Scripts** — all `<script src>` URLs
+- **Fingerprint** — detected frameworks, UI libraries, and analytics tools (React, Tailwind, PostHog, etc.)
+
+### Motion Capture (`{page}_motion.webm`)
+
+- 5-10 second video recording of the page during exploration.
+- Useful for documenting micro-interactions, scroll-triggered animations, and loading states.
 
 ### Network Log (`{page}_network.json`)
 
@@ -55,13 +61,13 @@ For every page, the scraper extracts deep technical metadata:
 
 Downloaded assets organized by category:
 
-| Category | Extensions | Example |
-|----------|-----------|---------|
-| `js/` | `.js`, `.mjs` | Bundle chunks, framework code |
-| `css/` | `.css` | Stylesheets |
-| `fonts/` | `.woff`, `.woff2`, `.ttf`, `.otf` | Web fonts |
-| `images/` | `.png`, `.jpg`, `.svg`, `.webp`, `.ico` | Logos, icons, photos |
-| `animations/` | `.lottie`, lottie `.json` | Motion graphics |
+| Category      | Extensions                              | Example                       |
+| ------------- | --------------------------------------- | ----------------------------- |
+| `js/`         | `.js`, `.mjs`                           | Bundle chunks, framework code |
+| `css/`        | `.css`                                  | Stylesheets                   |
+| `fonts/`      | `.woff`, `.woff2`, `.ttf`, `.otf`       | Web fonts                     |
+| `images/`     | `.png`, `.jpg`, `.svg`, `.webp`, `.ico` | Logos, icons, photos          |
+| `animations/` | `.lottie`, lottie `.json`               | Motion graphics               |
 
 ### HTML Snapshot (`{page}.html`)
 
@@ -109,6 +115,63 @@ pnpm run mirror:batch
 
 **Competitors configured:** Linear, ClickUp, Notion, Asana, Fireflies, Gong, Jira, Meeting BaaS, Monday, Otter, Read AI, Recall.ai, tl;dv, Height, Shortcut, Clockify, Jibble, Toggl, TimeCamp, TMetric, Harvest
 
+### Automated Target Discovery
+
+Saves a JSON list of high-value pages (pricing, features, etc.) by parsing a competitor's sitemap.
+
+```bash
+pnpm run discover <url> <competitor>
+
+# Example:
+node scripts/discover_targets.js https://linear.app linear
+```
+
+**Output:** `docs/research/library/<competitor>_discovery.json`
+
+### AI Design Audit
+
+Uses Claude 3.5 Sonnet Vision to generate a UX audit, layout labels, and design token analysis from a screenshot.
+
+```bash
+pnpm run analyze <competitor> <page>
+
+# Example:
+node scripts/analyze_design.js linear home
+```
+
+**Output:** `docs/research/library/<competitor>/<page>_analysis.json`
+
+### Authenticated Scraping
+
+For capturing pages behind a login (e.g., dashboards, settings), use the session-based auth system. This system is designed to be **highly automatic** for sites using "Login with Google".
+
+1.  **Universal Setup**: Run the setup script **once** to establish your Google identity.
+    ```bash
+    pnpm run setup:auth google
+    ```
+2.  **Automatic Handshake**: When you run the scraper with `--auth google`, it will:
+    - Automatically detect "Continue with Google" buttons.
+    - Automatically select your primary account on the Google auth screen.
+    - Securely cache the competitor-specific session for the duration of the 12-shot capture.
+
+    ```bash
+    pnpm run mirror <url> <competitor> <page> --auth google
+    ```
+
+### Freshness & Staleness
+
+To avoid redundant scraping, `mirror:batch` and `mirror` now use a 7-day freshness window.
+
+- **Automatic Skipping**: If a page has been scraped within the last 7 days, it will be skipped by `mirror:batch`.
+- **Custom Window**: Change the window (in days) using `--days=N`.
+  ```bash
+  pnpm run mirror:batch --days=14
+  ```
+- **Manual Force**: Bypass the freshness check and re-scrape everything.
+  ```bash
+  pnpm run mirror:batch --force
+  ```
+
 ### Deep Data Only (lightweight)
 
 Quick single-page scrape — only HTML + deep metadata JSON. No screenshots, no assets.
@@ -146,6 +209,8 @@ docs/research/library/<competitor>/
 ├── <page>_manifest.json                 # Asset download manifest (gitignored)
 ├── <page>_desktop_light.png             # Screenshots (12 per page)
 ├── <page>_desktop_dark.png
+├── <page>_motion.webm                   # Micro-interaction recording (gitignored)
+├── <page>_analysis.json                 # AI UX Audit / Layout labeling
 ├── <page>_laptop_light.png
 ├── <page>_laptop_dark.png
 ├── <page>_phablet_light.png
@@ -168,11 +233,12 @@ docs/research/library/<competitor>/
 
 - `*.png` — screenshots (visual evidence)
 - `*_tech.json` — tech summaries
+- `*_analysis.json` — AI design audits
 - `README.md` — library index
 
 ### What's Gitignored
 
 - `*.html` — full DOM dumps (large, regenerable)
-- `*.webp` — screen recordings
+- `*.webm` — screen recordings
 - `*_manifest.json`, `*_network.json`, `*_deep.json` — raw capture data
 - `assets/` — downloaded JS/CSS/fonts/images
