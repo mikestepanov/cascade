@@ -1,6 +1,7 @@
 import { v } from "convex/values";
 import { pruneNull } from "convex-helpers";
-import { internalQuery } from "./_generated/server";
+import type { Id } from "./_generated/dataModel";
+import { internalQuery, type MutationCtx } from "./_generated/server";
 import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
 import { batchFetchUsers } from "./lib/batchHelpers";
 import { validate } from "./lib/constrainedValidators";
@@ -129,6 +130,8 @@ export const updateProfile = authenticatedMutation({
         updates.email = args.email;
         // Revoke email verification if email changed
         updates.emailVerificationTime = undefined;
+
+        await syncEmailToAuthAccounts(ctx, ctx.userId, args.email);
       }
     }
 
@@ -151,6 +154,38 @@ export const updateProfile = authenticatedMutation({
     await ctx.db.patch(ctx.userId, updates);
   },
 });
+
+/**
+ * Helper function to sync email changes to authAccounts
+ */
+async function syncEmailToAuthAccounts(ctx: MutationCtx, userId: Id<"users">, newEmail: string) {
+  // Synchronize with authAccounts (for Password provider) to prevent notification hijacking
+  // and ensure the user logs in with the new email.
+  const passwordAccount = await ctx.db
+    .query("authAccounts")
+    .withIndex("userIdAndProvider", (q) => q.eq("userId", userId).eq("provider", "password"))
+    .first();
+
+  if (passwordAccount) {
+    // Check if new email is already in use by another account (in authAccounts)
+    const existingAccount = await ctx.db
+      .query("authAccounts")
+      .withIndex("providerAndAccountId", (q) =>
+        q.eq("provider", "password").eq("providerAccountId", newEmail),
+      )
+      .first();
+
+    if (existingAccount && existingAccount._id !== passwordAccount._id) {
+      throw conflict("Email already in use for authentication");
+    }
+
+    // Update authAccount
+    await ctx.db.patch(passwordAccount._id, {
+      providerAccountId: newEmail,
+      emailVerified: undefined, // Revoke verification
+    });
+  }
+}
 
 /**
  * Check if the current user is an organization admin
