@@ -332,6 +332,8 @@ export class ProjectsPage extends BasePage {
     await expect(tabLocator).toBeVisible({ timeout: 30000 });
 
     // Ensure the tab is actually clickable before attempting to click
+    // Add a check for navigation container to ensure hydration is complete
+    await expect(this.page.getByRole("navigation", { name: "Tabs" })).toBeVisible();
     await expect(tabLocator).toBeEnabled();
 
     // Use force click to ensure we hit it even if animations are playing
