@@ -51,6 +51,7 @@
     "mirror:batch": "node scripts/mirror_batch.js",
     "inventory": "node scripts/check_inventory.js",
     "discover": "node scripts/discover_targets.js",
+    "crawl": "node scripts/crawl_routes.js",
     "analyze": "node scripts/analyze_design.js",
     "setup:auth": "node scripts/setup_auth.js"
   },

@@ -131,6 +131,21 @@ node scripts/discover_targets.js https://linear.app linear
 
 **Output:** `docs/research/library/<competitor>_discovery.json`
 
+### Route Crawling (Fast Discovery)
+
+Use the dedicated crawler to map out all routes (public and authenticated) before running a full mirror.
+
+```bash
+# Public only
+pnpm run crawl <url> <competitor>
+
+# With internal auth discovery
+pnpm run crawl <url> <competitor> --auth google
+```
+
+- **Lightweight**: Optimized for speed (no screenshots/assets).
+- **Consolidated**: Merges sitemaps, SaaS probes, and dashboard links into one `_discovery.json`.
+
 ### Internal Route Discovery (Authenticated)
 
 When running with `--auth`, the scraper will dynamically discover new high-value internal routes by scanning sidebars and navigation menus for keywords like "Settings", "Team", or "Profile".
