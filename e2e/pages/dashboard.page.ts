@@ -313,12 +313,9 @@ export class DashboardPage extends BasePage {
       await expect(this.commandPalette).toBeVisible();
       // Verify it stays visible (not immediately closed)
       await expect(this.commandPaletteInput).toBeVisible();
+      // Focus the input to keep the dialog open and stable (inside retry loop to handle detachments)
+      await this.commandPaletteInput.focus();
     }).toPass();
-
-    // Focus the input to keep the dialog open and stable
-    await this.commandPaletteInput.focus();
-    // Final assertion that palette is still visible after focus
-    await expect(this.commandPalette).toBeVisible();
   }
 
   async closeCommandPalette() {

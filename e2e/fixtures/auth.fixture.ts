@@ -147,10 +147,7 @@ export const authenticatedTest = base.extend<AuthFixtures>({
   },
 
   monitorAuthState: [
-    async (
-      { ensureAuthenticated, page }: { ensureAuthenticated: () => Promise<void>; page: Page },
-      use: () => Promise<void>,
-    ) => {
+    async ({ ensureAuthenticated, page }, use) => {
       await page.context().addInitScript(() => {
         try {
           Object.defineProperty(navigator, "onLine", { get: () => true });

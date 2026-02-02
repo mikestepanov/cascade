@@ -57,7 +57,7 @@ export function CalendarView(): React.ReactElement {
   }
 
   return (
-    <Flex direction="column" className="h-full">
+    <Flex direction="column" className="h-full" data-calendar>
       <ShadcnCalendar
         events={events}
         mode={mode}

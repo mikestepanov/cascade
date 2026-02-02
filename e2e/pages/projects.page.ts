@@ -98,8 +98,8 @@ export class ProjectsPage extends BasePage {
     // We'll pick the first template by default or look for specific one
     // const templateButton = this.createProjectForm.getByRole("button").filter({ hasText: "Software Project" });
 
-    this.projectNameInput = page.getByLabel(/project name/i);
-    this.projectKeyInput = page.getByLabel(/project key/i);
+    this.projectNameInput = page.getByTestId("project-name-input");
+    this.projectKeyInput = page.getByTestId("project-key-input");
     this.projectDescriptionInput = page.getByLabel(/description/i);
     this.makePublicCheckbox = page.getByRole("checkbox", { name: /public/i });
 
@@ -135,12 +135,12 @@ export class ProjectsPage extends BasePage {
     this.issueAssigneeSelect = page.getByRole("combobox", { name: /assignee/i });
     this.submitIssueButton = this.createIssueModal.getByRole("button", { name: /create|submit/i });
 
-    // Project tabs - rendered as buttons in ProjectBoard.tsx with "X view" aria-labels
-    this.boardTab = page.getByRole("button", { name: "Board view" });
-    this.backlogTab = page.getByRole("button", { name: "Backlog view" });
-    this.sprintsTab = page.getByRole("button", { name: "Sprints view" });
-    this.analyticsTab = page.getByRole("button", { name: "Analytics view" });
-    this.settingsTab = page.getByRole("button", { name: "Settings view" });
+    // Project tabs - rendered as links in route.tsx
+    this.boardTab = page.getByRole("link", { name: /^Board$/ });
+    this.backlogTab = page.getByRole("link", { name: /^Backlog$/ });
+    this.sprintsTab = page.getByRole("link", { name: /^Sprints$/ });
+    this.analyticsTab = page.getByRole("link", { name: /^Analytics$/ });
+    this.settingsTab = page.getByRole("link", { name: /^Settings$/ });
     // Issue detail dialog
     // Issue detail dialog - distinct from Create Issue modal
     this.issueDetailDialog = page.getByTestId("issue-detail-modal");
@@ -255,12 +255,12 @@ export class ProjectsPage extends BasePage {
         throw e;
       }
 
-      // Wait for navigation to the new project page
-      // This is more robust than waiting for modal close, which can race with navigation
-      await this.page.waitForURL(/\/projects\/[A-Z0-9-]+/);
+      // Wait for navigation to the new project's board page
+      // The app redirects to /projects/[KEY]/board after creation
+      await this.page.waitForURL(/\/projects\/[A-Z0-9-]+\/board/);
 
-      // Wait for the new page to stabilize
-      await this.page.waitForLoadState("networkidle");
+      // Wait for board to be fully interactive before returning
+      await this.waitForBoardInteractive();
     } catch (e) {
       console.error("Failed to create project from template:", e);
       // Log the current URL to help debugging
