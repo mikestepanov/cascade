@@ -31,6 +31,9 @@ jobs:
 
       - name: Convex codegen
         run: npx convex codegen
+        env:
+          CONVEX_DEPLOYMENT: ${{ secrets.CONVEX_DEPLOYMENT }}
+          CONVEX_DEPLOY_KEY: ${{ secrets.CONVEX_DEPLOY_KEY }}
 
       - name: Check Convex generated files are up to date
         run: |
