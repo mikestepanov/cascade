@@ -464,8 +464,8 @@ describe("issue helpers", () => {
         const project = await ctx.db.get(projectId);
         return await ctx.db.insert("issues", {
           projectId,
-          organizationId: project!.organizationId,
-          workspaceId: project!.workspaceId,
+          organizationId: project?.organizationId,
+          workspaceId: project?.workspaceId,
           key: "TEST-2",
           title: "Subtask",
           type: "subtask",

@@ -60,9 +60,7 @@ describe("Invites", () => {
       expect(inviteId).toBeDefined();
       expect(token).toBeDefined();
 
-      const invite = await t.run(async (ctx) =>
-        ctx.db.get(inviteId as Id<"invites">),
-      );
+      const invite = await t.run(async (ctx) => ctx.db.get(inviteId as Id<"invites">));
       if (!invite || invite.role !== "user") throw new Error("Invite not found");
       expect(invite.email).toBe("newuser@example.com");
       expect(invite.status).toBe("pending");
@@ -384,11 +382,8 @@ describe("Invites", () => {
       });
       const { inviteId } = expectInviteCreated(result);
 
-      const inviteBefore = await t.run(async (ctx) =>
-        ctx.db.get(inviteId as Id<"invites">),
-      );
-      if (!inviteBefore || inviteBefore.role !== "user")
-        throw new Error("Invite not found");
+      const inviteBefore = await t.run(async (ctx) => ctx.db.get(inviteId as Id<"invites">));
+      if (!inviteBefore || inviteBefore.role !== "user") throw new Error("Invite not found");
       const originalExpiry = inviteBefore.expiresAt;
 
       // Simulate some time passing
@@ -398,11 +393,8 @@ describe("Invites", () => {
         inviteId: inviteId as Id<"invites">,
       });
 
-      const inviteAfter = await t.run(async (ctx) =>
-        ctx.db.get(inviteId as Id<"invites">),
-      );
-      if (!inviteAfter || inviteAfter.role !== "user")
-        throw new Error("Invite not found");
+      const inviteAfter = await t.run(async (ctx) => ctx.db.get(inviteId as Id<"invites">));
+      if (!inviteAfter || inviteAfter.role !== "user") throw new Error("Invite not found");
       if (!(inviteAfter.expiresAt && originalExpiry)) throw new Error("Missing expiry");
       expect(inviteAfter.expiresAt).toBeGreaterThan(originalExpiry);
       expect(inviteAfter.status).toBe("pending");
