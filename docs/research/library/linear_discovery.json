@@ -1,87 +1,9 @@
 [
   {
-    "url": "https://linear.app/docs/security-and-access",
+    "url": "https://linear.app/",
     "competitor": "linear",
-    "page": "security-and-access",
-    "score": 2
-  },
-  {
-    "url": "https://linear.app/docs/zapier",
-    "competitor": "linear",
-    "page": "zapier",
-    "score": 2
-  },
-  {
-    "url": "https://linear.app/docs/security",
-    "competitor": "linear",
-    "page": "security",
-    "score": 2
-  },
-  {
-    "url": "https://linear.app/docs/api-and-webhooks",
-    "competitor": "linear",
-    "page": "api-and-webhooks",
-    "score": 2
-  },
-  {
-    "url": "https://linear.app/docs/agents-api-deprecated",
-    "competitor": "linear",
-    "page": "agents-api-deprecated",
-    "score": 2
-  },
-  {
-    "url": "https://linear.app/blog/how-cursor-integrated-with-linear-for-agents",
-    "competitor": "linear",
-    "page": "how-cursor-integrated-with-linear-for-agents",
-    "score": 2
-  },
-  {
-    "url": "https://linear.app/blog/rethinking-the-startup-mvp-building-a-competitive-product",
-    "competitor": "linear",
-    "page": "rethinking-the-startup-mvp-building-a-competitive-product",
-    "score": 2
-  },
-  {
-    "url": "https://linear.app/blog/how-we-think-about-customer-experience-at-linear",
-    "competitor": "linear",
-    "page": "how-we-think-about-customer-experience-at-linear",
-    "score": 2
-  },
-  {
-    "url": "https://linear.app/blog/linear-raises-usd13m-in-series-a-funding-from-sequoia-capital",
-    "competitor": "linear",
-    "page": "linear-raises-usd13m-in-series-a-funding-from-sequoia-capital",
-    "score": 2
-  },
-  {
-    "url": "https://linear.app/integrations/producta",
-    "competitor": "linear",
-    "page": "producta",
-    "score": 2
-  },
-  {
-    "url": "https://linear.app/integrations/integrately",
-    "competitor": "linear",
-    "page": "integrately",
-    "score": 2
-  },
-  {
-    "url": "https://linear.app/integrations/orca-security",
-    "competitor": "linear",
-    "page": "orca-security",
-    "score": 2
-  },
-  {
-    "url": "https://linear.app/integrations/productlane",
-    "competitor": "linear",
-    "page": "productlane",
-    "score": 2
-  },
-  {
-    "url": "https://linear.app/integrations/github-enterprise-server",
-    "competitor": "linear",
-    "page": "github-enterprise-server",
-    "score": 2
+    "page": "linear.app",
+    "score": 0
   },
   {
     "url": "https://linear.app/about",
@@ -90,118 +12,16 @@
     "score": 1
   },
   {
-    "url": "https://linear.app/blog",
-    "competitor": "linear",
-    "page": "blog",
-    "score": 1
-  },
-  {
-    "url": "https://linear.app/docs",
-    "competitor": "linear",
-    "page": "docs",
-    "score": 1
-  },
-  {
-    "url": "https://linear.app/features",
-    "competitor": "linear",
-    "page": "features",
-    "score": 1
-  },
-  {
-    "url": "https://linear.app/integrations",
-    "competitor": "linear",
-    "page": "integrations",
-    "score": 1
-  },
-  {
-    "url": "https://linear.app/security/vulnerability",
-    "competitor": "linear",
-    "page": "vulnerability",
-    "score": 1
-  },
-  {
-    "url": "https://linear.app/pricing",
-    "competitor": "linear",
-    "page": "pricing",
-    "score": 1
-  },
-  {
-    "url": "https://linear.app/method/product-direction",
-    "competitor": "linear",
-    "page": "product-direction",
-    "score": 1
-  },
-  {
-    "url": "https://linear.app/blog/design-is-more-than-code",
-    "competitor": "linear",
-    "page": "design-is-more-than-code",
-    "score": 1
-  },
-  {
-    "url": "https://linear.app/changelog/2025-08-14-product-intelligence-technology-preview",
-    "competitor": "linear",
-    "page": "2025-08-14-product-intelligence-technology-preview",
-    "score": 1
-  },
-  {
-    "url": "https://linear.app/changelog/2024-10-10-document-subscriptions",
-    "competitor": "linear",
-    "page": "2024-10-10-document-subscriptions",
-    "score": 1
-  },
-  {
-    "url": "https://linear.app/changelog/2020-11-11-favorite-ordering-content-search-and-zapier-updates",
-    "competitor": "linear",
-    "page": "2020-11-11-favorite-ordering-content-search-and-zapier-updates",
-    "score": 1
-  },
-  {
-    "url": "https://linear.app/changelog/2019-11-26-api-improvements",
-    "competitor": "linear",
-    "page": "2019-11-26-api-improvements",
-    "score": 1
-  },
-  {
-    "url": "https://linear.app/changelog/2019-10-21-zapier-integration",
-    "competitor": "linear",
-    "page": "2019-10-21-zapier-integration",
-    "score": 1
-  },
-  {
-    "url": "https://linear.app/careers/d3bc1ced-3ce4-4086-a050-555055dbb1ff",
-    "competitor": "linear",
-    "page": "d3bc1ced-3ce4-4086-a050-555055dbb1ff",
-    "score": 0
-  },
-  {
-    "url": "https://linear.app/careers/cd5ae036-0223-427a-b038-ba16ef9dcb32",
-    "competitor": "linear",
-    "page": "cd5ae036-0223-427a-b038-ba16ef9dcb32",
-    "score": 0
-  },
-  {
-    "url": "https://linear.app/privacy",
-    "competitor": "linear",
-    "page": "privacy",
-    "score": 0
-  },
-  {
-    "url": "https://linear.app/terms",
-    "competitor": "linear",
-    "page": "terms",
-    "score": 0
-  },
-  {
-    "url": "https://linear.app/",
-    "competitor": "linear",
-    "page": "linear.app",
-    "score": 0
-  },
-  {
     "url": "https://linear.app/agents",
     "competitor": "linear",
     "page": "agents",
     "score": 0
+  },
+  {
+    "url": "https://linear.app/blog",
+    "competitor": "linear",
+    "page": "blog",
+    "score": 1
   },
   {
     "url": "https://linear.app/careers",
@@ -240,15 +60,4689 @@
     "score": 0
   },
   {
+    "url": "https://linear.app/docs",
+    "competitor": "linear",
+    "page": "docs",
+    "score": 1
+  },
+  {
     "url": "https://linear.app/developers",
     "competitor": "linear",
     "page": "developers",
     "score": 0
   },
   {
+    "url": "https://linear.app/features",
+    "competitor": "linear",
+    "page": "features",
+    "score": 1
+  },
+  {
     "url": "https://linear.app/asks",
     "competitor": "linear",
     "page": "asks",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/insights",
+    "competitor": "linear",
+    "page": "insights",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/integrations",
+    "competitor": "linear",
+    "page": "integrations",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/method",
+    "competitor": "linear",
+    "page": "method",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/releases/2020-12",
+    "competitor": "linear",
+    "page": "2020-12",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/releases/2021-06",
+    "competitor": "linear",
+    "page": "2021-06",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/releases/2022",
+    "competitor": "linear",
+    "page": "2022",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/releases/figma",
+    "competitor": "linear",
+    "page": "figma",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/security/vulnerability",
+    "competitor": "linear",
+    "page": "vulnerability",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/startups",
+    "competitor": "linear",
+    "page": "startups",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/startups/partners",
+    "competitor": "linear",
+    "page": "partners",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/dpa",
+    "competitor": "linear",
+    "page": "dpa",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/privacy",
+    "competitor": "linear",
+    "page": "privacy",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/terms",
+    "competitor": "linear",
+    "page": "terms",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/brand",
+    "competitor": "linear",
+    "page": "brand",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/change",
+    "competitor": "linear",
+    "page": "change",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/download",
+    "competitor": "linear",
+    "page": "download",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/now",
+    "competitor": "linear",
+    "page": "now",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/fm",
+    "competitor": "linear",
+    "page": "fm",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/pricing",
+    "competitor": "linear",
+    "page": "pricing",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/readme",
+    "competitor": "linear",
+    "page": "readme",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/ios",
+    "competitor": "linear",
+    "page": "ios",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/android",
+    "competitor": "linear",
+    "page": "android",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/plan",
+    "competitor": "linear",
+    "page": "plan",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/build",
+    "competitor": "linear",
+    "page": "build",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/mobile",
+    "competitor": "linear",
+    "page": "mobile",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/quality",
+    "competitor": "linear",
+    "page": "quality",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/switch",
+    "competitor": "linear",
+    "page": "switch",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/switch/migration-guide",
+    "competitor": "linear",
+    "page": "migration-guide",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/switch/pilot-guide",
+    "competitor": "linear",
+    "page": "pilot-guide",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/switch/pitch-guide",
+    "competitor": "linear",
+    "page": "pitch-guide",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/blog/design-is-more-than-code",
+    "competitor": "linear",
+    "page": "design-is-more-than-code",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/blog/cx-in-linear",
+    "competitor": "linear",
+    "page": "cx-in-linear",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/blog/continuous-planning-in-linear",
+    "competitor": "linear",
+    "page": "continuous-planning-in-linear",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/blog/designing-remote-work-at-linear",
+    "competitor": "linear",
+    "page": "designing-remote-work-at-linear",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/blog/self-driving-saas",
+    "competitor": "linear",
+    "page": "self-driving-saas",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/blog/linear-liquid-glass",
+    "competitor": "linear",
+    "page": "linear-liquid-glass",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/blog/dashboards-best-practices",
+    "competitor": "linear",
+    "page": "dashboards-best-practices",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/blog/zero-bugs-policy",
+    "competitor": "linear",
+    "page": "zero-bugs-policy",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/blog/commure-dashboards",
+    "competitor": "linear",
+    "page": "commure-dashboards",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/blog/how-we-built-triage-intelligence",
+    "competitor": "linear",
+    "page": "how-we-built-triage-intelligence",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/blog/giving-our-team-liquidity-through-linear-s-first-tender-offer",
+    "competitor": "linear",
+    "page": "giving-our-team-liquidity-through-linear-s-first-tender-offer",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/blog/how-cursor-integrated-with-linear-for-agents",
+    "competitor": "linear",
+    "page": "how-cursor-integrated-with-linear-for-agents",
+    "score": 2
+  },
+  {
+    "url": "https://linear.app/blog/quality-wednesdays",
+    "competitor": "linear",
+    "page": "quality-wednesdays",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/blog/our-approach-to-building-the-agent-interaction-sdk",
+    "competitor": "linear",
+    "page": "our-approach-to-building-the-agent-interaction-sdk",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/blog/mercury-linear-ai-agents",
+    "competitor": "linear",
+    "page": "mercury-linear-ai-agents",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/blog/building-our-way",
+    "competitor": "linear",
+    "page": "building-our-way",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/blog/why-is-quality-so-rare",
+    "competitor": "linear",
+    "page": "why-is-quality-so-rare",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/blog/design-for-the-ai-age",
+    "competitor": "linear",
+    "page": "design-for-the-ai-age",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/blog/building-what-customers-need",
+    "competitor": "linear",
+    "page": "building-what-customers-need",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/blog/the-profitable-startup",
+    "competitor": "linear",
+    "page": "the-profitable-startup",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/blog/why-and-how-scale-migrated-to-linear",
+    "competitor": "linear",
+    "page": "why-and-how-scale-migrated-to-linear",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/blog/simplifying-support-at-scale-how-pleo-uses-linear-asks",
+    "competitor": "linear",
+    "page": "simplifying-support-at-scale-how-pleo-uses-linear-asks",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/blog/how-we-built-multi-region-support-for-linear",
+    "competitor": "linear",
+    "page": "how-we-built-multi-region-support-for-linear",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/blog/how-we-redesigned-the-linear-ui",
+    "competitor": "linear",
+    "page": "how-we-redesigned-the-linear-ui",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/blog/a-design-reset",
+    "competitor": "linear",
+    "page": "a-design-reset",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/blog/rethinking-the-startup-mvp-building-a-competitive-product",
+    "competitor": "linear",
+    "page": "rethinking-the-startup-mvp-building-a-competitive-product",
+    "score": 2
+  },
+  {
+    "url": "https://linear.app/blog/descript-internal-guide-for-using-linear",
+    "competitor": "linear",
+    "page": "descript-internal-guide-for-using-linear",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/blog/linear-incident-on-jan-24th-2024",
+    "competitor": "linear",
+    "page": "linear-incident-on-jan-24th-2024",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/blog/why-and-how-we-do-work-trials-at-linear",
+    "competitor": "linear",
+    "page": "why-and-how-we-do-work-trials-at-linear",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/blog/using-ai-to-detect-similar-issues",
+    "competitor": "linear",
+    "page": "using-ai-to-detect-similar-issues",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/blog/planning-for-unplanned-work",
+    "competitor": "linear",
+    "page": "planning-for-unplanned-work",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/blog/how-we-run-projects-at-linear",
+    "competitor": "linear",
+    "page": "how-we-run-projects-at-linear",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/blog/series-b",
+    "competitor": "linear",
+    "page": "series-b",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/blog/how-we-think-about-customer-experience-at-linear",
+    "competitor": "linear",
+    "page": "how-we-think-about-customer-experience-at-linear",
+    "score": 2
+  },
+  {
+    "url": "https://linear.app/blog/scaling-the-linear-sync-engine",
+    "competitor": "linear",
+    "page": "scaling-the-linear-sync-engine",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/blog/welcoming-cristina-cordova-to-linear",
+    "competitor": "linear",
+    "page": "welcoming-cristina-cordova-to-linear",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/blog/how-we-built-project-updates",
+    "competitor": "linear",
+    "page": "how-we-built-project-updates",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/blog/settings-are-not-a-design-failure",
+    "competitor": "linear",
+    "page": "settings-are-not-a-design-failure",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/blog/linear-2021-wrapped",
+    "competitor": "linear",
+    "page": "linear-2021-wrapped",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/blog/fast-growing-startups-are-built-on-linear",
+    "competitor": "linear",
+    "page": "fast-growing-startups-are-built-on-linear",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/blog/building-at-the-early-stage",
+    "competitor": "linear",
+    "page": "building-at-the-early-stage",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/blog/linear-raises-usd13m-in-series-a-funding-from-sequoia-capital",
+    "competitor": "linear",
+    "page": "linear-raises-usd13m-in-series-a-funding-from-sequoia-capital",
+    "score": 2
+  },
+  {
+    "url": "https://linear.app/blog/invisible-details",
+    "competitor": "linear",
+    "page": "invisible-details",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/blog/practices-for-building-linear-is-now-open-for-all",
+    "competitor": "linear",
+    "page": "practices-for-building-linear-is-now-open-for-all",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/blog/startups-write-changelogs",
+    "competitor": "linear",
+    "page": "startups-write-changelogs",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/blog/linear-s-next-chapter-announcing-our-usd4-2m-seed-round",
+    "competitor": "linear",
+    "page": "linear-s-next-chapter-announcing-our-usd4-2m-seed-round",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/changelog/2026-01-29-time-in-status",
+    "competitor": "linear",
+    "page": "2026-01-29-time-in-status",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2026-01-22-customize-your-navigation-in-linear-mobile",
+    "competitor": "linear",
+    "page": "2026-01-22-customize-your-navigation-in-linear-mobile",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2025-12-17-team-owners",
+    "competitor": "linear",
+    "page": "2025-12-17-team-owners",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2025-12-11-linear-agent-for-intercom-zendesk-gong",
+    "competitor": "linear",
+    "page": "2025-12-11-linear-agent-for-intercom-zendesk-gong",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2025-12-04-openai-codex-agent",
+    "competitor": "linear",
+    "page": "2025-12-04-openai-codex-agent",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2025-11-20-form-templates",
+    "competitor": "linear",
+    "page": "2025-11-20-form-templates",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2025-11-13-pulse-on-mobile",
+    "competitor": "linear",
+    "page": "2025-11-13-pulse-on-mobile",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2025-10-28-github-copilot-agent",
+    "competitor": "linear",
+    "page": "2025-10-28-github-copilot-agent",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2025-10-23-linear-agent-for-slack",
+    "competitor": "linear",
+    "page": "2025-10-23-linear-agent-for-slack",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2025-10-16-mobile-app-redesign",
+    "competitor": "linear",
+    "page": "2025-10-16-mobile-app-redesign",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2025-10-09-label-descriptions-and-archiving",
+    "competitor": "linear",
+    "page": "2025-10-09-label-descriptions-and-archiving",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2025-10-02-issue-discussion-summaries",
+    "competitor": "linear",
+    "page": "2025-10-02-issue-discussion-summaries",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2025-09-19-auto-apply-triage-suggestions",
+    "competitor": "linear",
+    "page": "2025-09-19-auto-apply-triage-suggestions",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2025-09-04-salesforce",
+    "competitor": "linear",
+    "page": "2025-09-04-salesforce",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2025-08-21-cursor-agent",
+    "competitor": "linear",
+    "page": "2025-08-21-cursor-agent",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2025-08-14-product-intelligence-technology-preview",
+    "competitor": "linear",
+    "page": "2025-08-14-product-intelligence-technology-preview",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/changelog/2025-07-30-agent-interaction-guidelines-and-sdk",
+    "competitor": "linear",
+    "page": "2025-07-30-agent-interaction-guidelines-and-sdk",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2025-07-24-dashboards",
+    "competitor": "linear",
+    "page": "2025-07-24-dashboards",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2025-07-17-email-intake-for-asks",
+    "competitor": "linear",
+    "page": "2025-07-17-email-intake-for-asks",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2025-07-10-sub-initiatives",
+    "competitor": "linear",
+    "page": "2025-07-10-sub-initiatives",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2025-06-12-project-labels",
+    "competitor": "linear",
+    "page": "2025-06-12-project-labels",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2025-06-05-asks-fields-and-triage-routing",
+    "competitor": "linear",
+    "page": "2025-06-05-asks-fields-and-triage-routing",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2025-05-20-linear-for-agents",
+    "competitor": "linear",
+    "page": "2025-05-20-linear-for-agents",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2025-05-15-custom-feeds-in-pulse",
+    "competitor": "linear",
+    "page": "2025-05-15-custom-feeds-in-pulse",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2025-05-01-mcp",
+    "competitor": "linear",
+    "page": "2025-05-01-mcp",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2025-04-30-customer-requests-on-projects",
+    "competitor": "linear",
+    "page": "2025-04-30-customer-requests-on-projects",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2025-04-16-pulse",
+    "competitor": "linear",
+    "page": "2025-04-16-pulse",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2025-04-10-new-search",
+    "competitor": "linear",
+    "page": "2025-04-10-new-search",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2025-04-03-collapsed-issue-history",
+    "competitor": "linear",
+    "page": "2025-04-03-collapsed-issue-history",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2025-03-19-collapsible-sections",
+    "competitor": "linear",
+    "page": "2025-03-19-collapsible-sections",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2025-03-06-sub-teams",
+    "competitor": "linear",
+    "page": "2025-03-06-sub-teams",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2025-02-13-initiative-updates",
+    "competitor": "linear",
+    "page": "2025-02-13-initiative-updates",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2025-01-23-pull-request-reviews",
+    "competitor": "linear",
+    "page": "2025-01-23-pull-request-reviews",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2024-12-18-personalized-sidebar",
+    "competitor": "linear",
+    "page": "2024-12-18-personalized-sidebar",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2024-12-09-customer-requests",
+    "competitor": "linear",
+    "page": "2024-12-09-customer-requests",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2024-12-05-recurring-issues",
+    "competitor": "linear",
+    "page": "2024-12-05-recurring-issues",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2024-11-13-improvements-for-slas-templates-and-jira-and-github-issues-sync",
+    "competitor": "linear",
+    "page": "2024-11-13-improvements-for-slas-templates-and-jira-and-github-issues-sync",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2024-10-24-new-team-issues-page",
+    "competitor": "linear",
+    "page": "2024-10-24-new-team-issues-page",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2024-10-10-document-subscriptions",
+    "competitor": "linear",
+    "page": "2024-10-10-document-subscriptions",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/changelog/2024-09-19-introducing-linear-mobile",
+    "competitor": "linear",
+    "page": "2024-09-19-introducing-linear-mobile",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2024-09-06-auto-close-parent-and-sub-issues",
+    "competitor": "linear",
+    "page": "2024-09-06-auto-close-parent-and-sub-issues",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2024-08-23-slack-channel-notifications-for-custom-views",
+    "competitor": "linear",
+    "page": "2024-08-23-slack-channel-notifications-for-custom-views",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2024-08-08-project-dependencies",
+    "competitor": "linear",
+    "page": "2024-08-08-project-dependencies",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2024-07-25-priority-for-projects-and-micro-adjust",
+    "competitor": "linear",
+    "page": "2024-07-25-priority-for-projects-and-micro-adjust",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2024-06-25-introducing-initiatives",
+    "competitor": "linear",
+    "page": "2024-06-25-introducing-initiatives",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2024-06-17-a-new-home-for-your-projects",
+    "competitor": "linear",
+    "page": "2024-06-17-a-new-home-for-your-projects",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2024-05-30-passkeys-a-fast-and-secure-way-to-log-in-to-linear",
+    "competitor": "linear",
+    "page": "2024-05-30-passkeys-a-fast-and-secure-way-to-log-in-to-linear",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2024-05-23-european-union-data-hosting",
+    "competitor": "linear",
+    "page": "2024-05-23-european-union-data-hosting",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2024-05-02-the-next-generation-of-linear-projects",
+    "competitor": "linear",
+    "page": "2024-05-02-the-next-generation-of-linear-projects",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2024-04-24-editor-improvements",
+    "competitor": "linear",
+    "page": "2024-04-24-editor-improvements",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2024-04-03-swimlanes",
+    "competitor": "linear",
+    "page": "2024-04-03-swimlanes",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2024-03-20-new-linear-ui",
+    "competitor": "linear",
+    "page": "2024-03-20-new-linear-ui",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2024-03-19-custom-statuses-for-projects",
+    "competitor": "linear",
+    "page": "2024-03-19-custom-statuses-for-projects",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2024-02-29-milestones-on-the-timeline",
+    "competitor": "linear",
+    "page": "2024-02-29-milestones-on-the-timeline",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2024-02-15-create-issues-via-email",
+    "competitor": "linear",
+    "page": "2024-02-15-create-issues-via-email",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2024-02-01-project-update-comments",
+    "competitor": "linear",
+    "page": "2024-02-01-project-update-comments",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2024-01-17-project-timeframes",
+    "competitor": "linear",
+    "page": "2024-01-17-project-timeframes",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2023-12-20-jira-sync",
+    "competitor": "linear",
+    "page": "2023-12-20-jira-sync",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2023-12-14-github-issues-sync",
+    "competitor": "linear",
+    "page": "2023-12-14-github-issues-sync",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2023-12-06-editor-improvements",
+    "competitor": "linear",
+    "page": "2023-12-06-editor-improvements",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2023-11-15-github-workflow-updates",
+    "competitor": "linear",
+    "page": "2023-11-15-github-workflow-updates",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2023-11-08-resolve-comments",
+    "competitor": "linear",
+    "page": "2023-11-08-resolve-comments",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2023-10-25-linear-asks",
+    "competitor": "linear",
+    "page": "2023-10-25-linear-asks",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2023-10-12-triage-responsibility",
+    "competitor": "linear",
+    "page": "2023-10-12-triage-responsibility",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2023-09-28-resize-images",
+    "competitor": "linear",
+    "page": "2023-09-28-resize-images",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2023-09-21-project-templates",
+    "competitor": "linear",
+    "page": "2023-09-21-project-templates",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2023-08-30-mentions",
+    "competitor": "linear",
+    "page": "2023-08-30-mentions",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2023-08-16-project-progress-reports",
+    "competitor": "linear",
+    "page": "2023-08-16-project-progress-reports",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2023-08-03-similar-issues",
+    "competitor": "linear",
+    "page": "2023-08-03-similar-issues",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2023-07-20-templates-for-slack-intercom-and-zendesk",
+    "competitor": "linear",
+    "page": "2023-07-20-templates-for-slack-intercom-and-zendesk",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2023-07-06-slack-sync",
+    "competitor": "linear",
+    "page": "2023-07-06-slack-sync",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2023-06-21-figma-plugin-config",
+    "competitor": "linear",
+    "page": "2023-06-21-figma-plugin-config",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2023-06-15-burn-up-charts",
+    "competitor": "linear",
+    "page": "2023-06-15-burn-up-charts",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2023-06-01-ai-filters",
+    "competitor": "linear",
+    "page": "2023-06-01-ai-filters",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2023-05-25-project-views",
+    "competitor": "linear",
+    "page": "2023-05-25-project-views",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2023-05-11-issue-drafts",
+    "competitor": "linear",
+    "page": "2023-05-11-issue-drafts",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2023-04-27-improved-drag-and-drop",
+    "competitor": "linear",
+    "page": "2023-04-27-improved-drag-and-drop",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/project-milestones",
+    "competitor": "linear",
+    "page": "project-milestones",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2023-03-23-linear-insights",
+    "competitor": "linear",
+    "page": "2023-03-23-linear-insights",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2023-03-16-slas",
+    "competitor": "linear",
+    "page": "2023-03-16-slas",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/openai-help",
+    "competitor": "linear",
+    "page": "openai-help",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2023-02-09-threaded-comments",
+    "competitor": "linear",
+    "page": "2023-02-09-threaded-comments",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2023-01-31-issue-reminders",
+    "competitor": "linear",
+    "page": "2023-01-31-issue-reminders",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/unpublished-collapsible-sidebar",
+    "competitor": "linear",
+    "page": "unpublished-collapsible-sidebar",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/rewind-2022",
+    "competitor": "linear",
+    "page": "rewind-2022",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2022-12-01-polishing-season-2022",
+    "competitor": "linear",
+    "page": "2022-12-01-polishing-season-2022",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2022-11-22-arc",
+    "competitor": "linear",
+    "page": "2022-11-22-arc",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2022-11-10-label-groups",
+    "competitor": "linear",
+    "page": "2022-11-10-label-groups",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2022-10-19-2022-release",
+    "competitor": "linear",
+    "page": "2022-10-19-2022-release",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2022-10-13-faster-sub-issue-creation",
+    "competitor": "linear",
+    "page": "2022-10-13-faster-sub-issue-creation",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2022-09-22-cycles-and-graph-improvements",
+    "competitor": "linear",
+    "page": "2022-09-22-cycles-and-graph-improvements",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2022-09-09-fixes-and-improvements",
+    "competitor": "linear",
+    "page": "2022-09-09-fixes-and-improvements",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2022-08-25-third-party-application-approvals",
+    "competitor": "linear",
+    "page": "2022-08-25-third-party-application-approvals",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2022-08-18-board-ordering",
+    "competitor": "linear",
+    "page": "2022-08-18-board-ordering",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2022-08-04-project-updates",
+    "competitor": "linear",
+    "page": "2022-08-04-project-updates",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2022-07-14-guest-accounts",
+    "competitor": "linear",
+    "page": "2022-07-14-guest-accounts",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2022-07-07-project-updates-preview",
+    "competitor": "linear",
+    "page": "2022-07-07-project-updates-preview",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2022-06-30-sub-issues-improvements",
+    "competitor": "linear",
+    "page": "2022-06-30-sub-issues-improvements",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2022-06-16-integration-directory",
+    "competitor": "linear",
+    "page": "2022-06-16-integration-directory",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2022-06-09-inline-editing",
+    "competitor": "linear",
+    "page": "2022-06-09-inline-editing",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2022-05-26-combined-board-and-issue-view",
+    "competitor": "linear",
+    "page": "2022-05-26-combined-board-and-issue-view",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2022-05-05-discord-integration",
+    "competitor": "linear",
+    "page": "2022-05-05-discord-integration",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2022-04-28-search",
+    "competitor": "linear",
+    "page": "2022-04-28-search",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2022-04-21-project-backlog-and-grouping",
+    "competitor": "linear",
+    "page": "2022-04-21-project-backlog-and-grouping",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2022-04-07-hackweek",
+    "competitor": "linear",
+    "page": "2022-04-07-hackweek",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2022-03-24-favorite-folders",
+    "competitor": "linear",
+    "page": "2022-03-24-favorite-folders",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2022-03-15-new-desktop-app",
+    "competitor": "linear",
+    "page": "2022-03-15-new-desktop-app",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2022-02-11-sidebar-update",
+    "competitor": "linear",
+    "page": "2022-02-11-sidebar-update",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2022-02-03-github-commit-linking",
+    "competitor": "linear",
+    "page": "2022-02-03-github-commit-linking",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2022-01-20-linear-preview-new-sidebar-and-team-icons",
+    "competitor": "linear",
+    "page": "2022-01-20-linear-preview-new-sidebar-and-team-icons",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2022-01-12-link-with-jira",
+    "competitor": "linear",
+    "page": "2022-01-12-link-with-jira",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2021-12-16-filters-projects-roadmap",
+    "competitor": "linear",
+    "page": "2021-12-16-filters-projects-roadmap",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2021-12-02-workspace-templates",
+    "competitor": "linear",
+    "page": "2021-12-02-workspace-templates",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2021-11-18-front-integration-and-universal-links",
+    "competitor": "linear",
+    "page": "2021-11-18-front-integration-and-universal-links",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2021-11-08-linear-preview-new-filters",
+    "competitor": "linear",
+    "page": "2021-11-08-linear-preview-new-filters",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2021-10-21-soc-2",
+    "competitor": "linear",
+    "page": "2021-10-21-soc-2",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2021-10-07-audit-log",
+    "competitor": "linear",
+    "page": "2021-10-07-audit-log",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2021-09-29-slack-notification-actions",
+    "competitor": "linear",
+    "page": "2021-09-29-slack-notification-actions",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2021-09-23-desktop-navigation",
+    "competitor": "linear",
+    "page": "2021-09-23-desktop-navigation",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2021-09-16-graphql-filters",
+    "competitor": "linear",
+    "page": "2021-09-16-graphql-filters",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2021-09-13-small-fixes-and-improvements",
+    "competitor": "linear",
+    "page": "2021-09-13-small-fixes-and-improvements",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2021-09-03-easier-invites-and-webhook-improvements",
+    "competitor": "linear",
+    "page": "2021-09-03-easier-invites-and-webhook-improvements",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2021-08-27-multi-team-boards-and-manual-ordering",
+    "competitor": "linear",
+    "page": "2021-08-27-multi-team-boards-and-manual-ordering",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2021-08-19-github-secret-scanning",
+    "competitor": "linear",
+    "page": "2021-08-19-github-secret-scanning",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2021-07-26-summer",
+    "competitor": "linear",
+    "page": "2021-07-26-summer",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2021-06-29-linear-release-and-issue-triage",
+    "competitor": "linear",
+    "page": "2021-06-29-linear-release-and-issue-triage",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2021-06-23-intercom-integration",
+    "competitor": "linear",
+    "page": "2021-06-23-intercom-integration",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2021-06-17-inbox-snooze-and-easier-issue-merge",
+    "competitor": "linear",
+    "page": "2021-06-17-inbox-snooze-and-easier-issue-merge",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2021-06-11-new-setting-for-team-priority-ordering",
+    "competitor": "linear",
+    "page": "2021-06-11-new-setting-for-team-priority-ordering",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2021-06-03-issue-view-layout",
+    "competitor": "linear",
+    "page": "2021-06-03-issue-view-layout",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2021-05-27-linear-preview-roadmap-timeline",
+    "competitor": "linear",
+    "page": "2021-05-27-linear-preview-roadmap-timeline",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2021-05-20-improving-performance-for-large-workspaces",
+    "competitor": "linear",
+    "page": "2021-05-20-improving-performance-for-large-workspaces",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2021-05-13-new-issue-search",
+    "competitor": "linear",
+    "page": "2021-05-13-new-issue-search",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2021-05-07-just-fixes",
+    "competitor": "linear",
+    "page": "2021-05-07-just-fixes",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2021-04-30-zendesk-integration",
+    "competitor": "linear",
+    "page": "2021-04-30-zendesk-integration",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2021-04-23-smaller-improvements-and-april-22-outage",
+    "competitor": "linear",
+    "page": "2021-04-23-smaller-improvements-and-april-22-outage",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2021-04-15-auto-archive-cycles-and-projects-and-deleting-issues",
+    "competitor": "linear",
+    "page": "2021-04-15-auto-archive-cycles-and-projects-and-deleting-issues",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2021-04-08-private-teams-and-migration-assistant",
+    "competitor": "linear",
+    "page": "2021-04-08-private-teams-and-migration-assistant",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2021-03-31-startup-performance-improvements",
+    "competitor": "linear",
+    "page": "2021-03-31-startup-performance-improvements",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2021-03-25-keyboard-shortcuts-help",
+    "competitor": "linear",
+    "page": "2021-03-25-keyboard-shortcuts-help",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2021-03-18-apple-m1-and-windows-desktop",
+    "competitor": "linear",
+    "page": "2021-03-18-apple-m1-and-windows-desktop",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2021-03-10-new-issue-creation-ui",
+    "competitor": "linear",
+    "page": "2021-03-10-new-issue-creation-ui",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2021-03-05-linear-sdk",
+    "competitor": "linear",
+    "page": "2021-03-05-linear-sdk",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2021-02-25-new-issue-creation-ui",
+    "competitor": "linear",
+    "page": "2021-02-25-new-issue-creation-ui",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2021-02-18-importer-preview",
+    "competitor": "linear",
+    "page": "2021-02-18-importer-preview",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2021-02-12-issue-grouping",
+    "competitor": "linear",
+    "page": "2021-02-12-issue-grouping",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2021-02-04-new-webhook-types",
+    "competitor": "linear",
+    "page": "2021-02-04-new-webhook-types",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2021-01-28-github-notification-improvements",
+    "competitor": "linear",
+    "page": "2021-01-28-github-notification-improvements",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2021-01-21-search-notifications-using-cmd-f",
+    "competitor": "linear",
+    "page": "2021-01-21-search-notifications-using-cmd-f",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2021-01-14-authentication-restriction-options",
+    "competitor": "linear",
+    "page": "2021-01-14-authentication-restriction-options",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2020-12-17-bugfixes",
+    "competitor": "linear",
+    "page": "2020-12-17-bugfixes",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2020-12-08-series-a-roadmap-oauth2-and-big-sur-logo",
+    "competitor": "linear",
+    "page": "2020-12-08-series-a-roadmap-oauth2-and-big-sur-logo",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2020-12-04-themes",
+    "competitor": "linear",
+    "page": "2020-12-04-themes",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2020-11-25-new-sub-issue-editing-and-saml",
+    "competitor": "linear",
+    "page": "2020-11-25-new-sub-issue-editing-and-saml",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2020-11-19-notification-settings",
+    "competitor": "linear",
+    "page": "2020-11-19-notification-settings",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2020-11-11-favorite-ordering-content-search-and-zapier-updates",
+    "competitor": "linear",
+    "page": "2020-11-11-favorite-ordering-content-search-and-zapier-updates",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/changelog/pre-views",
+    "competitor": "linear",
+    "page": "pre-views",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/due-dates",
+    "competitor": "linear",
+    "page": "due-dates",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/issue-selection",
+    "competitor": "linear",
+    "page": "issue-selection",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/undo-actions",
+    "competitor": "linear",
+    "page": "undo-actions",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2020-09-30-project-slack-notifications",
+    "competitor": "linear",
+    "page": "2020-09-30-project-slack-notifications",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/personal-slack-notifications",
+    "competitor": "linear",
+    "page": "personal-slack-notifications",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2020-09-18-custom-emoji-and-a-new-billing-page",
+    "competitor": "linear",
+    "page": "2020-09-18-custom-emoji-and-a-new-billing-page",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/streamlined-issue-extensions",
+    "competitor": "linear",
+    "page": "streamlined-issue-extensions",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2020-09-02-sentry-integration",
+    "competitor": "linear",
+    "page": "2020-09-02-sentry-integration",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2020-08-26-better-menus-and-view-options",
+    "competitor": "linear",
+    "page": "2020-08-26-better-menus-and-view-options",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2020-08-19-auto-close-and-auto-archive",
+    "competitor": "linear",
+    "page": "2020-08-19-auto-close-and-auto-archive",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2020-08-13-linear-preview-view-options",
+    "competitor": "linear",
+    "page": "2020-08-13-linear-preview-view-options",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2020-08-06-linear-preview-auto-closing-issues",
+    "competitor": "linear",
+    "page": "2020-08-06-linear-preview-auto-closing-issues",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2020-07-29-filter-improvements",
+    "competitor": "linear",
+    "page": "2020-07-29-filter-improvements",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2020-07-22-linear-new-cycle-settings",
+    "competitor": "linear",
+    "page": "2020-07-22-linear-new-cycle-settings",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2020-07-14-project-visualizations-and-in-app-changelog",
+    "competitor": "linear",
+    "page": "2020-07-14-project-visualizations-and-in-app-changelog",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2020-07-08-emoji-reactions",
+    "competitor": "linear",
+    "page": "2020-07-08-emoji-reactions",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2020-06-30",
+    "competitor": "linear",
+    "page": "2020-06-30",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2020-06-24",
+    "competitor": "linear",
+    "page": "2020-06-24",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2020-06-17",
+    "competitor": "linear",
+    "page": "2020-06-17",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2020-06-09",
+    "competitor": "linear",
+    "page": "2020-06-09",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2020-05-26-setting-an-issue-s-status",
+    "competitor": "linear",
+    "page": "2020-05-26-setting-an-issue-s-status",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2020-05-18-login-with-email-magic-links",
+    "competitor": "linear",
+    "page": "2020-05-18-login-with-email-magic-links",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2020-05-05",
+    "competitor": "linear",
+    "page": "2020-05-05",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2020-04-27-improved-my-issues-view",
+    "competitor": "linear",
+    "page": "2020-04-27-improved-my-issues-view",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2020-04-13-branch-naming",
+    "competitor": "linear",
+    "page": "2020-04-13-branch-naming",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2020-04-02-project-links",
+    "competitor": "linear",
+    "page": "2020-04-02-project-links",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2020-03-27",
+    "competitor": "linear",
+    "page": "2020-03-27",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2020-03-19-desktop-app-improvements-multi-window-support",
+    "competitor": "linear",
+    "page": "2020-03-19-desktop-app-improvements-multi-window-support",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2020-03-11-issue-relations",
+    "competitor": "linear",
+    "page": "2020-03-11-issue-relations",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2020-03-04",
+    "competitor": "linear",
+    "page": "2020-03-04",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2020-02-20",
+    "competitor": "linear",
+    "page": "2020-02-20",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2020-02-11-issue-archive",
+    "competitor": "linear",
+    "page": "2020-02-11-issue-archive",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2020-02-03-automated-google-sheets-export",
+    "competitor": "linear",
+    "page": "2020-02-03-automated-google-sheets-export",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2020-01-28-webhooks",
+    "competitor": "linear",
+    "page": "2020-01-28-webhooks",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2020-01-21-improved-search",
+    "competitor": "linear",
+    "page": "2020-01-21-improved-search",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2020-01-14-copy-team-settings",
+    "competitor": "linear",
+    "page": "2020-01-14-copy-team-settings",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2020-01-07-issue-templates",
+    "competitor": "linear",
+    "page": "2020-01-07-issue-templates",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2019-12-18-new-command-menu",
+    "competitor": "linear",
+    "page": "2019-12-18-new-command-menu",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2019-12-12-onboarding-join-teams",
+    "competitor": "linear",
+    "page": "2019-12-12-onboarding-join-teams",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2019-12-05",
+    "competitor": "linear",
+    "page": "2019-12-05",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2019-11-26-api-improvements",
+    "competitor": "linear",
+    "page": "2019-11-26-api-improvements",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/changelog/2019-11-20-secured-a-usd-4-2m-seed-round",
+    "competitor": "linear",
+    "page": "2019-11-20-secured-a-usd-4-2m-seed-round",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2019-11-11-new-sidebar",
+    "competitor": "linear",
+    "page": "2019-11-11-new-sidebar",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2019-11-04-better-slack-notifications",
+    "competitor": "linear",
+    "page": "2019-11-04-better-slack-notifications",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2019-10-28-responsive-web-application",
+    "competitor": "linear",
+    "page": "2019-10-28-responsive-web-application",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2019-10-21-zapier-integration",
+    "competitor": "linear",
+    "page": "2019-10-21-zapier-integration",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/changelog/2019-10-14-improved-comments",
+    "competitor": "linear",
+    "page": "2019-10-14-improved-comments",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2019-10-07-contextual-command-menu",
+    "competitor": "linear",
+    "page": "2019-10-07-contextual-command-menu",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2019-09-30-figma-integration",
+    "competitor": "linear",
+    "page": "2019-09-30-figma-integration",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2019-09-23-improved-peek",
+    "competitor": "linear",
+    "page": "2019-09-23-improved-peek",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2019-09-17-favorite-projects",
+    "competitor": "linear",
+    "page": "2019-09-17-favorite-projects",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2019-09-09-cycle-cooldown",
+    "competitor": "linear",
+    "page": "2019-09-09-cycle-cooldown",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2019-09-02-video-uploads-and-player",
+    "competitor": "linear",
+    "page": "2019-09-02-video-uploads-and-player",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2019-08-25-github-pull-request-improvements",
+    "competitor": "linear",
+    "page": "2019-08-25-github-pull-request-improvements",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2019-08-18-new-search",
+    "competitor": "linear",
+    "page": "2019-08-18-new-search",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2019-08-13",
+    "competitor": "linear",
+    "page": "2019-08-13",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2019-08-04-filters",
+    "competitor": "linear",
+    "page": "2019-08-04-filters",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2019-07-28-projects",
+    "competitor": "linear",
+    "page": "2019-07-28-projects",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2019-07-18-cycles-are-here",
+    "competitor": "linear",
+    "page": "2019-07-18-cycles-are-here",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2019-07-11-github-workflow-configuration",
+    "competitor": "linear",
+    "page": "2019-07-11-github-workflow-configuration",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2019-07-04-cycles",
+    "competitor": "linear",
+    "page": "2019-07-04-cycles",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2019-06-27-backlog-and-active-issues",
+    "competitor": "linear",
+    "page": "2019-06-27-backlog-and-active-issues",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2019-06-20-international-keyboard-shortcut-improvements",
+    "competitor": "linear",
+    "page": "2019-06-20-international-keyboard-shortcut-improvements",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2019-05-26-grouping-headers",
+    "competitor": "linear",
+    "page": "2019-05-26-grouping-headers",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2019-05-19-new-sidebar-design",
+    "competitor": "linear",
+    "page": "2019-05-19-new-sidebar-design",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2019-05-09-first-time-user-experience",
+    "competitor": "linear",
+    "page": "2019-05-09-first-time-user-experience",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2019-05-02-creating-new-issues-via-email",
+    "competitor": "linear",
+    "page": "2019-05-02-creating-new-issues-via-email",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2019-04-25-linear-desktop-app",
+    "competitor": "linear",
+    "page": "2019-04-25-linear-desktop-app",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/changelog/2019-04-11-option-to-display-usernames-or-real-names",
+    "competitor": "linear",
+    "page": "2019-04-11-option-to-display-usernames-or-real-names",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/careers/d3bc1ced-3ce4-4086-a050-555055dbb1ff",
+    "competitor": "linear",
+    "page": "d3bc1ced-3ce4-4086-a050-555055dbb1ff",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/careers/cd5ae036-0223-427a-b038-ba16ef9dcb32",
+    "competitor": "linear",
+    "page": "cd5ae036-0223-427a-b038-ba16ef9dcb32",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/careers/069c4628-88d7-4e4d-b393-c996fc7f3076",
+    "competitor": "linear",
+    "page": "069c4628-88d7-4e4d-b393-c996fc7f3076",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/careers/453f1ba0-a35e-4ed2-8215-1514e0a30b92",
+    "competitor": "linear",
+    "page": "453f1ba0-a35e-4ed2-8215-1514e0a30b92",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/careers/4f10c2ca-d19a-42b5-9e1f-d1794c43dd89",
+    "competitor": "linear",
+    "page": "4f10c2ca-d19a-42b5-9e1f-d1794c43dd89",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/careers/4dc6be78-ccf0-45c8-bd98-a061a9e2ffe4",
+    "competitor": "linear",
+    "page": "4dc6be78-ccf0-45c8-bd98-a061a9e2ffe4",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/careers/12f8f208-0b9c-4569-bb3d-41c8a197029e",
+    "competitor": "linear",
+    "page": "12f8f208-0b9c-4569-bb3d-41c8a197029e",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/careers/b7669c4b-eeca-421d-ba9a-d90203f6fcb2",
+    "competitor": "linear",
+    "page": "b7669c4b-eeca-421d-ba9a-d90203f6fcb2",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/careers/5b9d2dca-6772-4508-9080-735485899fbb",
+    "competitor": "linear",
+    "page": "5b9d2dca-6772-4508-9080-735485899fbb",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/careers/4ed3c338-eae1-4f6a-ac0d-5dcba77f0261",
+    "competitor": "linear",
+    "page": "4ed3c338-eae1-4f6a-ac0d-5dcba77f0261",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/careers/86abcce0-04b2-405c-9a8e-e0ca84813914",
+    "competitor": "linear",
+    "page": "86abcce0-04b2-405c-9a8e-e0ca84813914",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/careers/d062065e-05bb-42ce-a430-ec205695cc2e",
+    "competitor": "linear",
+    "page": "d062065e-05bb-42ce-a430-ec205695cc2e",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/careers/1bfdcabe-aa5f-4999-9a6d-b8a824dd779b",
+    "competitor": "linear",
+    "page": "1bfdcabe-aa5f-4999-9a6d-b8a824dd779b",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/careers/c21af93e-210f-4969-8eaa-90fb16a5b720",
+    "competitor": "linear",
+    "page": "c21af93e-210f-4969-8eaa-90fb16a5b720",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/careers/e85e752a-b1d7-4695-b163-172b0ed19ce0",
+    "competitor": "linear",
+    "page": "e85e752a-b1d7-4695-b163-172b0ed19ce0",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/careers/a8041e0e-350e-47d0-9190-454089216fb8",
+    "competitor": "linear",
+    "page": "a8041e0e-350e-47d0-9190-454089216fb8",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/careers/b4a7764e-c680-4bdf-9956-dc78f2ca94d5",
+    "competitor": "linear",
+    "page": "b4a7764e-c680-4bdf-9956-dc78f2ca94d5",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/careers/3adaa1f5-2cf1-480d-8daf-92345ec08395",
+    "competitor": "linear",
+    "page": "3adaa1f5-2cf1-480d-8daf-92345ec08395",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/careers/c3457e89-9ac2-4017-93d5-d1a7935782a0",
+    "competitor": "linear",
+    "page": "c3457e89-9ac2-4017-93d5-d1a7935782a0",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/careers/ef9037bf-747d-4575-93b9-906959438a6c",
+    "competitor": "linear",
+    "page": "ef9037bf-747d-4575-93b9-906959438a6c",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/careers/82778dbf-711e-4d23-9d49-4a60db76737a",
+    "competitor": "linear",
+    "page": "82778dbf-711e-4d23-9d49-4a60db76737a",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/careers/8b8be501-de8e-4aab-aaf7-fe0644fb68ff",
+    "competitor": "linear",
+    "page": "8b8be501-de8e-4aab-aaf7-fe0644fb68ff",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/careers/0b120d06-575f-4e71-9724-68f38de6824a",
+    "competitor": "linear",
+    "page": "0b120d06-575f-4e71-9724-68f38de6824a",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/customers/craft",
+    "competitor": "linear",
+    "page": "craft",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/customers/dandelion-chocolate",
+    "competitor": "linear",
+    "page": "dandelion-chocolate",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/customers/graphcms",
+    "competitor": "linear",
+    "page": "graphcms",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/customers/brex",
+    "competitor": "linear",
+    "page": "brex",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/customers/watershed",
+    "competitor": "linear",
+    "page": "watershed",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/customers/raycast",
+    "competitor": "linear",
+    "page": "raycast",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/customers/cohere",
+    "competitor": "linear",
+    "page": "cohere",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/customers/ramp",
+    "competitor": "linear",
+    "page": "ramp",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/customers/opendoor",
+    "competitor": "linear",
+    "page": "opendoor",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/customers/retool",
+    "competitor": "linear",
+    "page": "retool",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/customers/sierra",
+    "competitor": "linear",
+    "page": "sierra",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/customers/doppler",
+    "competitor": "linear",
+    "page": "doppler",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/customers/middesk",
+    "competitor": "linear",
+    "page": "middesk",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/customers/braid",
+    "competitor": "linear",
+    "page": "braid",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/customers/remote",
+    "competitor": "linear",
+    "page": "remote",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/customers/render",
+    "competitor": "linear",
+    "page": "render",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/customers/clay",
+    "competitor": "linear",
+    "page": "clay",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/customers/automattic",
+    "competitor": "linear",
+    "page": "automattic",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/customers/browsercompany",
+    "competitor": "linear",
+    "page": "browsercompany",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/customers/cointracker",
+    "competitor": "linear",
+    "page": "cointracker",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/customers/expo",
+    "competitor": "linear",
+    "page": "expo",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/customers/darkroom",
+    "competitor": "linear",
+    "page": "darkroom",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/customers/openai",
+    "competitor": "linear",
+    "page": "openai",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/customers/alan",
+    "competitor": "linear",
+    "page": "alan",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/customers/pulley",
+    "competitor": "linear",
+    "page": "pulley",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/customers/test-staging",
+    "competitor": "linear",
+    "page": "test-staging",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/customers/unsplash",
+    "competitor": "linear",
+    "page": "unsplash",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/customers/scale",
+    "competitor": "linear",
+    "page": "scale",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/customers/cashapp",
+    "competitor": "linear",
+    "page": "cashapp",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/customers/mercury",
+    "competitor": "linear",
+    "page": "mercury",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/customers/twingate",
+    "competitor": "linear",
+    "page": "twingate",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/customers/pleo",
+    "competitor": "linear",
+    "page": "pleo",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/customers/semgrep",
+    "competitor": "linear",
+    "page": "semgrep",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/customers/clio",
+    "competitor": "linear",
+    "page": "clio",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/customers/descript",
+    "competitor": "linear",
+    "page": "descript",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/docs/start-guide",
+    "competitor": "linear",
+    "page": "start-guide",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/docs/conceptual-model",
+    "competitor": "linear",
+    "page": "conceptual-model",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/docs/get-the-app",
+    "competitor": "linear",
+    "page": "get-the-app",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/docs/profile",
+    "competitor": "linear",
+    "page": "profile",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/docs/account-preferences",
+    "competitor": "linear",
+    "page": "account-preferences",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/docs/notifications",
+    "competitor": "linear",
+    "page": "notifications",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/docs/security-and-access",
+    "competitor": "linear",
+    "page": "security-and-access",
+    "score": 2
+  },
+  {
+    "url": "https://linear.app/docs/inbox",
+    "competitor": "linear",
+    "page": "inbox",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/docs/my-issues",
+    "competitor": "linear",
+    "page": "my-issues",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/docs/pulse",
+    "competitor": "linear",
+    "page": "pulse",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/docs/pull-request-reviews",
+    "competitor": "linear",
+    "page": "pull-request-reviews",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/docs/favorites",
+    "competitor": "linear",
+    "page": "favorites",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/docs/teams",
+    "competitor": "linear",
+    "page": "teams",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/docs/private-teams",
+    "competitor": "linear",
+    "page": "private-teams",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/docs/sub-teams",
+    "competitor": "linear",
+    "page": "sub-teams",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/docs/configuring-workflows",
+    "competitor": "linear",
+    "page": "configuring-workflows",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/docs/creating-issues",
+    "competitor": "linear",
+    "page": "creating-issues",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/docs/editing-issues",
+    "competitor": "linear",
+    "page": "editing-issues",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/docs/assigning-issues",
+    "competitor": "linear",
+    "page": "assigning-issues",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/docs/select-issues",
+    "competitor": "linear",
+    "page": "select-issues",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/docs/parent-and-sub-issues",
+    "competitor": "linear",
+    "page": "parent-and-sub-issues",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/docs/issue-templates",
+    "competitor": "linear",
+    "page": "issue-templates",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/docs/issue-documents",
+    "competitor": "linear",
+    "page": "issue-documents",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/docs/comment-on-issues",
+    "competitor": "linear",
+    "page": "comment-on-issues",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/docs/editor",
+    "competitor": "linear",
+    "page": "editor",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/docs/delete-archive-issues",
+    "competitor": "linear",
+    "page": "delete-archive-issues",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/docs/customer-requests",
+    "competitor": "linear",
+    "page": "customer-requests",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/docs/due-dates",
+    "competitor": "linear",
+    "page": "due-dates",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/docs/estimates",
+    "competitor": "linear",
+    "page": "estimates",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/docs/issue-relations",
+    "competitor": "linear",
+    "page": "issue-relations",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/docs/labels",
+    "competitor": "linear",
+    "page": "labels",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/docs/priority",
+    "competitor": "linear",
+    "page": "priority",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/docs/sla",
+    "competitor": "linear",
+    "page": "sla",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/docs/projects",
+    "competitor": "linear",
+    "page": "projects",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/docs/project-milestones",
+    "competitor": "linear",
+    "page": "project-milestones",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/docs/project-overview",
+    "competitor": "linear",
+    "page": "project-overview",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/docs/project-documents",
+    "competitor": "linear",
+    "page": "project-documents",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/docs/project-graph",
+    "competitor": "linear",
+    "page": "project-graph",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/docs/project-status",
+    "competitor": "linear",
+    "page": "project-status",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/docs/project-labels",
+    "competitor": "linear",
+    "page": "project-labels",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/docs/project-notifications",
+    "competitor": "linear",
+    "page": "project-notifications",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/docs/project-priority",
+    "competitor": "linear",
+    "page": "project-priority",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/docs/project-dependencies",
+    "competitor": "linear",
+    "page": "project-dependencies",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/docs/project-templates",
+    "competitor": "linear",
+    "page": "project-templates",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/docs/initiatives",
+    "competitor": "linear",
+    "page": "initiatives",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/docs/sub-initiatives",
+    "competitor": "linear",
+    "page": "sub-initiatives",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/docs/initiative-and-project-updates",
+    "competitor": "linear",
+    "page": "initiative-and-project-updates",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/docs/use-cycles",
+    "competitor": "linear",
+    "page": "use-cycles",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/docs/update-cycles",
+    "competitor": "linear",
+    "page": "update-cycles",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/docs/cycle-graph",
+    "competitor": "linear",
+    "page": "cycle-graph",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/docs/board-layout",
+    "competitor": "linear",
+    "page": "board-layout",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/docs/timeline",
+    "competitor": "linear",
+    "page": "timeline",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/docs/custom-views",
+    "competitor": "linear",
+    "page": "custom-views",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/docs/triage",
+    "competitor": "linear",
+    "page": "triage",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/docs/user-views",
+    "competitor": "linear",
+    "page": "user-views",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/docs/peek",
+    "competitor": "linear",
+    "page": "peek",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/docs/default-team-pages",
+    "competitor": "linear",
+    "page": "default-team-pages",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/docs/search",
+    "competitor": "linear",
+    "page": "search",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/docs/filters",
+    "competitor": "linear",
+    "page": "filters",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/docs/display-options",
+    "competitor": "linear",
+    "page": "display-options",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/docs/agents-in-linear",
+    "competitor": "linear",
+    "page": "agents-in-linear",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/docs/mcp",
+    "competitor": "linear",
+    "page": "mcp",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/docs/triage-intelligence",
+    "competitor": "linear",
+    "page": "triage-intelligence",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/docs/integration-directory",
+    "competitor": "linear",
+    "page": "integration-directory",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/docs/airbyte",
+    "competitor": "linear",
+    "page": "airbyte",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/docs/linear-asks",
+    "competitor": "linear",
+    "page": "linear-asks",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/docs/discord",
+    "competitor": "linear",
+    "page": "discord",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/docs/figma",
+    "competitor": "linear",
+    "page": "figma",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/docs/front",
+    "competitor": "linear",
+    "page": "front",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/docs/github-integration",
+    "competitor": "linear",
+    "page": "github-integration",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/docs/gitlab",
+    "competitor": "linear",
+    "page": "gitlab",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/docs/google-sheets",
+    "competitor": "linear",
+    "page": "google-sheets",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/docs/gong",
+    "competitor": "linear",
+    "page": "gong",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/docs/intercom",
+    "competitor": "linear",
+    "page": "intercom",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/docs/jira",
+    "competitor": "linear",
+    "page": "jira",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/docs/notion",
+    "competitor": "linear",
+    "page": "notion",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/docs/salesforce",
+    "competitor": "linear",
+    "page": "salesforce",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/docs/sentry",
+    "competitor": "linear",
+    "page": "sentry",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/docs/slack",
+    "competitor": "linear",
+    "page": "slack",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/docs/zapier",
+    "competitor": "linear",
+    "page": "zapier",
+    "score": 2
+  },
+  {
+    "url": "https://linear.app/docs/zendesk",
+    "competitor": "linear",
+    "page": "zendesk",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/docs/dashboards",
+    "competitor": "linear",
+    "page": "dashboards",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/docs/insights",
+    "competitor": "linear",
+    "page": "insights",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/docs/exporting-data",
+    "competitor": "linear",
+    "page": "exporting-data",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/docs/workspaces",
+    "competitor": "linear",
+    "page": "workspaces",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/docs/login-methods",
+    "competitor": "linear",
+    "page": "login-methods",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/docs/invite-members",
+    "competitor": "linear",
+    "page": "invite-members",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/docs/members-roles",
+    "competitor": "linear",
+    "page": "members-roles",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/docs/security",
+    "competitor": "linear",
+    "page": "security",
+    "score": 2
+  },
+  {
+    "url": "https://linear.app/docs/saml-and-access-control",
+    "competitor": "linear",
+    "page": "saml-and-access-control",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/docs/scim",
+    "competitor": "linear",
+    "page": "scim",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/docs/api-and-webhooks",
+    "competitor": "linear",
+    "page": "api-and-webhooks",
+    "score": 2
+  },
+  {
+    "url": "https://linear.app/docs/third-party-application-approvals",
+    "competitor": "linear",
+    "page": "third-party-application-approvals",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/docs/billing-and-plans",
+    "competitor": "linear",
+    "page": "billing-and-plans",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/docs/audit-log",
+    "competitor": "linear",
+    "page": "audit-log",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/docs/import-issues",
+    "competitor": "linear",
+    "page": "import-issues",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/docs/triage-manage-unplanned-work",
+    "competitor": "linear",
+    "page": "triage-manage-unplanned-work",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/docs/team-issue-limit",
+    "competitor": "linear",
+    "page": "team-issue-limit",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/docs/view-demos",
+    "competitor": "linear",
+    "page": "view-demos",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/docs/beta-project-planning",
+    "competitor": "linear",
+    "page": "beta-project-planning",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/docs/ops-and-marketing",
+    "competitor": "linear",
+    "page": "ops-and-marketing",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/docs/joining-your-team-on-linear",
+    "competitor": "linear",
+    "page": "joining-your-team-on-linear",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/docs/making-the-most-of-linear",
+    "competitor": "linear",
+    "page": "making-the-most-of-linear",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/docs/jira-terminology-translated",
+    "competitor": "linear",
+    "page": "jira-terminology-translated",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/docs/linear-for-growth",
+    "competitor": "linear",
+    "page": "linear-for-growth",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/docs/making-the-most-of-linear-business",
+    "competitor": "linear",
+    "page": "making-the-most-of-linear-business",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/docs/how-to-use-linear",
+    "competitor": "linear",
+    "page": "how-to-use-linear",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/docs/agents-api-deprecated",
+    "competitor": "linear",
+    "page": "agents-api-deprecated",
+    "score": 2
+  },
+  {
+    "url": "https://linear.app/docs/linear-for-product-managers",
+    "competitor": "linear",
+    "page": "linear-for-product-managers",
+    "score": 2
+  },
+  {
+    "url": "https://linear.app/docs/ai-at-linear",
+    "competitor": "linear",
+    "page": "ai-at-linear",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/docs/github",
+    "competitor": "linear",
+    "page": "github",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/docs/github-to-linear",
+    "competitor": "linear",
+    "page": "github-to-linear",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/docs/jira-to-linear",
+    "competitor": "linear",
+    "page": "jira-to-linear",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/docs/how-to-use-linear-small-teams",
+    "competitor": "linear",
+    "page": "how-to-use-linear-small-teams",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/docs/how-to-use-linear-large-scaling-companies",
+    "competitor": "linear",
+    "page": "how-to-use-linear-large-scaling-companies",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/docs/how-to-use-linear-startups-mid-size-companies",
+    "competitor": "linear",
+    "page": "how-to-use-linear-startups-mid-size-companies",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/docs/workspace-owner",
+    "competitor": "linear",
+    "page": "workspace-owner",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/docs/changes-to-user-roles-when-upgrading-to-enterprise",
+    "competitor": "linear",
+    "page": "changes-to-user-roles-when-upgrading-to-enterprise",
+    "score": 2
+  },
+  {
+    "url": "https://linear.app/docs/team-owner",
+    "competitor": "linear",
+    "page": "team-owner",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/docs/changes-to-linears-pricing-plans",
+    "competitor": "linear",
+    "page": "changes-to-linears-pricing-plans",
+    "score": 2
+  },
+  {
+    "url": "https://linear.app/docs/releases",
+    "competitor": "linear",
+    "page": "releases",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/developers/graphql",
+    "competitor": "linear",
+    "page": "graphql",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/developers/pagination",
+    "competitor": "linear",
+    "page": "pagination",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/developers/filtering",
+    "competitor": "linear",
+    "page": "filtering",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/developers/rate-limiting",
+    "competitor": "linear",
+    "page": "rate-limiting",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/developers/deprecations",
+    "competitor": "linear",
+    "page": "deprecations",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/developers/webhooks",
+    "competitor": "linear",
+    "page": "webhooks",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/developers/attachments",
+    "competitor": "linear",
+    "page": "attachments",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/developers/managing-customers",
+    "competitor": "linear",
+    "page": "managing-customers",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/developers/oauth-2-0-authentication",
+    "competitor": "linear",
+    "page": "oauth-2-0-authentication",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/developers/oauth-actor-authorization",
+    "competitor": "linear",
+    "page": "oauth-actor-authorization",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/developers/file-storage-authentication",
+    "competitor": "linear",
+    "page": "file-storage-authentication",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/developers/aig",
+    "competitor": "linear",
+    "page": "aig",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/developers/agents",
+    "competitor": "linear",
+    "page": "agents",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/developers/agent-interaction",
+    "competitor": "linear",
+    "page": "agent-interaction",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/developers/agent-best-practices",
+    "competitor": "linear",
+    "page": "agent-best-practices",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/developers/agent-signals",
+    "competitor": "linear",
+    "page": "agent-signals",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/developers/sdk",
+    "competitor": "linear",
+    "page": "sdk",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/developers/sdk-fetching-and-modifying-data",
+    "competitor": "linear",
+    "page": "sdk-fetching-and-modifying-data",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/developers/sdk-errors",
+    "competitor": "linear",
+    "page": "sdk-errors",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/developers/advanced-usage",
+    "competitor": "linear",
+    "page": "advanced-usage",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/developers/sdk-webhooks",
+    "competitor": "linear",
+    "page": "sdk-webhooks",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/developers/migrating-from-1-x-to-2-x",
+    "competitor": "linear",
+    "page": "migrating-from-1-x-to-2-x",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/developers/how-to-upload-a-file-to-linear",
+    "competitor": "linear",
+    "page": "how-to-upload-a-file-to-linear",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/developers/create-issues-using-linear-new",
+    "competitor": "linear",
+    "page": "create-issues-using-linear-new",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/developers/integration-directory",
+    "competitor": "linear",
+    "page": "integration-directory",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/integrations/fencer",
+    "competitor": "linear",
+    "page": "fencer",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/span",
+    "competitor": "linear",
+    "page": "span",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/supernormal",
+    "competitor": "linear",
+    "page": "supernormal",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/secureslate",
+    "competitor": "linear",
+    "page": "secureslate",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/cyrus",
+    "competitor": "linear",
+    "page": "cyrus",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/fillout",
+    "competitor": "linear",
+    "page": "fillout",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/all-quiet",
+    "competitor": "linear",
+    "page": "all-quiet",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/github",
+    "competitor": "linear",
+    "page": "github",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/morgen",
+    "competitor": "linear",
+    "page": "morgen",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/arc",
+    "competitor": "linear",
+    "page": "arc",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/fernand",
+    "competitor": "linear",
+    "page": "fernand",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/truto",
+    "competitor": "linear",
+    "page": "truto",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/notion",
+    "competitor": "linear",
+    "page": "notion",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/tactiq",
+    "competitor": "linear",
+    "page": "tactiq",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/olvy",
+    "competitor": "linear",
+    "page": "olvy",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/basedash",
+    "competitor": "linear",
+    "page": "basedash",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/codex",
+    "competitor": "linear",
+    "page": "codex",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/cycle",
+    "competitor": "linear",
+    "page": "cycle",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/airbyte",
+    "competitor": "linear",
+    "page": "airbyte",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/trackingtime",
+    "competitor": "linear",
+    "page": "trackingtime",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/descript",
+    "competitor": "linear",
+    "page": "descript",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/datadog",
+    "competitor": "linear",
+    "page": "datadog",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/tusk",
+    "competitor": "linear",
+    "page": "tusk",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/next",
+    "competitor": "linear",
+    "page": "next",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/viasocket",
+    "competitor": "linear",
+    "page": "viasocket",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/gong",
+    "competitor": "linear",
+    "page": "gong",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/cursor",
+    "competitor": "linear",
+    "page": "cursor",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/intercom",
+    "competitor": "linear",
+    "page": "intercom",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/neat",
+    "competitor": "linear",
+    "page": "neat",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/youtube",
+    "competitor": "linear",
+    "page": "youtube",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/cardinal",
+    "competitor": "linear",
+    "page": "cardinal",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/warestack",
+    "competitor": "linear",
+    "page": "warestack",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/teamplify",
+    "competitor": "linear",
+    "page": "teamplify",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/spellar-ai",
+    "competitor": "linear",
+    "page": "spellar-ai",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/kollabe",
+    "competitor": "linear",
+    "page": "kollabe",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/betterbugs",
+    "competitor": "linear",
+    "page": "betterbugs",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/testmo",
+    "competitor": "linear",
+    "page": "testmo",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/cycle-report",
+    "competitor": "linear",
+    "page": "cycle-report",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/chatgpt",
+    "competitor": "linear",
+    "page": "chatgpt",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/pixelesq",
+    "competitor": "linear",
+    "page": "pixelesq",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/miro",
+    "competitor": "linear",
+    "page": "miro",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/agno",
+    "competitor": "linear",
+    "page": "agno",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/ranger",
+    "competitor": "linear",
+    "page": "ranger",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/github-copilot",
+    "competitor": "linear",
+    "page": "github-copilot",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/producta",
+    "competitor": "linear",
+    "page": "producta",
+    "score": 2
+  },
+  {
+    "url": "https://linear.app/integrations/netlify",
+    "competitor": "linear",
+    "page": "netlify",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/vs-code",
+    "competitor": "linear",
+    "page": "vs-code",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/locu",
+    "competitor": "linear",
+    "page": "locu",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/bird-eats-bug",
+    "competitor": "linear",
+    "page": "bird-eats-bug",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/triggerdotdev",
+    "competitor": "linear",
+    "page": "triggerdotdev",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/commented",
+    "competitor": "linear",
+    "page": "commented",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/talkthrough",
+    "competitor": "linear",
+    "page": "talkthrough",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/fellow",
+    "competitor": "linear",
+    "page": "fellow",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/factory",
+    "competitor": "linear",
+    "page": "factory",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/everhour",
+    "competitor": "linear",
+    "page": "everhour",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/gitlab",
+    "competitor": "linear",
+    "page": "gitlab",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/chatprd",
+    "competitor": "linear",
+    "page": "chatprd",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/guru",
+    "competitor": "linear",
+    "page": "guru",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/marker-io",
+    "competitor": "linear",
+    "page": "marker-io",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/screenful",
+    "competitor": "linear",
+    "page": "screenful",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/dust",
+    "competitor": "linear",
+    "page": "dust",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/vanta",
+    "competitor": "linear",
+    "page": "vanta",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/planningpoker-live",
+    "competitor": "linear",
+    "page": "planningpoker-live",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/merge",
+    "competitor": "linear",
+    "page": "merge",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/harvest",
+    "competitor": "linear",
+    "page": "harvest",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/slack",
+    "competitor": "linear",
+    "page": "slack",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/honeybadger",
+    "competitor": "linear",
+    "page": "honeybadger",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/salesforce",
+    "competitor": "linear",
+    "page": "salesforce",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/testdino",
+    "competitor": "linear",
+    "page": "testdino",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/secoda",
+    "competitor": "linear",
+    "page": "secoda",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/qodo",
+    "competitor": "linear",
+    "page": "qodo",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/glean",
+    "competitor": "linear",
+    "page": "glean",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/posthog",
+    "competitor": "linear",
+    "page": "posthog",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/reflag",
+    "competitor": "linear",
+    "page": "reflag",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/loom",
+    "competitor": "linear",
+    "page": "loom",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/pylon",
+    "competitor": "linear",
+    "page": "pylon",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/hotjar",
+    "competitor": "linear",
+    "page": "hotjar",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/steelsync",
+    "competitor": "linear",
+    "page": "steelsync",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/stilla",
+    "competitor": "linear",
+    "page": "stilla",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/fireflies-ai",
+    "competitor": "linear",
+    "page": "fireflies-ai",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/test-management-by-testsigma",
+    "competitor": "linear",
+    "page": "test-management-by-testsigma",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/index",
+    "competitor": "linear",
+    "page": "index",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/bugherd",
+    "competitor": "linear",
+    "page": "bugherd",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/integrately",
+    "competitor": "linear",
+    "page": "integrately",
+    "score": 2
+  },
+  {
+    "url": "https://linear.app/integrations/panaptico",
+    "competitor": "linear",
+    "page": "panaptico",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/superlist",
+    "competitor": "linear",
+    "page": "superlist",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/lindie",
+    "competitor": "linear",
+    "page": "lindie",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/iterationx",
+    "competitor": "linear",
+    "page": "iterationx",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/tella",
+    "competitor": "linear",
+    "page": "tella",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/slab",
+    "competitor": "linear",
+    "page": "slab",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/drata",
+    "competitor": "linear",
+    "page": "drata",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/capybara",
+    "competitor": "linear",
+    "page": "capybara",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/spike",
+    "competitor": "linear",
+    "page": "spike",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/tmetric",
+    "competitor": "linear",
+    "page": "tmetric",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/monkedo",
+    "competitor": "linear",
+    "page": "monkedo",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/tembo",
+    "competitor": "linear",
+    "page": "tembo",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/superduty",
+    "competitor": "linear",
+    "page": "superduty",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/radiant",
+    "competitor": "linear",
+    "page": "radiant",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/startdeliver",
+    "competitor": "linear",
+    "page": "startdeliver",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/sentry",
+    "competitor": "linear",
+    "page": "sentry",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/tally",
+    "competitor": "linear",
+    "page": "tally",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/fibery",
+    "competitor": "linear",
+    "page": "fibery",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/required",
+    "competitor": "linear",
+    "page": "required",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/figma",
+    "competitor": "linear",
+    "page": "figma",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/orca-security",
+    "competitor": "linear",
+    "page": "orca-security",
+    "score": 2
+  },
+  {
+    "url": "https://linear.app/integrations/latenode",
+    "competitor": "linear",
+    "page": "latenode",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/sunsama",
+    "competitor": "linear",
+    "page": "sunsama",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/fivetran",
+    "competitor": "linear",
+    "page": "fivetran",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/whimsical",
+    "competitor": "linear",
+    "page": "whimsical",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/doubleloop",
+    "competitor": "linear",
+    "page": "doubleloop",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/pipedream",
+    "competitor": "linear",
+    "page": "pipedream",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/todo-comments",
+    "competitor": "linear",
+    "page": "todo-comments",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/joyn",
+    "competitor": "linear",
+    "page": "joyn",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/replit",
+    "competitor": "linear",
+    "page": "replit",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/leanbe",
+    "competitor": "linear",
+    "page": "leanbe",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/suretriggers",
+    "competitor": "linear",
+    "page": "suretriggers",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/testomat",
+    "competitor": "linear",
+    "page": "testomat",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/systemprompt",
+    "competitor": "linear",
+    "page": "systemprompt",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/solo",
+    "competitor": "linear",
+    "page": "solo",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/dixa",
+    "competitor": "linear",
+    "page": "dixa",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/pagerly",
+    "competitor": "linear",
+    "page": "pagerly",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/steady",
+    "competitor": "linear",
+    "page": "steady",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/one-horizon",
+    "competitor": "linear",
+    "page": "one-horizon",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/attio",
+    "competitor": "linear",
+    "page": "attio",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/productlane",
+    "competitor": "linear",
+    "page": "productlane",
+    "score": 2
+  },
+  {
+    "url": "https://linear.app/integrations/devin",
+    "competitor": "linear",
+    "page": "devin",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/cursor-mcp",
+    "competitor": "linear",
+    "page": "cursor-mcp",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/shake",
+    "competitor": "linear",
+    "page": "shake",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/kraftful",
+    "competitor": "linear",
+    "page": "kraftful",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/flare",
+    "competitor": "linear",
+    "page": "flare",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/dailybot",
+    "competitor": "linear",
+    "page": "dailybot",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/livecycle",
+    "competitor": "linear",
+    "page": "livecycle",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/raycast",
+    "competitor": "linear",
+    "page": "raycast",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/codex-mcp",
+    "competitor": "linear",
+    "page": "codex-mcp",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/unthread",
+    "competitor": "linear",
+    "page": "unthread",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/runway",
+    "competitor": "linear",
+    "page": "runway",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/reclaim-ai",
+    "competitor": "linear",
+    "page": "reclaim-ai",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/clearfeed",
+    "competitor": "linear",
+    "page": "clearfeed",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/warp",
+    "competitor": "linear",
+    "page": "warp",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/charlie",
+    "competitor": "linear",
+    "page": "charlie",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/ducalis",
+    "competitor": "linear",
+    "page": "ducalis",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/atlas-support",
+    "competitor": "linear",
+    "page": "atlas-support",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/incident-io",
+    "competitor": "linear",
+    "page": "incident-io",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/capture-dev",
+    "competitor": "linear",
+    "page": "capture-dev",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/hill-charts-curious-lab",
+    "competitor": "linear",
+    "page": "hill-charts-curious-lab",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/usersnap",
+    "competitor": "linear",
+    "page": "usersnap",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/jellyfish",
+    "competitor": "linear",
+    "page": "jellyfish",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/thena",
+    "competitor": "linear",
+    "page": "thena",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/github-enterprise-server",
+    "competitor": "linear",
+    "page": "github-enterprise-server",
+    "score": 2
+  },
+  {
+    "url": "https://linear.app/integrations/stepflo",
+    "competitor": "linear",
+    "page": "stepflo",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/jira",
+    "competitor": "linear",
+    "page": "jira",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/n8n",
+    "competitor": "linear",
+    "page": "n8n",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/vs-code-mcp",
+    "competitor": "linear",
+    "page": "vs-code-mcp",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/apx",
+    "competitor": "linear",
+    "page": "apx",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/jet-admin",
+    "competitor": "linear",
+    "page": "jet-admin",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/range",
+    "competitor": "linear",
+    "page": "range",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/zendesk",
+    "competitor": "linear",
+    "page": "zendesk",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/circleback",
+    "competitor": "linear",
+    "page": "circleback",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/discord",
+    "competitor": "linear",
+    "page": "discord",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/google-sheets",
+    "competitor": "linear",
+    "page": "google-sheets",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/claap",
+    "competitor": "linear",
+    "page": "claap",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/create-issues-via-email",
+    "competitor": "linear",
+    "page": "create-issues-via-email",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/rootly",
+    "competitor": "linear",
+    "page": "rootly",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/timely",
+    "competitor": "linear",
+    "page": "timely",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/front",
+    "competitor": "linear",
+    "page": "front",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/swarmia",
+    "competitor": "linear",
+    "page": "swarmia",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/helpscout",
+    "competitor": "linear",
+    "page": "helpscout",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/aikido",
+    "competitor": "linear",
+    "page": "aikido",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/axolo",
+    "competitor": "linear",
+    "page": "axolo",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/cto-new",
+    "competitor": "linear",
+    "page": "cto-new",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/canny",
+    "competitor": "linear",
+    "page": "canny",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/korl",
+    "competitor": "linear",
+    "page": "korl",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/super",
+    "competitor": "linear",
+    "page": "super",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/figma-make",
+    "competitor": "linear",
+    "page": "figma-make",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/relay",
+    "competitor": "linear",
+    "page": "relay",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/hill-charts-by-routific",
+    "competitor": "linear",
+    "page": "hill-charts-by-routific",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/snoozethis",
+    "competitor": "linear",
+    "page": "snoozethis",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/teamoclock",
+    "competitor": "linear",
+    "page": "teamoclock",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/FeatureOS",
+    "competitor": "linear",
+    "page": "FeatureOS",
+    "score": 2
+  },
+  {
+    "url": "https://linear.app/integrations/parabol",
+    "competitor": "linear",
+    "page": "parabol",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/vercel",
+    "competitor": "linear",
+    "page": "vercel",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/graph",
+    "competitor": "linear",
+    "page": "graph",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/harvestr",
+    "competitor": "linear",
+    "page": "harvestr",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/hypercontext",
+    "competitor": "linear",
+    "page": "hypercontext",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/feedbucket",
+    "competitor": "linear",
+    "page": "feedbucket",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/testiny",
+    "competitor": "linear",
+    "page": "testiny",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/screenpresso",
+    "competitor": "linear",
+    "page": "screenpresso",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/builder-io-mcp",
+    "competitor": "linear",
+    "page": "builder-io-mcp",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/spades",
+    "competitor": "linear",
+    "page": "spades",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/polymer",
+    "competitor": "linear",
+    "page": "polymer",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/zed",
+    "competitor": "linear",
+    "page": "zed",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/make",
+    "competitor": "linear",
+    "page": "make",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/coderabbit",
+    "competitor": "linear",
+    "page": "coderabbit",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/claude",
+    "competitor": "linear",
+    "page": "claude",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/lindy",
+    "competitor": "linear",
+    "page": "lindy",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/kualitee",
+    "competitor": "linear",
+    "page": "kualitee",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/plain",
+    "competitor": "linear",
+    "page": "plain",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/slite",
+    "competitor": "linear",
+    "page": "slite",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/survicate",
+    "competitor": "linear",
+    "page": "survicate",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/dovetail",
+    "competitor": "linear",
+    "page": "dovetail",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/featurebase",
+    "competitor": "linear",
+    "page": "featurebase",
+    "score": 2
+  },
+  {
+    "url": "https://linear.app/integrations/windsurf",
+    "competitor": "linear",
+    "page": "windsurf",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/11ai",
+    "competitor": "linear",
+    "page": "11ai",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/linear-asks",
+    "competitor": "linear",
+    "page": "linear-asks",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/teamretro",
+    "competitor": "linear",
+    "page": "teamretro",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/packs4coda",
+    "competitor": "linear",
+    "page": "packs4coda",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/float",
+    "competitor": "linear",
+    "page": "float",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/v0",
+    "competitor": "linear",
+    "page": "v0",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/retool",
+    "competitor": "linear",
+    "page": "retool",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/chatwoot",
+    "competitor": "linear",
+    "page": "chatwoot",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/zapier",
+    "competitor": "linear",
+    "page": "zapier",
+    "score": 2
+  },
+  {
+    "url": "https://linear.app/integrations/deskpro",
+    "competitor": "linear",
+    "page": "deskpro",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/jam",
+    "competitor": "linear",
+    "page": "jam",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/lambdatest",
+    "competitor": "linear",
+    "page": "lambdatest",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/testlodge",
+    "competitor": "linear",
+    "page": "testlodge",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/graphite",
+    "competitor": "linear",
+    "page": "graphite",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/sentry-agent",
+    "competitor": "linear",
+    "page": "sentry-agent",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/clay",
+    "competitor": "linear",
+    "page": "clay",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/replicas",
+    "competitor": "linear",
+    "page": "replicas",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/reflect",
+    "competitor": "linear",
+    "page": "reflect",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/formcrafts",
+    "competitor": "linear",
+    "page": "formcrafts",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/highlight",
+    "competitor": "linear",
+    "page": "highlight",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/userback",
+    "competitor": "linear",
+    "page": "userback",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/reforge-insights",
+    "competitor": "linear",
+    "page": "reforge-insights",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/gitbook",
+    "competitor": "linear",
+    "page": "gitbook",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/essentials",
+    "competitor": "linear",
+    "page": "essentials",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/agents",
+    "competitor": "linear",
+    "page": "agents",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/ai-clients",
+    "competitor": "linear",
+    "page": "ai-clients",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/bug-reporting",
+    "competitor": "linear",
+    "page": "bug-reporting",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/analytics",
+    "competitor": "linear",
+    "page": "analytics",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/collaboration",
+    "competitor": "linear",
+    "page": "collaboration",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/linear-crafted",
+    "competitor": "linear",
+    "page": "linear-crafted",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/customer-experience",
+    "competitor": "linear",
+    "page": "customer-experience",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/media-and-design",
+    "competitor": "linear",
+    "page": "media-and-design",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/engineering",
+    "competitor": "linear",
+    "page": "engineering",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/integrations/security-and-compliance",
+    "competitor": "linear",
+    "page": "security-and-compliance",
+    "score": 2
+  },
+  {
+    "url": "https://linear.app/integrations/automations",
+    "competitor": "linear",
+    "page": "automations",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/method/introduction",
+    "competitor": "linear",
+    "page": "introduction",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/method/product-direction",
+    "competitor": "linear",
+    "page": "product-direction",
+    "score": 1
+  },
+  {
+    "url": "https://linear.app/method/set-useful-goals",
+    "competitor": "linear",
+    "page": "set-useful-goals",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/method/prioritize-enablers-and-blockers",
+    "competitor": "linear",
+    "page": "prioritize-enablers-and-blockers",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/method/scope-projects",
+    "competitor": "linear",
+    "page": "scope-projects",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/method/building-with-momentum",
+    "competitor": "linear",
+    "page": "building-with-momentum",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/method/write-issues-not-user-stories",
+    "competitor": "linear",
+    "page": "write-issues-not-user-stories",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/method/manage-design-projects",
+    "competitor": "linear",
+    "page": "manage-design-projects",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/method/build-with-users",
+    "competitor": "linear",
+    "page": "build-with-users",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/method/launching",
+    "competitor": "linear",
+    "page": "launching",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/method/build-in-public",
+    "competitor": "linear",
+    "page": "build-in-public",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/quality/00",
+    "competitor": "linear",
+    "page": "00",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/quality/01",
+    "competitor": "linear",
+    "page": "01",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/quality/02",
+    "competitor": "linear",
+    "page": "02",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/quality/03",
+    "competitor": "linear",
+    "page": "03",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/quality/04",
+    "competitor": "linear",
+    "page": "04",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/quality/05",
+    "competitor": "linear",
+    "page": "05",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/quality/06",
+    "competitor": "linear",
+    "page": "06",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/quality/07",
+    "competitor": "linear",
+    "page": "07",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/quality/08",
+    "competitor": "linear",
+    "page": "08",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/quality/09",
+    "competitor": "linear",
+    "page": "09",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/settings",
+    "competitor": "linear",
+    "page": "settings",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/settings/profile",
+    "competitor": "linear",
+    "page": "profile",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/settings/billing",
+    "competitor": "linear",
+    "page": "billing",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/settings/workspace",
+    "competitor": "linear",
+    "page": "workspace",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/settings/team",
+    "competitor": "linear",
+    "page": "team",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/dashboard",
+    "competitor": "linear",
+    "page": "dashboard",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/projects",
+    "competitor": "linear",
+    "page": "projects",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/members",
+    "competitor": "linear",
+    "page": "members",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/billing",
+    "competitor": "linear",
+    "page": "billing",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/profile",
+    "competitor": "linear",
+    "page": "profile",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/account",
+    "competitor": "linear",
+    "page": "account",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/organization",
+    "competitor": "linear",
+    "page": "organization",
+    "score": 0
+  },
+  {
+    "url": "https://linear.app/notifications",
+    "competitor": "linear",
+    "page": "notifications",
     "score": 0
   }
 ]

@@ -1,0 +1,3236 @@
+[
+  {
+    "url": "https://otter.ai",
+    "competitor": "otter",
+    "page": "otter.ai",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/apps",
+    "competitor": "otter",
+    "page": "apps",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/authors",
+    "competitor": "otter",
+    "page": "authors",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/blog",
+    "competitor": "otter",
+    "page": "blog",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog-demo",
+    "competitor": "otter",
+    "page": "blog-demo",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/business",
+    "competitor": "otter",
+    "page": "business",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/business-demo",
+    "competitor": "otter",
+    "page": "business-demo",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/careers",
+    "competitor": "otter",
+    "page": "careers",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/ccpa-notice",
+    "competitor": "otter",
+    "page": "ccpa-notice",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/chat",
+    "competitor": "otter",
+    "page": "chat",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/data-request-policy",
+    "competitor": "otter",
+    "page": "data-request-policy",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/demo",
+    "competitor": "otter",
+    "page": "demo",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/education",
+    "competitor": "otter",
+    "page": "education",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/education-demo",
+    "competitor": "otter",
+    "page": "education-demo",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/features",
+    "competitor": "otter",
+    "page": "features",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/general-demo",
+    "competitor": "otter",
+    "page": "general-demo",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/googlemeet",
+    "competitor": "otter",
+    "page": "googlemeet",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/job-detail",
+    "competitor": "otter",
+    "page": "job-detail",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/jp",
+    "competitor": "otter",
+    "page": "jp",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/media-kit",
+    "competitor": "otter",
+    "page": "media-kit",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/media-teams-demo",
+    "competitor": "otter",
+    "page": "media-teams-demo",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/meetings",
+    "competitor": "otter",
+    "page": "meetings",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/press",
+    "competitor": "otter",
+    "page": "press",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/pricing",
+    "competitor": "otter",
+    "page": "pricing",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/pricing-demo",
+    "competitor": "otter",
+    "page": "pricing-demo",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/privacy-policy",
+    "competitor": "otter",
+    "page": "privacy-policy",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/privacy-security",
+    "competitor": "otter",
+    "page": "privacy-security",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/product-teams-demo",
+    "competitor": "otter",
+    "page": "product-teams-demo",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/referral-terms",
+    "competitor": "otter",
+    "page": "referral-terms",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/resources",
+    "competitor": "otter",
+    "page": "resources",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/sales",
+    "competitor": "otter",
+    "page": "sales",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/sales-teams-demo",
+    "competitor": "otter",
+    "page": "sales-teams-demo",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/sitemap",
+    "competitor": "otter",
+    "page": "sitemap",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/apps/slack",
+    "competitor": "otter",
+    "page": "slack",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/start-for-free",
+    "competitor": "otter",
+    "page": "start-for-free",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/subprocessors",
+    "competitor": "otter",
+    "page": "subprocessors",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/terms-of-service",
+    "competitor": "otter",
+    "page": "terms-of-service",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/transcription",
+    "competitor": "otter",
+    "page": "transcription",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/googlemeet/uninstall",
+    "competitor": "otter",
+    "page": "uninstall",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/zoom",
+    "competitor": "otter",
+    "page": "zoom",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/integrations",
+    "competitor": "otter",
+    "page": "integrations",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/subscribe-now-demo",
+    "competitor": "otter",
+    "page": "subscribe-now-demo",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/meeting-notes",
+    "competitor": "otter",
+    "page": "meeting-notes",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/gongoffer",
+    "competitor": "otter",
+    "page": "gongoffer",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/meeting-notes-b",
+    "competitor": "otter",
+    "page": "meeting-notes-b",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/meeting-notes-c",
+    "competitor": "otter",
+    "page": "meeting-notes-c",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/how-otter-ai-can-save-you-time-at-work",
+    "competitor": "otter",
+    "page": "how-otter-ai-can-save-you-time-at-work",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/sales-agent",
+    "competitor": "otter",
+    "page": "sales-agent",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/recruiting-agent",
+    "competitor": "otter",
+    "page": "recruiting-agent",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/education-agent",
+    "competitor": "otter",
+    "page": "education-agent",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/media-agent",
+    "competitor": "otter",
+    "page": "media-agent",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/sales-agent/better-than-gong-lp",
+    "competitor": "otter",
+    "page": "better-than-gong-lp",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/sales-agent/better-than-gong-lp-b",
+    "competitor": "otter",
+    "page": "better-than-gong-lp-b",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/sales-agent/better-than-chorus-lp",
+    "competitor": "otter",
+    "page": "better-than-chorus-lp",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/sales-agent/better-than-chorus-lp-b",
+    "competitor": "otter",
+    "page": "better-than-chorus-lp-b",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/sales-agent/close-more-deals-lp",
+    "competitor": "otter",
+    "page": "close-more-deals-lp",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/sales-agent/close-more-deals-lp-b",
+    "competitor": "otter",
+    "page": "close-more-deals-lp-b",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/sales-agent/sales-teams-lp",
+    "competitor": "otter",
+    "page": "sales-teams-lp",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/sales-agent/sales-teams-lp-b",
+    "competitor": "otter",
+    "page": "sales-teams-lp-b",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/sales-agent/win-with-otter-lp",
+    "competitor": "otter",
+    "page": "win-with-otter-lp",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/sales-agent/better-than-fathom-lp",
+    "competitor": "otter",
+    "page": "better-than-fathom-lp",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/sales-agent/better-than-copilot-lp",
+    "competitor": "otter",
+    "page": "better-than-copilot-lp",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/sales-agent/better-than-fireflies-lp",
+    "competitor": "otter",
+    "page": "better-than-fireflies-lp",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/sales-agent/win-with-otter-lp-b",
+    "competitor": "otter",
+    "page": "win-with-otter-lp-b",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/sales-agent/better-than-fathom-lp-b",
+    "competitor": "otter",
+    "page": "better-than-fathom-lp-b",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/sales-agent/better-than-copilot-lp-b",
+    "competitor": "otter",
+    "page": "better-than-copilot-lp-b",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/sales-agent/better-than-fireflies-lp-b",
+    "competitor": "otter",
+    "page": "better-than-fireflies-lp-b",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/software-services-agreement",
+    "competitor": "otter",
+    "page": "software-services-agreement",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/recruiting-demo",
+    "competitor": "otter",
+    "page": "recruiting-demo",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/affiliate",
+    "competitor": "otter",
+    "page": "affiliate",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/recruiting-agent-demo",
+    "competitor": "otter",
+    "page": "recruiting-agent-demo",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/enterprise",
+    "competitor": "otter",
+    "page": "enterprise",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/sdr-agent-demo",
+    "competitor": "otter",
+    "page": "sdr-agent-demo",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/audio-to-text",
+    "competitor": "otter",
+    "page": "audio-to-text",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/youtube-transcript-generator",
+    "competitor": "otter",
+    "page": "youtube-transcript-generator",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/speech-to-text",
+    "competitor": "otter",
+    "page": "speech-to-text",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/mp3-to-text",
+    "competitor": "otter",
+    "page": "mp3-to-text",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/video-to-text",
+    "competitor": "otter",
+    "page": "video-to-text",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/mp4-to-text",
+    "competitor": "otter",
+    "page": "mp4-to-text",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/free-ai-transcription",
+    "competitor": "otter",
+    "page": "free-ai-transcription",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/podcast-transcription",
+    "competitor": "otter",
+    "page": "podcast-transcription",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/sdr-agent",
+    "competitor": "otter",
+    "page": "sdr-agent",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/author/amanda",
+    "competitor": "otter",
+    "page": "amanda",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/author/chang",
+    "competitor": "otter",
+    "page": "chang",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/author/darius-contractor",
+    "competitor": "otter",
+    "page": "darius-contractor",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/author/dennis-park",
+    "competitor": "otter",
+    "page": "dennis-park",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/author/dustin-crawford",
+    "competitor": "otter",
+    "page": "dustin-crawford",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/author/elliot-rogers",
+    "competitor": "otter",
+    "page": "elliot-rogers",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/author/james",
+    "competitor": "otter",
+    "page": "james",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/author/joel",
+    "competitor": "otter",
+    "page": "joel",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/author/josh-gould",
+    "competitor": "otter",
+    "page": "josh-gould",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/author/julie-wu",
+    "competitor": "otter",
+    "page": "julie-wu",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/author/luke-leighfield",
+    "competitor": "otter",
+    "page": "luke-leighfield",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/author/mark-brewer",
+    "competitor": "otter",
+    "page": "mark-brewer",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/author/max-garber",
+    "competitor": "otter",
+    "page": "max-garber",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/author/michael",
+    "competitor": "otter",
+    "page": "michael",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/author/michael-hart",
+    "competitor": "otter",
+    "page": "michael-hart",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/author/misako-izawa",
+    "competitor": "otter",
+    "page": "misako-izawa",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/author/otter",
+    "competitor": "otter",
+    "page": "otter",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/author/richard",
+    "competitor": "otter",
+    "page": "richard",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/author/richard-tasker",
+    "competitor": "otter",
+    "page": "richard-tasker",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/author/ross-rubin",
+    "competitor": "otter",
+    "page": "ross-rubin",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/author/seda-babayan",
+    "competitor": "otter",
+    "page": "seda-babayan",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/author/shaira",
+    "competitor": "otter",
+    "page": "shaira",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/author/simon",
+    "competitor": "otter",
+    "page": "simon",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/author/sydney",
+    "competitor": "otter",
+    "page": "sydney",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/author/tanya",
+    "competitor": "otter",
+    "page": "tanya",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/author/vick-advaney",
+    "competitor": "otter",
+    "page": "vick-advaney",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/tag/ai",
+    "competitor": "otter",
+    "page": "ai",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/tag/customer-stories",
+    "competitor": "otter",
+    "page": "customer-stories",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/tag/how-to",
+    "competitor": "otter",
+    "page": "how-to",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/tag/other",
+    "competitor": "otter",
+    "page": "other",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/tag/otter-podcast",
+    "competitor": "otter",
+    "page": "otter-podcast",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/tag/press-releases",
+    "competitor": "otter",
+    "page": "press-releases",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/tag/product-update",
+    "competitor": "otter",
+    "page": "product-update",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/tag/productivity-hacks",
+    "competitor": "otter",
+    "page": "productivity-hacks",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/tag/sales",
+    "competitor": "otter",
+    "page": "sales",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/tag/yuzasutori",
+    "competitor": "otter",
+    "page": "yuzasutori",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/blog/10-new-years-resolutions-for-productivity-improvement-in-2022",
+    "competitor": "otter",
+    "page": "10-new-years-resolutions-for-productivity-improvement-in-2022",
+    "score": 2
+  },
+  {
+    "url": "https://otter.ai/blog/10-reasons-every-sales-team-should-have-an-ai-meeting-assistant",
+    "competitor": "otter",
+    "page": "10-reasons-every-sales-team-should-have-an-ai-meeting-assistant",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/10-reasons-to-use-otter-meeting-notes-for-office-meetings",
+    "competitor": "otter",
+    "page": "10-reasons-to-use-otter-meeting-notes-for-office-meetings",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/10-tips-to-maximize-your-working-from-home-productivity",
+    "competitor": "otter",
+    "page": "10-tips-to-maximize-your-working-from-home-productivity",
+    "score": 2
+  },
+  {
+    "url": "https://otter.ai/blog/10-ways-entrepreneurs-use-automated-meeting-note-taker-to-build-their-companies",
+    "competitor": "otter",
+    "page": "10-ways-entrepreneurs-use-automated-meeting-note-taker-to-build-their-companies",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/3-creative-ways-to-use-otter",
+    "competitor": "otter",
+    "page": "3-creative-ways-to-use-otter",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/4-note-taking-strategies-for-remote-students",
+    "competitor": "otter",
+    "page": "4-note-taking-strategies-for-remote-students",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/4-ways-otter-can-improve-client-meetings-for-agencies-in-2023",
+    "competitor": "otter",
+    "page": "4-ways-otter-can-improve-client-meetings-for-agencies-in-2023",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/5-ai-superpowers-to-fuel-your-new-year-productivity-blitz",
+    "competitor": "otter",
+    "page": "5-ai-superpowers-to-fuel-your-new-year-productivity-blitz",
+    "score": 2
+  },
+  {
+    "url": "https://otter.ai/blog/5-myths-misconceptions-about-workplace-productivity",
+    "competitor": "otter",
+    "page": "5-myths-misconceptions-about-workplace-productivity",
+    "score": 3
+  },
+  {
+    "url": "https://otter.ai/blog/5-tips-for-productive-meetings",
+    "competitor": "otter",
+    "page": "5-tips-for-productive-meetings",
+    "score": 2
+  },
+  {
+    "url": "https://otter.ai/blog/5-tips-to-overcoming-objections-in-meetings",
+    "competitor": "otter",
+    "page": "5-tips-to-overcoming-objections-in-meetings",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/6-effective-meeting-tips-for-hybrid-teams",
+    "competitor": "otter",
+    "page": "6-effective-meeting-tips-for-hybrid-teams",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/6-productivity-quotes-from-historys-greatest-speeches",
+    "competitor": "otter",
+    "page": "6-productivity-quotes-from-historys-greatest-speeches",
+    "score": 2
+  },
+  {
+    "url": "https://otter.ai/blog/6-tips-to-make-meetings-more-accessible-in-2023",
+    "competitor": "otter",
+    "page": "6-tips-to-make-meetings-more-accessible-in-2023",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/7-best-practices-for-using-online-collaboration-tools",
+    "competitor": "otter",
+    "page": "7-best-practices-for-using-online-collaboration-tools",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/7-meeting-tips-for-a-more-inclusive-work-culture",
+    "competitor": "otter",
+    "page": "7-meeting-tips-for-a-more-inclusive-work-culture",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/a-sprint-planning-meeting-agenda-template-you-can-use-right-away",
+    "competitor": "otter",
+    "page": "a-sprint-planning-meeting-agenda-template-you-can-use-right-away",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/active-listening",
+    "competitor": "otter",
+    "page": "active-listening",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/ahn-sangmin",
+    "competitor": "otter",
+    "page": "ahn-sangmin",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/ai-and-privacy",
+    "competitor": "otter",
+    "page": "ai-and-privacy",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/ai-breakthrough-otter-ai-app-can-transcribe-your-meetings-in-real-time-for-free",
+    "competitor": "otter",
+    "page": "ai-breakthrough-otter-ai-app-can-transcribe-your-meetings-in-real-time-for-free",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/ai-cold-calling",
+    "competitor": "otter",
+    "page": "ai-cold-calling",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/ai-for-accessibility",
+    "competitor": "otter",
+    "page": "ai-for-accessibility",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/ai-for-content-creation",
+    "competitor": "otter",
+    "page": "ai-for-content-creation",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/ai-for-project-management",
+    "competitor": "otter",
+    "page": "ai-for-project-management",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/ai-for-small-businesses",
+    "competitor": "otter",
+    "page": "ai-for-small-businesses",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/ai-in-consulting",
+    "competitor": "otter",
+    "page": "ai-in-consulting",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/ai-in-customer-service",
+    "competitor": "otter",
+    "page": "ai-in-customer-service",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/ai-in-decision-making",
+    "competitor": "otter",
+    "page": "ai-in-decision-making",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/ai-in-education",
+    "competitor": "otter",
+    "page": "ai-in-education",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/ai-in-finance",
+    "competitor": "otter",
+    "page": "ai-in-finance",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/ai-in-market-research",
+    "competitor": "otter",
+    "page": "ai-in-market-research",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/ai-in-marketing",
+    "competitor": "otter",
+    "page": "ai-in-marketing",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/ai-in-the-workplace",
+    "competitor": "otter",
+    "page": "ai-in-the-workplace",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/ai-meeting-assistants-vs-meeting-agents",
+    "competitor": "otter",
+    "page": "ai-meeting-assistants-vs-meeting-agents",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/ai-notetaker-for-in-person-meetings",
+    "competitor": "otter",
+    "page": "ai-notetaker-for-in-person-meetings",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/ai-personal-assistant-for-work",
+    "competitor": "otter",
+    "page": "ai-personal-assistant-for-work",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/ai-productivity-tools",
+    "competitor": "otter",
+    "page": "ai-productivity-tools",
+    "score": 2
+  },
+  {
+    "url": "https://otter.ai/blog/ai-to-summarize-transcripts",
+    "competitor": "otter",
+    "page": "ai-to-summarize-transcripts",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/ai-voice-agents",
+    "competitor": "otter",
+    "page": "ai-voice-agents",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/ai-workflow-automation",
+    "competitor": "otter",
+    "page": "ai-workflow-automation",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/aisense-announces-general-availability-and-premium-version-of-otter-voice-notes-designed-for-business-people-journalists-and-students",
+    "competitor": "otter",
+    "page": "aisense-announces-general-availability-and-premium-version-of-otter-voice-notes-designed-for-business-people-journalists-and-students",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/aisense-announces-otter-brings-power-of-ambient-voice-intelligence-to-everyday-conversations",
+    "competitor": "otter",
+    "page": "aisense-announces-otter-brings-power-of-ambient-voice-intelligence-to-everyday-conversations",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/aisense-raises-10m-series-a-to-power-ambient-voice-intelligence",
+    "competitor": "otter",
+    "page": "aisense-raises-10m-series-a-to-power-ambient-voice-intelligence",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/annual-general-meeting",
+    "competitor": "otter",
+    "page": "annual-general-meeting",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/assistant",
+    "competitor": "otter",
+    "page": "assistant",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/asynchronous-communication",
+    "competitor": "otter",
+    "page": "asynchronous-communication",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/back-to-work",
+    "competitor": "otter",
+    "page": "back-to-work",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/bant-sales-framework",
+    "competitor": "otter",
+    "page": "bant-sales-framework",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/become-a-consultant-in-2023-with-these-8-tips",
+    "competitor": "otter",
+    "page": "become-a-consultant-in-2023-with-these-8-tips",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/behind-the-scenes-with-the-podcasters-who-use-otter",
+    "competitor": "otter",
+    "page": "behind-the-scenes-with-the-podcasters-who-use-otter",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/benefits-of-online-education",
+    "competitor": "otter",
+    "page": "benefits-of-online-education",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/best-ai-agents",
+    "competitor": "otter",
+    "page": "best-ai-agents",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/best-ai-meeting-notetakers-and-assistants-in-2025",
+    "competitor": "otter",
+    "page": "best-ai-meeting-notetakers-and-assistants-in-2025",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/best-ai-summarizers",
+    "competitor": "otter",
+    "page": "best-ai-summarizers",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/best-ai-tools-for-students",
+    "competitor": "otter",
+    "page": "best-ai-tools-for-students",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/best-ai-tools-for-teachers",
+    "competitor": "otter",
+    "page": "best-ai-tools-for-teachers",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/best-automatic-transcription-tools",
+    "competitor": "otter",
+    "page": "best-automatic-transcription-tools",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/best-chatgpt-alternatives",
+    "competitor": "otter",
+    "page": "best-chatgpt-alternatives",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/best-daily-helpers-of-2018-google-play",
+    "competitor": "otter",
+    "page": "best-daily-helpers-of-2018-google-play",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/best-follow-up-emails",
+    "competitor": "otter",
+    "page": "best-follow-up-emails",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/best-note-taking-tools",
+    "competitor": "otter",
+    "page": "best-note-taking-tools",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/best-onenote-alternative-review-of-top-note-taking-apps",
+    "competitor": "otter",
+    "page": "best-onenote-alternative-review-of-top-note-taking-apps",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/best-productivity-apps",
+    "competitor": "otter",
+    "page": "best-productivity-apps",
+    "score": 2
+  },
+  {
+    "url": "https://otter.ai/blog/best-productivity-hacks",
+    "competitor": "otter",
+    "page": "best-productivity-hacks",
+    "score": 2
+  },
+  {
+    "url": "https://otter.ai/blog/best-productivity-planners-11-great-options-for-2022",
+    "competitor": "otter",
+    "page": "best-productivity-planners-11-great-options-for-2022",
+    "score": 2
+  },
+  {
+    "url": "https://otter.ai/blog/best-speech-to-text-app",
+    "competitor": "otter",
+    "page": "best-speech-to-text-app",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/best-way-to-transcribe-video-to-text",
+    "competitor": "otter",
+    "page": "best-way-to-transcribe-video-to-text",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/bonjour-hola-otter-ai-expands-ai-meeting-assistant-to-support-french-and-spanish",
+    "competitor": "otter",
+    "page": "bonjour-hola-otter-ai-expands-ai-meeting-assistant-to-support-french-and-spanish",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/boost-productivity-with-an-ai-notetaker-key-benefits-and-tips",
+    "competitor": "otter",
+    "page": "boost-productivity-with-an-ai-notetaker-key-benefits-and-tips",
+    "score": 2
+  },
+  {
+    "url": "https://otter.ai/blog/building-a-high-performance-sales-team-best-practices-and-strategies",
+    "competitor": "otter",
+    "page": "building-a-high-performance-sales-team-best-practices-and-strategies",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/call-transcription",
+    "competitor": "otter",
+    "page": "call-transcription",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/candidate-interview",
+    "competitor": "otter",
+    "page": "candidate-interview",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/challenges-of-online-learning",
+    "competitor": "otter",
+    "page": "challenges-of-online-learning",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/challenges-of-working-remotely",
+    "competitor": "otter",
+    "page": "challenges-of-working-remotely",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/check-in-meetings",
+    "competitor": "otter",
+    "page": "check-in-meetings",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/client-communication",
+    "competitor": "otter",
+    "page": "client-communication",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/clubdeck",
+    "competitor": "otter",
+    "page": "clubdeck",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/cold-call-scripts",
+    "competitor": "otter",
+    "page": "cold-call-scripts",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/college-students-use-artificial-intelligence-powered-note-taker-2",
+    "competitor": "otter",
+    "page": "college-students-use-artificial-intelligence-powered-note-taker-2",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/comments",
+    "competitor": "otter",
+    "page": "comments",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/communication-plan",
+    "competitor": "otter",
+    "page": "communication-plan",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/conducting-a-successful-sales-discovery-call",
+    "competitor": "otter",
+    "page": "conducting-a-successful-sales-discovery-call",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/content-creators",
+    "competitor": "otter",
+    "page": "content-creators",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/conversational-ai",
+    "competitor": "otter",
+    "page": "conversational-ai",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/cool",
+    "competitor": "otter",
+    "page": "cool",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/cornell-note-taking-method",
+    "competitor": "otter",
+    "page": "cornell-note-taking-method",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/creative-check-in-questions-for-meetings",
+    "competitor": "otter",
+    "page": "creative-check-in-questions-for-meetings",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/custom-vocabulary",
+    "competitor": "otter",
+    "page": "custom-vocabulary",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/customer-retention-strategies",
+    "competitor": "otter",
+    "page": "customer-retention-strategies",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/dale-beaumont-recommends-otter-at-youpreneur-summit",
+    "competitor": "otter",
+    "page": "dale-beaumont-recommends-otter-at-youpreneur-summit",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/data-driven-sales-how-to-leverage-data-analytics-to-drive-sales-performance",
+    "competitor": "otter",
+    "page": "data-driven-sales-how-to-leverage-data-analytics-to-drive-sales-performance",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/descript-alternatives",
+    "competitor": "otter",
+    "page": "descript-alternatives",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/distance-learning-statistics",
+    "competitor": "otter",
+    "page": "distance-learning-statistics",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/distributed-teams-guide",
+    "competitor": "otter",
+    "page": "distributed-teams-guide",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/dont-zoom-in-too-close",
+    "competitor": "otter",
+    "page": "dont-zoom-in-too-close",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/easy",
+    "competitor": "otter",
+    "page": "easy",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/effective-meeting-notes-with-templates-and-samples",
+    "competitor": "otter",
+    "page": "effective-meeting-notes-with-templates-and-samples",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/featured-business-strategist-lucie-chiochetti",
+    "competitor": "otter",
+    "page": "featured-business-strategist-lucie-chiochetti",
+    "score": 2
+  },
+  {
+    "url": "https://otter.ai/blog/featured-ceo-james-routledge",
+    "competitor": "otter",
+    "page": "featured-ceo-james-routledge",
+    "score": 2
+  },
+  {
+    "url": "https://otter.ai/blog/featured-ceo-joanne-brooks",
+    "competitor": "otter",
+    "page": "featured-ceo-joanne-brooks",
+    "score": 2
+  },
+  {
+    "url": "https://otter.ai/blog/featured-educator-adam-burns",
+    "competitor": "otter",
+    "page": "featured-educator-adam-burns",
+    "score": 2
+  },
+  {
+    "url": "https://otter.ai/blog/featured-educator-juliet-inyang",
+    "competitor": "otter",
+    "page": "featured-educator-juliet-inyang",
+    "score": 2
+  },
+  {
+    "url": "https://otter.ai/blog/featured-entrepreneur-amy-modglin",
+    "competitor": "otter",
+    "page": "featured-entrepreneur-amy-modglin",
+    "score": 2
+  },
+  {
+    "url": "https://otter.ai/blog/featured-entrepreneur-jason-gurwin",
+    "competitor": "otter",
+    "page": "featured-entrepreneur-jason-gurwin",
+    "score": 2
+  },
+  {
+    "url": "https://otter.ai/blog/featured-entrepreneur-kevin-mccann",
+    "competitor": "otter",
+    "page": "featured-entrepreneur-kevin-mccann",
+    "score": 2
+  },
+  {
+    "url": "https://otter.ai/blog/featured-entrepreneur-paulina-karpis",
+    "competitor": "otter",
+    "page": "featured-entrepreneur-paulina-karpis",
+    "score": 2
+  },
+  {
+    "url": "https://otter.ai/blog/featured-freelance-management-consultant-paul-rogers",
+    "competitor": "otter",
+    "page": "featured-freelance-management-consultant-paul-rogers",
+    "score": 2
+  },
+  {
+    "url": "https://otter.ai/blog/featured-marketer-dupe-ajayi",
+    "competitor": "otter",
+    "page": "featured-marketer-dupe-ajayi",
+    "score": 2
+  },
+  {
+    "url": "https://otter.ai/blog/featured-nursing-student-veronica-conley",
+    "competitor": "otter",
+    "page": "featured-nursing-student-veronica-conley",
+    "score": 2
+  },
+  {
+    "url": "https://otter.ai/blog/featured-otter-user-emilio-harrison",
+    "competitor": "otter",
+    "page": "featured-otter-user-emilio-harrison",
+    "score": 2
+  },
+  {
+    "url": "https://otter.ai/blog/featured-otter-user-jeremy-brodeur",
+    "competitor": "otter",
+    "page": "featured-otter-user-jeremy-brodeur",
+    "score": 2
+  },
+  {
+    "url": "https://otter.ai/blog/featured-phd-candidate-tammy-clemons",
+    "competitor": "otter",
+    "page": "featured-phd-candidate-tammy-clemons",
+    "score": 2
+  },
+  {
+    "url": "https://otter.ai/blog/featured-product-manager-megan-huynh",
+    "competitor": "otter",
+    "page": "featured-product-manager-megan-huynh",
+    "score": 3
+  },
+  {
+    "url": "https://otter.ai/blog/featured-student-andrea-bossi",
+    "competitor": "otter",
+    "page": "featured-student-andrea-bossi",
+    "score": 2
+  },
+  {
+    "url": "https://otter.ai/blog/featured-student-ben-ouyang",
+    "competitor": "otter",
+    "page": "featured-student-ben-ouyang",
+    "score": 2
+  },
+  {
+    "url": "https://otter.ai/blog/featured-student-catherine-o-neil",
+    "competitor": "otter",
+    "page": "featured-student-catherine-o-neil",
+    "score": 2
+  },
+  {
+    "url": "https://otter.ai/blog/featured-student-jo-ann-christina",
+    "competitor": "otter",
+    "page": "featured-student-jo-ann-christina",
+    "score": 2
+  },
+  {
+    "url": "https://otter.ai/blog/featured-student-michaela-oneill",
+    "competitor": "otter",
+    "page": "featured-student-michaela-oneill",
+    "score": 2
+  },
+  {
+    "url": "https://otter.ai/blog/featured-student-otter-clara-kelley",
+    "competitor": "otter",
+    "page": "featured-student-otter-clara-kelley",
+    "score": 2
+  },
+  {
+    "url": "https://otter.ai/blog/featured-student-otter-elizabeth-moseley",
+    "competitor": "otter",
+    "page": "featured-student-otter-elizabeth-moseley",
+    "score": 2
+  },
+  {
+    "url": "https://otter.ai/blog/featured-student-otter-elizabeth-pagliei",
+    "competitor": "otter",
+    "page": "featured-student-otter-elizabeth-pagliei",
+    "score": 2
+  },
+  {
+    "url": "https://otter.ai/blog/featured-student-otter-hailey-dolak",
+    "competitor": "otter",
+    "page": "featured-student-otter-hailey-dolak",
+    "score": 2
+  },
+  {
+    "url": "https://otter.ai/blog/featured-student-otter-justin-felder",
+    "competitor": "otter",
+    "page": "featured-student-otter-justin-felder",
+    "score": 2
+  },
+  {
+    "url": "https://otter.ai/blog/featured-student-otter-kahini-mehta",
+    "competitor": "otter",
+    "page": "featured-student-otter-kahini-mehta",
+    "score": 2
+  },
+  {
+    "url": "https://otter.ai/blog/featured-student-otter-oj-oleka",
+    "competitor": "otter",
+    "page": "featured-student-otter-oj-oleka",
+    "score": 2
+  },
+  {
+    "url": "https://otter.ai/blog/featured-student-patricio-henriquez",
+    "competitor": "otter",
+    "page": "featured-student-patricio-henriquez",
+    "score": 2
+  },
+  {
+    "url": "https://otter.ai/blog/featured-student-peter-nicieja",
+    "competitor": "otter",
+    "page": "featured-student-peter-nicieja",
+    "score": 2
+  },
+  {
+    "url": "https://otter.ai/blog/featured-ux-designer-heather-applegate",
+    "competitor": "otter",
+    "page": "featured-ux-designer-heather-applegate",
+    "score": 2
+  },
+  {
+    "url": "https://otter.ai/blog/featured-ux-designer-peter-kattan",
+    "competitor": "otter",
+    "page": "featured-ux-designer-peter-kattan",
+    "score": 2
+  },
+  {
+    "url": "https://otter.ai/blog/featured-ux-designer-tina-bizaca",
+    "competitor": "otter",
+    "page": "featured-ux-designer-tina-bizaca",
+    "score": 2
+  },
+  {
+    "url": "https://otter.ai/blog/featured-video-producer-lucinda-emms",
+    "competitor": "otter",
+    "page": "featured-video-producer-lucinda-emms",
+    "score": 2
+  },
+  {
+    "url": "https://otter.ai/blog/free-customizable-team-meeting-agenda-template-for-all-industries",
+    "competitor": "otter",
+    "page": "free-customizable-team-meeting-agenda-template-for-all-industries",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/from-video-meeting-to-slack-otter-app-for-slack-uses-ai-to-bridge-the-work-communications-gap",
+    "competitor": "otter",
+    "page": "from-video-meeting-to-slack-otter-app-for-slack-uses-ai-to-bridge-the-work-communications-gap",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/frost-sullivan-award",
+    "competitor": "otter",
+    "page": "frost-sullivan-award",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/global-mobile-awards-2019-nominee-shortlist",
+    "competitor": "otter",
+    "page": "global-mobile-awards-2019-nominee-shortlist",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/good-interview-notes",
+    "competitor": "otter",
+    "page": "good-interview-notes",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/google-calendar-extensions",
+    "competitor": "otter",
+    "page": "google-calendar-extensions",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/goroman",
+    "competitor": "otter",
+    "page": "goroman",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/grace-miki",
+    "competitor": "otter",
+    "page": "grace-miki",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/guide-to-recording-interviews",
+    "competitor": "otter",
+    "page": "guide-to-recording-interviews",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/home-update",
+    "competitor": "otter",
+    "page": "home-update",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/how-accurate-is-otter",
+    "competitor": "otter",
+    "page": "how-accurate-is-otter",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/how-do-you-otter",
+    "competitor": "otter",
+    "page": "how-do-you-otter",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/how-journalists-are-using-otter",
+    "competitor": "otter",
+    "page": "how-journalists-are-using-otter",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/how-journalists-are-using-otter-michael-brein",
+    "competitor": "otter",
+    "page": "how-journalists-are-using-otter-michael-brein",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/how-managers-can-improve-work-processes-with-ai-strategies-and-best-practices",
+    "competitor": "otter",
+    "page": "how-managers-can-improve-work-processes-with-ai-strategies-and-best-practices",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/how-otter-helps-companies-transition-to-remote-work",
+    "competitor": "otter",
+    "page": "how-otter-helps-companies-transition-to-remote-work",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/how-sales-teams-can-use-the-bant-framework-in-concert-with-otterpilot-for-sales-to-increase-sales",
+    "competitor": "otter",
+    "page": "how-sales-teams-can-use-the-bant-framework-in-concert-with-otterpilot-for-sales-to-increase-sales",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/how-students-are-using-otter-in-and-out-of-the-classroom",
+    "competitor": "otter",
+    "page": "how-students-are-using-otter-in-and-out-of-the-classroom",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/how-to-add-captions-to-video",
+    "competitor": "otter",
+    "page": "how-to-add-captions-to-video",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/how-to-ask-ai-a-question",
+    "competitor": "otter",
+    "page": "how-to-ask-ai-a-question",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/how-to-become-a-better-interviewer",
+    "competitor": "otter",
+    "page": "how-to-become-a-better-interviewer",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/how-to-choose-the-best-note-taking-software-in-2022",
+    "competitor": "otter",
+    "page": "how-to-choose-the-best-note-taking-software-in-2022",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/how-to-choose-the-right-productivity-software-for-your-company",
+    "competitor": "otter",
+    "page": "how-to-choose-the-right-productivity-software-for-your-company",
+    "score": 2
+  },
+  {
+    "url": "https://otter.ai/blog/how-to-convert-mp3-to-text",
+    "competitor": "otter",
+    "page": "how-to-convert-mp3-to-text",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/how-to-convert-mp4-to-text",
+    "competitor": "otter",
+    "page": "how-to-convert-mp4-to-text",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/how-to-convert-wav-to-text",
+    "competitor": "otter",
+    "page": "how-to-convert-wav-to-text",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/how-to-create-an-effective-sales-meeting-agenda",
+    "competitor": "otter",
+    "page": "how-to-create-an-effective-sales-meeting-agenda",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/how-to-create-an-icp-for-sales",
+    "competitor": "otter",
+    "page": "how-to-create-an-icp-for-sales",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/how-to-generate-a-transcript-for-a-youtube-video",
+    "competitor": "otter",
+    "page": "how-to-generate-a-transcript-for-a-youtube-video",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/how-to-get-a-transcript-of-a-podcast",
+    "competitor": "otter",
+    "page": "how-to-get-a-transcript-of-a-podcast",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/how-to-host-a-webinar",
+    "competitor": "otter",
+    "page": "how-to-host-a-webinar",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/how-to-increase-buy-in-for-new-team-collaboration-tools",
+    "competitor": "otter",
+    "page": "how-to-increase-buy-in-for-new-team-collaboration-tools",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/how-to-live-transcribe-zoom-meetings-with-otter-ai-and-soundflower-on-mac",
+    "competitor": "otter",
+    "page": "how-to-live-transcribe-zoom-meetings-with-otter-ai-and-soundflower-on-mac",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/how-to-measure-productivity-in-your-remote-workforce",
+    "competitor": "otter",
+    "page": "how-to-measure-productivity-in-your-remote-workforce",
+    "score": 2
+  },
+  {
+    "url": "https://otter.ai/blog/how-to-prepare-for-a-meeting",
+    "competitor": "otter",
+    "page": "how-to-prepare-for-a-meeting",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/how-to-record-a-google-meet-call",
+    "competitor": "otter",
+    "page": "how-to-record-a-google-meet-call",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/how-to-record-a-microsoft-teams-meeting",
+    "competitor": "otter",
+    "page": "how-to-record-a-microsoft-teams-meeting",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/how-to-record-a-webinar",
+    "competitor": "otter",
+    "page": "how-to-record-a-webinar",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/how-to-run-a-meeting",
+    "competitor": "otter",
+    "page": "how-to-run-a-meeting",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/how-to-run-a-scrum-meeting",
+    "competitor": "otter",
+    "page": "how-to-run-a-scrum-meeting",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/how-to-set-team-goals",
+    "competitor": "otter",
+    "page": "how-to-set-team-goals",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/how-to-start-a-meeting",
+    "competitor": "otter",
+    "page": "how-to-start-a-meeting",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/how-to-transcribe-a-live-video-on-a-pc-with-otter-ai",
+    "competitor": "otter",
+    "page": "how-to-transcribe-a-live-video-on-a-pc-with-otter-ai",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/how-to-transcribe-a-video-on-a-mac-with-otter-ai",
+    "competitor": "otter",
+    "page": "how-to-transcribe-a-video-on-a-mac-with-otter-ai",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/how-to-transcribe-any-video-meetings-with-otter-ai",
+    "competitor": "otter",
+    "page": "how-to-transcribe-any-video-meetings-with-otter-ai",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/how-to-transcribe-any-videos-with-otter-ai",
+    "competitor": "otter",
+    "page": "how-to-transcribe-any-videos-with-otter-ai",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/how-to-transcribe-cisco-webex-meetings-with-otter-ai",
+    "competitor": "otter",
+    "page": "how-to-transcribe-cisco-webex-meetings-with-otter-ai",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/how-to-type-faster",
+    "competitor": "otter",
+    "page": "how-to-type-faster",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/how-to-use-digital-tools-to-help-teams-free-up-space-for-mental-health",
+    "competitor": "otter",
+    "page": "how-to-use-digital-tools-to-help-teams-free-up-space-for-mental-health",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/how-to-video-conference-from-home",
+    "competitor": "otter",
+    "page": "how-to-video-conference-from-home",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/how-to-write-a-business-plan",
+    "competitor": "otter",
+    "page": "how-to-write-a-business-plan",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/how-to-write-a-follow-up-email-from-a-discovery-call",
+    "competitor": "otter",
+    "page": "how-to-write-a-follow-up-email-from-a-discovery-call",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/how-to-write-a-great-board-meeting-agenda",
+    "competitor": "otter",
+    "page": "how-to-write-a-great-board-meeting-agenda",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/how-to-write-a-one-on-one-meeting-agenda",
+    "competitor": "otter",
+    "page": "how-to-write-a-one-on-one-meeting-agenda",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/how-to-write-an-agenda-for-a-meeting",
+    "competitor": "otter",
+    "page": "how-to-write-an-agenda-for-a-meeting",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/how-to-write-effective-ai-prompts",
+    "competitor": "otter",
+    "page": "how-to-write-effective-ai-prompts",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/how-you-can-use-ai-to-uplevel-your-recruiting-efforts-at-your-company",
+    "competitor": "otter",
+    "page": "how-you-can-use-ai-to-uplevel-your-recruiting-efforts-at-your-company",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/improve-collaboration-for-your-company-all-hands-calls",
+    "competitor": "otter",
+    "page": "improve-collaboration-for-your-company-all-hands-calls",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/in-otter-words-edith-yeung",
+    "competitor": "otter",
+    "page": "in-otter-words-edith-yeung",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/in-otter-words-kitty-kolding",
+    "competitor": "otter",
+    "page": "in-otter-words-kitty-kolding",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/in-otter-words-sam-lessin",
+    "competitor": "otter",
+    "page": "in-otter-words-sam-lessin",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/in-otter-words-tim-draper",
+    "competitor": "otter",
+    "page": "in-otter-words-tim-draper",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/increasing-productivity-in-meetings-with-an-ai-meeting-assistant",
+    "competitor": "otter",
+    "page": "increasing-productivity-in-meetings-with-an-ai-meeting-assistant",
+    "score": 2
+  },
+  {
+    "url": "https://otter.ai/blog/interview-transcript-tools-and-examples",
+    "competitor": "otter",
+    "page": "interview-transcript-tools-and-examples",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/is-it-illegal-to-record-someone-without-their-permission",
+    "competitor": "otter",
+    "page": "is-it-illegal-to-record-someone-without-their-permission",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/jeremy-caplan-on-otter-and-ai-for-journalists",
+    "competitor": "otter",
+    "page": "jeremy-caplan-on-otter-and-ai-for-journalists",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/journalists-tools-for-productivity",
+    "competitor": "otter",
+    "page": "journalists-tools-for-productivity",
+    "score": 2
+  },
+  {
+    "url": "https://otter.ai/blog/jp-faq",
+    "competitor": "otter",
+    "page": "jp-faq",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/jp-how-to-use",
+    "competitor": "otter",
+    "page": "jp-how-to-use",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/kickoff-meetings",
+    "competitor": "otter",
+    "page": "kickoff-meetings",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/komentoji-neng",
+    "competitor": "otter",
+    "page": "komentoji-neng",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/lecture-recording-apps",
+    "competitor": "otter",
+    "page": "lecture-recording-apps",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/level-10-meeting",
+    "competitor": "otter",
+    "page": "level-10-meeting",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/live-transcribe-zoom-webinars-with-otter-ai",
+    "competitor": "otter",
+    "page": "live-transcribe-zoom-webinars-with-otter-ai",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/live-transcribing-zoom-microsoft-teams-and-google-meet-using-otterpilot",
+    "competitor": "otter",
+    "page": "live-transcribing-zoom-microsoft-teams-and-google-meet-using-otterpilot",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/login-help",
+    "competitor": "otter",
+    "page": "login-help",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/long-time-zoom-chief-revenue-officer-greg-holmes-joins-otter-ai-advisory-board",
+    "competitor": "otter",
+    "page": "long-time-zoom-chief-revenue-officer-greg-holmes-joins-otter-ai-advisory-board",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/may-1-press-secretary-kayleigh-mcenany-holds-a-briefing",
+    "competitor": "otter",
+    "page": "may-1-press-secretary-kayleigh-mcenany-holds-a-briefing",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/meddpicc",
+    "competitor": "otter",
+    "page": "meddpicc",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/meet-the-new-otter",
+    "competitor": "otter",
+    "page": "meet-the-new-otter",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/meet-the-new-otter-the-one-stop-for-meeting-needs-for-the-half-billion-hybrid-work-professionals",
+    "competitor": "otter",
+    "page": "meet-the-new-otter-the-one-stop-for-meeting-needs-for-the-half-billion-hybrid-work-professionals",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/meeting-cadence",
+    "competitor": "otter",
+    "page": "meeting-cadence",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/meeting-facilitator",
+    "competitor": "otter",
+    "page": "meeting-facilitator",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/meeting-icebreakers",
+    "competitor": "otter",
+    "page": "meeting-icebreakers",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/meeting-invitation-email",
+    "competitor": "otter",
+    "page": "meeting-invitation-email",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/meeting-notes-template-with-action-items",
+    "competitor": "otter",
+    "page": "meeting-notes-template-with-action-items",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/meeting-recap",
+    "competitor": "otter",
+    "page": "meeting-recap",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/meeting-statistics",
+    "competitor": "otter",
+    "page": "meeting-statistics",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/meeting-summary",
+    "competitor": "otter",
+    "page": "meeting-summary",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/microsoft-word-docx-ekusupototozi-dong-gai-xing-fu-kisrt",
+    "competitor": "otter",
+    "page": "microsoft-word-docx-ekusupototozi-dong-gai-xing-fu-kisrt",
+    "score": 2
+  },
+  {
+    "url": "https://otter.ai/blog/neil-mascarenhas",
+    "competitor": "otter",
+    "page": "neil-mascarenhas",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/new-chief-design-officer-and-strategic-technology-advisors",
+    "competitor": "otter",
+    "page": "new-chief-design-officer-and-strategic-technology-advisors",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/new-otter-r-chrome-extension-makes-it-easier-than-ever-to-otterpilot-tm-your-zoom-and-google-meet-meetings-with-an-ai-powered-assistant",
+    "competitor": "otter",
+    "page": "new-otter-r-chrome-extension-makes-it-easier-than-ever-to-otterpilot-tm-your-zoom-and-google-meet-meetings-with-an-ai-powered-assistant",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/nishida-munechika",
+    "competitor": "otter",
+    "page": "nishida-munechika",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/note-taking-tips-and-to-do-lists-how-to-keep-on-track-this-holiday-season",
+    "competitor": "otter",
+    "page": "note-taking-tips-and-to-do-lists-how-to-keep-on-track-this-holiday-season",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/objection-handling",
+    "competitor": "otter",
+    "page": "objection-handling",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/one-on-one-questions",
+    "competitor": "otter",
+    "page": "one-on-one-questions",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/one-third-of-meetings-are-unnecessary-costing-companies-millions-and-no-one-is-happy-about-it",
+    "competitor": "otter",
+    "page": "one-third-of-meetings-are-unnecessary-costing-companies-millions-and-no-one-is-happy-about-it",
+    "score": 2
+  },
+  {
+    "url": "https://otter.ai/blog/online-learning-strategies",
+    "competitor": "otter",
+    "page": "online-learning-strategies",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/online-teaching-strategies",
+    "competitor": "otter",
+    "page": "online-teaching-strategies",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/otter-a-powerful-tool-for-professional-events",
+    "competitor": "otter",
+    "page": "otter-a-powerful-tool-for-professional-events",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/otter-advantage",
+    "competitor": "otter",
+    "page": "otter-advantage",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/otter-ai-achieves-hipaa-compliance",
+    "competitor": "otter",
+    "page": "otter-ai-achieves-hipaa-compliance",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/otter-ai-achieves-soc-2-type-ii-attestation-report",
+    "competitor": "otter",
+    "page": "otter-ai-achieves-soc-2-type-ii-attestation-report",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/otter-ai-adds-custom-vocabulary-to-otter-voice-notes-ai-app-for-ios-android-and-web",
+    "competitor": "otter",
+    "page": "otter-ai-adds-custom-vocabulary-to-otter-voice-notes-ai-app-for-ios-android-and-web",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/otter-ai-announces-otter-for-education-at-educause",
+    "competitor": "otter",
+    "page": "otter-ai-announces-otter-for-education-at-educause",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/otter-ai-announces-otter-for-teams-bringing-ai-powered-collaboration-assistant-to-businesses",
+    "competitor": "otter",
+    "page": "otter-ai-announces-otter-for-teams-bringing-ai-powered-collaboration-assistant-to-businesses",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/otter-ai-appoints-new-chief-growth-officer-as-viral-growth-triples",
+    "competitor": "otter",
+    "page": "otter-ai-appoints-new-chief-growth-officer-as-viral-growth-triples",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/otter-ai-asana-integration",
+    "competitor": "otter",
+    "page": "otter-ai-asana-integration",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/otter-ai-breaks-100m-arr-barrier-and-transforms-business-meetings-launching-industry-first-ai-meeting-agent-suite",
+    "competitor": "otter",
+    "page": "otter-ai-breaks-100m-arr-barrier-and-transforms-business-meetings-launching-industry-first-ai-meeting-agent-suite",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/otter-ai-brings-new-ai-capabilities-to-zoom-customers-at-zoomtopia",
+    "competitor": "otter",
+    "page": "otter-ai-brings-new-ai-capabilities-to-zoom-customers-at-zoomtopia",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/otter-ai-chat-ai-powered-meeting-assistant",
+    "competitor": "otter",
+    "page": "otter-ai-chat-ai-powered-meeting-assistant",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/otter-ai-chat-demo",
+    "competitor": "otter",
+    "page": "otter-ai-chat-demo",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/otter-ai-chat-more-intelligent-and-collaborative-than-chatgpt-for-your-everyday-team-meetings",
+    "competitor": "otter",
+    "page": "otter-ai-chat-more-intelligent-and-collaborative-than-chatgpt-for-your-everyday-team-meetings",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/otter-ai-chat-unlocking-hidden-gems-across-all-your-meetings",
+    "competitor": "otter",
+    "page": "otter-ai-chat-unlocking-hidden-gems-across-all-your-meetings",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/otter-ai-chrome-extension-for-google-meet-and-google-calendar",
+    "competitor": "otter",
+    "page": "otter-ai-chrome-extension-for-google-meet-and-google-calendar",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/otter-ai-clickup-integration",
+    "competitor": "otter",
+    "page": "otter-ai-clickup-integration",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/otter-ai-dropbox-integration",
+    "competitor": "otter",
+    "page": "otter-ai-dropbox-integration",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/otter-ai-google-calendar-integration",
+    "competitor": "otter",
+    "page": "otter-ai-google-calendar-integration",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/otter-ai-google-docs-integration",
+    "competitor": "otter",
+    "page": "otter-ai-google-docs-integration",
+    "score": 2
+  },
+  {
+    "url": "https://otter.ai/blog/otter-ai-justcall-integration",
+    "competitor": "otter",
+    "page": "otter-ai-justcall-integration",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/otter-ai-launches-live-notes-and-captions-for-100-million-daily-users-of-google-meet",
+    "competitor": "otter",
+    "page": "otter-ai-launches-live-notes-and-captions-for-100-million-daily-users-of-google-meet",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/otter-ai-launches-virtual-events-collaboration-service",
+    "competitor": "otter",
+    "page": "otter-ai-launches-virtual-events-collaboration-service",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/otter-ai-microsoft-outlook-integration",
+    "competitor": "otter",
+    "page": "otter-ai-microsoft-outlook-integration",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/otter-ai-new-feature-my-action-items",
+    "competitor": "otter",
+    "page": "otter-ai-new-feature-my-action-items",
+    "score": 2
+  },
+  {
+    "url": "https://otter.ai/blog/otter-ai-notion-integration",
+    "competitor": "otter",
+    "page": "otter-ai-notion-integration",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/otter-ai-offers-covid-19-relief-for-smbs-educators-and-teams-working-from-home",
+    "competitor": "otter",
+    "page": "otter-ai-offers-covid-19-relief-for-smbs-educators-and-teams-working-from-home",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/otter-ai-partners-with-ntt-docomo",
+    "competitor": "otter",
+    "page": "otter-ai-partners-with-ntt-docomo",
+    "score": 2
+  },
+  {
+    "url": "https://otter.ai/blog/otter-ai-releases-live-interactive-transcripts-for-zoom-to-support-remote-work-and-distance-learning",
+    "competitor": "otter",
+    "page": "otter-ai-releases-live-interactive-transcripts-for-zoom-to-support-remote-work-and-distance-learning",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/otter-ai-revolutionizes-sales-with-groundbreaking-ai-assistant-now-companies-can-leverage-ai-to-generate-more-revenue-by-increasing-productivity-by-up-to-33",
+    "competitor": "otter",
+    "page": "otter-ai-revolutionizes-sales-with-groundbreaking-ai-assistant-now-companies-can-leverage-ai-to-generate-more-revenue-by-increasing-productivity-by-up-to-33",
+    "score": 2
+  },
+  {
+    "url": "https://otter.ai/blog/otter-ai-selected-by-dropbox-for-media-partnership-to-collaborate-manage-and-search-video-files",
+    "competitor": "otter",
+    "page": "otter-ai-selected-by-dropbox-for-media-partnership-to-collaborate-manage-and-search-video-files",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/otter-ai-selected-for-ai-powered-zoom-live-transcriptions",
+    "competitor": "otter",
+    "page": "otter-ai-selected-for-ai-powered-zoom-live-transcriptions",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/otter-ai-showcases-ai-powered-live-transcription-at-usda-event-in-support-of-global-accessibility-awareness-day-gaad",
+    "competitor": "otter",
+    "page": "otter-ai-showcases-ai-powered-live-transcription-at-usda-event-in-support-of-global-accessibility-awareness-day-gaad",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/otter-ai-takes-aim-at-goliath-with-new-meeting-genai-launch-slingshots-past-microsoft-copilot-to-redefine-ai-meeting-intelligence",
+    "competitor": "otter",
+    "page": "otter-ai-takes-aim-at-goliath-with-new-meeting-genai-launch-slingshots-past-microsoft-copilot-to-redefine-ai-meeting-intelligence",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/otter-ai-trello-integration",
+    "competitor": "otter",
+    "page": "otter-ai-trello-integration",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/otter-ai-vs-gong-io-which-ai-sales-assistant-is-right-for-your-team",
+    "competitor": "otter",
+    "page": "otter-ai-vs-gong-io-which-ai-sales-assistant-is-right-for-your-team",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/otter-ai-zapier-integration",
+    "competitor": "otter",
+    "page": "otter-ai-zapier-integration",
+    "score": 2
+  },
+  {
+    "url": "https://otter.ai/blog/otter-assistant-for-google-meet",
+    "competitor": "otter",
+    "page": "otter-assistant-for-google-meet",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/otter-assistant-for-microsoft-teams",
+    "competitor": "otter",
+    "page": "otter-assistant-for-microsoft-teams",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/otter-brings-ai-to-the-campus",
+    "competitor": "otter",
+    "page": "otter-brings-ai-to-the-campus",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/otter-chrome-extension-makes-adding-meeting-notes-to-google-calendar-invites-easy",
+    "competitor": "otter",
+    "page": "otter-chrome-extension-makes-adding-meeting-notes-to-google-calendar-invites-easy",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/otter-dropbox-integration",
+    "competitor": "otter",
+    "page": "otter-dropbox-integration",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/otter-for-accessibility-a-universal-tool-that-meets-specific-needs-for-people-with-disabilities",
+    "competitor": "otter",
+    "page": "otter-for-accessibility-a-universal-tool-that-meets-specific-needs-for-people-with-disabilities",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/otter-for-education-transforms-remote-learning-2",
+    "competitor": "otter",
+    "page": "otter-for-education-transforms-remote-learning-2",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/otter-helps-students-and-teachers-transition-to-distance-learning",
+    "competitor": "otter",
+    "page": "otter-helps-students-and-teachers-transition-to-distance-learning",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/otter-is-the-leading-ai-meeting-assistant-hitting-50-million-meetings-summaries-milestone",
+    "competitor": "otter",
+    "page": "otter-is-the-leading-ai-meeting-assistant-hitting-50-million-meetings-summaries-milestone",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/otter-meeting-agent-your-new-collaborative-teammate",
+    "competitor": "otter",
+    "page": "otter-meeting-agent-your-new-collaborative-teammate",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/otter-meeting-types-get-smarter-tailored-summaries-for-every-meeting",
+    "competitor": "otter",
+    "page": "otter-meeting-types-get-smarter-tailored-summaries-for-every-meeting",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/otter-raises-50-million",
+    "competitor": "otter",
+    "page": "otter-raises-50-million",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/otter-sales-agent-real-time-sales-coaching-at-your-fingertips",
+    "competitor": "otter",
+    "page": "otter-sales-agent-real-time-sales-coaching-at-your-fingertips",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/otter-sdr-agent-autonomous-product-demos-lead-generation-anywhere-anytime",
+    "competitor": "otter",
+    "page": "otter-sdr-agent-autonomous-product-demos-lead-generation-anywhere-anytime",
+    "score": 2
+  },
+  {
+    "url": "https://otter.ai/blog/otter-stories-winners",
+    "competitor": "otter",
+    "page": "otter-stories-winners",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/otter-surpasses-1-billion-meetings-transcribed-and-launches-otterpilot-tm-the-smart-ai-meeting-assistant-to-eliminate-note-taking-and-automate-meeting-summaries",
+    "competitor": "otter",
+    "page": "otter-surpasses-1-billion-meetings-transcribed-and-launches-otterpilot-tm-the-smart-ai-meeting-assistant-to-eliminate-note-taking-and-automate-meeting-summaries",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/otter-talks-new-zoom-integration-on-cnbc-squawk-alley",
+    "competitor": "otter",
+    "page": "otter-talks-new-zoom-integration-on-cnbc-squawk-alley",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/otter-weekly-insights",
+    "competitor": "otter",
+    "page": "otter-weekly-insights",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/otterpilot-the-only-ai-meeting-assistant-that-streams-live-meeting-transcripts-to-everyone",
+    "competitor": "otter",
+    "page": "otterpilot-the-only-ai-meeting-assistant-that-streams-live-meeting-transcripts-to-everyone",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/otterpilot-versus-google-duet-which-ai-meeting-assistant-is-right-for-you",
+    "competitor": "otter",
+    "page": "otterpilot-versus-google-duet-which-ai-meeting-assistant-is-right-for-you",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/otterpilot-vs-microsoft-365-copilot-a-comparison-of-meeting-assistants",
+    "competitor": "otter",
+    "page": "otterpilot-vs-microsoft-365-copilot-a-comparison-of-meeting-assistants",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/otterpilot-vs-zoom-ai-companion-which-ai-meeting-assistant-is-better-for-your-meetings",
+    "competitor": "otter",
+    "page": "otterpilot-vs-zoom-ai-companion-which-ai-meeting-assistant-is-better-for-your-meetings",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/otters-new-highlight-summary-feature-turns-your-meeting-notes-into-a-summary-that-you-can-share",
+    "competitor": "otter",
+    "page": "otters-new-highlight-summary-feature-turns-your-meeting-notes-into-a-summary-that-you-can-share",
+    "score": 2
+  },
+  {
+    "url": "https://otter.ai/blog/otters-new-languages-french-and-spanish",
+    "competitor": "otter",
+    "page": "otters-new-languages-french-and-spanish",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/our-successful-completion-of-soc-2-type-ii-attestation-what-that-means-for-you",
+    "competitor": "otter",
+    "page": "our-successful-completion-of-soc-2-type-ii-attestation-what-that-means-for-you",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/out-of-office-message",
+    "competitor": "otter",
+    "page": "out-of-office-message",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/performance-review",
+    "competitor": "otter",
+    "page": "performance-review",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/post-meeting-survey-questions",
+    "competitor": "otter",
+    "page": "post-meeting-survey-questions",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/post-mortem-meeting",
+    "competitor": "otter",
+    "page": "post-mortem-meeting",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/press-release-otter-assistant",
+    "competitor": "otter",
+    "page": "press-release-otter-assistant",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/project-management-skills",
+    "competitor": "otter",
+    "page": "project-management-skills",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/project-tracking",
+    "competitor": "otter",
+    "page": "project-tracking",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/remote-working-tools",
+    "competitor": "otter",
+    "page": "remote-working-tools",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/richard-ward-on-joining-otter-ai",
+    "competitor": "otter",
+    "page": "richard-ward-on-joining-otter-ai",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/sales-call-report",
+    "competitor": "otter",
+    "page": "sales-call-report",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/sales-coaching",
+    "competitor": "otter",
+    "page": "sales-coaching",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/sales-demos",
+    "competitor": "otter",
+    "page": "sales-demos",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/sales-discovery-questions",
+    "competitor": "otter",
+    "page": "sales-discovery-questions",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/sales-meeting-topics",
+    "competitor": "otter",
+    "page": "sales-meeting-topics",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/sales-methodologies",
+    "competitor": "otter",
+    "page": "sales-methodologies",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/sales-pitch",
+    "competitor": "otter",
+    "page": "sales-pitch",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/sales-playbook",
+    "competitor": "otter",
+    "page": "sales-playbook",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/sales-prospecting",
+    "competitor": "otter",
+    "page": "sales-prospecting",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/sales-strategy",
+    "competitor": "otter",
+    "page": "sales-strategy",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/saml",
+    "competitor": "otter",
+    "page": "saml",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/sandler-sales-training",
+    "competitor": "otter",
+    "page": "sandler-sales-training",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/send-your-otter-ai-assistant-to-zoom-meetings",
+    "competitor": "otter",
+    "page": "send-your-otter-ai-assistant-to-zoom-meetings",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/smarter-team-collaboration-with-ai-chat-in-channels",
+    "competitor": "otter",
+    "page": "smarter-team-collaboration-with-ai-chat-in-channels",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/smooth-transition-moving-from-vowel-to-otter-ai-as-vowel-shuts-down",
+    "competitor": "otter",
+    "page": "smooth-transition-moving-from-vowel-to-otter-ai-as-vowel-shuts-down",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/sprint-retrospective",
+    "competitor": "otter",
+    "page": "sprint-retrospective",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/staff-meeting",
+    "competitor": "otter",
+    "page": "staff-meeting",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/stand-up-meeting",
+    "competitor": "otter",
+    "page": "stand-up-meeting",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/streamline-workflows-with-my-action-items-otter-ai-can-now-keep-track-of-all-your-action-items-across-all-your-meetings",
+    "competitor": "otter",
+    "page": "streamline-workflows-with-my-action-items-otter-ai-can-now-keep-track-of-all-your-action-items-across-all-your-meetings",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/streamline-your-meeting-workflow-with-the-otter-app-for-slack",
+    "competitor": "otter",
+    "page": "streamline-your-meeting-workflow-with-the-otter-app-for-slack",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/streamline-your-sales-process-with-otter-sales-agents-salesforce-integration",
+    "competitor": "otter",
+    "page": "streamline-your-sales-process-with-otter-sales-agents-salesforce-integration",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/student-learns-english-with-otter",
+    "competitor": "otter",
+    "page": "student-learns-english-with-otter",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/studentsuseotter",
+    "competitor": "otter",
+    "page": "studentsuseotter",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/super-bowl-commercials-with-otter-ai-your-game-day-memory-hero-for-super-bowl-58",
+    "competitor": "otter",
+    "page": "super-bowl-commercials-with-otter-ai-your-game-day-memory-hero-for-super-bowl-58",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/teams-use-automated-transcription-improve-meeting-note",
+    "competitor": "otter",
+    "page": "teams-use-automated-transcription-improve-meeting-note",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/techcrunch-disrupt-selects-otter-ai-for-live-ai-powered-transcription",
+    "competitor": "otter",
+    "page": "techcrunch-disrupt-selects-otter-ai-for-live-ai-powered-transcription",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/teleworkers-use-otter-ai-voice-note-taking-platform-to-capture-and-share-virtual-meetings",
+    "competitor": "otter",
+    "page": "teleworkers-use-otter-ai-voice-note-taking-platform-to-capture-and-share-virtual-meetings",
+    "score": 2
+  },
+  {
+    "url": "https://otter.ai/blog/the-22-best-project-management-tools-by-team-size",
+    "competitor": "otter",
+    "page": "the-22-best-project-management-tools-by-team-size",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/the-25-free-project-management-tools-to-try-today",
+    "competitor": "otter",
+    "page": "the-25-free-project-management-tools-to-try-today",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/the-4-best-digital-note-taking-strategies-for-busy-professionals",
+    "competitor": "otter",
+    "page": "the-4-best-digital-note-taking-strategies-for-busy-professionals",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/the-art-of-closing-sales-tips-and-techniques-for-sales-leaders",
+    "competitor": "otter",
+    "page": "the-art-of-closing-sales-tips-and-techniques-for-sales-leaders",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/the-best-work-from-home-apps",
+    "competitor": "otter",
+    "page": "the-best-work-from-home-apps",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/the-future-of-meetings",
+    "competitor": "otter",
+    "page": "the-future-of-meetings",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/the-future-of-sales-how-ai-is-transforming-the-game-in-2024",
+    "competitor": "otter",
+    "page": "the-future-of-sales-how-ai-is-transforming-the-game-in-2024",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/the-leading-ai-meeting-assistant-otter-ai-unveils-game-changing-productivity-boost-62-of-professionals-say-that-ai-saves-them-over-an-entire-month-of-work-each-year",
+    "competitor": "otter",
+    "page": "the-leading-ai-meeting-assistant-otter-ai-unveils-game-changing-productivity-boost-62-of-professionals-say-that-ai-saves-them-over-an-entire-month-of-work-each-year",
+    "score": 2
+  },
+  {
+    "url": "https://otter.ai/blog/the-most-essential-productivity-and-meeting-tools-for-consulting-agencies",
+    "competitor": "otter",
+    "page": "the-most-essential-productivity-and-meeting-tools-for-consulting-agencies",
+    "score": 2
+  },
+  {
+    "url": "https://otter.ai/blog/three-ways-to-improve-your-sales-cycle",
+    "competitor": "otter",
+    "page": "three-ways-to-improve-your-sales-cycle",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/tools-for-recording-transcribing-meetings",
+    "competitor": "otter",
+    "page": "tools-for-recording-transcribing-meetings",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/top-ai-sales-tools",
+    "competitor": "otter",
+    "page": "top-ai-sales-tools",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/top-meeting-scheduling-software",
+    "competitor": "otter",
+    "page": "top-meeting-scheduling-software",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/transcribe-audio-to-text-in-2023",
+    "competitor": "otter",
+    "page": "transcribe-audio-to-text-in-2023",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/transcribe-youtube-videos-from-mp4-and-mp3-into-text-in-seconds",
+    "competitor": "otter",
+    "page": "transcribe-youtube-videos-from-mp4-and-mp3-into-text-in-seconds",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/transcribe-zoom-meetings-with-otter",
+    "competitor": "otter",
+    "page": "transcribe-zoom-meetings-with-otter",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/transcription-service-otter-launches-enterprise-app-for-teams",
+    "competitor": "otter",
+    "page": "transcription-service-otter-launches-enterprise-app-for-teams",
+    "score": 2
+  },
+  {
+    "url": "https://otter.ai/blog/transcription-technology-that-can-make-your-work-environment-more-inclusive",
+    "competitor": "otter",
+    "page": "transcription-technology-that-can-make-your-work-environment-more-inclusive",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/troubleshoot-zoom-sync-problem",
+    "competitor": "otter",
+    "page": "troubleshoot-zoom-sync-problem",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/two-factor-authentication-for-all-otter-plans",
+    "competitor": "otter",
+    "page": "two-factor-authentication-for-all-otter-plans",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/two-voice-recorders-on-hand-because-congress-does-talk",
+    "competitor": "otter",
+    "page": "two-voice-recorders-on-hand-because-congress-does-talk",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/types-of-ai",
+    "competitor": "otter",
+    "page": "types-of-ai",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/ucla-empowers-students-with-learning-disabilities-with-artificial-intelligence-app-from-otter-ai",
+    "competitor": "otter",
+    "page": "ucla-empowers-students-with-learning-disabilities-with-artificial-intelligence-app-from-otter-ai",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/unhiding-appleid",
+    "competitor": "otter",
+    "page": "unhiding-appleid",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/using-a-voice-recorder-to-create-custom-keepsake-gifts-this-holiday-season",
+    "competitor": "otter",
+    "page": "using-a-voice-recorder-to-create-custom-keepsake-gifts-this-holiday-season",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/video-captions",
+    "competitor": "otter",
+    "page": "video-captions",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/virtual-meeting",
+    "competitor": "otter",
+    "page": "virtual-meeting",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/virtual-meeting-etiquette-guide",
+    "competitor": "otter",
+    "page": "virtual-meeting-etiquette-guide",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/virtual-team-building-activities",
+    "competitor": "otter",
+    "page": "virtual-team-building-activities",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/ways-to-improve-work-performance",
+    "competitor": "otter",
+    "page": "ways-to-improve-work-performance",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/ways-to-improve-your-interviewing-skills",
+    "competitor": "otter",
+    "page": "ways-to-improve-your-interviewing-skills",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/ways-to-maximize-productivity-in-a-video-meeting",
+    "competitor": "otter",
+    "page": "ways-to-maximize-productivity-in-a-video-meeting",
+    "score": 2
+  },
+  {
+    "url": "https://otter.ai/blog/web-conferencing-tools",
+    "competitor": "otter",
+    "page": "web-conferencing-tools",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/were-now-hipaa-compliant",
+    "competitor": "otter",
+    "page": "were-now-hipaa-compliant",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/what-are-ai-agents-a-guide-to-types-benefits-and-examples",
+    "competitor": "otter",
+    "page": "what-are-ai-agents-a-guide-to-types-benefits-and-examples",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/what-employees-think-needs-to-change",
+    "competitor": "otter",
+    "page": "what-employees-think-needs-to-change",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/what-is-an-objective-summary",
+    "competitor": "otter",
+    "page": "what-is-an-objective-summary",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/what-is-remote-communication",
+    "competitor": "otter",
+    "page": "what-is-remote-communication",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/what-you-need-to-know-about-working-from-home",
+    "competitor": "otter",
+    "page": "what-you-need-to-know-about-working-from-home",
+    "score": 2
+  },
+  {
+    "url": "https://otter.ai/blog/why-did-my-otter-price-change",
+    "competitor": "otter",
+    "page": "why-did-my-otter-price-change",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/with-increase-of-over-600-growth-in-product-use-in-the-last-2-years-otter-ai-is-accelerating-customer-and-company-growth-with-new-chief-revenue-officer-and-vp-of-people",
+    "competitor": "otter",
+    "page": "with-increase-of-over-600-growth-in-product-use-in-the-last-2-years-otter-ai-is-accelerating-customer-and-company-growth-with-new-chief-revenue-officer-and-vp-of-people",
+    "score": 2
+  },
+  {
+    "url": "https://otter.ai/blog/word-docx-export-auto-cut-srt",
+    "competitor": "otter",
+    "page": "word-docx-export-auto-cut-srt",
+    "score": 2
+  },
+  {
+    "url": "https://otter.ai/blog/work-from-home-statistics",
+    "competitor": "otter",
+    "page": "work-from-home-statistics",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/working-from-home",
+    "competitor": "otter",
+    "page": "working-from-home",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/working-on-vacation",
+    "competitor": "otter",
+    "page": "working-on-vacation",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/year-in-review-2019",
+    "competitor": "otter",
+    "page": "year-in-review-2019",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/your-full-guide-to-note-taking-methods-tools",
+    "competitor": "otter",
+    "page": "your-full-guide-to-note-taking-methods-tools",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/zoom",
+    "competitor": "otter",
+    "page": "zoom",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/zoom-2",
+    "competitor": "otter",
+    "page": "zoom-2",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/zoom-captions",
+    "competitor": "otter",
+    "page": "zoom-captions",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/zoom-etiquette",
+    "competitor": "otter",
+    "page": "zoom-etiquette",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/zoom-etiquette-for-students",
+    "competitor": "otter",
+    "page": "zoom-etiquette-for-students",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/zoom-fatigue",
+    "competitor": "otter",
+    "page": "zoom-fatigue",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/zoom-sync",
+    "competitor": "otter",
+    "page": "zoom-sync",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/zoom-transcription",
+    "competitor": "otter",
+    "page": "zoom-transcription",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/blog/zoom-webinars",
+    "competitor": "otter",
+    "page": "zoom-webinars",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/case-study/aiden-technologies",
+    "competitor": "otter",
+    "page": "aiden-technologies",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/case-study/anon",
+    "competitor": "otter",
+    "page": "anon",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/case-study/asset-panda",
+    "competitor": "otter",
+    "page": "asset-panda",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/case-study/canidium",
+    "competitor": "otter",
+    "page": "canidium",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/case-study/glacier-media",
+    "competitor": "otter",
+    "page": "glacier-media",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/case-study/irvine-valley-college",
+    "competitor": "otter",
+    "page": "irvine-valley-college",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/case-study/mri-software",
+    "competitor": "otter",
+    "page": "mri-software",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/case-study/stax",
+    "competitor": "otter",
+    "page": "stax",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/case-study/university-of-california-davis",
+    "competitor": "otter",
+    "page": "university-of-california-davis",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/integrations/analytics",
+    "competitor": "otter",
+    "page": "analytics",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/integrations/browser-extensions",
+    "competitor": "otter",
+    "page": "browser-extensions",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/integrations/calendar",
+    "competitor": "otter",
+    "page": "calendar",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/integrations/collaboration",
+    "competitor": "otter",
+    "page": "collaboration",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/integrations/crm",
+    "competitor": "otter",
+    "page": "crm",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/integrations/desktop",
+    "competitor": "otter",
+    "page": "desktop",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/integrations/dialers",
+    "competitor": "otter",
+    "page": "dialers",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/integrations/mobile",
+    "competitor": "otter",
+    "page": "mobile",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/integrations/storage",
+    "competitor": "otter",
+    "page": "storage",
+    "score": 1
+  },
+  {
+    "url": "https://otter.ai/integrations/video-conferencing",
+    "competitor": "otter",
+    "page": "video-conferencing",
+    "score": 1
+  },
+  {
+    "url": "https://help.otter.ai/hc/en-us",
+    "competitor": "otter",
+    "page": "en-us",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/blog/having-generated-1-billion-annual-roi-for-customers-otter-ai-aims-for-complete-meeting-transformation-by-launching-next-gen-enterprise-suite",
+    "competitor": "otter",
+    "page": "having-generated-1-billion-annual-roi-for-customers-otter-ai-aims-for-complete-meeting-transformation-by-launching-next-gen-enterprise-suite",
+    "score": 2
+  },
+  {
+    "url": "https://otter.ai/settings",
+    "competitor": "otter",
+    "page": "settings",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/settings/profile",
+    "competitor": "otter",
+    "page": "profile",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/settings/billing",
+    "competitor": "otter",
+    "page": "billing",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/settings/workspace",
+    "competitor": "otter",
+    "page": "workspace",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/settings/team",
+    "competitor": "otter",
+    "page": "team",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/dashboard",
+    "competitor": "otter",
+    "page": "dashboard",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/projects",
+    "competitor": "otter",
+    "page": "projects",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/members",
+    "competitor": "otter",
+    "page": "members",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/billing",
+    "competitor": "otter",
+    "page": "billing",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/profile",
+    "competitor": "otter",
+    "page": "profile",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/account",
+    "competitor": "otter",
+    "page": "account",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/organization",
+    "competitor": "otter",
+    "page": "organization",
+    "score": 0
+  },
+  {
+    "url": "https://otter.ai/notifications",
+    "competitor": "otter",
+    "page": "notifications",
+    "score": 0
+  }
+]

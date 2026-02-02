@@ -35,9 +35,10 @@ const COMMON_SAAS_ROUTES = [
   "/notifications",
 ];
 
-// Usage: node scripts/discover_targets.js <competitor-url> <competitor-name>
-const [, , baseUrl, competitorName] = process.argv;
-
+// Usage: node scripts/discover_targets.js <competitor-url> <competitor-name> [--raw]
+const args = process.argv.slice(2);
+const baseUrl = args[0];
+const competitorName = args[1];
 if (!baseUrl || !competitorName) {
   console.error("Usage: node scripts/discover_targets.js <url> <competitor>");
   process.exit(1);
@@ -131,7 +132,7 @@ async function discover() {
   const allUrls = Array.from(new Set(discoveredPages.map((p) => p.url)));
   const uniqueItems = allUrls.map((url) => discoveredPages.find((p) => p.url === url));
 
-  const finalTargets = sampleAndFilter(uniqueItems);
+  const finalTargets = uniqueItems.sort((a, b) => b.score - a.score);
 
   const outputPath = path.resolve(
     __dirname,
@@ -139,56 +140,7 @@ async function discover() {
   );
   fs.writeFileSync(outputPath, JSON.stringify(finalTargets, null, 2));
 
-  console.log(
-    `\n🎉 Discovery complete. Saved ${finalTargets.length} refined targets to ${outputPath}\n`,
-  );
-}
-
-function sampleAndFilter(items) {
-  const CATEGORIES = {
-    DOCS: { pattern: /\/docs\/|\/documentation\//, limit: 5 },
-    BLOG: { pattern: /\/blog\/|\/posts\//, limit: 5 },
-    CHANGELOG: { pattern: /\/changelog\/|\/updates\//, limit: 5 },
-    INTEGRATIONS: { pattern: /\/integrations\//, limit: 5 },
-    CAREERS: { pattern: /\/careers\/|\/jobs\//, limit: 2 },
-    LEGAL: { pattern: /\/legal\/|\/terms|\/privacy/, limit: 2 },
-  };
-
-  const buckets = {
-    HIGH_VALUE: [],
-    ...Object.keys(CATEGORIES).reduce((acc, key) => ({ ...acc, [key]: [] }), {}),
-    OTHER: [],
-  };
-
-  for (const item of items) {
-    let matched = false;
-    for (const [key, config] of Object.entries(CATEGORIES)) {
-      if (config.pattern.test(item.url)) {
-        buckets[key].push(item);
-        matched = true;
-        break;
-      }
-    }
-    if (!matched) {
-      if (item.score > 0 || item.page === "homepage") {
-        buckets.HIGH_VALUE.push(item);
-      } else {
-        buckets.OTHER.push(item);
-      }
-    }
-  }
-
-  let final = [...buckets.HIGH_VALUE];
-
-  for (const [key, config] of Object.entries(CATEGORIES)) {
-    const samples = buckets[key].sort((a, b) => b.score - a.score).slice(0, config.limit);
-    final = [...final, ...samples];
-  }
-
-  const otherSamples = buckets.OTHER.slice(0, 10);
-  final = [...final, ...otherSamples];
-
-  return final.sort((a, b) => b.score - a.score);
+  console.log(`\n🎉 Discovery complete. Saved ${finalTargets.length} targets to ${outputPath}\n`);
 }
 
 discover();

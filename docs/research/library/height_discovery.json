@@ -1,0 +1,80 @@
+[
+  {
+    "url": "https://height.app/settings",
+    "competitor": "height",
+    "page": "settings",
+    "score": 0
+  },
+  {
+    "url": "https://height.app/settings/profile",
+    "competitor": "height",
+    "page": "profile",
+    "score": 0
+  },
+  {
+    "url": "https://height.app/settings/billing",
+    "competitor": "height",
+    "page": "billing",
+    "score": 0
+  },
+  {
+    "url": "https://height.app/settings/workspace",
+    "competitor": "height",
+    "page": "workspace",
+    "score": 0
+  },
+  {
+    "url": "https://height.app/settings/team",
+    "competitor": "height",
+    "page": "team",
+    "score": 0
+  },
+  {
+    "url": "https://height.app/dashboard",
+    "competitor": "height",
+    "page": "dashboard",
+    "score": 0
+  },
+  {
+    "url": "https://height.app/projects",
+    "competitor": "height",
+    "page": "projects",
+    "score": 0
+  },
+  {
+    "url": "https://height.app/members",
+    "competitor": "height",
+    "page": "members",
+    "score": 0
+  },
+  {
+    "url": "https://height.app/billing",
+    "competitor": "height",
+    "page": "billing",
+    "score": 0
+  },
+  {
+    "url": "https://height.app/profile",
+    "competitor": "height",
+    "page": "profile",
+    "score": 0
+  },
+  {
+    "url": "https://height.app/account",
+    "competitor": "height",
+    "page": "account",
+    "score": 0
+  },
+  {
+    "url": "https://height.app/organization",
+    "competitor": "height",
+    "page": "organization",
+    "score": 0
+  },
+  {
+    "url": "https://height.app/notifications",
+    "competitor": "height",
+    "page": "notifications",
+    "score": 0
+  }
+]

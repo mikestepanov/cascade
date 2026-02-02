@@ -1,0 +1,986 @@
+[
+  {
+    "url": "https://www.notion.com/es-es/sitemap-root.xml",
+    "competitor": "notion",
+    "page": "sitemap-root.xml",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.com/es-es/blog/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 1
+  },
+  {
+    "url": "https://www.notion.com/es-es/customers/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.com/es-es/help/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.com/es-es/md/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.com/es-es/pages/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.com/es-es/product/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 1
+  },
+  {
+    "url": "https://www.notion.com/es-es/releases/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.com/es-es/use-case/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.com/es-es/feature/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 1
+  },
+  {
+    "url": "https://www.notion.com/zh-cn/sitemap-root.xml",
+    "competitor": "notion",
+    "page": "sitemap-root.xml",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.com/zh-cn/blog/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 1
+  },
+  {
+    "url": "https://www.notion.com/zh-cn/customers/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.com/zh-cn/help/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.com/zh-cn/md/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.com/zh-cn/pages/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.com/zh-cn/product/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 1
+  },
+  {
+    "url": "https://www.notion.com/zh-cn/releases/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.com/zh-cn/use-case/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.com/zh-cn/feature/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 1
+  },
+  {
+    "url": "https://www.notion.com/zh-tw/sitemap-root.xml",
+    "competitor": "notion",
+    "page": "sitemap-root.xml",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.com/zh-tw/blog/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 1
+  },
+  {
+    "url": "https://www.notion.com/zh-tw/customers/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.com/zh-tw/help/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.com/zh-tw/md/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.com/zh-tw/pages/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.com/zh-tw/product/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 1
+  },
+  {
+    "url": "https://www.notion.com/zh-tw/releases/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.com/zh-tw/use-case/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.com/zh-tw/feature/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 1
+  },
+  {
+    "url": "https://www.notion.com/en-gb/sitemap-root.xml",
+    "competitor": "notion",
+    "page": "sitemap-root.xml",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.com/en-gb/blog/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 1
+  },
+  {
+    "url": "https://www.notion.com/en-gb/customers/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.com/en-gb/help/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.com/en-gb/md/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.com/en-gb/pages/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.com/en-gb/product/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 1
+  },
+  {
+    "url": "https://www.notion.com/en-gb/releases/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.com/en-gb/use-case/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.com/en-gb/feature/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 1
+  },
+  {
+    "url": "https://www.notion.com/es/sitemap-root.xml",
+    "competitor": "notion",
+    "page": "sitemap-root.xml",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.com/es/blog/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 1
+  },
+  {
+    "url": "https://www.notion.com/es/customers/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.com/es/help/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.com/es/md/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.com/es/pages/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.com/es/product/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 1
+  },
+  {
+    "url": "https://www.notion.com/es/releases/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.com/es/use-case/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.com/es/feature/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 1
+  },
+  {
+    "url": "https://www.notion.com/fr/sitemap-root.xml",
+    "competitor": "notion",
+    "page": "sitemap-root.xml",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.com/fr/blog/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 1
+  },
+  {
+    "url": "https://www.notion.com/fr/customers/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.com/fr/help/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.com/fr/md/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.com/fr/pages/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.com/fr/product/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 1
+  },
+  {
+    "url": "https://www.notion.com/fr/releases/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.com/fr/use-case/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.com/fr/feature/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 1
+  },
+  {
+    "url": "https://www.notion.com/pt/sitemap-root.xml",
+    "competitor": "notion",
+    "page": "sitemap-root.xml",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.com/pt/blog/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 1
+  },
+  {
+    "url": "https://www.notion.com/pt/customers/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.com/pt/help/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.com/pt/md/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.com/pt/pages/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.com/pt/product/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 1
+  },
+  {
+    "url": "https://www.notion.com/pt/releases/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.com/pt/use-case/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.com/pt/feature/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 1
+  },
+  {
+    "url": "https://www.notion.com/ko/sitemap-root.xml",
+    "competitor": "notion",
+    "page": "sitemap-root.xml",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.com/ko/blog/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 1
+  },
+  {
+    "url": "https://www.notion.com/ko/customers/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.com/ko/help/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.com/ko/md/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.com/ko/pages/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.com/ko/product/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 1
+  },
+  {
+    "url": "https://www.notion.com/ko/releases/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.com/ko/use-case/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.com/ko/feature/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 1
+  },
+  {
+    "url": "https://www.notion.com/ja/sitemap-root.xml",
+    "competitor": "notion",
+    "page": "sitemap-root.xml",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.com/ja/blog/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 1
+  },
+  {
+    "url": "https://www.notion.com/ja/customers/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.com/ja/help/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.com/ja/md/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.com/ja/pages/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.com/ja/product/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 1
+  },
+  {
+    "url": "https://www.notion.com/ja/releases/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.com/ja/use-case/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.com/ja/feature/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 1
+  },
+  {
+    "url": "https://www.notion.com/de/sitemap-root.xml",
+    "competitor": "notion",
+    "page": "sitemap-root.xml",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.com/de/blog/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 1
+  },
+  {
+    "url": "https://www.notion.com/de/customers/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.com/de/help/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.com/de/md/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.com/de/pages/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.com/de/product/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 1
+  },
+  {
+    "url": "https://www.notion.com/de/releases/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.com/de/use-case/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.com/de/feature/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 1
+  },
+  {
+    "url": "https://www.notion.com/vi/sitemap-root.xml",
+    "competitor": "notion",
+    "page": "sitemap-root.xml",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.com/vi/blog/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 1
+  },
+  {
+    "url": "https://www.notion.com/vi/customers/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.com/vi/help/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.com/vi/md/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.com/vi/pages/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.com/vi/product/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 1
+  },
+  {
+    "url": "https://www.notion.com/vi/releases/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.com/vi/use-case/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.com/vi/feature/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 1
+  },
+  {
+    "url": "https://www.notion.com/id/sitemap-root.xml",
+    "competitor": "notion",
+    "page": "sitemap-root.xml",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.com/id/blog/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 1
+  },
+  {
+    "url": "https://www.notion.com/id/customers/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.com/id/help/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.com/id/md/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.com/id/pages/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.com/id/product/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 1
+  },
+  {
+    "url": "https://www.notion.com/id/releases/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.com/id/use-case/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.com/id/feature/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 1
+  },
+  {
+    "url": "https://www.notion.com/th/sitemap-root.xml",
+    "competitor": "notion",
+    "page": "sitemap-root.xml",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.com/th/blog/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 1
+  },
+  {
+    "url": "https://www.notion.com/th/customers/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.com/th/help/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.com/th/md/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.com/th/pages/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.com/th/product/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 1
+  },
+  {
+    "url": "https://www.notion.com/th/releases/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.com/th/use-case/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.com/th/feature/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 1
+  },
+  {
+    "url": "https://www.notion.com/he/sitemap-root.xml",
+    "competitor": "notion",
+    "page": "sitemap-root.xml",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.com/he/blog/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 1
+  },
+  {
+    "url": "https://www.notion.com/he/customers/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.com/he/help/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.com/he/md/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.com/he/pages/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.com/he/product/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 1
+  },
+  {
+    "url": "https://www.notion.com/he/releases/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.com/he/use-case/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.com/he/feature/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 1
+  },
+  {
+    "url": "https://www.notion.com/ar/sitemap-root.xml",
+    "competitor": "notion",
+    "page": "sitemap-root.xml",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.com/ar/blog/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 1
+  },
+  {
+    "url": "https://www.notion.com/ar/customers/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.com/ar/help/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.com/ar/md/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.com/ar/pages/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.com/ar/product/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 1
+  },
+  {
+    "url": "https://www.notion.com/ar/releases/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.com/ar/use-case/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.com/ar/feature/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 1
+  },
+  {
+    "url": "https://www.notion.com/front-static/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.so/settings",
+    "competitor": "notion",
+    "page": "settings",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.so/settings/profile",
+    "competitor": "notion",
+    "page": "profile",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.so/settings/billing",
+    "competitor": "notion",
+    "page": "billing",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.so/settings/workspace",
+    "competitor": "notion",
+    "page": "workspace",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.so/settings/team",
+    "competitor": "notion",
+    "page": "team",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.so/dashboard",
+    "competitor": "notion",
+    "page": "dashboard",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.so/projects",
+    "competitor": "notion",
+    "page": "projects",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.so/members",
+    "competitor": "notion",
+    "page": "members",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.so/billing",
+    "competitor": "notion",
+    "page": "billing",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.so/profile",
+    "competitor": "notion",
+    "page": "profile",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.so/account",
+    "competitor": "notion",
+    "page": "account",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.so/organization",
+    "competitor": "notion",
+    "page": "organization",
+    "score": 0
+  },
+  {
+    "url": "https://www.notion.so/notifications",
+    "competitor": "notion",
+    "page": "notifications",
+    "score": 0
+  }
+]

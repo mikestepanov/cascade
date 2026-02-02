@@ -137,20 +137,21 @@ Use the dedicated crawler to map out all routes (public and authenticated) befor
 
 ```bash
 # Public only
-pnpm run crawl <url> <competitor>
-
 # With internal auth discovery
 pnpm run crawl <url> <competitor> --auth google
+
+# Dump ALL routes (no sampling)
+pnpm run crawl <url> <competitor>
 ```
 
 - **Lightweight**: Optimized for speed (no screenshots/assets).
 - **Consolidated**: Merges sitemaps, SaaS probes, and dashboard links into one `_discovery.json`.
+- **Smart Sampling**: Automatically caps repetitive sections (docs, blogs) to 5 pages by default. Use `--limit <N>` to override.
 
 ### Internal Route Discovery (Authenticated)
 
 When running with `--auth`, the scraper will dynamically discover new high-value internal routes by scanning sidebars and navigation menus for keywords like "Settings", "Team", or "Profile".
 
-- **Deep Data Injection**: These discovered routes are saved in the `discoveredRoutes` key of the `_deep.json` output.
 - **Usage**: Check the `_deep.json` of a dashboard scrape to find more specific internal URLs to target next.
 
 ### AI Design Analysis (UX Audit)
