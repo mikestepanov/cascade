@@ -212,7 +212,8 @@ async function main() {
 
   // 3. Consolidate & Score
   console.log("\n📊 Consolidating results...");
-  const discovered = Array.from(results)
+  const rawList = Array.from(results)
+    .filter((url) => !url.includes("#") && !url.includes("javascript:"))
     .map((url) => {
       const score = HIGH_VALUE_KEYWORDS.reduce(
         (acc, kw) => acc + (url.toLowerCase().includes(kw) ? 1 : 0),
@@ -224,29 +225,78 @@ async function main() {
         page: url.split("/").filter(Boolean).pop()?.split("?")[0] || "homepage",
         score,
       };
-    })
-    .filter((p) => !p.url.includes("#") && !p.url.includes("javascript:"));
-
-  // Sort and dedup by URL
-  const uniqueResults = [];
-  const seenUrls = new Set();
-  discovered
-    .sort((a, b) => b.score - a.score)
-    .forEach((p) => {
-      if (!seenUrls.has(p.url)) {
-        uniqueResults.push(p);
-        seenUrls.add(p.url);
-      }
     });
+
+  // Smart Sampling & Deduplication
+  const uniqueUrls = new Map();
+  rawList.forEach((item) => {
+    if (!uniqueUrls.has(item.url)) uniqueUrls.set(item.url, item);
+  });
+
+  const finalTargets = sampleAndFilter(Array.from(uniqueUrls.values()));
 
   const outputPath = path.resolve(
     __dirname,
     `../docs/research/library/${competitorName}_discovery.json`,
   );
-  fs.writeFileSync(outputPath, JSON.stringify(uniqueResults, null, 2));
+  fs.writeFileSync(outputPath, JSON.stringify(finalTargets, null, 2));
 
-  console.log(`\n✅ Discovery complete. Found ${uniqueResults.length} routes.`);
+  console.log(
+    `\n✅ Discovery complete. Found ${finalTargets.length} refined targets (from ${rawList.length} total).`,
+  );
   console.log(`📂 Saved to: ${outputPath}\n`);
+}
+
+function sampleAndFilter(items) {
+  const CATEGORIES = {
+    DOCS: { pattern: /\/docs\/|\/documentation\//, limit: 5 },
+    BLOG: { pattern: /\/blog\/|\/posts\//, limit: 5 },
+    CHANGELOG: { pattern: /\/changelog\/|\/updates\//, limit: 5 },
+    INTEGRATIONS: { pattern: /\/integrations\//, limit: 5 },
+    CAREERS: { pattern: /\/careers\/|\/jobs\//, limit: 2 },
+    LEGAL: { pattern: /\/legal\/|\/terms|\/privacy/, limit: 2 },
+  };
+
+  const buckets = {
+    HIGH_VALUE: [],
+    ...Object.keys(CATEGORIES).reduce((acc, key) => ({ ...acc, [key]: [] }), {}),
+    OTHER: [],
+  };
+
+  for (const item of items) {
+    let matched = false;
+    for (const [key, config] of Object.entries(CATEGORIES)) {
+      if (config.pattern.test(item.url)) {
+        buckets[key].push(item);
+        matched = true;
+        break;
+      }
+    }
+    if (!matched) {
+      // High value check
+      if (item.score > 0 || item.page === "homepage") {
+        buckets.HIGH_VALUE.push(item);
+      } else {
+        buckets.OTHER.push(item);
+      }
+    }
+  }
+
+  let final = [...buckets.HIGH_VALUE];
+
+  // Pick samples from buckets
+  for (const [key, config] of Object.entries(CATEGORIES)) {
+    const samples = buckets[key]
+      .sort((a, b) => b.score - a.score) // high score first
+      .slice(0, config.limit);
+    final = [...final, ...samples];
+  }
+
+  // Add some "Other" if under specific count, or just top ones
+  const otherSamples = buckets.OTHER.slice(0, 10);
+  final = [...final, ...otherSamples];
+
+  return final.sort((a, b) => b.score - a.score);
 }
 
 main();
