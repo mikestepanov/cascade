@@ -60,9 +60,12 @@ describe("Invites", () => {
       expect(inviteId).toBeDefined();
       expect(token).toBeDefined();
 
-      const invite = await t.run(async (ctx) => ctx.db.get(inviteId));
-      expect(invite?.email).toBe("newuser@example.com");
-      expect(invite?.status).toBe("pending");
+      const invite = await t.run(async (ctx) =>
+        ctx.db.get(inviteId as Id<"invites">),
+      );
+      if (!invite || invite.role !== "user") throw new Error("Invite not found");
+      expect(invite.email).toBe("newuser@example.com");
+      expect(invite.status).toBe("pending");
     });
 
     it("should send a project invite", async () => {
@@ -85,8 +88,9 @@ describe("Invites", () => {
       const { inviteId } = expectInviteCreated(result);
 
       const invite = await t.run(async (ctx) => ctx.db.get(inviteId));
-      expect(invite?.projectId).toBe(projectId);
-      expect(invite?.projectRole).toBe("editor");
+      if (!invite || invite.role !== "user") throw new Error("Invite not found");
+      expect(invite.projectId).toBe(projectId);
+      expect(invite.projectRole).toBe("editor");
     });
 
     it("should prevent duplicate pending invites", async () => {
@@ -220,7 +224,8 @@ describe("Invites", () => {
       const { inviteId } = expectInviteCreated(result);
 
       const invite = await t.run(async (ctx) => ctx.db.get(inviteId));
-      expect(invite?.projectRole).toBe("editor");
+      if (!invite || invite.role !== "user") throw new Error("Invite not found");
+      expect(invite.projectRole).toBe("editor");
     });
   });
 
@@ -307,11 +312,14 @@ describe("Invites", () => {
       });
       const { inviteId } = expectInviteCreated(result);
 
-      await asAdmin.mutation(api.invites.revokeInvite, { inviteId });
+      await asAdmin.mutation(api.invites.revokeInvite, {
+        inviteId: inviteId as Id<"invites">,
+      });
 
       const invite = await t.run(async (ctx) => ctx.db.get(inviteId));
-      expect(invite?.status).toBe("revoked");
-      expect(invite?.revokedAt).toBeDefined();
+      if (!invite || invite.role !== "user") throw new Error("Invite not found");
+      expect(invite.status).toBe("revoked");
+      expect(invite.revokedAt).toBeDefined();
     });
 
     it("should reject revoking non-pending invite", async () => {
@@ -326,11 +334,15 @@ describe("Invites", () => {
       const { inviteId } = expectInviteCreated(result);
 
       // First revoke
-      await asAdmin.mutation(api.invites.revokeInvite, { inviteId });
+      await asAdmin.mutation(api.invites.revokeInvite, {
+        inviteId: inviteId as Id<"invites">,
+      });
 
       // Try to revoke again
       await expect(async () => {
-        await asAdmin.mutation(api.invites.revokeInvite, { inviteId });
+        await asAdmin.mutation(api.invites.revokeInvite, {
+          inviteId: inviteId as Id<"invites">,
+        });
       }).rejects.toThrow("Can only revoke pending invites");
     });
 
@@ -346,11 +358,16 @@ describe("Invites", () => {
       const { inviteId } = expectInviteCreated(result);
 
       // Non-admin user
-      const regularUserId = await createTestUser(t, { name: "Regular", email: "reg@example.com" });
+      const regularUserId = await createTestUser(t, {
+        name: "Regular",
+        email: "reg@example.com",
+      });
       const asRegular = asAuthenticatedUser(t, regularUserId);
 
       await expect(async () => {
-        await asRegular.mutation(api.invites.revokeInvite, { inviteId });
+        await asRegular.mutation(api.invites.revokeInvite, {
+          inviteId: inviteId as Id<"invites">,
+        });
       }).rejects.toThrow("Only admins can revoke invites");
     });
   });
@@ -367,18 +384,28 @@ describe("Invites", () => {
       });
       const { inviteId } = expectInviteCreated(result);
 
-      const inviteBefore = await t.run(async (ctx) => ctx.db.get(inviteId));
-      const originalExpiry = inviteBefore?.expiresAt;
+      const inviteBefore = await t.run(async (ctx) =>
+        ctx.db.get(inviteId as Id<"invites">),
+      );
+      if (!inviteBefore || inviteBefore.role !== "user")
+        throw new Error("Invite not found");
+      const originalExpiry = inviteBefore.expiresAt;
 
       // Simulate some time passing
       await new Promise((resolve) => setTimeout(resolve, 10));
 
-      await asAdmin.mutation(api.invites.resendInvite, { inviteId });
+      await asAdmin.mutation(api.invites.resendInvite, {
+        inviteId: inviteId as Id<"invites">,
+      });
 
-      const inviteAfter = await t.run(async (ctx) => ctx.db.get(inviteId));
-      if (!(inviteAfter?.expiresAt && originalExpiry)) throw new Error("Missing expiry");
+      const inviteAfter = await t.run(async (ctx) =>
+        ctx.db.get(inviteId as Id<"invites">),
+      );
+      if (!inviteAfter || inviteAfter.role !== "user")
+        throw new Error("Invite not found");
+      if (!(inviteAfter.expiresAt && originalExpiry)) throw new Error("Missing expiry");
       expect(inviteAfter.expiresAt).toBeGreaterThan(originalExpiry);
-      expect(inviteAfter?.status).toBe("pending");
+      expect(inviteAfter.status).toBe("pending");
     });
 
     it("should reject resending non-pending invite", async () => {
@@ -392,10 +419,14 @@ describe("Invites", () => {
       });
       const { inviteId } = expectInviteCreated(result);
 
-      await asAdmin.mutation(api.invites.revokeInvite, { inviteId });
+      await asAdmin.mutation(api.invites.revokeInvite, {
+        inviteId: inviteId as Id<"invites">,
+      });
 
       await expect(async () => {
-        await asAdmin.mutation(api.invites.resendInvite, { inviteId });
+        await asAdmin.mutation(api.invites.resendInvite, {
+          inviteId: inviteId as Id<"invites">,
+        });
       }).rejects.toThrow("Can only resend pending invites");
     });
 
@@ -414,7 +445,9 @@ describe("Invites", () => {
       const asRegular = asAuthenticatedUser(t, regularUserId);
 
       await expect(async () => {
-        await asRegular.mutation(api.invites.resendInvite, { inviteId });
+        await asRegular.mutation(api.invites.resendInvite, {
+          inviteId: inviteId as Id<"invites">,
+        });
       }).rejects.toThrow("Only admins can resend invites");
     });
   });
@@ -485,7 +518,9 @@ describe("Invites", () => {
 
       // Manually set expiresAt to past
       await t.run(async (ctx) => {
-        await ctx.db.patch(inviteId, { expiresAt: Date.now() - 1000 });
+        await ctx.db.patch(inviteId as Id<"invites">, {
+          expiresAt: Date.now() - 1000,
+        });
       });
 
       const invite = await t.query(api.invites.getInviteByToken, { token });
@@ -508,7 +543,9 @@ describe("Invites", () => {
 
       // Expire the invite
       await t.run(async (ctx) => {
-        await ctx.db.patch(inviteId, { expiresAt: Date.now() - 1000 });
+        await ctx.db.patch(inviteId as Id<"invites">, {
+          expiresAt: Date.now() - 1000,
+        });
       });
 
       const newUserId = await createTestUser(t, {
