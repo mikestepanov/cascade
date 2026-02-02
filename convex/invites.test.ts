@@ -10,6 +10,18 @@ import {
   createTestUser,
 } from "./testUtils";
 
+// Helper to extract inviteId and token from sendInvite result (handles union type)
+function expectInviteCreated(
+  result:
+    | { inviteId: string; token: string }
+    | { success: boolean; addedDirectly: boolean; userId: string },
+): { inviteId: string; token: string } {
+  if (!("inviteId" in result)) {
+    throw new Error("Expected invite to be created, but user was added directly");
+  }
+  return result as { inviteId: string; token: string };
+}
+
 describe("Invites", () => {
   beforeEach(() => {
     // Mock global fetch for email sending
@@ -38,11 +50,12 @@ describe("Invites", () => {
       const t = convexTest(schema, modules);
       const { organizationId, asUser: asAdmin } = await createTestContext(t);
 
-      const { inviteId, token } = await asAdmin.mutation(api.invites.sendInvite, {
+      const result = await asAdmin.mutation(api.invites.sendInvite, {
         email: "newuser@example.com",
         role: "user",
         organizationId,
       });
+      const { inviteId, token } = expectInviteCreated(result);
 
       expect(inviteId).toBeDefined();
       expect(token).toBeDefined();
@@ -62,13 +75,14 @@ describe("Invites", () => {
       const project = await t.run(async (ctx) => ctx.db.get(projectId));
       if (!project) throw new Error("Project not found");
 
-      const { inviteId } = await asAdmin.mutation(api.invites.sendInvite, {
+      const result = await asAdmin.mutation(api.invites.sendInvite, {
         email: "collab@example.com",
         role: "user",
         organizationId: project.organizationId,
         projectId,
         projectRole: "editor",
       });
+      const { inviteId } = expectInviteCreated(result);
 
       const invite = await t.run(async (ctx) => ctx.db.get(inviteId));
       expect(invite?.projectId).toBe(projectId);
@@ -196,13 +210,14 @@ describe("Invites", () => {
       const project = await t.run(async (ctx) => ctx.db.get(projectId));
       if (!project) throw new Error("Project not found");
 
-      const { inviteId } = await asAdmin.mutation(api.invites.sendInvite, {
+      const result = await asAdmin.mutation(api.invites.sendInvite, {
         email: "newcollab@example.com",
         role: "user",
         organizationId: project.organizationId,
         projectId,
         // No projectRole specified
       });
+      const { inviteId } = expectInviteCreated(result);
 
       const invite = await t.run(async (ctx) => ctx.db.get(inviteId));
       expect(invite?.projectRole).toBe("editor");
@@ -214,11 +229,12 @@ describe("Invites", () => {
       const t = convexTest(schema, modules);
       const { organizationId, asUser: asAdmin } = await createTestContext(t);
 
-      const { token } = await asAdmin.mutation(api.invites.sendInvite, {
+      const result = await asAdmin.mutation(api.invites.sendInvite, {
         email: "new@example.com",
         role: "user",
         organizationId,
       });
+      const { token } = expectInviteCreated(result);
 
       // Create the new user who will accept
       const newUserId = await createTestUser(t, { name: "New User", email: "new@example.com" });
@@ -251,13 +267,14 @@ describe("Invites", () => {
       const project = await t.run(async (ctx) => ctx.db.get(projectId));
       if (!project) throw new Error("Project not found");
 
-      const { token } = await asAdmin.mutation(api.invites.sendInvite, {
+      const result = await asAdmin.mutation(api.invites.sendInvite, {
         email: "project@example.com",
         role: "user",
         organizationId: project.organizationId,
         projectId,
         projectRole: "viewer",
       });
+      const { token } = expectInviteCreated(result);
 
       const newUserId = await createTestUser(t, {
         name: "Project User",
@@ -283,11 +300,12 @@ describe("Invites", () => {
       const t = convexTest(schema, modules);
       const { organizationId, asUser: asAdmin } = await createTestContext(t);
 
-      const { inviteId } = await asAdmin.mutation(api.invites.sendInvite, {
+      const result = await asAdmin.mutation(api.invites.sendInvite, {
         email: "revoke@example.com",
         role: "user",
         organizationId,
       });
+      const { inviteId } = expectInviteCreated(result);
 
       await asAdmin.mutation(api.invites.revokeInvite, { inviteId });
 
@@ -300,11 +318,12 @@ describe("Invites", () => {
       const t = convexTest(schema, modules);
       const { organizationId, asUser: asAdmin } = await createTestContext(t);
 
-      const { inviteId } = await asAdmin.mutation(api.invites.sendInvite, {
+      const result = await asAdmin.mutation(api.invites.sendInvite, {
         email: "revoke2@example.com",
         role: "user",
         organizationId,
       });
+      const { inviteId } = expectInviteCreated(result);
 
       // First revoke
       await asAdmin.mutation(api.invites.revokeInvite, { inviteId });
@@ -319,11 +338,12 @@ describe("Invites", () => {
       const t = convexTest(schema, modules);
       const { organizationId, asUser: asAdmin } = await createTestContext(t);
 
-      const { inviteId } = await asAdmin.mutation(api.invites.sendInvite, {
+      const result = await asAdmin.mutation(api.invites.sendInvite, {
         email: "revoke3@example.com",
         role: "user",
         organizationId,
       });
+      const { inviteId } = expectInviteCreated(result);
 
       // Non-admin user
       const regularUserId = await createTestUser(t, { name: "Regular", email: "reg@example.com" });
@@ -340,11 +360,12 @@ describe("Invites", () => {
       const t = convexTest(schema, modules);
       const { organizationId, asUser: asAdmin } = await createTestContext(t);
 
-      const { inviteId } = await asAdmin.mutation(api.invites.sendInvite, {
+      const result = await asAdmin.mutation(api.invites.sendInvite, {
         email: "resend@example.com",
         role: "user",
         organizationId,
       });
+      const { inviteId } = expectInviteCreated(result);
 
       const inviteBefore = await t.run(async (ctx) => ctx.db.get(inviteId));
       const originalExpiry = inviteBefore?.expiresAt;
@@ -364,11 +385,12 @@ describe("Invites", () => {
       const t = convexTest(schema, modules);
       const { organizationId, asUser: asAdmin } = await createTestContext(t);
 
-      const { inviteId } = await asAdmin.mutation(api.invites.sendInvite, {
+      const result = await asAdmin.mutation(api.invites.sendInvite, {
         email: "resend2@example.com",
         role: "user",
         organizationId,
       });
+      const { inviteId } = expectInviteCreated(result);
 
       await asAdmin.mutation(api.invites.revokeInvite, { inviteId });
 
@@ -381,11 +403,12 @@ describe("Invites", () => {
       const t = convexTest(schema, modules);
       const { organizationId, asUser: asAdmin } = await createTestContext(t);
 
-      const { inviteId } = await asAdmin.mutation(api.invites.sendInvite, {
+      const result = await asAdmin.mutation(api.invites.sendInvite, {
         email: "resend3@example.com",
         role: "user",
         organizationId,
       });
+      const { inviteId } = expectInviteCreated(result);
 
       const regularUserId = await createTestUser(t, { name: "Reg", email: "reg2@example.com" });
       const asRegular = asAuthenticatedUser(t, regularUserId);
@@ -401,11 +424,12 @@ describe("Invites", () => {
       const t = convexTest(schema, modules);
       const { organizationId, asUser: asAdmin } = await createTestContext(t);
 
-      const { token } = await asAdmin.mutation(api.invites.sendInvite, {
+      const result = await asAdmin.mutation(api.invites.sendInvite, {
         email: "gettoken@example.com",
         role: "user",
         organizationId,
       });
+      const { token } = expectInviteCreated(result);
 
       const invite = await t.query(api.invites.getInviteByToken, { token });
 
@@ -433,13 +457,14 @@ describe("Invites", () => {
       const project = await t.run(async (ctx) => ctx.db.get(projectId));
       if (!project) throw new Error("Project not found");
 
-      const { token } = await asAdmin.mutation(api.invites.sendInvite, {
+      const result = await asAdmin.mutation(api.invites.sendInvite, {
         email: "projtoken@example.com",
         role: "user",
         organizationId: project.organizationId,
         projectId,
         projectRole: "viewer",
       });
+      const { token } = expectInviteCreated(result);
 
       const invite = await t.query(api.invites.getInviteByToken, { token });
 
@@ -451,11 +476,12 @@ describe("Invites", () => {
       const t = convexTest(schema, modules);
       const { organizationId, asUser: asAdmin } = await createTestContext(t);
 
-      const { inviteId, token } = await asAdmin.mutation(api.invites.sendInvite, {
+      const result = await asAdmin.mutation(api.invites.sendInvite, {
         email: "expired@example.com",
         role: "user",
         organizationId,
       });
+      const { inviteId, token } = expectInviteCreated(result);
 
       // Manually set expiresAt to past
       await t.run(async (ctx) => {
@@ -473,11 +499,12 @@ describe("Invites", () => {
       const t = convexTest(schema, modules);
       const { organizationId, asUser: asAdmin } = await createTestContext(t);
 
-      const { inviteId, token } = await asAdmin.mutation(api.invites.sendInvite, {
+      const result = await asAdmin.mutation(api.invites.sendInvite, {
         email: "expiredaccept@example.com",
         role: "user",
         organizationId,
       });
+      const { inviteId, token } = expectInviteCreated(result);
 
       // Expire the invite
       await t.run(async (ctx) => {
@@ -499,11 +526,12 @@ describe("Invites", () => {
       const t = convexTest(schema, modules);
       const { organizationId, asUser: asAdmin } = await createTestContext(t);
 
-      const { token } = await asAdmin.mutation(api.invites.sendInvite, {
+      const result = await asAdmin.mutation(api.invites.sendInvite, {
         email: "correct@example.com",
         role: "user",
         organizationId,
       });
+      const { token } = expectInviteCreated(result);
 
       // Create user with different email
       const wrongUserId = await createTestUser(t, {
@@ -521,11 +549,12 @@ describe("Invites", () => {
       const t = convexTest(schema, modules);
       const { organizationId, asUser: asAdmin } = await createTestContext(t);
 
-      const { token } = await asAdmin.mutation(api.invites.sendInvite, {
+      const result = await asAdmin.mutation(api.invites.sendInvite, {
         email: "accepttwice@example.com",
         role: "user",
         organizationId,
       });
+      const { token } = expectInviteCreated(result);
 
       const newUserId = await createTestUser(t, {
         name: "Accept Twice",
@@ -608,11 +637,12 @@ describe("Invites", () => {
       const t = convexTest(schema, modules);
       const { organizationId, asUser: asAdmin } = await createTestContext(t);
 
-      const { inviteId } = await asAdmin.mutation(api.invites.sendInvite, {
+      const result = await asAdmin.mutation(api.invites.sendInvite, {
         email: "filter1@example.com",
         role: "user",
         organizationId,
       });
+      const { inviteId } = expectInviteCreated(result);
       await asAdmin.mutation(api.invites.sendInvite, {
         email: "filter2@example.com",
         role: "user",

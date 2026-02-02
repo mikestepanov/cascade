@@ -36,13 +36,24 @@ export function CalendarHeaderDateChevrons(): React.ReactElement {
 
   return (
     <div className="flex items-center gap-2">
-      <Button variant="outline" className="h-7 w-7 p-1" onClick={handleDateBackward}>
+      <Button variant="outline" className="h-7 px-2 text-xs" onClick={() => setDate(new Date())}>
+        Today
+      </Button>
+      <Button
+        variant="outline"
+        className="h-7 w-7 p-1"
+        onClick={handleDateBackward}
+        aria-label="Previous month"
+      >
         <ChevronLeft className="min-w-5 min-h-5" />
       </Button>
-
       <span className="min-w-35 text-center font-medium">{format(date, "MMMM d, yyyy")}</span>
-
-      <Button variant="outline" className="h-7 w-7 p-1" onClick={handleDateForward}>
+      <Button
+        variant="outline"
+        className="h-7 w-7 p-1"
+        onClick={handleDateForward}
+        aria-label="Next month"
+      >
         <ChevronRight className="min-w-5 min-h-5" />
       </Button>
     </div>
