@@ -8,15 +8,31 @@ const __dirname = path.dirname(__filename);
 // Keywords that indicate high-value pages for UI/UX research
 const HIGH_VALUE_KEYWORDS = [
   "pricing",
-  "features",
+  "feature",
   "product",
-  "solutions",
-  "customers",
-  "docs",
-  "documentation",
+  "integrate",
+  "api",
+  "doc",
+  "blog",
+  "security",
+  "enterprise",
   "about",
-  "platform",
-  "integrations",
+];
+
+const COMMON_SAAS_ROUTES = [
+  "/settings",
+  "/settings/profile",
+  "/settings/billing",
+  "/settings/workspace",
+  "/settings/team",
+  "/dashboard",
+  "/projects",
+  "/members",
+  "/billing",
+  "/profile",
+  "/account",
+  "/organization",
+  "/notifications",
 ];
 
 // Usage: node scripts/discover_targets.js <competitor-url> <competitor-name>
@@ -27,18 +43,16 @@ if (!baseUrl || !competitorName) {
   process.exit(1);
 }
 
-async function discover() {
-  console.log(`\n🔍 Discovering targets for ${competitorName} (${baseUrl})...`);
-
-  const sitemapUrls = [
-    new URL("/sitemap.xml", baseUrl).href,
-    new URL("/sitemap_index.xml", baseUrl).href,
-    new URL("/sitemap-pages.xml", baseUrl).href,
+async function parseSitemap(url) {
+  const sitemapCandidateUrls = [
+    new URL("/sitemap.xml", url).href,
+    new URL("/sitemap_index.xml", url).href,
+    new URL("/sitemap-pages.xml", url).href,
   ];
 
-  const discoveredPages = [];
+  const urlsFromSitemap = [];
 
-  for (const sitemapUrl of sitemapUrls) {
+  for (const sitemapUrl of sitemapCandidateUrls) {
     try {
       console.log(`   Checking ${sitemapUrl}...`);
       const response = await fetch(sitemapUrl);
@@ -48,40 +62,67 @@ async function discover() {
       // Simple regex to extract <loc> URLs from sitemap
       const matches = xml.matchAll(/<loc>(.*?)<\/loc>/g);
       for (const match of matches) {
-        const url = match[1];
-        const pageName = path.basename(new URL(url).pathname) || "home";
-
-        // Score the page based on keywords
-        const score = HIGH_VALUE_KEYWORDS.reduce((acc, keyword) => {
-          return acc + (url.toLowerCase().includes(keyword) ? 1 : 0);
-        }, 0);
-
-        if (score > 0 || url === baseUrl || url === `${baseUrl}/`) {
-          discoveredPages.push({
-            url,
-            competitor: competitorName,
-            page: pageName || "home",
-            score,
-          });
-        }
+        urlsFromSitemap.push(match[1]);
       }
 
-      if (discoveredPages.length > 0) {
-        console.log(`   ✅ Found ${discoveredPages.length} potential targets in ${sitemapUrl}`);
+      if (urlsFromSitemap.length > 0) {
+        console.log(`   ✅ Found ${urlsFromSitemap.length} URLs in ${sitemapUrl}`);
         break; // Stop at first successful sitemap
       }
-    } catch (err) {
-      console.error(`   ❌ Failed to fetch ${sitemapUrl}: ${err.message}`);
+    } catch (_err) {
+      // console.error(`   ❌ Failed to fetch ${sitemapUrl}: ${err.message}`);
+    }
+  }
+  return urlsFromSitemap;
+}
+
+async function discover() {
+  console.log(`\n🔍 Discovering targets for ${competitorName} (${baseUrl})...`);
+
+  // Combine Sitemap URLs with Common Probes
+  const sitemapUrls = await parseSitemap(baseUrl);
+  const probeUrls = COMMON_SAAS_ROUTES.map((route) =>
+    baseUrl.endsWith("/") ? baseUrl + route.slice(1) : baseUrl + route,
+  );
+
+  const allCandidateUrls = [...new Set([...sitemapUrls, ...probeUrls])];
+  const discoveredPages = [];
+
+  for (const url of allCandidateUrls) {
+    try {
+      if (!url.startsWith(baseUrl)) continue;
+
+      const score = HIGH_VALUE_KEYWORDS.reduce((acc, keyword) => {
+        return acc + (url.toLowerCase().includes(keyword) ? 1 : 0);
+      }, 0);
+
+      // Score base common routes slightly higher to ensure they are captured if they exist
+      const isCommonRoute = COMMON_SAAS_ROUTES.some((r) => url.endsWith(r));
+      const finalScore = isCommonRoute ? score + 0.5 : score;
+
+      if (finalScore > 0 || url === baseUrl || url === `${baseUrl}/`) {
+        discoveredPages.push({
+          url,
+          competitor: competitorName,
+          page:
+            url === baseUrl || url === `${baseUrl}/`
+              ? "homepage"
+              : url.split("/").filter(Boolean).pop().split("?")[0],
+          score: finalScore,
+        });
+      }
+    } catch (_err) {
+      // ignore invalid URLs if any
     }
   }
 
-  // Fallback: If no sitemap found, just use the home page
+  // Fallback: If no pages found (e.g. no sitemap and probes failed), just use the home page
   if (discoveredPages.length === 0) {
-    console.log("   ⚠️ No sitemap found. Falling back to home page.");
+    console.log("   ⚠️ No targets discovered. Falling back to home page.");
     discoveredPages.push({
       url: baseUrl,
       competitor: competitorName,
-      page: "home",
+      page: "homepage",
       score: 1,
     });
   }

@@ -126,9 +126,19 @@ pnpm run discover <url> <competitor>
 node scripts/discover_targets.js https://linear.app linear
 ```
 
+- **Common Probe**: Automatically tries standard SaaS patterns (e.g., `/settings`, `/billing`) to find pages not in the sitemap.
+- **Scoring**: Ranks pages based on relevance to UI/UX research.
+
 **Output:** `docs/research/library/<competitor>_discovery.json`
 
-### AI Design Audit
+### Internal Route Discovery (Authenticated)
+
+When running with `--auth`, the scraper will dynamically discover new high-value internal routes by scanning sidebars and navigation menus for keywords like "Settings", "Team", or "Profile".
+
+- **Deep Data Injection**: These discovered routes are saved in the `discoveredRoutes` key of the `_deep.json` output.
+- **Usage**: Check the `_deep.json` of a dashboard scrape to find more specific internal URLs to target next.
+
+### AI Design Analysis (UX Audit)
 
 Uses Claude 3.5 Sonnet Vision to generate a UX audit, layout labels, and design token analysis from a screenshot.
 

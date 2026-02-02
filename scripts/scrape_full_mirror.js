@@ -147,6 +147,53 @@ async function handleGoogleAuth(page) {
   }
 }
 
+// Helper: Discover Internal Routes (for Authenticated Pages)
+async function discoverInternalRoutes(page) {
+  console.log("🔍 Scanning for internal high-value routes...");
+  return await page.evaluate(() => {
+    const HIGH_VALUE_LINK_KEYWORDS = [
+      "settings",
+      "profile",
+      "billing",
+      "workspace",
+      "team",
+      "members",
+      "usage",
+      "plan",
+      "integration",
+      "api",
+      "account",
+      "security",
+      "project",
+      "org",
+    ];
+
+    const links = Array.from(document.querySelectorAll("a"));
+    const discovered = [];
+    const seen = new Set();
+
+    for (const link of links) {
+      const url = link.href;
+      const text = link.innerText.toLowerCase().trim();
+      const ariaLabel = (link.getAttribute("aria-label") || "").toLowerCase();
+
+      // Only same-origin links
+      if (!url.startsWith(window.location.origin)) continue;
+      if (seen.has(url)) continue;
+
+      const isHighValue = HIGH_VALUE_LINK_KEYWORDS.some(
+        (kw) => text.includes(kw) || ariaLabel.includes(kw) || url.includes(kw),
+      );
+
+      if (isHighValue) {
+        discovered.push({ url, text: text.slice(0, 50) });
+        seen.add(url);
+      }
+    }
+    return discovered;
+  });
+}
+
 (async () => {
   console.log(`\n🪞 Total Mirror Capture: ${competitor}/${pageName}`);
   console.log(`   URL: ${targetUrl}\n`);
@@ -212,6 +259,15 @@ async function handleGoogleAuth(page) {
     if (authProvider === "google" && isLoginPage) {
       console.log("🔓 Login page detected. Attempting auto-auth...");
       await handleGoogleAuth(techPage);
+    }
+
+    // Discover internal routes if authenticated
+    let internalRoutes = [];
+    if (authProvider) {
+      internalRoutes = await discoverInternalRoutes(techPage);
+      if (internalRoutes.length > 0) {
+        console.log(`   ✨ Discovered ${internalRoutes.length} internal high-value routes.`);
+      }
     }
 
     // Attempt networkidle but don't crash if it stays busy
@@ -321,6 +377,11 @@ async function handleGoogleAuth(page) {
 
     return { cssVars, keyframes, fonts, scripts, fingerprint, scrapedAt: new Date().toISOString() };
   });
+
+  // Inject discovered internal routes into deepData
+  if (typeof internalRoutes !== "undefined") {
+    deepData.discoveredRoutes = internalRoutes;
+  }
 
   fs.writeFileSync(
     path.join(outputDir, `${pageName}_deep.json`),
