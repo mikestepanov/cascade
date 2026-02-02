@@ -479,11 +479,11 @@ These only check visibility, not functionality.
 - [x] Add InvitePage + acceptance flow (`e2e/invite.spec.ts`)
 - [x] Add issue detail page tests (`e2e/issue-detail-page.spec.ts`)
 
-### Sprint 3: Depth (Est. 3-5 days)
-- [ ] Deepen search tests
-- [ ] Deepen analytics tests
-- [ ] Add drag-drop tests
-- [ ] Add permission cascade tests
+### Sprint 3: Depth (Est. 3-5 days) - COMPLETE ✅
+- [x] Deepen search tests (`e2e/search.spec.ts`)
+- [x] Deepen analytics tests (`e2e/analytics.spec.ts`)
+- [x] Add drag-drop tests (`e2e/board-drag-drop.spec.ts`)
+- [x] Add permission cascade tests (`e2e/permission-cascade.spec.ts`)
 
 ### Sprint 4: Advanced (Est. 5+ days)
 - [ ] Resolve BlockNote issue
