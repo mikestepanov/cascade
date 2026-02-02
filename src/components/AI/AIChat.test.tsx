@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
-import { describe, it, vi, expect } from "vitest";
-import { AIChat } from "./AIChat";
+import { describe, expect, it, vi } from "vitest";
 import { TooltipProvider } from "../ui/Tooltip";
+import { AIChat } from "./AIChat";
 import * as hooks from "./hooks";
 
 // Mock the hook
@@ -37,7 +37,7 @@ describe("AIChat", () => {
     render(
       <TooltipProvider>
         <AIChat projectId={"proj1" as any} />
-      </TooltipProvider>
+      </TooltipProvider>,
     );
 
     // Check for the button
