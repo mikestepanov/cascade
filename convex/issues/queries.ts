@@ -735,6 +735,7 @@ export const listByProjectSmart = projectQuery({
         const q = (() => {
           if (args.sprintId) {
             if (state.category === "done") {
+              // Batch query: Promise.all handles parallelism
               return ctx.db
                 .query("issues")
                 .withIndex("by_project_sprint_status_updated", (q) =>
@@ -747,7 +748,7 @@ export const listByProjectSmart = projectQuery({
                 .filter(notDeleted);
             }
 
-            // Promise.all handles parallelism
+            // Batch query: Promise.all handles parallelism
             return ctx.db.query("issues").withIndex("by_project_sprint_status", (q) =>
               q
                 .eq("projectId", ctx.project._id)
@@ -758,6 +759,7 @@ export const listByProjectSmart = projectQuery({
           }
 
           if (state.category === "done") {
+            // Batch query: Promise.all handles parallelism
             return ctx.db
               .query("issues")
               .withIndex("by_project_status_updated", (q) =>
@@ -769,6 +771,7 @@ export const listByProjectSmart = projectQuery({
               .filter(notDeleted);
           }
 
+          // Batch query: Promise.all handles parallelism
           return ctx.db
             .query("issues")
             .withIndex("by_project_status", (q) =>
@@ -843,6 +846,7 @@ export const listByTeamSmart = authenticatedQuery({
       workflowStates.map(async (state: { id: string; category: string }) => {
         const q = (() => {
           if (state.category === "done") {
+            // Batch query: Promise.all handles parallelism
             return ctx.db
               .query("issues")
               .withIndex("by_team_status_updated", (q) =>
@@ -851,6 +855,7 @@ export const listByTeamSmart = authenticatedQuery({
               .filter(notDeleted);
           }
 
+          // Batch query: Promise.all handles parallelism
           return ctx.db
             .query("issues")
             .withIndex("by_team_status", (q) =>
@@ -911,6 +916,7 @@ export const getTeamIssueCounts = authenticatedQuery({
 
         if (state.category === "done") {
           // Optimization: fetch visible items efficiently using index
+          // Batch query: Promise.all handles parallelism
           const visibleIssues = await ctx.db
             .query("issues")
             .withIndex("by_team_status_updated", (q) =>
@@ -922,6 +928,7 @@ export const getTeamIssueCounts = authenticatedQuery({
           visibleCount = Math.min(visibleIssues.length, DEFAULT_PAGE_SIZE);
 
           // Fetch total count efficiently
+          // Batch query: Promise.all handles parallelism
           totalCount = await efficientCount(
             ctx.db
               .query("issues")
@@ -932,6 +939,7 @@ export const getTeamIssueCounts = authenticatedQuery({
           );
         } else {
           // Non-done columns
+          // Batch query: Promise.all handles parallelism
           totalCount = await efficientCount(
             ctx.db
               .query("issues")
@@ -996,6 +1004,7 @@ export const getIssueCounts = authenticatedQuery({
 
           if (state.category === "done") {
             // Optimization: fetch visible items efficiently using index
+            // Batch query: Promise.all handles parallelism
             const visibleIssues = await ctx.db
               .query("issues")
               .withIndex("by_project_status_updated", (q) =>
@@ -1010,6 +1019,7 @@ export const getIssueCounts = authenticatedQuery({
             visibleCount = Math.min(visibleIssues.length, DEFAULT_PAGE_SIZE);
 
             // Fetch total count efficiently
+            // Batch query: Promise.all handles parallelism
             totalCount = await efficientCount(
               ctx.db
                 .query("issues")
@@ -1019,6 +1029,7 @@ export const getIssueCounts = authenticatedQuery({
               //.filter(notDeleted), // Optimization: handled by index
             );
           } else {
+            // Batch query: Promise.all handles parallelism
             totalCount = await efficientCount(
               ctx.db
                 .query("issues")
@@ -1106,6 +1117,7 @@ async function getSprintIssueCounts(
 
       if (state.category === "done") {
         // Optimization: fetch visible items efficiently using index
+        // Batch query: Promise.all handles parallelism
         const visibleIssues = await ctx.db
           .query("issues")
           .withIndex("by_project_sprint_status_updated", (q) =>
@@ -1121,6 +1133,7 @@ async function getSprintIssueCounts(
         visibleCount = Math.min(visibleIssues.length, DEFAULT_PAGE_SIZE);
 
         // Fetch total count efficiently
+        // Batch query: Promise.all handles parallelism
         totalCount = await efficientCount(
           ctx.db
             .query("issues")
@@ -1135,6 +1148,7 @@ async function getSprintIssueCounts(
         );
       } else {
         // Non-done columns
+        // Batch query: Promise.all handles parallelism
         totalCount = await efficientCount(
           ctx.db
             .query("issues")
