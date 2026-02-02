@@ -29,6 +29,22 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Convex codegen
+        run: npx convex codegen
+        env:
+          CONVEX_DEPLOYMENT: ${{ secrets.CONVEX_DEPLOYMENT }}
+          CONVEX_DEPLOY_KEY: ${{ secrets.CONVEX_DEPLOY_KEY }}
+
+      - name: Check Convex generated files are up to date
+        run: |
+          if [ -n "$(git status --porcelain convex/_generated/)" ]; then
+            echo "❌ Convex generated files are out of date!"
+            echo "Run 'npx convex codegen' locally and commit the changes."
+            git diff convex/_generated/
+            exit 1
+          fi
+          echo "✅ Convex generated files are up to date"
+
       - name: Biome
         run: pnpm run biome:check
 
@@ -105,7 +121,7 @@ jobs:
       - name: Build
         run: pnpm run build
         env:
-          VITE_CONVEX_URL: ${{ secrets.VITE_CONVEX_URL }}
+          VITE_CONVEX_URL: ${{ github.ref == 'refs/heads/main' && secrets.VITE_CONVEX_URL || 'http://localhost:3211' }}
           CONVEX_DEPLOYMENT: ${{ secrets.CONVEX_DEPLOYMENT }}
           CONVEX_DEPLOY_KEY: ${{ secrets.CONVEX_DEPLOY_KEY }}
 
@@ -167,13 +183,33 @@ jobs:
         if: steps.playwright-cache.outputs.cache-hit == 'true'
         run: pnpm exec playwright install-deps chromium
 
+      - name: Start Local Convex Backend
+        if: github.ref != 'refs/heads/main'
+        env:
+          CONVEX_NONINTERACTIVE: 1
+          CONVEX_AGENT_MODE: anonymous
+        run: |
+          # Start convex in background and capture output to file
+          npx convex dev --local --until-success > convex.log 2>&1 &
+          CONVEX_PID=$!
+
+          # Wait for the initial push to complete (look for "Convex functions ready" message)
+          echo "Waiting for Convex backend to push functions..."
+          timeout 300 bash -c 'while ! grep -q "Convex functions ready" convex.log 2>/dev/null; do sleep 1; done' || {
+            echo "Timeout waiting for Convex functions"
+            cat convex.log
+            exit 1
+          }
+          echo "Convex functions are ready!"
+          cat convex.log
+
       - name: Run E2E tests
         # Use 2 workers per shard on standard GitHub runners to avoid choking
         run: pnpm exec playwright test --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }} --workers=2
         env:
           SHARD_INDEX: ${{ matrix.shardIndex }}
           CI: true
-          VITE_CONVEX_URL: ${{ secrets.VITE_CONVEX_URL }}
+          VITE_CONVEX_URL: ${{ github.ref == 'refs/heads/main' && secrets.VITE_CONVEX_URL || 'http://127.0.0.1:3211' }}
           E2E_API_KEY: ${{ secrets.E2E_API_KEY }}
           MAILTRAP_API_TOKEN: ${{ secrets.MAILTRAP_API_TOKEN }}
           MAILTRAP_ACCOUNT_ID: ${{ secrets.MAILTRAP_ACCOUNT_ID }}

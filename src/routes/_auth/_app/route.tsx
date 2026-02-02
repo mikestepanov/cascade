@@ -1,4 +1,5 @@
 import { api } from "@convex/_generated/api";
+import { isReservedSlug } from "@convex/shared/constants";
 import { createFileRoute, Outlet, useLocation, useNavigate } from "@tanstack/react-router";
 import { useConvexAuth, useMutation, useQuery } from "convex/react";
 import { useEffect, useRef, useState } from "react";
@@ -106,6 +107,11 @@ function InitializeOrganization() {
         const result = await initializeDefaultOrganization({});
         // Navigate to the new organization's dashboard
         if (result.slug) {
+          // Safety check: ensure we don't attempt to navigate to a reserved-word slug
+          if (isReservedSlug(result.slug)) {
+            throw new Error(`Server returned reserved slug "${result.slug}"`);
+          }
+
           navigate({
             to: ROUTES.dashboard.path,
             params: { orgSlug: result.slug },

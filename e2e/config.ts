@@ -18,8 +18,15 @@ function requireEnv(name: string): string {
 
 // Convex site URL for E2E API endpoints
 // Derived from VITE_CONVEX_URL (same pattern as frontend)
+// For local backend: HTTP actions are served on port 3210, not 3211
 function getConvexSiteUrl(): string {
-  return requireEnv("VITE_CONVEX_URL").replace(".convex.cloud", ".convex.site");
+  const convexUrl = requireEnv("VITE_CONVEX_URL");
+  // Local backend uses port 3210 for HTTP actions (site URL)
+  if (convexUrl.includes("127.0.0.1:3211") || convexUrl.includes("localhost:3211")) {
+    return convexUrl.replace(":3211", ":3210");
+  }
+  // Cloud deployment: .convex.cloud -> .convex.site
+  return convexUrl.replace(".convex.cloud", ".convex.site");
 }
 
 export const CONVEX_SITE_URL = getConvexSiteUrl();
@@ -248,8 +255,7 @@ export const RBAC_TEST_CONFIG = {
   projectName: "RBAC Test Project",
   /**
    * Organization slug for URL paths.
-   * Uses "dashboard" because that's the auto-created organization when test users first log in.
-   * The RBAC setup will use this existing organization instead of creating a new one.
+   * The RBAC setup will use the existing organization created during login.
    */
   orgSlug: TEST_ORG_SLUG,
 };
