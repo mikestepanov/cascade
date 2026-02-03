@@ -1,10 +1,8 @@
 import type { Id } from "@convex/_generated/dataModel";
+import type { IssuePriority, IssueType } from "@/lib/issue-utils";
 import { Button } from "../ui/Button";
 import { Flex } from "../ui/Flex";
 import { Typography } from "../ui/Typography";
-
-type IssueType = "task" | "bug" | "story" | "epic";
-type IssuePriority = "lowest" | "low" | "medium" | "high" | "highest";
 
 interface TemplateCardProps {
   template: {

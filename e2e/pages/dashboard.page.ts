@@ -209,8 +209,8 @@ export class DashboardPage extends BasePage {
     // Navigate directly to dashboard URL
     await this.page.goto(dashboardUrl, { waitUntil: "domcontentloaded" });
 
-    // Wait a bit for potential auth redirect to settle
-    await this.page.waitForTimeout(1000);
+    // Wait for URL to settle (auth redirect check)
+    await this.page.waitForLoadState("load");
 
     // Check if we got redirected to landing/signin page (auth failure)
     let finalUrl = this.page.url();
@@ -225,8 +225,8 @@ export class DashboardPage extends BasePage {
         finalUrl,
         ". Retrying navigation once...",
       );
-      // Wait for a moment to allow any lingering auth state to settle
-      await this.page.waitForTimeout(2000);
+      // Wait for auth state to settle by waiting for load state
+      await this.page.waitForLoadState("networkidle").catch(() => {});
       await this.page.goto(dashboardUrl, { waitUntil: "domcontentloaded" });
       await this.waitForLoad();
       finalUrl = this.page.url(); // Update finalUrl after retry

@@ -1,0 +1,3482 @@
+[
+  {
+    "url": "https://developer.monday.com/apps/docs/intro",
+    "competitor": "monday",
+    "page": "intro",
+    "score": 1
+  },
+  {
+    "url": "https://ir.monday.com/corporate-governance/board-of-directors/default.aspx",
+    "competitor": "monday",
+    "page": "default.aspx",
+    "score": 0
+  },
+  {
+    "url": "https://ir.monday.com/corporate-governance/committee-composition/default.aspx",
+    "competitor": "monday",
+    "page": "default.aspx",
+    "score": 0
+  },
+  {
+    "url": "https://ir.monday.com/corporate-governance/documents-and-charters/default.aspx",
+    "competitor": "monday",
+    "page": "default.aspx",
+    "score": 1
+  },
+  {
+    "url": "https://ir.monday.com/corporate-governance/management-team/default.aspx",
+    "competitor": "monday",
+    "page": "default.aspx",
+    "score": 0
+  },
+  {
+    "url": "https://ir.monday.com/financials-and-filings/quarterly-results/default.aspx",
+    "competitor": "monday",
+    "page": "default.aspx",
+    "score": 0
+  },
+  {
+    "url": "https://ir.monday.com/financials-and-filings/sec-filings/default.aspx",
+    "competitor": "monday",
+    "page": "default.aspx",
+    "score": 0
+  },
+  {
+    "url": "https://ir.monday.com/ir-resources/contact-ir/default.aspx",
+    "competitor": "monday",
+    "page": "default.aspx",
+    "score": 0
+  },
+  {
+    "url": "https://ir.monday.com/ir-resources/email-alerts/default.aspx",
+    "competitor": "monday",
+    "page": "default.aspx",
+    "score": 0
+  },
+  {
+    "url": "https://ir.monday.com/ir-resources/investor-faqs/default.aspx",
+    "competitor": "monday",
+    "page": "default.aspx",
+    "score": 0
+  },
+  {
+    "url": "https://ir.monday.com/news-and-events/events/default.aspx",
+    "competitor": "monday",
+    "page": "default.aspx",
+    "score": 0
+  },
+  {
+    "url": "https://ir.monday.com/news-and-events/news-releases/default.aspx",
+    "competitor": "monday",
+    "page": "default.aspx",
+    "score": 0
+  },
+  {
+    "url": "https://ir.monday.com/overview/default.aspx",
+    "competitor": "monday",
+    "page": "default.aspx",
+    "score": 0
+  },
+  {
+    "url": "https://ir.monday.com/stock-information/analyst-coverage/default.aspx",
+    "competitor": "monday",
+    "page": "default.aspx",
+    "score": 0
+  },
+  {
+    "url": "https://ir.monday.com/stock-information/default.aspx",
+    "competitor": "monday",
+    "page": "default.aspx",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/",
+    "competitor": "monday",
+    "page": "monday.com",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/academy",
+    "competitor": "monday",
+    "page": "academy",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/academy/view/certification/work-management-core-certification",
+    "competitor": "monday",
+    "page": "work-management-core-certification",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/academy/view/lesson/admin-essentials",
+    "competitor": "monday",
+    "page": "admin-essentials",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/academy/view/lesson/building-workflows",
+    "competitor": "monday",
+    "page": "building-workflows",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/academy/view/lesson/monday-ai-blocks",
+    "competitor": "monday",
+    "page": "monday-ai-blocks",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/academy/view/lesson/onboarding-essentials",
+    "competitor": "monday",
+    "page": "onboarding-essentials",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/academy/view/lesson/work-management-product-demo",
+    "competitor": "monday",
+    "page": "work-management-product-demo",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/accessibility-statement",
+    "competitor": "monday",
+    "page": "accessibility-statement",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/affiliate-program",
+    "competitor": "monday",
+    "page": "affiliate-program",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/ap/de/service-ms",
+    "competitor": "monday",
+    "page": "service-ms",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/ap/es/service-ms",
+    "competitor": "monday",
+    "page": "service-ms",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/ap/fr/service-ms",
+    "competitor": "monday",
+    "page": "service-ms",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/ap/ja/service-ms",
+    "competitor": "monday",
+    "page": "service-ms",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/ap/pt/service-ms",
+    "competitor": "monday",
+    "page": "service-ms",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/app-marketplace",
+    "competitor": "monday",
+    "page": "app-marketplace",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/appdeveloper",
+    "competitor": "monday",
+    "page": "appdeveloper",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/appdeveloper/appideas",
+    "competitor": "monday",
+    "page": "appideas",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/appdeveloper/components",
+    "competitor": "monday",
+    "page": "components",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/appdeveloper/monetization",
+    "competitor": "monday",
+    "page": "monetization",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/appdeveloper/resources",
+    "competitor": "monday",
+    "page": "resources",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/blog",
+    "competitor": "monday",
+    "page": "blog",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/careers",
+    "competitor": "monday",
+    "page": "careers",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/construction",
+    "competitor": "monday",
+    "page": "construction",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/construction/resources",
+    "competitor": "monday",
+    "page": "resources",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/construction/templates",
+    "competitor": "monday",
+    "page": "templates",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/crm/campaigns/pricing",
+    "competitor": "monday",
+    "page": "pricing",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/crm/email-tracking",
+    "competitor": "monday",
+    "page": "email-tracking",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/crm/features",
+    "competitor": "monday",
+    "page": "features",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/crm/marketplace",
+    "competitor": "monday",
+    "page": "marketplace",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/crm/marketplace/category/construction",
+    "competitor": "monday",
+    "page": "construction",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/crm/marketplace/category/food-beverage",
+    "competitor": "monday",
+    "page": "food-beverage",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/crm/marketplace/category/insurance",
+    "competitor": "monday",
+    "page": "insurance",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/crm/marketplace/category/legal",
+    "competitor": "monday",
+    "page": "legal",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/crm/marketplace/category/real-estate",
+    "competitor": "monday",
+    "page": "real-estate",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/crm/marketplace/template/comprehensive-deals-management-crm",
+    "competitor": "monday",
+    "page": "comprehensive-deals-management-crm",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/crm/marketplace/template/comprehensive-lead-management-solution",
+    "competitor": "monday",
+    "page": "comprehensive-lead-management-solution",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/crm/marketplace/template/headcount-planning-crm-template",
+    "competitor": "monday",
+    "page": "headcount-planning-crm-template",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/crm/marketplace/template/sales-team-onboarding-crm-template",
+    "competitor": "monday",
+    "page": "sales-team-onboarding-crm-template",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/crm/pricing",
+    "competitor": "monday",
+    "page": "pricing",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/crm/templates",
+    "competitor": "monday",
+    "page": "templates",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/crm/whats-new",
+    "competitor": "monday",
+    "page": "whats-new",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/cs/board-views",
+    "competitor": "monday",
+    "page": "board-views",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/cs/gettingstarted-collaborate",
+    "competitor": "monday",
+    "page": "gettingstarted-collaborate",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/cs/gettingstarted-questions",
+    "competitor": "monday",
+    "page": "gettingstarted-questions",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/cs/guide-thebasics",
+    "competitor": "monday",
+    "page": "guide-thebasics",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/customers/alachua-county",
+    "competitor": "monday",
+    "page": "alachua-county",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/customers/callbox",
+    "competitor": "monday",
+    "page": "callbox",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/customers/kcpetroleum",
+    "competitor": "monday",
+    "page": "kcpetroleum",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/customers/telefonica",
+    "competitor": "monday",
+    "page": "telefonica",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/dev/features",
+    "competitor": "monday",
+    "page": "features",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/dev/integrations",
+    "competitor": "monday",
+    "page": "integrations",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/dev/pricing",
+    "competitor": "monday",
+    "page": "pricing",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/dev/whats-new",
+    "competitor": "monday",
+    "page": "whats-new",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/developers/apps-annotation",
+    "competitor": "monday",
+    "page": "apps-annotation",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/developers/apps-docviewer",
+    "competitor": "monday",
+    "page": "apps-docviewer",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/developers/apps-pivot",
+    "competitor": "monday",
+    "page": "apps-pivot",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/developers/orgchart",
+    "competitor": "monday",
+    "page": "orgchart",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/education/templates",
+    "competitor": "monday",
+    "page": "templates",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/efficiencyimpact",
+    "competitor": "monday",
+    "page": "efficiencyimpact",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/efficiencyimpact/use-case/centralize-product-roadmapping",
+    "competitor": "monday",
+    "page": "centralize-product-roadmapping",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/efficiencyimpact/use-case/effectively-allocate-resources",
+    "competitor": "monday",
+    "page": "effectively-allocate-resources",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/efficiencyimpact/use-case/employee-directory-management",
+    "competitor": "monday",
+    "page": "employee-directory-management",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/efficiencyimpact/use-case/farfetch-cost-saved-content-production-process",
+    "competitor": "monday",
+    "page": "farfetch-cost-saved-content-production-process",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/efficiencyimpact/use-case/improve-sales-enablement-process",
+    "competitor": "monday",
+    "page": "improve-sales-enablement-process",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/efficiencyimpact/use-case/improve-sales-pipeline",
+    "competitor": "monday",
+    "page": "improve-sales-pipeline",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/efficiencyimpact/use-case/lead-management",
+    "competitor": "monday",
+    "page": "lead-management",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/efficiencyimpact/use-case/manage-events-successfully",
+    "competitor": "monday",
+    "page": "manage-events-successfully",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/efficiencyimpact/use-case/manage-risks-effectively",
+    "competitor": "monday",
+    "page": "manage-risks-effectively",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/efficiencyimpact/use-case/optimize-headcount-planning",
+    "competitor": "monday",
+    "page": "optimize-headcount-planning",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/efficiencyimpact/use-case/optimize-recruitment-processes",
+    "competitor": "monday",
+    "page": "optimize-recruitment-processes",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/efficiencyimpact/use-case/post-sales-processes",
+    "competitor": "monday",
+    "page": "post-sales-processes",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/efficiencyimpact/use-case/run-efficient-campaigns",
+    "competitor": "monday",
+    "page": "run-efficient-campaigns",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/efficiencyimpact/use-case/simplify-approval-process",
+    "competitor": "monday",
+    "page": "simplify-approval-process",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/efficiencyimpact/use-case/simplify-okr-tracking",
+    "competitor": "monday",
+    "page": "simplify-okr-tracking",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/efficiencyimpact/use-case/streamline-procurement-processes",
+    "competitor": "monday",
+    "page": "streamline-procurement-processes",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/efficiencyimpact/use-case/successfully-onboard-clients",
+    "competitor": "monday",
+    "page": "successfully-onboard-clients",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/efficiencyimpact/use-case/track-bugs-efficiently",
+    "competitor": "monday",
+    "page": "track-bugs-efficiently",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/elevate/",
+    "competitor": "monday",
+    "page": "elevate",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/elevate/2023-session/2024-product-roadmap/",
+    "competitor": "monday",
+    "page": "2024-product-roadmap",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/elevate/2024-session/runway-to-rollout-how-seamless-operations-supports-country-road-groups-5-pillars-of-excellence/",
+    "competitor": "monday",
+    "page": "runway-to-rollout-how-seamless-operations-supports-country-road-groups-5-pillars-of-excellence",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/elevate/agenda-and-speakers/",
+    "competitor": "monday",
+    "page": "agenda-and-speakers",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/elevate/agenda/",
+    "competitor": "monday",
+    "page": "agenda",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/elevate/certification/",
+    "competitor": "monday",
+    "page": "certification",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/elevate/faqs/",
+    "competitor": "monday",
+    "page": "faqs",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/elevate/green/",
+    "competitor": "monday",
+    "page": "green",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/elevate/location/london/",
+    "competitor": "monday",
+    "page": "london",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/elevate/location/london/agenda-and-speakers/",
+    "competitor": "monday",
+    "page": "agenda-and-speakers",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/elevate/location/london/certification/",
+    "competitor": "monday",
+    "page": "certification",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/elevate/location/london/faq/",
+    "competitor": "monday",
+    "page": "faq",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/elevate/location/london/pricing/",
+    "competitor": "monday",
+    "page": "pricing",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/elevate/location/london/sponsorship/",
+    "competitor": "monday",
+    "page": "sponsorship",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/elevate/location/nyc/",
+    "competitor": "monday",
+    "page": "nyc",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/elevate/location/nyc/agenda-and-speakers/",
+    "competitor": "monday",
+    "page": "agenda-and-speakers",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/elevate/location/nyc/certification/",
+    "competitor": "monday",
+    "page": "certification",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/elevate/location/nyc/faq/",
+    "competitor": "monday",
+    "page": "faq",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/elevate/location/nyc/pricing/",
+    "competitor": "monday",
+    "page": "pricing",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/elevate/location/nyc/sponsorship/",
+    "competitor": "monday",
+    "page": "sponsorship",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/elevate/new-home-online/",
+    "competitor": "monday",
+    "page": "new-home-online",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/elevate/online/faqs/",
+    "competitor": "monday",
+    "page": "faqs",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/elevate/online/join/",
+    "competitor": "monday",
+    "page": "join",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/elevate/pricing/",
+    "competitor": "monday",
+    "page": "pricing",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/elevate/speakers/",
+    "competitor": "monday",
+    "page": "speakers",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/elevate/sponsorship/",
+    "competitor": "monday",
+    "page": "sponsorship",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/elevate/watch-2023/",
+    "competitor": "monday",
+    "page": "watch-2023",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/elevate/watch-2023/green-efforts/",
+    "competitor": "monday",
+    "page": "green-efforts",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/elevate/watch-2023/speakers/",
+    "competitor": "monday",
+    "page": "speakers",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/elevate/watch-2024/",
+    "competitor": "monday",
+    "page": "watch-2024",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/enterprise-agile",
+    "competitor": "monday",
+    "page": "enterprise-agile",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/expertcatalog",
+    "competitor": "monday",
+    "page": "expertcatalog",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/features/automations",
+    "competitor": "monday",
+    "page": "automations",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/features/dashboards",
+    "competitor": "monday",
+    "page": "dashboards",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/features/files",
+    "competitor": "monday",
+    "page": "files",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/features/forms",
+    "competitor": "monday",
+    "page": "forms",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/features/gantt",
+    "competitor": "monday",
+    "page": "gantt",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/features/kanban",
+    "competitor": "monday",
+    "page": "kanban",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/gartner-collaborative-work-management",
+    "competitor": "monday",
+    "page": "gartner-collaborative-work-management",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/help",
+    "competitor": "monday",
+    "page": "help",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/helpcenter/contact-support",
+    "competitor": "monday",
+    "page": "contact-support",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/helpcenter/contact-the-ceos",
+    "competitor": "monday",
+    "page": "contact-the-ceos",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/integrations",
+    "competitor": "monday",
+    "page": "integrations",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/integrations/asana",
+    "competitor": "monday",
+    "page": "asana",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/integrations/github",
+    "competitor": "monday",
+    "page": "github",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/integrations/gmail",
+    "competitor": "monday",
+    "page": "gmail",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/integrations/jira",
+    "competitor": "monday",
+    "page": "jira",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/integrations/mailchimp",
+    "competitor": "monday",
+    "page": "mailchimp",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/integrations/slack",
+    "competitor": "monday",
+    "page": "slack",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/integrations/trello",
+    "competitor": "monday",
+    "page": "trello",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/integrations/twilio",
+    "competitor": "monday",
+    "page": "twilio",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/integrations/typeform",
+    "competitor": "monday",
+    "page": "typeform",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/integrations/zendesk",
+    "competitor": "monday",
+    "page": "zendesk",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/inventory-tracking",
+    "competitor": "monday",
+    "page": "inventory-tracking",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/lang/de",
+    "competitor": "monday",
+    "page": "de",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/lang/de/construction",
+    "competitor": "monday",
+    "page": "construction",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/lang/de/crm",
+    "competitor": "monday",
+    "page": "crm",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/lang/de/crm/features",
+    "competitor": "monday",
+    "page": "features",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/lang/de/crm/pricing",
+    "competitor": "monday",
+    "page": "pricing",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/lang/de/customers/citizens-bank",
+    "competitor": "monday",
+    "page": "citizens-bank",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/lang/de/customers/deezer",
+    "competitor": "monday",
+    "page": "deezer",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/lang/de/customers/falkbuilt",
+    "competitor": "monday",
+    "page": "falkbuilt",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/lang/de/customers/genpact",
+    "competitor": "monday",
+    "page": "genpact",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/lang/de/customers/paiperleck",
+    "competitor": "monday",
+    "page": "paiperleck",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/lang/de/customers/red-cross",
+    "competitor": "monday",
+    "page": "red-cross",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/lang/de/customers/software-ag",
+    "competitor": "monday",
+    "page": "software-ag",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/lang/de/customers/zippo",
+    "competitor": "monday",
+    "page": "zippo",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/lang/de/dev",
+    "competitor": "monday",
+    "page": "dev",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/lang/de/dev/pricing",
+    "competitor": "monday",
+    "page": "pricing",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/lang/de/enterprise",
+    "competitor": "monday",
+    "page": "enterprise",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/lang/de/features/dashboards",
+    "competitor": "monday",
+    "page": "dashboards",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/lang/de/features/kanban",
+    "competitor": "monday",
+    "page": "kanban",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/lang/de/help",
+    "competitor": "monday",
+    "page": "help",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/lang/de/integrations",
+    "competitor": "monday",
+    "page": "integrations",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/lang/de/marketing",
+    "competitor": "monday",
+    "page": "marketing",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/lang/de/mb/dpm/mrktng",
+    "competitor": "monday",
+    "page": "mrktng",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/lang/de/pricing",
+    "competitor": "monday",
+    "page": "pricing",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/lang/de/terms/all",
+    "competitor": "monday",
+    "page": "all",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/lang/de/trustcenter",
+    "competitor": "monday",
+    "page": "trustcenter",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/lang/de/trustcenter/datasecure",
+    "competitor": "monday",
+    "page": "datasecure",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/lang/de/use-cases/marketing-project-management",
+    "competitor": "monday",
+    "page": "marketing-project-management",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/lang/de/why-monday/stories",
+    "competitor": "monday",
+    "page": "stories",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/lang/de/work-management",
+    "competitor": "monday",
+    "page": "work-management",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/lang/de/work-management/pmo",
+    "competitor": "monday",
+    "page": "pmo",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/lang/de/work-management/pricing",
+    "competitor": "monday",
+    "page": "pricing",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/lang/de/workdocs",
+    "competitor": "monday",
+    "page": "workdocs",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/lang/es",
+    "competitor": "monday",
+    "page": "es",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/lang/es/crm",
+    "competitor": "monday",
+    "page": "crm",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/lang/es/crm/features",
+    "competitor": "monday",
+    "page": "features",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/lang/es/crm/pricing",
+    "competitor": "monday",
+    "page": "pricing",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/lang/es/customers/entrepreneur",
+    "competitor": "monday",
+    "page": "entrepreneur",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/lang/es/customers/thoughtworks",
+    "competitor": "monday",
+    "page": "thoughtworks",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/lang/es/customers/zippo",
+    "competitor": "monday",
+    "page": "zippo",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/lang/es/dev",
+    "competitor": "monday",
+    "page": "dev",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/lang/es/dev/integrations",
+    "competitor": "monday",
+    "page": "integrations",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/lang/es/dev/pricing",
+    "competitor": "monday",
+    "page": "pricing",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/lang/es/enterprise",
+    "competitor": "monday",
+    "page": "enterprise",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/lang/es/features/kanban",
+    "competitor": "monday",
+    "page": "kanban",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/lang/es/integrations",
+    "competitor": "monday",
+    "page": "integrations",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/lang/es/pricing",
+    "competitor": "monday",
+    "page": "pricing",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/lang/es/product",
+    "competitor": "monday",
+    "page": "product",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/lang/es/sales/contact-us",
+    "competitor": "monday",
+    "page": "contact-us",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/lang/es/use-cases/marketing-project-management",
+    "competitor": "monday",
+    "page": "marketing-project-management",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/lang/es/use-cases/media-production",
+    "competitor": "monday",
+    "page": "media-production",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/lang/es/use-cases/project-management-software",
+    "competitor": "monday",
+    "page": "project-management-software",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/lang/es/use-cases/remote-work",
+    "competitor": "monday",
+    "page": "remote-work",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/lang/es/work-management",
+    "competitor": "monday",
+    "page": "work-management",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/lang/es/work-management/pmo",
+    "competitor": "monday",
+    "page": "pmo",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/lang/es/work-management/pricing",
+    "competitor": "monday",
+    "page": "pricing",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/lang/es/workdocs",
+    "competitor": "monday",
+    "page": "workdocs",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/lang/fr",
+    "competitor": "monday",
+    "page": "fr",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/lang/fr/construction",
+    "competitor": "monday",
+    "page": "construction",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/lang/fr/contact-us",
+    "competitor": "monday",
+    "page": "contact-us",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/lang/fr/crm",
+    "competitor": "monday",
+    "page": "crm",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/lang/fr/crm/features",
+    "competitor": "monday",
+    "page": "features",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/lang/fr/crm/pricing",
+    "competitor": "monday",
+    "page": "pricing",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/lang/fr/cs/webinars",
+    "competitor": "monday",
+    "page": "webinars",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/lang/fr/customers/artlogic",
+    "competitor": "monday",
+    "page": "artlogic",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/lang/fr/customers/deezer",
+    "competitor": "monday",
+    "page": "deezer",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/lang/fr/customers/farfetch",
+    "competitor": "monday",
+    "page": "farfetch",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/lang/fr/customers/fermob",
+    "competitor": "monday",
+    "page": "fermob",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/lang/fr/customers/infopro-digital",
+    "competitor": "monday",
+    "page": "infopro-digital",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/lang/fr/customers/leboncoin",
+    "competitor": "monday",
+    "page": "leboncoin",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/lang/fr/customers/welcome-to-the-jungle",
+    "competitor": "monday",
+    "page": "welcome-to-the-jungle",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/lang/fr/customers/zippo",
+    "competitor": "monday",
+    "page": "zippo",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/lang/fr/dev",
+    "competitor": "monday",
+    "page": "dev",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/lang/fr/dev/features",
+    "competitor": "monday",
+    "page": "features",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/lang/fr/dev/integrations",
+    "competitor": "monday",
+    "page": "integrations",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/lang/fr/dev/pricing",
+    "competitor": "monday",
+    "page": "pricing",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/lang/fr/enterprise",
+    "competitor": "monday",
+    "page": "enterprise",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/lang/fr/features/automations",
+    "competitor": "monday",
+    "page": "automations",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/lang/fr/features/dashboards",
+    "competitor": "monday",
+    "page": "dashboards",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/lang/fr/features/gantt",
+    "competitor": "monday",
+    "page": "gantt",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/lang/fr/features/kanban",
+    "competitor": "monday",
+    "page": "kanban",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/lang/fr/help",
+    "competitor": "monday",
+    "page": "help",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/lang/fr/integrations",
+    "competitor": "monday",
+    "page": "integrations",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/lang/fr/integrations/sl",
+    "competitor": "monday",
+    "page": "sl",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/lang/fr/lp/mb/dpm/project",
+    "competitor": "monday",
+    "page": "project",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/lang/fr/lp/mb/dpm/workflow",
+    "competitor": "monday",
+    "page": "workflow",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/lang/fr/lp/mb/task/comparison",
+    "competitor": "monday",
+    "page": "comparison",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/lang/fr/lp/monday-jira-integration-lp",
+    "competitor": "monday",
+    "page": "monday-jira-integration-lp",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/lang/fr/lp/templates/store",
+    "competitor": "monday",
+    "page": "store",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/lang/fr/nonprofits",
+    "competitor": "monday",
+    "page": "nonprofits",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/lang/fr/operations",
+    "competitor": "monday",
+    "page": "operations",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/lang/fr/pricing",
+    "competitor": "monday",
+    "page": "pricing",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/lang/fr/sales/contact-us",
+    "competitor": "monday",
+    "page": "contact-us",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/lang/fr/sales/request-demo",
+    "competitor": "monday",
+    "page": "request-demo",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/lang/fr/smb",
+    "competitor": "monday",
+    "page": "smb",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/lang/fr/terms/all",
+    "competitor": "monday",
+    "page": "all",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/lang/fr/trustcenter/datasecure",
+    "competitor": "monday",
+    "page": "datasecure",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/lang/fr/trustcenter/securitypolicies",
+    "competitor": "monday",
+    "page": "securitypolicies",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/lang/fr/use-cases/hr-management-software",
+    "competitor": "monday",
+    "page": "hr-management-software",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/lang/fr/use-cases/it-operations",
+    "competitor": "monday",
+    "page": "it-operations",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/lang/fr/work-management",
+    "competitor": "monday",
+    "page": "work-management",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/lang/fr/work-management/pmo",
+    "competitor": "monday",
+    "page": "pmo",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/lang/fr/work-management/pricing",
+    "competitor": "monday",
+    "page": "pricing",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/lang/fr/workdocs",
+    "competitor": "monday",
+    "page": "workdocs",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/lang/ja",
+    "competitor": "monday",
+    "page": "ja",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/lang/ja/construction",
+    "competitor": "monday",
+    "page": "construction",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/lang/ja/crm",
+    "competitor": "monday",
+    "page": "crm",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/lang/ja/crm/features",
+    "competitor": "monday",
+    "page": "features",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/lang/ja/crm/pricing",
+    "competitor": "monday",
+    "page": "pricing",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/lang/ja/customers/3dpc",
+    "competitor": "monday",
+    "page": "3dpc",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/lang/ja/customers/cover",
+    "competitor": "monday",
+    "page": "cover",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/lang/ja/customers/cybercom",
+    "competitor": "monday",
+    "page": "cybercom",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/lang/ja/customers/hitachi-solutions",
+    "competitor": "monday",
+    "page": "hitachi-solutions",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/lang/ja/customers/hulu",
+    "competitor": "monday",
+    "page": "hulu",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/lang/ja/customers/lixil",
+    "competitor": "monday",
+    "page": "lixil",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/lang/ja/customers/nttdata-gsl",
+    "competitor": "monday",
+    "page": "nttdata-gsl",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/lang/ja/customers/smartcamp",
+    "competitor": "monday",
+    "page": "smartcamp",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/lang/ja/customers/sony-biz-networks",
+    "competitor": "monday",
+    "page": "sony-biz-networks",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/lang/ja/customers/toyota-coniq-alpha",
+    "competitor": "monday",
+    "page": "toyota-coniq-alpha",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/lang/ja/dev",
+    "competitor": "monday",
+    "page": "dev",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/lang/ja/dev/integrations",
+    "competitor": "monday",
+    "page": "integrations",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/lang/ja/dev/pricing",
+    "competitor": "monday",
+    "page": "pricing",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/lang/ja/enterprise",
+    "competitor": "monday",
+    "page": "enterprise",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/lang/ja/features/gantt",
+    "competitor": "monday",
+    "page": "gantt",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/lang/ja/features/kanban",
+    "competitor": "monday",
+    "page": "kanban",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/lang/ja/integrations",
+    "competitor": "monday",
+    "page": "integrations",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/lang/ja/pricing",
+    "competitor": "monday",
+    "page": "pricing",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/lang/ja/sales/contact-us",
+    "competitor": "monday",
+    "page": "contact-us",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/lang/ja/trustcenter",
+    "competitor": "monday",
+    "page": "trustcenter",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/lang/ja/why-monday/stories",
+    "competitor": "monday",
+    "page": "stories",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/lang/ja/work-management",
+    "competitor": "monday",
+    "page": "work-management",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/lang/ja/work-management/marketing",
+    "competitor": "monday",
+    "page": "marketing",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/lang/ja/work-management/pmo",
+    "competitor": "monday",
+    "page": "pmo",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/lang/ja/work-management/pricing",
+    "competitor": "monday",
+    "page": "pricing",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/lang/ja/workdocs",
+    "competitor": "monday",
+    "page": "workdocs",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/lang/ko",
+    "competitor": "monday",
+    "page": "ko",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/lang/ko/crm",
+    "competitor": "monday",
+    "page": "crm",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/lang/ko/crm/features",
+    "competitor": "monday",
+    "page": "features",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/lang/ko/crm/pricing",
+    "competitor": "monday",
+    "page": "pricing",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/lang/ko/dev",
+    "competitor": "monday",
+    "page": "dev",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/lang/ko/dev/pricing",
+    "competitor": "monday",
+    "page": "pricing",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/lang/ko/enterprise",
+    "competitor": "monday",
+    "page": "enterprise",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/lang/ko/features/dashboards",
+    "competitor": "monday",
+    "page": "dashboards",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/lang/ko/project-management/features",
+    "competitor": "monday",
+    "page": "features",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/lang/ko/work-management",
+    "competitor": "monday",
+    "page": "work-management",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/lang/ko/work-management/pricing",
+    "competitor": "monday",
+    "page": "pricing",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/lang/pt",
+    "competitor": "monday",
+    "page": "pt",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/lang/pt/construction",
+    "competitor": "monday",
+    "page": "construction",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/lang/pt/crm",
+    "competitor": "monday",
+    "page": "crm",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/lang/pt/crm/features",
+    "competitor": "monday",
+    "page": "features",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/lang/pt/crm/pricing",
+    "competitor": "monday",
+    "page": "pricing",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/lang/pt/dev",
+    "competitor": "monday",
+    "page": "dev",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/lang/pt/dev/integrations",
+    "competitor": "monday",
+    "page": "integrations",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/lang/pt/dev/pricing",
+    "competitor": "monday",
+    "page": "pricing",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/lang/pt/enterprise",
+    "competitor": "monday",
+    "page": "enterprise",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/lang/pt/integrations",
+    "competitor": "monday",
+    "page": "integrations",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/lang/pt/marketing",
+    "competitor": "monday",
+    "page": "marketing",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/lang/pt/pricing",
+    "competitor": "monday",
+    "page": "pricing",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/lang/pt/project-management",
+    "competitor": "monday",
+    "page": "project-management",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/lang/pt/sales/contact-us",
+    "competitor": "monday",
+    "page": "contact-us",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/lang/pt/use-cases/hr-management-software",
+    "competitor": "monday",
+    "page": "hr-management-software",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/lang/pt/use-cases/lowcode-nocode",
+    "competitor": "monday",
+    "page": "lowcode-nocode",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/lang/pt/use-cases/marketing-project-management",
+    "competitor": "monday",
+    "page": "marketing-project-management",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/lang/pt/use-cases/media-production",
+    "competitor": "monday",
+    "page": "media-production",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/lang/pt/use-cases/project-management-software",
+    "competitor": "monday",
+    "page": "project-management-software",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/lang/pt/use-cases/remote-work",
+    "competitor": "monday",
+    "page": "remote-work",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/lang/pt/use-cases/sales-crm",
+    "competitor": "monday",
+    "page": "sales-crm",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/lang/pt/why-monday",
+    "competitor": "monday",
+    "page": "why-monday",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/lang/pt/work-management",
+    "competitor": "monday",
+    "page": "work-management",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/lang/pt/work-management/marketing",
+    "competitor": "monday",
+    "page": "marketing",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/lang/pt/work-management/pmo",
+    "competitor": "monday",
+    "page": "pmo",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/lang/pt/work-management/pricing",
+    "competitor": "monday",
+    "page": "pricing",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/lang/pt/workdocs",
+    "competitor": "monday",
+    "page": "workdocs",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/lang/zh-tw/crm",
+    "competitor": "monday",
+    "page": "crm",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/lang/zh-tw/crm/features",
+    "competitor": "monday",
+    "page": "features",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/lang/zh-tw/crm/pricing",
+    "competitor": "monday",
+    "page": "pricing",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/lang/zh-tw/dev",
+    "competitor": "monday",
+    "page": "dev",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/magic",
+    "competitor": "monday",
+    "page": "magic",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/marketing-minimal/aw-marketing",
+    "competitor": "monday",
+    "page": "aw-marketing",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/marketplace/listing/10000008/hootsuite",
+    "competitor": "monday",
+    "page": "hootsuite",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/marketplace/listing/10000038/docusign",
+    "competitor": "monday",
+    "page": "docusign",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/marketplace/listing/10000599/alisonai-creative-intelligence",
+    "competitor": "monday",
+    "page": "alisonai-creative-intelligence",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/marketplace/listing/10000674/microsoft-sharepoint",
+    "competitor": "monday",
+    "page": "microsoft-sharepoint",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/marketplace/listing/10000957/lusha",
+    "competitor": "monday",
+    "page": "lusha",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/marketplace/listing/37/stripe",
+    "competitor": "monday",
+    "page": "stripe",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/marketplace/listing/39/linkedin",
+    "competitor": "monday",
+    "page": "linkedin",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/marketplace/listing/44/surveymonkey",
+    "competitor": "monday",
+    "page": "surveymonkey",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/marketplace/listing/48/dropbox",
+    "competitor": "monday",
+    "page": "dropbox",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/monday-msi-latest.msi",
+    "competitor": "monday",
+    "page": "monday-msi-latest.msi",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/monday-win-latest.exe",
+    "competitor": "monday",
+    "page": "monday-win-latest.exe",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/nonprofits",
+    "competitor": "monday",
+    "page": "nonprofits",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/nonprofits/elifelet",
+    "competitor": "monday",
+    "page": "elifelet",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/nonprofits/eligibility",
+    "competitor": "monday",
+    "page": "eligibility",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/nonprofits/features",
+    "competitor": "monday",
+    "page": "features",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/nonprofits/success-stories",
+    "competitor": "monday",
+    "page": "success-stories",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/nonprofits/successhub",
+    "competitor": "monday",
+    "page": "successhub",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/nonprofits/upchieve",
+    "competitor": "monday",
+    "page": "upchieve",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/nonprofits/webinars",
+    "competitor": "monday",
+    "page": "webinars",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/operations",
+    "competitor": "monday",
+    "page": "operations",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/p/about/",
+    "competitor": "monday",
+    "page": "about",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/p/certificate/private-team-training/",
+    "competitor": "monday",
+    "page": "private-team-training",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/p/certificate/private-team-training/private-team-training-request/",
+    "competitor": "monday",
+    "page": "private-team-training-request",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/p/esg/",
+    "competitor": "monday",
+    "page": "esg",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/p/find-a-partner/",
+    "competitor": "monday",
+    "page": "find-a-partner",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/p/find-a-partner/solutions/",
+    "competitor": "monday",
+    "page": "solutions",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/p/news/",
+    "competitor": "monday",
+    "page": "news",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/p/news/press-kit/",
+    "competitor": "monday",
+    "page": "press-kit",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/p/partner-solution/advertising-management-solution/",
+    "competitor": "monday",
+    "page": "advertising-management-solution",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/p/partner-solution/asset-management-solution/",
+    "competitor": "monday",
+    "page": "asset-management-solution",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/p/partner-solution/brick-and-mortar/",
+    "competitor": "monday",
+    "page": "brick-and-mortar",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/p/partner-solution/build-by-gro/",
+    "competitor": "monday",
+    "page": "build-by-gro",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/p/partner-solution/carbonrecruiting-suite/",
+    "competitor": "monday",
+    "page": "carbonrecruiting-suite",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/p/partner-solution/construction-pmo/",
+    "competitor": "monday",
+    "page": "construction-pmo",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/p/partner-solution/contract-management/",
+    "competitor": "monday",
+    "page": "contract-management",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/p/partner-solution/crm-and-practice-management-for-immigration-law-firms/",
+    "competitor": "monday",
+    "page": "crm-and-practice-management-for-immigration-law-firms",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/p/partner-solution/cyber-security-management-solution-csms/",
+    "competitor": "monday",
+    "page": "cyber-security-management-solution-csms",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/p/partner-solution/econstruction/",
+    "competitor": "monday",
+    "page": "econstruction",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/p/partner-solution/equipment-validation-and-maintenance-evm/",
+    "competitor": "monday",
+    "page": "equipment-validation-and-maintenance-evm",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/p/partner-solution/festival-ops-suite/",
+    "competitor": "monday",
+    "page": "festival-ops-suite",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/p/partner-solution/financial-statement-closing-period/",
+    "competitor": "monday",
+    "page": "financial-statement-closing-period",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/p/partner-solution/foia-request-management/",
+    "competitor": "monday",
+    "page": "foia-request-management",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/p/partner-solution/global-publishing-copyright-operations/",
+    "competitor": "monday",
+    "page": "global-publishing-copyright-operations",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/p/partner-solution/grid-ops/",
+    "competitor": "monday",
+    "page": "grid-ops",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/p/partner-solution/healthcare-intake-crm/",
+    "competitor": "monday",
+    "page": "healthcare-intake-crm",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/p/partner-solution/healthcare-provider-solution/",
+    "competitor": "monday",
+    "page": "healthcare-provider-solution",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/p/partner-solution/hr-management/",
+    "competitor": "monday",
+    "page": "hr-management",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/p/partner-solution/human-resource-information-system-hris/",
+    "competitor": "monday",
+    "page": "human-resource-information-system-hris",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/p/partner-solution/interior-design-and-architectural-crm/",
+    "competitor": "monday",
+    "page": "interior-design-and-architectural-crm",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/p/partner-solution/inventory-management/",
+    "competitor": "monday",
+    "page": "inventory-management",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/p/partner-solution/iso-9001-compliancepro/",
+    "competitor": "monday",
+    "page": "iso-9001-compliancepro",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/p/partner-solution/jobflows/",
+    "competitor": "monday",
+    "page": "jobflows",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/p/partner-solution/kpi-genius/",
+    "competitor": "monday",
+    "page": "kpi-genius",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/p/partner-solution/legal-operations/",
+    "competitor": "monday",
+    "page": "legal-operations",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/p/partner-solution/legal-project-management-lpm-solution/",
+    "competitor": "monday",
+    "page": "legal-project-management-lpm-solution",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/p/partner-solution/lumos-365-information-and-data-management-for-energy-producers/",
+    "competitor": "monday",
+    "page": "lumos-365-information-and-data-management-for-energy-producers",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/p/partner-solution/manufacturing-solution/",
+    "competitor": "monday",
+    "page": "manufacturing-solution",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/p/partner-solution/marketing-in-a-box/",
+    "competitor": "monday",
+    "page": "marketing-in-a-box",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/p/partner-solution/medical-office-solution/",
+    "competitor": "monday",
+    "page": "medical-office-solution",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/p/partner-solution/mergers-acquisitions-os-2/",
+    "competitor": "monday",
+    "page": "mergers-acquisitions-os-2",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/p/partner-solution/sox-over-monday-com/",
+    "competitor": "monday",
+    "page": "sox-over-monday-com",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/p/press-release/fortune-media-and-great-place-to-work-name-monday-com-to-2023-fortune-best-workplaces-in-new-york/",
+    "competitor": "monday",
+    "page": "fortune-media-and-great-place-to-work-name-monday-com-to-2023-fortune-best-workplaces-in-new-york",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/p/press-release/monday-com-adds-built-in-monetization-solution-to-the-apps-marketplace/",
+    "competitor": "monday",
+    "page": "monday-com-adds-built-in-monetization-solution-to-the-apps-marketplace",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/p/press-release/monday-com-announces-ai-vision-to-empower-businesses-to-scale/",
+    "competitor": "monday",
+    "page": "monday-com-announces-ai-vision-to-empower-businesses-to-scale",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/p/press-release/monday-com-announces-first-quarter-2022-results/",
+    "competitor": "monday",
+    "page": "monday-com-announces-first-quarter-2022-results",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/p/press-release/monday-com-announces-first-quarter-2025-results/",
+    "competitor": "monday",
+    "page": "monday-com-announces-first-quarter-2025-results",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/p/press-release/monday-com-announces-fourth-quarter-and-fiscal-year-2021-results/",
+    "competitor": "monday",
+    "page": "monday-com-announces-fourth-quarter-and-fiscal-year-2021-results",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/p/press-release/monday-com-announces-fourth-quarter-and-fiscal-year-2024-results/",
+    "competitor": "monday",
+    "page": "monday-com-announces-fourth-quarter-and-fiscal-year-2024-results",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/p/press-release/monday-com-announces-full-release-of-monday-service-its-ai-enterprise-service-management-platform/",
+    "competitor": "monday",
+    "page": "monday-com-announces-full-release-of-monday-service-its-ai-enterprise-service-management-platform",
+    "score": 2
+  },
+  {
+    "url": "https://monday.com/p/press-release/monday-com-announces-participation-in-the-nasdaq-46th-investor-conference/",
+    "competitor": "monday",
+    "page": "monday-com-announces-participation-in-the-nasdaq-46th-investor-conference",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/p/press-release/monday-com-announces-strategic-alliance-with-kpmg/",
+    "competitor": "monday",
+    "page": "monday-com-announces-strategic-alliance-with-kpmg",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/p/press-release/monday-com-announces-third-quarter-2024-results/",
+    "competitor": "monday",
+    "page": "monday-com-announces-third-quarter-2024-results",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/p/press-release/monday-com-debuts-first-big-game-commercial/",
+    "competitor": "monday",
+    "page": "monday-com-debuts-first-big-game-commercial",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/p/press-release/monday-com-doubles-down-on-denver-with-new-larger-office-space-to-support-expanding-team/",
+    "competitor": "monday",
+    "page": "monday-com-doubles-down-on-denver-with-new-larger-office-space-to-support-expanding-team",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/p/press-release/monday-com-expands-global-leadership-team-with-appointment-of-cro/",
+    "competitor": "monday",
+    "page": "monday-com-expands-global-leadership-team-with-appointment-of-cro",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/p/press-release/monday-com-hosts-annual-partner-summit-showcasing-growth-and-collaboration-across-global-ecosystem/",
+    "competitor": "monday",
+    "page": "monday-com-hosts-annual-partner-summit-showcasing-growth-and-collaboration-across-global-ecosystem",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/p/press-release/monday-com-named-a-2024-gartner-magic-quadrant-leader-for-collaborative-work-management/",
+    "competitor": "monday",
+    "page": "monday-com-named-a-2024-gartner-magic-quadrant-leader-for-collaborative-work-management",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/p/press-release/monday-com-named-a-2024-gartner-magic-quadrant-leader-the-only-work-management-vendor-recognized-as-a-leader-in-three-magic-quadrant-reports/",
+    "competitor": "monday",
+    "page": "monday-com-named-a-2024-gartner-magic-quadrant-leader-the-only-work-management-vendor-recognized-as-a-leader-in-three-magic-quadrant-reports",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/p/press-release/monday-com-named-a-leader-in-the-2025-gartner-magic-quadrant-for-adaptive-project-management-and-reporting-for-the-fourth-consecutive-year/",
+    "competitor": "monday",
+    "page": "monday-com-named-a-leader-in-the-2025-gartner-magic-quadrant-for-adaptive-project-management-and-reporting-for-the-fourth-consecutive-year",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/p/press-release/monday-com-named-one-of-australias-best-workplaces-in-technology-list-2023/",
+    "competitor": "monday",
+    "page": "monday-com-named-one-of-australias-best-workplaces-in-technology-list-2023",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/p/press-release/monday-com-named-one-of-the-uks-best-workplaces-in-2023/",
+    "competitor": "monday",
+    "page": "monday-com-named-one-of-the-uks-best-workplaces-in-2023",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/p/press-release/monday-com-opens-new-apac-headquarters-in-sydney/",
+    "competitor": "monday",
+    "page": "monday-com-opens-new-apac-headquarters-in-sydney",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/p/press-release/monday-com-publishes-its-2024-environment-social-and-governance-esg-report/",
+    "competitor": "monday",
+    "page": "monday-com-publishes-its-2024-environment-social-and-governance-esg-report",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/p/press-release/monday-com-releases-second-annual-environment-social-and-governance-esg-report/",
+    "competitor": "monday",
+    "page": "monday-com-releases-second-annual-environment-social-and-governance-esg-report",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/p/press-release/monday-com-to-announce-first-quarter-2022-financial-results-on-monday-may-16-2022/",
+    "competitor": "monday",
+    "page": "monday-com-to-announce-first-quarter-2022-financial-results-on-monday-may-16-2022",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/p/press-release/monday-com-to-announce-fourth-quarter-and-fiscal-year-2021-financial-results-on-wednesday-february-23-2022/",
+    "competitor": "monday",
+    "page": "monday-com-to-announce-fourth-quarter-and-fiscal-year-2021-financial-results-on-wednesday-february-23-2022",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/p/press-release/monday-com-to-announce-third-quarter-2025-financial-results-on-monday-november-10-2025/",
+    "competitor": "monday",
+    "page": "monday-com-to-announce-third-quarter-2025-financial-results-on-monday-november-10-2025",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/p/press-release/monday-com-unveils-plans-to-incorporate-transformative-ai-capabilities-in-2023/",
+    "competitor": "monday",
+    "page": "monday-com-unveils-plans-to-incorporate-transformative-ai-capabilities-in-2023",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/p/press-release/monday-com-unveils-platform-wide-ai-shift-the-work-execution-era-arrives/",
+    "competitor": "monday",
+    "page": "monday-com-unveils-platform-wide-ai-shift-the-work-execution-era-arrives",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/p/press-releases/",
+    "competitor": "monday",
+    "page": "press-releases",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/partners/aws",
+    "competitor": "monday",
+    "page": "aws",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/partners/omnitas",
+    "competitor": "monday",
+    "page": "omnitas",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/partners/professional-services",
+    "competitor": "monday",
+    "page": "professional-services",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/presents/",
+    "competitor": "monday",
+    "page": "presents",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/presents/company-culture/",
+    "competitor": "monday",
+    "page": "company-culture",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/presents/company-culture/why-do-we-keep-all-our-marketing-in-house/",
+    "competitor": "monday",
+    "page": "why-do-we-keep-all-our-marketing-in-house",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/presents/customer-stories/",
+    "competitor": "monday",
+    "page": "customer-stories",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/presents/customer-stories/nissan-north-america-with-monday-com-smyrna-tn/",
+    "competitor": "monday",
+    "page": "nissan-north-america-with-monday-com-smyrna-tn",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/presents/elevate-show/",
+    "competitor": "monday",
+    "page": "elevate-show",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/presents/elevate-show/monday-com-for-retail/",
+    "competitor": "monday",
+    "page": "monday-com-for-retail",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/presents/monday-insights/",
+    "competitor": "monday",
+    "page": "monday-insights",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/presents/monday-makers/",
+    "competitor": "monday",
+    "page": "monday-makers",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/presents/monday-makers/this-machine-turns-virtual-meetings-into-an-emoji-fest/",
+    "competitor": "monday",
+    "page": "this-machine-turns-virtual-meetings-into-an-emoji-fest",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/presents/on-the-ground/",
+    "competitor": "monday",
+    "page": "on-the-ground",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/presents/on-the-ground/helping-the-south-african-red-cross-rescue-mission/",
+    "competitor": "monday",
+    "page": "helping-the-south-african-red-cross-rescue-mission",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/presents/presents-360/",
+    "competitor": "monday",
+    "page": "presents-360",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/presents/presents-360/inside-look-at-monday-coms-2023-product-roadmap-2/",
+    "competitor": "monday",
+    "page": "inside-look-at-monday-coms-2023-product-roadmap-2",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/presents/see-how-they-run/",
+    "competitor": "monday",
+    "page": "see-how-they-run",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/presents/the-bottom-line/",
+    "competitor": "monday",
+    "page": "the-bottom-line",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/presents/the-bottom-line/breaking-silos/",
+    "competitor": "monday",
+    "page": "breaking-silos",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/presents/whats-working/",
+    "competitor": "monday",
+    "page": "whats-working",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/presents/whats-working/how-to-hire-and-retain-top-talent/",
+    "competitor": "monday",
+    "page": "how-to-hire-and-retain-top-talent",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/presents/working-on-it/",
+    "competitor": "monday",
+    "page": "working-on-it",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/presents/working-on-it/how-does-the-workday-look-around-the-world/",
+    "competitor": "monday",
+    "page": "how-does-the-workday-look-around-the-world",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/presents/working-on-it/why-is-transparency-so-important/",
+    "competitor": "monday",
+    "page": "why-is-transparency-so-important",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/pricing",
+    "competitor": "monday",
+    "page": "pricing",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/projects/features",
+    "competitor": "monday",
+    "page": "features",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/reviews",
+    "competitor": "monday",
+    "page": "reviews",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/sales/contact-us",
+    "competitor": "monday",
+    "page": "contact-us",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/security/form",
+    "competitor": "monday",
+    "page": "form",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/service/pricing",
+    "competitor": "monday",
+    "page": "pricing",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/smb",
+    "competitor": "monday",
+    "page": "smb",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/terms/all",
+    "competitor": "monday",
+    "page": "all",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/terms/csa",
+    "competitor": "monday",
+    "page": "csa",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/terms/soc1",
+    "competitor": "monday",
+    "page": "soc1",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/terms/soc2",
+    "competitor": "monday",
+    "page": "soc2",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/terms/soc3",
+    "competitor": "monday",
+    "page": "soc3",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/time-management",
+    "competitor": "monday",
+    "page": "time-management",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/trustcenter",
+    "competitor": "monday",
+    "page": "trustcenter",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/trustcenter/datasecure",
+    "competitor": "monday",
+    "page": "datasecure",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/trustcenter/dora",
+    "competitor": "monday",
+    "page": "dora",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/trustcenter/faqs",
+    "competitor": "monday",
+    "page": "faqs",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/trustcenter/iso",
+    "competitor": "monday",
+    "page": "iso",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/trustcenter/privacy",
+    "competitor": "monday",
+    "page": "privacy",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/trustcenter/securitypolicies",
+    "competitor": "monday",
+    "page": "securitypolicies",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/vibe/",
+    "competitor": "monday",
+    "page": "vibe",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/w/ai",
+    "competitor": "monday",
+    "page": "ai",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/w/ai-trust-center",
+    "competitor": "monday",
+    "page": "ai-trust-center",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/w/crm",
+    "competitor": "monday",
+    "page": "crm",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/w/crm/campaigns",
+    "competitor": "monday",
+    "page": "campaigns",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/w/crm/partnership",
+    "competitor": "monday",
+    "page": "partnership",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/w/customer-stories",
+    "competitor": "monday",
+    "page": "customer-stories",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/w/customer-stories/argentine-red-cross",
+    "competitor": "monday",
+    "page": "argentine-red-cross",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/w/customer-stories/backswing-golf-events",
+    "competitor": "monday",
+    "page": "backswing-golf-events",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/w/customer-stories/better-health-network",
+    "competitor": "monday",
+    "page": "better-health-network",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/w/customer-stories/biopak",
+    "competitor": "monday",
+    "page": "biopak",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/w/customer-stories/black-mountain",
+    "competitor": "monday",
+    "page": "black-mountain",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/w/customer-stories/call-box",
+    "competitor": "monday",
+    "page": "call-box",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/w/customer-stories/canva",
+    "competitor": "monday",
+    "page": "canva",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/w/customer-stories/cenversa",
+    "competitor": "monday",
+    "page": "cenversa",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/w/customer-stories/citizens-bank",
+    "competitor": "monday",
+    "page": "citizens-bank",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/w/customer-stories/cloudinary",
+    "competitor": "monday",
+    "page": "cloudinary",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/w/customer-stories/coles-360",
+    "competitor": "monday",
+    "page": "coles-360",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/w/customer-stories/compass",
+    "competitor": "monday",
+    "page": "compass",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/w/customer-stories/country-road-group",
+    "competitor": "monday",
+    "page": "country-road-group",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/w/customer-stories/datacom",
+    "competitor": "monday",
+    "page": "datacom",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/w/customer-stories/deezer",
+    "competitor": "monday",
+    "page": "deezer",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/w/customer-stories/el-al",
+    "competitor": "monday",
+    "page": "el-al",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/w/customer-stories/entrepreneur",
+    "competitor": "monday",
+    "page": "entrepreneur",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/w/customer-stories/essence-corp",
+    "competitor": "monday",
+    "page": "essence-corp",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/w/customer-stories/falkbuilt",
+    "competitor": "monday",
+    "page": "falkbuilt",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/w/customer-stories/farfetch",
+    "competitor": "monday",
+    "page": "farfetch",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/w/customer-stories/flight-centre",
+    "competitor": "monday",
+    "page": "flight-centre",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/w/customer-stories/genpact",
+    "competitor": "monday",
+    "page": "genpact",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/w/customer-stories/howard-kennedy",
+    "competitor": "monday",
+    "page": "howard-kennedy",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/w/customer-stories/indosuez-wealth-management",
+    "competitor": "monday",
+    "page": "indosuez-wealth-management",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/w/customer-stories/jamf",
+    "competitor": "monday",
+    "page": "jamf",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/w/customer-stories/kc-petroleum",
+    "competitor": "monday",
+    "page": "kc-petroleum",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/w/customer-stories/knight-frank",
+    "competitor": "monday",
+    "page": "knight-frank",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/w/customer-stories/luxie-tech",
+    "competitor": "monday",
+    "page": "luxie-tech",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/w/customer-stories/m-booth",
+    "competitor": "monday",
+    "page": "m-booth",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/w/customer-stories/mcdonalds",
+    "competitor": "monday",
+    "page": "mcdonalds",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/w/customer-stories/mid-yorkshire-nhs-trust",
+    "competitor": "monday",
+    "page": "mid-yorkshire-nhs-trust",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/w/customer-stories/moneytree",
+    "competitor": "monday",
+    "page": "moneytree",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/w/customer-stories/motorola-forrester-report",
+    "competitor": "monday",
+    "page": "motorola-forrester-report",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/w/customer-stories/mydeal",
+    "competitor": "monday",
+    "page": "mydeal",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/w/customer-stories/officeworks",
+    "competitor": "monday",
+    "page": "officeworks",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/w/customer-stories/oscar",
+    "competitor": "monday",
+    "page": "oscar",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/w/customer-stories/playtech",
+    "competitor": "monday",
+    "page": "playtech",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/w/customer-stories/ray-white",
+    "competitor": "monday",
+    "page": "ray-white",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/w/customer-stories/rmi",
+    "competitor": "monday",
+    "page": "rmi",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/w/customer-stories/san-diego-county-office-of-education",
+    "competitor": "monday",
+    "page": "san-diego-county-office-of-education",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/w/customer-stories/seer-interactive",
+    "competitor": "monday",
+    "page": "seer-interactive",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/w/customer-stories/software-ag",
+    "competitor": "monday",
+    "page": "software-ag",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/w/customer-stories/sph-media",
+    "competitor": "monday",
+    "page": "sph-media",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/w/customer-stories/the-student-hotel",
+    "competitor": "monday",
+    "page": "the-student-hotel",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/w/customer-stories/the-travel-corporation",
+    "competitor": "monday",
+    "page": "the-travel-corporation",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/w/customer-stories/thoughtworks",
+    "competitor": "monday",
+    "page": "thoughtworks",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/w/customer-stories/todaytix-group",
+    "competitor": "monday",
+    "page": "todaytix-group",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/w/customer-stories/unilever-international",
+    "competitor": "monday",
+    "page": "unilever-international",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/w/customer-stories/velv",
+    "competitor": "monday",
+    "page": "velv",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/w/customer-stories/vistra",
+    "competitor": "monday",
+    "page": "vistra",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/w/customer-stories/vml",
+    "competitor": "monday",
+    "page": "vml",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/w/customer-stories/whsmith",
+    "competitor": "monday",
+    "page": "whsmith",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/w/customer-stories/zippo",
+    "competitor": "monday",
+    "page": "zippo",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/w/customer-stories/zopabank",
+    "competitor": "monday",
+    "page": "zopabank",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/w/de/crm/campaigns",
+    "competitor": "monday",
+    "page": "campaigns",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/w/de/enterprise",
+    "competitor": "monday",
+    "page": "enterprise",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/w/dev",
+    "competitor": "monday",
+    "page": "dev",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/w/enterprise",
+    "competitor": "monday",
+    "page": "enterprise",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/w/enterprise-pro-services",
+    "competitor": "monday",
+    "page": "enterprise-pro-services",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/w/es/ai-trust-center",
+    "competitor": "monday",
+    "page": "ai-trust-center",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/w/es/crm/campaigns",
+    "competitor": "monday",
+    "page": "campaigns",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/w/es/crm/partnership",
+    "competitor": "monday",
+    "page": "partnership",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/w/es/enterprise",
+    "competitor": "monday",
+    "page": "enterprise",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/w/fr/ai",
+    "competitor": "monday",
+    "page": "ai",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/w/fr/crm/campaigns",
+    "competitor": "monday",
+    "page": "campaigns",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/w/fr/crm/partnership",
+    "competitor": "monday",
+    "page": "partnership",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/w/gartner-mq/apmr-2024",
+    "competitor": "monday",
+    "page": "apmr-2024",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/w/gartner-mq/cwm-2024",
+    "competitor": "monday",
+    "page": "cwm-2024",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/w/gartner-mq/cwm-2025-g",
+    "competitor": "monday",
+    "page": "cwm-2025-g",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/w/industries/media",
+    "competitor": "monday",
+    "page": "media",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/w/industries/public-sector",
+    "competitor": "monday",
+    "page": "public-sector",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/w/industries/retail",
+    "competitor": "monday",
+    "page": "retail",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/w/insights",
+    "competitor": "monday",
+    "page": "insights",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/w/ja/ai",
+    "competitor": "monday",
+    "page": "ai",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/w/ja/crm/campaigns",
+    "competitor": "monday",
+    "page": "campaigns",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/w/mcp",
+    "competitor": "monday",
+    "page": "mcp",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/w/mondaydb",
+    "competitor": "monday",
+    "page": "mondaydb",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/w/partnership",
+    "competitor": "monday",
+    "page": "partnership",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/w/platform",
+    "competitor": "monday",
+    "page": "platform",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/w/pt/crm/campaigns",
+    "competitor": "monday",
+    "page": "campaigns",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/w/pt/crm/partnership",
+    "competitor": "monday",
+    "page": "partnership",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/w/service",
+    "competitor": "monday",
+    "page": "service",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/w/service-partner",
+    "competitor": "monday",
+    "page": "service-partner",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/w/service/partnership-service",
+    "competitor": "monday",
+    "page": "partnership-service",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/w/solution-partner",
+    "competitor": "monday",
+    "page": "solution-partner",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/w/tech-partner",
+    "competitor": "monday",
+    "page": "tech-partner",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/w/work-management",
+    "competitor": "monday",
+    "page": "work-management",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/w/work-management-for-enterprise",
+    "competitor": "monday",
+    "page": "work-management-for-enterprise",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/w/work-management/marketing",
+    "competitor": "monday",
+    "page": "marketing",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/whats-new",
+    "competitor": "monday",
+    "page": "whats-new",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/why-monday",
+    "competitor": "monday",
+    "page": "why-monday",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/work-management/marketing",
+    "competitor": "monday",
+    "page": "marketing",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/work-management/pmo",
+    "competitor": "monday",
+    "page": "pmo",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/work-management/pricing",
+    "competitor": "monday",
+    "page": "pricing",
+    "score": 1
+  },
+  {
+    "url": "https://monday.com/workdocs",
+    "competitor": "monday",
+    "page": "workdocs",
+    "score": 1
+  },
+  {
+    "url": "https://status.monday.com/",
+    "competitor": "monday",
+    "page": "status.monday.com",
+    "score": 0
+  },
+  {
+    "url": "https://status.monday.com/history",
+    "competitor": "monday",
+    "page": "history",
+    "score": 0
+  },
+  {
+    "url": "https://status.monday.com/uptime",
+    "competitor": "monday",
+    "page": "uptime",
+    "score": 0
+  },
+  {
+    "url": "https://support.monday.com/hc/en-us",
+    "competitor": "monday",
+    "page": "en-us",
+    "score": 0
+  },
+  {
+    "url": "https://support.monday.com/hc/en-us/p/support-lp",
+    "competitor": "monday",
+    "page": "support-lp",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/settings",
+    "competitor": "monday",
+    "page": "settings",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/settings/profile",
+    "competitor": "monday",
+    "page": "profile",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/settings/billing",
+    "competitor": "monday",
+    "page": "billing",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/settings/workspace",
+    "competitor": "monday",
+    "page": "workspace",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/settings/team",
+    "competitor": "monday",
+    "page": "team",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/dashboard",
+    "competitor": "monday",
+    "page": "dashboard",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/projects",
+    "competitor": "monday",
+    "page": "projects",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/members",
+    "competitor": "monday",
+    "page": "members",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/billing",
+    "competitor": "monday",
+    "page": "billing",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/profile",
+    "competitor": "monday",
+    "page": "profile",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/account",
+    "competitor": "monday",
+    "page": "account",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/organization",
+    "competitor": "monday",
+    "page": "organization",
+    "score": 0
+  },
+  {
+    "url": "https://monday.com/notifications",
+    "competitor": "monday",
+    "page": "notifications",
+    "score": 0
+  }
+]

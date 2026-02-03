@@ -1,161 +1,73 @@
-# Nixelo - Product Roadmap
+# Nixelo - Active TODO
 
-> **Last Updated:** 2026-01-24
-> **Current Architecture:** Organization → Workspaces → Teams → Projects → Issues
+> **Last Updated:** 2026-02-02
+> Focus: Core MVP features only
 
 ---
 
-## 🔥 NEXT: Multi-Level Views
+## Multi-Level Views
 
-**Goal:** Support boards, documents, and wikis at multiple levels (inspired by ClickUp, Linear, Jira)
+### Board Views
+- [x] Saved Filters UI - Backend exists, needs full UI integration
+- [ ] Cross-Team Dependencies - Visual view of dependencies across teams
+- [ ] Workspace Backlog (unassigned issues)
+- [ ] Workspace Sprint View (all active sprints)
+- [ ] Personal boards (@me)
 
-### Board Views (All Levels)
+### Documents/Wikis
+- [ ] Organization Wiki
+- [ ] Workspace Wiki
+- [ ] Team Wiki
 
-- [ ] **Cross-Team Dependencies** - Visual view of dependencies across teams
-- [ ] **Workspace Backlog** (unassigned issues)
-- [ ] **Workspace Sprint View** (all active sprints)
-- [ ] **Saved Filters UI** - Backend exists, needs full UI integration
-- [ ] **Personal boards (@me)**
+### Calendar/Events
+- [ ] Organization Calendar
+- [ ] Workspace Calendar
+- [ ] Team Calendar
 
-### Documents/Wikis (All Levels)
-
-- [ ] **Organization Wiki** - Organization-wide knowledge
-- [ ] **Workspace Wiki** - Department documentation
-- [ ] **Team Wiki** - Team knowledge base
-
-### Calendar/Events (All Levels)
-
-- [ ] **Organization Calendar** - All-hands, holidays
-- [ ] **Workspace Calendar** - Department events
-- [ ] **Team Calendar** - Team meetings, standups
-
-### Document Templates Integration
-
+### Document Templates
 - [ ] Add route to expose DocumentTemplatesManager
 - [ ] Add sidebar link for templates
 
 ---
 
-## 🔥 NEXT: Public Launch
+## Feature Gaps (P1-P2)
 
-### Day 1-2: Polish
-
-- [ ] Create demo video (2-3 min walkthrough)
-- [ ] Add issue/PR templates
-- [ ] Add "good first issue" labels
-
-### Day 4-5: Launch
-
-- [ ] Hacker News (Show HN)
-- [ ] Reddit: r/selfhosted, r/opensource, r/programming
-- [ ] Product Hunt
-- [ ] awesome-selfhosted list
-- [ ] Write launch blog post
-
-### Day 6-7: Community
-
-- [ ] Set up Discord server
-- [ ] Enable GitHub Discussions
-
-**Success:** 100 stars, 10 users, 5 Discord members
+- [x] Label groups - Organize labels into groups (Priority, Component, Area)
+- [x] Velocity charts - Track story points per sprint
+- [ ] Verify rich text comments - Improve Markdown support
+- [ ] User picker custom field - For "Reviewer", "QA", "Designer" fields
+- [ ] Slack integration - Extend existing `pumbleWebhooks` to Slack
 
 ---
 
-## 🎯 Feature Gaps (from Competitor Analysis)
+## Tech Debt
 
-> Source: [FEATURE_DEEP_DIVE.md](./research/FEATURE_DEEP_DIVE.md)
-
-### P1 - Quick Wins (Low Effort, High Impact)
-
-- [x] **Comment reactions** - 👍 👎 ❤️ 🎉 (COMPLETED)
-- [ ] **Verify rich text comments** - Improve Markdown support in comments
-
-### P2 - Medium Priority (Worth Doing)
-
-- [ ] **Label groups** - Like Linear: organize labels into groups (Priority, Component, Area)
-- [ ] **User picker custom field** - For "Reviewer", "QA", "Designer" fields
-- [ ] **Velocity charts** - Track story points per sprint, show average velocity
-- [ ] **Slack integration** - Extend existing `pumbleWebhooks` to Slack
-
-### P3 - Nice to Have (Later)
-
-- [ ] **Label descriptions** - Show on hover
-- [ ] **Query language** - Simple `status:done priority:high` syntax
-- [ ] **Swimlanes** - Group board rows by assignee/epic
-- [ ] **WIP limits** - Warn when column exceeds limit
-- [ ] **Auto-cycles** - Like Linear: auto-create next sprint
+- [ ] Type consistency - Ensure all TypeScript types (IssueType, IssuePriority) are imported from canonical sources, not duplicated
+- [ ] Docstring coverage - Currently 32.5%, CodeRabbit threshold is 80% (convex/ functions need JSDoc)
 
 ---
 
-## 🏢 Agency MVP (Phase 1)
+## Agency MVP
 
-**Pivot Goal:** Target agencies & consultants ("Replace 4 tools" value prop)
-**See:** [NICHE_STRATEGY.md](./research/NICHE_STRATEGY.md)
-
-- [ ] **Invoicing System** - Turn tracked hours into professional invoices (Backend partial)
-- [ ] **Client Portal** - Secure view for clients to track project progress/spend
+- [ ] Invoicing System - Turn tracked hours into invoices (Backend partial)
+- [ ] Client Portal - Secure view for clients
 
 ---
 
-## Phase 2: Growth (Post-Launch)
+## E2E Test Gaps
 
-### Calendar & Slack Sync
+| Route | Feature |
+|-------|---------|
+| `/projects/$key/activity` | Activity feed |
+| `/workspaces/$slug/teams/$teamSlug/calendar` | Team calendar |
+| `/workspaces/$slug/teams/$teamSlug/settings` | Team settings |
+| `/time-tracking` | Org time tracking |
 
-- [ ] Outlook Calendar integration
-- [ ] Post issue updates to Slack channels
-- [ ] Create issues from Slack (`/nixelo create`)
-- [ ] Unfurl issue links
-
-### Enhanced Search
-
-- [ ] Fuzzy matching
-- [ ] Search shortcuts (`type:bug`, `@me`)
-- [ ] Advanced search modal
-
-### Document Version History
-
-- [x] Restore previous version (UI) (COMPLETED)
-- [ ] Diff view
-
----
-
-## Phase 3: Enterprise
-
-### Nixelo Cloud (Hosted SaaS)
-
-- [ ] Stripe payment integration
-- [ ] Subscription management
-- [ ] Pricing page
-
-### SSO/SAML
-
-- [ ] Google Workspace SSO
-- [ ] Microsoft Entra ID
-- [ ] Okta
-
-### AI Assistant
-
-- [ ] Natural language queries
-- [ ] Project insights
-- [ ] Auto-summarize
-
----
-
-## Technical Debt
-
-### Backend
-
-- [ ] SendPulse email provider (optional, Resend works)
-
-### Medium Priority
-
-- [ ] Caching strategy
-- [ ] Monitoring/alerting
-- [ ] Activity log archiving
+- [ ] Remove remaining hardcoded timeouts (~11 instances)
 
 ---
 
 ## Related Docs
 
 - [CLAUDE.md](./CLAUDE.md) - Development guide
-- [Research Inventory](./docs/research/INVENTORY.md) - Strategy & Research index
+- [POST_MVP_TODO.md](./POST_MVP_TODO.md) - Deferred items

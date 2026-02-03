@@ -511,16 +511,25 @@ export async function trySignInUser(
  */
 export async function waitForSignUpResult(page: Page): Promise<"verification" | "redirect" | null> {
   const locators = authFormLocators(page);
-  const startTime = Date.now();
 
-  while (Date.now() - startTime < 15000) {
+  // Use Promise.race with proper waitFor patterns instead of polling
+  try {
+    await Promise.race([
+      locators.verifyEmailHeading
+        .waitFor({ state: "visible", timeout: 15000 })
+        .then(() => "verification"),
+      page.waitForURL(urlPatterns.dashboardOrOnboarding, { timeout: 15000 }).then(() => "redirect"),
+    ]);
+
+    // Check which one succeeded
     if (await locators.verifyEmailHeading.isVisible().catch(() => false)) {
       return "verification";
     }
     if (urlPatterns.dashboardOrOnboarding.test(page.url())) {
       return "redirect";
     }
-    await page.waitForTimeout(500);
+  } catch {
+    // Both timed out
   }
   return null;
 }
@@ -538,7 +547,6 @@ export async function signUpUserViaUI(
   try {
     await page.goto(`${baseURL}/signup`);
     await page.waitForLoadState("domcontentloaded");
-    await page.waitForTimeout(1000);
 
     // Check for onboarding or dashboard patterns (both old and new URL structures)
     if (urlPatterns.dashboardOrOnboarding.test(page.url())) {

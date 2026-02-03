@@ -1,0 +1,145 @@
+[
+  {
+    "url": "https://www.notion.com/en-gb/releases/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 0,
+    "selectionReason": "Sample: CHANGELOG"
+  },
+  {
+    "url": "https://www.notion.com/es-es/releases/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 0,
+    "selectionReason": "Sample: CHANGELOG"
+  },
+  {
+    "url": "https://www.notion.com/zh-cn/releases/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 0,
+    "selectionReason": "Sample: CHANGELOG"
+  },
+  {
+    "url": "https://www.notion.so/account",
+    "competitor": "notion",
+    "page": "account",
+    "score": 0,
+    "reason": "Priority: /account/",
+    "selectionReason": "Priority: /account/"
+  },
+  {
+    "url": "https://www.notion.so/billing",
+    "competitor": "notion",
+    "page": "billing",
+    "score": 0,
+    "reason": "Priority: /billing/",
+    "selectionReason": "Priority: /billing/"
+  },
+  {
+    "url": "https://www.notion.so/dashboard",
+    "competitor": "notion",
+    "page": "dashboard",
+    "score": 0,
+    "reason": "Priority: /dashboard/",
+    "selectionReason": "Priority: /dashboard/"
+  },
+  {
+    "url": "https://www.notion.so/profile",
+    "competitor": "notion",
+    "page": "profile",
+    "score": 0,
+    "reason": "Priority: /profile/",
+    "selectionReason": "Priority: /profile/"
+  },
+  {
+    "url": "https://www.notion.so/projects",
+    "competitor": "notion",
+    "page": "projects",
+    "score": 0,
+    "reason": "Priority: /projects/",
+    "selectionReason": "Priority: /projects/"
+  },
+  {
+    "url": "https://www.notion.so/settings",
+    "competitor": "notion",
+    "page": "settings",
+    "score": 0,
+    "reason": "Priority: /settings/",
+    "selectionReason": "Priority: /settings/"
+  },
+  {
+    "url": "https://www.notion.so/settings/billing",
+    "competitor": "notion",
+    "page": "billing",
+    "score": 0,
+    "reason": "Priority: /settings/",
+    "selectionReason": "Priority: /settings/"
+  },
+  {
+    "url": "https://www.notion.so/settings/profile",
+    "competitor": "notion",
+    "page": "profile",
+    "score": 0,
+    "reason": "Priority: /settings/",
+    "selectionReason": "Priority: /settings/"
+  },
+  {
+    "url": "https://www.notion.so/settings/team",
+    "competitor": "notion",
+    "page": "team",
+    "score": 0,
+    "reason": "Priority: /settings/",
+    "selectionReason": "Priority: /settings/"
+  },
+  {
+    "url": "https://www.notion.so/settings/workspace",
+    "competitor": "notion",
+    "page": "workspace",
+    "score": 0,
+    "reason": "Priority: /settings/",
+    "selectionReason": "Priority: /settings/"
+  },
+  {
+    "url": "https://www.notion.com/en-gb/help/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 0,
+    "selectionReason": "Sample: DOCS"
+  },
+  {
+    "url": "https://www.notion.com/es-es/help/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 0,
+    "selectionReason": "Sample: DOCS"
+  },
+  {
+    "url": "https://www.notion.com/zh-cn/help/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 0,
+    "selectionReason": "Sample: DOCS"
+  },
+  {
+    "url": "https://www.notion.com/en-gb/blog/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 1,
+    "selectionReason": "Sample: BLOG"
+  },
+  {
+    "url": "https://www.notion.com/es-es/blog/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 1,
+    "selectionReason": "Sample: BLOG"
+  },
+  {
+    "url": "https://www.notion.com/zh-cn/blog/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 1,
+    "selectionReason": "Sample: BLOG"
+  }
+]

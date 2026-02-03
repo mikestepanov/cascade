@@ -1,0 +1,269 @@
+[
+  {
+    "url": "https://asana.com/features/admin-security",
+    "competitor": "asana",
+    "page": "admin-security",
+    "score": 2,
+    "selectionReason": "High Score (Top 20)"
+  },
+  {
+    "url": "https://asana.com/features/admin-security/admin-console",
+    "competitor": "asana",
+    "page": "admin-console",
+    "score": 2,
+    "selectionReason": "High Score (Top 20)"
+  },
+  {
+    "url": "https://asana.com/features/admin-security/permissions",
+    "competitor": "asana",
+    "page": "permissions",
+    "score": 2,
+    "selectionReason": "High Score (Top 20)"
+  },
+  {
+    "url": "https://asana.com/inside-asana/asana-delivers-enterprise-offerings-with-new-product-tiers",
+    "competitor": "asana",
+    "page": "asana-delivers-enterprise-offerings-with-new-product-tiers",
+    "score": 2,
+    "selectionReason": "High Score (Top 20)"
+  },
+  {
+    "url": "https://asana.com/inside-asana/custom-fields-powerful-integrations-api",
+    "competitor": "asana",
+    "page": "custom-fields-powerful-integrations-api",
+    "score": 2,
+    "selectionReason": "High Score (Top 20)"
+  },
+  {
+    "url": "https://asana.com/inside-asana/designing-enterprise-vs-consumer-products-isnt-different-think",
+    "competitor": "asana",
+    "page": "designing-enterprise-vs-consumer-products-isnt-different-think",
+    "score": 2,
+    "reason": "Priority: /signin/",
+    "selectionReason": "Priority: /signin/"
+  },
+  {
+    "url": "https://asana.com/inside-asana/personal-productivity-features",
+    "competitor": "asana",
+    "page": "personal-productivity-features",
+    "score": 2,
+    "selectionReason": "High Score (Top 20)"
+  },
+  {
+    "url": "https://asana.com/inside-asana/productivity-asana-integrations",
+    "competitor": "asana",
+    "page": "productivity-asana-integrations",
+    "score": 2,
+    "selectionReason": "High Score (Top 20)"
+  },
+  {
+    "url": "https://asana.com/apps/aikido-security",
+    "competitor": "asana",
+    "page": "aikido-security",
+    "score": 1,
+    "reason": "Priority: /app/",
+    "selectionReason": "Priority: /app/"
+  },
+  {
+    "url": "https://asana.com/apps/apify",
+    "competitor": "asana",
+    "page": "apify",
+    "score": 1,
+    "reason": "Priority: /app/",
+    "selectionReason": "Priority: /app/"
+  },
+  {
+    "url": "https://asana.com/apps/apixdrive",
+    "competitor": "asana",
+    "page": "apixdrive",
+    "score": 1,
+    "reason": "Priority: /app/",
+    "selectionReason": "Priority: /app/"
+  },
+  {
+    "url": "https://asana.com/apps/cdoc-hax",
+    "competitor": "asana",
+    "page": "cdoc-hax",
+    "score": 1,
+    "selectionReason": "Sample: INTEGRATIONS"
+  },
+  {
+    "url": "https://asana.com/apps/docupile",
+    "competitor": "asana",
+    "page": "docupile",
+    "score": 1,
+    "selectionReason": "Sample: INTEGRATIONS"
+  },
+  {
+    "url": "https://asana.com/apps/docusign",
+    "competitor": "asana",
+    "page": "docusign",
+    "score": 1,
+    "reason": "Priority: /app/",
+    "selectionReason": "Priority: /app/"
+  },
+  {
+    "url": "https://asana.com/apps/freshdesk-asana-integration-by-integratecloud",
+    "competitor": "asana",
+    "page": "freshdesk-asana-integration-by-integratecloud",
+    "score": 1,
+    "reason": "Priority: /app/",
+    "selectionReason": "Priority: /app/"
+  },
+  {
+    "url": "https://asana.com/apps/google-security",
+    "competitor": "asana",
+    "page": "google-security",
+    "score": 1,
+    "reason": "Priority: /app/",
+    "selectionReason": "Priority: /app/"
+  },
+  {
+    "url": "https://asana.com/apps/googledocs",
+    "competitor": "asana",
+    "page": "googledocs",
+    "score": 1,
+    "reason": "Priority: /app/",
+    "selectionReason": "Priority: /app/"
+  },
+  {
+    "url": "https://asana.com/apps/integrately",
+    "competitor": "asana",
+    "page": "integrately",
+    "score": 1,
+    "reason": "Priority: /app/",
+    "selectionReason": "Priority: /app/"
+  },
+  {
+    "url": "https://asana.com/apps/mixed-analytics-api-connector",
+    "competitor": "asana",
+    "page": "mixed-analytics-api-connector",
+    "score": 1,
+    "reason": "Priority: /app/",
+    "selectionReason": "Priority: /app/"
+  },
+  {
+    "url": "https://asana.com/apps/oneteg-integration-platform",
+    "competitor": "asana",
+    "page": "oneteg-integration-platform",
+    "score": 1,
+    "reason": "Priority: /app/",
+    "selectionReason": "Priority: /app/"
+  },
+  {
+    "url": "https://asana.com/apps/productiv",
+    "competitor": "asana",
+    "page": "productiv",
+    "score": 1,
+    "selectionReason": "Sample: INTEGRATIONS"
+  },
+  {
+    "url": "https://asana.com/apps/productmotion",
+    "competitor": "asana",
+    "page": "productmotion",
+    "score": 1,
+    "reason": "Priority: /app/",
+    "selectionReason": "Priority: /app/"
+  },
+  {
+    "url": "https://asana.com/apps/rapidtaskai",
+    "competitor": "asana",
+    "page": "rapidtaskai",
+    "score": 1,
+    "reason": "Priority: /app/",
+    "selectionReason": "Priority: /app/"
+  },
+  {
+    "url": "https://asana.com/apps/timedoctor",
+    "competitor": "asana",
+    "page": "timedoctor",
+    "score": 1,
+    "reason": "Priority: /app/",
+    "selectionReason": "Priority: /app/"
+  },
+  {
+    "url": "https://asana.com/apps/zapier",
+    "competitor": "asana",
+    "page": "zapier",
+    "score": 1,
+    "selectionReason": "Sample: INTEGRATIONS"
+  },
+  {
+    "url": "https://asana.com/apps/zapier-twist",
+    "competitor": "asana",
+    "page": "zapier-twist",
+    "score": 1,
+    "reason": "Priority: /app/",
+    "selectionReason": "Priority: /app/"
+  },
+  {
+    "url": "https://asana.com/features",
+    "competitor": "asana",
+    "page": "features",
+    "score": 1,
+    "selectionReason": "Critical Page"
+  },
+  {
+    "url": "https://asana.com/jobs/product",
+    "competitor": "asana",
+    "page": "product",
+    "score": 1,
+    "selectionReason": "Sample: CAREERS"
+  },
+  {
+    "url": "https://asana.com/pricing",
+    "competitor": "asana",
+    "page": "pricing",
+    "score": 1,
+    "selectionReason": "Critical Page"
+  },
+  {
+    "url": "https://asana.com/terms/asana-product-specific-terms",
+    "competitor": "asana",
+    "page": "asana-product-specific-terms",
+    "score": 1,
+    "selectionReason": "Sample: LEGAL"
+  },
+  {
+    "url": "https://asana.com/terms/security-standards",
+    "competitor": "asana",
+    "page": "security-standards",
+    "score": 1,
+    "selectionReason": "Sample: LEGAL"
+  },
+  {
+    "url": "https://asana.com/work-innovation-lab/about",
+    "competitor": "asana",
+    "page": "about",
+    "score": 1,
+    "selectionReason": "Critical Page"
+  },
+  {
+    "url": "https://asana.com/apps/agilecharts",
+    "competitor": "asana",
+    "page": "agilecharts",
+    "score": 0,
+    "selectionReason": "Sample: INTEGRATIONS"
+  },
+  {
+    "url": "https://asana.com/jobs/all",
+    "competitor": "asana",
+    "page": "all",
+    "score": 0,
+    "selectionReason": "Sample: CAREERS"
+  },
+  {
+    "url": "https://asana.com/press/releases/pr",
+    "competitor": "asana",
+    "page": "pr",
+    "score": 0,
+    "selectionReason": "Sample: CHANGELOG"
+  },
+  {
+    "url": "https://asana.com/press/releases/pr/asana-announces-new-ai-teammates-collaborative-agents-that-deliver-results",
+    "competitor": "asana",
+    "page": "asana-announces-new-ai-teammates-collaborative-agents-that-deliver-results",
+    "score": 0,
+    "selectionReason": "Sample: CHANGELOG"
+  }
+]

@@ -12,6 +12,7 @@ export const create = projectEditorMutation({
   args: {
     name: v.string(),
     color: v.string(),
+    groupId: v.optional(v.id("labelGroups")),
   },
   handler: async (ctx, args) => {
     // Check if label with same name already exists in project
@@ -24,10 +25,27 @@ export const create = projectEditorMutation({
       throw conflict("Label with this name already exists");
     }
 
+    // If groupId is provided, verify it belongs to the same project
+    if (args.groupId) {
+      const group = await ctx.db.get(args.groupId);
+      if (!group || group.projectId !== ctx.projectId) {
+        throw validation("groupId", "Label group not found or belongs to a different project");
+      }
+    }
+
+    // Get max display order for labels in this group (or ungrouped)
+    const labelsInGroup = await ctx.db
+      .query("labels")
+      .withIndex("by_group", (q) => q.eq("groupId", args.groupId))
+      .take(BOUNDED_LIST_LIMIT);
+    const maxOrder = labelsInGroup.reduce((max, l) => Math.max(max, l.displayOrder ?? 0), 0);
+
     const labelId = await ctx.db.insert("labels", {
       projectId: ctx.projectId,
       name: args.name,
       color: args.color,
+      groupId: args.groupId,
+      displayOrder: maxOrder + 1,
       createdBy: ctx.userId,
     });
 
@@ -60,6 +78,7 @@ export const update = authenticatedMutation({
     id: v.id("labels"),
     name: v.optional(v.string()),
     color: v.optional(v.string()),
+    groupId: v.optional(v.union(v.id("labelGroups"), v.null())),
   },
   handler: async (ctx, args) => {
     const label = await ctx.db.get(args.id);
@@ -85,9 +104,18 @@ export const update = authenticatedMutation({
       }
     }
 
+    // If groupId is provided (not undefined), verify it belongs to the same project
+    if (args.groupId !== undefined && args.groupId !== null) {
+      const group = await ctx.db.get(args.groupId);
+      if (!group || group.projectId !== label.projectId) {
+        throw validation("groupId", "Label group not found or belongs to a different project");
+      }
+    }
+
     const updates: Partial<typeof label> = {};
     if (args.name !== undefined) updates.name = args.name;
     if (args.color !== undefined) updates.color = args.color;
+    if (args.groupId !== undefined) updates.groupId = args.groupId ?? undefined;
 
     await ctx.db.patch(args.id, updates);
   },

@@ -1,0 +1,90 @@
+[
+  {
+    "url": "https://tldv.io/account",
+    "competitor": "tldv",
+    "page": "account",
+    "score": 0,
+    "reason": "Priority: /account/",
+    "selectionReason": "Priority: /account/"
+  },
+  {
+    "url": "https://tldv.io/author-sitemap.xml",
+    "competitor": "tldv",
+    "page": "author-sitemap.xml",
+    "score": 0,
+    "reason": "Priority: /auth/",
+    "selectionReason": "Priority: /auth/"
+  },
+  {
+    "url": "https://tldv.io/billing",
+    "competitor": "tldv",
+    "page": "billing",
+    "score": 0,
+    "reason": "Priority: /billing/",
+    "selectionReason": "Priority: /billing/"
+  },
+  {
+    "url": "https://tldv.io/dashboard",
+    "competitor": "tldv",
+    "page": "dashboard",
+    "score": 0,
+    "reason": "Priority: /dashboard/",
+    "selectionReason": "Priority: /dashboard/"
+  },
+  {
+    "url": "https://tldv.io/profile",
+    "competitor": "tldv",
+    "page": "profile",
+    "score": 0,
+    "reason": "Priority: /profile/",
+    "selectionReason": "Priority: /profile/"
+  },
+  {
+    "url": "https://tldv.io/projects",
+    "competitor": "tldv",
+    "page": "projects",
+    "score": 0,
+    "reason": "Priority: /projects/",
+    "selectionReason": "Priority: /projects/"
+  },
+  {
+    "url": "https://tldv.io/settings",
+    "competitor": "tldv",
+    "page": "settings",
+    "score": 0,
+    "reason": "Priority: /settings/",
+    "selectionReason": "Priority: /settings/"
+  },
+  {
+    "url": "https://tldv.io/settings/billing",
+    "competitor": "tldv",
+    "page": "billing",
+    "score": 0,
+    "reason": "Priority: /settings/",
+    "selectionReason": "Priority: /settings/"
+  },
+  {
+    "url": "https://tldv.io/settings/profile",
+    "competitor": "tldv",
+    "page": "profile",
+    "score": 0,
+    "reason": "Priority: /settings/",
+    "selectionReason": "Priority: /settings/"
+  },
+  {
+    "url": "https://tldv.io/settings/team",
+    "competitor": "tldv",
+    "page": "team",
+    "score": 0,
+    "reason": "Priority: /settings/",
+    "selectionReason": "Priority: /settings/"
+  },
+  {
+    "url": "https://tldv.io/settings/workspace",
+    "competitor": "tldv",
+    "page": "workspace",
+    "score": 0,
+    "reason": "Priority: /settings/",
+    "selectionReason": "Priority: /settings/"
+  }
+]

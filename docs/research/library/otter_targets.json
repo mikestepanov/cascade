@@ -1,0 +1,108 @@
+[
+  {
+    "url": "https://otter.ai/features",
+    "competitor": "otter",
+    "page": "features",
+    "score": 1,
+    "selectionReason": "Critical Page"
+  },
+  {
+    "url": "https://otter.ai/integrations/analytics",
+    "competitor": "otter",
+    "page": "analytics",
+    "score": 1,
+    "selectionReason": "Sample: INTEGRATIONS"
+  },
+  {
+    "url": "https://otter.ai/integrations/browser-extensions",
+    "competitor": "otter",
+    "page": "browser-extensions",
+    "score": 1,
+    "selectionReason": "Sample: INTEGRATIONS"
+  },
+  {
+    "url": "https://otter.ai/integrations/calendar",
+    "competitor": "otter",
+    "page": "calendar",
+    "score": 1,
+    "selectionReason": "Sample: INTEGRATIONS"
+  },
+  {
+    "url": "https://otter.ai/integrations/collaboration",
+    "competitor": "otter",
+    "page": "collaboration",
+    "score": 1,
+    "selectionReason": "Sample: INTEGRATIONS"
+  },
+  {
+    "url": "https://otter.ai/integrations/crm",
+    "competitor": "otter",
+    "page": "crm",
+    "score": 1,
+    "selectionReason": "Sample: INTEGRATIONS"
+  },
+  {
+    "url": "https://otter.ai/pricing",
+    "competitor": "otter",
+    "page": "pricing",
+    "score": 1,
+    "selectionReason": "Critical Page"
+  },
+  {
+    "url": "https://otter.ai/privacy-security",
+    "competitor": "otter",
+    "page": "privacy-security",
+    "score": 1,
+    "selectionReason": "Sample: LEGAL"
+  },
+  {
+    "url": "https://otter.ai/product-teams-demo",
+    "competitor": "otter",
+    "page": "product-teams-demo",
+    "score": 1,
+    "reason": "Priority: /team/",
+    "selectionReason": "Priority: /team/"
+  },
+  {
+    "url": "https://otter.ai/privacy-policy",
+    "competitor": "otter",
+    "page": "privacy-policy",
+    "score": 0,
+    "selectionReason": "Sample: LEGAL"
+  },
+  {
+    "url": "https://otter.ai/blog/5-myths-misconceptions-about-workplace-productivity",
+    "competitor": "otter",
+    "page": "5-myths-misconceptions-about-workplace-productivity",
+    "score": 3,
+    "selectionReason": "High Score (Top 20)"
+  },
+  {
+    "url": "https://otter.ai/blog/featured-product-manager-megan-huynh",
+    "competitor": "otter",
+    "page": "featured-product-manager-megan-huynh",
+    "score": 3,
+    "selectionReason": "High Score (Top 20)"
+  },
+  {
+    "url": "https://otter.ai/blog/10-new-years-resolutions-for-productivity-improvement-in-2022",
+    "competitor": "otter",
+    "page": "10-new-years-resolutions-for-productivity-improvement-in-2022",
+    "score": 2,
+    "selectionReason": "High Score (Top 20)"
+  },
+  {
+    "url": "https://otter.ai/blog/10-tips-to-maximize-your-working-from-home-productivity",
+    "competitor": "otter",
+    "page": "10-tips-to-maximize-your-working-from-home-productivity",
+    "score": 2,
+    "selectionReason": "High Score (Top 20)"
+  },
+  {
+    "url": "https://otter.ai/blog/5-ai-superpowers-to-fuel-your-new-year-productivity-blitz",
+    "competitor": "otter",
+    "page": "5-ai-superpowers-to-fuel-your-new-year-productivity-blitz",
+    "score": 2,
+    "selectionReason": "High Score (Top 20)"
+  }
+]

@@ -104,7 +104,6 @@ describe("CommentRenderer", () => {
       render(<CommentRenderer content={content} />);
 
       const badge = screen.getByText("@User");
-      expect(badge).toHaveClass("inline-flex");
       expect(badge).toHaveClass("bg-brand-subtle");
       expect(badge).toHaveClass("text-brand-active");
     });

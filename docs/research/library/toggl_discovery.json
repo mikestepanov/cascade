@@ -1,0 +1,2408 @@
+[
+  {
+    "url": "https://toggl.com/about/",
+    "competitor": "toggl",
+    "page": "about",
+    "score": 1
+  },
+  {
+    "url": "https://toggl.com/deal-with-life-and-stress/answering-phone-calls/",
+    "competitor": "toggl",
+    "page": "answering-phone-calls",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/deal-with-life-and-stress/avoiding-conflict/",
+    "competitor": "toggl",
+    "page": "avoiding-conflict",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/deal-with-life-and-stress/avoiding-office-parties/",
+    "competitor": "toggl",
+    "page": "avoiding-office-parties",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/deal-with-life-and-stress/clearing-the-inbox/",
+    "competitor": "toggl",
+    "page": "clearing-the-inbox",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/deal-with-life-and-stress/dealing-with-bills/",
+    "competitor": "toggl",
+    "page": "dealing-with-bills",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/deal-with-life-and-stress/dealing-with-deadlines/",
+    "competitor": "toggl",
+    "page": "dealing-with-deadlines",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/deal-with-life-and-stress/dealing-with-hangovers/",
+    "competitor": "toggl",
+    "page": "dealing-with-hangovers",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/deal-with-life-and-stress/facing-bugs/",
+    "competitor": "toggl",
+    "page": "facing-bugs",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/deal-with-life-and-stress/frenemy-gets-a-promotion/",
+    "competitor": "toggl",
+    "page": "frenemy-gets-a-promotion",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/deal-with-life-and-stress/handling-client-feedback/",
+    "competitor": "toggl",
+    "page": "handling-client-feedback",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/deal-with-life-and-stress/handling-difficult-conversations/",
+    "competitor": "toggl",
+    "page": "handling-difficult-conversations",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/deal-with-life-and-stress/handling-interruptions/",
+    "competitor": "toggl",
+    "page": "handling-interruptions",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/deal-with-life-and-stress/handling-loneliness/",
+    "competitor": "toggl",
+    "page": "handling-loneliness",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/deal-with-life-and-stress/handling-money/",
+    "competitor": "toggl",
+    "page": "handling-money",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/deal-with-life-and-stress/",
+    "competitor": "toggl",
+    "page": "deal-with-life-and-stress",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/deal-with-life-and-stress/life-of-a-freelancer/",
+    "competitor": "toggl",
+    "page": "life-of-a-freelancer",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/deal-with-life-and-stress/long-hours/",
+    "competitor": "toggl",
+    "page": "long-hours",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/deal-with-life-and-stress/managing-stress/",
+    "competitor": "toggl",
+    "page": "managing-stress",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/deal-with-life-and-stress/meetings-without-agenda/",
+    "competitor": "toggl",
+    "page": "meetings-without-agenda",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/deal-with-life-and-stress/monday-mornings/",
+    "competitor": "toggl",
+    "page": "monday-mornings",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/deal-with-life-and-stress/motivational-boss/",
+    "competitor": "toggl",
+    "page": "motivational-boss",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/deal-with-life-and-stress/office-christmas-party/",
+    "competitor": "toggl",
+    "page": "office-christmas-party",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/deal-with-life-and-stress/passive-agressive-emails/",
+    "competitor": "toggl",
+    "page": "passive-agressive-emails",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/deal-with-life-and-stress/procrastinating/",
+    "competitor": "toggl",
+    "page": "procrastinating",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/deal-with-life-and-stress/socializing/",
+    "competitor": "toggl",
+    "page": "socializing",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/deal-with-life-and-stress/solving-problems/",
+    "competitor": "toggl",
+    "page": "solving-problems",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/deal-with-life-and-stress/time-management/",
+    "competitor": "toggl",
+    "page": "time-management",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/deal-with-life-and-stress/urgent-work/",
+    "competitor": "toggl",
+    "page": "urgent-work",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/deal-with-life-and-stress/vacation-hacking/",
+    "competitor": "toggl",
+    "page": "vacation-hacking",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/deal-with-life-and-stress/waking-up/",
+    "competitor": "toggl",
+    "page": "waking-up",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/deal-with-life-and-stress/weekend-depression/",
+    "competitor": "toggl",
+    "page": "weekend-depression",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/deal-with-life-and-stress/working-from-home/",
+    "competitor": "toggl",
+    "page": "working-from-home",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/deal-with-life-and-stress/working-from-home-with-kids/",
+    "competitor": "toggl",
+    "page": "working-from-home-with-kids",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/design-your-perfect-week/",
+    "competitor": "toggl",
+    "page": "design-your-perfect-week",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/flexible-work-hours/",
+    "competitor": "toggl",
+    "page": "flexible-work-hours",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/focus/",
+    "competitor": "toggl",
+    "page": "focus",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/focus/kanban-board/",
+    "competitor": "toggl",
+    "page": "kanban-board",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/focus/online-calendar-planner/",
+    "competitor": "toggl",
+    "page": "online-calendar-planner",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/focus/online-gantt-chart/",
+    "competitor": "toggl",
+    "page": "online-gantt-chart",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/focus/pricing/",
+    "competitor": "toggl",
+    "page": "pricing",
+    "score": 1
+  },
+  {
+    "url": "https://toggl.com/focus/project-management-software/",
+    "competitor": "toggl",
+    "page": "project-management-software",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/focus/project-planning/",
+    "competitor": "toggl",
+    "page": "project-planning",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/focus/resource-planning/",
+    "competitor": "toggl",
+    "page": "resource-planning",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/focus/task-management/",
+    "competitor": "toggl",
+    "page": "task-management",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/focus/task-management-mobile-app/",
+    "competitor": "toggl",
+    "page": "task-management-mobile-app",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/focus/toggl-focus-desktop-app/",
+    "competitor": "toggl",
+    "page": "toggl-focus-desktop-app",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/focus/visual-planning/",
+    "competitor": "toggl",
+    "page": "visual-planning",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/freelance-email-generator/",
+    "competitor": "toggl",
+    "page": "freelance-email-generator",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/fun-and-games/",
+    "competitor": "toggl",
+    "page": "fun-and-games",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/heist/",
+    "competitor": "toggl",
+    "page": "heist",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/hire/",
+    "competitor": "toggl",
+    "page": "hire",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/",
+    "competitor": "toggl",
+    "page": "toggl.com",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/integration-success/",
+    "competitor": "toggl",
+    "page": "integration-success",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/jobs/customer-support-americas/",
+    "competitor": "toggl",
+    "page": "customer-support-americas",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/jobs/hire-backend/",
+    "competitor": "toggl",
+    "page": "hire-backend",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/jobs/hire-growth-lead/",
+    "competitor": "toggl",
+    "page": "hire-growth-lead",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/jobs/hire-senior-backend/",
+    "competitor": "toggl",
+    "page": "hire-senior-backend",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/jobs/",
+    "competitor": "toggl",
+    "page": "jobs",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/jobs/plan-senior-fe/",
+    "competitor": "toggl",
+    "page": "plan-senior-fe",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/jobs/senior-be-suite/",
+    "competitor": "toggl",
+    "page": "senior-be-suite",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/jobs/toggl-AE-americas/",
+    "competitor": "toggl",
+    "page": "toggl-AE-americas",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/jobs/toggl-CMM/",
+    "competitor": "toggl",
+    "page": "toggl-CMM",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/jobs/toggl-analytics-engineer/",
+    "competitor": "toggl",
+    "page": "toggl-analytics-engineer",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/jobs/toggl-cpo/",
+    "competitor": "toggl",
+    "page": "toggl-cpo",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/jobs/toggl-cs-onboarding-specialist/",
+    "competitor": "toggl",
+    "page": "toggl-cs-onboarding-specialist",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/jobs/toggl-data-engineer/",
+    "competitor": "toggl",
+    "page": "toggl-data-engineer",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/jobs/toggl-demand-generation-manager/",
+    "competitor": "toggl",
+    "page": "toggl-demand-generation-manager",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/jobs/toggl-finance-specialist/",
+    "competitor": "toggl",
+    "page": "toggl-finance-specialist",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/jobs/toggl-head-of-brand/",
+    "competitor": "toggl",
+    "page": "toggl-head-of-brand",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/jobs/toggl-head-of-content/",
+    "competitor": "toggl",
+    "page": "toggl-head-of-content",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/jobs/toggl-head-of-product/",
+    "competitor": "toggl",
+    "page": "toggl-head-of-product",
+    "score": 1
+  },
+  {
+    "url": "https://toggl.com/jobs/toggl-head-of-sales/",
+    "competitor": "toggl",
+    "page": "toggl-head-of-sales",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/jobs/toggl-marketing-copywriter/",
+    "competitor": "toggl",
+    "page": "toggl-marketing-copywriter",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/jobs/toggl-partnerships-manager/",
+    "competitor": "toggl",
+    "page": "toggl-partnerships-manager",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/jobs/toggl-product-marketing-manager/",
+    "competitor": "toggl",
+    "page": "toggl-product-marketing-manager",
+    "score": 1
+  },
+  {
+    "url": "https://toggl.com/jobs/toggl-sdr-americas/",
+    "competitor": "toggl",
+    "page": "toggl-sdr-americas",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/jobs/toggl-sdr-emea/",
+    "competitor": "toggl",
+    "page": "toggl-sdr-emea",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/jobs/toggl-senior-PM/",
+    "competitor": "toggl",
+    "page": "toggl-senior-PM",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/jobs/toggl-senior-frontend/",
+    "competitor": "toggl",
+    "page": "toggl-senior-frontend",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/jobs/toggl-senior-product-designer-emea/",
+    "competitor": "toggl",
+    "page": "toggl-senior-product-designer-emea",
+    "score": 1
+  },
+  {
+    "url": "https://toggl.com/jobs/toggl-senior-sre/",
+    "competitor": "toggl",
+    "page": "toggl-senior-sre",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/jobs/toggl-seo-specialist/",
+    "competitor": "toggl",
+    "page": "toggl-seo-specialist",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/jobs/toggl-talent-acquisition-specialist/",
+    "competitor": "toggl",
+    "page": "toggl-talent-acquisition-specialist",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/jobs/togglX-senior-BE/",
+    "competitor": "toggl",
+    "page": "togglX-senior-BE",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/jobs/togglX-senior-PM/",
+    "competitor": "toggl",
+    "page": "togglX-senior-PM",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/jobs/togglhire-contentmanager/",
+    "competitor": "toggl",
+    "page": "togglhire-contentmanager",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/jobs/togglhire-pm/",
+    "competitor": "toggl",
+    "page": "togglhire-pm",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/jobs/toggltrack-dbr-engineer/",
+    "competitor": "toggl",
+    "page": "toggltrack-dbr-engineer",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/jobs/toggltrack-senior-backend/",
+    "competitor": "toggl",
+    "page": "toggltrack-senior-backend",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/jobs/track-product-designer/",
+    "competitor": "toggl",
+    "page": "track-product-designer",
+    "score": 1
+  },
+  {
+    "url": "https://toggl.com/jobs/track-senior-product-designer/",
+    "competitor": "toggl",
+    "page": "track-senior-product-designer",
+    "score": 1
+  },
+  {
+    "url": "https://toggl.com/jobs/work-growth-biz-dev/",
+    "competitor": "toggl",
+    "page": "work-growth-biz-dev",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/jobs/work-growth-manager/",
+    "competitor": "toggl",
+    "page": "work-growth-manager",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/jobs/work-product-designer/",
+    "competitor": "toggl",
+    "page": "work-product-designer",
+    "score": 1
+  },
+  {
+    "url": "https://toggl.com/laugh-break/",
+    "competitor": "toggl",
+    "page": "laugh-break",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/legal/affiliate/",
+    "competitor": "toggl",
+    "page": "affiliate",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/legal/affiliate/v1.0/",
+    "competitor": "toggl",
+    "page": "v1.0",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/legal/affiliate/v2.0/",
+    "competitor": "toggl",
+    "page": "v2.0",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/legal/candidate-privacy/",
+    "competitor": "toggl",
+    "page": "candidate-privacy",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/legal/community/",
+    "competitor": "toggl",
+    "page": "community",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/legal/cookie-declaration/",
+    "competitor": "toggl",
+    "page": "cookie-declaration",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/legal/eu-data-act/",
+    "competitor": "toggl",
+    "page": "eu-data-act",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/legal/focus/data-processing-agreement/",
+    "competitor": "toggl",
+    "page": "data-processing-agreement",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/legal/focus/data-processing-agreement/v1.0/",
+    "competitor": "toggl",
+    "page": "v1.0",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/legal/focus/data-processing-agreement/v2.0/",
+    "competitor": "toggl",
+    "page": "v2.0",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/legal/focus/privacy/",
+    "competitor": "toggl",
+    "page": "privacy",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/legal/focus/sub-processors/",
+    "competitor": "toggl",
+    "page": "sub-processors",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/legal/focus/terms/",
+    "competitor": "toggl",
+    "page": "terms",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/legal/focus/terms/v1.0/",
+    "competitor": "toggl",
+    "page": "v1.0",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/legal/focus/terms/v1.1/",
+    "competitor": "toggl",
+    "page": "v1.1",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/legal/hire/data-processing-agreement/",
+    "competitor": "toggl",
+    "page": "data-processing-agreement",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/legal/hire/data-processing-agreement/v1.0/",
+    "competitor": "toggl",
+    "page": "v1.0",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/legal/hire/data-processing-agreement/v2.0/",
+    "competitor": "toggl",
+    "page": "v2.0",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/legal/hire/expert-terms/",
+    "competitor": "toggl",
+    "page": "expert-terms",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/legal/hire/expert-terms/v1.0/",
+    "competitor": "toggl",
+    "page": "v1.0",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/legal/hire/privacy/",
+    "competitor": "toggl",
+    "page": "privacy",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/legal/hire/privacy/v1.0/",
+    "competitor": "toggl",
+    "page": "v1.0",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/legal/hire/processors-affiliates/",
+    "competitor": "toggl",
+    "page": "processors-affiliates",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/legal/hire/terms/",
+    "competitor": "toggl",
+    "page": "terms",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/legal/hire/terms/v1.0/",
+    "competitor": "toggl",
+    "page": "v1.0",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/legal/hire/terms/v2.0/",
+    "competitor": "toggl",
+    "page": "v2.0",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/legal/hire/terms/v3.0/",
+    "competitor": "toggl",
+    "page": "v3.0",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/legal/hire/terms/v4.0/",
+    "competitor": "toggl",
+    "page": "v4.0",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/legal/hire/terms/v4.1/",
+    "competitor": "toggl",
+    "page": "v4.1",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/legal/plan/data-processing-agreement/",
+    "competitor": "toggl",
+    "page": "data-processing-agreement",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/legal/plan/data-processing-agreement/v1.0/",
+    "competitor": "toggl",
+    "page": "v1.0",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/legal/plan/data-processing-agreement/v2.0/",
+    "competitor": "toggl",
+    "page": "v2.0",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/legal/plan/privacy/",
+    "competitor": "toggl",
+    "page": "privacy",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/legal/plan/sub-processors/",
+    "competitor": "toggl",
+    "page": "sub-processors",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/legal/plan/terms/",
+    "competitor": "toggl",
+    "page": "terms",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/legal/plan/terms/v1.0/",
+    "competitor": "toggl",
+    "page": "v1.0",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/legal/plan/terms/v1.1/",
+    "competitor": "toggl",
+    "page": "v1.1",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/legal/security/",
+    "competitor": "toggl",
+    "page": "security",
+    "score": 1
+  },
+  {
+    "url": "https://toggl.com/legal/track/beta/",
+    "competitor": "toggl",
+    "page": "beta",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/legal/track/data-processing-agreement/",
+    "competitor": "toggl",
+    "page": "data-processing-agreement",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/legal/track/data-processing-agreement/v1.0/",
+    "competitor": "toggl",
+    "page": "v1.0",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/legal/track/data-processing-agreement/v2.0/",
+    "competitor": "toggl",
+    "page": "v2.0",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/legal/track/privacy/",
+    "competitor": "toggl",
+    "page": "privacy",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/legal/track/sub-processors/",
+    "competitor": "toggl",
+    "page": "sub-processors",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/legal/track/terms/",
+    "competitor": "toggl",
+    "page": "terms",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/legal/track/terms/v1.0/",
+    "competitor": "toggl",
+    "page": "v1.0",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/legal/track/terms/v2.0/",
+    "competitor": "toggl",
+    "page": "v2.0",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/legal/track/terms/v2.1/",
+    "competitor": "toggl",
+    "page": "v2.1",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/legal/work/data-processing-agreement/",
+    "competitor": "toggl",
+    "page": "data-processing-agreement",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/legal/work/data-processing-agreement/v1.0/",
+    "competitor": "toggl",
+    "page": "v1.0",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/legal/work/data-processing-agreement/v2.0/",
+    "competitor": "toggl",
+    "page": "v2.0",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/legal/work/privacy/",
+    "competitor": "toggl",
+    "page": "privacy",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/legal/work/sub-processors/",
+    "competitor": "toggl",
+    "page": "sub-processors",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/legal/work/terms/",
+    "competitor": "toggl",
+    "page": "terms",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/legal/work/terms/v1.0/",
+    "competitor": "toggl",
+    "page": "v1.0",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/legal/work/terms/v1.1/",
+    "competitor": "toggl",
+    "page": "v1.1",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/out-of-office/",
+    "competitor": "toggl",
+    "page": "out-of-office",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/out-of-office-building-a-team/",
+    "competitor": "toggl",
+    "page": "out-of-office-building-a-team",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/out-of-office-growing-remote-teams/",
+    "competitor": "toggl",
+    "page": "out-of-office-growing-remote-teams",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/out-of-office-hiring-remote-team/",
+    "competitor": "toggl",
+    "page": "out-of-office-hiring-remote-team",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/out-of-office-leading-a-remote-team/",
+    "competitor": "toggl",
+    "page": "out-of-office-leading-a-remote-team",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/out-of-office-remote-company-culture/",
+    "competitor": "toggl",
+    "page": "out-of-office-remote-company-culture",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/out-of-office-why-go-remote/",
+    "competitor": "toggl",
+    "page": "out-of-office-why-go-remote",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/productivity-index/",
+    "competitor": "toggl",
+    "page": "productivity-index",
+    "score": 1
+  },
+  {
+    "url": "https://toggl.com/resources/agency-challenges/",
+    "competitor": "toggl",
+    "page": "agency-challenges",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/resources/agency-edition/",
+    "competitor": "toggl",
+    "page": "agency-edition",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/resources/agency-management/",
+    "competitor": "toggl",
+    "page": "agency-management",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/resources/agency-metrics/",
+    "competitor": "toggl",
+    "page": "agency-metrics",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/resources/agency-operations/",
+    "competitor": "toggl",
+    "page": "agency-operations",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/resources/agency-pricing/",
+    "competitor": "toggl",
+    "page": "agency-pricing",
+    "score": 1
+  },
+  {
+    "url": "https://toggl.com/resources/billable-utilization/",
+    "competitor": "toggl",
+    "page": "billable-utilization",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/resources/capacity-planning/",
+    "competitor": "toggl",
+    "page": "capacity-planning",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/resources/client-audit/",
+    "competitor": "toggl",
+    "page": "client-audit",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/resources/",
+    "competitor": "toggl",
+    "page": "resources",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/resources/investigation/",
+    "competitor": "toggl",
+    "page": "investigation",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/resources/project-planning/",
+    "competitor": "toggl",
+    "page": "project-planning",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/resources/project-profitability/",
+    "competitor": "toggl",
+    "page": "project-profitability",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/resources/workload-management/",
+    "competitor": "toggl",
+    "page": "workload-management",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/startup-simulator/",
+    "competitor": "toggl",
+    "page": "startup-simulator",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/superday/",
+    "competitor": "toggl",
+    "page": "superday",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/terrible-clients/breakeven/",
+    "competitor": "toggl",
+    "page": "breakeven",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/terrible-clients/destitute/",
+    "competitor": "toggl",
+    "page": "destitute",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/terrible-clients/",
+    "competitor": "toggl",
+    "page": "terrible-clients",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/terrible-clients/not-profitable/",
+    "competitor": "toggl",
+    "page": "not-profitable",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/terrible-clients/profitable/",
+    "competitor": "toggl",
+    "page": "profitable",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/terrible-clients/starving/",
+    "competitor": "toggl",
+    "page": "starving",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/terrible-clients/super-profitable/",
+    "competitor": "toggl",
+    "page": "super-profitable",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/timesheets-magazine/",
+    "competitor": "toggl",
+    "page": "timesheets-magazine",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/timesheets-magazine-berlin/6th-finger-human-side-teamwork/",
+    "competitor": "toggl",
+    "page": "6th-finger-human-side-teamwork",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/timesheets-magazine-berlin/drubay-outside-ones-bubble/",
+    "competitor": "toggl",
+    "page": "drubay-outside-ones-bubble",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/timesheets-magazine-berlin/faisst-learn-love-achievements/",
+    "competitor": "toggl",
+    "page": "faisst-learn-love-achievements",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/timesheets-magazine-berlin/index/",
+    "competitor": "toggl",
+    "page": "index",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/timesheets-magazine-berlin/",
+    "competitor": "toggl",
+    "page": "timesheets-magazine-berlin",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/timesheets-magazine-berlin/spiekermann-time-management-fly/",
+    "competitor": "toggl",
+    "page": "spiekermann-time-management-fly",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/timesheets-magazine-berlin/steinforth-nurturing-leadership/",
+    "competitor": "toggl",
+    "page": "steinforth-nurturing-leadership",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/timesheets-magazine-berlin/ziur-art-not-being-subtle/",
+    "competitor": "toggl",
+    "page": "ziur-art-not-being-subtle",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/timesheets-magazine-london/charlie-brinkhurst-cuff/",
+    "competitor": "toggl",
+    "page": "charlie-brinkhurst-cuff",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/timesheets-magazine-london/contents/",
+    "competitor": "toggl",
+    "page": "contents",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/timesheets-magazine-london/ibrahim-kamara/",
+    "competitor": "toggl",
+    "page": "ibrahim-kamara",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/timesheets-magazine-london/",
+    "competitor": "toggl",
+    "page": "timesheets-magazine-london",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/timesheets-magazine-london/liam-young/",
+    "competitor": "toggl",
+    "page": "liam-young",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/timesheets-magazine-london/maral-pourkazemi/",
+    "competitor": "toggl",
+    "page": "maral-pourkazemi",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/timesheets-magazine-london/sanah-ahsan/",
+    "competitor": "toggl",
+    "page": "sanah-ahsan",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/timesheets-magazine-london/virgin-xtravaganzah/",
+    "competitor": "toggl",
+    "page": "virgin-xtravaganzah",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/timesheets-magazine-london/zaiba-jabbar/",
+    "competitor": "toggl",
+    "page": "zaiba-jabbar",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/500/",
+    "competitor": "toggl",
+    "page": "500",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/admin-efficiency/",
+    "competitor": "toggl",
+    "page": "admin-efficiency",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/affiliates/",
+    "competitor": "toggl",
+    "page": "affiliates",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/anti-surveillance-statement/",
+    "competitor": "toggl",
+    "page": "anti-surveillance-statement",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/asana-time-tracking/",
+    "competitor": "toggl",
+    "page": "asana-time-tracking",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/assembla-time-tracking/",
+    "competitor": "toggl",
+    "page": "assembla-time-tracking",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/autohive/",
+    "competitor": "toggl",
+    "page": "autohive",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/automated-time-tracker/",
+    "competitor": "toggl",
+    "page": "automated-time-tracker",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/autotrack-your-time/",
+    "competitor": "toggl",
+    "page": "autotrack-your-time",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/beeminder/",
+    "competitor": "toggl",
+    "page": "beeminder",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/billable-hours-software/",
+    "competitor": "toggl",
+    "page": "billable-hours-software",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/bitbucket-time-tracking/",
+    "competitor": "toggl",
+    "page": "bitbucket-time-tracking",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/breeze-time-tracking/",
+    "competitor": "toggl",
+    "page": "breeze-time-tracking",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/business-etiquette-rules/",
+    "competitor": "toggl",
+    "page": "business-etiquette-rules",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/clarity/components/ChaosTearHero/",
+    "competitor": "toggl",
+    "page": "ChaosTearHero",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/clarity/",
+    "competitor": "toggl",
+    "page": "clarity",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/classroom-timer/",
+    "competitor": "toggl",
+    "page": "classroom-timer",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/clockify-alternative/",
+    "competitor": "toggl",
+    "page": "clockify-alternative",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/clockify-alternative-teams/",
+    "competitor": "toggl",
+    "page": "clockify-alternative-teams",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/company-productivity-tracker/",
+    "competitor": "toggl",
+    "page": "company-productivity-tracker",
+    "score": 1
+  },
+  {
+    "url": "https://toggl.com/track/contact/",
+    "competitor": "toggl",
+    "page": "contact",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/custom-built-profitability-report/",
+    "competitor": "toggl",
+    "page": "custom-built-profitability-report",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/custom-report-saves-manual-work/",
+    "competitor": "toggl",
+    "page": "custom-report-saves-manual-work",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/custom-time-tracking-xero-integration/",
+    "competitor": "toggl",
+    "page": "custom-time-tracking-xero-integration",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/customers/3angletech/",
+    "competitor": "toggl",
+    "page": "3angletech",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/customers/candybox-marketing/",
+    "competitor": "toggl",
+    "page": "candybox-marketing",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/customers/fullstack-labs/",
+    "competitor": "toggl",
+    "page": "fullstack-labs",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/customers/harvey-esquire/",
+    "competitor": "toggl",
+    "page": "harvey-esquire",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/customers/impekable/",
+    "competitor": "toggl",
+    "page": "impekable",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/customers/",
+    "competitor": "toggl",
+    "page": "customers",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/customers/lighting-beetle/",
+    "competitor": "toggl",
+    "page": "lighting-beetle",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/customers/mediacurrent/",
+    "competitor": "toggl",
+    "page": "mediacurrent",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/customers/mister-sweat/",
+    "competitor": "toggl",
+    "page": "mister-sweat",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/customers/moove-it/",
+    "competitor": "toggl",
+    "page": "moove-it",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/customers/netconomy/",
+    "competitor": "toggl",
+    "page": "netconomy",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/customers/netguru/",
+    "competitor": "toggl",
+    "page": "netguru",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/customers/newlogic/",
+    "competitor": "toggl",
+    "page": "newlogic",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/customers/paxson-fay/",
+    "competitor": "toggl",
+    "page": "paxson-fay",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/customers/perception-engineering/",
+    "competitor": "toggl",
+    "page": "perception-engineering",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/customers/platinum-companies/",
+    "competitor": "toggl",
+    "page": "platinum-companies",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/customers/revelation-agency/",
+    "competitor": "toggl",
+    "page": "revelation-agency",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/customers/roguemark-studios/",
+    "competitor": "toggl",
+    "page": "roguemark-studios",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/customers/sidetrade/",
+    "competitor": "toggl",
+    "page": "sidetrade",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/customers/skeleton/",
+    "competitor": "toggl",
+    "page": "skeleton",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/customers/talkshopmedia/",
+    "competitor": "toggl",
+    "page": "talkshopmedia",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/customers/xmartlabs/",
+    "competitor": "toggl",
+    "page": "xmartlabs",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/demo-request/",
+    "competitor": "toggl",
+    "page": "demo-request",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/deskpro/",
+    "competitor": "toggl",
+    "page": "deskpro",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/desktime-alternative/",
+    "competitor": "toggl",
+    "page": "desktime-alternative",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/device-unsupported/",
+    "competitor": "toggl",
+    "page": "device-unsupported",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/drupal-time-tracking/",
+    "competitor": "toggl",
+    "page": "drupal-time-tracking",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/easy-time-tracking/",
+    "competitor": "toggl",
+    "page": "easy-time-tracking",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/employee-monitoring-software/",
+    "competitor": "toggl",
+    "page": "employee-monitoring-software",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/employee-time-tracking/",
+    "competitor": "toggl",
+    "page": "employee-time-tracking",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/employee-time-tracking-teams/",
+    "competitor": "toggl",
+    "page": "employee-time-tracking-teams",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/enterprise/",
+    "competitor": "toggl",
+    "page": "enterprise",
+    "score": 1
+  },
+  {
+    "url": "https://toggl.com/track/eon-timer/",
+    "competitor": "toggl",
+    "page": "eon-timer",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/eu-data-act/",
+    "competitor": "toggl",
+    "page": "eu-data-act",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/everhour-alternative/",
+    "competitor": "toggl",
+    "page": "everhour-alternative",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/evernote-time-tracking/",
+    "competitor": "toggl",
+    "page": "evernote-time-tracking",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/feature-list/",
+    "competitor": "toggl",
+    "page": "feature-list",
+    "score": 1
+  },
+  {
+    "url": "https://toggl.com/track/features/",
+    "competitor": "toggl",
+    "page": "features",
+    "score": 1
+  },
+  {
+    "url": "https://toggl.com/track/featvalue/",
+    "competitor": "toggl",
+    "page": "featvalue",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/feedly-time-tracking/",
+    "competitor": "toggl",
+    "page": "feedly-time-tracking",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/focused-work/",
+    "competitor": "toggl",
+    "page": "focused-work",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/forgot-password/",
+    "competitor": "toggl",
+    "page": "forgot-password",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/freelance-time-tracking/",
+    "competitor": "toggl",
+    "page": "freelance-time-tracking",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/fte-calculator-employee-cost/",
+    "competitor": "toggl",
+    "page": "fte-calculator-employee-cost",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/github-time-tracking/",
+    "competitor": "toggl",
+    "page": "github-time-tracking",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/gmail-time-tracking/",
+    "competitor": "toggl",
+    "page": "gmail-time-tracking",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/google-calendar-time-tracking/",
+    "competitor": "toggl",
+    "page": "google-calendar-time-tracking",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/google-docs-time-tracking/",
+    "competitor": "toggl",
+    "page": "google-docs-time-tracking",
+    "score": 1
+  },
+  {
+    "url": "https://toggl.com/track/harvest-alternative/",
+    "competitor": "toggl",
+    "page": "harvest-alternative",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/harvest-alternative-teams/",
+    "competitor": "toggl",
+    "page": "harvest-alternative-teams",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/height/",
+    "competitor": "toggl",
+    "page": "height",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/how-to-audit-time-tracking-data/",
+    "competitor": "toggl",
+    "page": "how-to-audit-time-tracking-data",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/how-to-calculate-billable-hours/",
+    "competitor": "toggl",
+    "page": "how-to-calculate-billable-hours",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/hubstaff-alternative/",
+    "competitor": "toggl",
+    "page": "hubstaff-alternative",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/hubstaff-alternative-teams/",
+    "competitor": "toggl",
+    "page": "hubstaff-alternative-teams",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/ical-integration/",
+    "competitor": "toggl",
+    "page": "ical-integration",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/integrations/",
+    "competitor": "toggl",
+    "page": "integrations",
+    "score": 1
+  },
+  {
+    "url": "https://toggl.com/track/iso-certification/",
+    "competitor": "toggl",
+    "page": "iso-certification",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/jira-time-tracking/",
+    "competitor": "toggl",
+    "page": "jira-time-tracking",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/kanban-time-tracking/",
+    "competitor": "toggl",
+    "page": "kanban-time-tracking",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/kickstart-team-time-tracking/",
+    "competitor": "toggl",
+    "page": "kickstart-team-time-tracking",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/login/",
+    "competitor": "toggl",
+    "page": "login",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/maintaining-data-quality/",
+    "competitor": "toggl",
+    "page": "maintaining-data-quality",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/media-toolkit/",
+    "competitor": "toggl",
+    "page": "media-toolkit",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/mixed-analytics/",
+    "competitor": "toggl",
+    "page": "mixed-analytics",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/mobile-time-tracking-app/",
+    "competitor": "toggl",
+    "page": "mobile-time-tracking-app",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/not-found/",
+    "competitor": "toggl",
+    "page": "not-found",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/one-tracking/",
+    "competitor": "toggl",
+    "page": "one-tracking",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/online-employee-management/",
+    "competitor": "toggl",
+    "page": "online-employee-management",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/online-timer/",
+    "competitor": "toggl",
+    "page": "online-timer",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/outlook-time-tracking/",
+    "competitor": "toggl",
+    "page": "outlook-time-tracking",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/overtime-calculator/",
+    "competitor": "toggl",
+    "page": "overtime-calculator",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/payroll-hours-tracker/",
+    "competitor": "toggl",
+    "page": "payroll-hours-tracker",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/pivotal-tracker-time-tracking/",
+    "competitor": "toggl",
+    "page": "pivotal-tracker-time-tracking",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/podio-time-tracking/",
+    "competitor": "toggl",
+    "page": "podio-time-tracking",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/pomodoro-timer-toggl/",
+    "competitor": "toggl",
+    "page": "pomodoro-timer-toggl",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/pricing/",
+    "competitor": "toggl",
+    "page": "pricing",
+    "score": 1
+  },
+  {
+    "url": "https://toggl.com/track/product-demo/",
+    "competitor": "toggl",
+    "page": "product-demo",
+    "score": 1
+  },
+  {
+    "url": "https://toggl.com/track/product-hub/",
+    "competitor": "toggl",
+    "page": "product-hub",
+    "score": 1
+  },
+  {
+    "url": "https://toggl.com/track/project-management-software/",
+    "competitor": "toggl",
+    "page": "project-management-software",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/project-time-tracking/",
+    "competitor": "toggl",
+    "page": "project-time-tracking",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/project-time-tracking-teams/",
+    "competitor": "toggl",
+    "page": "project-time-tracking-teams",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/quickbooks-time-alternative/",
+    "competitor": "toggl",
+    "page": "quickbooks-time-alternative",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/quickbooks-time-tracking/",
+    "competitor": "toggl",
+    "page": "quickbooks-time-tracking",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/rd-tax-credit-time-tracking/",
+    "competitor": "toggl",
+    "page": "rd-tax-credit-time-tracking",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/redmine-time-tracking/",
+    "competitor": "toggl",
+    "page": "redmine-time-tracking",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/reporting/",
+    "competitor": "toggl",
+    "page": "reporting",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/request-demo/",
+    "competitor": "toggl",
+    "page": "request-demo",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/reset-password/",
+    "competitor": "toggl",
+    "page": "reset-password",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/roi-calc/",
+    "competitor": "toggl",
+    "page": "roi-calc",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/roi-calculator/",
+    "competitor": "toggl",
+    "page": "roi-calculator",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/salesforce-time-tracking/",
+    "competitor": "toggl",
+    "page": "salesforce-time-tracking",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/security-and-reliability/",
+    "competitor": "toggl",
+    "page": "security-and-reliability",
+    "score": 1
+  },
+  {
+    "url": "https://toggl.com/track/setting-up-data-quality-foundations/",
+    "competitor": "toggl",
+    "page": "setting-up-data-quality-foundations",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/signup/",
+    "competitor": "toggl",
+    "page": "signup",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/slack-time-tracking/",
+    "competitor": "toggl",
+    "page": "slack-time-tracking",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/smart-goals-template/",
+    "competitor": "toggl",
+    "page": "smart-goals-template",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/smoke-break-timer/",
+    "competitor": "toggl",
+    "page": "smoke-break-timer",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/soc-compliance/",
+    "competitor": "toggl",
+    "page": "soc-compliance",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/sso-login/",
+    "competitor": "toggl",
+    "page": "sso-login",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/sunsama/",
+    "competitor": "toggl",
+    "page": "sunsama",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/taiga-time-tracking/",
+    "competitor": "toggl",
+    "page": "taiga-time-tracking",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/takt-time-cycle-time-lead-time/",
+    "competitor": "toggl",
+    "page": "takt-time-cycle-time-lead-time",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/target-mate/",
+    "competitor": "toggl",
+    "page": "target-mate",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/targetprocess-time-tracking/",
+    "competitor": "toggl",
+    "page": "targetprocess-time-tracking",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/task-timer/",
+    "competitor": "toggl",
+    "page": "task-timer",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/team-building-games/",
+    "competitor": "toggl",
+    "page": "team-building-games",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/teamwork-time-tracking/",
+    "competitor": "toggl",
+    "page": "teamwork-time-tracking",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/time-billing-software/",
+    "competitor": "toggl",
+    "page": "time-billing-software",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/time-card-calculator/",
+    "competitor": "toggl",
+    "page": "time-card-calculator",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/time-reporting/",
+    "competitor": "toggl",
+    "page": "time-reporting",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/time-tracking-android/",
+    "competitor": "toggl",
+    "page": "time-tracking-android",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/time-tracking-anywhere/",
+    "competitor": "toggl",
+    "page": "time-tracking-anywhere",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/time-tracking-developer-teams/",
+    "competitor": "toggl",
+    "page": "time-tracking-developer-teams",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/time-tracking-invoicing/",
+    "competitor": "toggl",
+    "page": "time-tracking-invoicing",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/time-tracking-ios/",
+    "competitor": "toggl",
+    "page": "time-tracking-ios",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/time-tracking-lawyers/",
+    "competitor": "toggl",
+    "page": "time-tracking-lawyers",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/time-tracking-linux/",
+    "competitor": "toggl",
+    "page": "time-tracking-linux",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/time-tracking-mac/",
+    "competitor": "toggl",
+    "page": "time-tracking-mac",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/time-tracking-small-teams/",
+    "competitor": "toggl",
+    "page": "time-tracking-small-teams",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/time-tracking-software-for-agencies/",
+    "competitor": "toggl",
+    "page": "time-tracking-software-for-agencies",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/time-tracking-software-for-consultants/",
+    "competitor": "toggl",
+    "page": "time-tracking-software-for-consultants",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/time-tracking-software-for-designers/",
+    "competitor": "toggl",
+    "page": "time-tracking-software-for-designers",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/time-tracking-software-for-developers/",
+    "competitor": "toggl",
+    "page": "time-tracking-software-for-developers",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/time-tracking-software-for-finance-teams/",
+    "competitor": "toggl",
+    "page": "time-tracking-software-for-finance-teams",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/time-tracking-windows/",
+    "competitor": "toggl",
+    "page": "time-tracking-windows",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/timedoctor-alternative/",
+    "competitor": "toggl",
+    "page": "timedoctor-alternative",
+    "score": 1
+  },
+  {
+    "url": "https://toggl.com/track/timekeeper-software/",
+    "competitor": "toggl",
+    "page": "timekeeper-software",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/timely-alternative/",
+    "competitor": "toggl",
+    "page": "timely-alternative",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/timely-alternative-teams/",
+    "competitor": "toggl",
+    "page": "timely-alternative-teams",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/timesheet-reminders/",
+    "competitor": "toggl",
+    "page": "timesheet-reminders",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/timesheet-templates/excel-template/",
+    "competitor": "toggl",
+    "page": "excel-template",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/timesheet-templates/google-docs-template/",
+    "competitor": "toggl",
+    "page": "google-docs-template",
+    "score": 1
+  },
+  {
+    "url": "https://toggl.com/track/timesheet-templates/google-sheets-template/",
+    "competitor": "toggl",
+    "page": "google-sheets-template",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/timesheet-templates/",
+    "competitor": "toggl",
+    "page": "timesheet-templates",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/timesheet-templates/pdf-template/",
+    "competitor": "toggl",
+    "page": "pdf-template",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/timesheet-templates/word-template/",
+    "competitor": "toggl",
+    "page": "word-template",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/timesheets/",
+    "competitor": "toggl",
+    "page": "timesheets",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/todoist-time-tracking/",
+    "competitor": "toggl",
+    "page": "todoist-time-tracking",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/toggl-button-feedback/",
+    "competitor": "toggl",
+    "page": "toggl-button-feedback",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/toggl-custom-solutions/",
+    "competitor": "toggl",
+    "page": "toggl-custom-solutions",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/toggl-desktop/",
+    "competitor": "toggl",
+    "page": "toggl-desktop",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/toggl-plan-time-tracking/",
+    "competitor": "toggl",
+    "page": "toggl-plan-time-tracking",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/toggl-sso/",
+    "competitor": "toggl",
+    "page": "toggl-sso",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/toggl-track-year/",
+    "competitor": "toggl",
+    "page": "toggl-track-year",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/toggle-wear/",
+    "competitor": "toggl",
+    "page": "toggle-wear",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/toodledo-time-tracking/",
+    "competitor": "toggl",
+    "page": "toodledo-time-tracking",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/track-time-collaboratively/",
+    "competitor": "toggl",
+    "page": "track-time-collaboratively",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/trello-time-tracking/",
+    "competitor": "toggl",
+    "page": "trello-time-tracking",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/trydeepwork/",
+    "competitor": "toggl",
+    "page": "trydeepwork",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/unfuddle-time-tracking/",
+    "competitor": "toggl",
+    "page": "unfuddle-time-tracking",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/visual-studio-time-tracking/",
+    "competitor": "toggl",
+    "page": "visual-studio-time-tracking",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/ways-to-log-time/",
+    "competitor": "toggl",
+    "page": "ways-to-log-time",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/why-timesheet-approvals-matter/",
+    "competitor": "toggl",
+    "page": "why-timesheet-approvals-matter",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/wordpress-time-tracking/",
+    "competitor": "toggl",
+    "page": "wordpress-time-tracking",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/work-breakdown-structure/",
+    "competitor": "toggl",
+    "page": "work-breakdown-structure",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/work-hours-tracking/",
+    "competitor": "toggl",
+    "page": "work-hours-tracking",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/work-timer/",
+    "competitor": "toggl",
+    "page": "work-timer",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/wrike-time-tracking/",
+    "competitor": "toggl",
+    "page": "wrike-time-tracking",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/xero-time-tracking/",
+    "competitor": "toggl",
+    "page": "xero-time-tracking",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/track/zendesk-timer-toggl/",
+    "competitor": "toggl",
+    "page": "zendesk-timer-toggl",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/work/",
+    "competitor": "toggl",
+    "page": "work",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/work-from-home/",
+    "competitor": "toggl",
+    "page": "work-from-home",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/settings",
+    "competitor": "toggl",
+    "page": "settings",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/settings/profile",
+    "competitor": "toggl",
+    "page": "profile",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/settings/billing",
+    "competitor": "toggl",
+    "page": "billing",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/settings/workspace",
+    "competitor": "toggl",
+    "page": "workspace",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/settings/team",
+    "competitor": "toggl",
+    "page": "team",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/dashboard",
+    "competitor": "toggl",
+    "page": "dashboard",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/projects",
+    "competitor": "toggl",
+    "page": "projects",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/members",
+    "competitor": "toggl",
+    "page": "members",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/billing",
+    "competitor": "toggl",
+    "page": "billing",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/profile",
+    "competitor": "toggl",
+    "page": "profile",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/account",
+    "competitor": "toggl",
+    "page": "account",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/organization",
+    "competitor": "toggl",
+    "page": "organization",
+    "score": 0
+  },
+  {
+    "url": "https://toggl.com/notifications",
+    "competitor": "toggl",
+    "page": "notifications",
+    "score": 0
+  }
+]

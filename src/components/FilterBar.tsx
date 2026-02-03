@@ -1,8 +1,12 @@
 import { api } from "@convex/_generated/api";
 import type { Doc, Id } from "@convex/_generated/dataModel";
 import { useMutation, useQuery } from "convex/react";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { toast } from "sonner";
+import { ChevronDown, X } from "@/lib/icons";
+import type { IssuePriority, IssueType } from "@/lib/issue-utils";
+import { getTypeIcon } from "@/lib/issue-utils";
+import { cn } from "@/lib/utils";
 import { Button } from "./ui/Button";
 import {
   Dialog,
@@ -12,27 +16,41 @@ import {
   DialogHeader,
   DialogTitle,
 } from "./ui/Dialog";
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "./ui/DropdownMenu";
 import { Flex } from "./ui/Flex";
 import { Checkbox, Input } from "./ui/form";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/Select";
-import { Tooltip } from "./ui/Tooltip";
 
-type FilterValues = Record<string, unknown>;
+export interface BoardFilters {
+  type?: Exclude<IssueType, "subtask">[];
+  priority?: IssuePriority[];
+  assigneeId?: Id<"users">[];
+  labels?: string[];
+}
 
 interface FilterBarProps {
   projectId: Id<"projects">;
-  onFilterChange: (filters: FilterValues) => void;
+  filters: BoardFilters;
+  onFilterChange: (filters: BoardFilters) => void;
 }
 
-export function FilterBar({ projectId, onFilterChange }: FilterBarProps) {
+const ISSUE_TYPES = ["task", "bug", "story", "epic"] as const;
+const PRIORITIES = ["highest", "high", "medium", "low", "lowest"] as const;
+
+export function FilterBar({ projectId, filters, onFilterChange }: FilterBarProps) {
   const [showSaveDialog, setShowSaveDialog] = useState(false);
   const [filterName, setFilterName] = useState("");
   const [isPublic, setIsPublic] = useState(false);
-  const [activeFilters, setActiveFilters] = useState<FilterValues>({});
 
   const savedFilters = useQuery(api.savedFilters.list, { projectId });
   const createFilter = useMutation(api.savedFilters.create);
   const removeFilter = useMutation(api.savedFilters.remove);
+  const labels = useQuery(api.labels.list, { projectId });
+  const members = useQuery(api.projectMembers.list, { projectId });
 
   const handleSaveFilter = async () => {
     if (!filterName.trim()) {
@@ -44,7 +62,7 @@ export function FilterBar({ projectId, onFilterChange }: FilterBarProps) {
       await createFilter({
         projectId,
         name: filterName,
-        filters: activeFilters,
+        filters: filters,
         isPublic,
       });
       toast.success("Filter saved");
@@ -56,11 +74,13 @@ export function FilterBar({ projectId, onFilterChange }: FilterBarProps) {
     }
   };
 
-  const handleLoadFilter = (filters: FilterValues) => {
-    setActiveFilters(filters);
-    onFilterChange(filters);
-    toast.success("Filter applied");
-  };
+  const handleLoadFilter = useCallback(
+    (savedFilter: Doc<"savedFilters">) => {
+      onFilterChange(savedFilter.filters as BoardFilters);
+      toast.success("Filter applied");
+    },
+    [onFilterChange],
+  );
 
   const handleDeleteFilter = async (id: Id<"savedFilters">) => {
     try {
@@ -72,67 +92,237 @@ export function FilterBar({ projectId, onFilterChange }: FilterBarProps) {
   };
 
   const handleClearFilters = () => {
-    setActiveFilters({});
     onFilterChange({});
-    toast.success("Filters cleared");
   };
 
-  const hasActiveFilters = Object.keys(activeFilters).length > 0;
+  const toggleArrayFilter = useCallback(
+    <K extends keyof BoardFilters>(
+      key: K,
+      value: BoardFilters[K] extends (infer U)[] | undefined ? U : never,
+    ) => {
+      const currentArray = (filters[key] ?? []) as (typeof value)[];
+      const newArray = currentArray.includes(value)
+        ? currentArray.filter((v) => v !== value)
+        : [...currentArray, value];
+
+      onFilterChange({
+        ...filters,
+        [key]: newArray.length > 0 ? newArray : undefined,
+      });
+    },
+    [filters, onFilterChange],
+  );
+
+  const hasActiveFilters =
+    (filters.type?.length ?? 0) > 0 ||
+    (filters.priority?.length ?? 0) > 0 ||
+    (filters.assigneeId?.length ?? 0) > 0 ||
+    (filters.labels?.length ?? 0) > 0;
+
+  const activeFilterCount =
+    (filters.type?.length ?? 0) +
+    (filters.priority?.length ?? 0) +
+    (filters.assigneeId?.length ?? 0) +
+    (filters.labels?.length ?? 0);
 
   return (
-    <div className="bg-ui-bg-secondary border-b border-ui-border p-4">
-      <Flex align="center" gap="md" className="flex-wrap">
-        {/* Saved Filters Dropdown */}
-        <Flex align="center" gap="sm">
-          <label htmlFor="savedFilters" className="text-sm font-medium text-ui-text">
-            Saved Filters:
-          </label>
-          <Select
-            value=""
-            onValueChange={(value) => {
-              if (value) {
-                const selected = savedFilters?.find((f: Doc<"savedFilters">) => f._id === value);
-                if (selected) {
-                  handleLoadFilter(selected.filters);
-                }
-              }
-            }}
-          >
-            <SelectTrigger className="px-3 py-1.5 border border-ui-border rounded-lg bg-ui-bg text-sm">
-              <SelectValue placeholder="Select a filter..." />
-            </SelectTrigger>
-            <SelectContent>
-              {savedFilters?.map(
-                (filter: Doc<"savedFilters"> & { isOwner?: boolean; creatorName?: string }) => (
-                  <SelectItem key={filter._id} value={filter._id}>
-                    {filter.name} {filter.isPublic && "(Public)"}{" "}
-                    {!filter.isOwner && `- by ${filter.creatorName}`}
-                  </SelectItem>
-                ),
-              )}
-            </SelectContent>
-          </Select>
-        </Flex>
+    <div className="border-b border-ui-border px-4 py-2">
+      <Flex align="center" gap="sm" className="flex-wrap">
+        {/* Type Filter */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="ghost"
+              size="sm"
+              className={cn("h-8 px-3", filters.type?.length ? "bg-brand-subtle text-brand" : "")}
+            >
+              Type
+              {filters.type?.length ? ` (${filters.type.length})` : ""}
+              <ChevronDown className="ml-1 w-4 h-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start">
+            {ISSUE_TYPES.map((type) => (
+              <DropdownMenuCheckboxItem
+                key={type}
+                checked={filters.type?.includes(type) ?? false}
+                onCheckedChange={() => toggleArrayFilter("type", type)}
+              >
+                <Flex align="center" gap="sm">
+                  {getTypeIcon(type)}
+                  <span className="capitalize">{type}</span>
+                </Flex>
+              </DropdownMenuCheckboxItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
 
-        {/* Save Current Filter */}
-        {hasActiveFilters && (
-          <Button size="sm" onClick={() => setShowSaveDialog(true)}>
-            💾 Save Filter
-          </Button>
-        )}
+        {/* Priority Filter */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="ghost"
+              size="sm"
+              className={cn(
+                "h-8 px-3",
+                filters.priority?.length ? "bg-brand-subtle text-brand" : "",
+              )}
+            >
+              Priority
+              {filters.priority?.length ? ` (${filters.priority.length})` : ""}
+              <ChevronDown className="ml-1 w-4 h-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start">
+            {PRIORITIES.map((priority) => (
+              <DropdownMenuCheckboxItem
+                key={priority}
+                checked={filters.priority?.includes(priority) ?? false}
+                onCheckedChange={() => toggleArrayFilter("priority", priority)}
+              >
+                <span className="capitalize">{priority}</span>
+              </DropdownMenuCheckboxItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+        {/* Assignee Filter */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="ghost"
+              size="sm"
+              className={cn(
+                "h-8 px-3",
+                filters.assigneeId?.length ? "bg-brand-subtle text-brand" : "",
+              )}
+            >
+              Assignee
+              {filters.assigneeId?.length ? ` (${filters.assigneeId.length})` : ""}
+              <ChevronDown className="ml-1 w-4 h-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start" className="max-h-64 overflow-y-auto">
+            {members?.map((member) => (
+              <DropdownMenuCheckboxItem
+                key={member.userId}
+                checked={filters.assigneeId?.includes(member.userId) ?? false}
+                onCheckedChange={() => toggleArrayFilter("assigneeId", member.userId)}
+              >
+                {member.userName}
+              </DropdownMenuCheckboxItem>
+            ))}
+            {(!members || members.length === 0) && (
+              <div className="px-2 py-1.5 text-sm text-ui-text-secondary">No members</div>
+            )}
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+        {/* Labels Filter */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="ghost"
+              size="sm"
+              className={cn("h-8 px-3", filters.labels?.length ? "bg-brand-subtle text-brand" : "")}
+            >
+              Labels
+              {filters.labels?.length ? ` (${filters.labels.length})` : ""}
+              <ChevronDown className="ml-1 w-4 h-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start" className="max-h-64 overflow-y-auto">
+            {labels?.map((label) => (
+              <DropdownMenuCheckboxItem
+                key={label._id}
+                checked={filters.labels?.includes(label.name) ?? false}
+                onCheckedChange={() => toggleArrayFilter("labels", label.name)}
+              >
+                <Flex align="center" gap="sm">
+                  <span
+                    className="w-3 h-3 rounded-full shrink-0"
+                    style={{ backgroundColor: label.color }}
+                  />
+                  {label.name}
+                </Flex>
+              </DropdownMenuCheckboxItem>
+            ))}
+            {(!labels || labels.length === 0) && (
+              <div className="px-2 py-1.5 text-sm text-ui-text-secondary">No labels</div>
+            )}
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+        {/* Divider */}
+        {hasActiveFilters && <div className="w-px h-6 bg-ui-border" />}
 
         {/* Clear Filters */}
         {hasActiveFilters && (
-          <Button variant="secondary" size="sm" onClick={handleClearFilters}>
-            ✕ Clear
+          <Button variant="ghost" size="sm" onClick={handleClearFilters} className="h-8 px-2">
+            <X className="w-4 h-4 mr-1" />
+            Clear ({activeFilterCount})
           </Button>
         )}
 
-        {/* Active Filters Indicator */}
+        {/* Save Filter */}
         {hasActiveFilters && (
-          <div className="text-sm text-ui-text-secondary">
-            {Object.keys(activeFilters).length} filter(s) active
-          </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setShowSaveDialog(true)}
+            className="h-8 px-3"
+          >
+            Save Filter
+          </Button>
+        )}
+
+        {/* Saved Filters */}
+        {savedFilters && savedFilters.length > 0 && (
+          <>
+            <div className="w-px h-6 bg-ui-border" />
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm" className="h-8 px-3">
+                  Saved Filters ({savedFilters.length})
+                  <ChevronDown className="ml-1 w-4 h-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="max-h-64 overflow-y-auto min-w-48">
+                {savedFilters.map((filter) => (
+                  <Flex
+                    key={filter._id}
+                    align="center"
+                    justify="between"
+                    className="px-2 py-1.5 hover:bg-ui-bg-secondary rounded cursor-pointer"
+                  >
+                    <button
+                      type="button"
+                      onClick={() => handleLoadFilter(filter)}
+                      className="flex-1 text-left text-sm"
+                    >
+                      {filter.name}
+                      {filter.isPublic && (
+                        <span className="ml-1 text-xs text-ui-text-tertiary">(public)</span>
+                      )}
+                    </button>
+                    {filter.isOwner && (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          void handleDeleteFilter(filter._id);
+                        }}
+                        className="p-1 text-ui-text-tertiary hover:text-status-error"
+                        aria-label="Delete filter"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    )}
+                  </Flex>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </>
         )}
       </Flex>
 
@@ -178,47 +368,10 @@ export function FilterBar({ projectId, onFilterChange }: FilterBarProps) {
             >
               Cancel
             </Button>
-            <Button onClick={handleSaveFilter}>Save</Button>
+            <Button onClick={() => void handleSaveFilter()}>Save</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
-
-      {/* My Filters List (if any saved) */}
-      {savedFilters && savedFilters.length > 0 && (
-        <Flex wrap gap="sm" className="mt-3">
-          {savedFilters.slice(0, 5).map((filter: Doc<"savedFilters"> & { isOwner?: boolean }) => (
-            <Flex
-              inline
-              align="center"
-              gap="sm"
-              className="px-3 py-1 bg-ui-bg border border-ui-border rounded-full text-sm"
-              key={filter._id}
-            >
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => handleLoadFilter(filter.filters)}
-                className="p-0 min-h-0 hover:text-brand"
-              >
-                {filter.name}
-              </Button>
-              {filter.isOwner && (
-                <Tooltip content="Delete filter">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => handleDeleteFilter(filter._id)}
-                    className="p-0 min-h-0 text-ui-text-tertiary hover:text-status-error"
-                    aria-label="Delete filter"
-                  >
-                    ✕
-                  </Button>
-                </Tooltip>
-              )}
-            </Flex>
-          ))}
-        </Flex>
-      )}
     </div>
   );
 }
