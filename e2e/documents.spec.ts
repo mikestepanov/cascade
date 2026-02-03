@@ -3,72 +3,71 @@ import { expect, authenticatedTest as test } from "./fixtures";
 /**
  * Documents E2E Tests
  *
- * SKIPPED: BlockNote 0.15 incompatible with React 19
+ * Tests document creation, editing, and management using the Plate editor.
  */
-test.describe
-  .skip("Documents", () => {
-    // Run tests serially to prevent auth token rotation issues
-    test.describe.configure({ mode: "serial" });
+test.describe("Documents", () => {
+  // Run tests serially to prevent auth token rotation issues
+  test.describe.configure({ mode: "serial" });
 
-    // Re-authenticate if tokens were invalidated
-    test.beforeEach(async ({ ensureAuthenticated }) => {
-      await ensureAuthenticated();
+  // Re-authenticate if tokens were invalidated
+  test.beforeEach(async ({ ensureAuthenticated }) => {
+    await ensureAuthenticated();
+  });
+
+  test.describe("Documents Navigation", () => {
+    test("can navigate to documents page", async ({ dashboardPage }) => {
+      await dashboardPage.goto();
+      const _uniqueId = Date.now();
+      const _projectKey = `DOC${Math.floor(Math.random() * 10000)
+        .toString()
+        .padStart(4, "0")}`;
+      await dashboardPage.expectLoaded();
+      await dashboardPage.navigateTo("documents");
+      await dashboardPage.expectActiveTab("documents");
     });
 
-    test.describe("Documents Navigation", () => {
-      test("can navigate to documents page", async ({ dashboardPage }) => {
-        await dashboardPage.goto();
-        const _uniqueId = Date.now();
-        const _projectKey = `DOC${Math.floor(Math.random() * 10000)
-          .toString()
-          .padStart(4, "0")}`;
-        await dashboardPage.expectLoaded();
-        await dashboardPage.navigateTo("documents");
-        await dashboardPage.expectActiveTab("documents");
-      });
-
-      test("displays documents sidebar with new document button", async ({
-        dashboardPage,
-        documentsPage,
-      }) => {
-        await dashboardPage.goto();
-        await dashboardPage.navigateTo("documents");
-        await documentsPage.expectDocumentsView();
-      });
-    });
-
-    test.describe("Document Creation", () => {
-      test("can create a new blank document", async ({ dashboardPage, documentsPage, page }) => {
-        await dashboardPage.goto();
-        await dashboardPage.navigateTo("documents");
-
-        // Wait for documents view to load
-        await documentsPage.expectDocumentsView();
-
-        // Create new document
-        await documentsPage.createNewDocument();
-
-        // Should navigate to document editor (URL contains /documents/ followed by ID)
-        await page.waitForURL(/\/documents\/[^/]+$/);
-
-        // Editor should be visible
-        await documentsPage.expectEditorVisible();
-      });
-    });
-
-    test.describe("Document Editor", () => {
-      test("can edit document title", async ({ dashboardPage, documentsPage, page }) => {
-        await dashboardPage.goto();
-        await dashboardPage.navigateTo("documents");
-        await documentsPage.expectDocumentsView();
-
-        // Create a new document first
-        await documentsPage.createNewDocument();
-        await page.waitForURL(/\/documents\/[^/]+$/);
-        await documentsPage.expectEditorVisible();
-
-        // The BlockNote editor should be present
-        await expect(documentsPage.editorContent).toBeVisible();
-      });
+    test("displays documents sidebar with new document button", async ({
+      dashboardPage,
+      documentsPage,
+    }) => {
+      await dashboardPage.goto();
+      await dashboardPage.navigateTo("documents");
+      await documentsPage.expectDocumentsView();
     });
   });
+
+  test.describe("Document Creation", () => {
+    test("can create a new blank document", async ({ dashboardPage, documentsPage, page }) => {
+      await dashboardPage.goto();
+      await dashboardPage.navigateTo("documents");
+
+      // Wait for documents view to load
+      await documentsPage.expectDocumentsView();
+
+      // Create new document
+      await documentsPage.createNewDocument();
+
+      // Should navigate to document editor (URL contains /documents/ followed by ID)
+      await page.waitForURL(/\/documents\/[^/]+$/);
+
+      // Editor should be visible
+      await documentsPage.expectEditorVisible();
+    });
+  });
+
+  test.describe("Document Editor", () => {
+    test("can edit document title", async ({ dashboardPage, documentsPage, page }) => {
+      await dashboardPage.goto();
+      await dashboardPage.navigateTo("documents");
+      await documentsPage.expectDocumentsView();
+
+      // Create a new document first
+      await documentsPage.createNewDocument();
+      await page.waitForURL(/\/documents\/[^/]+$/);
+      await documentsPage.expectEditorVisible();
+
+      // The Plate editor should be present
+      await expect(documentsPage.editorContent).toBeVisible();
+    });
+  });
+});

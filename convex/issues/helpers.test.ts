@@ -462,10 +462,11 @@ describe("issue helpers", () => {
       // Create first sub-task
       const subTaskId = await t.run(async (ctx) => {
         const project = await ctx.db.get(projectId);
+        if (!project) throw new Error("Project not found");
         return await ctx.db.insert("issues", {
           projectId,
-          organizationId: project?.organizationId,
-          workspaceId: project?.workspaceId,
+          organizationId: project.organizationId,
+          workspaceId: project.workspaceId,
           key: "TEST-2",
           title: "Subtask",
           type: "subtask",

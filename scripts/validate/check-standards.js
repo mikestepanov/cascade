@@ -87,14 +87,14 @@ export function run() {
           );
         }
         // Flex standard
-        if (tagName === "div") {
+        if (tagName === "div" || tagName === "span") {
           const classText = getClassNameText(node);
           const classes = classText.split(/\s+/);
           if (classes.includes("flex") || classes.includes("inline-flex")) {
             reportError(
               filePath,
               node,
-              'Use <Flex> component instead of <div className="flex"> for one-dimensional layouts.',
+              `Use <Flex> component instead of <${tagName} className="flex"> for one-dimensional layouts.`,
               "warning",
             );
           }

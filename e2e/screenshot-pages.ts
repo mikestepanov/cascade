@@ -350,9 +350,10 @@ async function screenshotFilled(
     await takeScreenshot(page, p, "document-editor", `/${orgSlug}/documents/${docId}`);
   }
 
-  // Public pages (landing + signin) captured in pre-login phase
+  // Public pages (landing + signin + invite) captured in pre-login phase too
   await takeScreenshot(page, p, "landing", "/");
   await takeScreenshot(page, p, "signin", "/signin");
+  await takeScreenshot(page, p, "invite-invalid", "/invite/screenshot-test-token");
 
   console.log("");
 }
@@ -380,6 +381,7 @@ async function run(): Promise<void> {
   console.log("--- Pre-login: Public pages ---\n");
   await takeScreenshot(page, "empty", "landing", "/");
   await takeScreenshot(page, "empty", "signin", "/signin");
+  await takeScreenshot(page, "empty", "invite-invalid", "/invite/screenshot-test-token");
   console.log("");
 
   // Try automatic login first, fall back to manual

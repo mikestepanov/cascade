@@ -240,23 +240,10 @@ export class ProjectsPage extends BasePage {
       await expect(this.createButton).toBeEnabled();
       await this.createButton.click();
 
-      // Wait for success toast - this confirms the backend operation finished
-      // This is more robust than just waiting for the modal to close, as it handles slow backend responses better
-      try {
-        await expect(this.page.getByText("Project created successfully")).toBeVisible();
-      } catch (e) {
-        // If success toast didn't appear, check if we have an error toast to report better failure
-        const errorToast = this.page.locator('[data-sonner-toast][data-type="error"]');
-        if (await errorToast.isVisible()) {
-          const errorText = await errorToast.textContent();
-          console.error("Project Creation Failed with Toast:", errorText);
-          throw new Error(`Project Creation Failed: ${errorText}`);
-        }
-        throw e;
-      }
-
       // Wait for navigation to the new project's board page
       // The app redirects to /projects/[KEY]/board after creation
+      // URL change is the reliable, event-driven indicator that creation succeeded
+      // No hardcoded timeouts - Playwright's default actionability timeout handles slow backends
       await this.page.waitForURL(/\/projects\/[A-Z0-9-]+\/board/);
 
       // Wait for board to be fully interactive before returning
@@ -363,6 +350,10 @@ export class ProjectsPage extends BasePage {
       })
       .first();
     await expect(timeTrackingHeader).toBeVisible();
+
+    // Wait for timer button to be fully rendered (fixes flaky timer control tests)
+    // The button may appear slightly after the header due to React hydration
+    await expect(this.startTimerButton.or(this.stopTimerButton)).toBeVisible();
   }
 
   /**

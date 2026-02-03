@@ -39,6 +39,7 @@ export function run() {
     "src/components/LabelsManager.tsx",
     "src/components/Settings/DevToolsTab.tsx",
     "src/components/AI/config.ts",
+    "src/lib/yjs/", // Y.js collaboration cursor colors (dynamic per-user)
     "*.test.ts",
     "*.test.tsx",
     "convex/labels.test.ts",

@@ -62,11 +62,11 @@ export class DocumentsPage extends BasePage {
     this.meetingNotesTemplate = page.getByRole("button", { name: /meeting.*notes/i });
     this.projectBriefTemplate = page.getByRole("button", { name: /project.*brief/i });
 
-    // Editor
+    // Editor (Plate editor uses data-slate-editor attribute)
     this.editor = page
-      .locator("[data-editor]")
-      .or(page.locator(".ProseMirror, [contenteditable='true']").first());
-    this.editorContent = page.locator(".bn-editor, .ProseMirror");
+      .locator("[data-slate-editor]")
+      .or(page.locator("[data-editor], [contenteditable='true']").first());
+    this.editorContent = page.locator("[data-slate-editor], .slate-editor");
     this.documentTitle = page
       .getByRole("heading", { level: 1 })
       .first()

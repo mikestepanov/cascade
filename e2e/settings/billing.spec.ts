@@ -8,6 +8,11 @@ import { testUserService } from "../utils";
  * Tests behavior when billing is enabled vs disabled.
  * Uses settings profiles to toggle billingEnabled.
  *
+ * The billable checkbox appears in the TimeEntryModal when:
+ * 1. User clicks "Start Timer" button in the AppHeader (TimerWidget)
+ * 2. The TimeEntryModal opens with billingEnabled prop from org context
+ * 3. The modal conditionally renders "Billable time" checkbox based on this prop
+ *
  * Uses serial mode to prevent auth token rotation issues between tests.
  * Convex uses single-use refresh tokens - when Test 1 refreshes tokens,
  * Test 2 loading stale tokens from file will fail.
@@ -28,35 +33,65 @@ authenticatedTest.describe("Billing Settings", () => {
 
   authenticatedTest(
     "billing enabled shows billable checkbox on time entries",
-    async ({ dashboardPage, orgSlug }) => {
+    async ({ dashboardPage, page, orgSlug }) => {
       // Ensure billing is enabled
       const result = await testUserService.updateOrganizationSettings(orgSlug, {
         billingEnabled: true,
       });
       expect(result.success).toBe(true);
 
-      // Navigate to time tracking
+      // Navigate to dashboard (org context loads billingEnabled from settings)
       await dashboardPage.goto(orgSlug);
+      await dashboardPage.expectLoaded();
 
-      // TODO: Navigate to time entry form and verify billable checkbox is visible
-      // This is a placeholder - implement actual UI checks when time entry form exists
+      // Click "Start Timer" button in the header to open TimeEntryModal
+      const startTimerButton = page.getByRole("button", { name: /start timer/i });
+      await expect(startTimerButton).toBeVisible();
+      await startTimerButton.click();
+
+      // Wait for the TimeEntryModal dialog to appear
+      const timeEntryModal = page.getByRole("dialog");
+      await expect(timeEntryModal).toBeVisible();
+
+      // Verify billable checkbox IS visible when billing is enabled
+      const billableCheckbox = timeEntryModal.getByRole("checkbox", { name: /billable/i });
+      await expect(billableCheckbox).toBeVisible();
+
+      // Close modal
+      await page.keyboard.press("Escape");
+      await expect(timeEntryModal).not.toBeVisible();
     },
   );
 
   authenticatedTest(
     "billing disabled hides billable checkbox on time entries",
-    async ({ dashboardPage, orgSlug }) => {
+    async ({ dashboardPage, page, orgSlug }) => {
       // Disable billing
       const result = await testUserService.updateOrganizationSettings(orgSlug, {
         billingEnabled: false,
       });
       expect(result.success).toBe(true);
 
-      // Navigate to time tracking
+      // Navigate to dashboard (org context loads billingEnabled from settings)
       await dashboardPage.goto(orgSlug);
+      await dashboardPage.expectLoaded();
 
-      // TODO: Navigate to time entry form and verify billable checkbox is NOT visible
-      // This is a placeholder - implement actual UI checks when time entry form exists
+      // Click "Start Timer" button in the header to open TimeEntryModal
+      const startTimerButton = page.getByRole("button", { name: /start timer/i });
+      await expect(startTimerButton).toBeVisible();
+      await startTimerButton.click();
+
+      // Wait for the TimeEntryModal dialog to appear
+      const timeEntryModal = page.getByRole("dialog");
+      await expect(timeEntryModal).toBeVisible();
+
+      // Verify billable checkbox is NOT visible when billing is disabled
+      const billableCheckbox = timeEntryModal.getByRole("checkbox", { name: /billable/i });
+      await expect(billableCheckbox).not.toBeVisible();
+
+      // Close modal
+      await page.keyboard.press("Escape");
+      await expect(timeEntryModal).not.toBeVisible();
     },
   );
 });

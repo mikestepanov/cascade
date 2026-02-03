@@ -5,6 +5,7 @@ import { useMutation } from "convex/react";
 import { useEffect } from "react";
 import { z } from "zod";
 import { FormInput, FormSelect, FormTextarea } from "@/lib/form";
+import type { IssuePriority, IssueType } from "@/lib/issue-utils";
 import { showError, showSuccess } from "@/lib/toast";
 import { Button } from "../ui/Button";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "../ui/Dialog";
@@ -34,10 +35,10 @@ interface TemplateFormProps {
   template?: {
     _id: Id<"issueTemplates">;
     name: string;
-    type: "task" | "bug" | "story" | "epic";
+    type: Exclude<IssueType, "subtask">;
     titleTemplate: string;
     descriptionTemplate: string;
-    defaultPriority: "lowest" | "low" | "medium" | "high" | "highest";
+    defaultPriority: IssuePriority;
     defaultLabels?: string[];
   } | null;
   open: boolean;
