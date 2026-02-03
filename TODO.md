@@ -1,11 +1,11 @@
 # Nixelo - Product Roadmap
 
-> **Last Updated:** 2026-02-01
+> **Last Updated:** 2026-02-02
 > **Current Architecture:** Organization → Workspaces → Teams → Projects → Issues
 
 ---
 
-## 🔥 NEXT: Multi-Level Views
+## Multi-Level Views
 
 **Goal:** Support boards, documents, and wikis at multiple levels (inspired by ClickUp, Linear, Jira)
 
@@ -36,7 +36,7 @@
 
 ---
 
-## 🔥 NEXT: Public Launch
+## Public Launch
 
 ### Day 1-2: Polish
 
@@ -61,23 +61,22 @@
 
 ---
 
-## 🎯 Feature Gaps (from Competitor Analysis)
+## Feature Gaps (from Competitor Analysis)
 
 > Source: [FEATURE_DEEP_DIVE.md](./research/FEATURE_DEEP_DIVE.md)
 
-### P1 - Quick Wins (Low Effort, High Impact)
+### P1 - Quick Wins
 
-- [x] **Comment reactions** - 👍 👎 ❤️ 🎉 (COMPLETED)
 - [ ] **Verify rich text comments** - Improve Markdown support in comments
 
-### P2 - Medium Priority (Worth Doing)
+### P2 - Medium Priority
 
 - [ ] **Label groups** - Like Linear: organize labels into groups (Priority, Component, Area)
 - [ ] **User picker custom field** - For "Reviewer", "QA", "Designer" fields
 - [ ] **Velocity charts** - Track story points per sprint, show average velocity
 - [ ] **Slack integration** - Extend existing `pumbleWebhooks` to Slack
 
-### P3 - Nice to Have (Later)
+### P3 - Nice to Have
 
 - [ ] **Label descriptions** - Show on hover
 - [ ] **Query language** - Simple `status:done priority:high` syntax
@@ -87,7 +86,7 @@
 
 ---
 
-## 🏢 Agency MVP (Phase 1)
+## Agency MVP
 
 **Pivot Goal:** Target agencies & consultants ("Replace 4 tools" value prop)
 **See:** [NICHE_STRATEGY.md](./research/NICHE_STRATEGY.md)
@@ -114,7 +113,6 @@
 
 ### Document Version History
 
-- [x] Restore previous version (UI) (COMPLETED)
 - [ ] Diff view
 
 ---
@@ -141,6 +139,27 @@
 
 ---
 
+## E2E Test Coverage Gaps
+
+### Routes Needing Tests
+
+| Route | Feature | Priority |
+|-------|---------|----------|
+| `/projects/$key/activity` | Activity feed | P2 |
+| `/workspaces/$slug/teams/$teamSlug/calendar` | Team calendar | P2 |
+| `/workspaces/$slug/teams/$teamSlug/settings` | Team settings | P3 |
+| `/time-tracking` | Org time tracking | P3 |
+
+### E2E Infrastructure
+
+- [ ] Remove remaining hardcoded timeouts (~11 instances)
+- [ ] Visual regression testing (Percy)
+- [ ] Mobile viewport tests
+- [ ] OAuth flow tests
+- [ ] Multi-browser testing (Firefox, WebKit)
+
+---
+
 ## Technical Debt
 
 ### Backend
@@ -159,3 +178,5 @@
 
 - [CLAUDE.md](./CLAUDE.md) - Development guide
 - [Research Inventory](./docs/research/INVENTORY.md) - Strategy & Research index
+- [Testing Guide](./docs/testing/README.md)
+- [Plate Editor Docs](./docs/editor/README.md)
