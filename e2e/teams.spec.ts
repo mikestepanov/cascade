@@ -37,11 +37,16 @@ test.describe("Teams", () => {
     // First, go back to workspaces list
     await workspacesPage.goto();
 
+    // Wait for workspaces list to load - look for the page heading
+    await expect(page.getByRole("heading", { name: /workspaces/i })).toBeVisible({
+      timeout: 10000,
+    });
+
     // Click on the workspace card to navigate to it
     const workspaceCard = page
       .locator(`a[href*="/workspaces/"]`)
       .filter({ hasText: workspaceName });
-    await expect(workspaceCard).toBeVisible();
+    await expect(workspaceCard).toBeVisible({ timeout: 15000 });
     await workspaceCard.click();
 
     // Should be in the workspace now

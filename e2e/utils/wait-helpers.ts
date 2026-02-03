@@ -39,8 +39,8 @@ export async function waitForFormReady(page: Page, timeout = 5000): Promise<bool
     });
     return true;
   } catch {
-    // Fallback: wait the standard delay if attribute not found
-    await page.waitForTimeout(WAIT_TIMEOUTS.formReady);
+    // Fallback: wait for DOM to be ready if attribute not found
+    await page.waitForLoadState("domcontentloaded");
     return false;
   }
 }
@@ -48,6 +48,11 @@ export async function waitForFormReady(page: Page, timeout = 5000): Promise<bool
 /**
  * Wait for an animation or transition to complete.
  * Use this after clicking elements that trigger CSS transitions.
+ *
+ * NOTE: This is one of the few acceptable uses of waitForTimeout -
+ * CSS animations don't have JS hooks. Consider using CSS animation-end
+ * events or data attributes if this becomes flaky.
+ * @deprecated Prefer waiting for specific element states instead
  */
 export async function waitForAnimation(page: Page): Promise<void> {
   await page.waitForTimeout(WAIT_TIMEOUTS.animation);
@@ -58,10 +63,9 @@ export async function waitForAnimation(page: Page): Promise<void> {
  * Use this on cold starts when elements might not be interactive yet.
  */
 export async function waitForReactHydration(page: Page): Promise<void> {
-  // Wait for the page to have no pending network requests
+  // Wait for DOM to be ready and network to settle
   await page.waitForLoadState("domcontentloaded");
-  // Small additional buffer for React hydration
-  await page.waitForTimeout(WAIT_TIMEOUTS.reactHydration);
+  await page.waitForLoadState("networkidle");
 }
 
 /**
@@ -69,16 +73,36 @@ export async function waitForReactHydration(page: Page): Promise<void> {
  * Waits for the dropdown to have the expected visible state.
  */
 export async function waitForDropdown(page: Page, dropdownSelector: string): Promise<void> {
-  await page.locator(dropdownSelector).waitFor({ state: "visible" });
-  await page.waitForTimeout(WAIT_TIMEOUTS.animation);
+  const dropdown = page.locator(dropdownSelector);
+  await dropdown.waitFor({ state: "visible" });
+  // Wait for dropdown to be stable (not animating)
+  await dropdown.evaluate((el) => {
+    return new Promise<void>((resolve) => {
+      if (!el.getAnimations().length) {
+        resolve();
+        return;
+      }
+      Promise.all(el.getAnimations().map((a) => a.finished)).then(() => resolve());
+    });
+  });
 }
 
 /**
  * Wait for a modal/dialog to open and be interactive.
  */
 export async function waitForModal(page: Page, modalSelector = '[role="dialog"]'): Promise<void> {
-  await page.locator(modalSelector).waitFor({ state: "visible" });
-  await page.waitForTimeout(WAIT_TIMEOUTS.animation);
+  const modal = page.locator(modalSelector);
+  await modal.waitFor({ state: "visible" });
+  // Wait for modal to be stable (not animating)
+  await modal.evaluate((el) => {
+    return new Promise<void>((resolve) => {
+      if (!el.getAnimations().length) {
+        resolve();
+        return;
+      }
+      Promise.all(el.getAnimations().map((a) => a.finished)).then(() => resolve());
+    });
+  });
 }
 
 /**

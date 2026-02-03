@@ -163,8 +163,8 @@ test.describe("Board Drag-Drop", () => {
     await page.mouse.move(endX, endY, { steps: 10 });
     await page.mouse.up();
 
-    // Wait for potential API call to complete
-    await page.waitForTimeout(1000);
+    // Wait for mutation to complete by checking for network idle or UI update
+    await page.waitForLoadState("networkidle");
 
     // Verify issue is now in target column or status has changed
     // The issue card should now be in the target column

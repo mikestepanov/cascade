@@ -206,8 +206,9 @@ export class AuthPage extends BasePage {
       const continueBtn = this.continueWithEmailButton;
       if (await continueBtn.isVisible().catch(() => false)) {
         await continueBtn.click();
-        // Brief wait for state update
-        await this.page.waitForTimeout(100);
+        // Brief wait for React state update after click - necessary for form transition
+        // Using requestAnimationFrame-based wait instead of arbitrary timeout
+        await this.page.evaluate(() => new Promise((r) => requestAnimationFrame(r)));
       }
 
       // Check expansion again
@@ -245,8 +246,8 @@ export class AuthPage extends BasePage {
     // Click the submit button
     await this.signUpButton.click();
 
-    // Wait for form submission to complete (verification form or error)
-    await this.page.waitForTimeout(3000);
+    // Wait for form submission to complete - either verification form appears or error shows
+    await this.page.waitForLoadState("networkidle");
   }
 
   async navigateToSignUp() {
@@ -329,8 +330,8 @@ export class AuthPage extends BasePage {
   async verifyEmail(code: string) {
     await this.verifyCodeInput.fill(code);
     await this.verifyEmailButton.click({ force: true });
-    // Wait for verification to process
-    await this.page.waitForTimeout(1000);
+    // Wait for verification to process - network request completes
+    await this.page.waitForLoadState("networkidle");
   }
 
   async resendVerificationCode() {
@@ -369,8 +370,8 @@ export class AuthPage extends BasePage {
       });
     } catch {
       // Form might not have data-form-ready attribute (e.g., forgot password page)
-      // Just wait a brief moment for stability
-      await this.page.waitForTimeout(300);
+      // Wait for DOM to be ready as fallback
+      await this.page.waitForLoadState("domcontentloaded");
     }
   }
 
@@ -407,11 +408,9 @@ export class AuthPage extends BasePage {
   }
 
   async expectVerificationForm() {
-    // Give React state a moment to switch from SignUpForm to EmailVerificationForm
-    await this.page.waitForTimeout(1000);
-
-    // Wait longer for verification form to appear - server might be slow after sign-up
-    await expect(this.verifyHeading).toBeVisible();
+    // Wait for verification form to appear - server might be slow after sign-up
+    // Use expect with longer timeout to handle React state transition
+    await expect(this.verifyHeading).toBeVisible({ timeout: 10000 });
     await expect(this.verifyCodeInput).toBeVisible();
     await expect(this.verifyEmailButton).toBeVisible();
   }

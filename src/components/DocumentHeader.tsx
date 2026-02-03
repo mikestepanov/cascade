@@ -118,7 +118,7 @@ export function DocumentHeader({
               className="px-2 sm:px-3 py-1 bg-ui-bg-tertiary text-ui-text hover:bg-ui-bg-secondary min-h-0"
               aria-label="Version history"
             >
-              <span className="inline-flex items-center gap-0.5 sm:gap-1">
+              <Flex inline align="center" className="gap-0.5 sm:gap-1">
                 <History className="w-3 h-3 sm:w-4 sm:h-4" aria-hidden="true" />
                 <span className="hidden sm:inline">History</span>
                 {versionCount !== undefined && versionCount > 0 && (
@@ -126,7 +126,7 @@ export function DocumentHeader({
                     {versionCount}
                   </span>
                 )}
-              </span>
+              </Flex>
             </Button>
           </Tooltip>
 
@@ -140,7 +140,7 @@ export function DocumentHeader({
               className="px-2 sm:px-3 py-1 bg-brand-indigo-track text-brand-indigo-text hover:opacity-80 min-h-0"
               aria-label="Import from Markdown"
             >
-              <span className="inline-flex items-center gap-0.5 sm:gap-1">
+              <Flex inline align="center" className="gap-0.5 sm:gap-1">
                 <svg
                   aria-hidden="true"
                   className="w-3 h-3 sm:w-4 sm:h-4"
@@ -156,7 +156,7 @@ export function DocumentHeader({
                   />
                 </svg>
                 <span className="hidden sm:inline">Import MD</span>
-              </span>
+              </Flex>
             </Button>
           </Tooltip>
 
@@ -170,7 +170,7 @@ export function DocumentHeader({
               className="px-2 sm:px-3 py-1 bg-brand-cyan-track text-brand-cyan-text hover:opacity-80 min-h-0"
               aria-label="Export as Markdown"
             >
-              <span className="inline-flex items-center gap-0.5 sm:gap-1">
+              <Flex inline align="center" className="gap-0.5 sm:gap-1">
                 <svg
                   aria-hidden="true"
                   className="w-3 h-3 sm:w-4 sm:h-4"
@@ -186,7 +186,7 @@ export function DocumentHeader({
                   />
                 </svg>
                 <span className="hidden sm:inline">Export MD</span>
-              </span>
+              </Flex>
             </Button>
           </Tooltip>
 

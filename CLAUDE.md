@@ -152,6 +152,28 @@ Run this after UI changes. Target: 0 errors, 0 warnings.
 - **Queries:** Always use indexes (`.withIndex()`), reactive with `useQuery`
 - **Errors:** Use `showError(error, "Context")`, `ErrorBoundary` components
 
+## E2E Testing Rules
+
+**NEVER use hardcoded timeouts** (`page.waitForTimeout()`, `setTimeout`, etc.) in E2E tests. Hardcoded waits:
+- Hide real performance issues and inefficiencies
+- Make tests flaky (too short = failures, too long = slow CI)
+- Don't adapt to varying system load
+
+**Instead, use Playwright's built-in waiting mechanisms:**
+```typescript
+// ✅ CORRECT - Wait for specific conditions
+await expect(element).toBeVisible();
+await expect(page).toHaveURL(/\/dashboard/);
+await page.waitForLoadState("domcontentloaded");
+await element.waitFor({ state: "visible" });
+
+// ❌ WRONG - Hardcoded delays
+await page.waitForTimeout(1000);
+await new Promise(resolve => setTimeout(resolve, 500));
+```
+
+If a test needs a timeout to pass, the underlying code likely has a performance or loading state issue that should be fixed.
+
 ## Resources
 
 - [Convex Best Practices](./docs/CONVEX_BEST_PRACTICES.md)
