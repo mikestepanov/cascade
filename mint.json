@@ -1,0 +1,40 @@
+{
+  "name": "Nixelo",
+  "logo": {
+    "light": "/logo/light.svg",
+    "dark": "/logo/dark.svg"
+  },
+  "favicon": "/favicon.png",
+  "colors": {
+    "primary": "#3B82F6",
+    "light": "#60A5FA",
+    "dark": "#2563EB"
+  },
+  "topbarLinks": [
+    {
+      "name": "Support",
+      "url": "mailto:support@nixelo.com"
+    }
+  ],
+  "topbarCtaButton": {
+    "name": "Get Started",
+    "url": "https://nixelo.com"
+  },
+  "anchors": [
+    {
+      "name": "Documentation",
+      "icon": "book-open",
+      "url": "documentation"
+    }
+  ],
+  "navigation": [
+    {
+      "group": "Get Started",
+      "pages": ["introduction", "quickstart"]
+    }
+  ],
+  "footerSocials": {
+    "github": "https://github.com/nixelo/nixelo",
+    "twitter": "https://twitter.com/nixelo"
+  }
+}

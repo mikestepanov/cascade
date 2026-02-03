@@ -1,5 +1,5 @@
 import { convexTest } from "convex-test";
-import { describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { api } from "../_generated/api";
 import type { Id } from "../_generated/dataModel";
 import schema from "../schema";
@@ -176,13 +176,19 @@ describe("softDeleteHelpers", () => {
     });
 
     it("should return false at exact threshold", () => {
+      vi.useFakeTimers();
+      const now = Date.now();
+      vi.setSystemTime(now);
+
       const record = {
         isDeleted: true,
-        deletedAt: Date.now() - THIRTY_DAYS, // Exactly 30 days
+        deletedAt: now - THIRTY_DAYS, // Exactly 30 days
       };
 
       // Not eligible at exact threshold (must be > not >=)
       expect(isEligibleForPermanentDeletion(record)).toBe(false);
+
+      vi.useRealTimers();
     });
 
     it("should return false for empty record", () => {
