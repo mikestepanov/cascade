@@ -142,10 +142,10 @@ export function VersionHistory({
                           <span className="text-sm font-medium text-ui-text">{version.title}</span>
                         </Flex>
                         <Flex align="center" gap="md" className="text-sm text-ui-text-secondary">
-                          <span className="flex items-center gap-1">
+                          <Flex align="center" gap="xs">
                             <Clock className="w-3.5 h-3.5" />
-                            {formatDate(version._creationTime)}
-                          </span>
+                            <span>{formatDate(version._creationTime)}</span>
+                          </Flex>
                           <span>by {version.createdByName}</span>
                         </Flex>
                         {version.changeDescription && (

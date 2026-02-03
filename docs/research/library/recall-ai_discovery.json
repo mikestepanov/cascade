@@ -1,0 +1,1250 @@
+[
+  {
+    "url": "https://www.recall.ai/partners/assemblyai",
+    "competitor": "recall-ai",
+    "page": "assemblyai",
+    "score": 0
+  },
+  {
+    "url": "https://www.recall.ai/blog",
+    "competitor": "recall-ai",
+    "page": "blog",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/privacy/cookie-policy",
+    "competitor": "recall-ai",
+    "page": "cookie-policy",
+    "score": 0
+  },
+  {
+    "url": "https://www.recall.ai/customers",
+    "competitor": "recall-ai",
+    "page": "customers",
+    "score": 0
+  },
+  {
+    "url": "https://www.recall.ai/partners/deepgram",
+    "competitor": "recall-ai",
+    "page": "deepgram",
+    "score": 0
+  },
+  {
+    "url": "https://www.recall.ai/partners/gladia",
+    "competitor": "recall-ai",
+    "page": "gladia",
+    "score": 0
+  },
+  {
+    "url": "https://www.recall.ai/msa",
+    "competitor": "recall-ai",
+    "page": "msa",
+    "score": 0
+  },
+  {
+    "url": "https://www.recall.ai/partners",
+    "competitor": "recall-ai",
+    "page": "partners",
+    "score": 0
+  },
+  {
+    "url": "https://www.recall.ai/privacy",
+    "competitor": "recall-ai",
+    "page": "privacy",
+    "score": 0
+  },
+  {
+    "url": "https://www.recall.ai/redirect",
+    "competitor": "recall-ai",
+    "page": "redirect",
+    "score": 0
+  },
+  {
+    "url": "https://www.recall.ai/partners/rev",
+    "competitor": "recall-ai",
+    "page": "rev",
+    "score": 0
+  },
+  {
+    "url": "https://www.recall.ai/privacy/subprocessors",
+    "competitor": "recall-ai",
+    "page": "subprocessors",
+    "score": 0
+  },
+  {
+    "url": "https://www.recall.ai/terms-of-use",
+    "competitor": "recall-ai",
+    "page": "terms-of-use",
+    "score": 0
+  },
+  {
+    "url": "https://www.recall.ai/partners/speechmatics",
+    "competitor": "recall-ai",
+    "page": "speechmatics",
+    "score": 0
+  },
+  {
+    "url": "https://www.recall.ai/demo",
+    "competitor": "recall-ai",
+    "page": "demo",
+    "score": 0
+  },
+  {
+    "url": "https://www.recall.ai/book-a-demo",
+    "competitor": "recall-ai",
+    "page": "book-a-demo",
+    "score": 0
+  },
+  {
+    "url": "https://www.recall.ai/talk-to-sales",
+    "competitor": "recall-ai",
+    "page": "talk-to-sales",
+    "score": 0
+  },
+  {
+    "url": "https://www.recall.ai/login",
+    "competitor": "recall-ai",
+    "page": "login",
+    "score": 0
+  },
+  {
+    "url": "https://www.recall.ai/desktop-sdk-demo",
+    "competitor": "recall-ai",
+    "page": "desktop-sdk-demo",
+    "score": 0
+  },
+  {
+    "url": "https://www.recall.ai/careers",
+    "competitor": "recall-ai",
+    "page": "careers",
+    "score": 0
+  },
+  {
+    "url": "https://www.recall.ai/pricing",
+    "competitor": "recall-ai",
+    "page": "pricing",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/product/desktop-recording-sdk",
+    "competitor": "recall-ai",
+    "page": "desktop-recording-sdk",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/product/mobile-recording-sdk",
+    "competitor": "recall-ai",
+    "page": "mobile-recording-sdk",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/product/meeting-bot-api",
+    "competitor": "recall-ai",
+    "page": "meeting-bot-api",
+    "score": 2
+  },
+  {
+    "url": "https://www.recall.ai/product/meeting-bot-api/zoom",
+    "competitor": "recall-ai",
+    "page": "zoom",
+    "score": 2
+  },
+  {
+    "url": "https://www.recall.ai/product/meeting-bot-api/microsoft-teams",
+    "competitor": "recall-ai",
+    "page": "microsoft-teams",
+    "score": 2
+  },
+  {
+    "url": "https://www.recall.ai/product/meeting-bot-api/google-meet",
+    "competitor": "recall-ai",
+    "page": "google-meet",
+    "score": 2
+  },
+  {
+    "url": "https://www.recall.ai/product/notetaker-api",
+    "competitor": "recall-ai",
+    "page": "notetaker-api",
+    "score": 2
+  },
+  {
+    "url": "https://www.recall.ai/product/meeting-transcription-api",
+    "competitor": "recall-ai",
+    "page": "meeting-transcription-api",
+    "score": 2
+  },
+  {
+    "url": "https://www.recall.ai/product/meeting-bot-api/slack-huddles-api",
+    "competitor": "recall-ai",
+    "page": "slack-huddles-api",
+    "score": 2
+  },
+  {
+    "url": "https://www.recall.ai/product/microsoft-teams-transcription-api",
+    "competitor": "recall-ai",
+    "page": "microsoft-teams-transcription-api",
+    "score": 2
+  },
+  {
+    "url": "https://www.recall.ai/product/microsoft-teams-recording-api",
+    "competitor": "recall-ai",
+    "page": "microsoft-teams-recording-api",
+    "score": 2
+  },
+  {
+    "url": "https://www.recall.ai/product/google-meet-transcription-api",
+    "competitor": "recall-ai",
+    "page": "google-meet-transcription-api",
+    "score": 2
+  },
+  {
+    "url": "https://www.recall.ai/product/google-meet-recording-api",
+    "competitor": "recall-ai",
+    "page": "google-meet-recording-api",
+    "score": 2
+  },
+  {
+    "url": "https://www.recall.ai/product/zoom-recording-api",
+    "competitor": "recall-ai",
+    "page": "zoom-recording-api",
+    "score": 2
+  },
+  {
+    "url": "https://www.recall.ai/product/zoom-transcription-api",
+    "competitor": "recall-ai",
+    "page": "zoom-transcription-api",
+    "score": 2
+  },
+  {
+    "url": "https://www.recall.ai/product/meeting-recording-api",
+    "competitor": "recall-ai",
+    "page": "meeting-recording-api",
+    "score": 2
+  },
+  {
+    "url": "https://www.recall.ai/product/calendar-integration-api",
+    "competitor": "recall-ai",
+    "page": "calendar-integration-api",
+    "score": 2
+  },
+  {
+    "url": "https://www.recall.ai",
+    "competitor": "recall-ai",
+    "page": "www.recall.ai",
+    "score": 0
+  },
+  {
+    "url": "https://www.recall.ai/recall-ai-vs-nylas-notetaker",
+    "competitor": "recall-ai",
+    "page": "recall-ai-vs-nylas-notetaker",
+    "score": 0
+  },
+  {
+    "url": "https://www.recall.ai/product/speaker-diarization-api",
+    "competitor": "recall-ai",
+    "page": "speaker-diarization-api",
+    "score": 2
+  },
+  {
+    "url": "https://www.recall.ai/signup",
+    "competitor": "recall-ai",
+    "page": "signup",
+    "score": 0
+  },
+  {
+    "url": "https://www.recall.ai/blog/5-ways-to-request-recording-consent-with-meeting-bots",
+    "competitor": "recall-ai",
+    "page": "5-ways-to-request-recording-consent-with-meeting-bots",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/7-apis-to-get-zoom-transcripts-a-comprehensive-guide",
+    "competitor": "recall-ai",
+    "page": "7-apis-to-get-zoom-transcripts-a-comprehensive-guide",
+    "score": 2
+  },
+  {
+    "url": "https://www.recall.ai/blog/accessing-host-video-stream",
+    "competitor": "recall-ai",
+    "page": "accessing-host-video-stream",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/accessing-real-time-transcription-api",
+    "competitor": "recall-ai",
+    "page": "accessing-real-time-transcription-api",
+    "score": 2
+  },
+  {
+    "url": "https://www.recall.ai/blog/announcing-our-10m-series-a",
+    "competitor": "recall-ai",
+    "page": "announcing-our-10m-series-a",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/announcing-our-2-7m-seed-round",
+    "competitor": "recall-ai",
+    "page": "announcing-our-2-7m-seed-round",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/announcing-our-partnership-with-deepgram",
+    "competitor": "recall-ai",
+    "page": "announcing-our-partnership-with-deepgram",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/announcing-the-recall-ai-and-speechmatics-integration",
+    "competitor": "recall-ai",
+    "page": "announcing-the-recall-ai-and-speechmatics-integration",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/applying-account-level-settings-to-meetings-created-via-the-zoom-api",
+    "competitor": "recall-ai",
+    "page": "applying-account-level-settings-to-meetings-created-via-the-zoom-api",
+    "score": 2
+  },
+  {
+    "url": "https://www.recall.ai/blog/can-i-access-gallery-view-video-on-the-linux-sdk",
+    "competitor": "recall-ai",
+    "page": "can-i-access-gallery-view-video-on-the-linux-sdk",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/can-i-access-raw-audio-data-using-the-zoom-web-sdk",
+    "competitor": "recall-ai",
+    "page": "can-i-access-raw-audio-data-using-the-zoom-web-sdk",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/can-i-access-zoom-meeting-transcripts-without-a-pro-plan-or-cloud-recording",
+    "competitor": "recall-ai",
+    "page": "can-i-access-zoom-meeting-transcripts-without-a-pro-plan-or-cloud-recording",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/can-i-identify-meeting-participants-by-email-on-zoom",
+    "competitor": "recall-ai",
+    "page": "can-i-identify-meeting-participants-by-email-on-zoom",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/create-a-google-meet-programmatically",
+    "competitor": "recall-ai",
+    "page": "create-a-google-meet-programmatically",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/create-audio-video-capture-bots",
+    "competitor": "recall-ai",
+    "page": "create-audio-video-capture-bots",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/cronofy-and-recall-ai-integration",
+    "competitor": "recall-ai",
+    "page": "cronofy-and-recall-ai-integration",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/debugging-audio-artifacts-caused-by-a-serial-port",
+    "competitor": "recall-ai",
+    "page": "debugging-audio-artifacts-caused-by-a-serial-port",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/debugging-issues-with-automatic-cloud-recording",
+    "competitor": "recall-ai",
+    "page": "debugging-issues-with-automatic-cloud-recording",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/decoding-raw-video-frames-from-the-zoom-sdk",
+    "competitor": "recall-ai",
+    "page": "decoding-raw-video-frames-from-the-zoom-sdk",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/desktop-recording-sdk",
+    "competitor": "recall-ai",
+    "page": "desktop-recording-sdk",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/dockerfile-centric-development",
+    "competitor": "recall-ai",
+    "page": "dockerfile-centric-development",
+    "score": 2
+  },
+  {
+    "url": "https://www.recall.ai/blog/encoding-raw-video-from-the-zoom-sdk",
+    "competitor": "recall-ai",
+    "page": "encoding-raw-video-from-the-zoom-sdk",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/encountering-hyrums-law-in-the-wild",
+    "competitor": "recall-ai",
+    "page": "encountering-hyrums-law-in-the-wild",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/fixing-dll-warnings-in-the-zoom-windows-meeting-sdk",
+    "competitor": "recall-ai",
+    "page": "fixing-dll-warnings-in-the-zoom-windows-meeting-sdk",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/generating-meeting-action-items-with-recall-ai",
+    "competitor": "recall-ai",
+    "page": "generating-meeting-action-items-with-recall-ai",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/get-recordings-and-transcripts-from-slack-huddles-api",
+    "competitor": "recall-ai",
+    "page": "get-recordings-and-transcripts-from-slack-huddles-api",
+    "score": 2
+  },
+  {
+    "url": "https://www.recall.ai/blog/handling-crashes-in-the-zoom-windows-meeting-sdk",
+    "competitor": "recall-ai",
+    "page": "handling-crashes-in-the-zoom-windows-meeting-sdk",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/how-can-i-allow-multiple-users-to-test-my-zoom-oauth-app-in-development-mode",
+    "competitor": "recall-ai",
+    "page": "how-can-i-allow-multiple-users-to-test-my-zoom-oauth-app-in-development-mode",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/how-can-i-create-a-zoom-bot-that-joins-meetings-and-interacts-as-a-participant",
+    "competitor": "recall-ai",
+    "page": "how-can-i-create-a-zoom-bot-that-joins-meetings-and-interacts-as-a-participant",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/how-do-i-capture-participant-data-in-real-time-on-zoom",
+    "competitor": "recall-ai",
+    "page": "how-do-i-capture-participant-data-in-real-time-on-zoom",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/how-do-i-sync-audio-and-video-when-processing-raw-audio-video-from-the-zoom-sdk",
+    "competitor": "recall-ai",
+    "page": "how-do-i-sync-audio-and-video-when-processing-raw-audio-video-from-the-zoom-sdk",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/how-do-i-track-participants-across-zoom-breakout-rooms",
+    "competitor": "recall-ai",
+    "page": "how-do-i-track-participants-across-zoom-breakout-rooms",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/how-i-built-an-in-house-google-meet-bot",
+    "competitor": "recall-ai",
+    "page": "how-i-built-an-in-house-google-meet-bot",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/how-long-should-bots-wait-in-waiting-rooms",
+    "competitor": "recall-ai",
+    "page": "how-long-should-bots-wait-in-waiting-rooms",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/how-often-should-i-expect-to-receive-the-zoom-recording-completed-webhook-for-a-single-meeting",
+    "competitor": "recall-ai",
+    "page": "how-often-should-i-expect-to-receive-the-zoom-recording-completed-webhook-for-a-single-meeting",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/how-to-access-live-transcription-data-from-zoom-web-sdk-component-view",
+    "competitor": "recall-ai",
+    "page": "how-to-access-live-transcription-data-from-zoom-web-sdk-component-view",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/how-to-access-raw-data-in-the-zoom-meeting-sdk",
+    "competitor": "recall-ai",
+    "page": "how-to-access-raw-data-in-the-zoom-meeting-sdk",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/how-to-access-the-zoom-archive-files-api",
+    "competitor": "recall-ai",
+    "page": "how-to-access-the-zoom-archive-files-api",
+    "score": 2
+  },
+  {
+    "url": "https://www.recall.ai/blog/how-to-build-a-chrome-recording-extension",
+    "competitor": "recall-ai",
+    "page": "how-to-build-a-chrome-recording-extension",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/how-to-build-a-meeting-bot",
+    "competitor": "recall-ai",
+    "page": "how-to-build-a-meeting-bot",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/how-to-build-a-meeting-notetaker",
+    "competitor": "recall-ai",
+    "page": "how-to-build-a-meeting-notetaker",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/how-to-build-a-microsoft-teams-bot",
+    "competitor": "recall-ai",
+    "page": "how-to-build-a-microsoft-teams-bot",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/how-to-build-a-zoom-bot",
+    "competitor": "recall-ai",
+    "page": "how-to-build-a-zoom-bot",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/how-to-build-a-zoom-bot-a-guide-for-developers",
+    "competitor": "recall-ai",
+    "page": "how-to-build-a-zoom-bot-a-guide-for-developers",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/how-to-build-a-zoom-notetaker",
+    "competitor": "recall-ai",
+    "page": "how-to-build-a-zoom-notetaker",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/how-to-capture-audio-and-video-from-zoom-calls",
+    "competitor": "recall-ai",
+    "page": "how-to-capture-audio-and-video-from-zoom-calls",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/how-to-convert-zoom-raw-data-into-png-and-mp4",
+    "competitor": "recall-ai",
+    "page": "how-to-convert-zoom-raw-data-into-png-and-mp4",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/how-to-download-zoom-cloud-recordings-in-bulk",
+    "competitor": "recall-ai",
+    "page": "how-to-download-zoom-cloud-recordings-in-bulk",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/how-to-get-a-recording-from-the-google-meet-api",
+    "competitor": "recall-ai",
+    "page": "how-to-get-a-recording-from-the-google-meet-api",
+    "score": 2
+  },
+  {
+    "url": "https://www.recall.ai/blog/how-to-get-recordings-from-zoom",
+    "competitor": "recall-ai",
+    "page": "how-to-get-recordings-from-zoom",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/how-to-get-separate-audio-channels-for-each-user-rtmp",
+    "competitor": "recall-ai",
+    "page": "how-to-get-separate-audio-channels-for-each-user-rtmp",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/how-to-get-transcripts-from-google-meet-developer-edition",
+    "competitor": "recall-ai",
+    "page": "how-to-get-transcripts-from-google-meet-developer-edition",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/how-to-get-transcripts-from-zoom",
+    "competitor": "recall-ai",
+    "page": "how-to-get-transcripts-from-zoom",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/how-to-integrate-with-otter-ai",
+    "competitor": "recall-ai",
+    "page": "how-to-integrate-with-otter-ai",
+    "score": 2
+  },
+  {
+    "url": "https://www.recall.ai/blog/how-to-join-zoom-using-puppeteer",
+    "competitor": "recall-ai",
+    "page": "how-to-join-zoom-using-puppeteer",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/how-to-keep-audio-and-video-in-sync-with-raw-data-from-the-zoom-meeting-sdk-on-linux",
+    "competitor": "recall-ai",
+    "page": "how-to-keep-audio-and-video-in-sync-with-raw-data-from-the-zoom-meeting-sdk-on-linux",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/how-to-live-stream-the-video-from-zoom-microsoft-teams-and-google-meet-video-conferences",
+    "competitor": "recall-ai",
+    "page": "how-to-live-stream-the-video-from-zoom-microsoft-teams-and-google-meet-video-conferences",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/how-to-manage-zak-tokens-for-zoom-bots",
+    "competitor": "recall-ai",
+    "page": "how-to-manage-zak-tokens-for-zoom-bots",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/how-to-pick-a-meeting-note-taker",
+    "competitor": "recall-ai",
+    "page": "how-to-pick-a-meeting-note-taker",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/how-to-receive-multilingual-meeting-transcription-with-the-recall-ai-and-gladia-integration",
+    "competitor": "recall-ai",
+    "page": "how-to-receive-multilingual-meeting-transcription-with-the-recall-ai-and-gladia-integration",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/how-to-resolve-permissions-errors-with-the-zoom-users-api",
+    "competitor": "recall-ai",
+    "page": "how-to-resolve-permissions-errors-with-the-zoom-users-api",
+    "score": 2
+  },
+  {
+    "url": "https://www.recall.ai/blog/how-to-send-raw-video-data-into-zoom",
+    "competitor": "recall-ai",
+    "page": "how-to-send-raw-video-data-into-zoom",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/how-to-set-recording-to-audio-only-per-meeting",
+    "competitor": "recall-ai",
+    "page": "how-to-set-recording-to-audio-only-per-meeting",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/how-to-subscribe-to-raw-audio-from-the-meeting-sdk",
+    "competitor": "recall-ai",
+    "page": "how-to-subscribe-to-raw-audio-from-the-meeting-sdk",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/how-to-track-participant-name-changes-in-breakout-rooms",
+    "competitor": "recall-ai",
+    "page": "how-to-track-participant-name-changes-in-breakout-rooms",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/how-websockets-cost-us-1m-on-our-aws-bill",
+    "competitor": "recall-ai",
+    "page": "how-websockets-cost-us-1m-on-our-aws-bill",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/is-it-possible-to-get-recordings-for-entire-zoom-team-to-zapier",
+    "competitor": "recall-ai",
+    "page": "is-it-possible-to-get-recordings-for-entire-zoom-team-to-zapier",
+    "score": 2
+  },
+  {
+    "url": "https://www.recall.ai/blog/is-the-meeting-live-stream-interface-h-available-for-the-zoom-meeting-sdk-on-linux",
+    "competitor": "recall-ai",
+    "page": "is-the-meeting-live-stream-interface-h-available-for-the-zoom-meeting-sdk-on-linux",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/launching-output-media",
+    "competitor": "recall-ai",
+    "page": "launching-output-media",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/pdeathsig-is-almost-never-what-you-want",
+    "competitor": "recall-ai",
+    "page": "pdeathsig-is-almost-never-what-you-want",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/pros-and-cons-of-using-a-freelancer-to-build-a-meeting-recorder-bot",
+    "competitor": "recall-ai",
+    "page": "pros-and-cons-of-using-a-freelancer-to-build-a-meeting-recorder-bot",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/recall-ai-and-rev-partner-to-empower-developers-to-work-with-meeting-data",
+    "competitor": "recall-ai",
+    "page": "recall-ai-and-rev-partner-to-empower-developers-to-work-with-meeting-data",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/recall-ai-announces-participant-emails",
+    "competitor": "recall-ai",
+    "page": "recall-ai-announces-participant-emails",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/recall-ai-is-officially-hipaa-compliant",
+    "competitor": "recall-ai",
+    "page": "recall-ai-is-officially-hipaa-compliant",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/recall-ai-partners-with-symbl-ai-to-add-conversation-intelligence-to-voice-and-video-apps",
+    "competitor": "recall-ai",
+    "page": "recall-ai-partners-with-symbl-ai-to-add-conversation-intelligence-to-voice-and-video-apps",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/recall-ai-series-b-the-api-for-meeting-recording",
+    "competitor": "recall-ai",
+    "page": "recall-ai-series-b-the-api-for-meeting-recording",
+    "score": 2
+  },
+  {
+    "url": "https://www.recall.ai/blog/recall-announces-official-partnership-with-assembly-ai",
+    "competitor": "recall-ai",
+    "page": "recall-announces-official-partnership-with-assembly-ai",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/recording-meetings-without-a-local-recording-token",
+    "competitor": "recall-ai",
+    "page": "recording-meetings-without-a-local-recording-token",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/resolving-intermittent-errors-while-downloading-zoom-transcripts",
+    "competitor": "recall-ai",
+    "page": "resolving-intermittent-errors-while-downloading-zoom-transcripts",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/resolving-web-sdk-local-recording-errors",
+    "competitor": "recall-ai",
+    "page": "resolving-web-sdk-local-recording-errors",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/speaker-labels-and-names-explained",
+    "competitor": "recall-ai",
+    "page": "speaker-labels-and-names-explained",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/the-fix-for-a-segfault-that-never-shipped",
+    "competitor": "recall-ai",
+    "page": "the-fix-for-a-segfault-that-never-shipped",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/top-reasons-to-build-a-meeting-bot-into-your-product",
+    "competitor": "recall-ai",
+    "page": "top-reasons-to-build-a-meeting-bot-into-your-product",
+    "score": 2
+  },
+  {
+    "url": "https://www.recall.ai/blog/tracking-persistent-zoom-meeting-ids-for-participants-who-leave-and-rejoin",
+    "competitor": "recall-ai",
+    "page": "tracking-persistent-zoom-meeting-ids-for-participants-who-leave-and-rejoin",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/tracking-zoom-meetings-when-using-zoom-pmi",
+    "competitor": "recall-ai",
+    "page": "tracking-zoom-meetings-when-using-zoom-pmi",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/understanding-zoom-rtms-behavior-and-its-constraints",
+    "competitor": "recall-ai",
+    "page": "understanding-zoom-rtms-behavior-and-its-constraints",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/what-happens-after-submitting-a-zoom-app-for-review-and-can-multiple-users-log-in-once-it-s-approved",
+    "competitor": "recall-ai",
+    "page": "what-happens-after-submitting-a-zoom-app-for-review-and-can-multiple-users-log-in-once-it-s-approved",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/what-is-a-meeting-bot",
+    "competitor": "recall-ai",
+    "page": "what-is-a-meeting-bot",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/what-is-a-zoom-access-key-zak-token",
+    "competitor": "recall-ai",
+    "page": "what-is-a-zoom-access-key-zak-token",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/what-is-the-google-meet-media-api",
+    "competitor": "recall-ai",
+    "page": "what-is-the-google-meet-media-api",
+    "score": 2
+  },
+  {
+    "url": "https://www.recall.ai/blog/what-is-zoom-rtms",
+    "competitor": "recall-ai",
+    "page": "what-is-zoom-rtms",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/why-are-waiting-rooms-causing-issues-with-the-zoom-web-meeting-sdk",
+    "competitor": "recall-ai",
+    "page": "why-are-waiting-rooms-causing-issues-with-the-zoom-web-meeting-sdk",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/why-arent-transcription-webhooks-firing-for-my-zoom-meetings",
+    "competitor": "recall-ai",
+    "page": "why-arent-transcription-webhooks-firing-for-my-zoom-meetings",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/why-cant-i-send-shared-screen-frames",
+    "competitor": "recall-ai",
+    "page": "why-cant-i-send-shared-screen-frames",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/why-cant-my-bot-join-meetings-hosted-by-people-outside-of-my-zoom-organization",
+    "competitor": "recall-ai",
+    "page": "why-cant-my-bot-join-meetings-hosted-by-people-outside-of-my-zoom-organization",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/why-is-my-zoom-recording-completed-webhook-so-delayed",
+    "competitor": "recall-ai",
+    "page": "why-is-my-zoom-recording-completed-webhook-so-delayed",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/why-isnt-the-recording-completed-webhook-firing-when-stopping-recordings-mid-call",
+    "competitor": "recall-ai",
+    "page": "why-isnt-the-recording-completed-webhook-firing-when-stopping-recordings-mid-call",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/why-some-zoom-api-scopes-are-only-available-in-certain-app-types",
+    "competitor": "recall-ai",
+    "page": "why-some-zoom-api-scopes-are-only-available-in-certain-app-types",
+    "score": 2
+  },
+  {
+    "url": "https://www.recall.ai/blog/why-zoom-sdk-error-8-occurs-with-development-credentials",
+    "competitor": "recall-ai",
+    "page": "why-zoom-sdk-error-8-occurs-with-development-credentials",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/zoom-app-domain-verification",
+    "competitor": "recall-ai",
+    "page": "zoom-app-domain-verification",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/zoom-app-oauth-redirect-url-requirement",
+    "competitor": "recall-ai",
+    "page": "zoom-app-oauth-redirect-url-requirement",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/zoom-bot-automatic-recording",
+    "competitor": "recall-ai",
+    "page": "zoom-bot-automatic-recording",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/zoom-bot-skip-waiting-room",
+    "competitor": "recall-ai",
+    "page": "zoom-bot-skip-waiting-room",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/zoom-bots",
+    "competitor": "recall-ai",
+    "page": "zoom-bots",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/zoom-dev-forum",
+    "competitor": "recall-ai",
+    "page": "zoom-dev-forum",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/zoom-dev-forum-can-a-bot-join-a-specific-breakout-room",
+    "competitor": "recall-ai",
+    "page": "zoom-dev-forum-can-a-bot-join-a-specific-breakout-room",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/zoom-dev-forum-fetch-meeting-transcripts-via-api",
+    "competitor": "recall-ai",
+    "page": "zoom-dev-forum-fetch-meeting-transcripts-via-api",
+    "score": 2
+  },
+  {
+    "url": "https://www.recall.ai/blog/zoom-dev-forum-figure-out-if-recording-was-enabled",
+    "competitor": "recall-ai",
+    "page": "zoom-dev-forum-figure-out-if-recording-was-enabled",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/zoom-dev-forum-how-can-i-get-a-zoom-bot-to-automatically-join-meetings",
+    "competitor": "recall-ai",
+    "page": "zoom-dev-forum-how-can-i-get-a-zoom-bot-to-automatically-join-meetings",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/zoom-dev-forum-how-to-get-participants-from-meeting-in-real-time",
+    "competitor": "recall-ai",
+    "page": "zoom-dev-forum-how-to-get-participants-from-meeting-in-real-time",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/zoom-dev-forum-how-to-modify-streaming-quality",
+    "competitor": "recall-ai",
+    "page": "zoom-dev-forum-how-to-modify-streaming-quality",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/zoom-dev-forum-how-to-send-and-receive-chat-messages-with-the-zoom-meeting-sdk",
+    "competitor": "recall-ai",
+    "page": "zoom-dev-forum-how-to-send-and-receive-chat-messages-with-the-zoom-meeting-sdk",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/zoom-dev-forum-participant-tracking",
+    "competitor": "recall-ai",
+    "page": "zoom-dev-forum-participant-tracking",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/zoom-dev-forum-recording-does-not-exist",
+    "competitor": "recall-ai",
+    "page": "zoom-dev-forum-recording-does-not-exist",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/zoom-dev-forum-transcript-completed-not-firing",
+    "competitor": "recall-ai",
+    "page": "zoom-dev-forum-transcript-completed-not-firing",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/zoom-dev-forum-what-are-best-practices-for-implementing-ai-transcription-and-translation-in-zoom-meetings",
+    "competitor": "recall-ai",
+    "page": "zoom-dev-forum-what-are-best-practices-for-implementing-ai-transcription-and-translation-in-zoom-meetings",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/zoom-join-tokens-for-local-recording",
+    "competitor": "recall-ai",
+    "page": "zoom-join-tokens-for-local-recording",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/zoom-obf",
+    "competitor": "recall-ai",
+    "page": "zoom-obf",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/zoom-real-time-transcription-api",
+    "competitor": "recall-ai",
+    "page": "zoom-real-time-transcription-api",
+    "score": 2
+  },
+  {
+    "url": "https://www.recall.ai/blog/zoom-rtmp-live-streaming-integration-pros-and-cons",
+    "competitor": "recall-ai",
+    "page": "zoom-rtmp-live-streaming-integration-pros-and-cons",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/zoom-sdk-ai-voice-agent",
+    "competitor": "recall-ai",
+    "page": "zoom-sdk-ai-voice-agent",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/zoom-sdk-compliance-requirements",
+    "competitor": "recall-ai",
+    "page": "zoom-sdk-compliance-requirements",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/zoom-sdk-credentials",
+    "competitor": "recall-ai",
+    "page": "zoom-sdk-credentials",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/zoom-sdk-debugging-video-capture",
+    "competitor": "recall-ai",
+    "page": "zoom-sdk-debugging-video-capture",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/zoom-sdk-docker-issues",
+    "competitor": "recall-ai",
+    "page": "zoom-sdk-docker-issues",
+    "score": 2
+  },
+  {
+    "url": "https://www.recall.ai/blog/zoom-sdk-joining-meetings-without-passcodes",
+    "competitor": "recall-ai",
+    "page": "zoom-sdk-joining-meetings-without-passcodes",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/zoom-sdk-joining-registration-required-meetings",
+    "competitor": "recall-ai",
+    "page": "zoom-sdk-joining-registration-required-meetings",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/zoom-sdk-missing-transcription-webhooks",
+    "competitor": "recall-ai",
+    "page": "zoom-sdk-missing-transcription-webhooks",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/zoom-sdk-receiving-video-streams",
+    "competitor": "recall-ai",
+    "page": "zoom-sdk-receiving-video-streams",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/zoom-sdk-recording-permissions",
+    "competitor": "recall-ai",
+    "page": "zoom-sdk-recording-permissions",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/zoom-sdk-retrieving-participant-names",
+    "competitor": "recall-ai",
+    "page": "zoom-sdk-retrieving-participant-names",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/zoom-sdk-sending-chat-messages",
+    "competitor": "recall-ai",
+    "page": "zoom-sdk-sending-chat-messages",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/zoom-sdk-simultaneous-meeting-limitations",
+    "competitor": "recall-ai",
+    "page": "zoom-sdk-simultaneous-meeting-limitations",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/zoom-sdk-streaming-video-to-meeting",
+    "competitor": "recall-ai",
+    "page": "zoom-sdk-streaming-video-to-meeting",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/zoom-sdk-suppressing-consent-prompt",
+    "competitor": "recall-ai",
+    "page": "zoom-sdk-suppressing-consent-prompt",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/zoom-sdk-webhook-not-firing",
+    "competitor": "recall-ai",
+    "page": "zoom-sdk-webhook-not-firing",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/zoom-signature-invalid",
+    "competitor": "recall-ai",
+    "page": "zoom-signature-invalid",
+    "score": 1
+  },
+  {
+    "url": "https://www.recall.ai/blog/zoom-transcript-api",
+    "competitor": "recall-ai",
+    "page": "zoom-transcript-api",
+    "score": 2
+  },
+  {
+    "url": "https://www.recall.ai/customers/affinity",
+    "competitor": "recall-ai",
+    "page": "affinity",
+    "score": 0
+  },
+  {
+    "url": "https://www.recall.ai/customers/allego",
+    "competitor": "recall-ai",
+    "page": "allego",
+    "score": 0
+  },
+  {
+    "url": "https://www.recall.ai/customers/attention",
+    "competitor": "recall-ai",
+    "page": "attention",
+    "score": 0
+  },
+  {
+    "url": "https://www.recall.ai/customers/brighthire",
+    "competitor": "recall-ai",
+    "page": "brighthire",
+    "score": 0
+  },
+  {
+    "url": "https://www.recall.ai/customers/fellow",
+    "competitor": "recall-ai",
+    "page": "fellow",
+    "score": 0
+  },
+  {
+    "url": "https://www.recall.ai/customers/grain",
+    "competitor": "recall-ai",
+    "page": "grain",
+    "score": 0
+  },
+  {
+    "url": "https://www.recall.ai/customers/heysam",
+    "competitor": "recall-ai",
+    "page": "heysam",
+    "score": 0
+  },
+  {
+    "url": "https://www.recall.ai/customers/mindtickle",
+    "competitor": "recall-ai",
+    "page": "mindtickle",
+    "score": 0
+  },
+  {
+    "url": "https://www.recall.ai/customers/modjo",
+    "competitor": "recall-ai",
+    "page": "modjo",
+    "score": 0
+  },
+  {
+    "url": "https://www.recall.ai/customers/rootly",
+    "competitor": "recall-ai",
+    "page": "rootly",
+    "score": 0
+  },
+  {
+    "url": "https://www.recall.ai/customers/sybill",
+    "competitor": "recall-ai",
+    "page": "sybill",
+    "score": 0
+  },
+  {
+    "url": "https://www.recall.ai/customers/timeos",
+    "competitor": "recall-ai",
+    "page": "timeos",
+    "score": 0
+  },
+  {
+    "url": "https://www.recall.ai/customers/updateai",
+    "competitor": "recall-ai",
+    "page": "updateai",
+    "score": 0
+  },
+  {
+    "url": "https://www.recall.ai/customers/validia",
+    "competitor": "recall-ai",
+    "page": "validia",
+    "score": 0
+  },
+  {
+    "url": "https://www.recall.ai/customers/verbal",
+    "competitor": "recall-ai",
+    "page": "verbal",
+    "score": 0
+  },
+  {
+    "url": "https://recall.ai/settings",
+    "competitor": "recall-ai",
+    "page": "settings",
+    "score": 0
+  },
+  {
+    "url": "https://recall.ai/settings/profile",
+    "competitor": "recall-ai",
+    "page": "profile",
+    "score": 0
+  },
+  {
+    "url": "https://recall.ai/settings/billing",
+    "competitor": "recall-ai",
+    "page": "billing",
+    "score": 0
+  },
+  {
+    "url": "https://recall.ai/settings/workspace",
+    "competitor": "recall-ai",
+    "page": "workspace",
+    "score": 0
+  },
+  {
+    "url": "https://recall.ai/settings/team",
+    "competitor": "recall-ai",
+    "page": "team",
+    "score": 0
+  },
+  {
+    "url": "https://recall.ai/dashboard",
+    "competitor": "recall-ai",
+    "page": "dashboard",
+    "score": 0
+  },
+  {
+    "url": "https://recall.ai/projects",
+    "competitor": "recall-ai",
+    "page": "projects",
+    "score": 0
+  },
+  {
+    "url": "https://recall.ai/members",
+    "competitor": "recall-ai",
+    "page": "members",
+    "score": 0
+  },
+  {
+    "url": "https://recall.ai/billing",
+    "competitor": "recall-ai",
+    "page": "billing",
+    "score": 0
+  },
+  {
+    "url": "https://recall.ai/profile",
+    "competitor": "recall-ai",
+    "page": "profile",
+    "score": 0
+  },
+  {
+    "url": "https://recall.ai/account",
+    "competitor": "recall-ai",
+    "page": "account",
+    "score": 0
+  },
+  {
+    "url": "https://recall.ai/organization",
+    "competitor": "recall-ai",
+    "page": "organization",
+    "score": 0
+  },
+  {
+    "url": "https://recall.ai/notifications",
+    "competitor": "recall-ai",
+    "page": "notifications",
+    "score": 0
+  }
+]

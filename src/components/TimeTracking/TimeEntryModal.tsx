@@ -104,9 +104,13 @@ function TagsInput({
         <div className="mt-2">
           <Flex gap="sm" className="flex-wrap">
             {tags.map((tag) => (
-              <span
+              <Flex
                 key={tag}
-                className="inline-flex items-center gap-1 px-2 py-1 bg-brand-indigo-track text-brand-indigo-text text-xs rounded"
+                as="span"
+                inline
+                align="center"
+                gap="xs"
+                className="px-2 py-1 bg-brand-indigo-track text-brand-indigo-text text-xs rounded"
               >
                 {tag}
                 <button
@@ -117,7 +121,7 @@ function TagsInput({
                 >
                   ×
                 </button>
-              </span>
+              </Flex>
             ))}
           </Flex>
         </div>

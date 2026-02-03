@@ -70,9 +70,7 @@ export function FocusZone({ task }: FocusZoneProps) {
             </div>
 
             <Flex justify="end">
-              <span className="text-sm font-medium text-brand inline-flex items-center gap-1">
-                View Task <span>→</span>
-              </span>
+              <span className="text-sm font-medium text-brand">View Task →</span>
             </Flex>
           </Flex>
         </CardBody>

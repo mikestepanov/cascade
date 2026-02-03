@@ -1,0 +1,82 @@
+[
+  {
+    "url": "https://height.app/account",
+    "competitor": "height",
+    "page": "account",
+    "score": 0,
+    "reason": "Priority: /account/",
+    "selectionReason": "Priority: /account/"
+  },
+  {
+    "url": "https://height.app/billing",
+    "competitor": "height",
+    "page": "billing",
+    "score": 0,
+    "reason": "Priority: /billing/",
+    "selectionReason": "Priority: /billing/"
+  },
+  {
+    "url": "https://height.app/dashboard",
+    "competitor": "height",
+    "page": "dashboard",
+    "score": 0,
+    "reason": "Priority: /dashboard/",
+    "selectionReason": "Priority: /dashboard/"
+  },
+  {
+    "url": "https://height.app/profile",
+    "competitor": "height",
+    "page": "profile",
+    "score": 0,
+    "reason": "Priority: /profile/",
+    "selectionReason": "Priority: /profile/"
+  },
+  {
+    "url": "https://height.app/projects",
+    "competitor": "height",
+    "page": "projects",
+    "score": 0,
+    "reason": "Priority: /projects/",
+    "selectionReason": "Priority: /projects/"
+  },
+  {
+    "url": "https://height.app/settings",
+    "competitor": "height",
+    "page": "settings",
+    "score": 0,
+    "reason": "Priority: /settings/",
+    "selectionReason": "Priority: /settings/"
+  },
+  {
+    "url": "https://height.app/settings/billing",
+    "competitor": "height",
+    "page": "billing",
+    "score": 0,
+    "reason": "Priority: /settings/",
+    "selectionReason": "Priority: /settings/"
+  },
+  {
+    "url": "https://height.app/settings/profile",
+    "competitor": "height",
+    "page": "profile",
+    "score": 0,
+    "reason": "Priority: /settings/",
+    "selectionReason": "Priority: /settings/"
+  },
+  {
+    "url": "https://height.app/settings/team",
+    "competitor": "height",
+    "page": "team",
+    "score": 0,
+    "reason": "Priority: /settings/",
+    "selectionReason": "Priority: /settings/"
+  },
+  {
+    "url": "https://height.app/settings/workspace",
+    "competitor": "height",
+    "page": "workspace",
+    "score": 0,
+    "reason": "Priority: /settings/",
+    "selectionReason": "Priority: /settings/"
+  }
+]

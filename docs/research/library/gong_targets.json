@@ -1,0 +1,105 @@
+[
+  {
+    "url": "https://www.gong.io/press/docusign-selects-gong-revenue-ai-operating-system-to-accelerate-sales-productivity-and-drive-strategic-growth",
+    "competitor": "gong",
+    "page": "docusign-selects-gong-revenue-ai-operating-system-to-accelerate-sales-productivity-and-drive-strategic-growth",
+    "score": 2,
+    "selectionReason": "High Score (Top 20)"
+  },
+  {
+    "url": "https://www.gong.io/press/gong-named-to-4th-annual-enterprise-tech-30-list-by-wing-venture-capital",
+    "competitor": "gong",
+    "page": "gong-named-to-4th-annual-enterprise-tech-30-list-by-wing-venture-capital",
+    "score": 2,
+    "selectionReason": "High Score (Top 20)"
+  },
+  {
+    "url": "https://www.gong.io/about",
+    "competitor": "gong",
+    "page": "about",
+    "score": 1,
+    "selectionReason": "Critical Page"
+  },
+  {
+    "url": "https://www.gong.io/legal/gong-api-policy-terms-of-service",
+    "competitor": "gong",
+    "page": "gong-api-policy-terms-of-service",
+    "score": 1,
+    "selectionReason": "Sample: LEGAL"
+  },
+  {
+    "url": "https://www.gong.io/platform/ai-agents-for-revenue-teams",
+    "competitor": "gong",
+    "page": "ai-agents-for-revenue-teams",
+    "score": 1,
+    "reason": "Priority: /team/",
+    "selectionReason": "Priority: /team/"
+  },
+  {
+    "url": "https://www.gong.io/pricing",
+    "competitor": "gong",
+    "page": "pricing",
+    "score": 1,
+    "selectionReason": "Critical Page"
+  },
+  {
+    "url": "https://www.gong.io/sales-team-productivity-software",
+    "competitor": "gong",
+    "page": "sales-team-productivity-software",
+    "score": 1,
+    "reason": "Priority: /team/",
+    "selectionReason": "Priority: /team/"
+  },
+  {
+    "url": "https://www.gong.io/legal/notice-of-trademark-patent-rights",
+    "competitor": "gong",
+    "page": "notice-of-trademark-patent-rights",
+    "score": 0,
+    "selectionReason": "Sample: LEGAL"
+  },
+  {
+    "url": "https://www.gong.io/resources/guides/ask-anything-prompts-for-product-and-marketing-teams",
+    "competitor": "gong",
+    "page": "ask-anything-prompts-for-product-and-marketing-teams",
+    "score": 1,
+    "reason": "Priority: /team/",
+    "selectionReason": "Priority: /team/"
+  },
+  {
+    "url": "https://www.gong.io/blog/4-strategies-for-building-best-in-class-enterprise-products",
+    "competitor": "gong",
+    "page": "4-strategies-for-building-best-in-class-enterprise-products",
+    "score": 3,
+    "selectionReason": "High Score (Top 20)"
+  },
+  {
+    "url": "https://www.gong.io/blog/5-ways-to-unlock-your-sales-teams-productivity-using-revenue-intelligence",
+    "competitor": "gong",
+    "page": "5-ways-to-unlock-your-sales-teams-productivity-using-revenue-intelligence",
+    "score": 2,
+    "reason": "Priority: /team/",
+    "selectionReason": "Priority: /team/"
+  },
+  {
+    "url": "https://www.gong.io/blog/announcing-gong-microsoft-integrations-for-revenue-teams",
+    "competitor": "gong",
+    "page": "announcing-gong-microsoft-integrations-for-revenue-teams",
+    "score": 2,
+    "reason": "Priority: /team/",
+    "selectionReason": "Priority: /team/"
+  },
+  {
+    "url": "https://www.gong.io/blog/evaluating-ai-tech-security-leader-advice-gong-ciso",
+    "competitor": "gong",
+    "page": "evaluating-ai-tech-security-leader-advice-gong-ciso",
+    "score": 2,
+    "selectionReason": "Sample: BLOG"
+  },
+  {
+    "url": "https://www.gong.io/blog/global-enterprises-language-barriers-ai-translator",
+    "competitor": "gong",
+    "page": "global-enterprises-language-barriers-ai-translator",
+    "score": 2,
+    "selectionReason": "High Score (Top 20)"
+  }
+]

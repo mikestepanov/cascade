@@ -1,0 +1,143 @@
+[
+  {
+    "url": "https://www.shortcut.com/integrations/productboard",
+    "competitor": "shortcut",
+    "page": "productboard",
+    "score": 2,
+    "selectionReason": "High Score (Top 20)"
+  },
+  {
+    "url": "https://www.shortcut.com/integrations/zapier",
+    "competitor": "shortcut",
+    "page": "zapier",
+    "score": 2,
+    "selectionReason": "High Score (Top 20)"
+  },
+  {
+    "url": "https://www.shortcut.com/new-product-feature",
+    "competitor": "shortcut",
+    "page": "new-product-feature",
+    "score": 2,
+    "selectionReason": "High Score (Top 20)"
+  },
+  {
+    "url": "https://www.shortcut.com/product/docs",
+    "competitor": "shortcut",
+    "page": "docs",
+    "score": 2,
+    "selectionReason": "High Score (Top 20)"
+  },
+  {
+    "url": "https://www.shortcut.com/about",
+    "competitor": "shortcut",
+    "page": "about",
+    "score": 1,
+    "selectionReason": "Critical Page"
+  },
+  {
+    "url": "https://www.shortcut.com/integrations/aikido",
+    "competitor": "shortcut",
+    "page": "aikido",
+    "score": 1,
+    "selectionReason": "Sample: INTEGRATIONS"
+  },
+  {
+    "url": "https://www.shortcut.com/integrations/airfocus",
+    "competitor": "shortcut",
+    "page": "airfocus",
+    "score": 1,
+    "selectionReason": "Sample: INTEGRATIONS"
+  },
+  {
+    "url": "https://www.shortcut.com/integrations/bitbucket-cloud",
+    "competitor": "shortcut",
+    "page": "bitbucket-cloud",
+    "score": 1,
+    "selectionReason": "Sample: INTEGRATIONS"
+  },
+  {
+    "url": "https://www.shortcut.com/integrations/box",
+    "competitor": "shortcut",
+    "page": "box",
+    "score": 1,
+    "selectionReason": "Sample: INTEGRATIONS"
+  },
+  {
+    "url": "https://www.shortcut.com/integrations/bugsee",
+    "competitor": "shortcut",
+    "page": "bugsee",
+    "score": 1,
+    "selectionReason": "Sample: INTEGRATIONS"
+  },
+  {
+    "url": "https://www.shortcut.com/pricing",
+    "competitor": "shortcut",
+    "page": "pricing",
+    "score": 1,
+    "selectionReason": "Critical Page"
+  },
+  {
+    "url": "https://www.shortcut.com/product/teams",
+    "competitor": "shortcut",
+    "page": "teams",
+    "score": 1,
+    "reason": "Priority: /team/",
+    "selectionReason": "Priority: /team/"
+  },
+  {
+    "url": "https://www.shortcut.com/privacy",
+    "competitor": "shortcut",
+    "page": "privacy",
+    "score": 0,
+    "selectionReason": "Sample: LEGAL"
+  },
+  {
+    "url": "https://www.shortcut.com/signup",
+    "competitor": "shortcut",
+    "page": "signup",
+    "score": 0,
+    "selectionReason": "Critical Page"
+  },
+  {
+    "url": "https://www.shortcut.com/terms",
+    "competitor": "shortcut",
+    "page": "terms",
+    "score": 0,
+    "selectionReason": "Sample: LEGAL"
+  },
+  {
+    "url": "https://www.shortcut.com/blog/12-days-of-integrations-zapier",
+    "competitor": "shortcut",
+    "page": "12-days-of-integrations-zapier",
+    "score": 3,
+    "selectionReason": "High Score (Top 20)"
+  },
+  {
+    "url": "https://www.shortcut.com/blog/12-days-of-partners-integrations-and-other-good-stuff-productboard",
+    "competitor": "shortcut",
+    "page": "12-days-of-partners-integrations-and-other-good-stuff-productboard",
+    "score": 3,
+    "selectionReason": "High Score (Top 20)"
+  },
+  {
+    "url": "https://www.shortcut.com/blog/risks-you-need-to-know-about-before-you-develop-a-product-80efe3cfbac6",
+    "competitor": "shortcut",
+    "page": "risks-you-need-to-know-about-before-you-develop-a-product-80efe3cfbac6",
+    "score": 3,
+    "selectionReason": "High Score (Top 20)"
+  },
+  {
+    "url": "https://www.shortcut.com/blog/twelve-days-of-integrations-the-shortcut-api",
+    "competitor": "shortcut",
+    "page": "twelve-days-of-integrations-the-shortcut-api",
+    "score": 3,
+    "selectionReason": "High Score (Top 20)"
+  },
+  {
+    "url": "https://www.shortcut.com/blog/10-ways-to-use-shortcut-docs",
+    "competitor": "shortcut",
+    "page": "10-ways-to-use-shortcut-docs",
+    "score": 2,
+    "selectionReason": "High Score (Top 20)"
+  }
+]

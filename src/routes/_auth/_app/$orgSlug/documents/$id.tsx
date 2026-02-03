@@ -1,8 +1,8 @@
 import type { Id } from "@convex/_generated/dataModel";
 import { createFileRoute } from "@tanstack/react-router";
 import { Suspense } from "react";
-import { DocumentEditor } from "@/components/DocumentEditor";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { PlateEditor } from "@/components/PlateEditor";
 import { Flex } from "@/components/ui/Flex";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 
@@ -24,7 +24,7 @@ function DocumentPage() {
             </Flex>
           }
         >
-          <DocumentEditor documentId={id as Id<"documents">} />
+          <PlateEditor documentId={id as Id<"documents">} />
         </Suspense>
       </ErrorBoundary>
     </div>

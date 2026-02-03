@@ -175,8 +175,7 @@ export const rbacTest = base.extend<RbacFixtures>({
     const targetUrl = adminPage.url();
     if (targetUrl === "http://localhost:5555/" || targetUrl.endsWith("/signin")) {
       await adminPage.goto(`/${rbacOrgSlug}/dashboard`);
-      await adminPage.waitForLoadState("networkidle");
-      await adminPage.waitForTimeout(1000);
+      await adminPage.waitForLoadState("domcontentloaded");
     }
     await use(new ProjectsPage(adminPage, rbacOrgSlug));
   },
@@ -199,8 +198,7 @@ export const rbacTest = base.extend<RbacFixtures>({
     const targetUrl = editorPage.url();
     if (targetUrl === "http://localhost:5555/" || targetUrl.endsWith("/signin")) {
       await editorPage.goto(`/${rbacOrgSlug}/dashboard`);
-      await editorPage.waitForLoadState("networkidle");
-      await editorPage.waitForTimeout(1000);
+      await editorPage.waitForLoadState("domcontentloaded");
     }
     await use(new ProjectsPage(editorPage, rbacOrgSlug));
   },
@@ -223,8 +221,7 @@ export const rbacTest = base.extend<RbacFixtures>({
     const targetUrl = viewerPage.url();
     if (targetUrl === "http://localhost:5555/" || targetUrl.endsWith("/signin")) {
       await viewerPage.goto(`/${rbacOrgSlug}/dashboard`);
-      await viewerPage.waitForLoadState("networkidle");
-      await viewerPage.waitForTimeout(1000);
+      await viewerPage.waitForLoadState("domcontentloaded");
     }
     await use(new ProjectsPage(viewerPage, rbacOrgSlug));
   },

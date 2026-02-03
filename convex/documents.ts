@@ -6,7 +6,7 @@ import type { Id } from "./_generated/dataModel";
 import { authenticatedMutation, authenticatedQuery } from "./customFunctions";
 import { batchFetchProjects, batchFetchUsers, getUserName } from "./lib/batchHelpers";
 import { BOUNDED_RELATION_LIMIT } from "./lib/boundedQueries";
-import { conflict, forbidden, notFound, rateLimited } from "./lib/errors";
+import { conflict, forbidden, notFound, rateLimited, validation } from "./lib/errors";
 import {
   DEFAULT_PAGE_SIZE,
   DEFAULT_SEARCH_PAGE_SIZE,
@@ -64,6 +64,24 @@ export const create = authenticatedMutation({
 
     if (!membership) {
       throw forbidden(undefined, "You are not a member of this organization");
+    }
+
+    // Validate integrity: Project must belong to the specified organization
+    if (args.projectId) {
+      const project = await ctx.db.get(args.projectId);
+      if (!project) throw notFound("project", args.projectId);
+      if (project.organizationId !== args.organizationId) {
+        throw validation("projectId", "Project does not belong to the specified organization");
+      }
+    }
+
+    // Validate integrity: Workspace must belong to the specified organization
+    if (args.workspaceId) {
+      const workspace = await ctx.db.get(args.workspaceId);
+      if (!workspace) throw notFound("workspace", args.workspaceId);
+      if (workspace.organizationId !== args.organizationId) {
+        throw validation("workspaceId", "Workspace does not belong to the specified organization");
+      }
     }
 
     const now = Date.now();

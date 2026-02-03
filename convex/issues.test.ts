@@ -1,7 +1,6 @@
 import { convexTest } from "convex-test";
 import { describe, expect, it } from "vitest";
 import { api } from "./_generated/api";
-import type { EnrichedIssue } from "./lib/issueHelpers";
 import schema from "./schema";
 import { modules } from "./testSetup.test-helper";
 import { asAuthenticatedUser, createTestProject, createTestUser } from "./testUtils";
@@ -380,9 +379,9 @@ describe("Issues", () => {
         paginationOpts: { numItems: 10, cursor: null },
       });
       expect(issues).toHaveLength(3);
-      expect(issues.map((i) => (i as EnrichedIssue).title)).toContain("Issue 1");
-      expect(issues.map((i) => (i as EnrichedIssue).title)).toContain("Issue 2");
-      expect(issues.map((i) => (i as EnrichedIssue).title)).toContain("Issue 3");
+      expect(issues.map((i) => i.title)).toContain("Issue 1");
+      expect(issues.map((i) => i.title)).toContain("Issue 2");
+      expect(issues.map((i) => i.title)).toContain("Issue 3");
       await t.finishInProgressScheduledFunctions();
     });
 

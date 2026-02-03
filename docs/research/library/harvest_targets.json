@@ -1,0 +1,153 @@
+[
+  {
+    "url": "https://www.getharvest.com/integrations/integrately",
+    "competitor": "harvest",
+    "page": "integrately",
+    "score": 2,
+    "selectionReason": "High Score (Top 20)"
+  },
+  {
+    "url": "https://www.getharvest.com/integrations/zapier",
+    "competitor": "harvest",
+    "page": "zapier",
+    "score": 2,
+    "selectionReason": "Sample: INTEGRATIONS"
+  },
+  {
+    "url": "https://www.getharvest.com/about",
+    "competitor": "harvest",
+    "page": "about",
+    "score": 1,
+    "selectionReason": "Critical Page"
+  },
+  {
+    "url": "https://www.getharvest.com/features",
+    "competitor": "harvest",
+    "page": "features",
+    "score": 1,
+    "selectionReason": "Critical Page"
+  },
+  {
+    "url": "https://www.getharvest.com/forecast/features",
+    "competitor": "harvest",
+    "page": "features",
+    "score": 1,
+    "selectionReason": "Critical Page"
+  },
+  {
+    "url": "https://www.getharvest.com/forecast/pricing",
+    "competitor": "harvest",
+    "page": "pricing",
+    "score": 1,
+    "selectionReason": "Critical Page"
+  },
+  {
+    "url": "https://www.getharvest.com/integrations/breeze",
+    "competitor": "harvest",
+    "page": "breeze",
+    "score": 1,
+    "selectionReason": "Sample: INTEGRATIONS"
+  },
+  {
+    "url": "https://www.getharvest.com/integrations/brightpod",
+    "competitor": "harvest",
+    "page": "brightpod",
+    "score": 1,
+    "selectionReason": "Sample: INTEGRATIONS"
+  },
+  {
+    "url": "https://www.getharvest.com/integrations/herobi",
+    "competitor": "harvest",
+    "page": "herobi",
+    "score": 1,
+    "selectionReason": "Sample: INTEGRATIONS"
+  },
+  {
+    "url": "https://www.getharvest.com/integrations/relay",
+    "competitor": "harvest",
+    "page": "relay",
+    "score": 1,
+    "selectionReason": "Sample: INTEGRATIONS"
+  },
+  {
+    "url": "https://www.getharvest.com/invoices/enterprise-invoice-app",
+    "competitor": "harvest",
+    "page": "enterprise-invoice-app",
+    "score": 1,
+    "reason": "Priority: /app/",
+    "selectionReason": "Priority: /app/"
+  },
+  {
+    "url": "https://www.getharvest.com/pricing",
+    "competitor": "harvest",
+    "page": "pricing",
+    "score": 1,
+    "selectionReason": "Critical Page"
+  },
+  {
+    "url": "https://www.getharvest.com/forecast/signup",
+    "competitor": "harvest",
+    "page": "signup",
+    "score": 0,
+    "selectionReason": "Critical Page"
+  },
+  {
+    "url": "https://www.getharvest.com/privacy-policy-bfff73a7-3912-4fe8-8e37-c32d9f38eec4",
+    "competitor": "harvest",
+    "page": "privacy-policy-bfff73a7-3912-4fe8-8e37-c32d9f38eec4",
+    "score": 0,
+    "selectionReason": "Sample: LEGAL"
+  },
+  {
+    "url": "https://www.getharvest.com/privacy-policy-november-2022",
+    "competitor": "harvest",
+    "page": "privacy-policy-november-2022",
+    "score": 0,
+    "selectionReason": "Sample: LEGAL"
+  },
+  {
+    "url": "https://www.getharvest.com/signup",
+    "competitor": "harvest",
+    "page": "signup",
+    "score": 0,
+    "selectionReason": "Critical Page"
+  },
+  {
+    "url": "https://www.getharvest.com/blog/2018/08/boost-your-security-sign-in-with-google-for-two-factor-authentication",
+    "competitor": "harvest",
+    "page": "boost-your-security-sign-in-with-google-for-two-factor-authentication",
+    "score": 2,
+    "reason": "Priority: /auth/",
+    "selectionReason": "Priority: /auth/"
+  },
+  {
+    "url": "https://www.getharvest.com/blog/2019/05/two-new-features-to-help-you-prioritize-info",
+    "competitor": "harvest",
+    "page": "two-new-features-to-help-you-prioritize-info",
+    "score": 2,
+    "selectionReason": "High Score (Top 20)"
+  },
+  {
+    "url": "https://www.getharvest.com/blog/7-features-to-look-for-in-an-architecture-time-tracking-app-infographic",
+    "competitor": "harvest",
+    "page": "7-features-to-look-for-in-an-architecture-time-tracking-app-infographic",
+    "score": 2,
+    "reason": "Priority: /app/",
+    "selectionReason": "Priority: /app/"
+  },
+  {
+    "url": "https://www.getharvest.com/blog/7-signs-an-employee-is-about-to-quit-and-how-to-prevent-it-from-happening",
+    "competitor": "harvest",
+    "page": "7-signs-an-employee-is-about-to-quit-and-how-to-prevent-it-from-happening",
+    "score": 2,
+    "reason": "Priority: /app/",
+    "selectionReason": "Priority: /app/"
+  },
+  {
+    "url": "https://www.getharvest.com/blog/boost-productivity-with-employee-time-tracking-analytics",
+    "competitor": "harvest",
+    "page": "boost-productivity-with-employee-time-tracking-analytics",
+    "score": 2,
+    "selectionReason": "High Score (Top 20)"
+  }
+]

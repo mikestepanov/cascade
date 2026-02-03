@@ -153,18 +153,27 @@ test.describe("Integration", () => {
 
     // Wait for success toast indicating verification completed
     // The success toast shows before navigation
-    await expect(page.locator("[data-sonner-toast]").filter({ hasText: /verified|success/i }))
-      .toBeVisible()
-      .catch(() => {
-        console.log("[Test] No success toast found, checking for error...");
-      });
-
-    // Check for error toast
+    const successToast = page
+      .locator("[data-sonner-toast]")
+      .filter({ hasText: /verified|success/i });
     const errorToast = page.locator("[data-sonner-toast][data-type='error']");
-    if (await errorToast.isVisible().catch(() => false)) {
+
+    // Wait for either success toast or error toast to appear
+    const toastResult = await Promise.race([
+      successToast.waitFor({ state: "visible", timeout: 10000 }).then(() => "success" as const),
+      errorToast.waitFor({ state: "visible", timeout: 10000 }).then(() => "error" as const),
+    ]).catch(() => "timeout" as const);
+
+    if (toastResult === "error") {
       const errorText = await errorToast.textContent();
       console.log(`[Test] Error toast visible: ${errorText}`);
       throw new Error(`Verification failed with error: ${errorText}`);
+    }
+
+    if (toastResult === "timeout") {
+      console.log("[Test] No toast appeared within timeout, proceeding to check navigation...");
+    } else {
+      console.log("[Test] Success toast appeared");
     }
 
     // Check current URL

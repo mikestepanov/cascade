@@ -3,6 +3,7 @@ import type { Id } from "@convex/_generated/dataModel";
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
 import { useDeleteConfirmation } from "@/hooks/useDeleteConfirmation";
+import type { IssuePriority, IssueType } from "@/lib/issue-utils";
 import { TemplateCard } from "./templates/TemplateCard";
 import { TemplateForm } from "./templates/TemplateForm";
 import { Button } from "./ui/Button";
@@ -17,10 +18,10 @@ interface TemplatesManagerProps {
 type IssueTemplate = {
   _id: Id<"issueTemplates">;
   name: string;
-  type: "task" | "bug" | "story" | "epic";
+  type: Exclude<IssueType, "subtask">;
   titleTemplate: string;
   descriptionTemplate: string;
-  defaultPriority: "lowest" | "low" | "medium" | "high" | "highest";
+  defaultPriority: IssuePriority;
   defaultLabels?: string[];
 };
 

@@ -14,13 +14,13 @@ import {
 // Helper to extract inviteId and token from sendInvite result (handles union type)
 function expectInviteCreated(
   result:
-    | { inviteId: string; token: string }
-    | { success: boolean; addedDirectly: boolean; userId: string },
+    | { inviteId: Id<"invites">; token: string }
+    | { success: boolean; addedDirectly: boolean; userId: Id<"users"> },
 ): { inviteId: Id<"invites">; token: string } {
   if (!("inviteId" in result)) {
     throw new Error("Expected invite to be created, but user was added directly");
   }
-  return result as { inviteId: Id<"invites">; token: string };
+  return result;
 }
 
 describe("Invites", () => {

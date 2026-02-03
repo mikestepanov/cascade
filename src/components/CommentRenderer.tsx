@@ -50,7 +50,7 @@ interface MentionBadgeProps {
 function MentionBadge({ userName }: MentionBadgeProps) {
   return (
     <span
-      className="inline-flex items-center px-2 py-0.5 rounded bg-brand-subtle text-brand-active font-medium hover:bg-brand-border:bg-brand-active transition-colors cursor-default"
+      className="px-2 py-0.5 rounded bg-brand-subtle text-brand-active font-medium hover:bg-brand-border:bg-brand-active transition-colors cursor-default"
       title={`@${userName}`}
     >
       @{userName}

@@ -1,0 +1,360 @@
+[
+  {
+    "url": "https://www.atlassian.com/agile/product-management/product-features",
+    "competitor": "jira",
+    "page": "product-features",
+    "score": 2,
+    "selectionReason": "High Score (Top 20)"
+  },
+  {
+    "url": "https://www.atlassian.com/devops/integrations-guides/split-feature-flags-bitbucket",
+    "competitor": "jira",
+    "page": "split-feature-flags-bitbucket",
+    "score": 2,
+    "selectionReason": "High Score (Top 20)"
+  },
+  {
+    "url": "https://www.atlassian.com/software/bitbucket/features/cloud-security",
+    "competitor": "jira",
+    "page": "cloud-security",
+    "score": 2,
+    "selectionReason": "High Score (Top 20)"
+  },
+  {
+    "url": "https://www.atlassian.com/software/jira/product-discovery/features",
+    "competitor": "jira",
+    "page": "features",
+    "score": 2,
+    "selectionReason": "Critical Page"
+  },
+  {
+    "url": "https://www.atlassian.com/software/jira/product-discovery/pricing",
+    "competitor": "jira",
+    "page": "pricing",
+    "score": 2,
+    "selectionReason": "Critical Page"
+  },
+  {
+    "url": "https://www.atlassian.com/software/jira/service-management/features/enterprise-service-management",
+    "competitor": "jira",
+    "page": "enterprise-service-management",
+    "score": 2,
+    "selectionReason": "High Score (Top 20)"
+  },
+  {
+    "url": "https://www.atlassian.com/solutions/devops/integrations/feature-flags",
+    "competitor": "jira",
+    "page": "feature-flags",
+    "score": 2,
+    "selectionReason": "Sample: INTEGRATIONS"
+  },
+  {
+    "url": "https://www.atlassian.com/agile/about",
+    "competitor": "jira",
+    "page": "about",
+    "score": 1,
+    "selectionReason": "Critical Page"
+  },
+  {
+    "url": "https://www.atlassian.com/collections/service/pricing",
+    "competitor": "jira",
+    "page": "pricing",
+    "score": 1,
+    "selectionReason": "Critical Page"
+  },
+  {
+    "url": "https://www.atlassian.com/collections/strategy/pricing",
+    "competitor": "jira",
+    "page": "pricing",
+    "score": 1,
+    "selectionReason": "Critical Page"
+  },
+  {
+    "url": "https://www.atlassian.com/collections/teamwork/enterprise",
+    "competitor": "jira",
+    "page": "enterprise",
+    "score": 1,
+    "reason": "Priority: /team/",
+    "selectionReason": "Priority: /team/"
+  },
+  {
+    "url": "https://www.atlassian.com/collections/teamwork/features",
+    "competitor": "jira",
+    "page": "features",
+    "score": 1,
+    "selectionReason": "Critical Page"
+  },
+  {
+    "url": "https://www.atlassian.com/collections/teamwork/pricing",
+    "competitor": "jira",
+    "page": "pricing",
+    "score": 1,
+    "selectionReason": "Critical Page"
+  },
+  {
+    "url": "https://www.atlassian.com/legal/product-terms",
+    "competitor": "jira",
+    "page": "product-terms",
+    "score": 1,
+    "selectionReason": "Sample: LEGAL"
+  },
+  {
+    "url": "https://www.atlassian.com/legal/security-measures",
+    "competitor": "jira",
+    "page": "security-measures",
+    "score": 1,
+    "selectionReason": "Sample: LEGAL"
+  },
+  {
+    "url": "https://www.atlassian.com/platform/platform-apps",
+    "competitor": "jira",
+    "page": "platform-apps",
+    "score": 1,
+    "reason": "Priority: /app/",
+    "selectionReason": "Priority: /app/"
+  },
+  {
+    "url": "https://www.atlassian.com/platform/platform-apps/goals",
+    "competitor": "jira",
+    "page": "goals",
+    "score": 1,
+    "reason": "Priority: /app/",
+    "selectionReason": "Priority: /app/"
+  },
+  {
+    "url": "https://www.atlassian.com/platform/teamwork-graph",
+    "competitor": "jira",
+    "page": "teamwork-graph",
+    "score": 1,
+    "reason": "Priority: /team/",
+    "selectionReason": "Priority: /team/"
+  },
+  {
+    "url": "https://www.atlassian.com/software/bamboo/pricing",
+    "competitor": "jira",
+    "page": "pricing",
+    "score": 1,
+    "selectionReason": "Critical Page"
+  },
+  {
+    "url": "https://www.atlassian.com/software/bitbucket/pricing",
+    "competitor": "jira",
+    "page": "pricing",
+    "score": 1,
+    "selectionReason": "Critical Page"
+  },
+  {
+    "url": "https://www.atlassian.com/software/compass/features",
+    "competitor": "jira",
+    "page": "features",
+    "score": 1,
+    "selectionReason": "Critical Page"
+  },
+  {
+    "url": "https://www.atlassian.com/software/compass/pricing",
+    "competitor": "jira",
+    "page": "pricing",
+    "score": 1,
+    "selectionReason": "Critical Page"
+  },
+  {
+    "url": "https://www.atlassian.com/software/confluence/features",
+    "competitor": "jira",
+    "page": "features",
+    "score": 1,
+    "selectionReason": "Critical Page"
+  },
+  {
+    "url": "https://www.atlassian.com/software/confluence/pricing",
+    "competitor": "jira",
+    "page": "pricing",
+    "score": 1,
+    "selectionReason": "Critical Page"
+  },
+  {
+    "url": "https://www.atlassian.com/software/crowd/pricing",
+    "competitor": "jira",
+    "page": "pricing",
+    "score": 1,
+    "selectionReason": "Critical Page"
+  },
+  {
+    "url": "https://www.atlassian.com/software/crucible/features",
+    "competitor": "jira",
+    "page": "features",
+    "score": 1,
+    "selectionReason": "Critical Page"
+  },
+  {
+    "url": "https://www.atlassian.com/software/crucible/pricing",
+    "competitor": "jira",
+    "page": "pricing",
+    "score": 1,
+    "selectionReason": "Critical Page"
+  },
+  {
+    "url": "https://www.atlassian.com/software/fisheye/features",
+    "competitor": "jira",
+    "page": "features",
+    "score": 1,
+    "selectionReason": "Critical Page"
+  },
+  {
+    "url": "https://www.atlassian.com/software/fisheye/pricing",
+    "competitor": "jira",
+    "page": "pricing",
+    "score": 1,
+    "selectionReason": "Critical Page"
+  },
+  {
+    "url": "https://www.atlassian.com/software/guard/pricing",
+    "competitor": "jira",
+    "page": "pricing",
+    "score": 1,
+    "selectionReason": "Critical Page"
+  },
+  {
+    "url": "https://www.atlassian.com/software/jira/features",
+    "competitor": "jira",
+    "page": "features",
+    "score": 1,
+    "selectionReason": "Critical Page"
+  },
+  {
+    "url": "https://www.atlassian.com/software/jira/pricing",
+    "competitor": "jira",
+    "page": "pricing",
+    "score": 1,
+    "selectionReason": "Critical Page"
+  },
+  {
+    "url": "https://www.atlassian.com/software/jira/service-management/features",
+    "competitor": "jira",
+    "page": "features",
+    "score": 1,
+    "selectionReason": "Critical Page"
+  },
+  {
+    "url": "https://www.atlassian.com/software/loom/pricing",
+    "competitor": "jira",
+    "page": "pricing",
+    "score": 1,
+    "selectionReason": "Critical Page"
+  },
+  {
+    "url": "https://www.atlassian.com/software/opsgenie/features",
+    "competitor": "jira",
+    "page": "features",
+    "score": 1,
+    "selectionReason": "Critical Page"
+  },
+  {
+    "url": "https://www.atlassian.com/software/opsgenie/pricing",
+    "competitor": "jira",
+    "page": "pricing",
+    "score": 1,
+    "selectionReason": "Critical Page"
+  },
+  {
+    "url": "https://www.atlassian.com/software/statuspage/features",
+    "competitor": "jira",
+    "page": "features",
+    "score": 1,
+    "selectionReason": "Critical Page"
+  },
+  {
+    "url": "https://www.atlassian.com/software/statuspage/pricing",
+    "competitor": "jira",
+    "page": "pricing",
+    "score": 1,
+    "selectionReason": "Critical Page"
+  },
+  {
+    "url": "https://www.atlassian.com/solutions/devops/features",
+    "competitor": "jira",
+    "page": "features",
+    "score": 1,
+    "selectionReason": "Critical Page"
+  },
+  {
+    "url": "https://www.atlassian.com/teams/nonprofits/discount-pricing",
+    "competitor": "jira",
+    "page": "discount-pricing",
+    "score": 1,
+    "reason": "Priority: /team/",
+    "selectionReason": "Priority: /team/"
+  },
+  {
+    "url": "https://www.atlassian.com/work-management/project-collaboration/cross-functional-teams/piavita-uses-confluence-for-product-development",
+    "competitor": "jira",
+    "page": "piavita-uses-confluence-for-product-development",
+    "score": 1,
+    "reason": "Priority: /team/",
+    "selectionReason": "Priority: /team/"
+  },
+  {
+    "url": "https://www.atlassian.com/work-management/team-management-and-leadership/team-management-strategies/workplace-productivity",
+    "competitor": "jira",
+    "page": "workplace-productivity",
+    "score": 1,
+    "reason": "Priority: /team/",
+    "selectionReason": "Priority: /team/"
+  },
+  {
+    "url": "https://www.atlassian.com/company/careers/all-jobs",
+    "competitor": "jira",
+    "page": "all-jobs",
+    "score": 0,
+    "selectionReason": "Sample: CAREERS"
+  },
+  {
+    "url": "https://www.atlassian.com/try/cloud/signup",
+    "competitor": "jira",
+    "page": "signup",
+    "score": 0,
+    "selectionReason": "Critical Page"
+  },
+  {
+    "url": "https://www.atlassian.com/software/jira/product-discovery/guides/integrations/overview",
+    "competitor": "jira",
+    "page": "overview",
+    "score": 2,
+    "selectionReason": "Sample: INTEGRATIONS"
+  },
+  {
+    "url": "https://www.atlassian.com/work-management/knowledge-sharing/documentation/product-documentation",
+    "competitor": "jira",
+    "page": "product-documentation",
+    "score": 2,
+    "selectionReason": "High Score (Top 20)"
+  },
+  {
+    "url": "https://www.atlassian.com/company/careers/resources/career-growth/product-managers",
+    "competitor": "jira",
+    "page": "product-managers",
+    "score": 1,
+    "selectionReason": "Sample: CAREERS"
+  },
+  {
+    "url": "https://www.atlassian.com/work-management/knowledge-sharing/documentation/building-a-single-source-of-truth-ssot-for-your-team",
+    "competitor": "jira",
+    "page": "building-a-single-source-of-truth-ssot-for-your-team",
+    "score": 1,
+    "reason": "Priority: /team/",
+    "selectionReason": "Priority: /team/"
+  },
+  {
+    "url": "https://www.atlassian.com/work-management/knowledge-sharing/documentation/importance-of-documentation",
+    "competitor": "jira",
+    "page": "importance-of-documentation",
+    "score": 1,
+    "selectionReason": "Sample: DOCS"
+  },
+  {
+    "url": "https://www.atlassian.com/company/news/press-kit",
+    "competitor": "jira",
+    "page": "press-kit",
+    "score": 0,
+    "selectionReason": "Sample: BLOG"
+  }
+]
