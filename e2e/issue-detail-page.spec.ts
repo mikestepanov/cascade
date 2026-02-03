@@ -74,7 +74,7 @@ test.describe("Issue Detail Page", () => {
     // Extract the full issue key (e.g., "PROJ-1")
     const issueKeyMatch = issueKeyText?.match(new RegExp(`${projectKey}-\\d+`));
     expect(issueKeyMatch).toBeTruthy();
-    const issueKey = issueKeyMatch![0];
+    const issueKey = issueKeyMatch?.[0];
 
     console.log(`Created issue with key: ${issueKey}`);
 
@@ -116,7 +116,7 @@ test.describe("Issue Detail Page", () => {
     const issueKeyElement = page.locator(`text=${projectKey}-`).first();
     const issueKeyText = await issueKeyElement.textContent();
     const issueKeyMatch = issueKeyText?.match(new RegExp(`${projectKey}-\\d+`));
-    const issueKey = issueKeyMatch![0];
+    const issueKey = issueKeyMatch?.[0];
 
     // Navigate to issue detail page
     await page.goto(`/${orgSlug}/issues/${issueKey}`);

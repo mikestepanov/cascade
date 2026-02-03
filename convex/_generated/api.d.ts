@@ -89,6 +89,8 @@ import type * as lib_userUtils from "../lib/userUtils.js";
 import type * as lib_vectorSearchHelpers from "../lib/vectorSearchHelpers.js";
 import type * as lib_workspaceAccess from "../lib/workspaceAccess.js";
 import type * as meetingBot from "../meetingBot.js";
+import type * as migrations_blockNoteToPlate from "../migrations/blockNoteToPlate.js";
+import type * as migrations_migrateDocuments from "../migrations/migrateDocuments.js";
 import type * as mocks_testConfig from "../mocks/testConfig.js";
 import type * as notificationPreferences from "../notificationPreferences.js";
 import type * as notifications from "../notifications.js";
@@ -129,6 +131,7 @@ import type * as validators_index from "../validators/index.js";
 import type * as watchers from "../watchers.js";
 import type * as webhooks from "../webhooks.js";
 import type * as workspaces from "../workspaces.js";
+import type * as yjs from "../yjs.js";
 
 import type {
   ApiFromModules,
@@ -218,6 +221,8 @@ declare const fullApi: ApiFromModules<{
   "lib/vectorSearchHelpers": typeof lib_vectorSearchHelpers;
   "lib/workspaceAccess": typeof lib_workspaceAccess;
   meetingBot: typeof meetingBot;
+  "migrations/blockNoteToPlate": typeof migrations_blockNoteToPlate;
+  "migrations/migrateDocuments": typeof migrations_migrateDocuments;
   "mocks/testConfig": typeof mocks_testConfig;
   notificationPreferences: typeof notificationPreferences;
   notifications: typeof notifications;
@@ -258,6 +263,7 @@ declare const fullApi: ApiFromModules<{
   watchers: typeof watchers;
   webhooks: typeof webhooks;
   workspaces: typeof workspaces;
+  yjs: typeof yjs;
 }>;
 
 /**

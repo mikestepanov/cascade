@@ -71,6 +71,35 @@ const applicationTables = {
     .index("by_document", ["documentId"])
     .index("by_document_version", ["documentId", "version"]),
 
+  // Y.js document state for real-time collaboration
+  yjsDocuments: defineTable({
+    documentId: v.id("documents"), // Link to parent document
+    // Y.js state vector and updates are stored as binary (base64 encoded)
+    stateVector: v.string(), // Base64 encoded Y.js state vector
+    updates: v.array(v.string()), // Array of base64 encoded Y.js updates (batched for performance)
+    // Version tracking
+    version: v.number(), // Monotonically increasing version for conflict resolution
+    // Metadata
+    lastModifiedBy: v.optional(v.id("users")),
+    updatedAt: v.number(),
+  })
+    .index("by_document", ["documentId"])
+    .index("by_document_version", ["documentId", "version"]),
+
+  // Y.js awareness state for cursor positions and user presence
+  yjsAwareness: defineTable({
+    documentId: v.id("documents"),
+    userId: v.id("users"),
+    // Awareness data (cursor position, selection, etc.)
+    clientId: v.number(), // Y.js client ID
+    awarenessData: v.string(), // JSON string of awareness state
+    // Timestamp for garbage collection
+    lastSeenAt: v.number(),
+  })
+    .index("by_document", ["documentId"])
+    .index("by_document_user", ["documentId", "userId"])
+    .index("by_last_seen", ["lastSeenAt"]),
+
   documentTemplates: defineTable({
     name: v.string(), // Template name: "Meeting Notes", "RFC", "Project Brief"
     description: v.optional(v.string()),

@@ -18,6 +18,8 @@ export function run() {
     "purge.ts",
     "e2e.ts",
     "testUtils.ts",
+    "migrateDocuments.ts", // Migration needs unbounded collect for batch processing
+    "yjs.ts", // Y.js sync uses unbounded collect for awareness cleanup
   ];
 
   function findTsFiles(dir) {
