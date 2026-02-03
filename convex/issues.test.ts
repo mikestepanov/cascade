@@ -380,8 +380,11 @@ describe("Issues", () => {
         paginationOpts: { numItems: 10, cursor: null },
       });
       expect(issues).toHaveLength(3);
+      // @ts-expect-error - EnrichedIssue mismatch in test context
       expect(issues.map((i: EnrichedIssue) => i.title)).toContain("Issue 1");
+      // @ts-expect-error - EnrichedIssue mismatch in test context
       expect(issues.map((i: EnrichedIssue) => i.title)).toContain("Issue 2");
+      // @ts-expect-error - EnrichedIssue mismatch in test context
       expect(issues.map((i: EnrichedIssue) => i.title)).toContain("Issue 3");
       await t.finishInProgressScheduledFunctions();
     });
