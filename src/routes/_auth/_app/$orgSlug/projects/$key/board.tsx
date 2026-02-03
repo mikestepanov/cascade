@@ -2,7 +2,9 @@ import { api } from "@convex/_generated/api";
 import type { Doc, Id } from "@convex/_generated/dataModel";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
+import { useState } from "react";
 import { ExportButton } from "@/components/ExportButton";
+import { type BoardFilters, FilterBar } from "@/components/FilterBar";
 import { KanbanBoard } from "@/components/KanbanBoard";
 import { PageContent, PageError } from "@/components/layout";
 import { Badge } from "@/components/ui/Badge";
@@ -31,6 +33,7 @@ function BoardPage() {
   const { key } = Route.useParams();
   const { sprint: sprintParam } = Route.useSearch();
   const navigate = Route.useNavigate();
+  const [filters, setFilters] = useState<BoardFilters>({});
 
   const project = useQuery(api.projects.getByKey, { key });
   const sprints = useQuery(
@@ -102,9 +105,12 @@ function BoardPage() {
         </Flex>
       </div>
 
+      {/* Filter Bar */}
+      <FilterBar projectId={project._id} filters={filters} onFilterChange={setFilters} />
+
       {/* Board Content */}
       <div className="flex-1 overflow-hidden">
-        <KanbanBoard projectId={project._id} sprintId={effectiveSprintId} />
+        <KanbanBoard projectId={project._id} sprintId={effectiveSprintId} filters={filters} />
       </div>
     </Flex>
   );

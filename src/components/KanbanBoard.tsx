@@ -1,5 +1,6 @@
 import { api } from "@convex/_generated/api";
 import type { Id } from "@convex/_generated/dataModel";
+import type { EnrichedIssue } from "@convex/lib/issueHelpers";
 import type { WorkflowState } from "@convex/shared/types";
 import { useQuery } from "convex/react";
 import { useCallback, useMemo, useState } from "react";
@@ -10,6 +11,7 @@ import { useListNavigation } from "@/hooks/useListNavigation";
 import { useSmartBoardData } from "@/hooks/useSmartBoardData";
 import { BulkOperationsBar } from "./BulkOperationsBar";
 import { CreateIssueModal } from "./CreateIssueModal";
+import type { BoardFilters } from "./FilterBar";
 import { IssueDetailModal } from "./IssueDetailModal";
 import { BoardToolbar } from "./Kanban/BoardToolbar";
 import { KanbanColumn } from "./Kanban/KanbanColumn";
@@ -19,9 +21,44 @@ interface KanbanBoardProps {
   projectId?: Id<"projects">;
   teamId?: Id<"teams">;
   sprintId?: Id<"sprints">;
+  filters?: BoardFilters;
 }
 
-export function KanbanBoard({ projectId, teamId, sprintId }: KanbanBoardProps) {
+/** Apply client-side filters to issues */
+function applyFilters(issues: EnrichedIssue[], filters?: BoardFilters): EnrichedIssue[] {
+  if (!filters) return issues;
+
+  return issues.filter((issue) => {
+    // Type filter
+    if (filters.type?.length && !filters.type.includes(issue.type)) {
+      return false;
+    }
+
+    // Priority filter
+    if (filters.priority?.length && !filters.priority.includes(issue.priority)) {
+      return false;
+    }
+
+    // Assignee filter
+    if (filters.assigneeId?.length) {
+      if (!issue.assigneeId || !filters.assigneeId.includes(issue.assigneeId)) {
+        return false;
+      }
+    }
+
+    // Labels filter (issue must have at least one of the selected labels)
+    if (filters.labels?.length) {
+      const hasMatchingLabel = issue.labels?.some((label) => filters.labels?.includes(label.name));
+      if (!hasMatchingLabel) {
+        return false;
+      }
+    }
+
+    return true;
+  });
+}
+
+export function KanbanBoard({ projectId, teamId, sprintId, filters }: KanbanBoardProps) {
   const [showCreateIssue, setShowCreateIssue] = useState(false);
   const [selectedIssue, setSelectedIssue] = useState<Id<"issues"> | null>(null);
   const [selectionMode, setSelectionMode] = useState(false);
@@ -47,9 +84,18 @@ export function KanbanBoard({ projectId, teamId, sprintId }: KanbanBoardProps) {
 
   const { historyStack, redoStack, handleUndo, handleRedo, pushAction } = useBoardHistory();
 
+  // Apply filters to issues
+  const filteredIssuesByStatus = useMemo(() => {
+    const result: Record<string, EnrichedIssue[]> = {};
+    for (const [status, issues] of Object.entries(issuesByStatus)) {
+      result[status] = applyFilters(issues, filters);
+    }
+    return result;
+  }, [issuesByStatus, filters]);
+
   const allIssues = useMemo(() => {
-    return Object.values(issuesByStatus).flat();
-  }, [issuesByStatus]);
+    return Object.values(filteredIssuesByStatus).flat();
+  }, [filteredIssuesByStatus]);
 
   // Keyboard Navigation
   const { selectedIndex } = useListNavigation({
@@ -167,7 +213,7 @@ export function KanbanBoard({ projectId, teamId, sprintId }: KanbanBoardProps) {
             <KanbanColumn
               key={state.id}
               state={state}
-              issues={issuesByStatus[state.id] || []}
+              issues={filteredIssuesByStatus[state.id] || []}
               columnIndex={columnIndex}
               selectionMode={selectionMode}
               selectedIssueIds={selectedIssueIds}

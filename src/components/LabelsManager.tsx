@@ -1,7 +1,8 @@
 import { api } from "@convex/_generated/api";
 import type { Doc, Id } from "@convex/_generated/dataModel";
 import { useMutation, useQuery } from "convex/react";
-import { Pencil, Plus, Trash } from "lucide-react";
+import { ChevronDown, ChevronRight, FolderPlus, Pencil, Plus, Trash } from "lucide-react";
+import { useState } from "react";
 import { useAsyncMutation } from "@/hooks/useAsyncMutation";
 import { useDeleteConfirmation } from "@/hooks/useDeleteConfirmation";
 import { useEntityForm } from "@/hooks/useEntityForm";
@@ -14,7 +15,8 @@ import { ConfirmDialog } from "./ui/ConfirmDialog";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "./ui/Dialog";
 import { EmptyState } from "./ui/EmptyState";
 import { Flex } from "./ui/Flex";
-import { Input } from "./ui/form";
+import { Input, Select } from "./ui/form";
+import { Typography } from "./ui/Typography";
 
 interface LabelsManagerProps {
   projectId: Id<"projects">;
@@ -23,179 +25,417 @@ interface LabelsManagerProps {
 interface LabelFormData {
   name: string;
   color: string;
+  groupId: Id<"labelGroups"> | null;
+  [key: string]: unknown;
+}
+
+interface GroupFormData {
+  name: string;
+  description: string;
   [key: string]: unknown;
 }
 
 // Default to brand-ring equivalent color
 const DEFAULT_LABEL_COLOR = "#6366F1"; // matches --color-brand-ring
 
-const DEFAULT_FORM: LabelFormData = {
+const DEFAULT_LABEL_FORM: LabelFormData = {
   name: "",
   color: DEFAULT_LABEL_COLOR,
+  groupId: null,
+};
+
+const DEFAULT_GROUP_FORM: GroupFormData = {
+  name: "",
+  description: "",
+};
+
+type LabelGroup = {
+  _id: Id<"labelGroups"> | null;
+  name: string;
+  description?: string;
+  displayOrder: number;
+  labels: Doc<"labels">[];
 };
 
 export function LabelsManager({ projectId }: LabelsManagerProps) {
-  // Data
-  const labels = useQuery(api.labels.list, { projectId });
+  // Track collapsed groups
+  const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(new Set());
 
-  // Form state
-  const modal = useModal();
-  const form = useEntityForm<LabelFormData>(DEFAULT_FORM);
+  // Data - use the new grouped list endpoint
+  const labelGroups = useQuery(api.labelGroups.list, { projectId });
 
-  // Mutations with loading states
+  // Form states for labels
+  const labelModal = useModal();
+  const labelForm = useEntityForm<LabelFormData>(DEFAULT_LABEL_FORM);
+
+  // Form states for groups
+  const groupModal = useModal();
+  const groupForm = useEntityForm<GroupFormData>(DEFAULT_GROUP_FORM);
+
+  // Label mutations
   const createLabel = useMutation(api.labels.create);
   const updateLabel = useMutation(api.labels.update);
   const deleteLabelMutation = useMutation(api.labels.remove);
 
-  const { mutate: submitForm, isLoading: isSubmitting } = useAsyncMutation(
-    async () => {
-      if (!form.formData.name.trim()) return;
+  // Group mutations
+  const createGroup = useMutation(api.labelGroups.create);
+  const updateGroup = useMutation(api.labelGroups.update);
+  const deleteGroupMutation = useMutation(api.labelGroups.remove);
 
-      if (form.editingId) {
+  // Label form submission
+  const { mutate: submitLabelForm, isLoading: isLabelSubmitting } = useAsyncMutation(
+    async () => {
+      if (!labelForm.formData.name.trim()) return;
+
+      if (labelForm.editingId) {
         await updateLabel({
-          id: form.editingId as Id<"labels">,
-          name: form.formData.name.trim(),
-          color: form.formData.color,
+          id: labelForm.editingId as Id<"labels">,
+          name: labelForm.formData.name.trim(),
+          color: labelForm.formData.color,
+          groupId: labelForm.formData.groupId,
         });
         showSuccess("Label updated");
       } else {
         await createLabel({
           projectId,
-          name: form.formData.name.trim(),
-          color: form.formData.color,
+          name: labelForm.formData.name.trim(),
+          color: labelForm.formData.color,
+          groupId: labelForm.formData.groupId ?? undefined,
         });
         showSuccess("Label created");
       }
-      handleCloseModal();
+      handleCloseLabelModal();
     },
     { errorMessage: "Failed to save label" },
   );
 
-  // Delete confirmation
-  const deleteConfirm = useDeleteConfirmation<"labels">({
+  // Group form submission
+  const { mutate: submitGroupForm, isLoading: isGroupSubmitting } = useAsyncMutation(
+    async () => {
+      if (!groupForm.formData.name.trim()) return;
+
+      if (groupForm.editingId) {
+        await updateGroup({
+          id: groupForm.editingId as Id<"labelGroups">,
+          name: groupForm.formData.name.trim(),
+          description: groupForm.formData.description.trim() || null,
+        });
+        showSuccess("Group updated");
+      } else {
+        await createGroup({
+          projectId,
+          name: groupForm.formData.name.trim(),
+          description: groupForm.formData.description.trim() || undefined,
+        });
+        showSuccess("Group created");
+      }
+      handleCloseGroupModal();
+    },
+    { errorMessage: "Failed to save group" },
+  );
+
+  // Delete confirmations
+  const labelDeleteConfirm = useDeleteConfirmation<"labels">({
     successMessage: "Label deleted",
     errorMessage: "Failed to delete label",
   });
 
-  const handleCloseModal = () => {
-    modal.close();
-    form.resetForm();
+  const groupDeleteConfirm = useDeleteConfirmation<"labelGroups">({
+    successMessage: "Group deleted",
+    errorMessage: "Failed to delete group",
+  });
+
+  // Modal handlers
+  const handleCloseLabelModal = () => {
+    labelModal.close();
+    labelForm.resetForm();
   };
 
-  const handleCreate = () => {
-    form.startCreate();
-    modal.open();
+  const handleCloseGroupModal = () => {
+    groupModal.close();
+    groupForm.resetForm();
   };
 
-  const handleEdit = (label: { _id: Id<"labels">; name: string; color: string }) => {
-    form.loadForEdit({ _id: label._id, name: label.name, color: label.color });
-    modal.open();
+  const handleCreateLabel = (groupId?: Id<"labelGroups"> | null) => {
+    labelForm.startCreate();
+    if (groupId) {
+      labelForm.updateField("groupId", groupId);
+    }
+    labelModal.open();
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleEditLabel = (label: Doc<"labels">) => {
+    labelForm.loadForEdit({
+      _id: label._id,
+      name: label.name,
+      color: label.color,
+      groupId: label.groupId ?? null,
+    });
+    labelModal.open();
+  };
+
+  const handleCreateGroup = () => {
+    groupForm.startCreate();
+    groupModal.open();
+  };
+
+  const handleEditGroup = (group: LabelGroup) => {
+    if (!group._id) return; // Can't edit "Ungrouped"
+    groupForm.loadForEdit({
+      _id: group._id,
+      name: group.name,
+      description: group.description ?? "",
+    });
+    groupModal.open();
+  };
+
+  const toggleGroup = (groupId: string) => {
+    setCollapsedGroups((prev) => {
+      const next = new Set(prev);
+      if (next.has(groupId)) {
+        next.delete(groupId);
+      } else {
+        next.add(groupId);
+      }
+      return next;
+    });
+  };
+
+  const handleLabelSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    submitForm();
+    submitLabelForm();
   };
+
+  const handleGroupSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    submitGroupForm();
+  };
+
+  // Get real groups (not including virtual "Ungrouped")
+  const realGroups =
+    labelGroups?.filter((g): g is LabelGroup & { _id: Id<"labelGroups"> } => g._id !== null) ?? [];
+
+  // Total label count
+  const totalLabels = labelGroups?.reduce((sum, g) => sum + g.labels.length, 0) ?? 0;
 
   return (
     <>
       <Card>
         <CardHeader
           title="Labels"
-          description="Organize issues with colored labels"
+          description="Organize issues with colored labels grouped by category"
           action={
-            <Button onClick={handleCreate} leftIcon={<Plus className="w-4 h-4" />}>
-              New Label
-            </Button>
+            <Flex gap="sm">
+              <Button
+                variant="secondary"
+                onClick={handleCreateGroup}
+                leftIcon={<FolderPlus className="w-4 h-4" />}
+              >
+                New Group
+              </Button>
+              <Button onClick={() => handleCreateLabel()} leftIcon={<Plus className="w-4 h-4" />}>
+                New Label
+              </Button>
+            </Flex>
           }
         />
 
         <CardBody>
-          {!labels || labels.length === 0 ? (
+          {!labelGroups || totalLabels === 0 ? (
             <EmptyState
               icon="🏷️"
               title="No labels yet"
-              description="Create labels to organize your issues"
+              description="Create labels and organize them into groups"
               action={{
                 label: "Create Your First Label",
-                onClick: handleCreate,
+                onClick: () => handleCreateLabel(),
               }}
             />
           ) : (
-            <Flex direction="column" gap="sm">
-              {labels.map((label: Doc<"labels">) => (
-                <Flex
-                  key={label._id}
-                  justify="between"
-                  align="center"
-                  className="p-3 bg-ui-bg-secondary rounded-lg hover:bg-ui-bg-tertiary transition-colors"
-                >
-                  <Flex gap="md" align="center">
-                    <span
-                      className="px-3 py-1 rounded-full text-sm font-medium text-white"
-                      style={{ backgroundColor: label.color }}
-                    >
-                      {label.name}
-                    </span>
-                    <span className="text-xs text-ui-text-tertiary">{label.color}</span>
-                  </Flex>
+            <Flex direction="column" gap="lg">
+              {labelGroups.map((group) => {
+                const groupKey = group._id ?? "ungrouped";
+                const isCollapsed = collapsedGroups.has(groupKey);
+                const isUngrouped = group._id === null;
 
-                  <Flex gap="sm">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleEdit(label)}
-                      leftIcon={<Pencil className="w-4 h-4" />}
+                return (
+                  <div
+                    key={groupKey}
+                    className="border border-ui-border rounded-lg overflow-hidden"
+                  >
+                    {/* Group Header */}
+                    <Flex
+                      justify="between"
+                      align="center"
+                      className="p-3 bg-ui-bg-secondary cursor-pointer hover:bg-ui-bg-tertiary transition-colors"
+                      onClick={() => toggleGroup(groupKey)}
                     >
-                      Edit
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => deleteConfirm.confirmDelete(label._id)}
-                      leftIcon={<Trash className="w-4 h-4" />}
-                    >
-                      Delete
-                    </Button>
-                  </Flex>
-                </Flex>
-              ))}
+                      <Flex gap="sm" align="center">
+                        {isCollapsed ? (
+                          <ChevronRight className="w-4 h-4 text-ui-text-secondary" />
+                        ) : (
+                          <ChevronDown className="w-4 h-4 text-ui-text-secondary" />
+                        )}
+                        <Typography variant="h4" className="text-sm font-medium">
+                          {group.name}
+                        </Typography>
+                        <span className="text-xs text-ui-text-tertiary">
+                          ({group.labels.length})
+                        </span>
+                        {group.description && (
+                          <span className="text-xs text-ui-text-tertiary hidden sm:inline">
+                            — {group.description}
+                          </span>
+                        )}
+                      </Flex>
+
+                      <Flex gap="sm" onClick={(e) => e.stopPropagation()}>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleCreateLabel(group._id)}
+                          leftIcon={<Plus className="w-3 h-3" />}
+                        >
+                          Add
+                        </Button>
+                        {!isUngrouped && (
+                          <>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleEditGroup(group)}
+                              leftIcon={<Pencil className="w-3 h-3" />}
+                            >
+                              Edit
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => groupDeleteConfirm.confirmDelete(group._id!)}
+                              leftIcon={<Trash className="w-3 h-3" />}
+                            >
+                              Delete
+                            </Button>
+                          </>
+                        )}
+                      </Flex>
+                    </Flex>
+
+                    {/* Labels in Group */}
+                    {!isCollapsed && group.labels.length > 0 && (
+                      <Flex direction="column" className="divide-y divide-ui-border">
+                        {group.labels.map((label) => (
+                          <Flex
+                            key={label._id}
+                            justify="between"
+                            align="center"
+                            className="p-3 hover:bg-ui-bg-secondary transition-colors"
+                          >
+                            <Flex gap="md" align="center">
+                              <span
+                                className="px-3 py-1 rounded-full text-sm font-medium text-white"
+                                style={{ backgroundColor: label.color }}
+                              >
+                                {label.name}
+                              </span>
+                              <span className="text-xs text-ui-text-tertiary">{label.color}</span>
+                            </Flex>
+
+                            <Flex gap="sm">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => handleEditLabel(label)}
+                                leftIcon={<Pencil className="w-4 h-4" />}
+                              >
+                                Edit
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => labelDeleteConfirm.confirmDelete(label._id)}
+                                leftIcon={<Trash className="w-4 h-4" />}
+                              >
+                                Delete
+                              </Button>
+                            </Flex>
+                          </Flex>
+                        ))}
+                      </Flex>
+                    )}
+
+                    {/* Empty Group State */}
+                    {!isCollapsed && group.labels.length === 0 && (
+                      <div className="p-4 text-center text-sm text-ui-text-secondary">
+                        No labels in this group.{" "}
+                        <button
+                          type="button"
+                          onClick={() => handleCreateLabel(group._id)}
+                          className="text-brand hover:underline"
+                        >
+                          Add one
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
             </Flex>
           )}
         </CardBody>
       </Card>
 
-      {/* Create/Edit Modal */}
-      <Dialog open={modal.isOpen} onOpenChange={(open) => !open && handleCloseModal()}>
+      {/* Create/Edit Label Modal */}
+      <Dialog open={labelModal.isOpen} onOpenChange={(open) => !open && handleCloseLabelModal()}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>{form.editingId ? "Edit Label" : "Create Label"}</DialogTitle>
+            <DialogTitle>{labelForm.editingId ? "Edit Label" : "Create Label"}</DialogTitle>
           </DialogHeader>
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleLabelSubmit}>
             <Flex direction="column" gap="lg" className="p-6">
               <Input
                 label="Label Name"
-                value={form.formData.name}
-                onChange={(e) => form.updateField("name", e.target.value)}
+                value={labelForm.formData.name}
+                onChange={(e) => labelForm.updateField("name", e.target.value)}
                 placeholder="e.g., bug, feature, urgent"
                 required
                 autoFocus
               />
 
               <ColorPicker
-                value={form.formData.color}
-                onChange={(color) => form.updateField("color", color)}
+                value={labelForm.formData.color}
+                onChange={(color) => labelForm.updateField("color", color)}
                 label="Color"
               />
+
+              {realGroups.length > 0 && (
+                <Select
+                  label="Group"
+                  value={labelForm.formData.groupId ?? ""}
+                  onChange={(e) =>
+                    labelForm.updateField(
+                      "groupId",
+                      e.target.value ? (e.target.value as Id<"labelGroups">) : null,
+                    )
+                  }
+                >
+                  <option value="">No group (ungrouped)</option>
+                  {realGroups.map((group) => (
+                    <option key={group._id} value={group._id}>
+                      {group.name}
+                    </option>
+                  ))}
+                </Select>
+              )}
 
               {/* Preview */}
               <div>
                 <div className="block text-sm font-medium text-ui-text mb-2">Preview</div>
                 <span
                   className="px-3 py-1 rounded-full text-sm font-medium text-white"
-                  style={{ backgroundColor: form.formData.color }}
+                  style={{ backgroundColor: labelForm.formData.color }}
                 >
-                  {form.formData.name || "Label name"}
+                  {labelForm.formData.name || "Label name"}
                 </span>
               </div>
 
@@ -203,13 +443,13 @@ export function LabelsManager({ projectId }: LabelsManagerProps) {
                 <Button
                   type="button"
                   variant="secondary"
-                  onClick={handleCloseModal}
-                  disabled={isSubmitting}
+                  onClick={handleCloseLabelModal}
+                  disabled={isLabelSubmitting}
                 >
                   Cancel
                 </Button>
-                <Button type="submit" isLoading={isSubmitting}>
-                  {form.editingId ? "Update" : "Create"} Label
+                <Button type="submit" isLoading={isLabelSubmitting}>
+                  {labelForm.editingId ? "Update" : "Create"} Label
                 </Button>
               </DialogFooter>
             </Flex>
@@ -217,12 +457,54 @@ export function LabelsManager({ projectId }: LabelsManagerProps) {
         </DialogContent>
       </Dialog>
 
-      {/* Delete Confirmation Dialog */}
+      {/* Create/Edit Group Modal */}
+      <Dialog open={groupModal.isOpen} onOpenChange={(open) => !open && handleCloseGroupModal()}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>{groupForm.editingId ? "Edit Group" : "Create Group"}</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={handleGroupSubmit}>
+            <Flex direction="column" gap="lg" className="p-6">
+              <Input
+                label="Group Name"
+                value={groupForm.formData.name}
+                onChange={(e) => groupForm.updateField("name", e.target.value)}
+                placeholder="e.g., Priority, Component, Area"
+                required
+                autoFocus
+              />
+
+              <Input
+                label="Description (optional)"
+                value={groupForm.formData.description}
+                onChange={(e) => groupForm.updateField("description", e.target.value)}
+                placeholder="e.g., Labels for issue priority levels"
+              />
+
+              <DialogFooter className="pt-4">
+                <Button
+                  type="button"
+                  variant="secondary"
+                  onClick={handleCloseGroupModal}
+                  disabled={isGroupSubmitting}
+                >
+                  Cancel
+                </Button>
+                <Button type="submit" isLoading={isGroupSubmitting}>
+                  {groupForm.editingId ? "Update" : "Create"} Group
+                </Button>
+              </DialogFooter>
+            </Flex>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Label Confirmation Dialog */}
       <ConfirmDialog
-        isOpen={!!deleteConfirm.deleteId}
-        onClose={deleteConfirm.cancelDelete}
+        isOpen={!!labelDeleteConfirm.deleteId}
+        onClose={labelDeleteConfirm.cancelDelete}
         onConfirm={() => {
-          deleteConfirm.executeDelete((id) => {
+          labelDeleteConfirm.executeDelete((id) => {
             return deleteLabelMutation({ id }).then(() => {
               /* intentional */
             });
@@ -232,7 +514,25 @@ export function LabelsManager({ projectId }: LabelsManagerProps) {
         message="Are you sure you want to delete this label? It will be removed from all issues."
         variant="danger"
         confirmLabel="Delete"
-        isLoading={deleteConfirm.isDeleting}
+        isLoading={labelDeleteConfirm.isDeleting}
+      />
+
+      {/* Delete Group Confirmation Dialog */}
+      <ConfirmDialog
+        isOpen={!!groupDeleteConfirm.deleteId}
+        onClose={groupDeleteConfirm.cancelDelete}
+        onConfirm={() => {
+          groupDeleteConfirm.executeDelete((id) => {
+            return deleteGroupMutation({ id }).then(() => {
+              /* intentional */
+            });
+          });
+        }}
+        title="Delete Group"
+        message="Are you sure you want to delete this group? Labels in this group will become ungrouped."
+        variant="danger"
+        confirmLabel="Delete"
+        isLoading={groupDeleteConfirm.isDeleting}
       />
     </>
   );

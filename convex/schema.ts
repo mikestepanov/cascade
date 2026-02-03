@@ -305,14 +305,28 @@ const applicationTables = {
     .index("by_user", ["userId"])
     .index("by_issue_user", ["issueId", "userId"]),
 
-  labels: defineTable({
-    projectId: v.id("projects"), // Label belongs to project
-    name: v.string(),
-    color: v.string(), // Hex color code like "#3B82F6"
+  labelGroups: defineTable({
+    projectId: v.id("projects"), // Group belongs to project
+    name: v.string(), // e.g., "Priority", "Component", "Area"
+    description: v.optional(v.string()),
+    displayOrder: v.number(), // For sorting groups in UI
     createdBy: v.id("users"),
   })
     .index("by_project", ["projectId"])
-    .index("by_project_name", ["projectId", "name"]),
+    .index("by_project_name", ["projectId", "name"])
+    .index("by_project_order", ["projectId", "displayOrder"]),
+
+  labels: defineTable({
+    projectId: v.id("projects"), // Label belongs to project
+    groupId: v.optional(v.id("labelGroups")), // Optional group assignment
+    name: v.string(),
+    color: v.string(), // Hex color code like "#3B82F6"
+    displayOrder: v.optional(v.number()), // Order within group
+    createdBy: v.id("users"),
+  })
+    .index("by_project", ["projectId"])
+    .index("by_project_name", ["projectId", "name"])
+    .index("by_group", ["groupId"]),
 
   issueTemplates: defineTable({
     projectId: v.id("projects"), // Template belongs to project
