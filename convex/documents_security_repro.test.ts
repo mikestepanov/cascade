@@ -6,8 +6,8 @@ import { modules } from "./testSetup.test-helper";
 import {
   asAuthenticatedUser,
   createOrganizationAdmin,
-  createTestUser,
   createProjectInOrganization,
+  createTestUser,
 } from "./testUtils";
 
 describe("Document Security Vulnerability Reproduction", () => {
@@ -36,7 +36,7 @@ describe("Document Security Vulnerability Reproduction", () => {
         title: "Malicious Document",
         isPublic: false,
         organizationId: orgA, // Valid: User A is in Org A
-        projectId: projectB,  // Invalid: Project B is in Org B!
+        projectId: projectB, // Invalid: Project B is in Org B!
       }),
     ).rejects.toThrow("Project does not belong to this organization");
   });
@@ -61,7 +61,7 @@ describe("Document Security Vulnerability Reproduction", () => {
         title: "Malicious Workspace Document",
         isPublic: false,
         organizationId: orgA, // Valid: User A is in Org A
-        workspaceId: wsB,     // Invalid: Workspace B is in Org B!
+        workspaceId: wsB, // Invalid: Workspace B is in Org B!
       }),
     ).rejects.toThrow("Workspace does not belong to this organization");
   });
