@@ -53,8 +53,10 @@
     "discover": "node scripts/discover_targets.js",
     "crawl": "node scripts/crawl_routes.js",
     "crawl:batch": "node scripts/crawl_batch.js",
+    "select:targets": "node scripts/select_targets.js",
     "analyze": "node scripts/analyze_design.js",
-    "setup:auth": "node scripts/setup_auth.js"
+    "setup:auth": "node scripts/setup_auth.js",
+    "auth:manual": "node scripts/manual_handshake.js"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^3.0.35",

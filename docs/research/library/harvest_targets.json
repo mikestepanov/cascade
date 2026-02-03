@@ -1,0 +1,402 @@
+[
+  {
+    "url": "https://www.getharvest.com/blog/2009/01/new-feature-unit-pricing-for-expenses",
+    "competitor": "harvest",
+    "page": "new-feature-unit-pricing-for-expenses",
+    "score": 3,
+    "selectionReason": "High Score (Top 20)"
+  },
+  {
+    "url": "https://www.getharvest.com/blog/2007/04/new-feature-add-a-person-to-all-existing-projects",
+    "competitor": "harvest",
+    "page": "new-feature-add-a-person-to-all-existing-projects",
+    "score": 2,
+    "reason": "Priority: /projects/",
+    "selectionReason": "Priority: /projects/"
+  },
+  {
+    "url": "https://www.getharvest.com/blog/2008/04/api-updates-and-more",
+    "competitor": "harvest",
+    "page": "api-updates-and-more",
+    "score": 2,
+    "selectionReason": "High Score (Top 20)"
+  },
+  {
+    "url": "https://www.getharvest.com/blog/2008/05/pending-approval-happier-faster-more-productive",
+    "competitor": "harvest",
+    "page": "pending-approval-happier-faster-more-productive",
+    "score": 2,
+    "reason": "Priority: /app/",
+    "selectionReason": "Priority: /app/"
+  },
+  {
+    "url": "https://www.getharvest.com/blog/2009/01/harvest-api-ruby-wrapper-now-available",
+    "competitor": "harvest",
+    "page": "harvest-api-ruby-wrapper-now-available",
+    "score": 2,
+    "reason": "Priority: /app/",
+    "selectionReason": "Priority: /app/"
+  },
+  {
+    "url": "https://www.getharvest.com/blog/2009/03/be-defensive-when-developing-against-the-twitter-api",
+    "competitor": "harvest",
+    "page": "be-defensive-when-developing-against-the-twitter-api",
+    "score": 2,
+    "selectionReason": "High Score (Top 20)"
+  },
+  {
+    "url": "https://www.getharvest.com/blog/2009/03/sxsw-bingo-its-about-fun",
+    "competitor": "harvest",
+    "page": "sxsw-bingo-its-about-fun",
+    "score": 2,
+    "selectionReason": "High Score (Top 20)"
+  },
+  {
+    "url": "https://www.getharvest.com/blog/2009/04/new-feature-automatic-late-invoice-reminder",
+    "competitor": "harvest",
+    "page": "new-feature-automatic-late-invoice-reminder",
+    "score": 2,
+    "selectionReason": "Sample: BLOG"
+  },
+  {
+    "url": "https://www.getharvest.com/blog/2009/08/new-feature-create-and-send-estimates",
+    "competitor": "harvest",
+    "page": "new-feature-create-and-send-estimates",
+    "score": 2,
+    "selectionReason": "High Score (Top 20)"
+  },
+  {
+    "url": "https://www.getharvest.com/blog/2009/12/new-feature-duplicate-timesheet",
+    "competitor": "harvest",
+    "page": "new-feature-duplicate-timesheet",
+    "score": 2,
+    "selectionReason": "Sample: BLOG"
+  },
+  {
+    "url": "https://www.getharvest.com/blog/2010/02/new-feature-import-export-projects-clients-people-and-tasks",
+    "competitor": "harvest",
+    "page": "new-feature-import-export-projects-clients-people-and-tasks",
+    "score": 2,
+    "reason": "Priority: /projects/",
+    "selectionReason": "Priority: /projects/"
+  },
+  {
+    "url": "https://www.getharvest.com/blog/2010/04/harvested-a-new-ruby-api-wrapper",
+    "competitor": "harvest",
+    "page": "harvested-a-new-ruby-api-wrapper",
+    "score": 2,
+    "reason": "Priority: /app/",
+    "selectionReason": "Priority: /app/"
+  },
+  {
+    "url": "https://www.getharvest.com/blog/2010/06/walkabout-nyc-open-house-for-startups",
+    "competitor": "harvest",
+    "page": "walkabout-nyc-open-house-for-startups",
+    "score": 2,
+    "selectionReason": "High Score (Top 20)"
+  },
+  {
+    "url": "https://www.getharvest.com/blog/2010/09/cloud-tools-working-together-outright-integrates-with-harvest",
+    "competitor": "harvest",
+    "page": "cloud-tools-working-together-outright-integrates-with-harvest",
+    "score": 2,
+    "selectionReason": "High Score (Top 20)"
+  },
+  {
+    "url": "https://www.getharvest.com/blog/2010/12/harvest-integrations-galore-github-in-co-op-fluid-growl-reminders-and-java-for-harvest",
+    "competitor": "harvest",
+    "page": "harvest-integrations-galore-github-in-co-op-fluid-growl-reminders-and-java-for-harvest",
+    "score": 2,
+    "selectionReason": "Sample: BLOG"
+  },
+  {
+    "url": "https://www.getharvest.com/blog/2011/02/how-we-handle-feature-requests",
+    "competitor": "harvest",
+    "page": "how-we-handle-feature-requests",
+    "score": 2,
+    "selectionReason": "High Score (Top 20)"
+  },
+  {
+    "url": "https://www.getharvest.com/blog/2011/09/new-timesheet-feature-start-your-week-on-saturday-sunday-or-monday",
+    "competitor": "harvest",
+    "page": "new-timesheet-feature-start-your-week-on-saturday-sunday-or-monday",
+    "score": 2,
+    "selectionReason": "High Score (Top 20)"
+  },
+  {
+    "url": "https://www.getharvest.com/blog/2011/10/oauth-2-0-for-the-harvest-api-plus-a-new-sdk",
+    "competitor": "harvest",
+    "page": "oauth-2-0-for-the-harvest-api-plus-a-new-sdk",
+    "score": 2,
+    "reason": "Priority: /auth/",
+    "selectionReason": "Priority: /auth/"
+  },
+  {
+    "url": "https://www.getharvest.com/blog/2012/02/improved-password-security",
+    "competitor": "harvest",
+    "page": "improved-password-security",
+    "score": 2,
+    "selectionReason": "High Score (Top 20)"
+  },
+  {
+    "url": "https://www.getharvest.com/blog/2012/03/new-feature-add-projects-from-user-profiles",
+    "competitor": "harvest",
+    "page": "new-feature-add-projects-from-user-profiles",
+    "score": 2,
+    "reason": "Priority: /profile/",
+    "selectionReason": "Priority: /profile/"
+  },
+  {
+    "url": "https://www.getharvest.com/blog/2012/05/walkaboutnyc-how-it-all-started",
+    "competitor": "harvest",
+    "page": "walkaboutnyc-how-it-all-started",
+    "score": 2,
+    "selectionReason": "Sample: BLOG"
+  },
+  {
+    "url": "https://www.getharvest.com/blog/2012/11/the-harvest-platform-bring-time-tracking-into-your-application",
+    "competitor": "harvest",
+    "page": "the-harvest-platform-bring-time-tracking-into-your-application",
+    "score": 2,
+    "reason": "Priority: /app/",
+    "selectionReason": "Priority: /app/"
+  },
+  {
+    "url": "https://www.getharvest.com/blog/2013/08/join-us-on-github-for-all-of-your-api-needs",
+    "competitor": "harvest",
+    "page": "join-us-on-github-for-all-of-your-api-needs",
+    "score": 2,
+    "selectionReason": "High Score (Top 20)"
+  },
+  {
+    "url": "https://www.getharvest.com/blog/2015/06/new-feature-budget-by-task-fees",
+    "competitor": "harvest",
+    "page": "new-feature-budget-by-task-fees",
+    "score": 2,
+    "selectionReason": "High Score (Top 20)"
+  },
+  {
+    "url": "https://www.getharvest.com/blog/2017/07/using-zapier-to-improve-your-harvest-workflow",
+    "competitor": "harvest",
+    "page": "using-zapier-to-improve-your-harvest-workflow",
+    "score": 2,
+    "selectionReason": "High Score (Top 20)"
+  },
+  {
+    "url": "https://www.getharvest.com/blog/2017/09/introducing-harvest-api-v2",
+    "competitor": "harvest",
+    "page": "introducing-harvest-api-v2",
+    "score": 2,
+    "selectionReason": "High Score (Top 20)"
+  },
+  {
+    "url": "https://www.getharvest.com/blog/2018/08/boost-your-security-sign-in-with-google-for-two-factor-authentication",
+    "competitor": "harvest",
+    "page": "boost-your-security-sign-in-with-google-for-two-factor-authentication",
+    "score": 2,
+    "reason": "Priority: /auth/",
+    "selectionReason": "Priority: /auth/"
+  },
+  {
+    "url": "https://www.getharvest.com/blog/2019/05/two-new-features-to-help-you-prioritize-info",
+    "competitor": "harvest",
+    "page": "two-new-features-to-help-you-prioritize-info",
+    "score": 2,
+    "selectionReason": "High Score (Top 20)"
+  },
+  {
+    "url": "https://www.getharvest.com/blog/7-features-to-look-for-in-an-architecture-time-tracking-app-infographic",
+    "competitor": "harvest",
+    "page": "7-features-to-look-for-in-an-architecture-time-tracking-app-infographic",
+    "score": 2,
+    "reason": "Priority: /app/",
+    "selectionReason": "Priority: /app/"
+  },
+  {
+    "url": "https://www.getharvest.com/blog/7-signs-an-employee-is-about-to-quit-and-how-to-prevent-it-from-happening",
+    "competitor": "harvest",
+    "page": "7-signs-an-employee-is-about-to-quit-and-how-to-prevent-it-from-happening",
+    "score": 2,
+    "reason": "Priority: /app/",
+    "selectionReason": "Priority: /app/"
+  },
+  {
+    "url": "https://www.getharvest.com/blog/boost-productivity-with-employee-time-tracking-analytics",
+    "competitor": "harvest",
+    "page": "boost-productivity-with-employee-time-tracking-analytics",
+    "score": 2,
+    "selectionReason": "High Score (Top 20)"
+  },
+  {
+    "url": "https://www.getharvest.com/blog/boosting-productivity-in-your-architecture-firm-in-5-steps-infographic",
+    "competitor": "harvest",
+    "page": "boosting-productivity-in-your-architecture-firm-in-5-steps-infographic",
+    "score": 2,
+    "selectionReason": "Sample: BLOG"
+  },
+  {
+    "url": "https://www.getharvest.com/blog/culture-productivity",
+    "competitor": "harvest",
+    "page": "culture-productivity",
+    "score": 2,
+    "selectionReason": "High Score (Top 20)"
+  },
+  {
+    "url": "https://www.getharvest.com/blog/free-time-tracking-software-can-boost-productivity",
+    "competitor": "harvest",
+    "page": "free-time-tracking-software-can-boost-productivity",
+    "score": 2,
+    "selectionReason": "High Score (Top 20)"
+  },
+  {
+    "url": "https://www.getharvest.com/blog/product-updates-mobile-app-updates-customize-online-payment-options-and-faster-payments",
+    "competitor": "harvest",
+    "page": "product-updates-mobile-app-updates-customize-online-payment-options-and-faster-payments",
+    "score": 2,
+    "reason": "Priority: /app/",
+    "selectionReason": "Priority: /app/"
+  },
+  {
+    "url": "https://www.getharvest.com/blog/timesheets-are-shaping-the-future-of-remote-work",
+    "competitor": "harvest",
+    "page": "timesheets-are-shaping-the-future-of-remote-work",
+    "score": 2,
+    "selectionReason": "High Score (Top 20)"
+  },
+  {
+    "url": "https://www.getharvest.com/integrations/integrately",
+    "competitor": "harvest",
+    "page": "integrately",
+    "score": 2,
+    "selectionReason": "High Score (Top 20)"
+  },
+  {
+    "url": "https://www.getharvest.com/integrations/zapier",
+    "competitor": "harvest",
+    "page": "zapier",
+    "score": 2,
+    "selectionReason": "Sample: INTEGRATIONS"
+  },
+  {
+    "url": "https://www.getharvest.com/about",
+    "competitor": "harvest",
+    "page": "about",
+    "score": 1,
+    "selectionReason": "Critical Page"
+  },
+  {
+    "url": "https://www.getharvest.com/blog/2019/03/update-your-teams-billable-rates-while-retaining-accurate-reporting",
+    "competitor": "harvest",
+    "page": "update-your-teams-billable-rates-while-retaining-accurate-reporting",
+    "score": 1,
+    "reason": "Priority: /team/",
+    "selectionReason": "Priority: /team/"
+  },
+  {
+    "url": "https://www.getharvest.com/blog/manage-workloads-and-prevent-burnout-with-the-team-section",
+    "competitor": "harvest",
+    "page": "manage-workloads-and-prevent-burnout-with-the-team-section",
+    "score": 1,
+    "reason": "Priority: /team/",
+    "selectionReason": "Priority: /team/"
+  },
+  {
+    "url": "https://www.getharvest.com/features",
+    "competitor": "harvest",
+    "page": "features",
+    "score": 1,
+    "selectionReason": "Critical Page"
+  },
+  {
+    "url": "https://www.getharvest.com/forecast/features",
+    "competitor": "harvest",
+    "page": "features",
+    "score": 1,
+    "selectionReason": "Critical Page"
+  },
+  {
+    "url": "https://www.getharvest.com/forecast/pricing",
+    "competitor": "harvest",
+    "page": "pricing",
+    "score": 1,
+    "selectionReason": "Critical Page"
+  },
+  {
+    "url": "https://www.getharvest.com/integrations/breeze",
+    "competitor": "harvest",
+    "page": "breeze",
+    "score": 1,
+    "selectionReason": "Sample: INTEGRATIONS"
+  },
+  {
+    "url": "https://www.getharvest.com/integrations/brightpod",
+    "competitor": "harvest",
+    "page": "brightpod",
+    "score": 1,
+    "selectionReason": "Sample: INTEGRATIONS"
+  },
+  {
+    "url": "https://www.getharvest.com/integrations/herobi",
+    "competitor": "harvest",
+    "page": "herobi",
+    "score": 1,
+    "selectionReason": "Sample: INTEGRATIONS"
+  },
+  {
+    "url": "https://www.getharvest.com/integrations/relay",
+    "competitor": "harvest",
+    "page": "relay",
+    "score": 1,
+    "selectionReason": "Sample: INTEGRATIONS"
+  },
+  {
+    "url": "https://www.getharvest.com/invoices/enterprise-invoice-app",
+    "competitor": "harvest",
+    "page": "enterprise-invoice-app",
+    "score": 1,
+    "reason": "Priority: /app/",
+    "selectionReason": "Priority: /app/"
+  },
+  {
+    "url": "https://www.getharvest.com/pricing",
+    "competitor": "harvest",
+    "page": "pricing",
+    "score": 1,
+    "selectionReason": "Critical Page"
+  },
+  {
+    "url": "https://www.getharvest.com/contact",
+    "competitor": "harvest",
+    "page": "contact",
+    "score": 0,
+    "selectionReason": "Critical Page"
+  },
+  {
+    "url": "https://www.getharvest.com/forecast/signup",
+    "competitor": "harvest",
+    "page": "signup",
+    "score": 0,
+    "selectionReason": "Critical Page"
+  },
+  {
+    "url": "https://www.getharvest.com/privacy-policy-bfff73a7-3912-4fe8-8e37-c32d9f38eec4",
+    "competitor": "harvest",
+    "page": "privacy-policy-bfff73a7-3912-4fe8-8e37-c32d9f38eec4",
+    "score": 0,
+    "selectionReason": "Sample: LEGAL"
+  },
+  {
+    "url": "https://www.getharvest.com/privacy-policy-november-2022",
+    "competitor": "harvest",
+    "page": "privacy-policy-november-2022",
+    "score": 0,
+    "selectionReason": "Sample: LEGAL"
+  },
+  {
+    "url": "https://www.getharvest.com/signup",
+    "competitor": "harvest",
+    "page": "signup",
+    "score": 0,
+    "selectionReason": "Critical Page"
+  }
+]

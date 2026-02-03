@@ -1,0 +1,89 @@
+[
+  {
+    "url": "https://clickup.com/blog/sitemap.xml",
+    "competitor": "clickup",
+    "page": "sitemap.xml",
+    "score": 1,
+    "selectionReason": "Sample: BLOG"
+  },
+  {
+    "url": "https://clickup.com/account",
+    "competitor": "clickup",
+    "page": "account",
+    "score": 0,
+    "reason": "Priority: /account/",
+    "selectionReason": "Priority: /account/"
+  },
+  {
+    "url": "https://clickup.com/billing",
+    "competitor": "clickup",
+    "page": "billing",
+    "score": 0,
+    "reason": "Priority: /billing/",
+    "selectionReason": "Priority: /billing/"
+  },
+  {
+    "url": "https://clickup.com/dashboard",
+    "competitor": "clickup",
+    "page": "dashboard",
+    "score": 0,
+    "reason": "Priority: /dashboard/",
+    "selectionReason": "Priority: /dashboard/"
+  },
+  {
+    "url": "https://clickup.com/profile",
+    "competitor": "clickup",
+    "page": "profile",
+    "score": 0,
+    "reason": "Priority: /profile/",
+    "selectionReason": "Priority: /profile/"
+  },
+  {
+    "url": "https://clickup.com/projects",
+    "competitor": "clickup",
+    "page": "projects",
+    "score": 0,
+    "reason": "Priority: /projects/",
+    "selectionReason": "Priority: /projects/"
+  },
+  {
+    "url": "https://clickup.com/settings",
+    "competitor": "clickup",
+    "page": "settings",
+    "score": 0,
+    "reason": "Priority: /settings/",
+    "selectionReason": "Priority: /settings/"
+  },
+  {
+    "url": "https://clickup.com/settings/billing",
+    "competitor": "clickup",
+    "page": "billing",
+    "score": 0,
+    "reason": "Priority: /settings/",
+    "selectionReason": "Priority: /settings/"
+  },
+  {
+    "url": "https://clickup.com/settings/profile",
+    "competitor": "clickup",
+    "page": "profile",
+    "score": 0,
+    "reason": "Priority: /settings/",
+    "selectionReason": "Priority: /settings/"
+  },
+  {
+    "url": "https://clickup.com/settings/team",
+    "competitor": "clickup",
+    "page": "team",
+    "score": 0,
+    "reason": "Priority: /settings/",
+    "selectionReason": "Priority: /settings/"
+  },
+  {
+    "url": "https://clickup.com/settings/workspace",
+    "competitor": "clickup",
+    "page": "workspace",
+    "score": 0,
+    "reason": "Priority: /settings/",
+    "selectionReason": "Priority: /settings/"
+  }
+]

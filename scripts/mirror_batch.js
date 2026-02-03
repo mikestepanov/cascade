@@ -10,6 +10,7 @@ const __dirname = path.dirname(__filename);
 const args = process.argv.slice(2);
 const FORCE = args.includes("--force");
 const FRESHNESS_DAYS = parseInt(args.find((a) => a.startsWith("--days="))?.split("=")[1], 10) || 7;
+const COMPETITOR_FILTER = args.find((a) => a.startsWith("--competitor="))?.split("=")[1];
 
 // Define all target pages to mirror
 const TARGETS = [
@@ -107,14 +108,51 @@ async function runMirror(target) {
 async function main() {
   console.log("\n🚀 OMEGA BATCH MIRROR");
   console.log(
-    `   Capturing ${TARGETS.length} pages from ${[...new Set(TARGETS.map((t) => t.competitor))].length} competitors\n`,
+    `   Capturing pages from ${[...new Set(TARGETS.map((t) => t.competitor))].length} competitors\n`,
   );
   console.log(`${"=".repeat(60)}\n`);
 
   const startTime = Date.now();
 
-  for (let i = 0; i < TARGETS.length; i++) {
-    const target = TARGETS[i];
+  // 1. Identify distinct competitors
+  let competitors = [...new Set(TARGETS.map((t) => t.competitor))];
+
+  if (COMPETITOR_FILTER) {
+    console.log(`   🎯 Filtered to competitor: ${COMPETITOR_FILTER}`);
+    competitors = competitors.filter((c) => c === COMPETITOR_FILTER);
+  }
+
+  const finalRunList = [];
+
+  // 2. Build Run List (Prioritize JSON targets)
+  for (const comp of competitors) {
+    const targetsPath = path.resolve(__dirname, `../docs/research/library/${comp}_targets.json`);
+
+    if (fs.existsSync(targetsPath)) {
+      try {
+        const json = JSON.parse(fs.readFileSync(targetsPath, "utf-8"));
+        if (Array.isArray(json) && json.length > 0) {
+          console.log(`   ✅ Loaded ${json.length} selected targets for ${comp}`);
+          finalRunList.push(...json);
+          continue; // Skip hardcoded for this competitor
+        }
+      } catch (_e) {
+        console.error(`   ⚠️ Error reading targets for ${comp}, falling back to defaults.`);
+      }
+    }
+
+    // Fallback: Add hardcoded targets for this competitor
+    const defaults = TARGETS.filter((t) => t.competitor === comp);
+    // console.log(`   ℹ️ Using ${defaults.length} default targets for ${comp}`);
+    finalRunList.push(...defaults);
+  }
+
+  console.log(`\n   📋 Final Run List: ${finalRunList.length} pages`);
+  console.log(`${"=".repeat(60)}\n`);
+
+  // 3. Execute
+  for (let i = 0; i < finalRunList.length; i++) {
+    const target = finalRunList[i];
 
     try {
       // Smart Skip & Staleness Check
@@ -147,14 +185,14 @@ async function main() {
         }
       }
 
+      const progress = `[${i + 1}/${finalRunList.length}]`;
+
       if (shouldSkip) {
-        console.log(
-          `\n[${i + 1}/${TARGETS.length}] ${target.competitor}/${target.page} ⏩ Skipped (${reason})`,
-        );
+        console.log(`\n${progress} ${target.competitor}/${target.page} ⏩ Skipped (${reason})`);
         continue;
       }
 
-      console.log(`\n[${i + 1}/${TARGETS.length}] ${target.competitor}/${target.page}`);
+      console.log(`\n${progress} ${target.competitor}/${target.page}`);
       console.log("-".repeat(40));
       await runMirror(target);
     } catch (err) {
@@ -165,7 +203,7 @@ async function main() {
   const elapsed = ((Date.now() - startTime) / 1000 / 60).toFixed(1);
   console.log(`\n${"=".repeat(60)}`);
   console.log(`\n✅ BATCH COMPLETE in ${elapsed} minutes`);
-  console.log(`   Captured ${TARGETS.length} pages\n`);
+  console.log(`   Captured ${finalRunList.length} pages\n`);
 }
 
 main();

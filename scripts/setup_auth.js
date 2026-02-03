@@ -15,34 +15,57 @@ if (!fs.existsSync(AUTH_DIR)) {
 
 async function setupGoogleAuth(credentials) {
   console.log("🔐 Starting Google Authentication...");
-  const browser = await chromium.launch({ headless: false }); // Headed for manual intervention if needed
-  const context = await browser.newContext();
+  const browser = await chromium.launch({
+    headless: false,
+    args: ["--disable-blink-features=AutomationControlled"],
+  });
+  const context = await browser.newContext({
+    userAgent:
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+    viewport: { width: 1280, height: 720 },
+    ignoreHTTPSErrors: true,
+  });
   const page = await context.newPage();
 
-  await page.goto("https://accounts.google.com/signin");
-
-  // Fill email
-  await page.fill('input[type="email"]', credentials.email);
-  await page.click("#identifierNext");
-
-  // Wait for password field and fill it
-  await page.waitForSelector('input[type="password"]', { timeout: 30000 });
-  await page.fill('input[type="password"]', credentials.password);
-  await page.click("#passwordNext");
-
-  console.log("⏳ Waiting for login to complete (solve 2FA if prompted)...");
-
-  // Wait for navigation back to a logged-in state or a timeout
-  // We'll wait up to 2 minutes for the user to handle any prompts
-  await page.waitForURL("https://myaccount.google.com/**", { timeout: 120000 }).catch(() => {
-    console.log("⚠️  Warning: Login did not redirect to MyAccount. Check if you are logged in.");
+  // Script to hide automation
+  await page.addInitScript(() => {
+    Object.defineProperty(navigator, "webdriver", { get: () => undefined });
   });
 
-  const statePath = path.join(AUTH_DIR, "google.json");
-  await context.storageState({ path: statePath });
-  console.log(`✅ Google session saved to ${statePath}`);
+  try {
+    await page.goto("https://accounts.google.com/signin", { waitUntil: "load" });
 
-  await browser.close();
+    // Fill email
+    await page.fill('input[type="email"]', credentials.email);
+    await page.click("#identifierNext");
+
+    // Wait for password field and fill it
+    await page.waitForSelector('input[type="password"]', { timeout: 30000 });
+    await page.fill('input[type="password"]', credentials.password);
+    await page.click("#passwordNext");
+
+    console.log("⏳ Waiting for login to complete (solve 2FA if prompted)...");
+
+    // Wait for navigation back to a logged-in state or a timeout
+    // We'll wait up to 2 minutes for the user to handle any prompts
+    await page
+      .waitForURL("https://myaccount.google.com/**", { timeout: 120000 })
+      .catch(async (err) => {
+        console.log("⚠️  Warning: Login did not redirect to MyAccount. Taking debug screenshot.");
+        await page.screenshot({ path: path.join(AUTH_DIR, "auth_timeout_debug.png") });
+        throw err;
+      });
+
+    const statePath = path.join(AUTH_DIR, "google.json");
+    await context.storageState({ path: statePath });
+    console.log(`✅ Google session saved to ${statePath}`);
+  } catch (err) {
+    console.error("❌ Auth Error:", err.message);
+    await page.screenshot({ path: path.join(AUTH_DIR, "auth_error_debug.png") });
+    throw err;
+  } finally {
+    await browser.close();
+  }
 }
 
 async function setupLinearAuth() {

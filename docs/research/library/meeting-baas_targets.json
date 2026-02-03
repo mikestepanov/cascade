@@ -1,0 +1,82 @@
+[
+  {
+    "url": "https://meetingbaas.com/account",
+    "competitor": "meeting-baas",
+    "page": "account",
+    "score": 0,
+    "reason": "Priority: /account/",
+    "selectionReason": "Priority: /account/"
+  },
+  {
+    "url": "https://meetingbaas.com/billing",
+    "competitor": "meeting-baas",
+    "page": "billing",
+    "score": 0,
+    "reason": "Priority: /billing/",
+    "selectionReason": "Priority: /billing/"
+  },
+  {
+    "url": "https://meetingbaas.com/dashboard",
+    "competitor": "meeting-baas",
+    "page": "dashboard",
+    "score": 0,
+    "reason": "Priority: /dashboard/",
+    "selectionReason": "Priority: /dashboard/"
+  },
+  {
+    "url": "https://meetingbaas.com/profile",
+    "competitor": "meeting-baas",
+    "page": "profile",
+    "score": 0,
+    "reason": "Priority: /profile/",
+    "selectionReason": "Priority: /profile/"
+  },
+  {
+    "url": "https://meetingbaas.com/projects",
+    "competitor": "meeting-baas",
+    "page": "projects",
+    "score": 0,
+    "reason": "Priority: /projects/",
+    "selectionReason": "Priority: /projects/"
+  },
+  {
+    "url": "https://meetingbaas.com/settings",
+    "competitor": "meeting-baas",
+    "page": "settings",
+    "score": 0,
+    "reason": "Priority: /settings/",
+    "selectionReason": "Priority: /settings/"
+  },
+  {
+    "url": "https://meetingbaas.com/settings/billing",
+    "competitor": "meeting-baas",
+    "page": "billing",
+    "score": 0,
+    "reason": "Priority: /settings/",
+    "selectionReason": "Priority: /settings/"
+  },
+  {
+    "url": "https://meetingbaas.com/settings/profile",
+    "competitor": "meeting-baas",
+    "page": "profile",
+    "score": 0,
+    "reason": "Priority: /settings/",
+    "selectionReason": "Priority: /settings/"
+  },
+  {
+    "url": "https://meetingbaas.com/settings/team",
+    "competitor": "meeting-baas",
+    "page": "team",
+    "score": 0,
+    "reason": "Priority: /settings/",
+    "selectionReason": "Priority: /settings/"
+  },
+  {
+    "url": "https://meetingbaas.com/settings/workspace",
+    "competitor": "meeting-baas",
+    "page": "workspace",
+    "score": 0,
+    "reason": "Priority: /settings/",
+    "selectionReason": "Priority: /settings/"
+  }
+]
