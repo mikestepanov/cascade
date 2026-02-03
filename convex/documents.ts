@@ -66,6 +66,26 @@ export const create = authenticatedMutation({
       throw forbidden(undefined, "You are not a member of this organization");
     }
 
+    if (args.projectId) {
+      const project = await ctx.db.get(args.projectId);
+      if (!project) {
+        throw notFound("project", args.projectId);
+      }
+      if (project.organizationId !== args.organizationId) {
+        throw forbidden(undefined, "Project does not belong to this organization");
+      }
+    }
+
+    if (args.workspaceId) {
+      const workspace = await ctx.db.get(args.workspaceId);
+      if (!workspace) {
+        throw notFound("workspace", args.workspaceId);
+      }
+      if (workspace.organizationId !== args.organizationId) {
+        throw forbidden(undefined, "Workspace does not belong to this organization");
+      }
+    }
+
     const now = Date.now();
     return await ctx.db.insert("documents", {
       title: args.title,
