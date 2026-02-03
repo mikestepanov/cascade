@@ -1,0 +1,244 @@
+[
+  {
+    "url": "https://monday.com/p/press-release/monday-com-announces-full-release-of-monday-service-its-ai-enterprise-service-management-platform/",
+    "competitor": "monday",
+    "page": "monday-com-announces-full-release-of-monday-service-its-ai-enterprise-service-management-platform",
+    "score": 2,
+    "selectionReason": "High Score (Top 20)"
+  },
+  {
+    "url": "https://monday.com/crm/campaigns/pricing",
+    "competitor": "monday",
+    "page": "pricing",
+    "score": 1,
+    "selectionReason": "Critical Page"
+  },
+  {
+    "url": "https://monday.com/crm/features",
+    "competitor": "monday",
+    "page": "features",
+    "score": 1,
+    "selectionReason": "Critical Page"
+  },
+  {
+    "url": "https://monday.com/crm/pricing",
+    "competitor": "monday",
+    "page": "pricing",
+    "score": 1,
+    "selectionReason": "Critical Page"
+  },
+  {
+    "url": "https://monday.com/dev/features",
+    "competitor": "monday",
+    "page": "features",
+    "score": 1,
+    "selectionReason": "Critical Page"
+  },
+  {
+    "url": "https://monday.com/dev/pricing",
+    "competitor": "monday",
+    "page": "pricing",
+    "score": 1,
+    "selectionReason": "Critical Page"
+  },
+  {
+    "url": "https://monday.com/developers/apps-docviewer",
+    "competitor": "monday",
+    "page": "apps-docviewer",
+    "score": 1,
+    "reason": "Priority: /app/",
+    "selectionReason": "Priority: /app/"
+  },
+  {
+    "url": "https://monday.com/efficiencyimpact/use-case/centralize-product-roadmapping",
+    "competitor": "monday",
+    "page": "centralize-product-roadmapping",
+    "score": 1,
+    "reason": "Priority: /app/",
+    "selectionReason": "Priority: /app/"
+  },
+  {
+    "url": "https://monday.com/elevate/location/london/pricing/",
+    "competitor": "monday",
+    "page": "pricing",
+    "score": 1,
+    "selectionReason": "Critical Page"
+  },
+  {
+    "url": "https://monday.com/elevate/location/nyc/pricing/",
+    "competitor": "monday",
+    "page": "pricing",
+    "score": 1,
+    "selectionReason": "Critical Page"
+  },
+  {
+    "url": "https://monday.com/elevate/pricing/",
+    "competitor": "monday",
+    "page": "pricing",
+    "score": 1,
+    "selectionReason": "Critical Page"
+  },
+  {
+    "url": "https://monday.com/features/dashboards",
+    "competitor": "monday",
+    "page": "dashboards",
+    "score": 1,
+    "reason": "Priority: /dashboard/",
+    "selectionReason": "Priority: /dashboard/"
+  },
+  {
+    "url": "https://monday.com/integrations/asana",
+    "competitor": "monday",
+    "page": "asana",
+    "score": 1,
+    "selectionReason": "Sample: INTEGRATIONS"
+  },
+  {
+    "url": "https://monday.com/integrations/github",
+    "competitor": "monday",
+    "page": "github",
+    "score": 1,
+    "selectionReason": "Sample: INTEGRATIONS"
+  },
+  {
+    "url": "https://monday.com/integrations/gmail",
+    "competitor": "monday",
+    "page": "gmail",
+    "score": 1,
+    "selectionReason": "Sample: INTEGRATIONS"
+  },
+  {
+    "url": "https://monday.com/integrations/jira",
+    "competitor": "monday",
+    "page": "jira",
+    "score": 1,
+    "selectionReason": "Sample: INTEGRATIONS"
+  },
+  {
+    "url": "https://monday.com/integrations/mailchimp",
+    "competitor": "monday",
+    "page": "mailchimp",
+    "score": 1,
+    "selectionReason": "Sample: INTEGRATIONS"
+  },
+  {
+    "url": "https://monday.com/nonprofits/features",
+    "competitor": "monday",
+    "page": "features",
+    "score": 1,
+    "selectionReason": "Critical Page"
+  },
+  {
+    "url": "https://monday.com/p/about/",
+    "competitor": "monday",
+    "page": "about",
+    "score": 1,
+    "selectionReason": "Critical Page"
+  },
+  {
+    "url": "https://monday.com/pricing",
+    "competitor": "monday",
+    "page": "pricing",
+    "score": 1,
+    "selectionReason": "Critical Page"
+  },
+  {
+    "url": "https://monday.com/projects/features",
+    "competitor": "monday",
+    "page": "features",
+    "score": 1,
+    "selectionReason": "Critical Page"
+  },
+  {
+    "url": "https://monday.com/service/pricing",
+    "competitor": "monday",
+    "page": "pricing",
+    "score": 1,
+    "selectionReason": "Critical Page"
+  },
+  {
+    "url": "https://monday.com/work-management/pricing",
+    "competitor": "monday",
+    "page": "pricing",
+    "score": 1,
+    "selectionReason": "Critical Page"
+  },
+  {
+    "url": "https://ir.monday.com/corporate-governance/management-team/default.aspx",
+    "competitor": "monday",
+    "page": "default.aspx",
+    "score": 0,
+    "reason": "Priority: /team/",
+    "selectionReason": "Priority: /team/"
+  },
+  {
+    "url": "https://monday.com/app-marketplace",
+    "competitor": "monday",
+    "page": "app-marketplace",
+    "score": 0,
+    "reason": "Priority: /app/",
+    "selectionReason": "Priority: /app/"
+  },
+  {
+    "url": "https://monday.com/appdeveloper",
+    "competitor": "monday",
+    "page": "appdeveloper",
+    "score": 0,
+    "reason": "Priority: /app/",
+    "selectionReason": "Priority: /app/"
+  },
+  {
+    "url": "https://monday.com/appdeveloper/appideas",
+    "competitor": "monday",
+    "page": "appideas",
+    "score": 0,
+    "reason": "Priority: /app/",
+    "selectionReason": "Priority: /app/"
+  },
+  {
+    "url": "https://monday.com/appdeveloper/components",
+    "competitor": "monday",
+    "page": "components",
+    "score": 0,
+    "reason": "Priority: /app/",
+    "selectionReason": "Priority: /app/"
+  },
+  {
+    "url": "https://monday.com/appdeveloper/monetization",
+    "competitor": "monday",
+    "page": "monetization",
+    "score": 0,
+    "reason": "Priority: /app/",
+    "selectionReason": "Priority: /app/"
+  },
+  {
+    "url": "https://monday.com/appdeveloper/resources",
+    "competitor": "monday",
+    "page": "resources",
+    "score": 0,
+    "reason": "Priority: /app/",
+    "selectionReason": "Priority: /app/"
+  },
+  {
+    "url": "https://developer.monday.com/apps/docs/intro",
+    "competitor": "monday",
+    "page": "intro",
+    "score": 1,
+    "reason": "Priority: /app/",
+    "selectionReason": "Priority: /app/"
+  },
+  {
+    "url": "https://monday.com/p/news/",
+    "competitor": "monday",
+    "page": "news",
+    "score": 0,
+    "selectionReason": "Sample: BLOG"
+  },
+  {
+    "url": "https://monday.com/p/news/press-kit/",
+    "competitor": "monday",
+    "page": "press-kit",
+    "score": 0,
+    "selectionReason": "Sample: BLOG"
+  }
+]

@@ -1,0 +1,188 @@
+[
+  {
+    "url": "https://www.recall.ai/product/calendar-integration-api",
+    "competitor": "recall-ai",
+    "page": "calendar-integration-api",
+    "score": 2,
+    "selectionReason": "High Score (Top 20)"
+  },
+  {
+    "url": "https://www.recall.ai/product/google-meet-recording-api",
+    "competitor": "recall-ai",
+    "page": "google-meet-recording-api",
+    "score": 2,
+    "selectionReason": "High Score (Top 20)"
+  },
+  {
+    "url": "https://www.recall.ai/product/google-meet-transcription-api",
+    "competitor": "recall-ai",
+    "page": "google-meet-transcription-api",
+    "score": 2,
+    "selectionReason": "High Score (Top 20)"
+  },
+  {
+    "url": "https://www.recall.ai/product/meeting-bot-api",
+    "competitor": "recall-ai",
+    "page": "meeting-bot-api",
+    "score": 2,
+    "selectionReason": "High Score (Top 20)"
+  },
+  {
+    "url": "https://www.recall.ai/product/meeting-bot-api/google-meet",
+    "competitor": "recall-ai",
+    "page": "google-meet",
+    "score": 2,
+    "selectionReason": "High Score (Top 20)"
+  },
+  {
+    "url": "https://www.recall.ai/product/meeting-bot-api/microsoft-teams",
+    "competitor": "recall-ai",
+    "page": "microsoft-teams",
+    "score": 2,
+    "reason": "Priority: /team/",
+    "selectionReason": "Priority: /team/"
+  },
+  {
+    "url": "https://www.recall.ai/product/meeting-bot-api/slack-huddles-api",
+    "competitor": "recall-ai",
+    "page": "slack-huddles-api",
+    "score": 2,
+    "selectionReason": "High Score (Top 20)"
+  },
+  {
+    "url": "https://www.recall.ai/product/meeting-bot-api/zoom",
+    "competitor": "recall-ai",
+    "page": "zoom",
+    "score": 2,
+    "selectionReason": "High Score (Top 20)"
+  },
+  {
+    "url": "https://www.recall.ai/product/meeting-recording-api",
+    "competitor": "recall-ai",
+    "page": "meeting-recording-api",
+    "score": 2,
+    "selectionReason": "High Score (Top 20)"
+  },
+  {
+    "url": "https://www.recall.ai/product/meeting-transcription-api",
+    "competitor": "recall-ai",
+    "page": "meeting-transcription-api",
+    "score": 2,
+    "selectionReason": "High Score (Top 20)"
+  },
+  {
+    "url": "https://www.recall.ai/product/microsoft-teams-recording-api",
+    "competitor": "recall-ai",
+    "page": "microsoft-teams-recording-api",
+    "score": 2,
+    "reason": "Priority: /team/",
+    "selectionReason": "Priority: /team/"
+  },
+  {
+    "url": "https://www.recall.ai/product/microsoft-teams-transcription-api",
+    "competitor": "recall-ai",
+    "page": "microsoft-teams-transcription-api",
+    "score": 2,
+    "reason": "Priority: /team/",
+    "selectionReason": "Priority: /team/"
+  },
+  {
+    "url": "https://www.recall.ai/product/notetaker-api",
+    "competitor": "recall-ai",
+    "page": "notetaker-api",
+    "score": 2,
+    "selectionReason": "High Score (Top 20)"
+  },
+  {
+    "url": "https://www.recall.ai/product/speaker-diarization-api",
+    "competitor": "recall-ai",
+    "page": "speaker-diarization-api",
+    "score": 2,
+    "selectionReason": "High Score (Top 20)"
+  },
+  {
+    "url": "https://www.recall.ai/product/zoom-recording-api",
+    "competitor": "recall-ai",
+    "page": "zoom-recording-api",
+    "score": 2,
+    "selectionReason": "High Score (Top 20)"
+  },
+  {
+    "url": "https://www.recall.ai/product/zoom-transcription-api",
+    "competitor": "recall-ai",
+    "page": "zoom-transcription-api",
+    "score": 2,
+    "selectionReason": "High Score (Top 20)"
+  },
+  {
+    "url": "https://www.recall.ai/pricing",
+    "competitor": "recall-ai",
+    "page": "pricing",
+    "score": 1,
+    "selectionReason": "Critical Page"
+  },
+  {
+    "url": "https://www.recall.ai/login",
+    "competitor": "recall-ai",
+    "page": "login",
+    "score": 0,
+    "selectionReason": "Critical Page"
+  },
+  {
+    "url": "https://www.recall.ai/privacy",
+    "competitor": "recall-ai",
+    "page": "privacy",
+    "score": 0,
+    "selectionReason": "Sample: LEGAL"
+  },
+  {
+    "url": "https://www.recall.ai/privacy/cookie-policy",
+    "competitor": "recall-ai",
+    "page": "cookie-policy",
+    "score": 0,
+    "selectionReason": "Sample: LEGAL"
+  },
+  {
+    "url": "https://www.recall.ai/signup",
+    "competitor": "recall-ai",
+    "page": "signup",
+    "score": 0,
+    "selectionReason": "Critical Page"
+  },
+  {
+    "url": "https://www.recall.ai/blog/7-apis-to-get-zoom-transcripts-a-comprehensive-guide",
+    "competitor": "recall-ai",
+    "page": "7-apis-to-get-zoom-transcripts-a-comprehensive-guide",
+    "score": 2,
+    "selectionReason": "High Score (Top 20)"
+  },
+  {
+    "url": "https://www.recall.ai/blog/accessing-real-time-transcription-api",
+    "competitor": "recall-ai",
+    "page": "accessing-real-time-transcription-api",
+    "score": 2,
+    "selectionReason": "High Score (Top 20)"
+  },
+  {
+    "url": "https://www.recall.ai/blog/applying-account-level-settings-to-meetings-created-via-the-zoom-api",
+    "competitor": "recall-ai",
+    "page": "applying-account-level-settings-to-meetings-created-via-the-zoom-api",
+    "score": 2,
+    "reason": "Priority: /app/",
+    "selectionReason": "Priority: /app/"
+  },
+  {
+    "url": "https://www.recall.ai/blog/dockerfile-centric-development",
+    "competitor": "recall-ai",
+    "page": "dockerfile-centric-development",
+    "score": 2,
+    "selectionReason": "High Score (Top 20)"
+  },
+  {
+    "url": "https://www.recall.ai/blog/get-recordings-and-transcripts-from-slack-huddles-api",
+    "competitor": "recall-ai",
+    "page": "get-recordings-and-transcripts-from-slack-huddles-api",
+    "score": 2,
+    "selectionReason": "High Score (Top 20)"
+  }
+]

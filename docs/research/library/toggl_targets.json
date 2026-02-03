@@ -1,0 +1,191 @@
+[
+  {
+    "url": "https://toggl.com/about/",
+    "competitor": "toggl",
+    "page": "about",
+    "score": 1,
+    "selectionReason": "Critical Page"
+  },
+  {
+    "url": "https://toggl.com/focus/pricing/",
+    "competitor": "toggl",
+    "page": "pricing",
+    "score": 1,
+    "selectionReason": "Critical Page"
+  },
+  {
+    "url": "https://toggl.com/jobs/toggl-head-of-product/",
+    "competitor": "toggl",
+    "page": "toggl-head-of-product",
+    "score": 1,
+    "selectionReason": "Sample: CAREERS"
+  },
+  {
+    "url": "https://toggl.com/jobs/toggl-product-marketing-manager/",
+    "competitor": "toggl",
+    "page": "toggl-product-marketing-manager",
+    "score": 1,
+    "selectionReason": "Sample: CAREERS"
+  },
+  {
+    "url": "https://toggl.com/legal/security/",
+    "competitor": "toggl",
+    "page": "security",
+    "score": 1,
+    "selectionReason": "Sample: LEGAL"
+  },
+  {
+    "url": "https://toggl.com/track/features/",
+    "competitor": "toggl",
+    "page": "features",
+    "score": 1,
+    "selectionReason": "Critical Page"
+  },
+  {
+    "url": "https://toggl.com/track/integrations/",
+    "competitor": "toggl",
+    "page": "integrations",
+    "score": 1,
+    "selectionReason": "Sample: INTEGRATIONS"
+  },
+  {
+    "url": "https://toggl.com/track/pricing/",
+    "competitor": "toggl",
+    "page": "pricing",
+    "score": 1,
+    "selectionReason": "Critical Page"
+  },
+  {
+    "url": "https://toggl.com/focus/task-management-mobile-app/",
+    "competitor": "toggl",
+    "page": "task-management-mobile-app",
+    "score": 0,
+    "reason": "Priority: /app/",
+    "selectionReason": "Priority: /app/"
+  },
+  {
+    "url": "https://toggl.com/focus/toggl-focus-desktop-app/",
+    "competitor": "toggl",
+    "page": "toggl-focus-desktop-app",
+    "score": 0,
+    "reason": "Priority: /app/",
+    "selectionReason": "Priority: /app/"
+  },
+  {
+    "url": "https://toggl.com/legal/affiliate/",
+    "competitor": "toggl",
+    "page": "affiliate",
+    "score": 0,
+    "selectionReason": "Sample: LEGAL"
+  },
+  {
+    "url": "https://toggl.com/out-of-office-building-a-team/",
+    "competitor": "toggl",
+    "page": "out-of-office-building-a-team",
+    "score": 0,
+    "reason": "Priority: /team/",
+    "selectionReason": "Priority: /team/"
+  },
+  {
+    "url": "https://toggl.com/out-of-office-growing-remote-teams/",
+    "competitor": "toggl",
+    "page": "out-of-office-growing-remote-teams",
+    "score": 0,
+    "reason": "Priority: /team/",
+    "selectionReason": "Priority: /team/"
+  },
+  {
+    "url": "https://toggl.com/out-of-office-hiring-remote-team/",
+    "competitor": "toggl",
+    "page": "out-of-office-hiring-remote-team",
+    "score": 0,
+    "reason": "Priority: /team/",
+    "selectionReason": "Priority: /team/"
+  },
+  {
+    "url": "https://toggl.com/out-of-office-leading-a-remote-team/",
+    "competitor": "toggl",
+    "page": "out-of-office-leading-a-remote-team",
+    "score": 0,
+    "reason": "Priority: /team/",
+    "selectionReason": "Priority: /team/"
+  },
+  {
+    "url": "https://toggl.com/timesheets-magazine-berlin/6th-finger-human-side-teamwork/",
+    "competitor": "toggl",
+    "page": "6th-finger-human-side-teamwork",
+    "score": 0,
+    "reason": "Priority: /team/",
+    "selectionReason": "Priority: /team/"
+  },
+  {
+    "url": "https://toggl.com/track/clockify-alternative-teams/",
+    "competitor": "toggl",
+    "page": "clockify-alternative-teams",
+    "score": 0,
+    "reason": "Priority: /team/",
+    "selectionReason": "Priority: /team/"
+  },
+  {
+    "url": "https://toggl.com/track/employee-time-tracking-teams/",
+    "competitor": "toggl",
+    "page": "employee-time-tracking-teams",
+    "score": 0,
+    "reason": "Priority: /team/",
+    "selectionReason": "Priority: /team/"
+  },
+  {
+    "url": "https://toggl.com/track/harvest-alternative-teams/",
+    "competitor": "toggl",
+    "page": "harvest-alternative-teams",
+    "score": 0,
+    "reason": "Priority: /team/",
+    "selectionReason": "Priority: /team/"
+  },
+  {
+    "url": "https://toggl.com/track/hubstaff-alternative-teams/",
+    "competitor": "toggl",
+    "page": "hubstaff-alternative-teams",
+    "score": 0,
+    "reason": "Priority: /team/",
+    "selectionReason": "Priority: /team/"
+  },
+  {
+    "url": "https://toggl.com/track/kickstart-team-time-tracking/",
+    "competitor": "toggl",
+    "page": "kickstart-team-time-tracking",
+    "score": 0,
+    "reason": "Priority: /team/",
+    "selectionReason": "Priority: /team/"
+  },
+  {
+    "url": "https://toggl.com/track/login/",
+    "competitor": "toggl",
+    "page": "login",
+    "score": 0,
+    "selectionReason": "Critical Page"
+  },
+  {
+    "url": "https://toggl.com/track/mobile-time-tracking-app/",
+    "competitor": "toggl",
+    "page": "mobile-time-tracking-app",
+    "score": 0,
+    "reason": "Priority: /app/",
+    "selectionReason": "Priority: /app/"
+  },
+  {
+    "url": "https://toggl.com/track/project-time-tracking-teams/",
+    "competitor": "toggl",
+    "page": "project-time-tracking-teams",
+    "score": 0,
+    "reason": "Priority: /team/",
+    "selectionReason": "Priority: /team/"
+  },
+  {
+    "url": "https://toggl.com/track/signup/",
+    "competitor": "toggl",
+    "page": "signup",
+    "score": 0,
+    "selectionReason": "Critical Page"
+  }
+]

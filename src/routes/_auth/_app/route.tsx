@@ -99,28 +99,32 @@ function InitializeOrganization() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    const handleInitResult = (result: { slug?: string }) => {
+      // Navigate to the new organization's dashboard
+      if (result.slug) {
+        // Safety check: ensure we don't attempt to navigate to a reserved-word slug
+        if (isReservedSlug(result.slug)) {
+          throw new Error(`Server returned reserved slug "${result.slug}"`);
+        }
+
+        navigate({
+          to: ROUTES.dashboard.path,
+          params: { orgSlug: result.slug },
+          replace: true,
+        });
+      } else {
+        // Fallback: reload to trigger organization query refresh
+        window.location.reload();
+      }
+    };
+
     const init = async () => {
       // Use ref to prevent duplicate initialization calls (survives re-renders)
       if (initRef.current) return;
       initRef.current = true;
       try {
         const result = await initializeDefaultOrganization({});
-        // Navigate to the new organization's dashboard
-        if (result.slug) {
-          // Safety check: ensure we don't attempt to navigate to a reserved-word slug
-          if (isReservedSlug(result.slug)) {
-            throw new Error(`Server returned reserved slug "${result.slug}"`);
-          }
-
-          navigate({
-            to: ROUTES.dashboard.path,
-            params: { orgSlug: result.slug },
-            replace: true,
-          });
-        } else {
-          // Fallback: reload to trigger organization query refresh
-          window.location.reload();
-        }
+        handleInitResult(result);
       } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to create organization");
         initRef.current = false; // Allow retry on error

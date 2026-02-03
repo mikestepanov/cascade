@@ -1,5 +1,5 @@
 import { cva, type VariantProps } from "class-variance-authority";
-import type * as React from "react";
+import * as React from "react";
 import { cn } from "@/lib/utils";
 
 const typographyVariants = cva("text-ui-text", {
@@ -49,13 +49,20 @@ export interface TypographyProps
   as?: React.ElementType;
 }
 
-export function Typography({ className, variant, color, size, as, ...props }: TypographyProps) {
-  const Component = as || mapVariantToTag(variant);
+export const Typography = React.forwardRef<HTMLElement, TypographyProps>(
+  ({ className, variant, color, size, as, ...props }, ref) => {
+    const Component = as || mapVariantToTag(variant);
 
-  return (
-    <Component className={cn(typographyVariants({ variant, color, size, className }))} {...props} />
-  );
-}
+    return (
+      <Component
+        ref={ref}
+        className={cn(typographyVariants({ variant, color, size, className }))}
+        {...props}
+      />
+    );
+  },
+);
+Typography.displayName = "Typography";
 
 function mapVariantToTag(variant: TypographyProps["variant"]): React.ElementType {
   switch (variant) {

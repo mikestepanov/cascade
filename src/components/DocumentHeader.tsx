@@ -1,6 +1,7 @@
 import type { Doc } from "@convex/_generated/dataModel";
 import { useState } from "react";
 import { Flex } from "@/components/ui/Flex";
+import { Tooltip } from "@/components/ui/Tooltip";
 import { Typography } from "@/components/ui/Typography";
 import { History } from "@/lib/icons";
 import { cn } from "@/lib/utils";
@@ -57,6 +58,28 @@ export function DocumentHeader({
     }
   };
 
+  const titleComponent = (
+    <Typography
+      variant="h1"
+      role={document.isOwner ? "button" : undefined}
+      tabIndex={document.isOwner ? 0 : undefined}
+      className="text-xl sm:text-2xl font-bold text-ui-text cursor-pointer hover:bg-ui-bg-secondary rounded px-2 py-1 transition-colors"
+      onClick={document.isOwner ? handleTitleEdit : undefined}
+      onKeyDown={
+        document.isOwner
+          ? (e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                handleTitleEdit();
+              }
+            }
+          : undefined
+      }
+    >
+      {document.title}
+    </Typography>
+  );
+
   return (
     <div className="border-b border-ui-border p-3 sm:p-6">
       <Flex
@@ -76,27 +99,10 @@ export function DocumentHeader({
               onKeyDown={handleTitleKeyDown}
               className="text-xl sm:text-2xl font-bold bg-transparent border-none outline-none focus:ring-2 focus:ring-brand-ring rounded px-2 py-1 text-ui-text"
             />
+          ) : document.isOwner ? (
+            <Tooltip content="Click to edit title">{titleComponent}</Tooltip>
           ) : (
-            <Typography
-              variant="h1"
-              role={document.isOwner ? "button" : undefined}
-              tabIndex={document.isOwner ? 0 : undefined}
-              className="text-xl sm:text-2xl font-bold text-ui-text cursor-pointer hover:bg-ui-bg-secondary rounded px-2 py-1 transition-colors"
-              onClick={document.isOwner ? handleTitleEdit : undefined}
-              onKeyDown={
-                document.isOwner
-                  ? (e) => {
-                      if (e.key === "Enter" || e.key === " ") {
-                        e.preventDefault();
-                        handleTitleEdit();
-                      }
-                    }
-                  : undefined
-              }
-              title={document.isOwner ? "Click to edit title" : ""}
-            >
-              {document.title}
-            </Typography>
+            titleComponent
           )}
         </div>
 
@@ -104,82 +110,85 @@ export function DocumentHeader({
           <PresenceIndicator roomId={document._id} userId={userId} />
 
           {/* Version History */}
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={onShowVersionHistory}
-            className="px-2 sm:px-3 py-1 bg-ui-bg-tertiary text-ui-text hover:bg-ui-bg-secondary min-h-0"
-            title="View version history"
-            aria-label="Version history"
-          >
-            <Flex align="center" gap="xs" className="sm:gap-1">
-              <History className="w-3 h-3 sm:w-4 sm:h-4" aria-hidden="true" />
-              <span className="hidden sm:inline">History</span>
-              {versionCount !== undefined && versionCount > 0 && (
-                <span className="ml-0.5 sm:ml-1 px-1 sm:px-1.5 py-0.5 text-xs bg-ui-bg-tertiary rounded">
-                  {versionCount}
-                </span>
-              )}
-            </Flex>
-          </Button>
+          <Tooltip content="View version history">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onShowVersionHistory}
+              className="px-2 sm:px-3 py-1 bg-ui-bg-tertiary text-ui-text hover:bg-ui-bg-secondary min-h-0"
+              aria-label="Version history"
+            >
+              <span className="inline-flex items-center gap-0.5 sm:gap-1">
+                <History className="w-3 h-3 sm:w-4 sm:h-4" aria-hidden="true" />
+                <span className="hidden sm:inline">History</span>
+                {versionCount !== undefined && versionCount > 0 && (
+                  <span className="ml-0.5 sm:ml-1 px-1 sm:px-1.5 py-0.5 text-xs bg-ui-bg-tertiary rounded">
+                    {versionCount}
+                  </span>
+                )}
+              </span>
+            </Button>
+          </Tooltip>
 
           {/* Import Markdown */}
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => void onImportMarkdown()}
-            disabled={!editorReady}
-            className="px-2 sm:px-3 py-1 bg-brand-indigo-track text-brand-indigo-text hover:opacity-80 min-h-0"
-            title="Import from Markdown file"
-            aria-label="Import from Markdown"
-          >
-            <Flex align="center" gap="xs" className="sm:gap-1">
-              <svg
-                aria-hidden="true"
-                className="w-3 h-3 sm:w-4 sm:h-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
-                />
-              </svg>
-              <span className="hidden sm:inline">Import MD</span>
-            </Flex>
-          </Button>
+          <Tooltip content="Import from Markdown file">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => void onImportMarkdown()}
+              disabled={!editorReady}
+              className="px-2 sm:px-3 py-1 bg-brand-indigo-track text-brand-indigo-text hover:opacity-80 min-h-0"
+              aria-label="Import from Markdown"
+            >
+              <span className="inline-flex items-center gap-0.5 sm:gap-1">
+                <svg
+                  aria-hidden="true"
+                  className="w-3 h-3 sm:w-4 sm:h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                  />
+                </svg>
+                <span className="hidden sm:inline">Import MD</span>
+              </span>
+            </Button>
+          </Tooltip>
 
           {/* Export Markdown */}
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => void onExportMarkdown()}
-            disabled={!editorReady}
-            className="px-2 sm:px-3 py-1 bg-brand-cyan-track text-brand-cyan-text hover:opacity-80 min-h-0"
-            title="Export as Markdown file"
-            aria-label="Export as Markdown"
-          >
-            <Flex align="center" gap="xs" className="sm:gap-1">
-              <svg
-                aria-hidden="true"
-                className="w-3 h-3 sm:w-4 sm:h-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"
-                />
-              </svg>
-              <span className="hidden sm:inline">Export MD</span>
-            </Flex>
-          </Button>
+          <Tooltip content="Export as Markdown file">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => void onExportMarkdown()}
+              disabled={!editorReady}
+              className="px-2 sm:px-3 py-1 bg-brand-cyan-track text-brand-cyan-text hover:opacity-80 min-h-0"
+              aria-label="Export as Markdown"
+            >
+              <span className="inline-flex items-center gap-0.5 sm:gap-1">
+                <svg
+                  aria-hidden="true"
+                  className="w-3 h-3 sm:w-4 sm:h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"
+                  />
+                </svg>
+                <span className="hidden sm:inline">Export MD</span>
+              </span>
+            </Button>
+          </Tooltip>
 
           {document.isOwner && (
             <Button
