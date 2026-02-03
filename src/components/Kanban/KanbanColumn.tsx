@@ -6,6 +6,7 @@ import { Flex } from "@/components/ui/Flex";
 import { Tooltip } from "@/components/ui/Tooltip";
 import { Typography } from "@/components/ui/Typography";
 import { ANIMATION } from "@/lib/constants";
+import type { IssuePriority, IssueType } from "@/lib/issue-utils";
 import { getWorkflowCategoryColor } from "@/lib/issue-utils";
 import { cn } from "@/lib/utils";
 import type { LabelInfo } from "../../../convex/lib/issueHelpers";
@@ -19,8 +20,8 @@ interface Issue {
   title: string;
   key: string;
   status: string;
-  priority: "lowest" | "low" | "medium" | "high" | "highest";
-  type: "task" | "bug" | "story" | "epic" | "subtask";
+  priority: IssuePriority;
+  type: IssueType;
   order: number;
   assignee?: {
     _id: Id<"users">;

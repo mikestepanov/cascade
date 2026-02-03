@@ -37,7 +37,7 @@ export const create = projectEditorMutation({
     const labelsInGroup = await ctx.db
       .query("labels")
       .withIndex("by_group", (q) => q.eq("groupId", args.groupId))
-      .collect();
+      .take(BOUNDED_LIST_LIMIT);
     const maxOrder = labelsInGroup.reduce((max, l) => Math.max(max, l.displayOrder ?? 0), 0);
 
     const labelId = await ctx.db.insert("labels", {

@@ -298,7 +298,7 @@ export function LabelsManager({ projectId }: LabelsManagerProps) {
                         >
                           Add
                         </Button>
-                        {!isUngrouped && (
+                        {!isUngrouped && group._id && (
                           <>
                             <Button
                               variant="ghost"
@@ -311,7 +311,7 @@ export function LabelsManager({ projectId }: LabelsManagerProps) {
                             <Button
                               variant="ghost"
                               size="sm"
-                              onClick={() => groupDeleteConfirm.confirmDelete(group._id!)}
+                              onClick={() => groupDeleteConfirm.confirmDelete(group._id)}
                               leftIcon={<Trash className="w-3 h-3" />}
                             >
                               Delete

@@ -29,7 +29,7 @@ export const create = projectEditorMutation({
     const groups = await ctx.db
       .query("labelGroups")
       .withIndex("by_project", (q) => q.eq("projectId", ctx.projectId))
-      .collect();
+      .take(BOUNDED_LIST_LIMIT);
     const maxOrder = groups.reduce((max, g) => Math.max(max, g.displayOrder), 0);
 
     const groupId = await ctx.db.insert("labelGroups", {
@@ -71,7 +71,7 @@ export const list = projectQuery({
       if (!labelsByGroup.has(key)) {
         labelsByGroup.set(key, []);
       }
-      labelsByGroup.get(key)!.push(label);
+      labelsByGroup.get(key)?.push(label);
     }
 
     // Sort labels within each group by displayOrder
@@ -161,7 +161,7 @@ export const remove = authenticatedMutation({
     const labelsInGroup = await ctx.db
       .query("labels")
       .withIndex("by_group", (q) => q.eq("groupId", args.id))
-      .collect();
+      .take(BOUNDED_LIST_LIMIT);
 
     await Promise.all(
       labelsInGroup.map((label) => ctx.db.patch(label._id, { groupId: undefined })),
@@ -228,7 +228,7 @@ export const moveLabel = projectEditorMutation({
     const labelsInTargetGroup = await ctx.db
       .query("labels")
       .withIndex("by_group", (q) => q.eq("groupId", args.groupId))
-      .collect();
+      .take(BOUNDED_LIST_LIMIT);
     const maxOrder = labelsInTargetGroup.reduce((max, l) => Math.max(max, l.displayOrder ?? 0), 0);
 
     await ctx.db.patch(args.labelId, {
