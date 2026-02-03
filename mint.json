@@ -1,0 +1,58 @@
+{
+  "$schema": "https://mintlify.com/schema.json",
+  "name": "Cascade",
+  "logo": {
+    "light": "/logo/light.svg",
+    "dark": "/logo/dark.svg"
+  },
+  "favicon": "/favicon.png",
+  "colors": {
+    "primary": "#0D9488",
+    "light": "#2DD4BF",
+    "dark": "#115E59",
+    "anchors": "#0F766E"
+  },
+  "topbarLinks": [
+    {
+      "name": "Support",
+      "url": "mailto:support@cascade.app"
+    }
+  ],
+  "topbarCtaButton": {
+    "name": "Sign In",
+    "url": "https://app.cascade.app"
+  },
+  "anchors": [
+    {
+      "name": "API Reference",
+      "icon": "book-open-cover",
+      "url": "api-reference"
+    },
+    {
+      "name": "Community",
+      "icon": "discord",
+      "url": "https://discord.gg/cascade"
+    }
+  ],
+  "navigation": [
+    {
+      "group": "Get Started",
+      "pages": [
+        "introduction",
+        "quickstart"
+      ]
+    },
+    {
+      "group": "Essentials",
+      "pages": [
+        "architecture",
+        "authentication"
+      ]
+    }
+  ],
+  "footerSocials": {
+    "x": "https://x.com/cascade_app",
+    "github": "https://github.com/cascade-app",
+    "linkedin": "https://www.linkedin.com/company/cascade-app"
+  }
+}
