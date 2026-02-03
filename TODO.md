@@ -43,6 +43,7 @@
 ## Tech Debt
 
 - [ ] Type consistency - Ensure all TypeScript types (IssueType, IssuePriority) are imported from canonical sources, not duplicated
+- [ ] Docstring coverage - Currently 32.5%, CodeRabbit threshold is 80% (convex/ functions need JSDoc)
 
 ---
 
