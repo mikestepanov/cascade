@@ -30,7 +30,7 @@ const COMPETITORS = [
 ];
 
 async function runCrawl(competitor) {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve, _reject) => {
     console.log(`\n🌊 Starting batch crawl for ${competitor.id}...`);
 
     // Using the same node process to run the script
@@ -70,7 +70,7 @@ async function main() {
   }
 
   const duration = ((Date.now() - start) / 1000 / 60).toFixed(1);
-  console.log("\n" + "=".repeat(60));
+  console.log(`\n${"=".repeat(60)}`);
   console.log(`✅ ALL CRAWLS COMPLETE in ${duration} minutes.`);
 }
 

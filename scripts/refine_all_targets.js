@@ -1,4 +1,3 @@
-// biome-ignore lint/suspicious/noConsoleLog: scripts need output
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -40,13 +39,13 @@ function isOldHarvestBlog(url) {
 function processFile(filePath) {
   const filename = path.basename(filePath);
   const competitor = filename.replace("_targets.json", "");
-  
+
   if (!fs.existsSync(filePath)) return;
 
   let targets = [];
   try {
     targets = JSON.parse(fs.readFileSync(filePath, "utf-8"));
-  } catch (e) {
+  } catch (_e) {
     console.error(`❌ Failed to parse ${filename}`);
     return;
   }
@@ -55,12 +54,12 @@ function processFile(filePath) {
   console.log(`\nProcessing ${competitor} (${initialCount} pages)...`);
 
   // 1. Basic Filter
-  let filtered = targets.filter(t => {
+  const filtered = targets.filter((t) => {
     const url = t.url.toLowerCase();
-    
+
     if (isLocalized(url)) return false;
     if (isIrrelevant(url)) return false;
-    
+
     if (competitor === "harvest" && isOldHarvestBlog(url)) return false;
 
     return true;
@@ -70,13 +69,19 @@ function processFile(filePath) {
   const categories = {
     docs: [],
     blog: [],
-    marketing: []
+    marketing: [],
   };
 
-  filtered.forEach(t => {
+  filtered.forEach((t) => {
     const url = t.url.toLowerCase();
     // Broad categorization
-    if (url.includes("/documentation/") || url.includes("/docs/") || url.includes("/guides/") || url.includes("/resources/") || url.includes("/help/")) {
+    if (
+      url.includes("/documentation/") ||
+      url.includes("/docs/") ||
+      url.includes("/guides/") ||
+      url.includes("/resources/") ||
+      url.includes("/help/")
+    ) {
       categories.docs.push(t);
     } else if (url.includes("/blog/") || url.includes("/changelog/") || url.includes("/news/")) {
       categories.blog.push(t);
@@ -94,19 +99,19 @@ function processFile(filePath) {
 
   const keptDocs = categories.docs.slice(0, DOCS_CAP);
   const keptBlog = categories.blog.slice(0, BLOG_CAP);
-  
+
   // Clean Marketing (De-dupe)
   const uniqueMarketing = [];
   const seenUrls = new Set();
-  categories.marketing.forEach(t => {
-     if (!seenUrls.has(t.url)) {
-       uniqueMarketing.push(t);
-       seenUrls.add(t.url);
-     }
+  categories.marketing.forEach((t) => {
+    if (!seenUrls.has(t.url)) {
+      uniqueMarketing.push(t);
+      seenUrls.add(t.url);
+    }
   });
 
   const finalList = [...uniqueMarketing, ...keptDocs, ...keptBlog];
-  
+
   console.log(`   - Removed Localized/Legacy/Irrelevant: ${initialCount - filtered.length}`);
   console.log(`   - Docs: ${categories.docs.length} -> ${keptDocs.length}`);
   console.log(`   - Blog: ${categories.blog.length} -> ${keptBlog.length}`);
@@ -120,9 +125,9 @@ function processFile(filePath) {
 
 function run() {
   console.log("🧹 Refining ALL Competitor Targets...");
-  
-  const files = fs.readdirSync(LIBRARY_DIR).filter(f => f.endsWith("_targets.json"));
-  
+
+  const files = fs.readdirSync(LIBRARY_DIR).filter((f) => f.endsWith("_targets.json"));
+
   for (const file of files) {
     processFile(path.join(LIBRARY_DIR, file));
   }

@@ -56,13 +56,12 @@ function selectTargets(competitor) {
   const targetsPath = path.join(LIBRARY_DIR, `${competitor}_targets.json`);
 
   if (!fs.existsSync(discoveryPath)) {
-    // biome-ignore lint/suspicious/noConsoleLog: CLI output
     console.log(`⚠️ No discovery file found for ${competitor}. Skipping.`);
     return;
   }
 
   const allRoutes = JSON.parse(fs.readFileSync(discoveryPath, "utf-8"));
-  // biome-ignore lint/suspicious/noConsoleLog: CLI output
+
   console.log(`\n🔍 Processing ${competitor} (${allRoutes.length} discovered routes)...`);
 
   const selected = new Map();
@@ -103,7 +102,9 @@ function selectTargets(competitor) {
   priorityBucket
     .sort((a, b) => b.score - a.score)
     .slice(0, 15)
-    .forEach((r) => add(r, r.reason));
+    .forEach((r) => {
+      add(r, r.reason);
+    });
 
   // 3. High Score (Top 20 only)
   // Ensure we get the main product pages that might not match specific patterns
@@ -111,12 +112,16 @@ function selectTargets(competitor) {
     .filter((r) => r.score >= 2 && !selected.has(r.url)) // Ensure not already picked
     .sort((a, b) => b.score - a.score)
     .slice(0, 20)
-    .forEach((r) => add(r, "High Score (Top 20)"));
+    .forEach((r) => {
+      add(r, "High Score (Top 20)");
+    });
 
   // 4. Smart Sampling
   // Create buckets for sampling categories
   const buckets = {};
-  Object.keys(CONFIG.SAMPLING).forEach((k) => (buckets[k] = []));
+  Object.keys(CONFIG.SAMPLING).forEach((k) => {
+    buckets[k] = [];
+  });
 
   allRoutes.forEach((route) => {
     if (selected.has(route.url)) return; // Skip if already selected
@@ -133,7 +138,9 @@ function selectTargets(competitor) {
   for (const [key, config] of Object.entries(CONFIG.SAMPLING)) {
     const sorted = buckets[key].sort((a, b) => b.score - a.score); // Best scoring first
     const picks = sorted.slice(0, config.limit);
-    picks.forEach((r) => add(r, `Sample: ${key}`));
+    picks.forEach((r) => {
+      add(r, `Sample: ${key}`);
+    });
   }
 
   // Convert to array and sort
@@ -143,9 +150,9 @@ function selectTargets(competitor) {
   finalTuple.sort((a, b) => b.score - a.score || a.url.localeCompare(b.url));
 
   fs.writeFileSync(targetsPath, JSON.stringify(finalTuple, null, 2));
-  // biome-ignore lint/suspicious/noConsoleLog: CLI output
+
   console.log(`✅ Selected ${finalTuple.length} targets for ${competitor}`);
-  // biome-ignore lint/suspicious/noConsoleLog: CLI output
+
   console.log(`📂 Saved to: ${targetsPath}`);
 }
 
@@ -156,12 +163,10 @@ async function main() {
     .map((f) => f.replace("_discovery.json", ""));
 
   if (competitors.length === 0) {
-    // biome-ignore lint/suspicious/noConsoleLog: CLI output
     console.log("No discovery files found. Run 'pnpm run crawl:batch' first.");
     return;
   }
 
-  // biome-ignore lint/suspicious/noConsoleLog: CLI output
   console.log(`Found discovery data for: ${competitors.join(", ")}`);
 
   for (const comp of competitors) {
