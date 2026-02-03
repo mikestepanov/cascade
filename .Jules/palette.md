@@ -25,3 +25,7 @@
 ## 2026-02-18 - Replacing Native Title with Tooltips
 **Learning:** Native `title` attributes are problematic for accessibility (inconsistent screen reader support, no mobile support) and UX (delayed appearance, default styling).
 **Action:** Replace `title` attributes on interactive elements with the `Tooltip` component. When doing so on icon-only buttons, ensure an explicit `aria-label` is added if the button relies on the `title` for its accessible name. Update tests to query by accessible name (`getByRole('button', { name: '...' })`) instead of `getByTitle`.
+
+## 2025-05-20 - Missing Component Tests
+**Learning:** Some components (like `AIChat`) may not have associated test files despite documentation or memory suggesting otherwise.
+**Action:** Always verify the existence of test files before planning to run or update them. If missing, rely on manual verification or integration tests if creating new unit tests is out of scope.
