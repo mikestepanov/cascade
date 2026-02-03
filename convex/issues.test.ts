@@ -380,9 +380,10 @@ describe("Issues", () => {
         paginationOpts: { numItems: 10, cursor: null },
       });
       expect(issues).toHaveLength(3);
-      expect(issues.map((i: EnrichedIssue) => i.title)).toContain("Issue 1");
-      expect(issues.map((i: EnrichedIssue) => i.title)).toContain("Issue 2");
-      expect(issues.map((i: EnrichedIssue) => i.title)).toContain("Issue 3");
+      // Don't cast to EnrichedIssue since it causes strict type errors with test context inference
+      expect(issues.map((i) => i.title)).toContain("Issue 1");
+      expect(issues.map((i) => i.title)).toContain("Issue 2");
+      expect(issues.map((i) => i.title)).toContain("Issue 3");
       await t.finishInProgressScheduledFunctions();
     });
 
