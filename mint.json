@@ -37,17 +37,11 @@
   "navigation": [
     {
       "group": "Get Started",
-      "pages": [
-        "introduction",
-        "quickstart"
-      ]
+      "pages": ["introduction", "quickstart"]
     },
     {
       "group": "Essentials",
-      "pages": [
-        "architecture",
-        "authentication"
-      ]
+      "pages": ["architecture", "authentication"]
     }
   ],
   "footerSocials": {
