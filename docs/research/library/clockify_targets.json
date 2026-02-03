@@ -1,0 +1,99 @@
+[
+  {
+    "url": "https://clockify.me/enterprise-plan/features",
+    "competitor": "clockify",
+    "page": "features",
+    "score": 2,
+    "selectionReason": "Critical Page"
+  },
+  {
+    "url": "https://clockify.me/basic-plan/features",
+    "competitor": "clockify",
+    "page": "features",
+    "score": 1,
+    "selectionReason": "Critical Page"
+  },
+  {
+    "url": "https://clockify.me/features/",
+    "competitor": "clockify",
+    "page": "features",
+    "score": 1,
+    "selectionReason": "Critical Page"
+  },
+  {
+    "url": "https://clockify.me/features/approval",
+    "competitor": "clockify",
+    "page": "approval",
+    "score": 1,
+    "reason": "Priority: /app/",
+    "selectionReason": "Priority: /app/"
+  },
+  {
+    "url": "https://clockify.me/features/location",
+    "competitor": "clockify",
+    "page": "location",
+    "score": 1,
+    "selectionReason": "Critical Page"
+  },
+  {
+    "url": "https://clockify.me/features/projects",
+    "competitor": "clockify",
+    "page": "projects",
+    "score": 1,
+    "reason": "Priority: /projects/",
+    "selectionReason": "Priority: /projects/"
+  },
+  {
+    "url": "https://clockify.me/features/team",
+    "competitor": "clockify",
+    "page": "team",
+    "score": 1,
+    "reason": "Priority: /team/",
+    "selectionReason": "Priority: /team/"
+  },
+  {
+    "url": "https://clockify.me/pricing",
+    "competitor": "clockify",
+    "page": "pricing",
+    "score": 1,
+    "selectionReason": "Critical Page"
+  },
+  {
+    "url": "https://clockify.me/pro-plan/features",
+    "competitor": "clockify",
+    "page": "features",
+    "score": 1,
+    "selectionReason": "Critical Page"
+  },
+  {
+    "url": "https://clockify.me/standard-plan/features",
+    "competitor": "clockify",
+    "page": "features",
+    "score": 1,
+    "selectionReason": "Critical Page"
+  },
+  {
+    "url": "https://clockify.me/activity-log-app",
+    "competitor": "clockify",
+    "page": "activity-log-app",
+    "score": 0,
+    "reason": "Priority: /app/",
+    "selectionReason": "Priority: /app/"
+  },
+  {
+    "url": "https://clockify.me/apps",
+    "competitor": "clockify",
+    "page": "apps",
+    "score": 0,
+    "reason": "Priority: /app/",
+    "selectionReason": "Priority: /app/"
+  },
+  {
+    "url": "https://clockify.me/best-time-tracking-apps",
+    "competitor": "clockify",
+    "page": "best-time-tracking-apps",
+    "score": 0,
+    "reason": "Priority: /app/",
+    "selectionReason": "Priority: /app/"
+  }
+]

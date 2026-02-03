@@ -1,0 +1,76 @@
+[
+  {
+    "url": "https://www.read.ai/articles/best-ai-notetakers-and-ai-copilots-for-meetings-in-2025---compare-features-pricing-and-reviews",
+    "competitor": "read-ai",
+    "page": "best-ai-notetakers-and-ai-copilots-for-meetings-in-2025---compare-features-pricing-and-reviews",
+    "score": 2,
+    "selectionReason": "High Score (Top 20)"
+  },
+  {
+    "url": "https://www.read.ai/hi/articles/best-ai-notetakers-and-ai-copilots-for-meetings-in-2025---compare-features-pricing-and-reviews",
+    "competitor": "read-ai",
+    "page": "best-ai-notetakers-and-ai-copilots-for-meetings-in-2025---compare-features-pricing-and-reviews",
+    "score": 2,
+    "selectionReason": "High Score (Top 20)"
+  },
+  {
+    "url": "https://www.read.ai/hi/post/read-introduces-uploads-slack-and-zapier-integrations",
+    "competitor": "read-ai",
+    "page": "read-introduces-uploads-slack-and-zapier-integrations",
+    "score": 2,
+    "selectionReason": "High Score (Top 20)"
+  },
+  {
+    "url": "https://www.read.ai/post/read-introduces-uploads-slack-and-zapier-integrations",
+    "competitor": "read-ai",
+    "page": "read-introduces-uploads-slack-and-zapier-integrations",
+    "score": 2,
+    "selectionReason": "High Score (Top 20)"
+  },
+  {
+    "url": "https://www.read.ai/about",
+    "competitor": "read-ai",
+    "page": "about",
+    "score": 1,
+    "selectionReason": "Critical Page"
+  },
+  {
+    "url": "https://www.read.ai/integrations/asana",
+    "competitor": "read-ai",
+    "page": "asana",
+    "score": 1,
+    "selectionReason": "Sample: INTEGRATIONS"
+  },
+  {
+    "url": "https://www.read.ai/account-and-privacy-center",
+    "competitor": "read-ai",
+    "page": "account-and-privacy-center",
+    "score": 0,
+    "reason": "Priority: /account/",
+    "selectionReason": "Priority: /account/"
+  },
+  {
+    "url": "https://www.read.ai/workspaces",
+    "competitor": "read-ai",
+    "page": "workspaces",
+    "score": 0,
+    "reason": "Priority: /workspace/",
+    "selectionReason": "Priority: /workspace/"
+  },
+  {
+    "url": "https://www.read.ai/hi/resources/clockwork-accelerates-complex-projects-with-read-ai-integrations",
+    "competitor": "read-ai",
+    "page": "clockwork-accelerates-complex-projects-with-read-ai-integrations",
+    "score": 1,
+    "reason": "Priority: /projects/",
+    "selectionReason": "Priority: /projects/"
+  },
+  {
+    "url": "https://www.read.ai/resources/clockwork-accelerates-complex-projects-with-read-ai-integrations",
+    "competitor": "read-ai",
+    "page": "clockwork-accelerates-complex-projects-with-read-ai-integrations",
+    "score": 1,
+    "reason": "Priority: /projects/",
+    "selectionReason": "Priority: /projects/"
+  }
+]

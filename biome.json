@@ -17,7 +17,8 @@
       "!**/.vinxi",
       "!**/.output",
       "!**/node_modules",
-      "!**/src/index.css"
+      "!**/src/index.css",
+      "!**/docs/research/library/**/*_discovery.json"
     ]
   },
   "formatter": {
@@ -49,7 +50,8 @@
         "useKeyWithClickEvents": "warn"
       },
       "suspicious": {
-        "noExplicitAny": "warn"
+        "noExplicitAny": "warn",
+        "noConsole": "off"
       },
       "correctness": {
         "noUnusedVariables": "warn"
@@ -114,6 +116,9 @@
         "rules": {
           "complexity": {
             "noExcessiveCognitiveComplexity": "off"
+          },
+          "suspicious": {
+            "noConsole": "off"
           }
         }
       }

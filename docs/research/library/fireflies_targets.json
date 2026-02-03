@@ -1,0 +1,98 @@
+[
+  {
+    "url": "https://fireflies.ai/sitemap/blog-authors-sitemap.xml",
+    "competitor": "fireflies",
+    "page": "blog-authors-sitemap.xml",
+    "score": 1,
+    "reason": "Priority: /auth/",
+    "selectionReason": "Priority: /auth/"
+  },
+  {
+    "url": "https://fireflies.ai/account",
+    "competitor": "fireflies",
+    "page": "account",
+    "score": 0,
+    "reason": "Priority: /account/",
+    "selectionReason": "Priority: /account/"
+  },
+  {
+    "url": "https://fireflies.ai/billing",
+    "competitor": "fireflies",
+    "page": "billing",
+    "score": 0,
+    "reason": "Priority: /billing/",
+    "selectionReason": "Priority: /billing/"
+  },
+  {
+    "url": "https://fireflies.ai/dashboard",
+    "competitor": "fireflies",
+    "page": "dashboard",
+    "score": 0,
+    "reason": "Priority: /dashboard/",
+    "selectionReason": "Priority: /dashboard/"
+  },
+  {
+    "url": "https://fireflies.ai/profile",
+    "competitor": "fireflies",
+    "page": "profile",
+    "score": 0,
+    "reason": "Priority: /profile/",
+    "selectionReason": "Priority: /profile/"
+  },
+  {
+    "url": "https://fireflies.ai/projects",
+    "competitor": "fireflies",
+    "page": "projects",
+    "score": 0,
+    "reason": "Priority: /projects/",
+    "selectionReason": "Priority: /projects/"
+  },
+  {
+    "url": "https://fireflies.ai/settings",
+    "competitor": "fireflies",
+    "page": "settings",
+    "score": 0,
+    "reason": "Priority: /settings/",
+    "selectionReason": "Priority: /settings/"
+  },
+  {
+    "url": "https://fireflies.ai/settings/billing",
+    "competitor": "fireflies",
+    "page": "billing",
+    "score": 0,
+    "reason": "Priority: /settings/",
+    "selectionReason": "Priority: /settings/"
+  },
+  {
+    "url": "https://fireflies.ai/settings/profile",
+    "competitor": "fireflies",
+    "page": "profile",
+    "score": 0,
+    "reason": "Priority: /settings/",
+    "selectionReason": "Priority: /settings/"
+  },
+  {
+    "url": "https://fireflies.ai/settings/team",
+    "competitor": "fireflies",
+    "page": "team",
+    "score": 0,
+    "reason": "Priority: /settings/",
+    "selectionReason": "Priority: /settings/"
+  },
+  {
+    "url": "https://fireflies.ai/settings/workspace",
+    "competitor": "fireflies",
+    "page": "workspace",
+    "score": 0,
+    "reason": "Priority: /settings/",
+    "selectionReason": "Priority: /settings/"
+  },
+  {
+    "url": "https://fireflies.ai/sitemap/apps-sitemap.xml",
+    "competitor": "fireflies",
+    "page": "apps-sitemap.xml",
+    "score": 0,
+    "reason": "Priority: /app/",
+    "selectionReason": "Priority: /app/"
+  }
+]

@@ -1,9 +1,16 @@
 import { spawn } from "node:child_process";
+import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+// Config
+const args = process.argv.slice(2);
+const FORCE = args.includes("--force");
+const FRESHNESS_DAYS = parseInt(args.find((a) => a.startsWith("--days="))?.split("=")[1], 10) || 7;
+const COMPETITOR_FILTER = args.find((a) => a.startsWith("--competitor="))?.split("=")[1];
 
 // Define all target pages to mirror
 const TARGETS = [
@@ -69,7 +76,14 @@ const TARGETS = [
 async function runMirror(target) {
   return new Promise((resolve, _reject) => {
     const scriptPath = path.join(__dirname, "scrape_full_mirror.js");
-    const child = spawn("node", [scriptPath, target.url, target.competitor, target.page], {
+    const args = [scriptPath, target.url, target.competitor, target.page];
+    if (FORCE) args.push("--force");
+    if (target.auth) {
+      args.push("--auth");
+      args.push(target.auth);
+    }
+
+    const child = spawn("node", args, {
       stdio: "inherit",
       cwd: path.join(__dirname, ".."),
       shell: true,
@@ -94,26 +108,91 @@ async function runMirror(target) {
 async function main() {
   console.log("\n🚀 OMEGA BATCH MIRROR");
   console.log(
-    `   Capturing ${TARGETS.length} pages from ${[...new Set(TARGETS.map((t) => t.competitor))].length} competitors\n`,
+    `   Capturing pages from ${[...new Set(TARGETS.map((t) => t.competitor))].length} competitors\n`,
   );
   console.log(`${"=".repeat(60)}\n`);
 
   const startTime = Date.now();
 
-  for (let i = 0; i < TARGETS.length; i++) {
-    const target = TARGETS[i];
+  // 1. Identify distinct competitors
+  let competitors = [...new Set(TARGETS.map((t) => t.competitor))];
+
+  if (COMPETITOR_FILTER) {
+    console.log(`   🎯 Filtered to competitor: ${COMPETITOR_FILTER}`);
+    competitors = competitors.filter((c) => c === COMPETITOR_FILTER);
+  }
+
+  const finalRunList = [];
+
+  // 2. Build Run List (Prioritize JSON targets)
+  for (const comp of competitors) {
+    const targetsPath = path.resolve(__dirname, `../docs/research/library/${comp}_targets.json`);
+
+    if (fs.existsSync(targetsPath)) {
+      try {
+        const json = JSON.parse(fs.readFileSync(targetsPath, "utf-8"));
+        if (Array.isArray(json) && json.length > 0) {
+          console.log(`   ✅ Loaded ${json.length} selected targets for ${comp}`);
+          finalRunList.push(...json);
+          continue; // Skip hardcoded for this competitor
+        }
+      } catch (_e) {
+        console.error(`   ⚠️ Error reading targets for ${comp}, falling back to defaults.`);
+      }
+    }
+
+    // Fallback: Add hardcoded targets for this competitor
+    const defaults = TARGETS.filter((t) => t.competitor === comp);
+    // console.log(`   ℹ️ Using ${defaults.length} default targets for ${comp}`);
+    finalRunList.push(...defaults);
+  }
+
+  console.log(`\n   📋 Final Run List: ${finalRunList.length} pages`);
+  console.log(`${"=".repeat(60)}\n`);
+
+  // 3. Execute
+  for (let i = 0; i < finalRunList.length; i++) {
+    const target = finalRunList[i];
 
     try {
-      // Smart Skip: Check if directory exists
+      // Smart Skip & Staleness Check
       const outputDir = path.resolve(__dirname, "../docs/research/library", target.competitor);
-      if (fs.existsSync(outputDir) && fs.readdirSync(outputDir).length > 0) {
-        console.log(
-          `\n[${i + 1}/${TARGETS.length}] ${target.competitor}/${target.page} ⏩ Skipped (Exists)`,
-        );
+      const deepDataPath = path.join(outputDir, `${target.page}_deep.json`);
+
+      let shouldSkip = false;
+      let reason = "";
+
+      if (!FORCE && fs.existsSync(deepDataPath)) {
+        try {
+          const deepData = JSON.parse(fs.readFileSync(deepDataPath, "utf-8"));
+          if (deepData.scrapedAt) {
+            const lastScrape = new Date(deepData.scrapedAt);
+            const now = new Date();
+            const diffDays = (now - lastScrape) / (1000 * 60 * 60 * 24);
+
+            if (diffDays < FRESHNESS_DAYS) {
+              shouldSkip = true;
+              reason = `Fresh (${Math.floor(diffDays)}d ago)`;
+            }
+          } else {
+            // If no timestamp but file exists, treat as "old" but not necessarily stale
+            // unless we want to be strict. For now, let's just skip if it exists at all.
+            shouldSkip = true;
+            reason = "Exists";
+          }
+        } catch (_e) {
+          // ignore parse error, re-scrape
+        }
+      }
+
+      const progress = `[${i + 1}/${finalRunList.length}]`;
+
+      if (shouldSkip) {
+        console.log(`\n${progress} ${target.competitor}/${target.page} ⏩ Skipped (${reason})`);
         continue;
       }
 
-      console.log(`\n[${i + 1}/${TARGETS.length}] ${target.competitor}/${target.page}`);
+      console.log(`\n${progress} ${target.competitor}/${target.page}`);
       console.log("-".repeat(40));
       await runMirror(target);
     } catch (err) {
@@ -124,7 +203,7 @@ async function main() {
   const elapsed = ((Date.now() - startTime) / 1000 / 60).toFixed(1);
   console.log(`\n${"=".repeat(60)}`);
   console.log(`\n✅ BATCH COMPLETE in ${elapsed} minutes`);
-  console.log(`   Captured ${TARGETS.length} pages\n`);
+  console.log(`   Captured ${finalRunList.length} pages\n`);
 }
 
 main();

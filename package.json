@@ -49,7 +49,14 @@
     "dev:purge": "convex run purge:purgeData \"{\\\"confirm\\\": true}\"",
     "mirror": "node scripts/scrape_full_mirror.js",
     "mirror:batch": "node scripts/mirror_batch.js",
-    "inventory": "node scripts/check_inventory.js"
+    "inventory": "node scripts/check_inventory.js",
+    "discover": "node scripts/discover_targets.js",
+    "crawl": "node scripts/crawl_routes.js",
+    "crawl:batch": "node scripts/crawl_batch.js",
+    "select:targets": "node scripts/select_targets.js",
+    "analyze": "node scripts/analyze_design.js",
+    "setup:auth": "node scripts/setup_auth.js",
+    "auth:manual": "node scripts/manual_handshake.js"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^3.0.35",

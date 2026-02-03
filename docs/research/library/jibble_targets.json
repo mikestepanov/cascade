@@ -1,0 +1,82 @@
+[
+  {
+    "url": "https://jibble.io/account",
+    "competitor": "jibble",
+    "page": "account",
+    "score": 0,
+    "reason": "Priority: /account/",
+    "selectionReason": "Priority: /account/"
+  },
+  {
+    "url": "https://jibble.io/billing",
+    "competitor": "jibble",
+    "page": "billing",
+    "score": 0,
+    "reason": "Priority: /billing/",
+    "selectionReason": "Priority: /billing/"
+  },
+  {
+    "url": "https://jibble.io/dashboard",
+    "competitor": "jibble",
+    "page": "dashboard",
+    "score": 0,
+    "reason": "Priority: /dashboard/",
+    "selectionReason": "Priority: /dashboard/"
+  },
+  {
+    "url": "https://jibble.io/profile",
+    "competitor": "jibble",
+    "page": "profile",
+    "score": 0,
+    "reason": "Priority: /profile/",
+    "selectionReason": "Priority: /profile/"
+  },
+  {
+    "url": "https://jibble.io/projects",
+    "competitor": "jibble",
+    "page": "projects",
+    "score": 0,
+    "reason": "Priority: /projects/",
+    "selectionReason": "Priority: /projects/"
+  },
+  {
+    "url": "https://jibble.io/settings",
+    "competitor": "jibble",
+    "page": "settings",
+    "score": 0,
+    "reason": "Priority: /settings/",
+    "selectionReason": "Priority: /settings/"
+  },
+  {
+    "url": "https://jibble.io/settings/billing",
+    "competitor": "jibble",
+    "page": "billing",
+    "score": 0,
+    "reason": "Priority: /settings/",
+    "selectionReason": "Priority: /settings/"
+  },
+  {
+    "url": "https://jibble.io/settings/profile",
+    "competitor": "jibble",
+    "page": "profile",
+    "score": 0,
+    "reason": "Priority: /settings/",
+    "selectionReason": "Priority: /settings/"
+  },
+  {
+    "url": "https://jibble.io/settings/team",
+    "competitor": "jibble",
+    "page": "team",
+    "score": 0,
+    "reason": "Priority: /settings/",
+    "selectionReason": "Priority: /settings/"
+  },
+  {
+    "url": "https://jibble.io/settings/workspace",
+    "competitor": "jibble",
+    "page": "workspace",
+    "score": 0,
+    "reason": "Priority: /settings/",
+    "selectionReason": "Priority: /settings/"
+  }
+]

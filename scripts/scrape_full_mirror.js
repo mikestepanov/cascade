@@ -8,13 +8,24 @@ import { chromium } from "playwright";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Usage: node scripts/scrape_full_mirror.js <URL> <competitor> <page>
-// Example: node scripts/scrape_full_mirror.js https://linear.app/homepage linear homepage
+// Usage: node scripts/scrape_full_mirror.js <URL> <competitor> <page> [--auth google|linear]
 // Example: node scripts/scrape_full_mirror.js https://linear.app/features linear features
-const [, , targetUrl, competitor, pageName] = process.argv;
+// Example: node scripts/scrape_full_mirror.js https://linear.app/antigravity-research-lab linear dashboard --auth linear
+const args = process.argv.slice(2);
+const targetUrl = args[0];
+const competitor = args[1];
+const pageName = args[2];
+
+let authProvider = null;
+const authIndex = args.indexOf("--auth");
+if (authIndex !== -1 && args[authIndex + 1]) {
+  authProvider = args[authIndex + 1];
+}
 
 if (!(targetUrl && competitor && pageName)) {
-  console.error("Usage: node scripts/scrape_full_mirror.js <URL> <competitor> <page>");
+  console.error(
+    "Usage: node scripts/scrape_full_mirror.js <URL> <competitor> <page> [--auth provider]",
+  );
   console.error(
     "Example: node scripts/scrape_full_mirror.js https://linear.app/features linear features",
   );
@@ -83,6 +94,106 @@ const VIEWPORTS = [
 
 const THEMES = ["light", "dark"];
 
+// Helper: Handle Google OAuth Flow
+async function handleGoogleAuth(page) {
+  console.log("🔍 Detecting Google Auth elements...");
+
+  // 1. Look for "Continue with Google" buttons on third-party sites
+  const googleButtons = [
+    'button:has-text("Continue with Google")',
+    'button:has-text("Sign in with Google")',
+    'a:has-text("Continue with Google")',
+    'a:has-text("Sign in with Google")',
+    '[aria-label*="Google"]',
+    'svg[viewBox*="0 0 48 48"]', // Common Google G logo
+  ];
+
+  for (const selector of googleButtons) {
+    const btn = await page.$(selector);
+    if (btn && (await btn.isVisible())) {
+      console.log(`   Found Google login button via: ${selector}`);
+      await btn.click();
+      await page.waitForTimeout(3000);
+      break;
+    }
+  }
+
+  // 2. Handle Google's Account Selection (if we land on accounts.google.com)
+  if (page.url().includes("accounts.google.com")) {
+    console.log("   Detected Google Account Selection page...");
+    const accountSelector = '[data-authuser="0"]'; // First account
+    const emailSelector = 'div[role="link"]';
+
+    try {
+      if (await page.$(accountSelector)) {
+        console.log("   Selecting primary Google account...");
+        await page.click(accountSelector);
+      } else if (await page.$(emailSelector)) {
+        console.log("   Selecting available email...");
+        await page.click(emailSelector);
+      }
+      await page.waitForTimeout(5000); // Wait for redirect
+    } catch (err) {
+      console.log(`   ⚠️ Could not auto-select account: ${err.message}`);
+    }
+  }
+
+  // 3. Wait for return to app
+  try {
+    await page.waitForLoadState("load", { timeout: 30000 });
+    console.log(`✅ Handshake settled: ${page.url()}`);
+  } catch (_err) {
+    console.log("   ⚠️ Redirect taking longer than expected...");
+  }
+}
+
+// Helper: Discover Internal Routes (for Authenticated Pages)
+async function discoverInternalRoutes(page) {
+  console.log("🔍 Scanning for internal high-value routes...");
+  return await page.evaluate(() => {
+    const HIGH_VALUE_LINK_KEYWORDS = [
+      "settings",
+      "profile",
+      "billing",
+      "workspace",
+      "team",
+      "members",
+      "usage",
+      "plan",
+      "integration",
+      "api",
+      "account",
+      "security",
+      "project",
+      "org",
+    ];
+
+    const links = Array.from(document.querySelectorAll("a"));
+    const discovered = [];
+    const seen = new Set();
+
+    for (const link of links) {
+      const url = link.href;
+      const text = link.innerText.toLowerCase().trim();
+      const ariaLabel = (link.getAttribute("aria-label") || "").toLowerCase();
+
+      // Only same-origin links
+      if (!url.startsWith(window.location.origin)) continue;
+      if (seen.has(url)) continue;
+
+      const isHighValue = HIGH_VALUE_LINK_KEYWORDS.some(
+        (kw) => text.includes(kw) || ariaLabel.includes(kw) || url.includes(kw),
+      );
+
+      if (isHighValue) {
+        discovered.push({ url, text: text.slice(0, 50) });
+        seen.add(url);
+      }
+    }
+    return discovered;
+  });
+}
+
 (async () => {
   console.log(`\n🪞 Total Mirror Capture: ${competitor}/${pageName}`);
   console.log(`   URL: ${targetUrl}\n`);
@@ -102,12 +213,28 @@ const THEMES = ["light", "dark"];
   const browser = await chromium.launch({ headless: true });
 
   // Main technical capture (default Desktop Light)
-  const technicalContext = await browser.newContext({
+  const contextOptions = {
     viewport: { width: 1920, height: 1080 },
     colorScheme: "light",
     userAgent:
       "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36",
-  });
+    recordVideo: {
+      dir: path.join(outputDir, "recording"),
+      size: { width: 1280, height: 720 },
+    },
+  };
+
+  if (authProvider) {
+    const authPath = path.resolve(__dirname, `../e2e/.auth/${authProvider}.json`);
+    if (fs.existsSync(authPath)) {
+      console.log(`🔒 Loading auth session: ${authProvider}`);
+      contextOptions.storageState = authPath;
+    } else {
+      console.warn(`⚠️ Auth state not found for ${authProvider}. Running without auth.`);
+    }
+  }
+
+  const technicalContext = await browser.newContext(contextOptions);
   const techPage = await technicalContext.newPage();
 
   // Collect network requests
@@ -126,6 +253,23 @@ const THEMES = ["light", "dark"];
   console.log("📡 Navigating for technical capture (120s timeout)...");
   try {
     await techPage.goto(targetUrl, { waitUntil: "load", timeout: 120000 });
+
+    // Handle Google Auth if needed and requested
+    const isLoginPage = techPage.url().includes("login") || techPage.url().includes("auth");
+    if (authProvider === "google" && isLoginPage) {
+      console.log("🔓 Login page detected. Attempting auto-auth...");
+      await handleGoogleAuth(techPage);
+    }
+
+    // Discover internal routes if authenticated
+    let internalRoutes = [];
+    if (authProvider) {
+      internalRoutes = await discoverInternalRoutes(techPage);
+      if (internalRoutes.length > 0) {
+        console.log(`   ✨ Discovered ${internalRoutes.length} internal high-value routes.`);
+      }
+    }
+
     // Attempt networkidle but don't crash if it stays busy
     await techPage.waitForLoadState("networkidle", { timeout: 15000 }).catch(() => {
       // ignore
@@ -194,14 +338,65 @@ const THEMES = ["light", "dark"];
       .map((s) => s.src)
       .filter(Boolean);
 
-    return { cssVars, keyframes, fonts, scripts };
+    // --- Tech Stack Fingerprinting ---
+    const fingerprint = {
+      frameworks: [],
+      libraries: [],
+      ui: [],
+      analytics: [],
+    };
+
+    const docHtml = document.documentElement.innerHTML.toLowerCase();
+    const _bodyText = document.body.innerText.toLowerCase();
+
+    // Framework Detection
+    if (window.React || document.querySelector("[data-reactroot]"))
+      fingerprint.frameworks.push("React");
+    if (window.next || docHtml.includes("__next")) fingerprint.frameworks.push("Next.js");
+    if (window.Vue) fingerprint.frameworks.push("Vue");
+    if (docHtml.includes("nuxt")) fingerprint.frameworks.push("Nuxt.js");
+    if (docHtml.includes("webflow")) fingerprint.frameworks.push("Webflow");
+
+    // UI & Styling Libraries
+    if (docHtml.includes("tailwind")) fingerprint.ui.push("Tailwind CSS");
+    if (docHtml.includes("radix-ui")) fingerprint.ui.push("Radix UI");
+    if (docHtml.includes("framer-motion")) fingerprint.ui.push("Framer Motion");
+    if (docHtml.includes("mantine")) fingerprint.ui.push("Mantine");
+    if (docHtml.includes("chakra-ui")) fingerprint.ui.push("Chakra UI");
+    if (docHtml.includes("shadcn")) fingerprint.ui.push("shadcn/ui");
+
+    // Utilities
+    if (window.LottieCompress || docHtml.includes("lottie")) fingerprint.libraries.push("Lottie");
+    if (window.gsap) fingerprint.libraries.push("GSAP");
+
+    // Analytics
+    if (window.posthog) fingerprint.analytics.push("PostHog");
+    if (window.ga || window.google_analytics) fingerprint.analytics.push("Google Analytics");
+    if (window.mixpanel) fingerprint.analytics.push("Mixpanel");
+    if (window.Intercom) fingerprint.analytics.push("Intercom");
+
+    return { cssVars, keyframes, fonts, scripts, fingerprint, scrapedAt: new Date().toISOString() };
   });
+
+  // Inject discovered internal routes into deepData
+  if (typeof internalRoutes !== "undefined") {
+    deepData.discoveredRoutes = internalRoutes;
+  }
 
   fs.writeFileSync(
     path.join(outputDir, `${pageName}_deep.json`),
     JSON.stringify(deepData, null, 2),
   );
   console.log(`✅ Saved ${pageName}_deep.json`);
+
+  // --- Session Caching for Multi-shot ---
+  let tempAuthState = null;
+  if (authProvider) {
+    const tempPath = path.resolve(__dirname, `../e2e/.auth/${competitor}_temp.json`);
+    await technicalContext.storageState({ path: tempPath });
+    tempAuthState = tempPath;
+    console.log(`💾 Cached temporary ${competitor} session for visual capture.`);
+  }
 
   await technicalContext.close();
 
@@ -214,12 +409,18 @@ const THEMES = ["light", "dark"];
 
       process.stdout.write(`   Capture: ${vp.name} (${theme})... `);
 
-      const shotContext = await browser.newContext({
+      const shotOptions = {
         viewport: { width: vp.width, height: vp.height },
         colorScheme: theme,
         userAgent:
           "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36",
-      });
+      };
+
+      if (tempAuthState) {
+        shotOptions.storageState = tempAuthState;
+      }
+
+      const shotContext = await browser.newContext(shotOptions);
       const shotPage = await shotContext.newPage();
 
       try {
@@ -281,5 +482,25 @@ const THEMES = ["light", "dark"];
   console.log(`✅ Saved ${pageName}_manifest.json and ${pageName}_network.json`);
 
   await browser.close();
+
+  // Move video file and rename it
+  const videoDir = path.join(outputDir, "recording");
+  if (fs.existsSync(videoDir)) {
+    const files = fs.readdirSync(videoDir);
+    if (files.length > 0) {
+      const videoPath = path.join(videoDir, files[0]);
+      const finalVideoPath = path.join(outputDir, `${pageName}_motion.webm`);
+      fs.renameSync(videoPath, finalVideoPath);
+      fs.rmSync(videoDir, { recursive: true, force: true });
+      console.log(`✅ Saved ${pageName}_motion.webm`);
+    }
+  }
+
+  // Cleanup temp auth state
+  const tempPath = path.resolve(__dirname, `../e2e/.auth/${competitor}_temp.json`);
+  if (fs.existsSync(tempPath)) {
+    fs.unlinkSync(tempPath);
+  }
+
   console.log(`\n🎉 Mirror complete: ${outputDir}/${pageName}.*\n`);
 })();
