@@ -56,11 +56,13 @@ function selectTargets(competitor) {
   const targetsPath = path.join(LIBRARY_DIR, `${competitor}_targets.json`);
 
   if (!fs.existsSync(discoveryPath)) {
+    // biome-ignore lint/suspicious/noConsoleLog: CLI output
     console.log(`⚠️ No discovery file found for ${competitor}. Skipping.`);
     return;
   }
 
   const allRoutes = JSON.parse(fs.readFileSync(discoveryPath, "utf-8"));
+  // biome-ignore lint/suspicious/noConsoleLog: CLI output
   console.log(`\n🔍 Processing ${competitor} (${allRoutes.length} discovered routes)...`);
 
   const selected = new Map();
@@ -92,6 +94,7 @@ function selectTargets(competitor) {
         if (pattern.test(pathname.toLowerCase())) {
           priorityBucket.push({ ...route, reason: `Priority: ${pattern.toString()}` });
           break;
+        }
       }
     } catch (_e) {}
   });
@@ -140,7 +143,9 @@ function selectTargets(competitor) {
   finalTuple.sort((a, b) => b.score - a.score || a.url.localeCompare(b.url));
 
   fs.writeFileSync(targetsPath, JSON.stringify(finalTuple, null, 2));
+  // biome-ignore lint/suspicious/noConsoleLog: CLI output
   console.log(`✅ Selected ${finalTuple.length} targets for ${competitor}`);
+  // biome-ignore lint/suspicious/noConsoleLog: CLI output
   console.log(`📂 Saved to: ${targetsPath}`);
 }
 
@@ -151,10 +156,12 @@ async function main() {
     .map((f) => f.replace("_discovery.json", ""));
 
   if (competitors.length === 0) {
+    // biome-ignore lint/suspicious/noConsoleLog: CLI output
     console.log("No discovery files found. Run 'pnpm run crawl:batch' first.");
     return;
   }
 
+  // biome-ignore lint/suspicious/noConsoleLog: CLI output
   console.log(`Found discovery data for: ${competitors.join(", ")}`);
 
   for (const comp of competitors) {
