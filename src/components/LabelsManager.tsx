@@ -212,8 +212,11 @@ export function LabelsManager({ projectId }: LabelsManagerProps) {
   };
 
   // Get real groups (not including virtual "Ungrouped")
-  const realGroups =
-    labelGroups?.filter((g): g is LabelGroup & { _id: Id<"labelGroups"> } => g._id !== null) ?? [];
+  const realGroups = labelGroups
+    ? (labelGroups.filter((g) => g._id !== null) as Array<
+        (typeof labelGroups)[number] & { _id: Id<"labelGroups"> }
+      >)
+    : [];
 
   // Total label count
   const totalLabels = labelGroups?.reduce((sum, g) => sum + g.labels.length, 0) ?? 0;

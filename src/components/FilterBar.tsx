@@ -26,7 +26,7 @@ import { Flex } from "./ui/Flex";
 import { Checkbox, Input } from "./ui/form";
 
 export interface BoardFilters {
-  type?: IssueType[];
+  type?: Exclude<IssueType, "subtask">[];
   priority?: IssuePriority[];
   assigneeId?: Id<"users">[];
   labels?: string[];

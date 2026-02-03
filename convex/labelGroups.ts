@@ -122,12 +122,11 @@ export const update = authenticatedMutation({
     await assertCanEditProject(ctx, group.projectId, ctx.userId);
 
     // If name is changing, check for duplicates
-    if (args.name && args.name !== group.name) {
+    const newName = args.name;
+    if (newName && newName !== group.name) {
       const existing = await ctx.db
         .query("labelGroups")
-        .withIndex("by_project_name", (q) =>
-          q.eq("projectId", group.projectId).eq("name", args.name),
-        )
+        .withIndex("by_project_name", (q) => q.eq("projectId", group.projectId).eq("name", newName))
         .first();
 
       if (existing) {
@@ -216,9 +215,12 @@ export const moveLabel = projectEditorMutation({
       throw validation("labelId", "Label belongs to a different project");
     }
 
+    // Convert null to undefined (Convex stores undefined for missing optional fields)
+    const targetGroupId = args.groupId ?? undefined;
+
     // If moving to a group, verify it exists and belongs to same project
-    if (args.groupId) {
-      const group = await ctx.db.get(args.groupId);
+    if (targetGroupId) {
+      const group = await ctx.db.get(targetGroupId);
       if (!group || group.projectId !== ctx.projectId) {
         throw validation("groupId", "Label group not found or belongs to a different project");
       }
@@ -227,12 +229,12 @@ export const moveLabel = projectEditorMutation({
     // Get max display order in target group
     const labelsInTargetGroup = await ctx.db
       .query("labels")
-      .withIndex("by_group", (q) => q.eq("groupId", args.groupId))
+      .withIndex("by_group", (q) => q.eq("groupId", targetGroupId))
       .take(BOUNDED_LIST_LIMIT);
     const maxOrder = labelsInTargetGroup.reduce((max, l) => Math.max(max, l.displayOrder ?? 0), 0);
 
     await ctx.db.patch(args.labelId, {
-      groupId: args.groupId ?? undefined,
+      groupId: targetGroupId,
       displayOrder: maxOrder + 1,
     });
   },

@@ -9,6 +9,7 @@ import { useBoardDragAndDrop } from "@/hooks/useBoardDragAndDrop";
 import { useBoardHistory } from "@/hooks/useBoardHistory";
 import { useListNavigation } from "@/hooks/useListNavigation";
 import { useSmartBoardData } from "@/hooks/useSmartBoardData";
+import type { IssueType } from "@/lib/issue-utils";
 import { BulkOperationsBar } from "./BulkOperationsBar";
 import { CreateIssueModal } from "./CreateIssueModal";
 import type { BoardFilters } from "./FilterBar";
@@ -30,7 +31,10 @@ function applyFilters(issues: EnrichedIssue[], filters?: BoardFilters): Enriched
 
   return issues.filter((issue) => {
     // Type filter
-    if (filters.type?.length && !filters.type.includes(issue.type)) {
+    if (
+      filters.type?.length &&
+      !filters.type.includes(issue.type as Exclude<IssueType, "subtask">)
+    ) {
       return false;
     }
 
