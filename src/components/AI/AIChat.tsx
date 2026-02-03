@@ -11,6 +11,7 @@ import { Button } from "../ui/Button";
 import { Flex } from "../ui/Flex";
 import { LoadingSpinner } from "../ui/LoadingSpinner";
 import { Skeleton } from "../ui/Skeleton";
+import { Tooltip } from "../ui/Tooltip";
 import { Typography } from "../ui/Typography";
 import { AI_CONFIG } from "./config";
 import { useAIChat } from "./hooks";
@@ -57,45 +58,47 @@ function MessageItem({
       >
         {/* Copy button for assistant messages */}
         {message.role === "assistant" && (
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => onCopy(message.content, messageId)}
-            className="absolute -right-2 -top-2 h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity shadow-sm hover:shadow-md border border-ui-border bg-ui-bg"
-            title="Copy message"
-          >
-            {isCopied ? (
-              <svg
-                className="w-4 h-4 text-status-success"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <title>Copied</title>
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M5 13l4 4L19 7"
-                />
-              </svg>
-            ) : (
-              <svg
-                className="w-4 h-4 text-ui-text-secondary"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <title>Copy</title>
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
-                />
-              </svg>
-            )}
-          </Button>
+          <Tooltip content="Copy message">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => onCopy(message.content, messageId)}
+              className="absolute -right-2 -top-2 h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity shadow-sm hover:shadow-md border border-ui-border bg-ui-bg"
+              aria-label="Copy message"
+            >
+              {isCopied ? (
+                <svg
+                  className="w-4 h-4 text-status-success"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <title>Copied</title>
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M5 13l4 4L19 7"
+                  />
+                </svg>
+              ) : (
+                <svg
+                  className="w-4 h-4 text-ui-text-secondary"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <title>Copy</title>
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+                  />
+                </svg>
+              )}
+            </Button>
+          </Tooltip>
         )}
 
         {/* Message content with markdown for assistant */}
