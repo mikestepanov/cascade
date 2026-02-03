@@ -18,12 +18,7 @@
     },
     {
       "group": "Documentation",
-      "pages": [
-        "docs/API",
-        "docs/AUTHENTICATION",
-        "docs/FUZZY_SEARCH",
-        "docs/COLORS"
-      ]
+      "pages": ["docs/API", "docs/AUTHENTICATION", "docs/FUZZY_SEARCH", "docs/COLORS"]
     },
     {
       "group": "Architecture",
