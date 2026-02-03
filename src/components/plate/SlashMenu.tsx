@@ -28,6 +28,7 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
+import { Flex } from "@/components/ui/Flex";
 import { Popover, PopoverAnchor, PopoverContent } from "@/components/ui/Popover";
 import { NODE_TYPES } from "@/lib/plate/plugins";
 
@@ -320,10 +321,10 @@ export function SlashMenu() {
               {filteredItems.map((item) => (
                 <CommandItem key={item.id} value={item.id} onSelect={() => handleSelect(item)}>
                   <item.icon className="mr-2 h-4 w-4" />
-                  <span className="flex flex-col">
+                  <Flex direction="column">
                     <span>{item.label}</span>
                     <span className="text-xs text-ui-text-tertiary">{item.description}</span>
-                  </span>
+                  </Flex>
                 </CommandItem>
               ))}
             </CommandGroup>

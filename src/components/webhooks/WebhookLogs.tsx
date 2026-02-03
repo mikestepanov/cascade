@@ -41,19 +41,19 @@ export function WebhookLogs({ webhookId, open, onOpenChange }: WebhookLogsProps)
     switch (status) {
       case "success":
         return (
-          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-status-success/10 text-status-success">
+          <span className="px-2 py-1 rounded-full text-xs font-medium bg-status-success/10 text-status-success">
             ✓ Success
           </span>
         );
       case "failed":
         return (
-          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-status-error/10 text-status-error">
+          <span className="px-2 py-1 rounded-full text-xs font-medium bg-status-error/10 text-status-error">
             ✗ Failed
           </span>
         );
       case "retrying":
         return (
-          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-status-warning/10 text-status-warning">
+          <span className="px-2 py-1 rounded-full text-xs font-medium bg-status-warning/10 text-status-warning">
             ⟳ Retrying
           </span>
         );

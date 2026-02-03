@@ -149,7 +149,7 @@ export const IssueCard = memo(function IssueCard({
               <span
                 tabIndex={0}
                 role="button"
-                className="inline-flex rounded-md focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-brand-ring"
+                className="rounded-md focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-brand-ring"
               >
                 <Typography
                   variant="small"
