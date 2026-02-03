@@ -127,13 +127,6 @@
     "selectionReason": "Priority: /team/"
   },
   {
-    "url": "https://toggl.com/track/contact/",
-    "competitor": "toggl",
-    "page": "contact",
-    "score": 0,
-    "selectionReason": "Critical Page"
-  },
-  {
     "url": "https://toggl.com/track/employee-time-tracking-teams/",
     "competitor": "toggl",
     "page": "employee-time-tracking-teams",

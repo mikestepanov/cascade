@@ -1,12 +1,5 @@
 [
   {
-    "url": "https://clockify.me/de/enterprise-plan/features",
-    "competitor": "clockify",
-    "page": "features",
-    "score": 2,
-    "selectionReason": "Critical Page"
-  },
-  {
     "url": "https://clockify.me/enterprise-plan/features",
     "competitor": "clockify",
     "page": "features",
@@ -14,115 +7,7 @@
     "selectionReason": "Critical Page"
   },
   {
-    "url": "https://clockify.me/es/enterprise-plan/features",
-    "competitor": "clockify",
-    "page": "features",
-    "score": 2,
-    "selectionReason": "Critical Page"
-  },
-  {
-    "url": "https://clockify.me/fr/enterprise-plan/features",
-    "competitor": "clockify",
-    "page": "features",
-    "score": 2,
-    "selectionReason": "Critical Page"
-  },
-  {
-    "url": "https://clockify.me/pt/enterprise-plan/features",
-    "competitor": "clockify",
-    "page": "features",
-    "score": 2,
-    "selectionReason": "Critical Page"
-  },
-  {
     "url": "https://clockify.me/basic-plan/features",
-    "competitor": "clockify",
-    "page": "features",
-    "score": 1,
-    "selectionReason": "Critical Page"
-  },
-  {
-    "url": "https://clockify.me/de/basic-plan/features",
-    "competitor": "clockify",
-    "page": "features",
-    "score": 1,
-    "selectionReason": "Critical Page"
-  },
-  {
-    "url": "https://clockify.me/de/features/",
-    "competitor": "clockify",
-    "page": "features",
-    "score": 1,
-    "selectionReason": "Critical Page"
-  },
-  {
-    "url": "https://clockify.me/de/features/approval",
-    "competitor": "clockify",
-    "page": "approval",
-    "score": 1,
-    "reason": "Priority: /app/",
-    "selectionReason": "Priority: /app/"
-  },
-  {
-    "url": "https://clockify.me/de/features/location",
-    "competitor": "clockify",
-    "page": "location",
-    "score": 1,
-    "selectionReason": "Critical Page"
-  },
-  {
-    "url": "https://clockify.me/de/features/projects",
-    "competitor": "clockify",
-    "page": "projects",
-    "score": 1,
-    "reason": "Priority: /projects/",
-    "selectionReason": "Priority: /projects/"
-  },
-  {
-    "url": "https://clockify.me/de/features/team",
-    "competitor": "clockify",
-    "page": "team",
-    "score": 1,
-    "reason": "Priority: /team/",
-    "selectionReason": "Priority: /team/"
-  },
-  {
-    "url": "https://clockify.me/de/pricing",
-    "competitor": "clockify",
-    "page": "pricing",
-    "score": 1,
-    "selectionReason": "Critical Page"
-  },
-  {
-    "url": "https://clockify.me/de/pro-plan/features",
-    "competitor": "clockify",
-    "page": "features",
-    "score": 1,
-    "selectionReason": "Critical Page"
-  },
-  {
-    "url": "https://clockify.me/de/standard-plan/features",
-    "competitor": "clockify",
-    "page": "features",
-    "score": 1,
-    "selectionReason": "Critical Page"
-  },
-  {
-    "url": "https://clockify.me/es/basic-plan/features",
-    "competitor": "clockify",
-    "page": "features",
-    "score": 1,
-    "selectionReason": "Critical Page"
-  },
-  {
-    "url": "https://clockify.me/es/pro-plan/features",
-    "competitor": "clockify",
-    "page": "features",
-    "score": 1,
-    "selectionReason": "Critical Page"
-  },
-  {
-    "url": "https://clockify.me/es/standard-plan/features",
     "competitor": "clockify",
     "page": "features",
     "score": 1,
@@ -167,72 +52,6 @@
     "selectionReason": "Priority: /team/"
   },
   {
-    "url": "https://clockify.me/fr/basic-plan/features",
-    "competitor": "clockify",
-    "page": "features",
-    "score": 1,
-    "selectionReason": "Critical Page"
-  },
-  {
-    "url": "https://clockify.me/fr/features/",
-    "competitor": "clockify",
-    "page": "features",
-    "score": 1,
-    "selectionReason": "Critical Page"
-  },
-  {
-    "url": "https://clockify.me/fr/features/approval",
-    "competitor": "clockify",
-    "page": "approval",
-    "score": 1,
-    "reason": "Priority: /app/",
-    "selectionReason": "Priority: /app/"
-  },
-  {
-    "url": "https://clockify.me/fr/features/location",
-    "competitor": "clockify",
-    "page": "location",
-    "score": 1,
-    "selectionReason": "Critical Page"
-  },
-  {
-    "url": "https://clockify.me/fr/features/projects",
-    "competitor": "clockify",
-    "page": "projects",
-    "score": 1,
-    "reason": "Priority: /projects/",
-    "selectionReason": "Priority: /projects/"
-  },
-  {
-    "url": "https://clockify.me/fr/features/team",
-    "competitor": "clockify",
-    "page": "team",
-    "score": 1,
-    "reason": "Priority: /team/",
-    "selectionReason": "Priority: /team/"
-  },
-  {
-    "url": "https://clockify.me/fr/pricing",
-    "competitor": "clockify",
-    "page": "pricing",
-    "score": 1,
-    "selectionReason": "Critical Page"
-  },
-  {
-    "url": "https://clockify.me/fr/pro-plan/features",
-    "competitor": "clockify",
-    "page": "features",
-    "score": 1,
-    "selectionReason": "Critical Page"
-  },
-  {
-    "url": "https://clockify.me/fr/standard-plan/features",
-    "competitor": "clockify",
-    "page": "features",
-    "score": 1,
-    "selectionReason": "Critical Page"
-  },
-  {
     "url": "https://clockify.me/pricing",
     "competitor": "clockify",
     "page": "pricing",
@@ -241,72 +60,6 @@
   },
   {
     "url": "https://clockify.me/pro-plan/features",
-    "competitor": "clockify",
-    "page": "features",
-    "score": 1,
-    "selectionReason": "Critical Page"
-  },
-  {
-    "url": "https://clockify.me/pt/basic-plan/features",
-    "competitor": "clockify",
-    "page": "features",
-    "score": 1,
-    "selectionReason": "Critical Page"
-  },
-  {
-    "url": "https://clockify.me/pt/features/",
-    "competitor": "clockify",
-    "page": "features",
-    "score": 1,
-    "selectionReason": "Critical Page"
-  },
-  {
-    "url": "https://clockify.me/pt/features/approval",
-    "competitor": "clockify",
-    "page": "approval",
-    "score": 1,
-    "reason": "Priority: /app/",
-    "selectionReason": "Priority: /app/"
-  },
-  {
-    "url": "https://clockify.me/pt/features/location",
-    "competitor": "clockify",
-    "page": "location",
-    "score": 1,
-    "selectionReason": "Critical Page"
-  },
-  {
-    "url": "https://clockify.me/pt/features/projects",
-    "competitor": "clockify",
-    "page": "projects",
-    "score": 1,
-    "reason": "Priority: /projects/",
-    "selectionReason": "Priority: /projects/"
-  },
-  {
-    "url": "https://clockify.me/pt/features/team",
-    "competitor": "clockify",
-    "page": "team",
-    "score": 1,
-    "reason": "Priority: /team/",
-    "selectionReason": "Priority: /team/"
-  },
-  {
-    "url": "https://clockify.me/pt/pricing",
-    "competitor": "clockify",
-    "page": "pricing",
-    "score": 1,
-    "selectionReason": "Critical Page"
-  },
-  {
-    "url": "https://clockify.me/pt/pro-plan/features",
-    "competitor": "clockify",
-    "page": "features",
-    "score": 1,
-    "selectionReason": "Critical Page"
-  },
-  {
-    "url": "https://clockify.me/pt/standard-plan/features",
     "competitor": "clockify",
     "page": "features",
     "score": 1,

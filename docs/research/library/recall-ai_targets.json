@@ -1,113 +1,5 @@
 [
   {
-    "url": "https://www.recall.ai/blog/7-apis-to-get-zoom-transcripts-a-comprehensive-guide",
-    "competitor": "recall-ai",
-    "page": "7-apis-to-get-zoom-transcripts-a-comprehensive-guide",
-    "score": 2,
-    "selectionReason": "High Score (Top 20)"
-  },
-  {
-    "url": "https://www.recall.ai/blog/accessing-real-time-transcription-api",
-    "competitor": "recall-ai",
-    "page": "accessing-real-time-transcription-api",
-    "score": 2,
-    "selectionReason": "High Score (Top 20)"
-  },
-  {
-    "url": "https://www.recall.ai/blog/applying-account-level-settings-to-meetings-created-via-the-zoom-api",
-    "competitor": "recall-ai",
-    "page": "applying-account-level-settings-to-meetings-created-via-the-zoom-api",
-    "score": 2,
-    "reason": "Priority: /app/",
-    "selectionReason": "Priority: /app/"
-  },
-  {
-    "url": "https://www.recall.ai/blog/dockerfile-centric-development",
-    "competitor": "recall-ai",
-    "page": "dockerfile-centric-development",
-    "score": 2,
-    "selectionReason": "High Score (Top 20)"
-  },
-  {
-    "url": "https://www.recall.ai/blog/get-recordings-and-transcripts-from-slack-huddles-api",
-    "competitor": "recall-ai",
-    "page": "get-recordings-and-transcripts-from-slack-huddles-api",
-    "score": 2,
-    "selectionReason": "High Score (Top 20)"
-  },
-  {
-    "url": "https://www.recall.ai/blog/how-to-access-the-zoom-archive-files-api",
-    "competitor": "recall-ai",
-    "page": "how-to-access-the-zoom-archive-files-api",
-    "score": 2,
-    "selectionReason": "High Score (Top 20)"
-  },
-  {
-    "url": "https://www.recall.ai/blog/how-to-get-a-recording-from-the-google-meet-api",
-    "competitor": "recall-ai",
-    "page": "how-to-get-a-recording-from-the-google-meet-api",
-    "score": 2,
-    "selectionReason": "High Score (Top 20)"
-  },
-  {
-    "url": "https://www.recall.ai/blog/how-to-integrate-with-otter-ai",
-    "competitor": "recall-ai",
-    "page": "how-to-integrate-with-otter-ai",
-    "score": 2,
-    "selectionReason": "High Score (Top 20)"
-  },
-  {
-    "url": "https://www.recall.ai/blog/how-to-resolve-permissions-errors-with-the-zoom-users-api",
-    "competitor": "recall-ai",
-    "page": "how-to-resolve-permissions-errors-with-the-zoom-users-api",
-    "score": 2,
-    "selectionReason": "Sample: BLOG"
-  },
-  {
-    "url": "https://www.recall.ai/blog/is-it-possible-to-get-recordings-for-entire-zoom-team-to-zapier",
-    "competitor": "recall-ai",
-    "page": "is-it-possible-to-get-recordings-for-entire-zoom-team-to-zapier",
-    "score": 2,
-    "reason": "Priority: /team/",
-    "selectionReason": "Priority: /team/"
-  },
-  {
-    "url": "https://www.recall.ai/blog/recall-ai-series-b-the-api-for-meeting-recording",
-    "competitor": "recall-ai",
-    "page": "recall-ai-series-b-the-api-for-meeting-recording",
-    "score": 2,
-    "selectionReason": "Sample: BLOG"
-  },
-  {
-    "url": "https://www.recall.ai/blog/top-reasons-to-build-a-meeting-bot-into-your-product",
-    "competitor": "recall-ai",
-    "page": "top-reasons-to-build-a-meeting-bot-into-your-product",
-    "score": 2,
-    "selectionReason": "Sample: BLOG"
-  },
-  {
-    "url": "https://www.recall.ai/blog/what-is-the-google-meet-media-api",
-    "competitor": "recall-ai",
-    "page": "what-is-the-google-meet-media-api",
-    "score": 2,
-    "selectionReason": "Sample: BLOG"
-  },
-  {
-    "url": "https://www.recall.ai/blog/why-some-zoom-api-scopes-are-only-available-in-certain-app-types",
-    "competitor": "recall-ai",
-    "page": "why-some-zoom-api-scopes-are-only-available-in-certain-app-types",
-    "score": 2,
-    "reason": "Priority: /app/",
-    "selectionReason": "Priority: /app/"
-  },
-  {
-    "url": "https://www.recall.ai/blog/zoom-dev-forum-fetch-meeting-transcripts-via-api",
-    "competitor": "recall-ai",
-    "page": "zoom-dev-forum-fetch-meeting-transcripts-via-api",
-    "score": 2,
-    "selectionReason": "Sample: BLOG"
-  },
-  {
     "url": "https://www.recall.ai/product/calendar-integration-api",
     "competitor": "recall-ai",
     "page": "calendar-integration-api",
@@ -223,62 +115,6 @@
     "selectionReason": "High Score (Top 20)"
   },
   {
-    "url": "https://www.recall.ai/blog/how-can-i-allow-multiple-users-to-test-my-zoom-oauth-app-in-development-mode",
-    "competitor": "recall-ai",
-    "page": "how-can-i-allow-multiple-users-to-test-my-zoom-oauth-app-in-development-mode",
-    "score": 1,
-    "reason": "Priority: /auth/",
-    "selectionReason": "Priority: /auth/"
-  },
-  {
-    "url": "https://www.recall.ai/blog/how-to-build-a-microsoft-teams-bot",
-    "competitor": "recall-ai",
-    "page": "how-to-build-a-microsoft-teams-bot",
-    "score": 1,
-    "reason": "Priority: /team/",
-    "selectionReason": "Priority: /team/"
-  },
-  {
-    "url": "https://www.recall.ai/blog/how-to-live-stream-the-video-from-zoom-microsoft-teams-and-google-meet-video-conferences",
-    "competitor": "recall-ai",
-    "page": "how-to-live-stream-the-video-from-zoom-microsoft-teams-and-google-meet-video-conferences",
-    "score": 1,
-    "reason": "Priority: /team/",
-    "selectionReason": "Priority: /team/"
-  },
-  {
-    "url": "https://www.recall.ai/blog/recall-ai-partners-with-symbl-ai-to-add-conversation-intelligence-to-voice-and-video-apps",
-    "competitor": "recall-ai",
-    "page": "recall-ai-partners-with-symbl-ai-to-add-conversation-intelligence-to-voice-and-video-apps",
-    "score": 1,
-    "reason": "Priority: /app/",
-    "selectionReason": "Priority: /app/"
-  },
-  {
-    "url": "https://www.recall.ai/blog/what-happens-after-submitting-a-zoom-app-for-review-and-can-multiple-users-log-in-once-it-s-approved",
-    "competitor": "recall-ai",
-    "page": "what-happens-after-submitting-a-zoom-app-for-review-and-can-multiple-users-log-in-once-it-s-approved",
-    "score": 1,
-    "reason": "Priority: /app/",
-    "selectionReason": "Priority: /app/"
-  },
-  {
-    "url": "https://www.recall.ai/blog/zoom-app-domain-verification",
-    "competitor": "recall-ai",
-    "page": "zoom-app-domain-verification",
-    "score": 1,
-    "reason": "Priority: /app/",
-    "selectionReason": "Priority: /app/"
-  },
-  {
-    "url": "https://www.recall.ai/blog/zoom-app-oauth-redirect-url-requirement",
-    "competitor": "recall-ai",
-    "page": "zoom-app-oauth-redirect-url-requirement",
-    "score": 1,
-    "reason": "Priority: /auth/",
-    "selectionReason": "Priority: /auth/"
-  },
-  {
     "url": "https://www.recall.ai/pricing",
     "competitor": "recall-ai",
     "page": "pricing",
@@ -312,5 +148,41 @@
     "page": "signup",
     "score": 0,
     "selectionReason": "Critical Page"
+  },
+  {
+    "url": "https://www.recall.ai/blog/7-apis-to-get-zoom-transcripts-a-comprehensive-guide",
+    "competitor": "recall-ai",
+    "page": "7-apis-to-get-zoom-transcripts-a-comprehensive-guide",
+    "score": 2,
+    "selectionReason": "High Score (Top 20)"
+  },
+  {
+    "url": "https://www.recall.ai/blog/accessing-real-time-transcription-api",
+    "competitor": "recall-ai",
+    "page": "accessing-real-time-transcription-api",
+    "score": 2,
+    "selectionReason": "High Score (Top 20)"
+  },
+  {
+    "url": "https://www.recall.ai/blog/applying-account-level-settings-to-meetings-created-via-the-zoom-api",
+    "competitor": "recall-ai",
+    "page": "applying-account-level-settings-to-meetings-created-via-the-zoom-api",
+    "score": 2,
+    "reason": "Priority: /app/",
+    "selectionReason": "Priority: /app/"
+  },
+  {
+    "url": "https://www.recall.ai/blog/dockerfile-centric-development",
+    "competitor": "recall-ai",
+    "page": "dockerfile-centric-development",
+    "score": 2,
+    "selectionReason": "High Score (Top 20)"
+  },
+  {
+    "url": "https://www.recall.ai/blog/get-recordings-and-transcripts-from-slack-huddles-api",
+    "competitor": "recall-ai",
+    "page": "get-recordings-and-transcripts-from-slack-huddles-api",
+    "score": 2,
+    "selectionReason": "High Score (Top 20)"
   }
 ]

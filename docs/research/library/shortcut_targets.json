@@ -1,224 +1,5 @@
 [
   {
-    "url": "https://www.shortcut.com/blog/12-days-of-integrations-zapier",
-    "competitor": "shortcut",
-    "page": "12-days-of-integrations-zapier",
-    "score": 3,
-    "selectionReason": "High Score (Top 20)"
-  },
-  {
-    "url": "https://www.shortcut.com/blog/12-days-of-partners-integrations-and-other-good-stuff-productboard",
-    "competitor": "shortcut",
-    "page": "12-days-of-partners-integrations-and-other-good-stuff-productboard",
-    "score": 3,
-    "selectionReason": "High Score (Top 20)"
-  },
-  {
-    "url": "https://www.shortcut.com/blog/risks-you-need-to-know-about-before-you-develop-a-product-80efe3cfbac6",
-    "competitor": "shortcut",
-    "page": "risks-you-need-to-know-about-before-you-develop-a-product-80efe3cfbac6",
-    "score": 3,
-    "selectionReason": "High Score (Top 20)"
-  },
-  {
-    "url": "https://www.shortcut.com/blog/twelve-days-of-integrations-the-shortcut-api",
-    "competitor": "shortcut",
-    "page": "twelve-days-of-integrations-the-shortcut-api",
-    "score": 3,
-    "selectionReason": "High Score (Top 20)"
-  },
-  {
-    "url": "https://www.shortcut.com/blog/10-ways-to-use-shortcut-docs",
-    "competitor": "shortcut",
-    "page": "10-ways-to-use-shortcut-docs",
-    "score": 2,
-    "selectionReason": "High Score (Top 20)"
-  },
-  {
-    "url": "https://www.shortcut.com/blog/12-days-of-partners-integrations-and-other-good-stuff",
-    "competitor": "shortcut",
-    "page": "12-days-of-partners-integrations-and-other-good-stuff",
-    "score": 2,
-    "selectionReason": "High Score (Top 20)"
-  },
-  {
-    "url": "https://www.shortcut.com/blog/12-days-of-partners-integrations-and-other-good-stuff-firehydrant",
-    "competitor": "shortcut",
-    "page": "12-days-of-partners-integrations-and-other-good-stuff-firehydrant",
-    "score": 2,
-    "selectionReason": "High Score (Top 20)"
-  },
-  {
-    "url": "https://www.shortcut.com/blog/12-days-of-partners-integrations-and-other-good-stuff-github",
-    "competitor": "shortcut",
-    "page": "12-days-of-partners-integrations-and-other-good-stuff-github",
-    "score": 2,
-    "selectionReason": "High Score (Top 20)"
-  },
-  {
-    "url": "https://www.shortcut.com/blog/12-days-of-partners-integrations-and-other-good-stuff-gitlab",
-    "competitor": "shortcut",
-    "page": "12-days-of-partners-integrations-and-other-good-stuff-gitlab",
-    "score": 2,
-    "selectionReason": "High Score (Top 20)"
-  },
-  {
-    "url": "https://www.shortcut.com/blog/12-days-of-partners-integrations-and-other-good-stuff-google-sheets",
-    "competitor": "shortcut",
-    "page": "12-days-of-partners-integrations-and-other-good-stuff-google-sheets",
-    "score": 2,
-    "selectionReason": "High Score (Top 20)"
-  },
-  {
-    "url": "https://www.shortcut.com/blog/12-days-of-partners-integrations-and-other-good-stuff-linearb",
-    "competitor": "shortcut",
-    "page": "12-days-of-partners-integrations-and-other-good-stuff-linearb",
-    "score": 2,
-    "selectionReason": "High Score (Top 20)"
-  },
-  {
-    "url": "https://www.shortcut.com/blog/12-days-of-partners-integrations-and-other-good-stuff-react-spring",
-    "competitor": "shortcut",
-    "page": "12-days-of-partners-integrations-and-other-good-stuff-react-spring",
-    "score": 2,
-    "selectionReason": "High Score (Top 20)"
-  },
-  {
-    "url": "https://www.shortcut.com/blog/12-days-of-partners-integrations-and-other-good-stuff-rollbar",
-    "competitor": "shortcut",
-    "page": "12-days-of-partners-integrations-and-other-good-stuff-rollbar",
-    "score": 2,
-    "selectionReason": "High Score (Top 20)"
-  },
-  {
-    "url": "https://www.shortcut.com/blog/12-days-of-partners-integrations-and-other-good-stuff-sentry",
-    "competitor": "shortcut",
-    "page": "12-days-of-partners-integrations-and-other-good-stuff-sentry",
-    "score": 2,
-    "selectionReason": "High Score (Top 20)"
-  },
-  {
-    "url": "https://www.shortcut.com/blog/12-days-of-partners-integrations-and-other-good-stuff-slack",
-    "competitor": "shortcut",
-    "page": "12-days-of-partners-integrations-and-other-good-stuff-slack",
-    "score": 2,
-    "selectionReason": "High Score (Top 20)"
-  },
-  {
-    "url": "https://www.shortcut.com/blog/2020-product-year-in-review",
-    "competitor": "shortcut",
-    "page": "2020-product-year-in-review",
-    "score": 2,
-    "selectionReason": "High Score (Top 20)"
-  },
-  {
-    "url": "https://www.shortcut.com/blog/agile-product-management",
-    "competitor": "shortcut",
-    "page": "agile-product-management",
-    "score": 2,
-    "selectionReason": "Sample: BLOG"
-  },
-  {
-    "url": "https://www.shortcut.com/blog/an-easy-way-for-teams-to-submit-product-requests",
-    "competitor": "shortcut",
-    "page": "an-easy-way-for-teams-to-submit-product-requests",
-    "score": 2,
-    "reason": "Priority: /team/",
-    "selectionReason": "Priority: /team/"
-  },
-  {
-    "url": "https://www.shortcut.com/blog/api-v3",
-    "competitor": "shortcut",
-    "page": "api-v3",
-    "score": 2,
-    "selectionReason": "Sample: BLOG"
-  },
-  {
-    "url": "https://www.shortcut.com/blog/api-v3-update",
-    "competitor": "shortcut",
-    "page": "api-v3-update",
-    "score": 2,
-    "selectionReason": "Sample: BLOG"
-  },
-  {
-    "url": "https://www.shortcut.com/blog/boiler-rooms-head-of-product-on-merging-music-passion-and-technology-420bdf1b8cdf",
-    "competitor": "shortcut",
-    "page": "boiler-rooms-head-of-product-on-merging-music-passion-and-technology-420bdf1b8cdf",
-    "score": 2,
-    "selectionReason": "Sample: BLOG"
-  },
-  {
-    "url": "https://www.shortcut.com/blog/bug-reports-to-shortcut-with-new-instabug-and-bugsee-integrations",
-    "competitor": "shortcut",
-    "page": "bug-reports-to-shortcut-with-new-instabug-and-bugsee-integrations",
-    "score": 2,
-    "selectionReason": "Sample: BLOG"
-  },
-  {
-    "url": "https://www.shortcut.com/blog/how-marketing-teams-can-use-shortcut-to-work-alongside-product-development",
-    "competitor": "shortcut",
-    "page": "how-marketing-teams-can-use-shortcut-to-work-alongside-product-development",
-    "score": 2,
-    "reason": "Priority: /team/",
-    "selectionReason": "Priority: /team/"
-  },
-  {
-    "url": "https://www.shortcut.com/blog/how-we-designed-our-new-teams-feature",
-    "competitor": "shortcut",
-    "page": "how-we-designed-our-new-teams-feature",
-    "score": 2,
-    "reason": "Priority: /team/",
-    "selectionReason": "Priority: /team/"
-  },
-  {
-    "url": "https://www.shortcut.com/blog/how-we-use-organizations-workspaces-product-management-of-clubhouse",
-    "competitor": "shortcut",
-    "page": "how-we-use-organizations-workspaces-product-management-of-clubhouse",
-    "score": 2,
-    "reason": "Priority: /workspace/",
-    "selectionReason": "Priority: /workspace/"
-  },
-  {
-    "url": "https://www.shortcut.com/blog/how-we-use-teams-projects-product-management-clubhouse",
-    "competitor": "shortcut",
-    "page": "how-we-use-teams-projects-product-management-clubhouse",
-    "score": 2,
-    "reason": "Priority: /team/",
-    "selectionReason": "Priority: /team/"
-  },
-  {
-    "url": "https://www.shortcut.com/blog/introducing-more-affordable-pricing-for-smaller-teams-4478d4b7b960",
-    "competitor": "shortcut",
-    "page": "introducing-more-affordable-pricing-for-smaller-teams-4478d4b7b960",
-    "score": 2,
-    "reason": "Priority: /team/",
-    "selectionReason": "Priority: /team/"
-  },
-  {
-    "url": "https://www.shortcut.com/blog/shared-product-vision-for-technical-and-non-technical-teams",
-    "competitor": "shortcut",
-    "page": "shared-product-vision-for-technical-and-non-technical-teams",
-    "score": 2,
-    "reason": "Priority: /team/",
-    "selectionReason": "Priority: /team/"
-  },
-  {
-    "url": "https://www.shortcut.com/blog/software-engineering-teams-are-more-productive-when-they-work-at-a-comfortable-pace",
-    "competitor": "shortcut",
-    "page": "software-engineering-teams-are-more-productive-when-they-work-at-a-comfortable-pace",
-    "score": 2,
-    "reason": "Priority: /team/",
-    "selectionReason": "Priority: /team/"
-  },
-  {
-    "url": "https://www.shortcut.com/blog/twelve-days-of-integrations-pomodoneapp",
-    "competitor": "shortcut",
-    "page": "twelve-days-of-integrations-pomodoneapp",
-    "score": 2,
-    "reason": "Priority: /app/",
-    "selectionReason": "Priority: /app/"
-  },
-  {
     "url": "https://www.shortcut.com/integrations/productboard",
     "competitor": "shortcut",
     "page": "productboard",
@@ -252,46 +33,6 @@
     "page": "about",
     "score": 1,
     "selectionReason": "Critical Page"
-  },
-  {
-    "url": "https://www.shortcut.com/blog/3-tips-for-preventing-team-tool-fatigue-81837e49f5b8",
-    "competitor": "shortcut",
-    "page": "3-tips-for-preventing-team-tool-fatigue-81837e49f5b8",
-    "score": 1,
-    "reason": "Priority: /team/",
-    "selectionReason": "Priority: /team/"
-  },
-  {
-    "url": "https://www.shortcut.com/blog/5-ways-to-enable-cross-team-collaboration",
-    "competitor": "shortcut",
-    "page": "5-ways-to-enable-cross-team-collaboration",
-    "score": 1,
-    "reason": "Priority: /team/",
-    "selectionReason": "Priority: /team/"
-  },
-  {
-    "url": "https://www.shortcut.com/blog/6-key-skills-for-leading-a-software-team",
-    "competitor": "shortcut",
-    "page": "6-key-skills-for-leading-a-software-team",
-    "score": 1,
-    "reason": "Priority: /team/",
-    "selectionReason": "Priority: /team/"
-  },
-  {
-    "url": "https://www.shortcut.com/blog/7-best-jira-alternatives-for-engineering-teams-in-2026",
-    "competitor": "shortcut",
-    "page": "7-best-jira-alternatives-for-engineering-teams-in-2026",
-    "score": 1,
-    "reason": "Priority: /team/",
-    "selectionReason": "Priority: /team/"
-  },
-  {
-    "url": "https://www.shortcut.com/blog/8-best-jira-alternatives-for-engineering-teams-in-2026",
-    "competitor": "shortcut",
-    "page": "8-best-jira-alternatives-for-engineering-teams-in-2026",
-    "score": 1,
-    "reason": "Priority: /team/",
-    "selectionReason": "Priority: /team/"
   },
   {
     "url": "https://www.shortcut.com/integrations/aikido",
@@ -344,13 +85,6 @@
     "selectionReason": "Priority: /team/"
   },
   {
-    "url": "https://www.shortcut.com/contact",
-    "competitor": "shortcut",
-    "page": "contact",
-    "score": 0,
-    "selectionReason": "Critical Page"
-  },
-  {
     "url": "https://www.shortcut.com/privacy",
     "competitor": "shortcut",
     "page": "privacy",
@@ -370,5 +104,40 @@
     "page": "terms",
     "score": 0,
     "selectionReason": "Sample: LEGAL"
+  },
+  {
+    "url": "https://www.shortcut.com/blog/12-days-of-integrations-zapier",
+    "competitor": "shortcut",
+    "page": "12-days-of-integrations-zapier",
+    "score": 3,
+    "selectionReason": "High Score (Top 20)"
+  },
+  {
+    "url": "https://www.shortcut.com/blog/12-days-of-partners-integrations-and-other-good-stuff-productboard",
+    "competitor": "shortcut",
+    "page": "12-days-of-partners-integrations-and-other-good-stuff-productboard",
+    "score": 3,
+    "selectionReason": "High Score (Top 20)"
+  },
+  {
+    "url": "https://www.shortcut.com/blog/risks-you-need-to-know-about-before-you-develop-a-product-80efe3cfbac6",
+    "competitor": "shortcut",
+    "page": "risks-you-need-to-know-about-before-you-develop-a-product-80efe3cfbac6",
+    "score": 3,
+    "selectionReason": "High Score (Top 20)"
+  },
+  {
+    "url": "https://www.shortcut.com/blog/twelve-days-of-integrations-the-shortcut-api",
+    "competitor": "shortcut",
+    "page": "twelve-days-of-integrations-the-shortcut-api",
+    "score": 3,
+    "selectionReason": "High Score (Top 20)"
+  },
+  {
+    "url": "https://www.shortcut.com/blog/10-ways-to-use-shortcut-docs",
+    "competitor": "shortcut",
+    "page": "10-ways-to-use-shortcut-docs",
+    "score": 2,
+    "selectionReason": "High Score (Top 20)"
   }
 ]

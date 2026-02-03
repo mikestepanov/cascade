@@ -1,12 +1,5 @@
 [
   {
-    "url": "https://clickup.com/blog/sitemap.xml",
-    "competitor": "clickup",
-    "page": "sitemap.xml",
-    "score": 1,
-    "selectionReason": "Sample: BLOG"
-  },
-  {
     "url": "https://clickup.com/account",
     "competitor": "clickup",
     "page": "account",
@@ -85,5 +78,12 @@
     "score": 0,
     "reason": "Priority: /settings/",
     "selectionReason": "Priority: /settings/"
+  },
+  {
+    "url": "https://clickup.com/blog/sitemap.xml",
+    "competitor": "clickup",
+    "page": "sitemap.xml",
+    "score": 1,
+    "selectionReason": "Sample: BLOG"
   }
 ]

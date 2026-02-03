@@ -1,66 +1,10 @@
 [
   {
-    "url": "https://www.notion.com/en-gb/blog/sitemap.xml",
-    "competitor": "notion",
-    "page": "sitemap.xml",
-    "score": 1,
-    "selectionReason": "Sample: BLOG"
-  },
-  {
-    "url": "https://www.notion.com/es-es/blog/sitemap.xml",
-    "competitor": "notion",
-    "page": "sitemap.xml",
-    "score": 1,
-    "selectionReason": "Sample: BLOG"
-  },
-  {
-    "url": "https://www.notion.com/es/blog/sitemap.xml",
-    "competitor": "notion",
-    "page": "sitemap.xml",
-    "score": 1,
-    "selectionReason": "Sample: BLOG"
-  },
-  {
-    "url": "https://www.notion.com/zh-cn/blog/sitemap.xml",
-    "competitor": "notion",
-    "page": "sitemap.xml",
-    "score": 1,
-    "selectionReason": "Sample: BLOG"
-  },
-  {
-    "url": "https://www.notion.com/zh-tw/blog/sitemap.xml",
-    "competitor": "notion",
-    "page": "sitemap.xml",
-    "score": 1,
-    "selectionReason": "Sample: BLOG"
-  },
-  {
-    "url": "https://www.notion.com/de/help/sitemap.xml",
-    "competitor": "notion",
-    "page": "sitemap.xml",
-    "score": 0,
-    "selectionReason": "Sample: DOCS"
-  },
-  {
-    "url": "https://www.notion.com/en-gb/help/sitemap.xml",
-    "competitor": "notion",
-    "page": "sitemap.xml",
-    "score": 0,
-    "selectionReason": "Sample: DOCS"
-  },
-  {
     "url": "https://www.notion.com/en-gb/releases/sitemap.xml",
     "competitor": "notion",
     "page": "sitemap.xml",
     "score": 0,
     "selectionReason": "Sample: CHANGELOG"
-  },
-  {
-    "url": "https://www.notion.com/es-es/help/sitemap.xml",
-    "competitor": "notion",
-    "page": "sitemap.xml",
-    "score": 0,
-    "selectionReason": "Sample: DOCS"
   },
   {
     "url": "https://www.notion.com/es-es/releases/sitemap.xml",
@@ -70,70 +14,7 @@
     "selectionReason": "Sample: CHANGELOG"
   },
   {
-    "url": "https://www.notion.com/es/help/sitemap.xml",
-    "competitor": "notion",
-    "page": "sitemap.xml",
-    "score": 0,
-    "selectionReason": "Sample: DOCS"
-  },
-  {
-    "url": "https://www.notion.com/es/releases/sitemap.xml",
-    "competitor": "notion",
-    "page": "sitemap.xml",
-    "score": 0,
-    "selectionReason": "Sample: CHANGELOG"
-  },
-  {
-    "url": "https://www.notion.com/fr/help/sitemap.xml",
-    "competitor": "notion",
-    "page": "sitemap.xml",
-    "score": 0,
-    "selectionReason": "Sample: DOCS"
-  },
-  {
-    "url": "https://www.notion.com/ja/help/sitemap.xml",
-    "competitor": "notion",
-    "page": "sitemap.xml",
-    "score": 0,
-    "selectionReason": "Sample: DOCS"
-  },
-  {
-    "url": "https://www.notion.com/ko/help/sitemap.xml",
-    "competitor": "notion",
-    "page": "sitemap.xml",
-    "score": 0,
-    "selectionReason": "Sample: DOCS"
-  },
-  {
-    "url": "https://www.notion.com/pt/help/sitemap.xml",
-    "competitor": "notion",
-    "page": "sitemap.xml",
-    "score": 0,
-    "selectionReason": "Sample: DOCS"
-  },
-  {
-    "url": "https://www.notion.com/zh-cn/help/sitemap.xml",
-    "competitor": "notion",
-    "page": "sitemap.xml",
-    "score": 0,
-    "selectionReason": "Sample: DOCS"
-  },
-  {
     "url": "https://www.notion.com/zh-cn/releases/sitemap.xml",
-    "competitor": "notion",
-    "page": "sitemap.xml",
-    "score": 0,
-    "selectionReason": "Sample: CHANGELOG"
-  },
-  {
-    "url": "https://www.notion.com/zh-tw/help/sitemap.xml",
-    "competitor": "notion",
-    "page": "sitemap.xml",
-    "score": 0,
-    "selectionReason": "Sample: DOCS"
-  },
-  {
-    "url": "https://www.notion.com/zh-tw/releases/sitemap.xml",
     "competitor": "notion",
     "page": "sitemap.xml",
     "score": 0,
@@ -218,5 +99,47 @@
     "score": 0,
     "reason": "Priority: /settings/",
     "selectionReason": "Priority: /settings/"
+  },
+  {
+    "url": "https://www.notion.com/en-gb/help/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 0,
+    "selectionReason": "Sample: DOCS"
+  },
+  {
+    "url": "https://www.notion.com/es-es/help/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 0,
+    "selectionReason": "Sample: DOCS"
+  },
+  {
+    "url": "https://www.notion.com/zh-cn/help/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 0,
+    "selectionReason": "Sample: DOCS"
+  },
+  {
+    "url": "https://www.notion.com/en-gb/blog/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 1,
+    "selectionReason": "Sample: BLOG"
+  },
+  {
+    "url": "https://www.notion.com/es-es/blog/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 1,
+    "selectionReason": "Sample: BLOG"
+  },
+  {
+    "url": "https://www.notion.com/zh-cn/blog/sitemap.xml",
+    "competitor": "notion",
+    "page": "sitemap.xml",
+    "score": 1,
+    "selectionReason": "Sample: BLOG"
   }
 ]

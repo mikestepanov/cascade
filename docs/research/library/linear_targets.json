@@ -1,89 +1,5 @@
 [
   {
-    "url": "https://linear.app/blog/how-cursor-integrated-with-linear-for-agents",
-    "competitor": "linear",
-    "page": "how-cursor-integrated-with-linear-for-agents",
-    "score": 2,
-    "selectionReason": "High Score (Top 20)"
-  },
-  {
-    "url": "https://linear.app/blog/how-we-think-about-customer-experience-at-linear",
-    "competitor": "linear",
-    "page": "how-we-think-about-customer-experience-at-linear",
-    "score": 2,
-    "selectionReason": "High Score (Top 20)"
-  },
-  {
-    "url": "https://linear.app/blog/linear-raises-usd13m-in-series-a-funding-from-sequoia-capital",
-    "competitor": "linear",
-    "page": "linear-raises-usd13m-in-series-a-funding-from-sequoia-capital",
-    "score": 2,
-    "selectionReason": "High Score (Top 20)"
-  },
-  {
-    "url": "https://linear.app/blog/rethinking-the-startup-mvp-building-a-competitive-product",
-    "competitor": "linear",
-    "page": "rethinking-the-startup-mvp-building-a-competitive-product",
-    "score": 2,
-    "selectionReason": "High Score (Top 20)"
-  },
-  {
-    "url": "https://linear.app/docs/agents-api-deprecated",
-    "competitor": "linear",
-    "page": "agents-api-deprecated",
-    "score": 2,
-    "selectionReason": "High Score (Top 20)"
-  },
-  {
-    "url": "https://linear.app/docs/api-and-webhooks",
-    "competitor": "linear",
-    "page": "api-and-webhooks",
-    "score": 2,
-    "selectionReason": "High Score (Top 20)"
-  },
-  {
-    "url": "https://linear.app/docs/changes-to-linears-pricing-plans",
-    "competitor": "linear",
-    "page": "changes-to-linears-pricing-plans",
-    "score": 2,
-    "selectionReason": "High Score (Top 20)"
-  },
-  {
-    "url": "https://linear.app/docs/changes-to-user-roles-when-upgrading-to-enterprise",
-    "competitor": "linear",
-    "page": "changes-to-user-roles-when-upgrading-to-enterprise",
-    "score": 2,
-    "selectionReason": "High Score (Top 20)"
-  },
-  {
-    "url": "https://linear.app/docs/linear-for-product-managers",
-    "competitor": "linear",
-    "page": "linear-for-product-managers",
-    "score": 2,
-    "selectionReason": "High Score (Top 20)"
-  },
-  {
-    "url": "https://linear.app/docs/security",
-    "competitor": "linear",
-    "page": "security",
-    "score": 2,
-    "selectionReason": "High Score (Top 20)"
-  },
-  {
-    "url": "https://linear.app/docs/security-and-access",
-    "competitor": "linear",
-    "page": "security-and-access",
-    "score": 2,
-    "selectionReason": "High Score (Top 20)"
-  },
-  {
-    "url": "https://linear.app/docs/zapier",
-    "competitor": "linear",
-    "page": "zapier",
-    "score": 2,
-    "selectionReason": "High Score (Top 20)"
-  },
-  {
     "url": "https://linear.app/integrations/featurebase",
     "competitor": "linear",
     "page": "featurebase",
@@ -154,266 +70,6 @@
     "selectionReason": "Critical Page"
   },
   {
-    "url": "https://linear.app/blog/commure-dashboards",
-    "competitor": "linear",
-    "page": "commure-dashboards",
-    "score": 1,
-    "reason": "Priority: /dashboard/",
-    "selectionReason": "Priority: /dashboard/"
-  },
-  {
-    "url": "https://linear.app/blog/continuous-planning-in-linear",
-    "competitor": "linear",
-    "page": "continuous-planning-in-linear",
-    "score": 1,
-    "selectionReason": "Sample: BLOG"
-  },
-  {
-    "url": "https://linear.app/blog/cx-in-linear",
-    "competitor": "linear",
-    "page": "cx-in-linear",
-    "score": 1,
-    "selectionReason": "Sample: BLOG"
-  },
-  {
-    "url": "https://linear.app/blog/dashboards-best-practices",
-    "competitor": "linear",
-    "page": "dashboards-best-practices",
-    "score": 1,
-    "reason": "Priority: /dashboard/",
-    "selectionReason": "Priority: /dashboard/"
-  },
-  {
-    "url": "https://linear.app/blog/design-is-more-than-code",
-    "competitor": "linear",
-    "page": "design-is-more-than-code",
-    "score": 1,
-    "selectionReason": "Sample: BLOG"
-  },
-  {
-    "url": "https://linear.app/blog/designing-remote-work-at-linear",
-    "competitor": "linear",
-    "page": "designing-remote-work-at-linear",
-    "score": 1,
-    "reason": "Priority: /signin/",
-    "selectionReason": "Priority: /signin/"
-  },
-  {
-    "url": "https://linear.app/blog/giving-our-team-liquidity-through-linear-s-first-tender-offer",
-    "competitor": "linear",
-    "page": "giving-our-team-liquidity-through-linear-s-first-tender-offer",
-    "score": 1,
-    "reason": "Priority: /team/",
-    "selectionReason": "Priority: /team/"
-  },
-  {
-    "url": "https://linear.app/blog/how-we-run-projects-at-linear",
-    "competitor": "linear",
-    "page": "how-we-run-projects-at-linear",
-    "score": 1,
-    "reason": "Priority: /projects/",
-    "selectionReason": "Priority: /projects/"
-  },
-  {
-    "url": "https://linear.app/blog/linear-2021-wrapped",
-    "competitor": "linear",
-    "page": "linear-2021-wrapped",
-    "score": 1,
-    "reason": "Priority: /app/",
-    "selectionReason": "Priority: /app/"
-  },
-  {
-    "url": "https://linear.app/blog/linear-liquid-glass",
-    "competitor": "linear",
-    "page": "linear-liquid-glass",
-    "score": 1,
-    "selectionReason": "Sample: BLOG"
-  },
-  {
-    "url": "https://linear.app/blog/our-approach-to-building-the-agent-interaction-sdk",
-    "competitor": "linear",
-    "page": "our-approach-to-building-the-agent-interaction-sdk",
-    "score": 1,
-    "reason": "Priority: /app/",
-    "selectionReason": "Priority: /app/"
-  },
-  {
-    "url": "https://linear.app/blog/self-driving-saas",
-    "competitor": "linear",
-    "page": "self-driving-saas",
-    "score": 1,
-    "selectionReason": "Sample: BLOG"
-  },
-  {
-    "url": "https://linear.app/blog/settings-are-not-a-design-failure",
-    "competitor": "linear",
-    "page": "settings-are-not-a-design-failure",
-    "score": 1,
-    "reason": "Priority: /settings/",
-    "selectionReason": "Priority: /settings/"
-  },
-  {
-    "url": "https://linear.app/changelog/2019-10-21-zapier-integration",
-    "competitor": "linear",
-    "page": "2019-10-21-zapier-integration",
-    "score": 1,
-    "selectionReason": "Sample: CHANGELOG"
-  },
-  {
-    "url": "https://linear.app/changelog/2019-11-26-api-improvements",
-    "competitor": "linear",
-    "page": "2019-11-26-api-improvements",
-    "score": 1,
-    "selectionReason": "Sample: CHANGELOG"
-  },
-  {
-    "url": "https://linear.app/changelog/2020-11-11-favorite-ordering-content-search-and-zapier-updates",
-    "competitor": "linear",
-    "page": "2020-11-11-favorite-ordering-content-search-and-zapier-updates",
-    "score": 1,
-    "selectionReason": "Sample: CHANGELOG"
-  },
-  {
-    "url": "https://linear.app/changelog/2024-10-10-document-subscriptions",
-    "competitor": "linear",
-    "page": "2024-10-10-document-subscriptions",
-    "score": 1,
-    "selectionReason": "Sample: CHANGELOG"
-  },
-  {
-    "url": "https://linear.app/changelog/2025-08-14-product-intelligence-technology-preview",
-    "competitor": "linear",
-    "page": "2025-08-14-product-intelligence-technology-preview",
-    "score": 1,
-    "selectionReason": "Sample: CHANGELOG"
-  },
-  {
-    "url": "https://linear.app/docs/account-preferences",
-    "competitor": "linear",
-    "page": "account-preferences",
-    "score": 1,
-    "reason": "Priority: /account/",
-    "selectionReason": "Priority: /account/"
-  },
-  {
-    "url": "https://linear.app/docs/assigning-issues",
-    "competitor": "linear",
-    "page": "assigning-issues",
-    "score": 1,
-    "reason": "Priority: /signin/",
-    "selectionReason": "Priority: /signin/"
-  },
-  {
-    "url": "https://linear.app/docs/conceptual-model",
-    "competitor": "linear",
-    "page": "conceptual-model",
-    "score": 1,
-    "selectionReason": "Sample: DOCS"
-  },
-  {
-    "url": "https://linear.app/docs/configuring-workflows",
-    "competitor": "linear",
-    "page": "configuring-workflows",
-    "score": 1,
-    "selectionReason": "Sample: DOCS"
-  },
-  {
-    "url": "https://linear.app/docs/creating-issues",
-    "competitor": "linear",
-    "page": "creating-issues",
-    "score": 1,
-    "selectionReason": "Sample: DOCS"
-  },
-  {
-    "url": "https://linear.app/docs/favorites",
-    "competitor": "linear",
-    "page": "favorites",
-    "score": 1,
-    "selectionReason": "Sample: DOCS"
-  },
-  {
-    "url": "https://linear.app/docs/get-the-app",
-    "competitor": "linear",
-    "page": "get-the-app",
-    "score": 1,
-    "reason": "Priority: /app/",
-    "selectionReason": "Priority: /app/"
-  },
-  {
-    "url": "https://linear.app/docs/inbox",
-    "competitor": "linear",
-    "page": "inbox",
-    "score": 1,
-    "selectionReason": "Sample: DOCS"
-  },
-  {
-    "url": "https://linear.app/docs/my-issues",
-    "competitor": "linear",
-    "page": "my-issues",
-    "score": 1,
-    "selectionReason": "Sample: DOCS"
-  },
-  {
-    "url": "https://linear.app/docs/notifications",
-    "competitor": "linear",
-    "page": "notifications",
-    "score": 1,
-    "selectionReason": "Sample: DOCS"
-  },
-  {
-    "url": "https://linear.app/docs/private-teams",
-    "competitor": "linear",
-    "page": "private-teams",
-    "score": 1,
-    "reason": "Priority: /team/",
-    "selectionReason": "Priority: /team/"
-  },
-  {
-    "url": "https://linear.app/docs/profile",
-    "competitor": "linear",
-    "page": "profile",
-    "score": 1,
-    "reason": "Priority: /profile/",
-    "selectionReason": "Priority: /profile/"
-  },
-  {
-    "url": "https://linear.app/docs/pull-request-reviews",
-    "competitor": "linear",
-    "page": "pull-request-reviews",
-    "score": 1,
-    "selectionReason": "Sample: DOCS"
-  },
-  {
-    "url": "https://linear.app/docs/pulse",
-    "competitor": "linear",
-    "page": "pulse",
-    "score": 1,
-    "selectionReason": "Sample: DOCS"
-  },
-  {
-    "url": "https://linear.app/docs/start-guide",
-    "competitor": "linear",
-    "page": "start-guide",
-    "score": 1,
-    "selectionReason": "Sample: DOCS"
-  },
-  {
-    "url": "https://linear.app/docs/sub-teams",
-    "competitor": "linear",
-    "page": "sub-teams",
-    "score": 1,
-    "reason": "Priority: /team/",
-    "selectionReason": "Priority: /team/"
-  },
-  {
-    "url": "https://linear.app/docs/teams",
-    "competitor": "linear",
-    "page": "teams",
-    "score": 1,
-    "reason": "Priority: /team/",
-    "selectionReason": "Priority: /team/"
-  },
-  {
     "url": "https://linear.app/features",
     "competitor": "linear",
     "page": "features",
@@ -470,13 +126,6 @@
     "selectionReason": "Sample: CAREERS"
   },
   {
-    "url": "https://linear.app/contact",
-    "competitor": "linear",
-    "page": "contact",
-    "score": 0,
-    "selectionReason": "Critical Page"
-  },
-  {
     "url": "https://linear.app/privacy",
     "competitor": "linear",
     "page": "privacy",
@@ -489,5 +138,76 @@
     "page": "terms",
     "score": 0,
     "selectionReason": "Sample: LEGAL"
+  },
+  {
+    "url": "https://linear.app/docs/agents-api-deprecated",
+    "competitor": "linear",
+    "page": "agents-api-deprecated",
+    "score": 2,
+    "selectionReason": "High Score (Top 20)"
+  },
+  {
+    "url": "https://linear.app/docs/api-and-webhooks",
+    "competitor": "linear",
+    "page": "api-and-webhooks",
+    "score": 2,
+    "selectionReason": "High Score (Top 20)"
+  },
+  {
+    "url": "https://linear.app/docs/changes-to-linears-pricing-plans",
+    "competitor": "linear",
+    "page": "changes-to-linears-pricing-plans",
+    "score": 2,
+    "selectionReason": "High Score (Top 20)"
+  },
+  {
+    "url": "https://linear.app/docs/changes-to-user-roles-when-upgrading-to-enterprise",
+    "competitor": "linear",
+    "page": "changes-to-user-roles-when-upgrading-to-enterprise",
+    "score": 2,
+    "selectionReason": "High Score (Top 20)"
+  },
+  {
+    "url": "https://linear.app/docs/linear-for-product-managers",
+    "competitor": "linear",
+    "page": "linear-for-product-managers",
+    "score": 2,
+    "selectionReason": "High Score (Top 20)"
+  },
+  {
+    "url": "https://linear.app/blog/how-cursor-integrated-with-linear-for-agents",
+    "competitor": "linear",
+    "page": "how-cursor-integrated-with-linear-for-agents",
+    "score": 2,
+    "selectionReason": "High Score (Top 20)"
+  },
+  {
+    "url": "https://linear.app/blog/how-we-think-about-customer-experience-at-linear",
+    "competitor": "linear",
+    "page": "how-we-think-about-customer-experience-at-linear",
+    "score": 2,
+    "selectionReason": "High Score (Top 20)"
+  },
+  {
+    "url": "https://linear.app/blog/linear-raises-usd13m-in-series-a-funding-from-sequoia-capital",
+    "competitor": "linear",
+    "page": "linear-raises-usd13m-in-series-a-funding-from-sequoia-capital",
+    "score": 2,
+    "selectionReason": "High Score (Top 20)"
+  },
+  {
+    "url": "https://linear.app/blog/rethinking-the-startup-mvp-building-a-competitive-product",
+    "competitor": "linear",
+    "page": "rethinking-the-startup-mvp-building-a-competitive-product",
+    "score": 2,
+    "selectionReason": "High Score (Top 20)"
+  },
+  {
+    "url": "https://linear.app/blog/commure-dashboards",
+    "competitor": "linear",
+    "page": "commure-dashboards",
+    "score": 1,
+    "reason": "Priority: /dashboard/",
+    "selectionReason": "Priority: /dashboard/"
   }
 ]
