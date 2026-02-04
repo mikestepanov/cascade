@@ -69,5 +69,4 @@ docs/research/library/*/manifest.json
 docs/research/library/*/network.json
 docs/research/library/*/deep_data.json
 # Keep: *_tech.json (summaries)
-*.png
 *.webm
