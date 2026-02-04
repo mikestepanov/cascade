@@ -42,11 +42,11 @@ test.describe("Board Drag-Drop", () => {
     // Switch to backlog to find the issue
     await projectsPage.switchToTab("backlog");
 
-    // Find the issue card
-    const issueCard = page.locator("[data-issue-card]").filter({ hasText: issueTitle });
+    // Find the issue card - it's rendered as a button with the issue title
+    const issueCard = page.getByRole("button").filter({ hasText: issueTitle });
     await expect(issueCard).toBeVisible();
 
-    // Verify the card has draggable attribute
+    // Verify the card has draggable attribute (cards are draggable when canEdit=true)
     const draggable = await issueCard.getAttribute("draggable");
     expect(draggable).toBe("true");
     console.log("✓ Issue card is draggable");
@@ -97,8 +97,8 @@ test.describe("Board Drag-Drop", () => {
     // Switch to backlog to see the issue
     await projectsPage.switchToTab("backlog");
 
-    // Find the issue card
-    const issueCard = page.locator("[data-issue-card]").filter({ hasText: issueTitle });
+    // Find the issue card - it's rendered as a button with the issue title
+    const issueCard = page.getByRole("button").filter({ hasText: issueTitle });
     await expect(issueCard).toBeVisible();
     console.log("✓ Issue card visible in initial column");
 
@@ -163,8 +163,8 @@ test.describe("Board Drag-Drop", () => {
     await page.mouse.move(endX, endY, { steps: 10 });
     await page.mouse.up();
 
-    // Wait for potential API call to complete
-    await page.waitForTimeout(1000);
+    // Wait for mutation to complete by checking for network idle or UI update
+    await page.waitForLoadState("networkidle");
 
     // Verify issue is now in target column or status has changed
     // The issue card should now be in the target column

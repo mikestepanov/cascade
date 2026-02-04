@@ -172,8 +172,19 @@ export class OnboardingPage {
       try {
         await expect(this.tourNextButton).toBeVisible();
         await this.tourNextButton.click();
-        // Small delay to let animations complete
-        await this.page.waitForTimeout(300);
+        // Wait for animation to complete using Web Animations API
+        await this.tourPopover
+          .evaluate((el) => {
+            return new Promise<void>((resolve) => {
+              const animations = el.getAnimations();
+              if (!animations.length) {
+                resolve();
+                return;
+              }
+              Promise.all(animations.map((a) => a.finished)).then(() => resolve());
+            });
+          })
+          .catch(() => {});
       } catch {
         hasNext = false;
       }

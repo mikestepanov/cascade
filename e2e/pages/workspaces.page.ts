@@ -92,9 +92,9 @@ export class WorkspacesPage extends BasePage {
     const modal = this.page.getByRole("dialog");
     await modal.waitFor({ state: "visible" });
 
-    // Wait for input to be visible and stable
+    // Wait for input to be visible and editable
     await this.workspaceNameInput.waitFor({ state: "visible" });
-    await this.page.waitForTimeout(500);
+    await expect(this.workspaceNameInput).toBeEnabled();
 
     // Fill with name
     await this.workspaceNameInput.fill(name);
@@ -104,8 +104,7 @@ export class WorkspacesPage extends BasePage {
 
     if (description) {
       await this.workspaceDescriptionInput.waitFor({ state: "visible" });
-      // Ensure it's stable
-      await this.page.waitForTimeout(500);
+      await expect(this.workspaceDescriptionInput).toBeEnabled();
       await this.workspaceDescriptionInput.fill(description, { force: true });
     }
 
@@ -123,8 +122,8 @@ export class WorkspacesPage extends BasePage {
     // Wait for modal to close (name input disappears)
     await expect(this.workspaceNameInput).not.toBeVisible();
 
-    // Additional wait for list to refresh
-    await this.page.waitForTimeout(500);
+    // Wait for network to settle after mutation
+    await this.page.waitForLoadState("networkidle");
   }
 
   async expectWorkspacesView() {

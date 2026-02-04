@@ -213,8 +213,8 @@
 
 | Project      | Real-time Sync   | Technology                   | Latency |
 | ------------ | ---------------- | ---------------------------- | ------- |
-| **Nixelo**   | ✅✅✅ Excellent | Convex (built-in)            | <100ms  |
-| **AppFlowy** | ✅✅✅ Excellent | CRDT (Yjs)                   | <100ms  |
+| **Nixelo**   | ✅✅✅ Excellent | Convex (built-in)            | &lt;100ms  |
+| **AppFlowy** | ✅✅✅ Excellent | CRDT (Yjs)                   | &lt;100ms  |
 | **Canvas**   | ⭐ Limited       | Polling/ActionCable          | 1-5s    |
 | **Cal.com**  | ❌ None          | No real-time                 | N/A     |
 | **Kimai**    | ❌ None          | Traditional request/response | N/A     |

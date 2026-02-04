@@ -55,12 +55,11 @@ test.describe("Global Search", () => {
     await expect(issueResult).toBeVisible();
     console.log("✓ Issue found in search results");
 
-    // Verify result shows issue type badge
-    const issueBadge = page
-      .locator("[cmdk-item]")
-      .filter({ hasText: uniqueSearchTerm })
-      .getByText("issue");
-    await expect(issueBadge).toBeVisible();
+    // Verify result shows issue type badge (lowercase "issue" from result.type)
+    const issueItem = page.locator("[cmdk-item]").filter({ hasText: uniqueSearchTerm });
+    await expect(issueItem).toBeVisible();
+    // The Badge renders result.type which is "issue"
+    await expect(issueItem.getByText("issue", { exact: true })).toBeVisible();
     console.log("✓ Issue badge visible");
 
     // Close search
