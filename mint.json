@@ -7,6 +7,7 @@
     "dark": "#0A3BBF",
     "anchors": "#0F53FF"
   },
+  "favicon": "public/icon-192.png",
   "navigation": [
     {
       "group": "Introduction",
