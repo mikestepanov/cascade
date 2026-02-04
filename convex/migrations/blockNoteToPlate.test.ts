@@ -237,6 +237,7 @@ describe("BlockNote to Plate Converter", () => {
       const result = proseMirrorToSlate(proseMirror);
 
       expect(result[0].type).toBe("ul");
+      // @ts-expect-error - testing specific structure
       expect(result[0].children[0].type).toBe("li");
     });
 
