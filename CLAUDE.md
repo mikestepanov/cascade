@@ -167,10 +167,18 @@ await expect(page).toHaveURL(/\/dashboard/);
 await page.waitForLoadState("domcontentloaded");
 await element.waitFor({ state: "visible" });
 
+// ✅ CORRECT - Retry logic for flaky UI transitions
+await expect(async () => {
+  await button.click();
+  await expect(result).toBeVisible();
+}).toPass({ intervals: [500, 1000, 2000] });
+
 // ❌ WRONG - Hardcoded delays
 await page.waitForTimeout(1000);
 await new Promise(resolve => setTimeout(resolve, 500));
 ```
+
+**Use `expect().toPass()` for retry logic** when an action may need multiple attempts (e.g., clicking a button that triggers a React state transition). The intervals provide built-in waits between retries.
 
 If a test needs a timeout to pass, the underlying code likely has a performance or loading state issue that should be fixed.
 
