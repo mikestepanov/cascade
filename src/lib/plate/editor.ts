@@ -62,43 +62,36 @@ export function deserializeValue(json: string | null | undefined): Value {
   }
 }
 
+/** Check if a node is an empty text node */
+function isEmptyTextNode(node: unknown): boolean {
+  return (
+    node !== null &&
+    typeof node === "object" &&
+    "text" in node &&
+    (node as { text: string }).text === ""
+  );
+}
+
+/** Check if children array represents empty content */
+function hasEmptyChildren(children: unknown[]): boolean {
+  if (children.length === 0) return true;
+  if (children.length === 1 && isEmptyTextNode(children[0])) return true;
+  return false;
+}
+
+/** Check if a node is an empty paragraph */
+function isEmptyParagraph(node: unknown): boolean {
+  if (!node || typeof node !== "object") return false;
+  if (!("type" in node) || node.type !== "p") return false;
+  if (!("children" in node) || !Array.isArray(node.children)) return false;
+  return hasEmptyChildren(node.children);
+}
+
 /**
  * Check if a value is empty (only contains empty paragraph)
  */
 export function isEmptyValue(value: Value): boolean {
-  if (!Array.isArray(value) || value.length === 0) {
-    return true;
-  }
-
-  if (value.length > 1) {
-    return false;
-  }
-
-  const firstNode = value[0];
-  if (!firstNode || typeof firstNode !== "object") {
-    return true;
-  }
-
-  // Check if it's an empty paragraph
-  if ("type" in firstNode && firstNode.type === "p") {
-    if ("children" in firstNode && Array.isArray(firstNode.children)) {
-      const children = firstNode.children;
-      if (children.length === 0) {
-        return true;
-      }
-      if (children.length === 1) {
-        const firstChild = children[0];
-        if (
-          firstChild &&
-          typeof firstChild === "object" &&
-          "text" in firstChild &&
-          firstChild.text === ""
-        ) {
-          return true;
-        }
-      }
-    }
-  }
-
-  return false;
+  if (!Array.isArray(value) || value.length === 0) return true;
+  if (value.length > 1) return false;
+  return isEmptyParagraph(value[0]);
 }

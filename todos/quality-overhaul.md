@@ -275,7 +275,8 @@ grep -r "console\.log" src --include="*.ts*" | grep -v ".test." | grep -v "// DE
 
 | File | Function | Complexity | Max | Status |
 |------|----------|------------|-----|--------|
-| `src/lib/plate/markdown.ts` | `parseMarkdown` | 43 | 15 | Pending |
+| `src/lib/plate/markdown.ts` | `parseMarkdown` | 43 | 15 | **Done** |
+| `src/lib/plate/editor.ts` | `isEmptyValue` | 21 | 15 | **Done** |
 | `src/components/FilterBar.tsx` | `FilterBar` | 25 | 15 | **Done** |
 | `src/components/KanbanBoard.tsx` | filter callback | 17 | 15 | **Done** |
 | `src/components/plate/FloatingToolbar.tsx` | useEffect | 16 | 15 | **Done** |
@@ -288,7 +289,8 @@ grep -r "console\.log" src --include="*.ts*" | grep -v ".test." | grep -v "// DE
 - Split large switch statements into lookup objects
 
 **Implementation:**
-- [ ] Refactor `parseMarkdown` (43 complexity - worst offender)
+- [x] Refactor `parseMarkdown` (43 → <15) - extracted block parsers (parseCodeBlock, parseHeading, etc.) and parser chain pattern
+- [x] Refactor `isEmptyValue` (21 → <15) - extracted isEmptyTextNode, hasEmptyChildren, isEmptyParagraph helpers
 - [x] Refactor `FilterBar` component (25 → <15) - extracted FilterDropdown, SavedFiltersDropdown, SaveFilterDialog, countActiveFilters
 - [x] Refactor `KanbanBoard.tsx` filter callback (17 → <15) - extracted filter match helpers
 - [x] Refactor `FloatingToolbar.tsx` useEffect (16 → <15) - extracted getSelectionRect
@@ -313,7 +315,7 @@ grep -r "console\.log" src --include="*.ts*" | grep -v ".test." | grep -v "// DE
 - [ ] No duplicate type definitions in codebase
 - [ ] JSDoc on core convex functions
 - [ ] No `console.log` in production code (except error/warn)
-- [ ] All Biome complexity warnings resolved
+- [x] All Biome complexity warnings resolved
 
 ---
 

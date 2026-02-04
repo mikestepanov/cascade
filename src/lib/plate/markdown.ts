@@ -178,6 +178,188 @@ function tableToMarkdown(table: SlateElement): string {
   return lines.join("\n");
 }
 
+/** Result from a block parser: the parsed node and the new line index */
+interface ParseResult {
+  node: SlateElement;
+  newIndex: number;
+}
+
+/** Block parser function signature */
+type BlockParser = (lines: string[], index: number) => ParseResult | null;
+
+/** Parse a fenced code block (```...```) */
+function parseCodeBlock(lines: string[], startIndex: number): ParseResult | null {
+  const line = lines[startIndex];
+  if (!line.startsWith("```")) return null;
+
+  const language = line.slice(3).trim();
+  const codeLines: string[] = [];
+  let i = startIndex + 1;
+
+  while (i < lines.length && !lines[i].startsWith("```")) {
+    codeLines.push(lines[i]);
+    i++;
+  }
+
+  return {
+    node: {
+      type: NODE_TYPES.codeBlock,
+      language,
+      children: codeLines.map((codeLine) => ({
+        type: NODE_TYPES.codeLine,
+        children: [{ text: codeLine }],
+      })),
+    },
+    newIndex: i + 1, // Skip closing ```
+  };
+}
+
+/** Parse a heading (# ... to ######) */
+function parseHeading(lines: string[], index: number): ParseResult | null {
+  const match = lines[index].match(/^(#{1,6})\s+(.+)$/);
+  if (!match) return null;
+
+  const level = match[1].length;
+  const type =
+    level === 1 ? NODE_TYPES.heading1 : level === 2 ? NODE_TYPES.heading2 : NODE_TYPES.heading3;
+
+  return { node: { type, children: parseInlineText(match[2]) }, newIndex: index + 1 };
+}
+
+/** Parse a blockquote (> ...) */
+function parseBlockquote(lines: string[], index: number): ParseResult | null {
+  const line = lines[index];
+  if (!line.startsWith("> ")) return null;
+  return {
+    node: { type: NODE_TYPES.blockquote, children: parseInlineText(line.slice(2)) },
+    newIndex: index + 1,
+  };
+}
+
+/** Parse a checklist item (- [x] ... or - [ ] ...) */
+function parseChecklistItem(lines: string[], index: number): ParseResult | null {
+  const match = lines[index].match(/^\s*[-*]\s+\[([ x])\]\s+(.*)$/);
+  if (!match) return null;
+
+  return {
+    node: {
+      type: NODE_TYPES.todoList,
+      checked: match[1] === "x",
+      children: parseInlineText(match[2]),
+    },
+    newIndex: index + 1,
+  };
+}
+
+/** Parse a bullet list item (- ... or * ...) */
+function parseBulletItem(lines: string[], index: number): ParseResult | null {
+  const match = lines[index].match(/^\s*[-*]\s+(.*)$/);
+  if (!match) return null;
+  return {
+    node: { type: NODE_TYPES.listItem, children: parseInlineText(match[1]) },
+    newIndex: index + 1,
+  };
+}
+
+/** Parse a numbered list item (1. ...) */
+function parseNumberedItem(lines: string[], index: number): ParseResult | null {
+  const match = lines[index].match(/^\s*\d+\.\s+(.*)$/);
+  if (!match) return null;
+  return {
+    node: { type: NODE_TYPES.listItem, children: parseInlineText(match[1]) },
+    newIndex: index + 1,
+  };
+}
+
+/** Parse an image (![alt](url)) */
+function parseImage(lines: string[], index: number): ParseResult | null {
+  const match = lines[index].match(/^!\[([^\]]*)\]\(([^)]+)\)$/);
+  if (!match) return null;
+  return {
+    node: { type: NODE_TYPES.image, url: match[2], children: [{ text: "" }] },
+    newIndex: index + 1,
+  };
+}
+
+/** Parse a markdown table */
+function parseTableBlock(lines: string[], startIndex: number): ParseResult | null {
+  const line = lines[startIndex];
+  if (!line.startsWith("|") || !line.endsWith("|")) return null;
+
+  const tableRows: SlateElement[] = [];
+  let i = startIndex;
+
+  while (i < lines.length && lines[i].startsWith("|")) {
+    const rowLine = lines[i];
+    // Skip separator row (|---|---|)
+    if (rowLine.match(/^\|[\s-:|]+\|$/)) {
+      i++;
+      continue;
+    }
+
+    const cells = rowLine
+      .slice(1, -1)
+      .split("|")
+      .map((cell) => cell.trim());
+    const isHeader = tableRows.length === 0;
+
+    tableRows.push({
+      type: NODE_TYPES.tableRow,
+      children: cells.map((cell) => ({
+        type: isHeader ? NODE_TYPES.tableCellHeader : NODE_TYPES.tableCell,
+        children: parseInlineText(cell),
+      })),
+    });
+    i++;
+  }
+
+  if (tableRows.length === 0) return null;
+
+  return {
+    node: { type: NODE_TYPES.table, children: tableRows },
+    newIndex: i,
+  };
+}
+
+/** Parse empty line (returns null node to skip) */
+function parseEmptyLine(lines: string[], index: number): ParseResult | null {
+  if (lines[index].trim()) return null;
+  return { node: null as unknown as SlateElement, newIndex: index + 1 };
+}
+
+/** Parse paragraph (fallback) */
+function parseParagraph(lines: string[], index: number): ParseResult {
+  return {
+    node: { type: NODE_TYPES.paragraph, children: parseInlineText(lines[index]) },
+    newIndex: index + 1,
+  };
+}
+
+/**
+ * Block parsers in order of specificity (most specific patterns first).
+ * Checklist must come before bullet since "- [x]" would otherwise match "- " pattern.
+ */
+const BLOCK_PARSERS: BlockParser[] = [
+  parseCodeBlock,
+  parseHeading,
+  parseBlockquote,
+  parseChecklistItem, // Must be before bullet
+  parseBulletItem,
+  parseNumberedItem,
+  parseImage,
+  parseTableBlock,
+  parseEmptyLine,
+];
+
+/** Try each parser until one matches, return result or null */
+function tryParsers(lines: string[], index: number): ParseResult | null {
+  for (const parser of BLOCK_PARSERS) {
+    const result = parser(lines, index);
+    if (result) return result;
+  }
+  return null;
+}
+
 /**
  * Parse markdown string to Slate Value
  */
@@ -187,144 +369,20 @@ function parseMarkdown(markdown: string): Value {
 
   let i = 0;
   while (i < lines.length) {
-    const line = lines[i];
+    const result = tryParsers(lines, i);
 
-    // Code blocks
-    if (line.startsWith("```")) {
-      const language = line.slice(3).trim();
-      const codeLines: string[] = [];
-      i++;
-      while (i < lines.length && !lines[i].startsWith("```")) {
-        codeLines.push(lines[i]);
-        i++;
+    if (result) {
+      // null node means skip (empty line)
+      if (result.node) {
+        nodes.push(result.node);
       }
-      nodes.push({
-        type: NODE_TYPES.codeBlock,
-        language,
-        children: codeLines.map((codeLine) => ({
-          type: NODE_TYPES.codeLine,
-          children: [{ text: codeLine }],
-        })),
-      });
-      i++;
-      continue;
+      i = result.newIndex;
+    } else {
+      // Fallback to paragraph
+      const para = parseParagraph(lines, i);
+      nodes.push(para.node);
+      i = para.newIndex;
     }
-
-    // Headings
-    const headingMatch = line.match(/^(#{1,6})\s+(.+)$/);
-    if (headingMatch) {
-      const level = headingMatch[1].length;
-      const type =
-        level === 1 ? NODE_TYPES.heading1 : level === 2 ? NODE_TYPES.heading2 : NODE_TYPES.heading3;
-      nodes.push({
-        type,
-        children: parseInlineText(headingMatch[2]),
-      });
-      i++;
-      continue;
-    }
-
-    // Blockquotes
-    if (line.startsWith("> ")) {
-      nodes.push({
-        type: NODE_TYPES.blockquote,
-        children: parseInlineText(line.slice(2)),
-      });
-      i++;
-      continue;
-    }
-
-    // Checklist items
-    const checkMatch = line.match(/^\s*[-*]\s+\[([ x])\]\s+(.*)$/);
-    if (checkMatch) {
-      nodes.push({
-        type: NODE_TYPES.todoList,
-        checked: checkMatch[1] === "x",
-        children: parseInlineText(checkMatch[2]),
-      });
-      i++;
-      continue;
-    }
-
-    // Bullet list items
-    const bulletMatch = line.match(/^\s*[-*]\s+(.*)$/);
-    if (bulletMatch) {
-      nodes.push({
-        type: NODE_TYPES.listItem,
-        children: parseInlineText(bulletMatch[1]),
-      });
-      i++;
-      continue;
-    }
-
-    // Numbered list items
-    const numberedMatch = line.match(/^\s*\d+\.\s+(.*)$/);
-    if (numberedMatch) {
-      nodes.push({
-        type: NODE_TYPES.listItem,
-        children: parseInlineText(numberedMatch[1]),
-      });
-      i++;
-      continue;
-    }
-
-    // Images
-    const imageMatch = line.match(/^!\[([^\]]*)\]\(([^)]+)\)$/);
-    if (imageMatch) {
-      nodes.push({
-        type: NODE_TYPES.image,
-        url: imageMatch[2],
-        children: [{ text: "" }],
-      });
-      i++;
-      continue;
-    }
-
-    // Tables (simple detection)
-    if (line.startsWith("|") && line.endsWith("|")) {
-      const tableRows: SlateElement[] = [];
-      while (i < lines.length && lines[i].startsWith("|")) {
-        const rowLine = lines[i];
-        // Skip separator row
-        if (rowLine.match(/^\|[\s-:|]+\|$/)) {
-          i++;
-          continue;
-        }
-        const cells = rowLine
-          .slice(1, -1)
-          .split("|")
-          .map((cell) => cell.trim());
-        const isHeader = tableRows.length === 0;
-        tableRows.push({
-          type: NODE_TYPES.tableRow,
-          children: cells.map((cell) => ({
-            type: isHeader ? NODE_TYPES.tableCellHeader : NODE_TYPES.tableCell,
-            children: parseInlineText(cell),
-          })),
-        });
-        i++;
-      }
-      if (tableRows.length > 0) {
-        nodes.push({
-          type: NODE_TYPES.table,
-          children: tableRows,
-        });
-      }
-      continue;
-    }
-
-    // Empty lines - skip
-    if (!line.trim()) {
-      i++;
-      continue;
-    }
-
-    // Regular paragraphs
-    nodes.push({
-      type: NODE_TYPES.paragraph,
-      children: parseInlineText(line),
-    });
-    i++;
   }
 
   // Return at least one empty paragraph if no nodes
