@@ -22,11 +22,7 @@ test.describe("Permission Cascade", () => {
     if (!seedResult) console.warn("WARNING: Failed to seed templates in test setup");
   });
 
-  test("org owner can access organization settings", async ({
-    dashboardPage,
-    settingsPage,
-    page,
-  }) => {
+  test("org owner can access organization settings", async ({ dashboardPage, page }) => {
     // Navigate to dashboard (user is org owner from setup)
     await dashboardPage.goto();
     await dashboardPage.expectLoaded();
@@ -202,11 +198,7 @@ test.describe("Permission Cascade", () => {
     }
   });
 
-  test("organization members list is accessible to admins", async ({
-    settingsPage,
-    dashboardPage,
-    page,
-  }) => {
+  test("organization members list is accessible to admins", async ({ dashboardPage, page }) => {
     // Navigate to settings
     await dashboardPage.goto();
     await dashboardPage.navigateTo("settings");
