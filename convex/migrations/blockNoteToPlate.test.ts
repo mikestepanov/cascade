@@ -237,7 +237,8 @@ describe("BlockNote to Plate Converter", () => {
       const result = proseMirrorToSlate(proseMirror);
 
       expect(result[0].type).toBe("ul");
-      expect(result[0].children[0].type).toBe("li");
+      const firstChild = result[0].children[0];
+      expect("type" in firstChild && firstChild.type).toBe("li");
     });
 
     it("converts marks to text styles", () => {
