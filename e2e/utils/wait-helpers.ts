@@ -75,15 +75,14 @@ export async function waitForReactHydration(page: Page): Promise<void> {
 export async function waitForDropdown(page: Page, dropdownSelector: string): Promise<void> {
   const dropdown = page.locator(dropdownSelector);
   await dropdown.waitFor({ state: "visible" });
-  // Wait for dropdown to be stable (not animating)
+  // Wait for finite animations to complete (skip infinite ones like loaders)
   await dropdown.evaluate((el) => {
-    return new Promise<void>((resolve) => {
-      if (!el.getAnimations().length) {
-        resolve();
-        return;
-      }
-      Promise.all(el.getAnimations().map((a) => a.finished)).then(() => resolve());
+    const finiteAnimations = el.getAnimations().filter((a) => {
+      const timing = a.effect?.getComputedTiming();
+      return timing && timing.duration !== Infinity && timing.iterations !== Infinity;
     });
+    if (!finiteAnimations.length) return Promise.resolve();
+    return Promise.all(finiteAnimations.map((a) => a.finished));
   });
 }
 
@@ -93,15 +92,14 @@ export async function waitForDropdown(page: Page, dropdownSelector: string): Pro
 export async function waitForModal(page: Page, modalSelector = '[role="dialog"]'): Promise<void> {
   const modal = page.locator(modalSelector);
   await modal.waitFor({ state: "visible" });
-  // Wait for modal to be stable (not animating)
+  // Wait for finite animations to complete (skip infinite ones like loaders)
   await modal.evaluate((el) => {
-    return new Promise<void>((resolve) => {
-      if (!el.getAnimations().length) {
-        resolve();
-        return;
-      }
-      Promise.all(el.getAnimations().map((a) => a.finished)).then(() => resolve());
+    const finiteAnimations = el.getAnimations().filter((a) => {
+      const timing = a.effect?.getComputedTiming();
+      return timing && timing.duration !== Infinity && timing.iterations !== Infinity;
     });
+    if (!finiteAnimations.length) return Promise.resolve();
+    return Promise.all(finiteAnimations.map((a) => a.finished));
   });
 }
 

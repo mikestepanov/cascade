@@ -16,7 +16,7 @@
 
 ### Launch Channels
 
-- [ ] **Hacker News** - "Show HN: Nixelo - Open source Jira alternative with real-time collaboration"
+- [ ] **Hacker News** - "Show HN: Nixelo - Open-source Jira alternative with real-time collaboration"
 - [ ] **Reddit** - Post to r/selfhosted, r/opensource, r/programming
 - [ ] **Product Hunt** - Schedule launch, prepare assets
 - [ ] **awesome-selfhosted** - Submit PR to add Nixelo

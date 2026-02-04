@@ -69,7 +69,7 @@
 
 ### Issue Tracking ⭐⭐⭐⭐⭐
 
-- **Lightning-fast issue creation** - `C` keyboard shortcut, <50ms
+- **Lightning-fast issue creation** - `C` keyboard shortcut, &lt;50ms
 - **Rich text descriptions** - Markdown-based editor
 - **Custom fields** - Text, number, select, date
 - **Issue states** - Custom workflows
@@ -211,7 +211,7 @@
    - Power users love this
 
 4. **Real-Time Collaboration**
-   - Instant sync (<100ms)
+   - Instant sync (&lt;100ms)
    - Live presence indicators
    - Optimistic UI updates
    - Better than Jira, Asana, Monday
@@ -434,7 +434,7 @@
    - Navigate entire app via keyboard
 
 4. **Real-Time Done Right**
-   - Instant sync (<100ms)
+   - Instant sync (&lt;100ms)
    - Live presence indicators
    - Optimistic UI
    - Nixelo already has this via Convex!

@@ -50,7 +50,7 @@ import type { IssueType, IssuePriority } from "@/types/issues";
 
 **Implementation:**
 - [ ] Audit all type definitions with: `grep -r "IssueType\|IssuePriority\|IssueStatus" src --include="*.ts*"`
-- [ ] Create canonical `src/types/issues.ts` (or use Convex generated types)
+- [ ] Create canonical `src/types/issues.ts` (or use Convex-generated types)
 - [ ] Update all imports to use canonical source
 - [ ] Add lint rule to prevent local type redefinition
 
