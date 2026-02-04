@@ -42,10 +42,15 @@ test.describe("Teams", () => {
       timeout: 10000,
     });
 
-    // Click on the workspace card to navigate to it
-    const workspaceCard = page
+    // Click on the workspace card to navigate to it - scope to main content to avoid sidebar links
+    const mainContent = page
+      .locator("main")
+      .or(page.locator('[role="main"]'))
+      .or(page.locator(".flex-1"));
+    const workspaceCard = mainContent
       .locator(`a[href*="/workspaces/"]`)
-      .filter({ hasText: workspaceName });
+      .filter({ hasText: workspaceName })
+      .first();
     await expect(workspaceCard).toBeVisible({ timeout: 15000 });
     await workspaceCard.click();
 
