@@ -12,10 +12,9 @@ Each file in this folder is a complete feature specification with:
 
 | File | Feature | Priority | Effort |
 |------|---------|----------|--------|
-| [e2e-quality-overhaul.md](./e2e-quality-overhaul.md) | E2E test infrastructure & quality | P0 | Large |
+| [quality-overhaul.md](./quality-overhaul.md) | E2E tests, type consistency, complexity, docstrings | P0/P2 | Large |
 | [multi-level-views.md](./multi-level-views.md) | Board/Wiki/Calendar at org/workspace/team levels | P1 | Large |
 | [feature-gaps.md](./feature-gaps.md) | Rich text comments, user picker, Slack | P2 | Medium |
-| [tech-debt.md](./tech-debt.md) | Type consistency, docstrings | P2 | Small |
 | [agency-mvp.md](./agency-mvp.md) | Invoicing, client portal | P2 | Large |
 
 ## Deferred (Post-MVP)
