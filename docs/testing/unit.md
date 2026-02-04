@@ -250,10 +250,10 @@ screen.getByTestId("modal-content")
 |-------|---------------------|---------|
 | `getBy*` | Yes | Element |
 | `queryBy*` | No | Element or null |
-| `findBy*` | Yes (async) | Promise<Element> |
+| `findBy*` | Yes (async) | `Promise<Element>` |
 | `getAllBy*` | Yes | Element[] |
 | `queryAllBy*` | No | Element[] |
-| `findAllBy*` | Yes (async) | Promise<Element[]> |
+| `findAllBy*` | Yes (async) | `Promise<Element[]>` |
 
 ```typescript
 // Use getBy for elements that should exist

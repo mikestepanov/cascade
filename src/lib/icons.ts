@@ -50,6 +50,7 @@ export {
   Settings,
   Trash2,
   TrendingUp,
+  Upload,
   Users,
   Wifi,
   WifiOff,

@@ -6,9 +6,9 @@
 
 | Competitor     | "Scrappable" Feature     | Why it's useful                                              | Nixelo's "Configurable Edge"                                                                   |
 | :------------- | :----------------------- | :----------------------------------------------------------- | :--------------------------------------------------------------------------------------------- |
-| **Jibble**     | **Biometric Selfie**     | Prevents "buddy punching" in physical offices.               | **Trust Level:** Off by default. <br>**Proof Level:** Optional on clock-in.                    |
-| **Clockify**   | **Idle Detection**       | Pop-up to clean "dirty data" when timer is left running.     | **Trust Level:** Just a nudge. <br>**Accountability:** Auto-discard idle time.                 |
-| **Hubstaff**   | **Activity Percentages** | Helps spot burnout or "ghost employees."                     | **Scrap:** Key/Mouse counts. <br>**Edge:** **"Flow State" Meter** (High activity = Deep Work). |
+| **Jibble**     | **Biometric Selfie**     | Prevents "buddy punching" in physical offices.               | **Trust Level:** Off by default. <br />**Proof Level:** Optional on clock-in.                    |
+| **Clockify**   | **Idle Detection**       | Pop-up to clean "dirty data" when timer is left running.     | **Trust Level:** Just a nudge. <br />**Accountability:** Auto-discard idle time.                 |
+| **Hubstaff**   | **Activity Percentages** | Helps spot burnout or "ghost employees."                     | **Scrap:** Key/Mouse counts. <br />**Edge:** **"Flow State" Meter** (High activity = Deep Work). |
 | **Toggl**      | **Timeline Track**       | Low-friction way to reconstruct the day.                     | **Edge:** **"Private Mode"** (Ignore banking/personal sites).                                  |
 | **Insightful** | **Productivity Labels**  | Categorizes URLs (StackOverflow = Work, YouTube = Personal). | **Edge:** Auto-suggests project based on URL context.                                          |
 | **Staffcop**   | **Screen Capture**       | Proof of work for contractors.                               | **Edge:** **"Privacy-First"** (Blur or B&W only). Auto-delete after 72h.                       |

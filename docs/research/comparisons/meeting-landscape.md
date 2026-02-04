@@ -116,7 +116,7 @@ curl -X POST https://us-east-1.recall.ai/api/v1/bot \
   }'
 ```
 
-**Best for:** Teams who want to focus on product, not bot infrastructure. Low-medium volume (<100 hrs/mo).
+**Best for:** Teams who want to focus on product, not bot infrastructure. Low-medium volume (&lt;100 hrs/mo).
 
 ---
 
@@ -943,8 +943,8 @@ const response = await ollama.chat({
 
 | Factor | Build Yourself | Use Recall.ai |
 |--------|----------------|---------------|
-| **Monthly cost (<50 hrs)** | Higher | Lower |
-| **Monthly cost (>100 hrs)** | Lower | Higher |
+| **Monthly cost (&lt;50 hrs)** | Higher | Lower |
+| **Monthly cost (&gt;100 hrs)** | Lower | Higher |
 | **Time to Zoom/Teams** | Weeks | Hours |
 | **Maintenance burden** | You fix when platforms break | Zero |
 | **Customization** | Full control | Limited to API |
