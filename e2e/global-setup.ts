@@ -19,7 +19,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { type BrowserContext, chromium, type FullConfig, type Page } from "@playwright/test";
-import { AUTH_PATHS, RBAC_TEST_CONFIG, TEST_USERS, type TestUser, CONVEX_SITE_URL } from "./config";
+import { AUTH_PATHS, CONVEX_SITE_URL, RBAC_TEST_CONFIG, TEST_USERS, type TestUser } from "./config";
 import { testUserService, trySignInUser } from "./utils";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -138,7 +138,6 @@ async function setupTestUser(
  */
 async function waitForBackendReady(maxRetries = 60, intervalMs = 1000): Promise<boolean> {
   // Use a simple known endpoint (or just root) to check connectivity
-  const healthCheckUrl = `${CONVEX_SITE_URL}/e2e/cleanup`; // Using cleanup as it's a GET-safe-ish POST or just check connectivity
   // Actually, we can't easily GET a POST-only endpoint, but we can check if connection is refused.
   // Better: use a dedicated health check if available, or just try to fetch root and accept 404 (as long as it connects).
   // The CI failure was ECONNREFUSED, so connection is key.
@@ -154,7 +153,7 @@ async function waitForBackendReady(maxRetries = 60, intervalMs = 1000): Promise<
         console.log(`✓ Convex Backend is ready (status: ${res.status})`);
         return true;
       }
-    } catch (e) {
+    } catch {
       if (i % 5 === 0) console.log(`  ...waiting (${i}/${maxRetries})`);
       await new Promise((resolve) => setTimeout(resolve, intervalMs));
     }
