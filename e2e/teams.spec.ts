@@ -37,11 +37,21 @@ test.describe("Teams", () => {
     // First, go back to workspaces list
     await workspacesPage.goto();
 
-    // Click on the workspace card to navigate to it
-    const workspaceCard = page
+    // Wait for workspaces list to load - look for the page heading
+    await expect(page.getByRole("heading", { name: /workspaces/i })).toBeVisible({
+      timeout: 10000,
+    });
+
+    // Click on the workspace card to navigate to it - scope to main content to avoid sidebar links
+    const mainContent = page
+      .locator("main")
+      .or(page.locator('[role="main"]'))
+      .or(page.locator(".flex-1"));
+    const workspaceCard = mainContent
       .locator(`a[href*="/workspaces/"]`)
-      .filter({ hasText: workspaceName });
-    await expect(workspaceCard).toBeVisible();
+      .filter({ hasText: workspaceName })
+      .first();
+    await expect(workspaceCard).toBeVisible({ timeout: 15000 });
     await workspaceCard.click();
 
     // Should be in the workspace now

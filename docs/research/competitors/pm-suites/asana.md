@@ -273,7 +273,7 @@
 **Industry Distribution:**
 
 - Marketing (997 companies), Digital Marketing (945), Social Media (767)
-- Majority of customers are small companies (<$50M revenue, 69%)
+- Majority of customers are small companies (&lt;$50M revenue, 69%)
 - 15% are large enterprises (>$1B revenue)
 
 ---

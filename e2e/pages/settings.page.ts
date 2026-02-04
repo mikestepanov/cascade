@@ -305,8 +305,10 @@ export class SettingsPage extends BasePage {
   // ===================
 
   async openInviteUserModal() {
-    // Wait for the Admin tab content to be fully loaded
-    await this.page.waitForTimeout(2000);
+    // Wait for the Admin tab content to be fully loaded - wait for heading to be visible
+    await this.page
+      .getByRole("heading", { name: /organization settings/i })
+      .waitFor({ state: "visible" });
 
     // Use the first "Invite User" button (header one, not empty state one)
     const inviteBtn = this.inviteUserButton.first();
@@ -314,7 +316,8 @@ export class SettingsPage extends BasePage {
 
     // Scroll into view and wait for it to be stable
     await inviteBtn.scrollIntoViewIfNeeded();
-    await this.page.waitForTimeout(300);
+    // Wait for button to be enabled (stable)
+    await expect(inviteBtn).toBeEnabled();
 
     // Click using standard Playwright click
     await inviteBtn.click();

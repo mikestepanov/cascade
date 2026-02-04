@@ -71,9 +71,10 @@ export async function dismissAllToasts(page: Page, maxAttempts = 10): Promise<vo
     const count = await toasts.count();
     if (count === 0) break;
 
-    await toasts.nth(0).click();
-    // Wait briefly for toast to disappear
-    await page.waitForTimeout(100);
+    const firstToast = toasts.nth(0);
+    await firstToast.click();
+    // Wait for toast to disappear after clicking
+    await firstToast.waitFor({ state: "hidden" }).catch(() => {});
     attempts++;
   }
 }
@@ -87,8 +88,11 @@ export function isCI(): boolean {
 
 /**
  * Slow down test execution (for debugging)
+ * @deprecated Use Playwright's --slow-mo flag or browser context slowMo option instead
  */
 export async function slowMo(page: Page, ms = 100): Promise<void> {
+  // This function intentionally uses waitForTimeout for debugging purposes only.
+  // It should NOT be used in production tests - use Playwright's native slowMo options.
   await page.waitForTimeout(ms);
 }
 

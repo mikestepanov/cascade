@@ -25,8 +25,7 @@ async function resetOnboarding(parallelIndex: number): Promise<void> {
     if (!response.ok) {
       console.warn(`Failed to reset onboarding for ${email}: ${response.status}`);
     }
-    // Small delay to allow DB changes to propagate and UI to react
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    // Note: DB changes propagate reactively via Convex, no hardcoded delay needed
   } catch (e) {
     console.warn(`Failed to reset onboarding: ${e}`);
   }
