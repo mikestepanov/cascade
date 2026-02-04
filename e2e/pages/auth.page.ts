@@ -206,9 +206,9 @@ export class AuthPage extends BasePage {
       const continueBtn = this.continueWithEmailButton;
       if (await continueBtn.isVisible().catch(() => false)) {
         await continueBtn.click();
-        // Brief wait for React state update after click - necessary for form transition
-        // Using requestAnimationFrame-based wait instead of arbitrary timeout
-        await this.page.evaluate(() => new Promise((r) => requestAnimationFrame(r)));
+        // The .toPass() retry intervals (500, 1000, 2000ms) provide the wait
+        // No explicit wait needed - the expect() below will fail if not ready
+        // and .toPass() will retry after the interval
       }
 
       // Check expansion again
