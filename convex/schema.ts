@@ -240,7 +240,7 @@ const applicationTables = {
       dimensions: 512, // Voyage AI voyage-3-lite embedding dimension
       filterFields: ["projectId", "workspaceId", "teamId"], // Added workspaceId, teamId
     })
-    .index("by_project_type", ["projectId", "type"]),
+    .index("by_project_type", ["projectId", "type", "isDeleted"]),
 
   issueComments: defineTable({
     issueId: v.id("issues"),
