@@ -19,7 +19,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { type BrowserContext, chromium, type FullConfig, type Page } from "@playwright/test";
-import { AUTH_PATHS, RBAC_TEST_CONFIG, TEST_USERS, type TestUser } from "./config";
+import { AUTH_PATHS, CONVEX_SITE_URL, RBAC_TEST_CONFIG, TEST_USERS, type TestUser } from "./config";
 import { testUserService, trySignInUser } from "./utils";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -133,6 +133,36 @@ async function setupTestUser(
 }
 
 /**
+ * Wait for the Convex Backend (HTTP Actions) to be ready
+ * Polling loop for local dev server
+ */
+async function waitForBackendReady(maxRetries = 60, intervalMs = 1000): Promise<boolean> {
+  // Use a simple known endpoint (or just root) to check connectivity
+  // Actually, we can't easily GET a POST-only endpoint, but we can check if connection is refused.
+  // Better: use a dedicated health check if available, or just try to fetch root and accept 404 (as long as it connects).
+  // The CI failure was ECONNREFUSED, so connection is key.
+
+  console.log(`⏳ Waiting for Convex Backend at ${CONVEX_SITE_URL} ...`);
+
+  for (let i = 0; i < maxRetries; i++) {
+    try {
+      // Just check if we can connect to the port
+      const res = await fetch(CONVEX_SITE_URL);
+      // If we get a response (even 404), the server is up
+      if (res.status !== undefined) {
+        console.log(`✓ Convex Backend is ready (status: ${res.status})`);
+        return true;
+      }
+    } catch {
+      if (i % 5 === 0) console.log(`  ...waiting (${i}/${maxRetries})`);
+      await new Promise((resolve) => setTimeout(resolve, intervalMs));
+    }
+  }
+  console.error("❌ Convex Backend failed to start within timeout");
+  return false;
+}
+
+/**
  * Wait for the React app to be fully loaded
  */
 async function waitForAppReady(page: Page, baseURL: string): Promise<boolean> {
@@ -181,6 +211,14 @@ async function globalSetup(config: FullConfig): Promise<void> {
     fs.rmSync(AUTH_DIR, { recursive: true, force: true });
   }
   fs.mkdirSync(AUTH_DIR, { recursive: true });
+
+  // 0. Wait for Convex Backend (HTTP Actions)
+  const backendReady = await waitForBackendReady();
+  if (!backendReady) {
+    throw new Error(
+      "Convex Backend (HTTP Actions) failed to start. Cannot proceed with global setup.",
+    );
+  }
 
   const browser = await chromium.launch();
 

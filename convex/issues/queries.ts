@@ -443,7 +443,7 @@ export const get = query({
     const userId = await getAuthUserId(ctx);
     const issue = await ctx.db.get(args.id);
 
-    if (!issue) {
+    if (!issue || issue.isDeleted) {
       return null;
     }
 
@@ -512,7 +512,7 @@ export const listComments = query({
     const userId = await getAuthUserId(ctx);
     const issue = await ctx.db.get(args.issueId);
 
-    if (!issue) {
+    if (!issue || issue.isDeleted) {
       throw notFound("issue", args.issueId);
     }
 
@@ -582,7 +582,7 @@ export const listSubtasks = authenticatedQuery({
   args: { parentId: v.id("issues") },
   handler: async (ctx, args) => {
     const parentIssue = await ctx.db.get(args.parentId);
-    if (!parentIssue) {
+    if (!parentIssue || parentIssue.isDeleted) {
       return [];
     }
 

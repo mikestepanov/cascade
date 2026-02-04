@@ -11,7 +11,7 @@ import {
 } from "../customFunctions";
 import { validate } from "../lib/constrainedValidators";
 import { rateLimited, validation } from "../lib/errors";
-import { cascadeDelete } from "../lib/relationships";
+import { softDeleteFields } from "../lib/softDeleteHelpers";
 import { assertCanEditProject, assertIsProjectAdmin } from "../projectAccess";
 import { workflowCategories } from "../validators";
 import {
@@ -661,8 +661,16 @@ export const bulkDelete = authenticatedMutation({
         continue;
       }
 
-      await cascadeDelete(ctx, "issues", issueId);
-      await ctx.db.delete(issueId);
+      // Soft delete issue
+      await ctx.db.patch(issueId, softDeleteFields(ctx.userId));
+
+      // Log activity
+      await ctx.db.insert("issueActivity", {
+        issueId,
+        userId: ctx.userId,
+        action: "deleted",
+      });
+
       results.push(issueId);
     }
 
