@@ -8,6 +8,7 @@
  *   4. Query issues         — N+1 queries, unbounded .collect(), missing indexes
  *   5. Arbitrary Tailwind   — arbitrary values like h-[50px] (warning only)
  *   6. Type consistency     — ensures types imported from canonical sources, not duplicated
+ *   7. Test ID constants    — ensures data-testid uses TEST_IDS constants, not strings
  *
  * Exit code 1 if any error-level check fails.
  * Arbitrary Tailwind + MEDIUM/LOW query issues are warnings only.
@@ -21,6 +22,7 @@ import { run as runArbitraryTailwindCheck } from "./validate/check-arbitrary-tw.
 import { run as runColorAudit } from "./validate/check-colors.js";
 import { run as runQueryIssuesCheck } from "./validate/check-queries.js";
 import { run as runStandardsCheck } from "./validate/check-standards.js";
+import { run as runTestIdsCheck } from "./validate/check-test-ids.js";
 import { run as runTypeConsistencyCheck } from "./validate/check-types.js";
 import { c } from "./validate/utils.js";
 
@@ -31,6 +33,7 @@ const checks = [
   { name: "Query issues", fn: runQueryIssuesCheck },
   { name: "Arbitrary Tailwind", fn: runArbitraryTailwindCheck },
   { name: "Type consistency", fn: runTypeConsistencyCheck },
+  { name: "Test ID constants", fn: runTestIdsCheck },
 ];
 
 console.log(`\n${c.bold}Running validation...${c.reset}\n`);

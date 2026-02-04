@@ -22,6 +22,7 @@ import * as fs from "node:fs";
 import * as path from "node:path";
 import { chromium, type Page } from "@playwright/test";
 // Env loaded via --env-file=.env.local in the npm script
+import { TEST_IDS } from "../src/lib/test-ids";
 import { TEST_USERS } from "./config";
 import { type SeedScreenshotResult, testUserService } from "./utils/test-user-service";
 
@@ -250,9 +251,13 @@ async function screenshotFilled(
     await page.waitForTimeout(SETTLE_MS);
 
     // Calendar view-mode screenshots: day, week, month
-    // Toggle items have data-testid="calendar-mode-{day|week|month}".
+    const calendarModeTestIds = {
+      day: TEST_IDS.CALENDAR.MODE_DAY,
+      week: TEST_IDS.CALENDAR.MODE_WEEK,
+      month: TEST_IDS.CALENDAR.MODE_MONTH,
+    } as const;
     for (const mode of ["day", "week", "month"] as const) {
-      const toggleItem = page.getByTestId(`calendar-mode-${mode}`);
+      const toggleItem = page.getByTestId(calendarModeTestIds[mode]);
       if ((await toggleItem.count()) > 0) {
         await toggleItem.first().click();
         await page.waitForTimeout(SETTLE_MS);
@@ -267,7 +272,7 @@ async function screenshotFilled(
 
     // Event details modal screenshot — click first visible calendar event
     // Switch back to week view for the modal screenshot (events are most visible)
-    const weekToggle = page.getByTestId("calendar-mode-week");
+    const weekToggle = page.getByTestId(TEST_IDS.CALENDAR.MODE_WEEK);
     if ((await weekToggle.count()) > 0) {
       await weekToggle.first().click();
       await page.waitForTimeout(SETTLE_MS);

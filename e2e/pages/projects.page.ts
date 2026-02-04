@@ -1,5 +1,6 @@
 import type { Locator, Page } from "@playwright/test";
 import { expect } from "@playwright/test";
+import { TEST_IDS } from "../../src/lib/test-ids";
 import { BasePage } from "./base.page";
 
 /**
@@ -98,8 +99,8 @@ export class ProjectsPage extends BasePage {
     // We'll pick the first template by default or look for specific one
     // const templateButton = this.createProjectForm.getByRole("button").filter({ hasText: "Software Project" });
 
-    this.projectNameInput = page.getByTestId("project-name-input");
-    this.projectKeyInput = page.getByTestId("project-key-input");
+    this.projectNameInput = page.getByTestId(TEST_IDS.PROJECT.NAME_INPUT);
+    this.projectKeyInput = page.getByTestId(TEST_IDS.PROJECT.KEY_INPUT);
     this.projectDescriptionInput = page.getByLabel(/description/i);
     this.makePublicCheckbox = page.getByRole("checkbox", { name: /public/i });
 
@@ -143,7 +144,7 @@ export class ProjectsPage extends BasePage {
     this.settingsTab = page.getByRole("link", { name: /^Settings$/ });
     // Issue detail dialog
     // Issue detail dialog - distinct from Create Issue modal
-    this.issueDetailDialog = page.getByTestId("issue-detail-modal");
+    this.issueDetailDialog = page.getByTestId(TEST_IDS.ISSUE.DETAIL_MODAL);
     this.startTimerButton = this.issueDetailDialog.getByRole("button", { name: "Start Timer" });
     this.stopTimerButton = this.issueDetailDialog.getByRole("button", { name: /stop timer|stop/i });
     this.timerStoppedToast = page.getByText(/Timer stopped/i);

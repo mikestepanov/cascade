@@ -4,6 +4,7 @@ import { Flex } from "@/components/ui/Flex";
 import { useOrganization } from "@/hooks/useOrgContext";
 import { Check, Copy } from "@/lib/icons";
 import { getPriorityColor, getTypeIcon } from "@/lib/issue-utils";
+import { TEST_IDS } from "@/lib/test-ids";
 import { IssueDetailLayout, useIssueDetail } from "./IssueDetailView";
 import { Badge } from "./ui/Badge";
 import { Button } from "./ui/Button";
@@ -53,7 +54,7 @@ export function IssueDetailModal({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         className="sm:max-w-5xl max-h-panel-lg overflow-y-auto p-0"
-        data-testid="issue-detail-modal"
+        data-testid={TEST_IDS.ISSUE.DETAIL_MODAL}
       >
         <DialogHeader className="px-6 pt-6 pb-0">
           <Flex align="center" justify="between">
