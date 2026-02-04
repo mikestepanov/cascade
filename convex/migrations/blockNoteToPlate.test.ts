@@ -3,6 +3,7 @@
  */
 
 import { describe, expect, it } from "vitest";
+import type { SlateElement } from "./blockNoteToPlate";
 import {
   blockNoteToSlate,
   convertToSlate,
@@ -237,8 +238,7 @@ describe("BlockNote to Plate Converter", () => {
       const result = proseMirrorToSlate(proseMirror);
 
       expect(result[0].type).toBe("ul");
-      // @ts-expect-error - we know this is an element
-      expect(result[0].children[0].type).toBe("li");
+      expect((result[0].children[0] as SlateElement).type).toBe("li");
     });
 
     it("converts marks to text styles", () => {
