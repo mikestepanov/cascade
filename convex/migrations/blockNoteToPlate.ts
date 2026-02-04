@@ -93,7 +93,7 @@ interface SlateText {
   code?: boolean;
 }
 
-interface SlateElement {
+export interface SlateElement {
   type: string;
   children: (SlateElement | SlateText)[];
   url?: string;
