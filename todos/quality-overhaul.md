@@ -273,11 +273,14 @@ grep -r "console\.log" src --include="*.ts*" | grep -v ".test." | grep -v "// DE
 
 **Current warnings:**
 
-| File | Function | Complexity | Max |
-|------|----------|------------|-----|
-| `src/lib/plate/markdown.ts` | `parseMarkdown` | 43 | 15 |
-| `src/components/FilterBar.tsx` | `FilterBar` | 25 | 15 |
-| `src/components/KanbanBoard.tsx` | filter callback | 17 | 15 |
+| File | Function | Complexity | Max | Status |
+|------|----------|------------|-----|--------|
+| `src/lib/plate/markdown.ts` | `parseMarkdown` | 43 | 15 | Pending |
+| `src/components/FilterBar.tsx` | `FilterBar` | 25 | 15 | **Done** |
+| `src/components/KanbanBoard.tsx` | filter callback | 17 | 15 | **Done** |
+| `src/components/plate/FloatingToolbar.tsx` | useEffect | 16 | 15 | **Done** |
+| `src/components/plate/SlashMenu.tsx` | useEffect/handleSelect | 17 | 15 | **Done** |
+| `e2e/permission-cascade.spec.ts` | unused params | - | - | **Done** |
 
 **Approach:**
 - Extract helper functions
@@ -286,8 +289,11 @@ grep -r "console\.log" src --include="*.ts*" | grep -v ".test." | grep -v "// DE
 
 **Implementation:**
 - [ ] Refactor `parseMarkdown` (43 complexity - worst offender)
-- [ ] Refactor `FilterBar` component (25 complexity)
-- [ ] Refactor `KanbanBoard.tsx` filter callback (17 complexity)
+- [x] Refactor `FilterBar` component (25 → <15) - extracted FilterDropdown, SavedFiltersDropdown, SaveFilterDialog, countActiveFilters
+- [x] Refactor `KanbanBoard.tsx` filter callback (17 → <15) - extracted filter match helpers
+- [x] Refactor `FloatingToolbar.tsx` useEffect (16 → <15) - extracted getSelectionRect
+- [x] Refactor `SlashMenu.tsx` (17 → <15) - extracted detectSlashTrigger, deleteSlashCommand
+- [x] Remove unused params in `e2e/permission-cascade.spec.ts`
 
 ---
 
