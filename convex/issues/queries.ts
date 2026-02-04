@@ -123,8 +123,9 @@ export const listEpics = authenticatedQuery({
     const epics = await safeCollect(
       ctx.db
         .query("issues")
-        .withIndex("by_project_type", (q) => q.eq("projectId", args.projectId).eq("type", "epic"))
-        .filter(notDeleted),
+        .withIndex("by_project_type", (q) =>
+          q.eq("projectId", args.projectId).eq("type", "epic").lt("isDeleted", true),
+        ),
       200, // Reasonable limit for epics
       "project epics",
     );
@@ -203,12 +204,12 @@ export const listRoadmapIssues = authenticatedQuery({
       const outcomes = await Promise.all(
         typesToFetch.map((type) =>
           safeCollect(
-            ctx.db
-              .query("issues")
-              .withIndex("by_project_type", (q) =>
-                q.eq("projectId", args.projectId).eq("type", type as Doc<"issues">["type"]),
-              )
-              .filter(notDeleted),
+            ctx.db.query("issues").withIndex("by_project_type", (q) =>
+              q
+                .eq("projectId", args.projectId)
+                .eq("type", type as Doc<"issues">["type"])
+                .lt("isDeleted", true),
+            ),
             BOUNDED_LIST_LIMIT,
             `roadmap issues type=${type}`,
           ),
@@ -279,9 +280,8 @@ export const listRoadmapIssuesPaginated = authenticatedQuery({
     const result = await ctx.db
       .query("issues")
       .withIndex("by_project_type", (q) =>
-        q.eq("projectId", args.projectId).eq("type", ROOT_ISSUE_TYPES[0]),
+        q.eq("projectId", args.projectId).eq("type", ROOT_ISSUE_TYPES[0]).lt("isDeleted", true),
       )
-      .filter(notDeleted)
       .paginate(args.paginationOpts);
 
     return {
@@ -304,7 +304,9 @@ export const listSelectableIssues = authenticatedQuery({
 
     const issues = await ctx.db
       .query("issues")
-      .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
+      .withIndex("by_project_deleted", (q) =>
+        q.eq("projectId", args.projectId).lt("isDeleted", true),
+      )
       .order("desc")
       .take(500);
 
@@ -673,8 +675,9 @@ export const search = authenticatedQuery({
       issues = await safeCollect(
         ctx.db
           .query("issues")
-          .withIndex("by_project", (q) => q.eq("projectId", projectId))
-          .filter(notDeleted)
+          .withIndex("by_project_deleted", (q) =>
+            q.eq("projectId", projectId).lt("isDeleted", true),
+          )
           .order("desc"),
         fetchLimit,
         "issue search by project",
