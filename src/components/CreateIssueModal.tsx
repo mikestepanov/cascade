@@ -1,5 +1,6 @@
 import { api } from "@convex/_generated/api";
 import type { Doc, Id } from "@convex/_generated/dataModel";
+import { ISSUE_PRIORITIES, ISSUE_TYPES_WITH_SUBTASK } from "@convex/validators";
 import { useForm } from "@tanstack/react-form";
 import { useAction, useMutation, useQuery } from "convex/react";
 import { useEffect, useState } from "react";
@@ -25,8 +26,8 @@ import { Select } from "./ui/form";
 // Schema
 // =============================================================================
 
-const issueTypes = ["task", "bug", "story", "epic", "subtask"] as const;
-const priorities = ["lowest", "low", "medium", "high", "highest"] as const;
+const issueTypes = ISSUE_TYPES_WITH_SUBTASK;
+const priorities = ISSUE_PRIORITIES;
 
 const createIssueSchema = z.object({
   title: z.string().min(1, "Title is required"),

@@ -1,7 +1,6 @@
 import { convexTest } from "convex-test";
 import { describe, expect, it } from "vitest";
 import type { Id } from "./_generated/dataModel";
-import type { ProjectRole } from "./rbac";
 import { hasMinimumRole } from "./rbac";
 import schema from "./schema";
 import { modules } from "./testSetup.test-helper";
@@ -11,6 +10,7 @@ import {
   createTestProject,
   createTestUser,
 } from "./testUtils";
+import type { ProjectRole } from "./validators";
 
 describe("RBAC Utilities", () => {
   describe("hasMinimumRole", () => {

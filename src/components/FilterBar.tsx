@@ -1,5 +1,6 @@
 import { api } from "@convex/_generated/api";
 import type { Doc, Id } from "@convex/_generated/dataModel";
+import { ISSUE_PRIORITIES, ISSUE_TYPES } from "@convex/validators";
 import { useMutation, useQuery } from "convex/react";
 import type { ReactNode } from "react";
 import { useCallback, useState } from "react";
@@ -39,8 +40,7 @@ interface FilterBarProps {
   onFilterChange: (filters: BoardFilters) => void;
 }
 
-const ISSUE_TYPES = ["task", "bug", "story", "epic"] as const;
-const PRIORITIES = ["highest", "high", "medium", "low", "lowest"] as const;
+const PRIORITIES_DISPLAY_ORDER = [...ISSUE_PRIORITIES].reverse();
 
 /** Count total active filters across all filter types */
 function countActiveFilters(filters: BoardFilters): number {
@@ -321,7 +321,7 @@ export function FilterBar({ projectId, filters, onFilterChange }: FilterBarProps
         <FilterDropdown
           label="Priority"
           activeCount={filters.priority?.length ?? 0}
-          items={PRIORITIES}
+          items={PRIORITIES_DISPLAY_ORDER}
           selectedValues={filters.priority}
           onToggle={(priority) => toggleArrayFilter("priority", priority)}
           getKey={(priority) => priority}

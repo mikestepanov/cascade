@@ -11,9 +11,6 @@ import { BOUNDED_LIST_LIMIT } from "./lib/boundedQueries";
 import { notFound } from "./lib/errors";
 import { freeUnitTypes, serviceTypes } from "./validators";
 
-// Service types
-export type ServiceType = "transcription" | "email" | "sms" | "ai";
-
 // Get current month string
 function getCurrentMonth(): string {
   const now = new Date();

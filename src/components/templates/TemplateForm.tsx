@@ -1,5 +1,6 @@
 import { api } from "@convex/_generated/api";
 import type { Id } from "@convex/_generated/dataModel";
+import { ISSUE_PRIORITIES, ISSUE_TYPES } from "@convex/validators";
 import { useForm } from "@tanstack/react-form";
 import { useMutation } from "convex/react";
 import { useEffect } from "react";
@@ -14,8 +15,8 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "
 // Schema
 // =============================================================================
 
-const issueTypes = ["task", "bug", "story", "epic"] as const;
-const priorities = ["lowest", "low", "medium", "high", "highest"] as const;
+const issueTypes = ISSUE_TYPES;
+const priorities = ISSUE_PRIORITIES;
 
 const templateSchema = z.object({
   name: z.string().min(1, "Name is required"),
