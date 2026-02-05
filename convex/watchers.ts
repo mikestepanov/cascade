@@ -71,10 +71,7 @@ export const unwatch = authenticatedMutation({
   },
 });
 
-/**
- * Get all watchers for an issue with user details
- * Public query - no auth required
- */
+/** Retrieves all watchers for an issue with user details using batch fetching. */
 export const getWatchers = query({
   args: {
     issueId: v.id("issues"),

@@ -74,10 +74,7 @@ const TABLES: TableNames[] = [
   "authVerificationCodes",
 ];
 
-/**
- * Purge all data from the database.
- * This is a mutation that can be called via CLI: npx convex run purge:purgeData
- */
+/** Purges all data from the database in batches, requires confirmation parameter. */
 export const purgeData = mutation({
   args: {
     confirm: v.boolean(),

@@ -8,14 +8,16 @@
 
 ## Remaining Tasks
 
-### Task 9: Docstring Coverage
+### Task 9: Docstring Coverage ✅
 
-**Current state:** 32.5% coverage
+**Current state:** ~95% coverage on exported convex functions
 
-**TODO:**
-- [ ] Run: `grep -L "@param\|@returns" convex/*.ts` to find undocumented files
-- [ ] Add JSDoc to core exported queries/mutations
-- [ ] Add JSDoc to complex utility functions
+**DONE:**
+- [x] Audited all convex files — found ~73 undocumented exported functions across 24 files
+- [x] Phase 1: Integration files (webhooks, meetingBot, googleCalendar, github) — 58 functions
+- [x] Phase 2: Core feature files (presence, notifications, projectTemplates) — 16 functions
+- [x] Phase 3: System files (e2e, automationRules, documentTemplates, apiKeys, etc.) — 17 files
+- [x] Verified with `pnpm fixme` — biome + typecheck pass clean
 
 ---
 
@@ -34,6 +36,6 @@
 
 ### Code Quality
 - [x] No duplicate type definitions in codebase
-- [ ] JSDoc on core convex functions
+- [x] JSDoc on core convex functions
 - [x] No `console.log` in production code (verified clean)
 - [x] All Biome complexity warnings resolved

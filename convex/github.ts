@@ -8,7 +8,7 @@ import { conflict, forbidden, notFound, validation } from "./lib/errors";
 import { notDeleted } from "./lib/softDeleteHelpers";
 import { ciStatuses, prStates } from "./validators";
 
-// Connect GitHub account (OAuth callback)
+/** Connect a GitHub account via OAuth callback. Encrypts and stores access tokens. */
 export const connectGitHub = authenticatedMutation({
   args: {
     githubUserId: v.string(),
@@ -56,7 +56,7 @@ export const connectGitHub = authenticatedMutation({
   },
 });
 
-// Get GitHub connection for current user (without exposing tokens)
+/** Get the current user's GitHub connection status without exposing tokens. */
 export const getConnection = authenticatedQuery({
   args: {},
   handler: async (ctx) => {
@@ -83,7 +83,7 @@ export const getConnection = authenticatedQuery({
   },
 });
 
-// Internal helper to get decrypted tokens (for backend API calls)
+/** Retrieve decrypted GitHub OAuth tokens for a user. Internal use only for API calls. */
 export const getDecryptedGitHubTokens = internalMutation({
   args: {
     userId: v.id("users"),
@@ -104,7 +104,7 @@ export const getDecryptedGitHubTokens = internalMutation({
   },
 });
 
-// Disconnect GitHub account
+/** Disconnect and delete the current user's GitHub connection. */
 export const disconnectGitHub = authenticatedMutation({
   args: {},
   handler: async (ctx) => {
@@ -119,7 +119,7 @@ export const disconnectGitHub = authenticatedMutation({
   },
 });
 
-// Link a GitHub repository to a project
+/** Link a GitHub repository to a project for PR/commit tracking. Requires editor role or higher. */
 export const linkRepository = authenticatedMutation({
   args: {
     projectId: v.id("projects"),
@@ -180,7 +180,7 @@ export const linkRepository = authenticatedMutation({
   },
 });
 
-// Unlink repository from project
+/** Unlink a GitHub repository from its project. Requires admin role. */
 export const unlinkRepository = authenticatedMutation({
   args: {
     repositoryId: v.id("githubRepositories"),
@@ -210,7 +210,7 @@ export const unlinkRepository = authenticatedMutation({
   },
 });
 
-// List repositories linked to a project
+/** List all GitHub repositories linked to a project. */
 export const listRepositories = authenticatedQuery({
   args: {
     projectId: v.id("projects"),
@@ -242,7 +242,7 @@ export const listRepositories = authenticatedQuery({
   },
 });
 
-// Create/update a pull request (called from webhook)
+/** Create or update a GitHub pull request record. Called from GitHub webhook events. Auto-links to issues by key. */
 export const upsertPullRequest = mutation({
   args: {
     repositoryId: v.id("githubRepositories"),
@@ -324,7 +324,7 @@ export const upsertPullRequest = mutation({
   },
 });
 
-// Link PR to issue manually
+/** Manually link a GitHub pull request to a project issue. Both must belong to the same project. */
 export const linkPRToIssue = authenticatedMutation({
   args: {
     prId: v.id("githubPullRequests"),
@@ -350,7 +350,7 @@ export const linkPRToIssue = authenticatedMutation({
   },
 });
 
-// Get PRs for an issue
+/** Get all GitHub pull requests linked to an issue. */
 export const getPullRequests = authenticatedQuery({
   args: {
     issueId: v.id("issues"),
@@ -386,7 +386,7 @@ export const getPullRequests = authenticatedQuery({
   },
 });
 
-// Create/update a commit (called from webhook or manual sync)
+/** Create or update a GitHub commit record. Called from webhooks. Auto-links to issues by key in commit message. */
 export const upsertCommit = mutation({
   args: {
     repositoryId: v.id("githubRepositories"),
@@ -448,7 +448,7 @@ export const upsertCommit = mutation({
   },
 });
 
-// Get commits for an issue
+/** Get all GitHub commits linked to an issue. */
 export const getCommits = authenticatedQuery({
   args: {
     issueId: v.id("issues"),

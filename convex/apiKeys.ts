@@ -37,10 +37,7 @@ async function hashApiKey(key: string): Promise<string> {
   return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
 }
 
-/**
- * Query to validate API key (for use in HTTP actions)
- * This is public but only contains validation logic, not sensitive data
- */
+/** Validates an API key for HTTP actions, returning auth context if valid and active. */
 export const validateApiKey = internalQuery({
   args: {
     apiKey: v.string(),
