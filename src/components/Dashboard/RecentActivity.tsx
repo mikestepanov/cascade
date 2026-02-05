@@ -1,3 +1,4 @@
+import { Avatar } from "../ui/Avatar";
 import { Badge } from "../ui/Badge";
 import { Card, CardBody, CardHeader } from "../ui/Card";
 import { EmptyState } from "../ui/EmptyState";
@@ -18,20 +19,20 @@ interface RecentActivityProps {
   activities: Activity[] | undefined;
 }
 
-const getActionLabel = (action: string): string => {
+const getActionBadgeVariant = (action: string): "success" | "info" | "warning" | "neutral" => {
   switch (action) {
     case "created":
-      return "+";
+      return "success";
     case "updated":
-      return "~";
+      return "info";
     case "commented":
-      return "#";
+      return "info";
     case "assigned":
-      return "@";
+      return "warning";
     case "moved":
-      return ">";
+      return "neutral";
     default:
-      return "*";
+      return "neutral";
   }
 };
 
@@ -62,18 +63,10 @@ export function RecentActivity({ activities }: RecentActivityProps) {
                 )}
 
                 <Flex gap="md" align="start">
-                  <Flex
-                    align="center"
-                    justify="center"
-                    className="shrink-0 w-8 h-8 rounded-full bg-ui-bg-tertiary border border-ui-border relative z-10"
-                  >
-                    <span
-                      className="text-xs font-mono font-bold text-ui-text-secondary"
-                      aria-hidden="true"
-                    >
-                      {getActionLabel(activity.action)}
-                    </span>
-                  </Flex>
+                  {/* User avatar */}
+                  <div className="shrink-0 relative z-10">
+                    <Avatar name={activity.userName} size="md" variant="brand" />
+                  </div>
 
                   <div className="flex-1 min-w-0 pb-4">
                     <div className="text-sm">
