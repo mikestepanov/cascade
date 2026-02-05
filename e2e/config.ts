@@ -18,12 +18,12 @@ function requireEnv(name: string): string {
 
 // Convex site URL for E2E API endpoints
 // Derived from VITE_CONVEX_URL (same pattern as frontend)
-// For local backend: HTTP actions are served on port 3210, not 3211
+// For local backend: HTTP actions are served on port 3211 (site), while client is 3210
 function getConvexSiteUrl(): string {
   const convexUrl = requireEnv("VITE_CONVEX_URL");
-  // Local backend uses port 3210 for HTTP actions (site URL)
-  if (convexUrl.includes("127.0.0.1:3211") || convexUrl.includes("localhost:3211")) {
-    return convexUrl.replace(":3211", ":3210");
+  // Local backend uses port 3211 for HTTP actions (site URL)
+  if (convexUrl.includes("127.0.0.1:3210") || convexUrl.includes("localhost:3210")) {
+    return convexUrl.replace(":3210", ":3211");
   }
   // Cloud deployment: .convex.cloud -> .convex.site
   return convexUrl.replace(".convex.cloud", ".convex.site");
