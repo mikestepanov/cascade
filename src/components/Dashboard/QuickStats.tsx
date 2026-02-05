@@ -46,8 +46,10 @@ function StatCard({ title, value, subtitle, variant, progressValue }: StatCardPr
   const styles = variantStyles[variant];
 
   return (
-    <Card>
-      <CardBody className="p-5">
+    <Card className="relative overflow-hidden group hover:shadow-card-hover transition-shadow">
+      {/* Colored left border accent */}
+      <div className={cn("absolute left-0 top-0 h-full w-1", styles.bg)} />
+      <CardBody className="p-5 pl-6">
         <Typography
           variant="small"
           color="tertiary"

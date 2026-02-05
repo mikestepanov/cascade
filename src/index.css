@@ -13,21 +13,26 @@
   --radius-secondary: 4px;
   --radius-container: 12px;
 
-  /* Box Shadows */
+  /* Box Shadows - Premium tiers */
   --shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
   --shadow-hover: 0 2px 8px rgba(0, 0, 0, 0.12);
+  --shadow-soft: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.06);
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.08), 0 2px 6px rgba(0, 0, 0, 0.04);
+  --shadow-card-hover: 0 4px 12px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.06);
+  --shadow-elevated: 0 4px 16px rgba(0, 0, 0, 0.12), 0 2px 6px rgba(0, 0, 0, 0.08);
 
   /* ============================================================
    * TIER 2 — Semantic tokens (what components use)
    * All defined via light-dark() so dark mode is automatic.
    * ============================================================ */
 
-  /* --- Surface (5 vars) --- */
+  /* --- Surface (6 vars) --- */
   --color-ui-bg: light-dark(var(--p-white), var(--p-gray-900));
   --color-ui-bg-secondary: light-dark(var(--p-gray-50), var(--p-gray-800));
   --color-ui-bg-tertiary: light-dark(var(--p-gray-100), var(--p-gray-700));
   --color-ui-bg-elevated: light-dark(var(--p-white), var(--p-gray-800));
   --color-ui-bg-overlay: light-dark(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.75));
+  --color-ui-bg-sidebar: light-dark(#f8f9fb, var(--p-gray-900));
 
   /* --- Text (4 vars) --- */
   --color-ui-text: light-dark(var(--p-gray-900), var(--p-gray-50));

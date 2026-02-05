@@ -40,7 +40,7 @@ const getActionLabel = (action: string): string => {
  */
 export function RecentActivity({ activities }: RecentActivityProps) {
   return (
-    <Card>
+    <Card className="hover:shadow-card-hover transition-shadow">
       <CardHeader title="Feed" description="Latest updates across all projects" />
       <CardBody>
         {!activities ? (

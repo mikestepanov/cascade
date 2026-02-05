@@ -52,7 +52,7 @@ export function WorkspacesList({ projects, projectNavigation }: WorkspacesListPr
   const workspacesLabel = count === 1 ? "project" : "projects";
 
   return (
-    <Card>
+    <Card className="hover:shadow-card-hover transition-shadow">
       <CardHeader title="Workspaces" description={`${count} active ${workspacesLabel}`} />
       <CardBody>
         {!projects ? (
