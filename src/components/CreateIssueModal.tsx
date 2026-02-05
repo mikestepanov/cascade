@@ -1,5 +1,6 @@
 import { api } from "@convex/_generated/api";
 import type { Doc, Id } from "@convex/_generated/dataModel";
+import type { IssuePriority, IssueTypeWithSubtask } from "@convex/validators";
 import { ISSUE_PRIORITIES, ISSUE_TYPES_WITH_SUBTASK } from "@convex/validators";
 import { useForm } from "@tanstack/react-form";
 import { useAction, useMutation, useQuery } from "convex/react";
@@ -112,8 +113,8 @@ export function CreateIssueModal({
     defaultValues: {
       title: "",
       description: "",
-      type: "task" as CreateIssueForm["type"],
-      priority: "medium" as CreateIssueForm["priority"],
+      type: "task" satisfies IssueTypeWithSubtask,
+      priority: "medium" satisfies IssuePriority,
       assigneeId: "",
       storyPoints: "",
     },
@@ -171,7 +172,7 @@ export function CreateIssueModal({
 
   interface AISuggestions {
     description?: string;
-    priority?: string;
+    priority?: IssuePriority;
     labels?: string[];
   }
 
@@ -180,7 +181,7 @@ export function CreateIssueModal({
       form.setFieldValue("description", suggestions.description as string);
     }
     if (suggestions.priority) {
-      form.setFieldValue("priority", suggestions.priority as (typeof ISSUE_PRIORITIES)[number]);
+      form.setFieldValue("priority", suggestions.priority);
     }
     if (suggestions.labels && (suggestions.labels as string[]).length > 0 && labels) {
       const suggestedLabelIds = labels

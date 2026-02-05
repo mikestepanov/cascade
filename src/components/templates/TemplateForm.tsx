@@ -50,10 +50,10 @@ export function TemplateForm({ projectId, template, open, onOpenChange }: Templa
   const form = useForm({
     defaultValues: {
       name: "",
-      type: "task" as (typeof ISSUE_TYPES)[number],
+      type: "task" satisfies IssueType,
       titleTemplate: "",
       descriptionTemplate: "",
-      defaultPriority: "medium" as (typeof ISSUE_PRIORITIES)[number],
+      defaultPriority: "medium" satisfies IssuePriority,
       defaultLabels: "",
     },
     validators: { onChange: templateSchema },
@@ -90,13 +90,10 @@ export function TemplateForm({ projectId, template, open, onOpenChange }: Templa
   useEffect(() => {
     if (template) {
       form.setFieldValue("name", template.name);
-      form.setFieldValue("type", template.type as (typeof ISSUE_TYPES)[number]);
+      form.setFieldValue("type", template.type);
       form.setFieldValue("titleTemplate", template.titleTemplate);
       form.setFieldValue("descriptionTemplate", template.descriptionTemplate);
-      form.setFieldValue(
-        "defaultPriority",
-        template.defaultPriority as (typeof ISSUE_PRIORITIES)[number],
-      );
+      form.setFieldValue("defaultPriority", template.defaultPriority);
       form.setFieldValue("defaultLabels", template.defaultLabels?.join(", ") || "");
     } else {
       form.reset();
