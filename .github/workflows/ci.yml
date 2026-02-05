@@ -209,7 +209,7 @@ jobs:
         env:
           SHARD_INDEX: ${{ matrix.shardIndex }}
           CI: true
-          VITE_CONVEX_URL: ${{ github.ref == 'refs/heads/main' && secrets.VITE_CONVEX_URL || 'http://127.0.0.1:3211' }}
+          VITE_CONVEX_URL: ${{ github.ref == 'refs/heads/main' && secrets.VITE_CONVEX_URL || 'http://127.0.0.1:3210' }}
           E2E_API_KEY: ${{ secrets.E2E_API_KEY }}
           MAILTRAP_API_TOKEN: ${{ secrets.MAILTRAP_API_TOKEN }}
           MAILTRAP_ACCOUNT_ID: ${{ secrets.MAILTRAP_ACCOUNT_ID }}
