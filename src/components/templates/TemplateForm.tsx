@@ -15,15 +15,12 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "
 // Schema
 // =============================================================================
 
-const issueTypes = ISSUE_TYPES;
-const priorities = ISSUE_PRIORITIES;
-
 const templateSchema = z.object({
   name: z.string().min(1, "Name is required"),
-  type: z.enum(issueTypes),
+  type: z.enum(ISSUE_TYPES),
   titleTemplate: z.string().min(1, "Title template is required"),
   descriptionTemplate: z.string(),
-  defaultPriority: z.enum(priorities),
+  defaultPriority: z.enum(ISSUE_PRIORITIES),
   defaultLabels: z.string(),
 });
 
@@ -53,10 +50,10 @@ export function TemplateForm({ projectId, template, open, onOpenChange }: Templa
   const form = useForm({
     defaultValues: {
       name: "",
-      type: "task" as (typeof issueTypes)[number],
+      type: "task" as (typeof ISSUE_TYPES)[number],
       titleTemplate: "",
       descriptionTemplate: "",
-      defaultPriority: "medium" as (typeof priorities)[number],
+      defaultPriority: "medium" as (typeof ISSUE_PRIORITIES)[number],
       defaultLabels: "",
     },
     validators: { onChange: templateSchema },
@@ -93,12 +90,12 @@ export function TemplateForm({ projectId, template, open, onOpenChange }: Templa
   useEffect(() => {
     if (template) {
       form.setFieldValue("name", template.name);
-      form.setFieldValue("type", template.type as (typeof issueTypes)[number]);
+      form.setFieldValue("type", template.type as (typeof ISSUE_TYPES)[number]);
       form.setFieldValue("titleTemplate", template.titleTemplate);
       form.setFieldValue("descriptionTemplate", template.descriptionTemplate);
       form.setFieldValue(
         "defaultPriority",
-        template.defaultPriority as (typeof priorities)[number],
+        template.defaultPriority as (typeof ISSUE_PRIORITIES)[number],
       );
       form.setFieldValue("defaultLabels", template.defaultLabels?.join(", ") || "");
     } else {

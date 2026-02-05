@@ -26,14 +26,11 @@ import { Select } from "./ui/form";
 // Schema
 // =============================================================================
 
-const issueTypes = ISSUE_TYPES_WITH_SUBTASK;
-const priorities = ISSUE_PRIORITIES;
-
 const createIssueSchema = z.object({
   title: z.string().min(1, "Title is required"),
   description: z.string(),
-  type: z.enum(issueTypes),
-  priority: z.enum(priorities),
+  type: z.enum(ISSUE_TYPES_WITH_SUBTASK),
+  priority: z.enum(ISSUE_PRIORITIES),
   assigneeId: z.string(),
   storyPoints: z.string(),
 });
@@ -183,7 +180,7 @@ export function CreateIssueModal({
       form.setFieldValue("description", suggestions.description as string);
     }
     if (suggestions.priority) {
-      form.setFieldValue("priority", suggestions.priority as (typeof priorities)[number]);
+      form.setFieldValue("priority", suggestions.priority as (typeof ISSUE_PRIORITIES)[number]);
     }
     if (suggestions.labels && (suggestions.labels as string[]).length > 0 && labels) {
       const suggestedLabelIds = labels
