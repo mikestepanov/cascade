@@ -77,7 +77,7 @@ export class ProjectsPage extends BasePage {
     super(page, orgSlug);
 
     // Sidebar
-    this.sidebar = page.locator("[data-tour='sidebar']").or(page.locator("aside").first());
+    this.sidebar = page.locator("[data-tour='sidebar']").or(page.getByRole("complementary"));
     // Updated to distinguish between Project and Workspace
     this.newProjectButton = page.getByRole("button", { name: "+ Create Project" });
     this.newWorkspaceButton = page.getByRole("button", { name: "+ Create Workspace" });

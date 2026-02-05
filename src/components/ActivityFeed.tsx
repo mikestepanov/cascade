@@ -2,6 +2,7 @@ import { api } from "@convex/_generated/api";
 import type { Id } from "@convex/_generated/dataModel";
 import { useQuery } from "convex/react";
 import { formatRelativeTime } from "@/lib/dates";
+import { TEST_IDS } from "@/lib/test-ids";
 import { cn } from "@/lib/utils";
 import { EmptyState } from "./ui/EmptyState";
 import { Flex } from "./ui/Flex";
@@ -145,12 +146,13 @@ export function ActivityFeed({ projectId, limit = 50, compact = false }: Activit
   }
 
   return (
-    <Flex direction="column" gap="lg">
+    <Flex direction="column" gap="lg" data-testid={TEST_IDS.ACTIVITY.FEED}>
       {activities.map((activity: Activity, index: number) => (
         <Flex
           key={`${activity._id}-${index}`}
           gap="lg"
           className={compact ? "py-2" : "p-4 bg-ui-bg rounded-lg border border-ui-border"}
+          data-testid={TEST_IDS.ACTIVITY.ENTRY}
         >
           {/* Timeline dot */}
           <Flex direction="column" align="center" className="shrink-0">

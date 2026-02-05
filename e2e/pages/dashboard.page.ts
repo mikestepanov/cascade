@@ -139,7 +139,7 @@ export class DashboardPage extends BasePage {
     // Content areas - use last() to get innermost main element (nested layout)
     this.mainContent = page.getByRole("main").last();
     this.sidebar = page.locator("[data-tour='sidebar']");
-    this.loadingSpinner = page.locator(".animate-spin");
+    this.loadingSpinner = page.getByRole("status").or(page.locator("[data-loading-spinner]"));
 
     // Dashboard specific content - match actual UI headings
     this.myIssuesSection = page.getByRole("heading", { name: /feed/i }).first();

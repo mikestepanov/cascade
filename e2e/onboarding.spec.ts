@@ -91,8 +91,8 @@ test.describe("Onboarding Wizard", () => {
     await page.waitForURL(/\/[^/]+\/dashboard/);
     await page.waitForLoadState("domcontentloaded");
 
-    // Wait for dashboard to finish loading (spinner disappears)
-    await expect(page.locator(".animate-spin")).not.toBeVisible();
+    // Wait for dashboard to finish loading — check for dashboard content, not generic spinner class
+    await expect(page.getByRole("heading", { name: /feed/i })).toBeVisible({ timeout: 10000 });
 
     // Should navigate to dashboard
     await onboarding.expectDashboard();
@@ -186,8 +186,8 @@ test.describe("Onboarding - Team Member Flow", () => {
     await page.waitForURL(/\/[^/]+\/dashboard/);
     await page.waitForLoadState("domcontentloaded");
 
-    // Wait for dashboard to finish loading (spinner disappears)
-    await expect(page.locator(".animate-spin")).not.toBeVisible();
+    // Wait for dashboard to finish loading — check for dashboard content, not generic spinner class
+    await expect(page.getByRole("heading", { name: /feed/i })).toBeVisible({ timeout: 10000 });
 
     // Should navigate to dashboard
     await onboarding.expectDashboard();

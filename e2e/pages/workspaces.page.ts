@@ -24,7 +24,7 @@ export class WorkspacesPage extends BasePage {
     this.workspaceNameInput = page.locator("#workspace-name");
     this.workspaceDescriptionInput = page.locator("#workspace-description");
     this.submitWorkspaceButton = page.getByRole("button", { name: /create workspace/i });
-    this.workspaceList = page.locator(".grid"); // Adjust based on actual container
+    this.workspaceList = page.getByRole("main").locator("a[href*='/workspaces/']").locator("..");
     this.workspaceCards = page.locator("a[href*='/workspaces/']");
   }
 

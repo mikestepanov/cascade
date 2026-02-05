@@ -9,9 +9,10 @@
  *   5. Arbitrary Tailwind   — arbitrary values like h-[50px] (warning only)
  *   6. Type consistency     — ensures types imported from canonical sources, not duplicated
  *   7. Test ID constants    — ensures data-testid uses TEST_IDS constants, not strings
+ *   8. E2E quality          — catches broad selectors, networkidle, waitForSelector
  *
  * Exit code 1 if any error-level check fails.
- * Arbitrary Tailwind + MEDIUM/LOW query issues are warnings only.
+ * Arbitrary Tailwind + MEDIUM/LOW query issues + networkidle are warnings only.
  *
  * Usage:
  *   node scripts/validate.js
@@ -20,6 +21,7 @@
 import { run as runApiCallsCheck } from "./validate/check-api-calls.js";
 import { run as runArbitraryTailwindCheck } from "./validate/check-arbitrary-tw.js";
 import { run as runColorAudit } from "./validate/check-colors.js";
+import { run as runE2EQualityCheck } from "./validate/check-e2e-quality.js";
 import { run as runQueryIssuesCheck } from "./validate/check-queries.js";
 import { run as runStandardsCheck } from "./validate/check-standards.js";
 import { run as runTestIdsCheck } from "./validate/check-test-ids.js";
@@ -34,6 +36,7 @@ const checks = [
   { name: "Arbitrary Tailwind", fn: runArbitraryTailwindCheck },
   { name: "Type consistency", fn: runTypeConsistencyCheck },
   { name: "Test ID constants", fn: runTestIdsCheck },
+  { name: "E2E quality", fn: runE2EQualityCheck },
 ];
 
 console.log(`\n${c.bold}Running validation...${c.reset}\n`);
