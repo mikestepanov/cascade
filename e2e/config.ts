@@ -20,6 +20,11 @@ function requireEnv(name: string): string {
 // Derived from VITE_CONVEX_URL (same pattern as frontend)
 // For local backend: HTTP actions are served on port 3211 (site), while client is 3210
 function getConvexSiteUrl(): string {
+  // Use the explicit site URL if available (e.g. from .env.local created by convex dev)
+  if (process.env.VITE_CONVEX_SITE_URL) {
+    return process.env.VITE_CONVEX_SITE_URL;
+  }
+
   const convexUrl = requireEnv("VITE_CONVEX_URL");
   // Local backend uses port 3211 for HTTP actions (site URL)
   if (convexUrl.includes("127.0.0.1:3210") || convexUrl.includes("localhost:3210")) {
