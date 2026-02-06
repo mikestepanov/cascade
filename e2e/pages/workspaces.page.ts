@@ -82,11 +82,9 @@ export class WorkspacesPage extends BasePage {
     const createButton = this.newWorkspaceButton.first();
     await createButton.waitFor({ state: "visible" });
 
-    // Scroll into view
+    // Scroll into view and click
     await createButton.scrollIntoViewIfNeeded();
-
-    // Use JavaScript click to ensure React event handler fires
-    await createButton.evaluate((el: HTMLElement) => el.click());
+    await createButton.click();
 
     // Wait for modal dialog to appear
     const modal = this.page.getByRole("dialog");

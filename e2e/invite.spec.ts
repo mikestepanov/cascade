@@ -44,7 +44,7 @@ test.describe("Invite Page", () => {
       .getByRole("button", { name: /go to home/i })
       .or(page.getByRole("link", { name: /go to home/i }));
     await expect(homeButton).toBeVisible();
-    await homeButton.evaluate((el: HTMLElement) => el.click());
+    await homeButton.click();
 
     // Should navigate to home page (could be / or /signin for unauthenticated)
     // The full URL includes the host, so match the path portion

@@ -147,19 +147,19 @@ test.describe("Global Search", () => {
     await expect(allTab).toBeVisible();
     console.log("✓ All tab visible");
 
-    // Click on "Issues" tab - use evaluate for React event handling
+    // Click on "Issues" tab
     const issuesTab = page.getByRole("button", { name: /^issues/i });
     await expect(issuesTab).toBeVisible();
-    await issuesTab.evaluate((el: HTMLElement) => el.click());
+    await issuesTab.click();
 
     // Issue should still be visible (it's an issue)
     await expect(page.getByText(uniqueSearchTerm)).toBeVisible();
     console.log("✓ Issue visible in Issues tab");
 
-    // Click on "Documents" tab - use evaluate for React event handling
+    // Click on "Documents" tab
     const documentsTab = page.getByRole("button", { name: /^documents/i });
     await expect(documentsTab).toBeVisible();
-    await documentsTab.evaluate((el: HTMLElement) => el.click());
+    await documentsTab.click();
 
     // Wait for tab to switch - check if either no results or no issue visible
     // Since we created an issue but no document, either "no results" shows or our issue is filtered out

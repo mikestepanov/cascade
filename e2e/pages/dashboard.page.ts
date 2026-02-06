@@ -383,8 +383,7 @@ export class DashboardPage extends BasePage {
   async openGlobalSearch() {
     // Use retry pattern - click may not register immediately after page load
     await expect(async () => {
-      // Use evaluate for reliable React event handling
-      await this.globalSearchButton.evaluate((el: HTMLElement) => el.click());
+      await this.globalSearchButton.click();
       await expect(this.globalSearchModal).toBeVisible();
       // Wait for input to be interactive (cmdk library needs time to hydrate)
       await expect(this.globalSearchInput).toBeVisible();

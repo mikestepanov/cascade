@@ -277,13 +277,13 @@ export class ProjectsPage extends BasePage {
   }
 
   async cancelCreateProject() {
-    await this.cancelButton.evaluate((el: HTMLElement) => el.click());
+    await this.cancelButton.click();
     await expect(this.createProjectForm).not.toBeVisible();
   }
 
   async selectProject(index: number) {
     const item = this.projectItems.nth(index);
-    await item.evaluate((el: HTMLElement) => el.click());
+    await item.click();
   }
 
   async openCreateIssueModal() {
@@ -300,7 +300,7 @@ export class ProjectsPage extends BasePage {
     if (priority) {
       await this.issuePrioritySelect.selectOption(priority);
     }
-    await this.submitIssueButton.evaluate((el: HTMLElement) => el.click());
+    await this.submitIssueButton.click();
   }
 
   async switchToTab(tab: "board" | "backlog" | "sprints" | "analytics" | "settings") {

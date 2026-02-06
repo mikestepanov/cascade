@@ -73,7 +73,7 @@ test.describe("Sign In Form - Elements", () => {
       // Fill form with invalid email
       await authPage.emailInput.fill("invalid-email");
       await authPage.passwordInput.fill("password123");
-      await submitButton.evaluate((el: HTMLElement) => el.click());
+      await submitButton.click();
 
       // HTML5 validation should trigger
       const isInvalid = await authPage.emailInput.evaluate(
