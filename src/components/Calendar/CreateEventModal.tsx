@@ -148,7 +148,12 @@ export function CreateEventModal({
 
                 {/* Event Type */}
                 <div>
-                  <div className="block text-sm font-medium text-ui-text mb-1">Event Type</div>
+                  <Typography
+                    variant="small"
+                    className="block text-sm font-medium text-ui-text mb-1"
+                  >
+                    Event Type
+                  </Typography>
                   <div className="grid grid-cols-4 gap-2">
                     {eventTypes.map((type) => (
                       <button
@@ -175,7 +180,12 @@ export function CreateEventModal({
 
                 {/* Color */}
                 <div>
-                  <div className="block text-sm font-medium text-ui-text mb-1">Color</div>
+                  <Typography
+                    variant="small"
+                    className="block text-sm font-medium text-ui-text mb-1"
+                  >
+                    Color
+                  </Typography>
                   <Flex gap="sm" className="flex-wrap">
                     {PALETTE_COLORS.map((color) => {
                       const isActive =
@@ -287,7 +297,9 @@ export function CreateEventModal({
                             onChange={(e) => field.handleChange(e.target.checked)}
                             className="w-4 h-4 text-brand rounded focus:ring-2 focus:ring-brand-ring"
                           />
-                          <span className="text-sm text-ui-text">All day event</span>
+                          <Typography as="span" className="text-sm text-ui-text">
+                            All day event
+                          </Typography>
                         </Flex>
                       </label>
                     </div>
@@ -307,9 +319,9 @@ export function CreateEventModal({
                               onChange={(e) => field.handleChange(e.target.checked)}
                               className="w-4 h-4 text-brand rounded focus:ring-2 focus:ring-brand-ring"
                             />
-                            <span className="text-sm text-ui-text">
+                            <Typography as="span" className="text-sm text-ui-text">
                               Required attendance (track who attends)
-                            </span>
+                            </Typography>
                           </Flex>
                         </label>
                         {isRequired && (

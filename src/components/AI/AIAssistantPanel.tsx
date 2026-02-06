@@ -61,7 +61,9 @@ export function AIAssistantPanel({ projectId, isOpen, onClose }: AIAssistantPane
             <Flex align="center" gap="md">
               <div className="text-2xl">🤖</div>
               <div>
-                <SheetTitle className="text-lg font-semibold text-brand-foreground">AI Assistant</SheetTitle>
+                <SheetTitle className="text-lg font-semibold text-brand-foreground">
+                  AI Assistant
+                </SheetTitle>
                 <SheetDescription className="text-xs text-brand-subtle">
                   {projectId ? "Project-specific context" : "General chat"}
                 </SheetDescription>

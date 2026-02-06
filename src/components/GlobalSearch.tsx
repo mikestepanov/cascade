@@ -108,7 +108,12 @@ function SearchTab({
           : "border-transparent text-ui-text-secondary hover:text-ui-text",
       )}
     >
-      {label} {showCount && <span className="text-xs">({count})</span>}
+      {label}{" "}
+      {showCount && (
+        <Typography as="span" className="text-xs">
+          ({count})
+        </Typography>
+      )}
     </button>
   );
 }
@@ -242,7 +247,9 @@ function SearchResultItem({ result, onClose }: { result: SearchResult; onClose: 
         <div className="flex-1 min-w-0">
           <Flex align="center" gap="sm" wrap>
             {result.type === "issue" && (
-              <span className="text-xs font-mono text-ui-text-secondary">{result.key}</span>
+              <Typography as="span" className="text-xs font-mono text-ui-text-secondary">
+                {result.key}
+              </Typography>
             )}
             <Badge variant="neutral" shape="pill" data-testid={TEST_IDS.SEARCH.RESULT_TYPE}>
               {result.type}
@@ -320,10 +327,15 @@ export function GlobalSearch() {
             d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
           />
         </svg>
-        <span className="text-ui-text-tertiary">Search...</span>
-        <kbd className="hidden sm:inline-block px-2 py-0.5 text-xs text-ui-text-tertiary bg-ui-bg border border-ui-border/50 rounded font-mono">
+        <Typography as="span" className="text-ui-text-tertiary">
+          Search...
+        </Typography>
+        <Typography
+          as="kbd"
+          className="hidden sm:inline-block px-2 py-0.5 text-xs text-ui-text-tertiary bg-ui-bg border border-ui-border/50 rounded font-mono"
+        >
           ⌘K
-        </kbd>
+        </Typography>
       </Button>
 
       {/* Search Modal */}
@@ -380,23 +392,23 @@ export function GlobalSearch() {
             className="p-3 border-t border-ui-border text-xs text-ui-text-secondary"
           >
             <Flex align="center" gap="lg">
-              <span>
+              <Typography as="span">
                 <CommandShortcut className="bg-ui-bg-tertiary px-2 py-1 rounded">
                   ↑↓
                 </CommandShortcut>{" "}
                 Navigate
-              </span>
-              <span>
+              </Typography>
+              <Typography as="span">
                 <CommandShortcut className="bg-ui-bg-tertiary px-2 py-1 rounded">
                   Enter
                 </CommandShortcut>{" "}
                 Open
-              </span>
+              </Typography>
             </Flex>
-            <span>
+            <Typography as="span">
               <CommandShortcut className="bg-ui-bg-tertiary px-2 py-1 rounded">Esc</CommandShortcut>{" "}
               Close
-            </span>
+            </Typography>
           </Flex>
         </Command>
       </CommandDialog>

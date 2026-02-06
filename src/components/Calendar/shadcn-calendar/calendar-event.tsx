@@ -1,5 +1,7 @@
 import { format, isSameDay, isSameMonth } from "date-fns";
 import { AnimatePresence, MotionConfig, motion } from "framer-motion";
+import { Flex } from "@/components/ui/Flex";
+import { Typography } from "@/components/ui/Typography";
 import { cn } from "@/lib/utils";
 import { getEventColorClasses } from "../calendar-colors";
 import { useCalendarContext } from "./calendar-context";
@@ -141,12 +143,18 @@ export function CalendarEvent({
             )}
             layout="position"
           >
-            <p className={cn("font-bold truncate", month && "text-xs")}>{event.title}</p>
-            <p className={cn("text-sm", month && "text-xs")}>
-              <span>{format(event.start, "h:mm a")}</span>
-              <span className={cn("mx-1", month && "hidden")}>-</span>
-              <span className={cn(month && "hidden")}>{format(event.end, "h:mm a")}</span>
-            </p>
+            <Typography variant="p" className={cn("font-bold truncate", month && "text-xs")}>
+              {event.title}
+            </Typography>
+            <Typography variant="small" className={cn("text-sm", month && "text-xs")}>
+              <Typography as="span">{format(event.start, "h:mm a")}</Typography>
+              <Typography as="span" className={cn("mx-1", month && "hidden")}>
+                -
+              </Typography>
+              <Typography as="span" className={cn(month && "hidden")}>
+                {format(event.end, "h:mm a")}
+              </Typography>
+            </Typography>
           </motion.div>
         </motion.div>
       </AnimatePresence>

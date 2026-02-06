@@ -34,7 +34,8 @@ export function HeroSection() {
       <div className="relative max-w-4xl mx-auto text-center">
         {/* Tag - with staggered animation */}
         <Flex justify="center" className="mb-10 animate-fade-in">
-          <span
+          <Typography
+            as="span"
             className={cn(
               "px-4 py-2 rounded-pill",
               "border border-ui-border",
@@ -44,7 +45,7 @@ export function HeroSection() {
             )}
           >
             Project Management · Time Tracking
-          </span>
+          </Typography>
         </Flex>
 
         {/* Headline - with tighter tracking for premium feel */}
@@ -59,9 +60,12 @@ export function HeroSection() {
         >
           Revolutionize Your Workflow.
           <br />
-          <span className="bg-linear-to-r from-landing-accent via-landing-accent-teal to-status-success-text bg-clip-text text-transparent">
+          <Typography
+            as="span"
+            className="bg-linear-to-r from-landing-accent via-landing-accent-teal to-status-success-text bg-clip-text text-transparent"
+          >
             Harmonize Your Team.
-          </span>
+          </Typography>
         </Typography>
 
         {/* Subheadline - with opacity-based secondary text */}

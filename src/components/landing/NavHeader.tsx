@@ -9,6 +9,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/DropdownMenu";
 import { Flex } from "@/components/ui/Flex";
+import { Typography } from "@/components/ui/Typography";
 import { ROUTES } from "@/config/routes";
 import { useTheme } from "@/contexts/ThemeContext";
 import { NixeloLogo } from "./icons";
@@ -24,7 +25,9 @@ export function NavHeader() {
           className="flex items-center gap-2.5 hover:opacity-80 transition-opacity duration-default"
         >
           <NixeloLogo />
-          <span className="text-xl font-semibold text-ui-text tracking-tight">Nixelo</span>
+          <Typography as="span" className="text-xl font-semibold text-ui-text tracking-tight">
+            Nixelo
+          </Typography>
         </Link>
 
         <div className="hidden md:flex items-center justify-center gap-8 absolute left-1/2 -translate-x-1/2">
@@ -49,7 +52,9 @@ export function NavHeader() {
               >
                 <Sun className="h-icon-theme-toggle w-icon-theme-toggle rotate-0 scale-100 transition-all duration-default" />
                 <Moon className="absolute h-icon-theme-toggle w-icon-theme-toggle rotate-90 scale-0 transition-all duration-default" />
-                <span className="sr-only">Toggle theme</span>
+                <Typography as="span" className="sr-only">
+                  Toggle theme
+                </Typography>
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">

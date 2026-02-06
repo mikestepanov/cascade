@@ -154,7 +154,7 @@ export const NotificationItem = memo(function NotificationItem({
           </Typography>
           {notification.actorName && (
             <>
-              <span className="text-xs text-ui-text-tertiary">•</span>
+              <Typography as="span" className="text-xs text-ui-text-tertiary">•</Typography>
               <Typography className="text-xs text-ui-text-tertiary">
                 {notification.actorName}
               </Typography>

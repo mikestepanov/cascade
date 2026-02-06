@@ -10,6 +10,7 @@ import type { IssuePriority, IssueType } from "@/lib/issue-utils";
 import { getTypeIcon } from "@/lib/issue-utils";
 import { cn } from "@/lib/utils";
 import { Button } from "./ui/Button";
+import { Typography } from "./ui/Typography";
 import {
   Dialog,
   DialogContent,
@@ -146,7 +147,7 @@ function SavedFiltersDropdown({
             >
               {filter.name}
               {filter.isPublic && (
-                <span className="ml-1 text-xs text-ui-text-tertiary">(public)</span>
+                <Typography as="span" className="ml-1 text-xs text-ui-text-tertiary">(public)</Typography>
               )}
             </button>
             {filter.isOwner && (
@@ -312,7 +313,7 @@ export function FilterBar({ projectId, filters, onFilterChange }: FilterBarProps
           renderItem={(type) => (
             <Flex align="center" gap="sm">
               {getTypeIcon(type)}
-              <span className="capitalize">{type}</span>
+              <Typography as="span" className="capitalize">{type}</Typography>
             </Flex>
           )}
         />
@@ -325,7 +326,7 @@ export function FilterBar({ projectId, filters, onFilterChange }: FilterBarProps
           selectedValues={filters.priority}
           onToggle={(priority) => toggleArrayFilter("priority", priority)}
           getKey={(priority) => priority}
-          renderItem={(priority) => <span className="capitalize">{priority}</span>}
+          renderItem={(priority) => <Typography as="span" className="capitalize">{priority}</Typography>}
         />
 
         {/* Assignee Filter */}
@@ -353,7 +354,8 @@ export function FilterBar({ projectId, filters, onFilterChange }: FilterBarProps
             const label = labels?.find((l) => l.name === name);
             return (
               <Flex align="center" gap="sm">
-                <span
+                <Typography
+                  as="span"
                   className="w-3 h-3 rounded-full shrink-0"
                   style={{ backgroundColor: label?.color }}
                 />

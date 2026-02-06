@@ -97,9 +97,9 @@ export function NotificationBell() {
 
         {/* Unread Badge */}
         {unreadCount !== undefined && unreadCount > 0 && (
-          <span className="absolute top-0 right-0 grid place-items-center w-5 h-5 text-xs font-bold text-brand-foreground bg-status-error rounded-full">
+          <Typography as="span" className="absolute top-0 right-0 grid place-items-center w-5 h-5 text-xs font-bold text-brand-foreground bg-status-error rounded-full">
             {unreadCount > 9 ? "9+" : unreadCount}
-          </span>
+          </Typography>
         )}
       </Button>
 
@@ -169,15 +169,15 @@ export function NotificationBell() {
                             {notification.message}
                           </Typography>
                           <Flex align="center" gap="sm" className="mt-2">
-                            <span className="text-xs text-ui-text-tertiary">
+                            <Typography as="span" className="text-xs text-ui-text-tertiary">
                               {formatTime(notification._creationTime)}
-                            </span>
+                            </Typography>
                             {notification.actorName && (
                               <>
-                                <span className="text-xs text-ui-text-tertiary">•</span>
-                                <span className="text-xs text-ui-text-tertiary">
+                                <Typography as="span" className="text-xs text-ui-text-tertiary">•</Typography>
+                                <Typography as="span" className="text-xs text-ui-text-tertiary">
                                   by {notification.actorName}
-                                </span>
+                                </Typography>
                               </>
                             )}
                           </Flex>

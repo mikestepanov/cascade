@@ -439,7 +439,7 @@ function NavItem({
       )}
     >
       <Icon className="w-5 h-5 shrink-0" />
-      {!isCollapsed && <span>{label}</span>}
+      {!isCollapsed && <Typography as="span">{label}</Typography>}
     </Link>
   );
 
@@ -555,7 +555,7 @@ function CollapsibleSection({
             )}
           >
             <Icon className="w-5 h-5" />
-            <span>{label}</span>
+            <Typography as="span">{label}</Typography>
           </Link>
         ) : (
           <Flex
@@ -564,7 +564,7 @@ function CollapsibleSection({
             className="flex-1 text-sm font-medium text-ui-text-secondary transition-default"
           >
             <Icon className="w-5 h-5" />
-            <span>{label}</span>
+            <Typography as="span">{label}</Typography>
           </Flex>
         )}
         <Button
@@ -622,7 +622,7 @@ function NavSubItem({
       )}
     >
       {Icon && <Icon className="w-4 h-4 shrink-0" />}
-      <span className="truncate">{label}</span>
+      <Typography as="span" className="truncate">{label}</Typography>
     </Link>
   );
 }

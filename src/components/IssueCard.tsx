@@ -121,16 +121,22 @@ export const IssueCard = memo(function IssueCard({
             />
           )}
           <Tooltip content={getTypeLabel(issue.type)}>
-            <span role="img" aria-label={getTypeLabel(issue.type)} className="text-sm cursor-help">
+            <Typography
+              as="span"
+              role="img"
+              aria-label={getTypeLabel(issue.type)}
+              className="text-sm cursor-help"
+            >
               {getTypeIcon(issue.type)}
-            </span>
+            </Typography>
           </Tooltip>
-          <span
+          <Typography
+            as="span"
             data-testid={TEST_IDS.ISSUE.KEY}
             className="text-xs text-ui-text-secondary font-mono"
           >
             {issue.key}
-          </span>
+          </Typography>
         </Flex>
         <Tooltip
           content={`Priority: ${issue.priority.charAt(0).toUpperCase() + issue.priority.slice(1)}`}
@@ -226,8 +232,10 @@ export const IssueCard = memo(function IssueCard({
         </Flex>
         {issue.storyPoints !== undefined && (
           <Flex align="center" className="space-x-1 text-xs text-ui-text-secondary">
-            <span className="font-medium">{issue.storyPoints}</span>
-            <span>pts</span>
+            <Typography as="span" className="font-medium">
+              {issue.storyPoints}
+            </Typography>
+            <Typography as="span">pts</Typography>
           </Flex>
         )}
       </Flex>
