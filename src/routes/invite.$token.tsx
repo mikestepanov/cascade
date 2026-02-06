@@ -104,7 +104,7 @@ function InviteRoute() {
           </Typography>
           <Typography variant="p" color="secondary" className="mb-6">
             This invitation has expired. Please contact{" "}
-            <span className="font-medium">{invite.inviterName}</span> to send a new invitation.
+            <Typography as="span" className="font-medium">{invite.inviterName}</Typography> to send a new invitation.
           </Typography>
           <Button variant="primary" onClick={goToHome}>
             Go to Home

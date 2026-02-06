@@ -256,25 +256,61 @@ For each screen, capture screenshots in:
 
 | Component | Checked | Issues Found | Fixed |
 |-----------|---------|--------------|-------|
-| Button | | | |
-| Card | | | |
-| Dialog | | | |
-| Input | | | |
-| Select | | | |
-| Dropdown | | | |
-| Tooltip | | | |
-| Popover | | | |
-| Badge | | | |
+| Accordion | | | |
+| Alert | | | |
+| AlertDialog | | | |
 | Avatar | | | |
-| Table | | | |
+| Badge | | | |
+| Breadcrumb | | | |
+| Button | | | |
+| Calendar | | | |
+| Card | | | |
+| Carousel | | | |
 | Checkbox | | | |
-| Radio | | | |
-| Switch | | | |
-| Tabs | | | |
-| Progress | | | |
-| Skeleton | | | |
+| Collapsible | | | |
+| ColorPicker | | | |
+| Command | | | |
+| ConfirmDialog | | | |
+| ContextMenu | | | |
+| Dialog | | | |
+| DropdownMenu | | | |
 | EmptyState | | | |
-| ... | | | |
+| EntityCard | | | |
+| Flex | | | |
+| Form | | | |
+| FormDialog | | | |
+| FormPrimitives | | | |
+| HoverCard | | | |
+| Input | | | |
+| KeyboardShortcut | | | |
+| Label | | | |
+| LoadingSpinner | | | |
+| LoadMoreButton | | | |
+| MarkdownPreviewModal | | | |
+| Menubar | | | |
+| NavigationMenu | | | |
+| Pagination | | | |
+| PaginationInfo | | | |
+| Popover | | | |
+| Progress | | | |
+| RadioGroup | | | |
+| Resizable | | | |
+| ScrollArea | | | |
+| Select | | | |
+| Separator | | | |
+| ShadcnTabs | | | |
+| Sheet | | | |
+| Skeleton | | | |
+| Slider | | | |
+| Sonner | | | |
+| Switch | | | |
+| Table | | | |
+| Textarea | | | |
+| Toggle | | | |
+| ToggleGroup | | | |
+| Tooltip | | | |
+| Typography | | | |
+| VirtualList | | | |
 
 ### Pass 2: Pages
 

@@ -72,7 +72,7 @@ function WorkspacesList() {
               <Card hoverable className="p-6">
                 <Flex direction="column" gap="md">
                   <Flex align="center" gap="sm">
-                    {workspace.icon && <span className="text-3xl">{workspace.icon}</span>}
+                    {workspace.icon && <Typography as="span" className="text-3xl">{workspace.icon}</Typography>}
                     <Typography variant="h3">{workspace.name}</Typography>
                   </Flex>
 
@@ -83,14 +83,14 @@ function WorkspacesList() {
                   )}
 
                   <Flex gap="md" className="text-sm text-ui-text-secondary">
-                    <span>
+                    <Typography as="span">
                       {workspace.teamCount} {workspace.teamCount === 1 ? "team" : "teams"}
-                    </span>
-                    <span>•</span>
-                    <span>
+                    </Typography>
+                    <Typography as="span">•</Typography>
+                    <Typography as="span">
                       {workspace.projectCount}{" "}
                       {workspace.projectCount === 1 ? "project" : "projects"}
-                    </span>
+                    </Typography>
                   </Flex>
                 </Flex>
               </Card>
