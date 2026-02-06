@@ -1,6 +1,7 @@
 import { cva, type VariantProps } from "class-variance-authority";
 import * as React from "react";
 import { cn } from "@/lib/utils";
+import { Typography } from "./Typography";
 
 const textareaVariants = cva(
   "flex min-h-20 w-full rounded-lg border bg-ui-bg-soft px-3 py-2 text-sm text-ui-text transition-[border-color] duration-150 placeholder:text-ui-text-tertiary focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50",
@@ -45,7 +46,11 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
           aria-invalid={!!error}
           {...props}
         />
-        {error && <p className="mt-1 text-sm text-status-error">{error}</p>}
+        {error && (
+          <Typography variant="muted" className="mt-1 text-sm text-status-error">
+            {error}
+          </Typography>
+        )}
       </div>
     );
   },

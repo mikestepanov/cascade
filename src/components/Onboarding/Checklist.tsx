@@ -116,7 +116,7 @@ export function OnboardingChecklist() {
 
       {/* Progress Bar - Mintlify-inspired with brand color */}
       <div className="px-4 pt-4">
-        <div className="flex items-center gap-3">
+        <Flex align="center" gap="md">
           <Progress
             value={progress}
             indicatorClassName="bg-brand duration-500"
@@ -125,7 +125,7 @@ export function OnboardingChecklist() {
           <Typography className="text-xs font-medium text-ui-text-secondary tabular-nums">
             {progress}%
           </Typography>
-        </div>
+        </Flex>
       </div>
 
       {/* Checklist Items - Mintlify-inspired with cleaner spacing */}

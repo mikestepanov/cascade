@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { Star } from "lucide-react";
 import { useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "./avatar";
 import { Badge } from "./badge";
@@ -676,7 +677,7 @@ export const MixedContent: Story = {
             </TableCell>
             <TableCell className="text-center">
               <Flex justify="center" align="center" gap="xs">
-                <span className="text-status-warning">&#9733;</span>
+                <Star className="w-4 h-4 fill-status-warning text-status-warning" />
                 <span className="tabular-nums">{product.rating.toFixed(1)}</span>
               </Flex>
             </TableCell>

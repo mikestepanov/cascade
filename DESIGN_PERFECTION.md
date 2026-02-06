@@ -1,267 +1,328 @@
-# Design Perfection Protocol
+# Design Perfection Protocol v2
 
-> **Goal**: Achieve Mintlify-level polish through iterative, measurable quality passes
-> **Acceptance Threshold**: 75% subagent approval per phase before advancing
-> **Component Standard**: 100% quality - nothing less accepted
+> **Goal**: State-of-the-art visual quality matching Mintlify/Linear/Vercel standards
+> **Method**: Hands-on manual inspection. NO automated scoring. NO subagents.
+> **Acceptance**: Zero tolerance. Every pixel intentional.
 
 ---
 
 ## Execution Model
 
 ```
-FOR EACH phase IN [1, 2, 3, 4]:
-    REPEAT:
-        EXECUTE phase tasks
-        SPAWN review subagents
-        COLLECT acceptance scores
+PASS 1: COMPONENTS
+    For each component in src/components/ui/:
+        1. Read the file
+        2. Apply exact standards from Component Checklist
+        3. Fix ALL issues before moving to next component
+        4. Take screenshot if visual component
 
-        IF any_score < 75%:
-            FIX identified issues
-            CONTINUE loop
-        ELSE:
-            ADVANCE to next phase
+PASS 2: PAGES (Structural Consistency)
+    For each page:
+        1. Capture desktop/tablet screenshots in light + dark mode
+        2. Compare spacing/gaps against Page Standards
+        3. Fix structural inconsistencies across ALL pages
+        4. Pages must be structurally identical (same header height, same padding, same gaps)
 
-UNTIL all phases pass at 75%+
+PASS 3: COLORS
+    For each screen:
+        1. Manual visual inspection in BOTH modes
+        2. Check borders, shadows, text contrast
+        3. Zero hardcoded colors
+        4. Zero dark mode "accidents"
+
+REPEAT until perfect.
 ```
 
 ---
 
-## Phase Overview
+## PASS 1: Component Standards
 
-| Phase | Focus | Acceptance Criteria | Status |
-|-------|-------|---------------------|--------|
-| **1** | [Components](docs/design-perfection/PHASE_1_COMPONENTS.md) | Storybook setup, 100% component quality | PENDING |
-| **2** | [Structure](docs/design-perfection/PHASE_2_STRUCTURE.md) | Clean layout across all viewports | PENDING |
-| **3** | [Color](docs/design-perfection/PHASE_3_COLOR.md) | 100% semantic tokens, no visual anomalies | PENDING |
-| **4** | [Docs Sync](docs/design-perfection/PHASE_4_DOCS_SYNC.md) | Mintlify docs updated, TODOs extracted & executed | PENDING |
+### Spacing (8px Grid - NO EXCEPTIONS)
 
----
+| Token | Pixels | Use Case |
+|-------|--------|----------|
+| `gap-1` | 4px | Icon-to-text inline |
+| `gap-2` | 8px | Tight groups (button content) |
+| `gap-3` | 12px | List items, form fields |
+| `gap-4` | 16px | Card sections, related content |
+| `gap-6` | 24px | Page sections |
+| `gap-8` | 32px | Major sections |
 
-## Phase 1: Component Foundation
+**HARD RULE**: Never use arbitrary spacing (`gap-[14px]`). Pick the closest standard value.
 
-**Doc**: `docs/design-perfection/PHASE_1_COMPONENTS.md`
+### Padding Standards
 
-### Objective
-Every UI component in `src/components/ui/` must be bulletproof - documented, tested, and visually consistent.
+| Context | Value | Classes |
+|---------|-------|---------|
+| Button sm | 8px 12px | `px-3 py-2` |
+| Button default | 12px 16px | `px-4 py-3` |
+| Button lg | 16px 24px | `px-6 py-4` |
+| Card content | 16px | `p-4` |
+| Card lg | 24px | `p-6` |
+| Page container | 24px | `p-6` |
+| Modal content | 24px | `p-6` |
+| Dropdown item | 8px 12px | `px-3 py-2` |
 
-### Key Tasks
-1. **Set up Storybook** for component documentation
-2. **Create stories** for every component variant and state
-3. **Visual audit** - each component reviewed by subagent
-4. **Fix issues** until 100% component quality
+### Border Standards
 
-### Subagent Review Protocol
-- 1 subagent per component category (buttons, cards, inputs, etc.)
-- Must achieve 100% approval (components are foundation)
-- Any issue = fix before proceeding
+| Token | Use Case |
+|-------|----------|
+| `border-ui-border` | Default borders (subtle, consistent) |
+| `border-ui-border-hover` | Hover states |
+| `border-ui-border-focus` | Focus rings (with `ring-2 ring-brand`) |
+| `border-status-*` | Status indicators only |
 
-### Completion Gate
-- [ ] Storybook running locally
-- [ ] All UI components have stories
-- [ ] All variants documented
-- [ ] All states covered (hover, focus, disabled, loading, error)
-- [ ] Subagent approval: 100%
+**HARD RULE**: Never use `border-gray-*`, `border-slate-*`, or any raw color.
 
----
+### Shadow Standards
 
-## Phase 2: Structural Polish
+| Token | Use Case |
+|-------|----------|
+| `shadow-sm` | NEVER USE - too subtle |
+| `shadow-card` | Cards, panels |
+| `shadow-elevated` | Dropdowns, popovers, modals |
+| `shadow-glow` | Brand elements (sparingly) |
 
-**Doc**: `docs/design-perfection/PHASE_2_STRUCTURE.md`
+**HARD RULE**: Every elevated surface uses `shadow-elevated`. Cards use `shadow-card`.
 
-### Objective
-Every screen must be structurally clean across desktop, tablet, and mobile.
+### Radius Standards
 
-### Key Tasks
-1. **Layout audit** - grid alignment, spacing consistency
-2. **Typography hierarchy** - clear visual hierarchy on every screen
-3. **Responsive behavior** - proper stacking, no overflow, no cramping
-4. **Component usage** - `<Flex>` not raw divs, `<Typography>` not raw tags
-
-### Subagent Review Protocol
-- 1 subagent for desktop screenshots
-- 1 subagent for tablet screenshots
-- 1 subagent for mobile screenshots
-- Each reviews ALL screens in their viewport
-
-### Review Checklist (per screen)
-- [ ] 8px spacing grid consistent
-- [ ] Typography hierarchy clear (H1 > H2 > body > caption)
-- [ ] No layout overflow or cramping
-- [ ] Proper responsive stacking
-- [ ] Empty states designed
-- [ ] Loading skeletons match final content
-
-### Completion Gate
-- [ ] Desktop subagent: 75%+ approval
-- [ ] Tablet subagent: 75%+ approval
-- [ ] Mobile subagent: 75%+ approval
+| Token | Use Case |
+|-------|----------|
+| `rounded` | Buttons, inputs, badges |
+| `rounded-lg` | Cards, panels |
+| `rounded-xl` | Modals, large containers |
+| `rounded-full` | Avatars, pills, icons |
+| `rounded-container` | Standard container radius |
 
 ---
 
-## Phase 3: Color & Visual Polish
+## Component Checklist (Every Component MUST Pass)
 
-**Doc**: `docs/design-perfection/PHASE_3_COLOR.md`
+### Structure
+- [ ] Uses `<Flex>` not raw `<div className="flex">`
+- [ ] Uses `<Typography>` not raw `<p>`, `<h1>`, etc.
+- [ ] Uses `cn()` for class merging, never template literals
+- [ ] File is PascalCase (`Button.tsx` not `button.tsx`)
 
-### Objective
-100% semantic token usage. No visual anomalies. Dark/light parity.
+### Spacing
+- [ ] All gaps use standard tokens (gap-1 through gap-8)
+- [ ] All padding uses standard tokens (p-1 through p-8)
+- [ ] No arbitrary spacing values
+- [ ] Internal spacing consistent across all variants
 
-### Key Tasks
-1. **Color audit** - grep for hardcoded colors, arbitrary Tailwind
-2. **Token compliance** - replace all with semantic tokens
-3. **Dark/light parity** - both modes look intentional, not broken
-4. **Visual anomaly hunt** - anything that looks "off" gets fixed
+### Colors (ZERO EXCEPTIONS)
+- [ ] Background: `bg-ui-bg`, `bg-ui-bg-soft`, `bg-ui-bg-elevated`, `bg-brand`, `bg-status-*`
+- [ ] Text: `text-ui-text`, `text-ui-text-secondary`, `text-ui-text-tertiary`, `text-brand`, `text-brand-foreground`
+- [ ] Border: `border-ui-border`, `border-ui-border-hover`, `border-brand`, `border-status-*`
+- [ ] NO `text-gray-*`, `bg-slate-*`, `border-zinc-*` or any raw Tailwind color
+- [ ] NO hardcoded hex (`#fff`, `#000`, etc.)
+- [ ] NO `text-white`, `text-black` - use `text-brand-foreground` or semantic tokens
 
-### Subagent Review Protocol
-- 1 subagent reviews EVERY desktop screenshot individually
-- Flag anything non-standard, weird, or off-brand
-- Specific focus: shadows, borders, text contrast, hover states
+### Interactivity
+- [ ] Hover state defined and visible
+- [ ] Focus ring uses `ring-2 ring-brand ring-offset-2`
+- [ ] Disabled state uses `opacity-50 cursor-not-allowed`
+- [ ] Loading state shows spinner, uses `aria-busy`
+- [ ] Transitions use `transition-default` or explicit duration
 
-### Review Checklist (per screen)
-- [ ] No hardcoded hex/rgb colors
-- [ ] No arbitrary Tailwind brackets for colors
-- [ ] Shadows consistent (`shadow-card`, not `shadow-sm`)
-- [ ] Borders using semantic tokens
-- [ ] Text contrast meets WCAG AA
-- [ ] Dark mode looks intentional (not inverted accident)
-- [ ] Light mode polished (subtle shadows, clear hierarchy)
-
-### Completion Gate
-- [ ] 0 hardcoded colors in codebase
-- [ ] 0 arbitrary color brackets
-- [ ] Validator passes with 0 color warnings
-- [ ] Subagent approval: 75%+
-
----
-
-## Phase 4: Docs Sync
-
-**Doc**: `docs/design-perfection/PHASE_4_DOCS_SYNC.md`
-
-### Objective
-Mintlify design docs are current, TODOs are extracted and executed.
-
-### Key Tasks
-1. **Audit `docs/design-system/`** - mark completed items
-2. **Extract actionable TODOs** from all spec files
-3. **Execute or delegate** each TODO
-4. **Update docs** with new patterns discovered
-
-### Files to Audit
-- `docs/design-system/MASTER_PLAN.md` - Update phase checklists
-- `docs/design-system/INDEX.md` - Update status table
-- `docs/design-system/pages/*.md` - 13 page specs
-- `docs/design-system/components/*.md` - 13 component specs
-- `docs/design-system/tokens/*.md` - 4 token docs
-
-### Subagent Review Protocol
-- 1 subagent audits all docs for accuracy
-- Extract all unchecked TODOs into actionable list
-- Prioritize by impact
-
-### Completion Gate
-- [ ] All completed items marked in MASTER_PLAN.md
-- [ ] All page specs have current screenshots referenced
-- [ ] All component specs match actual implementation
-- [ ] Extracted TODOs documented and prioritized
-- [ ] High-priority TODOs executed
+### Accessibility
+- [ ] `aria-label` where needed (icon-only buttons, etc.)
+- [ ] `aria-invalid` on error states
+- [ ] `aria-busy` on loading states
+- [ ] Focus visible on keyboard navigation
+- [ ] Color contrast meets WCAG AA (4.5:1 text, 3:1 large text)
 
 ---
 
-## Review Subagent Instructions
+## PASS 2: Page Structural Standards
 
-When spawned as a review subagent:
+### Every Page MUST Have Identical:
 
-### 1. Screenshot Review (Phases 2-3)
-```
-FOR EACH screenshot in assigned set:
-    ANALYZE for:
-        - Structural issues (layout, spacing, typography)
-        - Color issues (consistency, contrast, token usage)
-        - Visual anomalies (anything that looks wrong)
+| Element | Standard |
+|---------|----------|
+| **Page header height** | Consistent across ALL pages |
+| **Page padding** | `p-6` (24px) on all sides |
+| **Header-to-content gap** | `gap-6` (24px) |
+| **Section gaps** | `gap-8` (32px) between major sections |
+| **Card gaps** | `gap-4` (16px) between cards in a grid |
+| **Sidebar width** | Fixed at design token value |
+| **Content max-width** | Consistent (e.g., `max-w-5xl`) |
 
-    SCORE: PASS / FAIL with specific issues listed
+### Page Layout Checklist
 
-CALCULATE overall acceptance: (PASS count / total) * 100
-RETURN acceptance score + detailed issue list
-```
+- [ ] Same header height as other pages
+- [ ] Same padding around content
+- [ ] Same gap between header and content
+- [ ] No weird extra whitespace
+- [ ] No cramped areas with different spacing
+- [ ] Responsive stacking consistent with other pages
+- [ ] Tablet layout matches tablet layout of similar pages
+- [ ] Mobile layout matches mobile layout of similar pages
 
-### 2. Component Review (Phase 1)
-```
-FOR EACH component story:
-    CHECK:
-        - All variants covered
-        - All states covered (hover, focus, disabled, loading)
-        - Consistent with design tokens
-        - Accessible (focus rings, aria labels)
+### Known Pages to Audit
 
-    SCORE: 0-100% per component
-
-RETURN component scores + specific issues
-```
-
-### 3. Docs Review (Phase 4)
-```
-FOR EACH doc file:
-    COMPARE spec vs actual implementation
-    IDENTIFY outdated sections
-    EXTRACT unchecked TODOs
-
-RETURN:
-    - Accuracy score
-    - List of outdated sections
-    - Prioritized TODO list
-```
-
----
-
-## Iteration Log
-
-Track each pass through the protocol:
-
-| Date | Phase | Iteration | Score | Issues Fixed | Notes |
-|------|-------|-----------|-------|--------------|-------|
-| | | | | | |
+1. Dashboard
+2. Projects list
+3. Project board
+4. Project backlog
+5. Project settings
+6. Issues list
+7. Issue detail
+8. Documents list
+9. Document editor
+10. Calendar (day/week/month views)
+11. Workspaces
+12. Time tracking
+13. Settings pages (all)
+14. Team pages
+15. Landing page
+16. Sign in / Sign up
 
 ---
 
-## Related Documentation
+## PASS 3: Color Perfection
 
-### Design System Specs (Reference)
-- `docs/design-system/MASTER_PLAN.md` - Full design system roadmap
-- `docs/design-system/INDEX.md` - Comprehensive entry point
-- `docs/design-system/pages/*.md` - 13 page specifications
-- `docs/design-system/components/*.md` - 13 component specifications
-- `docs/design-system/tokens/*.md` - Token documentation
+### Light Mode Standards
 
-### Screenshots (Current State)
-- `e2e/screenshots/desktop-dark/` - Desktop dark mode (primary)
-- `e2e/screenshots/tablet-light/` - Tablet light mode
-- `e2e/screenshots/mobile-light/` - Mobile light mode
+| Element | Token | Visual Result |
+|---------|-------|---------------|
+| Page background | `bg-ui-bg` | Off-white, not pure white |
+| Card background | `bg-ui-bg-elevated` | White with subtle shadow |
+| Sidebar | `bg-ui-bg-soft` | Very subtle gray tint |
+| Primary text | `text-ui-text` | Near-black, not pure black |
+| Secondary text | `text-ui-text-secondary` | Medium gray |
+| Muted text | `text-ui-text-tertiary` | Light gray |
+| Borders | `border-ui-border` | Very subtle, barely visible |
+| Shadows | `shadow-card` / `shadow-elevated` | Soft, diffuse |
 
-### Feature TODOs
-- `TODO.md` - Active feature/tech debt items
+### Dark Mode Standards
 
----
+| Element | Token | Visual Result |
+|---------|-------|---------------|
+| Page background | `bg-ui-bg` | Deep dark, not pure black |
+| Card background | `bg-ui-bg-elevated` | Slightly lighter than page |
+| Sidebar | `bg-ui-bg-soft` | Subtle variation |
+| Primary text | `text-ui-text` | Off-white, not pure white |
+| Secondary text | `text-ui-text-secondary` | Medium light gray |
+| Borders | `border-ui-border` | Subtle, visible but not harsh |
+| Shadows | Very subtle or none | Shadows work differently in dark |
 
-## Quick Commands
+### Dark Mode Failure Patterns (MUST FIX)
+
+- **Inverted colors**: Elements that look "negative" or inverted
+- **Pure white on dark**: Harsh `#fff` instead of soft off-white
+- **Missing contrast**: Elements that blend into background
+- **Wrong background levels**: Cards same color as page
+- **Harsh borders**: Borders too visible/bright
+- **Broken shadows**: Shadows that look wrong in dark
+
+### Color Audit Command
 
 ```bash
-# Capture fresh screenshots
-pnpm screenshots
-
-# Run validators
+# Find all color violations
 node scripts/validate.js
 
-# Check for arbitrary Tailwind
-node scripts/validate/check-arbitrary-tw.js
-
-# Run component tests
-pnpm test
-
-# Start Storybook (after setup)
-pnpm storybook
+# Should return 0 color-related warnings
 ```
 
 ---
 
-*This is an executable protocol. Run iteratively until all phases achieve 75%+ acceptance.*
+## Visual Inspection Protocol
+
+For each screen, capture screenshots in:
+1. Desktop light mode (1920x1080)
+2. Desktop dark mode (1920x1080)
+3. Tablet light mode (768px)
+4. Tablet dark mode (768px)
+
+### Inspection Checklist
+
+- [ ] First impression: Does it look professional and polished?
+- [ ] Spacing: Is everything evenly spaced?
+- [ ] Alignment: Are all elements properly aligned?
+- [ ] Typography: Is hierarchy clear?
+- [ ] Colors: Do all colors look intentional?
+- [ ] Borders: Are borders consistent (not too dark, not too light)?
+- [ ] Shadows: Are shadows appropriate for the elevation?
+- [ ] Dark mode: Does it look designed for dark, not just inverted?
+- [ ] Tablet: Does layout adapt cleanly?
+
+---
+
+## Execution Tracking
+
+### Pass 1: Components
+
+| Component | Checked | Issues Found | Fixed |
+|-----------|---------|--------------|-------|
+| Button | | | |
+| Card | | | |
+| Dialog | | | |
+| Input | | | |
+| Select | | | |
+| Dropdown | | | |
+| Tooltip | | | |
+| Popover | | | |
+| Badge | | | |
+| Avatar | | | |
+| Table | | | |
+| Checkbox | | | |
+| Radio | | | |
+| Switch | | | |
+| Tabs | | | |
+| Progress | | | |
+| Skeleton | | | |
+| EmptyState | | | |
+| ... | | | |
+
+### Pass 2: Pages
+
+| Page | Desktop Light | Desktop Dark | Tablet | Issues | Fixed |
+|------|---------------|--------------|--------|--------|-------|
+| Dashboard | | | | | |
+| Projects | | | | | |
+| Board | | | | | |
+| Issues | | | | | |
+| Documents | | | | | |
+| Calendar | | | | | |
+| Settings | | | | | |
+| ... | | | | | |
+
+### Pass 3: Colors
+
+| Screen | Light Mode OK | Dark Mode OK | Issues | Fixed |
+|--------|---------------|--------------|--------|-------|
+| Dashboard | | | | |
+| Projects | | | | |
+| ... | | | | |
+
+---
+
+## Quick Reference
+
+### Semantic Tokens (Use These)
+
+```
+Backgrounds: bg-ui-bg, bg-ui-bg-soft, bg-ui-bg-elevated, bg-ui-bg-hover, bg-brand
+Text: text-ui-text, text-ui-text-secondary, text-ui-text-tertiary, text-brand, text-brand-foreground
+Borders: border-ui-border, border-ui-border-hover, border-brand
+Shadows: shadow-card, shadow-elevated
+Status: bg-status-*, text-status-*, border-status-* (success, warning, error, info)
+```
+
+### Forbidden Patterns
+
+```
+❌ bg-gray-*, bg-slate-*, bg-zinc-*
+❌ text-gray-*, text-white, text-black
+❌ border-gray-*, border-slate-*
+❌ #fff, #000, rgb(*), hsl(*)
+❌ shadow-sm, shadow-md, shadow-lg (use semantic shadows)
+❌ gap-[Xpx], p-[Xpx] (arbitrary values)
+❌ dark: prefixes on semantic tokens
+```
+
+---
+
+*Execute manually. Inspect visually. Accept nothing less than perfect.*

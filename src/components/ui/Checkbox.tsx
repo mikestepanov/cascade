@@ -3,6 +3,7 @@ import * as React from "react";
 import { Check } from "@/lib/icons";
 import { cn } from "@/lib/utils";
 import { Flex } from "./Flex";
+import { Typography } from "./Typography";
 
 export interface CheckboxProps
   extends React.ComponentPropsWithoutRef<typeof CheckboxPrimitive.Root> {
@@ -72,7 +73,11 @@ const Checkbox = React.forwardRef<React.ElementRef<typeof CheckboxPrimitive.Root
               {label}
             </label>
           )}
-          {description && <p className="text-sm text-ui-text-secondary">{description}</p>}
+          {description && (
+            <Typography variant="muted" className="text-sm">
+              {description}
+            </Typography>
+          )}
         </div>
       </Flex>
     );

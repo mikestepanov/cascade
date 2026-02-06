@@ -2,6 +2,7 @@ import * as RadioGroupPrimitive from "@radix-ui/react-radio-group";
 import * as React from "react";
 import { cn } from "@/lib/utils";
 import { Flex } from "./Flex";
+import { Typography } from "./Typography";
 
 export interface RadioGroupProps
   extends React.ComponentPropsWithoutRef<typeof RadioGroupPrimitive.Root> {}
@@ -73,7 +74,11 @@ const RadioGroupItem = React.forwardRef<
             {label}
           </label>
         )}
-        {description && <p className="text-sm text-ui-text-secondary">{description}</p>}
+        {description && (
+          <Typography variant="muted" className="text-sm">
+            {description}
+          </Typography>
+        )}
       </div>
     </Flex>
   );

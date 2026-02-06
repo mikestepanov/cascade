@@ -521,14 +521,14 @@ export const TimePickerTrigger: Story = {
 // ============================================================================
 
 const COLORS = [
-  { name: "Red", value: "#ef4444" },
-  { name: "Orange", value: "#f97316" },
-  { name: "Yellow", value: "#eab308" },
-  { name: "Green", value: "#22c55e" },
-  { name: "Blue", value: "#3b82f6" },
-  { name: "Purple", value: "#a855f7" },
-  { name: "Pink", value: "#ec4899" },
-  { name: "Gray", value: "#6b7280" },
+  { name: "Red", value: "var(--color-palette-red)" },
+  { name: "Orange", value: "var(--color-palette-orange)" },
+  { name: "Amber", value: "var(--color-palette-amber)" },
+  { name: "Green", value: "var(--color-palette-green)" },
+  { name: "Blue", value: "var(--color-palette-blue)" },
+  { name: "Purple", value: "var(--color-palette-purple)" },
+  { name: "Pink", value: "var(--color-palette-pink)" },
+  { name: "Gray", value: "var(--color-palette-gray)" },
 ];
 
 export const ColorPicker: Story = {

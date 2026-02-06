@@ -3,6 +3,7 @@ import { AlertCircleIcon, AlertTriangleIcon, CheckCircleIcon, InfoIcon, XIcon } 
 import type * as React from "react";
 
 import { cn } from "@/lib/utils";
+import { Typography } from "./Typography";
 
 /**
  * Mintlify-inspired alert/banner component.
@@ -81,13 +82,17 @@ function Alert({ className, variant = "default", onDismiss, children, ...props }
   );
 }
 
-function AlertTitle({ className, ...props }: React.ComponentProps<"h5">) {
+function AlertTitle({ className, children, ...props }: React.ComponentProps<"h5">) {
   return (
-    <h5
+    <Typography
+      as="h5"
+      variant="h5"
       data-slot="alert-title"
       className={cn("text-sm font-semibold leading-tight tracking-tight", className)}
       {...props}
-    />
+    >
+      {children}
+    </Typography>
   );
 }
 

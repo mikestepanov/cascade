@@ -1,6 +1,7 @@
 import { cva, type VariantProps } from "class-variance-authority";
 import * as React from "react";
 import { cn } from "@/lib/utils";
+import { Typography } from "./Typography";
 
 const inputVariants = cva(
   "flex w-full rounded-lg border transition-[border-color,box-shadow] duration-200 file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-ui-text-tertiary focus-visible:outline-none focus-visible:border-ui-border-secondary focus-visible:shadow-soft disabled:cursor-not-allowed disabled:opacity-50",
@@ -61,7 +62,11 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           aria-invalid={!!error}
           {...props}
         />
-        {error && <p className="mt-1 text-sm text-status-error">{error}</p>}
+        {error && (
+          <Typography variant="muted" className="mt-1 text-sm text-status-error">
+            {error}
+          </Typography>
+        )}
       </div>
     );
   },
