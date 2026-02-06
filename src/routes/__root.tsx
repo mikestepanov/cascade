@@ -5,7 +5,7 @@ import { CloudOff } from "lucide-react";
 import { useEffect } from "react";
 import { Button } from "@/components/ui/Button";
 import { Flex } from "@/components/ui/Flex";
-import { Toaster } from "@/components/ui/sonner";
+import { Toaster } from "@/components/ui/Sonner";
 import { LazyPostHog } from "../components/LazyPostHog";
 import { NotFoundPage } from "../components/NotFoundPage";
 import { TooltipProvider } from "../components/ui/Tooltip";

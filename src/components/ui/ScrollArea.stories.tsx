@@ -3,7 +3,7 @@ import { Avatar, AvatarFallback } from "./avatar";
 import { Badge } from "./badge";
 import { Card, CardBody, CardHeader } from "./card";
 import { Flex } from "./Flex";
-import { ScrollArea, ScrollBar } from "./scroll-area";
+import { ScrollArea, ScrollBar } from "./ScrollArea";
 
 const meta: Meta<typeof ScrollArea> = {
   title: "UI/ScrollArea",
@@ -419,7 +419,7 @@ export const CodePreview: Story = {
   render: () => (
     <ScrollArea className="h-64 w-full max-w-lg rounded-lg border border-ui-border bg-ui-bg-soft">
       <pre className="p-4 text-sm font-mono text-ui-text">
-        <code>{`import { ScrollArea, ScrollBar } from "./scroll-area";
+        <code>{`import { ScrollArea, ScrollBar } from "./ScrollArea";
 
 function Example() {
   return (

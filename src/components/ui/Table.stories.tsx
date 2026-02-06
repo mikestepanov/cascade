@@ -14,7 +14,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "./table";
+} from "./Table";
 
 const meta: Meta<typeof Table> = {
   title: "UI/Table",

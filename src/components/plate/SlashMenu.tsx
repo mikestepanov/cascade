@@ -27,7 +27,7 @@ import {
   CommandGroup,
   CommandItem,
   CommandList,
-} from "@/components/ui/command";
+} from "@/components/ui/Command";
 import { Flex } from "@/components/ui/Flex";
 import { Popover, PopoverAnchor, PopoverContent } from "@/components/ui/Popover";
 import { NODE_TYPES } from "@/lib/plate/plugins";

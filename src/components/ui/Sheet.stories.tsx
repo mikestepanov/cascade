@@ -25,7 +25,7 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from "./sheet";
+} from "./Sheet";
 
 const meta: Meta<typeof Sheet> = {
   title: "UI/Sheet",

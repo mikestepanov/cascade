@@ -7,7 +7,7 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
+} from "@/components/ui/Breadcrumb";
 import { Flex } from "@/components/ui/Flex";
 import { Typography } from "@/components/ui/Typography";
 import { cn } from "@/lib/utils";

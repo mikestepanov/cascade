@@ -1,4 +1,4 @@
-import { Calendar } from "@/components/ui/calendar";
+import { Calendar } from "@/components/ui/Calendar";
 import { useCalendarContext } from "../../calendar-context";
 
 export function CalendarBodyDayCalendar(): React.ReactElement {

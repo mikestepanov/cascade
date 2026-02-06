@@ -17,7 +17,7 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from "./breadcrumb";
+} from "./Breadcrumb";
 import {
   DropdownMenu,
   DropdownMenuContent,

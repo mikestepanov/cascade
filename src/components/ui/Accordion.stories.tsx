@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { Bell, CreditCard, HelpCircle, Lock, Mail, Settings, User } from "lucide-react";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "./accordion";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "./Accordion";
 
 const meta: Meta<typeof Accordion> = {
   title: "UI/Accordion",
