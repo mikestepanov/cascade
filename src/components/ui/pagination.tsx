@@ -1,5 +1,5 @@
-import * as React from "react";
 import { ChevronLeft, ChevronRight, MoreHorizontal } from "lucide-react";
+import * as React from "react";
 import { cn } from "@/lib/utils";
 import { Button, type ButtonProps } from "./button";
 
@@ -121,36 +121,19 @@ export function Pagination({
  * Sub-components
  * ============================================================ */
 
-function PaginationContent({
-  className,
-  ...props
-}: React.ComponentProps<"ul">) {
-  return (
-    <ul
-      className={cn("flex items-center gap-1", className)}
-      {...props}
-    />
-  );
+function PaginationContent({ className, ...props }: React.ComponentProps<"ul">) {
+  return <ul className={cn("flex items-center gap-1", className)} {...props} />;
 }
 
-function PaginationItem({
-  className,
-  ...props
-}: React.ComponentProps<"li">) {
+function PaginationItem({ className, ...props }: React.ComponentProps<"li">) {
   return <li className={cn("", className)} {...props} />;
 }
 
-export interface PaginationLinkProps
-  extends Omit<ButtonProps, "variant" | "size"> {
+export interface PaginationLinkProps extends Omit<ButtonProps, "variant" | "size"> {
   isActive?: boolean;
 }
 
-function PaginationLink({
-  className,
-  isActive,
-  children,
-  ...props
-}: PaginationLinkProps) {
+function PaginationLink({ className, isActive, children, ...props }: PaginationLinkProps) {
   return (
     <button
       type="button"
@@ -195,11 +178,7 @@ function PaginationPrevious({
   );
 }
 
-function PaginationNext({
-  className,
-  disabled,
-  ...props
-}: Omit<ButtonProps, "variant" | "size">) {
+function PaginationNext({ className, disabled, ...props }: Omit<ButtonProps, "variant" | "size">) {
   return (
     <Button
       variant="ghost"
@@ -219,17 +198,11 @@ function PaginationNext({
   );
 }
 
-function PaginationEllipsis({
-  className,
-  ...props
-}: React.ComponentProps<"span">) {
+function PaginationEllipsis({ className, ...props }: React.ComponentProps<"span">) {
   return (
     <span
       aria-hidden
-      className={cn(
-        "flex h-9 w-9 items-center justify-center text-ui-text-tertiary",
-        className,
-      )}
+      className={cn("flex h-9 w-9 items-center justify-center text-ui-text-tertiary", className)}
       {...props}
     >
       <MoreHorizontal className="h-4 w-4" />

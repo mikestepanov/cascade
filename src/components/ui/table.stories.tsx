@@ -1,20 +1,20 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { useState } from "react";
-import {
-  Table,
-  TableHeader,
-  TableBody,
-  TableFooter,
-  TableHead,
-  TableRow,
-  TableCell,
-  TableCaption,
-} from "./table";
+import { Avatar, AvatarFallback, AvatarImage } from "./avatar";
 import { Badge } from "./badge";
 import { Button } from "./button";
-import { Flex } from "./Flex";
-import { Avatar, AvatarFallback, AvatarImage } from "./avatar";
 import { Checkbox } from "./checkbox";
+import { Flex } from "./Flex";
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableFooter,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "./table";
 
 const meta: Meta<typeof Table> = {
   title: "UI/Table",
@@ -68,7 +68,13 @@ const sampleInvoices: Invoice[] = [
   { id: "INV-002", client: "Globex Inc", amount: 3400.0, status: "pending", date: "2024-01-20" },
   { id: "INV-003", client: "Initech", amount: 890.5, status: "overdue", date: "2024-01-10" },
   { id: "INV-004", client: "Umbrella Corp", amount: 5200.0, status: "paid", date: "2024-01-25" },
-  { id: "INV-005", client: "Stark Industries", amount: 15000.0, status: "pending", date: "2024-01-28" },
+  {
+    id: "INV-005",
+    client: "Stark Industries",
+    amount: 15000.0,
+    status: "pending",
+    date: "2024-01-28",
+  },
 ];
 
 interface Product {
@@ -81,10 +87,31 @@ interface Product {
 }
 
 const sampleProducts: Product[] = [
-  { id: "P001", name: "Wireless Mouse", category: "Electronics", price: 29.99, stock: 150, rating: 4.5 },
-  { id: "P002", name: "Mechanical Keyboard", category: "Electronics", price: 89.99, stock: 75, rating: 4.8 },
+  {
+    id: "P001",
+    name: "Wireless Mouse",
+    category: "Electronics",
+    price: 29.99,
+    stock: 150,
+    rating: 4.5,
+  },
+  {
+    id: "P002",
+    name: "Mechanical Keyboard",
+    category: "Electronics",
+    price: 89.99,
+    stock: 75,
+    rating: 4.8,
+  },
   { id: "P003", name: "USB-C Hub", category: "Accessories", price: 45.0, stock: 200, rating: 4.2 },
-  { id: "P004", name: "Monitor Stand", category: "Furniture", price: 79.99, stock: 30, rating: 4.0 },
+  {
+    id: "P004",
+    name: "Monitor Stand",
+    category: "Furniture",
+    price: 79.99,
+    stock: 30,
+    rating: 4.0,
+  },
   { id: "P005", name: "Desk Lamp", category: "Furniture", price: 34.99, stock: 0, rating: 3.9 },
 ];
 
@@ -171,7 +198,11 @@ export const WithCaption: Story = {
             <TableCell>
               <Badge
                 variant={
-                  user.status === "active" ? "success" : user.status === "pending" ? "warning" : "neutral"
+                  user.status === "active"
+                    ? "success"
+                    : user.status === "pending"
+                      ? "warning"
+                      : "neutral"
                 }
               >
                 {user.status}
@@ -277,13 +308,10 @@ function SortableTableDemo() {
 
   const SortIcon = ({ field }: { field: SortField }) => {
     if (sortField !== field) return <span className="ml-1 text-ui-text-tertiary">&#x2195;</span>;
-    return (
-      <span className="ml-1 text-brand">{sortDirection === "asc" ? "\u2191" : "\u2193"}</span>
-    );
+    return <span className="ml-1 text-brand">{sortDirection === "asc" ? "\u2191" : "\u2193"}</span>;
   };
 
-  const sortableHeadClass =
-    "cursor-pointer select-none hover:bg-ui-bg-hover transition-colors";
+  const sortableHeadClass = "cursor-pointer select-none hover:bg-ui-bg-hover transition-colors";
 
   return (
     <Table>
@@ -530,7 +558,9 @@ export const NumericData: Story = {
           <TableCell className="text-right tabular-nums">$142,500</TableCell>
           <TableCell className="text-right tabular-nums">$168,000</TableCell>
           <TableCell className="text-right tabular-nums">$195,000</TableCell>
-          <TableCell className="text-right tabular-nums font-medium text-ui-text">$630,500</TableCell>
+          <TableCell className="text-right tabular-nums font-medium text-ui-text">
+            $630,500
+          </TableCell>
         </TableRow>
         <TableRow>
           <TableCell className="font-medium text-ui-text">Europe</TableCell>
@@ -538,7 +568,9 @@ export const NumericData: Story = {
           <TableCell className="text-right tabular-nums">$110,000</TableCell>
           <TableCell className="text-right tabular-nums">$125,000</TableCell>
           <TableCell className="text-right tabular-nums">$145,000</TableCell>
-          <TableCell className="text-right tabular-nums font-medium text-ui-text">$478,000</TableCell>
+          <TableCell className="text-right tabular-nums font-medium text-ui-text">
+            $478,000
+          </TableCell>
         </TableRow>
         <TableRow>
           <TableCell className="font-medium text-ui-text">Asia Pacific</TableCell>
@@ -546,7 +578,9 @@ export const NumericData: Story = {
           <TableCell className="text-right tabular-nums">$88,500</TableCell>
           <TableCell className="text-right tabular-nums">$102,000</TableCell>
           <TableCell className="text-right tabular-nums">$118,000</TableCell>
-          <TableCell className="text-right tabular-nums font-medium text-ui-text">$383,500</TableCell>
+          <TableCell className="text-right tabular-nums font-medium text-ui-text">
+            $383,500
+          </TableCell>
         </TableRow>
       </TableBody>
       <TableFooter>
@@ -742,7 +776,11 @@ export const ActionColumn: Story = {
                 <Button variant="ghost" size="sm">
                   Edit
                 </Button>
-                <Button variant="ghost" size="sm" className="text-status-error hover:text-status-error">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-status-error hover:text-status-error"
+                >
                   Delete
                 </Button>
               </Flex>

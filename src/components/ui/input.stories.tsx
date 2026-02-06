@@ -162,11 +162,7 @@ export const FormExample: Story = {
   render: () => (
     <div className="flex flex-col gap-2 w-80">
       <Label htmlFor="email">Email Address</Label>
-      <Input
-        id="email"
-        type="email"
-        placeholder="you@example.com"
-      />
+      <Input id="email" type="email" placeholder="you@example.com" />
     </div>
   ),
 };
@@ -191,15 +187,8 @@ export const FormExampleRequired: Story = {
       <Label htmlFor="username">
         Username <span className="text-status-error">*</span>
       </Label>
-      <Input
-        id="username"
-        type="text"
-        placeholder="Enter your username"
-        required
-      />
-      <p className="text-sm text-ui-text-secondary">
-        Your username must be unique.
-      </p>
+      <Input id="username" type="text" placeholder="Enter your username" required />
+      <p className="text-sm text-ui-text-secondary">Your username must be unique.</p>
     </div>
   ),
 };

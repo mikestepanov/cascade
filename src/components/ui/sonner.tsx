@@ -27,11 +27,9 @@ function Toaster({ ...props }: ToasterProps) {
             "bg-ui-bg-tertiary text-ui-text-secondary px-3 py-1.5 rounded text-sm font-medium hover:bg-ui-bg-hover transition-default",
           closeButton:
             "absolute right-2 top-2 rounded-md p-1 text-ui-text-tertiary opacity-70 hover:opacity-100 hover:bg-ui-bg-tertiary transition-default",
-          success:
-            "border-status-success/20 [&>[data-icon]]:text-status-success",
+          success: "border-status-success/20 [&>[data-icon]]:text-status-success",
           error: "border-status-error/20 [&>[data-icon]]:text-status-error",
-          warning:
-            "border-status-warning/20 [&>[data-icon]]:text-status-warning",
+          warning: "border-status-warning/20 [&>[data-icon]]:text-status-warning",
           info: "border-status-info/20 [&>[data-icon]]:text-status-info",
         },
       }}

@@ -148,17 +148,13 @@ export const CheckboxGroup: Story = {
 
     const toggleOption = (option: string) => {
       setSelected((prev) =>
-        prev.includes(option)
-          ? prev.filter((item) => item !== option)
-          : [...prev, option],
+        prev.includes(option) ? prev.filter((item) => item !== option) : [...prev, option],
       );
     };
 
     return (
       <div className="flex flex-col gap-4 w-80">
-        <p className="text-sm font-medium text-ui-text">
-          Notification Preferences
-        </p>
+        <p className="text-sm font-medium text-ui-text">Notification Preferences</p>
         <div className="flex flex-col gap-3">
           <Checkbox
             label="Email notifications"
@@ -205,11 +201,7 @@ export const SelectAllPattern: Story = {
     };
 
     const toggleItem = (id: string) => {
-      setItems(
-        items.map((item) =>
-          item.id === id ? { ...item, checked: !item.checked } : item,
-        ),
-      );
+      setItems(items.map((item) => (item.id === id ? { ...item, checked: !item.checked } : item)));
     };
 
     return (
@@ -245,10 +237,7 @@ export const FormExample: Story = {
           description="Allow others to see your profile"
           defaultChecked
         />
-        <Checkbox
-          label="Show email address"
-          description="Display your email on your profile"
-        />
+        <Checkbox label="Show email address" description="Display your email on your profile" />
         <Checkbox
           label="Enable two-factor authentication"
           description="Add an extra layer of security"
@@ -279,21 +268,15 @@ export const AllStates: Story = {
       <div className="flex items-center gap-8">
         <div className="flex flex-col items-center gap-2">
           <Checkbox disabled />
-          <span className="text-sm text-ui-text-secondary">
-            Disabled Unchecked
-          </span>
+          <span className="text-sm text-ui-text-secondary">Disabled Unchecked</span>
         </div>
         <div className="flex flex-col items-center gap-2">
           <Checkbox disabled defaultChecked />
-          <span className="text-sm text-ui-text-secondary">
-            Disabled Checked
-          </span>
+          <span className="text-sm text-ui-text-secondary">Disabled Checked</span>
         </div>
         <div className="flex flex-col items-center gap-2">
           <Checkbox disabled checked="indeterminate" />
-          <span className="text-sm text-ui-text-secondary">
-            Disabled Indeterminate
-          </span>
+          <span className="text-sm text-ui-text-secondary">Disabled Indeterminate</span>
         </div>
       </div>
     </div>

@@ -1,4 +1,4 @@
-import * as React from "react";
+import type * as React from "react";
 import * as ResizablePrimitive from "react-resizable-panels";
 import { cn } from "@/lib/utils";
 
@@ -15,16 +15,10 @@ export interface ResizablePanelGroupProps
  *   <ResizablePanel>Right</ResizablePanel>
  * </ResizablePanelGroup>
  */
-function ResizablePanelGroup({
-  className,
-  ...props
-}: ResizablePanelGroupProps) {
+function ResizablePanelGroup({ className, ...props }: ResizablePanelGroupProps) {
   return (
     <ResizablePrimitive.PanelGroup
-      className={cn(
-        "flex h-full w-full data-[panel-group-direction=vertical]:flex-col",
-        className,
-      )}
+      className={cn("flex h-full w-full data-[panel-group-direction=vertical]:flex-col", className)}
       {...props}
     />
   );
@@ -54,11 +48,7 @@ export interface ResizableHandleProps
  * // With visible grip handle
  * <ResizableHandle withHandle />
  */
-function ResizableHandle({
-  withHandle,
-  className,
-  ...props
-}: ResizableHandleProps) {
+function ResizableHandle({ withHandle, className, ...props }: ResizableHandleProps) {
   return (
     <ResizablePrimitive.PanelResizeHandle
       className={cn(

@@ -55,9 +55,7 @@ export function FormDialog({
         <DialogHeader>
           <DialogTitle className="tracking-tight">{title}</DialogTitle>
           {description ? (
-            <DialogDescription className="text-ui-text-secondary">
-              {description}
-            </DialogDescription>
+            <DialogDescription className="text-ui-text-secondary">{description}</DialogDescription>
           ) : (
             <DialogDescription className="sr-only">Form dialog</DialogDescription>
           )}

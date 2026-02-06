@@ -42,6 +42,7 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
         <textarea
           className={cn(textareaVariants({ variant: computedVariant, className }))}
           ref={ref}
+          aria-invalid={!!error}
           {...props}
         />
         {error && <p className="mt-1 text-sm text-status-error">{error}</p>}

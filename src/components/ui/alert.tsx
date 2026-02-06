@@ -1,11 +1,5 @@
-import { type VariantProps, cva } from "class-variance-authority";
-import {
-  AlertCircleIcon,
-  AlertTriangleIcon,
-  CheckCircleIcon,
-  InfoIcon,
-  XIcon,
-} from "lucide-react";
+import { cva, type VariantProps } from "class-variance-authority";
+import { AlertCircleIcon, AlertTriangleIcon, CheckCircleIcon, InfoIcon, XIcon } from "lucide-react";
 import type * as React from "react";
 
 import { cn } from "@/lib/utils";
@@ -49,9 +43,7 @@ const alertIcons = {
   error: AlertCircleIcon,
 };
 
-interface AlertProps
-  extends React.ComponentProps<"div">,
-    VariantProps<typeof alertVariants> {
+interface AlertProps extends React.ComponentProps<"div">, VariantProps<typeof alertVariants> {
   /** Called when the dismiss button is clicked. If not provided, dismiss button is hidden. */
   onDismiss?: () => void;
 }

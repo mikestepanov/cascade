@@ -459,13 +459,13 @@ export const UsageExamples: Story = {
         <div className="flex flex-col gap-3">
           <div className="flex items-start gap-2">
             <Avatar name="Michael Scott" size="sm" variant="brand" />
-            <div className="rounded-lg bg-ui-bg-secondary p-2 text-sm">
-              That's what she said!
-            </div>
+            <div className="rounded-lg bg-ui-bg-secondary p-2 text-sm">That's what she said!</div>
           </div>
           <div className="flex items-start gap-2">
             <Avatar name="Jim Halpert" size="sm" variant="accent" />
-            <div className="rounded-lg bg-ui-bg-secondary p-2 text-sm">Bears. Beets. Battlestar Galactica.</div>
+            <div className="rounded-lg bg-ui-bg-secondary p-2 text-sm">
+              Bears. Beets. Battlestar Galactica.
+            </div>
           </div>
         </div>
       </div>

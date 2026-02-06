@@ -1,4 +1,4 @@
-import { AlertTriangle, AlertCircle, Info, Loader2 } from "lucide-react";
+import { AlertCircle, AlertTriangle, Info, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   AlertDialog,
@@ -74,9 +74,7 @@ export function ConfirmDialog({
               <Icon className={cn("size-5", config.iconColor)} />
             </Flex>
             <Flex direction="column" gap="sm" className="flex-1 pt-0.5">
-              <AlertDialogTitle className="tracking-tight">
-                {title}
-              </AlertDialogTitle>
+              <AlertDialogTitle className="tracking-tight">{title}</AlertDialogTitle>
               <AlertDialogDescription className="text-ui-text-secondary leading-relaxed">
                 {message}
               </AlertDialogDescription>

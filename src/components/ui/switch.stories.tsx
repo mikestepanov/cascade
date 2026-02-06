@@ -132,9 +132,7 @@ export const WithDescription: Story = {
       <Switch id="notifications" className="mt-0.5" />
       <div className="flex flex-col gap-1">
         <Label htmlFor="notifications">Push Notifications</Label>
-        <p className="text-sm text-ui-text-secondary">
-          Receive push notifications on your device
-        </p>
+        <p className="text-sm text-ui-text-secondary">Receive push notifications on your device</p>
       </div>
     </div>
   ),
@@ -146,9 +144,7 @@ export const WithDescriptionOn: Story = {
       <Switch id="notifications-on" defaultChecked className="mt-0.5" />
       <div className="flex flex-col gap-1">
         <Label htmlFor="notifications-on">Push Notifications</Label>
-        <p className="text-sm text-ui-text-secondary">
-          Receive push notifications on your device
-        </p>
+        <p className="text-sm text-ui-text-secondary">Receive push notifications on your device</p>
       </div>
     </div>
   ),
@@ -161,16 +157,10 @@ export const Controlled: Story = {
     return (
       <div className="flex flex-col gap-4">
         <div className="flex items-center gap-3">
-          <Switch
-            id="controlled"
-            checked={checked}
-            onCheckedChange={setChecked}
-          />
+          <Switch id="controlled" checked={checked} onCheckedChange={setChecked} />
           <Label htmlFor="controlled">Controlled Switch</Label>
         </div>
-        <p className="text-sm text-ui-text-secondary">
-          Current state: {checked ? "On" : "Off"}
-        </p>
+        <p className="text-sm text-ui-text-secondary">Current state: {checked ? "On" : "Off"}</p>
       </div>
     );
   },
@@ -192,16 +182,12 @@ export const SettingsPanel: Story = {
 
     return (
       <div className="flex flex-col gap-6 w-80">
-        <p className="text-sm font-medium text-ui-text">
-          Notification Settings
-        </p>
+        <p className="text-sm font-medium text-ui-text">Notification Settings</p>
         <div className="flex flex-col gap-4">
           <div className="flex items-center justify-between">
             <div className="flex flex-col gap-1">
               <Label htmlFor="push-notifs">Push Notifications</Label>
-              <p className="text-sm text-ui-text-secondary">
-                Get notified on your device
-              </p>
+              <p className="text-sm text-ui-text-secondary">Get notified on your device</p>
             </div>
             <Switch
               id="push-notifs"
@@ -212,9 +198,7 @@ export const SettingsPanel: Story = {
           <div className="flex items-center justify-between">
             <div className="flex flex-col gap-1">
               <Label htmlFor="email-notifs">Email Notifications</Label>
-              <p className="text-sm text-ui-text-secondary">
-                Get notified via email
-              </p>
+              <p className="text-sm text-ui-text-secondary">Get notified via email</p>
             </div>
             <Switch
               id="email-notifs"
@@ -225,9 +209,7 @@ export const SettingsPanel: Story = {
           <div className="flex items-center justify-between">
             <div className="flex flex-col gap-1">
               <Label htmlFor="marketing">Marketing Emails</Label>
-              <p className="text-sm text-ui-text-secondary">
-                Receive marketing updates
-              </p>
+              <p className="text-sm text-ui-text-secondary">Receive marketing updates</p>
             </div>
             <Switch
               id="marketing"
@@ -238,9 +220,7 @@ export const SettingsPanel: Story = {
           <div className="flex items-center justify-between">
             <div className="flex flex-col gap-1">
               <Label htmlFor="product-updates">Product Updates</Label>
-              <p className="text-sm text-ui-text-secondary">
-                Learn about new features
-              </p>
+              <p className="text-sm text-ui-text-secondary">Learn about new features</p>
             </div>
             <Switch
               id="product-updates"
@@ -317,13 +297,9 @@ export const FormWithValidation: Story = {
           />
           <div className="flex flex-col gap-1">
             <Label htmlFor="terms">Accept Terms and Conditions</Label>
-            <p className="text-sm text-ui-text-secondary">
-              You must accept to continue
-            </p>
+            <p className="text-sm text-ui-text-secondary">You must accept to continue</p>
             {submitted && !accepted && (
-              <p className="text-sm text-status-error">
-                Please accept the terms to continue
-              </p>
+              <p className="text-sm text-status-error">Please accept the terms to continue</p>
             )}
           </div>
         </div>
@@ -387,18 +363,13 @@ export const FeatureToggle: Story = {
         <div className="flex flex-col gap-3">
           {Object.entries(features).map(([key, value]) => (
             <div key={key} className="flex items-center justify-between">
-              <Label
-                htmlFor={key}
-                className="capitalize text-sm text-ui-text-secondary"
-              >
+              <Label htmlFor={key} className="capitalize text-sm text-ui-text-secondary">
                 {key.replace(/([A-Z])/g, " $1").trim()}
               </Label>
               <Switch
                 id={key}
                 checked={value}
-                onCheckedChange={() =>
-                  toggleFeature(key as keyof typeof features)
-                }
+                onCheckedChange={() => toggleFeature(key as keyof typeof features)}
               />
             </div>
           ))}

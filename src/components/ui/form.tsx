@@ -10,4 +10,4 @@
 export * from "./form/index";
 
 // Also export form primitives for components that need them
-export { FormItem, FormLabel, FormDescription, FormMessage } from "./form-primitives";
+export { FormDescription, FormItem, FormLabel, FormMessage } from "./form-primitives";

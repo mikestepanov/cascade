@@ -4,6 +4,7 @@ import { X } from "lucide-react";
 import * as React from "react";
 
 import { cn } from "@/lib/utils";
+import { Flex } from "./Flex";
 
 const Sheet = SheetPrimitive.Root;
 
@@ -28,24 +29,21 @@ const SheetOverlay = React.forwardRef<
 ));
 SheetOverlay.displayName = SheetPrimitive.Overlay.displayName;
 
-const sheetVariants = cva(
-  "fixed z-50 gap-4 bg-ui-bg p-6 shadow-elevated border-ui-border",
-  {
-    variants: {
-      side: {
-        top: "inset-x-0 top-0 border-b data-[state=open]:animate-slide-down data-[state=closed]:animate-slide-up-out",
-        bottom:
-          "inset-x-0 bottom-0 border-t data-[state=open]:animate-slide-up data-[state=closed]:animate-slide-down-out",
-        left: "inset-y-0 left-0 h-full w-3/4 border-r data-[state=open]:animate-enter-left data-[state=closed]:animate-exit-left sm:max-w-sm",
-        right:
-          "inset-y-0 right-0 h-full w-3/4 border-l data-[state=open]:animate-enter-right data-[state=closed]:animate-exit-right sm:max-w-sm",
-      },
-    },
-    defaultVariants: {
-      side: "right",
+const sheetVariants = cva("fixed z-50 gap-4 bg-ui-bg p-6 shadow-elevated border-ui-border", {
+  variants: {
+    side: {
+      top: "inset-x-0 top-0 border-b data-[state=open]:animate-slide-down data-[state=closed]:animate-slide-up-out",
+      bottom:
+        "inset-x-0 bottom-0 border-t data-[state=open]:animate-slide-up data-[state=closed]:animate-slide-down-out",
+      left: "inset-y-0 left-0 h-full w-3/4 border-r data-[state=open]:animate-enter-left data-[state=closed]:animate-exit-left sm:max-w-sm",
+      right:
+        "inset-y-0 right-0 h-full w-3/4 border-l data-[state=open]:animate-enter-right data-[state=closed]:animate-exit-right sm:max-w-sm",
     },
   },
-);
+  defaultVariants: {
+    side: "right",
+  },
+});
 
 interface SheetContentProps
   extends React.ComponentPropsWithoutRef<typeof SheetPrimitive.Content>,
@@ -69,15 +67,17 @@ const SheetContent = React.forwardRef<
 SheetContent.displayName = SheetPrimitive.Content.displayName;
 
 const SheetHeader = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
-  <div className={cn("flex flex-col space-y-2 text-center sm:text-left", className)} {...props} />
+  <Flex
+    direction="column"
+    gap="sm"
+    className={cn("text-center sm:text-left", className)}
+    {...props}
+  />
 );
 SheetHeader.displayName = "SheetHeader";
 
 const SheetFooter = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
-  <div
-    className={cn("flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2", className)}
-    {...props}
-  />
+  <Flex className={cn("flex-col-reverse sm:flex-row sm:justify-end gap-2", className)} {...props} />
 );
 SheetFooter.displayName = "SheetFooter";
 

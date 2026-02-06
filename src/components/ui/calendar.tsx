@@ -48,8 +48,7 @@ function Calendar({
         outside:
           "day-outside text-ui-text-tertiary aria-selected:bg-brand-subtle aria-selected:text-ui-text-secondary",
         disabled: "text-ui-text-tertiary opacity-50 cursor-not-allowed",
-        range_middle:
-          "aria-selected:bg-brand-subtle aria-selected:text-brand-subtle-foreground",
+        range_middle: "aria-selected:bg-brand-subtle aria-selected:text-brand-subtle-foreground",
         hidden: "invisible",
         ...classNames,
       }}

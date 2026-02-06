@@ -23,34 +23,25 @@ Breadcrumb.displayName = "Breadcrumb";
 /**
  * BreadcrumbList - container for breadcrumb items
  */
-const BreadcrumbList = React.forwardRef<
-  HTMLOListElement,
-  React.ComponentPropsWithoutRef<"ol">
->(({ className, ...props }, ref) => (
-  <ol
-    ref={ref}
-    className={cn(
-      "flex flex-wrap items-center gap-1.5 break-words text-sm",
-      className,
-    )}
-    {...props}
-  />
-));
+const BreadcrumbList = React.forwardRef<HTMLOListElement, React.ComponentPropsWithoutRef<"ol">>(
+  ({ className, ...props }, ref) => (
+    <ol
+      ref={ref}
+      className={cn("flex flex-wrap items-center gap-1.5 break-words text-sm", className)}
+      {...props}
+    />
+  ),
+);
 BreadcrumbList.displayName = "BreadcrumbList";
 
 /**
  * BreadcrumbItem - individual breadcrumb item wrapper
  */
-const BreadcrumbItem = React.forwardRef<
-  HTMLLIElement,
-  React.ComponentPropsWithoutRef<"li">
->(({ className, ...props }, ref) => (
-  <li
-    ref={ref}
-    className={cn("inline-flex items-center gap-1.5", className)}
-    {...props}
-  />
-));
+const BreadcrumbItem = React.forwardRef<HTMLLIElement, React.ComponentPropsWithoutRef<"li">>(
+  ({ className, ...props }, ref) => (
+    <li ref={ref} className={cn("inline-flex items-center gap-1.5", className)} {...props} />
+  ),
+);
 BreadcrumbItem.displayName = "BreadcrumbItem";
 
 /**
@@ -81,34 +72,25 @@ BreadcrumbLink.displayName = "BreadcrumbLink";
  * BreadcrumbPage - current/active page indicator
  * Uses text-ui-text for active state (stronger emphasis)
  */
-const BreadcrumbPage = React.forwardRef<
-  HTMLSpanElement,
-  React.ComponentPropsWithoutRef<"span">
->(({ className, ...props }, ref) => (
-  <span
-    ref={ref}
-    role="link"
-    aria-disabled="true"
-    aria-current="page"
-    className={cn(
-      "font-medium text-ui-text",
-      "max-w-48 truncate",
-      className,
-    )}
-    {...props}
-  />
-));
+const BreadcrumbPage = React.forwardRef<HTMLSpanElement, React.ComponentPropsWithoutRef<"span">>(
+  ({ className, ...props }, ref) => (
+    <span
+      ref={ref}
+      role="link"
+      aria-disabled="true"
+      aria-current="page"
+      className={cn("font-medium text-ui-text", "max-w-48 truncate", className)}
+      {...props}
+    />
+  ),
+);
 BreadcrumbPage.displayName = "BreadcrumbPage";
 
 /**
  * BreadcrumbSeparator - subtle separator between breadcrumb items
  * Uses text-ui-text-tertiary for minimal visual weight
  */
-const BreadcrumbSeparator = ({
-  children,
-  className,
-  ...props
-}: React.ComponentProps<"li">) => (
+const BreadcrumbSeparator = ({ children, className, ...props }: React.ComponentProps<"li">) => (
   <li
     role="presentation"
     aria-hidden="true"
@@ -123,17 +105,11 @@ BreadcrumbSeparator.displayName = "BreadcrumbSeparator";
 /**
  * BreadcrumbEllipsis - shows truncated breadcrumb items
  */
-const BreadcrumbEllipsis = ({
-  className,
-  ...props
-}: React.ComponentProps<"span">) => (
+const BreadcrumbEllipsis = ({ className, ...props }: React.ComponentProps<"span">) => (
   <span
     role="presentation"
     aria-hidden="true"
-    className={cn(
-      "flex h-6 w-6 items-center justify-center text-ui-text-tertiary",
-      className,
-    )}
+    className={cn("flex h-6 w-6 items-center justify-center text-ui-text-tertiary", className)}
     {...props}
   >
     <span className="text-lg leading-none">...</span>

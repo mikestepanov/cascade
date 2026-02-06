@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { Textarea } from "./textarea";
 import { Label } from "./label";
+import { Textarea } from "./textarea";
 
 const meta: Meta<typeof Textarea> = {
   title: "UI/Textarea",
@@ -134,10 +134,7 @@ export const FormExample: Story = {
   render: () => (
     <div className="flex flex-col gap-2 w-80">
       <Label htmlFor="description">Description</Label>
-      <Textarea
-        id="description"
-        placeholder="Enter a detailed description..."
-      />
+      <Textarea id="description" placeholder="Enter a detailed description..." />
     </div>
   ),
 };
@@ -146,11 +143,7 @@ export const FormExampleWithError: Story = {
   render: () => (
     <div className="flex flex-col gap-2 w-80">
       <Label htmlFor="bio-error">Bio</Label>
-      <Textarea
-        id="bio-error"
-        defaultValue="Hi"
-        error="Bio must be at least 20 characters long"
-      />
+      <Textarea id="bio-error" defaultValue="Hi" error="Bio must be at least 20 characters long" />
     </div>
   ),
 };
@@ -161,15 +154,8 @@ export const FormExampleRequired: Story = {
       <Label htmlFor="feedback">
         Feedback <span className="text-status-error">*</span>
       </Label>
-      <Textarea
-        id="feedback"
-        placeholder="Please share your feedback..."
-        rows={4}
-        required
-      />
-      <p className="text-sm text-ui-text-secondary">
-        Your feedback helps us improve.
-      </p>
+      <Textarea id="feedback" placeholder="Please share your feedback..." rows={4} required />
+      <p className="text-sm text-ui-text-secondary">Your feedback helps us improve.</p>
     </div>
   ),
 };
@@ -178,11 +164,7 @@ export const FormExampleWithHint: Story = {
   render: () => (
     <div className="flex flex-col gap-2 w-80">
       <Label htmlFor="notes">Notes</Label>
-      <Textarea
-        id="notes"
-        placeholder="Add any additional notes..."
-        rows={3}
-      />
+      <Textarea id="notes" placeholder="Add any additional notes..." rows={3} />
       <Label variant="hint">Optional - max 500 characters</Label>
     </div>
   ),

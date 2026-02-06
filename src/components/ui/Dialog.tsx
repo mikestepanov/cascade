@@ -3,6 +3,7 @@ import { XIcon } from "lucide-react";
 import type * as React from "react";
 
 import { cn } from "@/lib/utils";
+import { Flex } from "./Flex";
 
 function Dialog({ ...props }: React.ComponentProps<typeof DialogPrimitive.Root>) {
   return <DialogPrimitive.Root data-slot="dialog" {...props} />;
@@ -50,7 +51,7 @@ function DialogContent({
       <DialogPrimitive.Content
         data-slot="dialog-content"
         className={cn(
-          "bg-ui-bg fixed top-1/2 left-1/2 z-50 grid w-full max-w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 gap-4 rounded-lg border border-ui-border p-6 shadow-lg sm:max-w-lg origin-center [perspective:800px] data-[state=open]:animate-scale-in data-[state=closed]:animate-scale-out",
+          "bg-ui-bg fixed top-1/2 left-1/2 z-50 grid w-full max-w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 gap-4 rounded-lg border border-ui-border p-6 shadow-elevated sm:max-w-lg origin-center [perspective:800px] data-[state=open]:animate-scale-in data-[state=closed]:animate-scale-out",
           className,
         )}
         {...props}
@@ -72,9 +73,11 @@ function DialogContent({
 
 function DialogHeader({ className, ...props }: React.ComponentProps<"div">) {
   return (
-    <div
+    <Flex
+      direction="column"
+      gap="sm"
       data-slot="dialog-header"
-      className={cn("flex flex-col gap-2 text-center sm:text-left", className)}
+      className={cn("text-center sm:text-left", className)}
       {...props}
     />
   );
@@ -82,9 +85,9 @@ function DialogHeader({ className, ...props }: React.ComponentProps<"div">) {
 
 function DialogFooter({ className, ...props }: React.ComponentProps<"div">) {
   return (
-    <div
+    <Flex
       data-slot="dialog-footer"
-      className={cn("flex flex-col-reverse gap-3 sm:flex-row sm:justify-end pt-4", className)}
+      className={cn("flex-col-reverse gap-3 sm:flex-row sm:justify-end pt-4", className)}
       {...props}
     />
   );

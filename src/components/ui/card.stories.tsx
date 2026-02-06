@@ -1,6 +1,14 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { Card, CardHeader, CardBody, CardTitle, CardDescription, CardContent, CardFooter } from "./card";
 import { Button } from "./button";
+import {
+  Card,
+  CardBody,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "./card";
 import { Flex } from "./Flex";
 
 const meta: Meta<typeof Card> = {
@@ -36,7 +44,9 @@ export const Default: Story = {
     variant: "default",
     children: (
       <CardBody>
-        <p className="text-ui-text">This is the default card variant with standard background and shadow.</p>
+        <p className="text-ui-text">
+          This is the default card variant with standard background and shadow.
+        </p>
       </CardBody>
     ),
   },
@@ -47,7 +57,9 @@ export const Soft: Story = {
     variant: "soft",
     children: (
       <CardBody>
-        <p className="text-ui-text">This is the soft card variant with a softer background color.</p>
+        <p className="text-ui-text">
+          This is the soft card variant with a softer background color.
+        </p>
       </CardBody>
     ),
   },
@@ -122,10 +134,7 @@ export const WithHeaderTitleOnly: Story = {
 export const WithHeaderTitleAndDescription: Story = {
   render: () => (
     <Card className="w-80">
-      <CardHeader
-        title="Project Overview"
-        description="View and manage your project details"
-      />
+      <CardHeader title="Project Overview" description="View and manage your project details" />
       <CardBody>
         <p className="text-ui-text">This card has both a title and description in the header.</p>
       </CardBody>
@@ -208,7 +217,11 @@ export const CompleteCard: Story = {
       <CardHeader
         title="Complete Card Example"
         description="This card demonstrates all sections"
-        action={<Button variant="ghost" size="sm">Edit</Button>}
+        action={
+          <Button variant="ghost" size="sm">
+            Edit
+          </Button>
+        }
       />
       <CardBody>
         <Flex direction="column" gap="sm">
@@ -239,8 +252,8 @@ export const CompleteCardWithContent: Story = {
       </CardHeader>
       <CardContent>
         <p className="text-ui-text">
-          CardContent has different padding than CardBody. Use CardContent when following
-          the shadcn/ui pattern, or CardBody for the custom Nixelo pattern.
+          CardContent has different padding than CardBody. Use CardContent when following the
+          shadcn/ui pattern, or CardBody for the custom Nixelo pattern.
         </p>
       </CardContent>
       <CardFooter>
@@ -263,8 +276,8 @@ export const InteractiveCard: Story = {
         <Flex direction="column" gap="xs">
           <h4 className="text-lg font-semibold text-ui-text">Interactive Card</h4>
           <p className="text-ui-text-secondary">
-            Click anywhere on this card to trigger the onClick handler.
-            It also responds to Enter and Space keys for accessibility.
+            Click anywhere on this card to trigger the onClick handler. It also responds to Enter
+            and Space keys for accessibility.
           </p>
         </Flex>
       </CardBody>
@@ -281,12 +294,7 @@ export const InteractiveCardGrid: Story = {
     return (
       <Flex gap="md" wrap>
         {["Dashboard", "Projects", "Settings", "Profile"].map((item) => (
-          <Card
-            key={item}
-            hoverable
-            onClick={() => handleClick(item)}
-            className="w-48"
-          >
+          <Card key={item} hoverable onClick={() => handleClick(item)} className="w-48">
             <CardBody>
               <Flex direction="column" align="center" gap="xs" className="text-center">
                 <div className="w-10 h-10 rounded-full bg-brand/10 flex items-center justify-center">

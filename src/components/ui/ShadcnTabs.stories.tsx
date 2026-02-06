@@ -1,14 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import {
-  Bell,
-  CreditCard,
-  FileText,
-  Home,
-  Lock,
-  Settings,
-  User,
-  Users,
-} from "lucide-react";
+import { Bell, CreditCard, FileText, Home, Lock, Settings, User, Users } from "lucide-react";
 import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ShadcnTabs";
 
@@ -74,14 +65,10 @@ export const ThreeTabs: Story = {
         </p>
       </TabsContent>
       <TabsContent value="analytics">
-        <p className="text-sm text-ui-text-secondary">
-          Detailed analytics and performance data.
-        </p>
+        <p className="text-sm text-ui-text-secondary">Detailed analytics and performance data.</p>
       </TabsContent>
       <TabsContent value="reports">
-        <p className="text-sm text-ui-text-secondary">
-          Generate and download reports.
-        </p>
+        <p className="text-sm text-ui-text-secondary">Generate and download reports.</p>
       </TabsContent>
     </Tabs>
   ),
@@ -325,8 +312,7 @@ export const Vertical: Story = {
   parameters: {
     docs: {
       description: {
-        story:
-          "Vertical orientation for sidebar-style navigation. Requires custom flex styling.",
+        story: "Vertical orientation for sidebar-style navigation. Requires custom flex styling.",
       },
     },
   },

@@ -1,9 +1,9 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { ScrollArea, ScrollBar } from "./scroll-area";
+import { Avatar, AvatarFallback } from "./avatar";
+import { Badge } from "./badge";
 import { Card, CardBody, CardHeader } from "./card";
 import { Flex } from "./Flex";
-import { Badge } from "./badge";
-import { Avatar, AvatarFallback } from "./avatar";
+import { ScrollArea, ScrollBar } from "./scroll-area";
 
 const meta: Meta<typeof ScrollArea> = {
   title: "UI/ScrollArea",
@@ -117,9 +117,7 @@ export const VerticalScroll: Story = {
                   <p className="text-sm font-medium text-ui-text">{notification.title}</p>
                   <p className="text-xs text-ui-text-tertiary">{notification.time}</p>
                 </div>
-                {notification.unread && (
-                  <span className="h-2 w-2 rounded-full bg-brand" />
-                )}
+                {notification.unread && <span className="h-2 w-2 rounded-full bg-brand" />}
               </Flex>
             </div>
           ))}
@@ -335,14 +333,56 @@ export const DropdownMenu: Story = {
 export const ChatMessages: Story = {
   render: () => {
     const messages = [
-      { id: "1", sender: "Alice", text: "Hey, how's the project going?", time: "10:30 AM", isMe: false },
-      { id: "2", sender: "Me", text: "Going well! Just finished the UI components.", time: "10:32 AM", isMe: true },
-      { id: "3", sender: "Alice", text: "Great! Can you share a preview?", time: "10:33 AM", isMe: false },
-      { id: "4", sender: "Me", text: "Sure, let me push the latest changes first.", time: "10:35 AM", isMe: true },
+      {
+        id: "1",
+        sender: "Alice",
+        text: "Hey, how's the project going?",
+        time: "10:30 AM",
+        isMe: false,
+      },
+      {
+        id: "2",
+        sender: "Me",
+        text: "Going well! Just finished the UI components.",
+        time: "10:32 AM",
+        isMe: true,
+      },
+      {
+        id: "3",
+        sender: "Alice",
+        text: "Great! Can you share a preview?",
+        time: "10:33 AM",
+        isMe: false,
+      },
+      {
+        id: "4",
+        sender: "Me",
+        text: "Sure, let me push the latest changes first.",
+        time: "10:35 AM",
+        isMe: true,
+      },
       { id: "5", sender: "Alice", text: "Perfect, take your time.", time: "10:36 AM", isMe: false },
-      { id: "6", sender: "Me", text: "Done! Check the staging environment.", time: "10:45 AM", isMe: true },
-      { id: "7", sender: "Alice", text: "Looks amazing! Love the new design.", time: "10:48 AM", isMe: false },
-      { id: "8", sender: "Me", text: "Thanks! Let me know if you want any changes.", time: "10:50 AM", isMe: true },
+      {
+        id: "6",
+        sender: "Me",
+        text: "Done! Check the staging environment.",
+        time: "10:45 AM",
+        isMe: true,
+      },
+      {
+        id: "7",
+        sender: "Alice",
+        text: "Looks amazing! Love the new design.",
+        time: "10:48 AM",
+        isMe: false,
+      },
+      {
+        id: "8",
+        sender: "Me",
+        text: "Thanks! Let me know if you want any changes.",
+        time: "10:50 AM",
+        isMe: true,
+      },
     ];
 
     return (
@@ -351,15 +391,10 @@ export const ChatMessages: Story = {
         <ScrollArea className="h-72">
           <div className="p-4 space-y-3">
             {messages.map((msg) => (
-              <div
-                key={msg.id}
-                className={`flex ${msg.isMe ? "justify-end" : "justify-start"}`}
-              >
+              <div key={msg.id} className={`flex ${msg.isMe ? "justify-end" : "justify-start"}`}>
                 <div
                   className={`max-w-[80%] rounded-lg px-3 py-2 ${
-                    msg.isMe
-                      ? "bg-brand text-white"
-                      : "bg-ui-bg-soft text-ui-text"
+                    msg.isMe ? "bg-brand text-white" : "bg-ui-bg-soft text-ui-text"
                   }`}
                 >
                   <p className="text-sm">{msg.text}</p>

@@ -17,7 +17,8 @@ const meta: Meta<typeof Alert> = {
     },
     onDismiss: {
       action: "dismissed",
-      description: "Callback when dismiss button is clicked. If not provided, dismiss button is hidden.",
+      description:
+        "Callback when dismiss button is clicked. If not provided, dismiss button is hidden.",
     },
   },
   decorators: [
@@ -112,7 +113,9 @@ export const DismissibleError: Story = {
   render: () => (
     <Alert variant="error" onDismiss={() => {}}>
       <AlertTitle>Connection Lost</AlertTitle>
-      <AlertDescription>Unable to connect to the server. Please check your network.</AlertDescription>
+      <AlertDescription>
+        Unable to connect to the server. Please check your network.
+      </AlertDescription>
     </Alert>
   ),
 };
@@ -172,9 +175,9 @@ export const LongContent: Story = {
     <Alert variant="info">
       <AlertTitle>Important Information About Your Account</AlertTitle>
       <AlertDescription>
-        We have updated our terms of service and privacy policy. Please take a moment to review these changes
-        as they affect how we handle your data. By continuing to use our services, you agree to the new
-        terms.
+        We have updated our terms of service and privacy policy. Please take a moment to review
+        these changes as they affect how we handle your data. By continuing to use our services, you
+        agree to the new terms.
       </AlertDescription>
     </Alert>
   ),
@@ -185,9 +188,9 @@ export const LongContentDismissible: Story = {
     <Alert variant="warning" onDismiss={() => {}}>
       <AlertTitle>System Maintenance Scheduled</AlertTitle>
       <AlertDescription>
-        Our systems will undergo scheduled maintenance on Saturday, January 15th from 2:00 AM to 6:00 AM
-        UTC. During this time, some features may be temporarily unavailable. We apologize for any
-        inconvenience.
+        Our systems will undergo scheduled maintenance on Saturday, January 15th from 2:00 AM to
+        6:00 AM UTC. During this time, some features may be temporarily unavailable. We apologize
+        for any inconvenience.
       </AlertDescription>
     </Alert>
   ),
