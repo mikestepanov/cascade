@@ -219,12 +219,8 @@ export class AuthPage extends BasePage {
         return; // Expanded
       }
 
-      // Submit the form by dispatching submit event on the form element
-      // This is more reliable than clicking because it bypasses any click handler issues
-      const form = this.page.locator("form[data-hydrated]");
-      await form.evaluate((formEl) => {
-        formEl.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }));
-      });
+      // Click the button to expand the form
+      await submitButton.click();
 
       // Verify button text changed (uses Playwright's default assertion timeout)
       await expect(submitButton).toHaveText(/Sign in|Create account/i);
