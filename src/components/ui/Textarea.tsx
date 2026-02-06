@@ -3,12 +3,12 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 
 const textareaVariants = cva(
-  "flex min-h-20 w-full rounded-lg border bg-ui-bg px-3 py-2 text-sm text-ui-text transition-colors placeholder:text-ui-text-tertiary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
+  "flex min-h-20 w-full rounded-lg border bg-ui-bg-soft px-3 py-2 text-sm text-ui-text transition-[border-color] duration-150 placeholder:text-ui-text-tertiary focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50",
   {
     variants: {
       variant: {
-        default: "border-ui-border",
-        error: "border-status-error focus-visible:ring-status-error",
+        default: "border-ui-border focus-visible:border-brand",
+        error: "border-status-error focus-visible:border-status-error",
       },
     },
     defaultVariants: {

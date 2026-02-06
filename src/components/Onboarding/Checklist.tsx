@@ -72,13 +72,19 @@ export function OnboardingChecklist() {
   };
 
   return (
-    <div className="fixed bottom-6 right-6 w-80 bg-ui-bg rounded-lg shadow-xl border border-ui-border z-40">
-      {/* Header */}
-      <Flex justify="between" align="center" className="p-4 border-b border-ui-border">
-        <Flex gap="sm" align="center">
-          <span className="text-lg">🚀</span>
+    <div className="fixed bottom-6 right-6 w-80 bg-ui-bg rounded-container shadow-elevated border border-ui-border z-40 overflow-hidden">
+      {/* Header - Mintlify-inspired with subtle gradient */}
+      <Flex
+        justify="between"
+        align="center"
+        className="p-4 bg-ui-bg-soft border-b border-ui-border"
+      >
+        <Flex gap="md" align="center">
+          <Flex align="center" justify="center" className="w-9 h-9 rounded-lg bg-brand-subtle">
+            <span className="text-lg">🚀</span>
+          </Flex>
           <div>
-            <Typography variant="h3" className="font-semibold text-ui-text">
+            <Typography variant="h3" className="font-semibold text-ui-text tracking-tight">
               Getting Started
             </Typography>
             <Typography className="text-xs text-ui-text-tertiary">
@@ -86,11 +92,11 @@ export function OnboardingChecklist() {
             </Typography>
           </div>
         </Flex>
-        <Flex gap="sm" align="center">
+        <Flex gap="xs" align="center">
           <button
             type="button"
             onClick={() => setIsExpanded(!isExpanded)}
-            className="p-1 hover:bg-ui-bg-secondary rounded"
+            className="p-1.5 hover:bg-ui-bg-hover rounded-md transition-colors duration-fast"
           >
             {isExpanded ? (
               <ChevronDown className="w-4 h-4 text-ui-text-tertiary" />
@@ -101,58 +107,92 @@ export function OnboardingChecklist() {
           <button
             type="button"
             onClick={handleDismiss}
-            className="p-1 hover:bg-ui-bg-secondary rounded"
+            className="p-1.5 hover:bg-ui-bg-hover rounded-md transition-colors duration-fast"
           >
             <X className="w-4 h-4 text-ui-text-tertiary" />
           </button>
         </Flex>
       </Flex>
 
-      {/* Progress Bar */}
-      <div className="px-4 pt-3">
-        <Progress value={progress} indicatorClassName="bg-status-success duration-500" />
+      {/* Progress Bar - Mintlify-inspired with brand color */}
+      <div className="px-4 pt-4">
+        <div className="flex items-center gap-3">
+          <Progress
+            value={progress}
+            indicatorClassName="bg-brand duration-500"
+            className="flex-1"
+          />
+          <Typography className="text-xs font-medium text-ui-text-secondary tabular-nums">
+            {progress}%
+          </Typography>
+        </div>
       </div>
 
-      {/* Checklist Items */}
+      {/* Checklist Items - Mintlify-inspired with cleaner spacing */}
       {isExpanded && (
-        <Flex direction="column" gap="md" className="p-4">
-          {items.map((item) => (
-            <Flex key={item.id} gap="md" align="start">
-              <div
+        <Flex direction="column" gap="sm" className="p-4">
+          {items.map((item, index) => (
+            <Flex
+              key={item.id}
+              gap="md"
+              align="start"
+              className={cn(
+                "p-3 rounded-lg transition-colors duration-fast",
+                item.completed ? "bg-transparent" : "bg-ui-bg-soft hover:bg-ui-bg-hover",
+              )}
+            >
+              <Flex
+                align="center"
+                justify="center"
                 className={cn(
-                  "flex-shrink-0 w-5 h-5 rounded-full border-2 flex items-center justify-center mt-0.5 transition-all",
+                  "flex-shrink-0 w-6 h-6 rounded-full transition-all duration-default",
                   item.completed
-                    ? "bg-status-success border-status-success"
-                    : "border-ui-border-secondary",
+                    ? "bg-status-success text-white"
+                    : "border-2 border-ui-border-secondary text-ui-text-tertiary",
                 )}
               >
-                {item.completed && <Check className="w-3 h-3 text-white" />}
-              </div>
-              <div className="flex-1">
+                {item.completed ? (
+                  <Check className="w-3.5 h-3.5" />
+                ) : (
+                  <span className="text-xs font-medium">{index + 1}</span>
+                )}
+              </Flex>
+              <div className="flex-1 min-w-0">
                 <Typography
                   className={cn(
-                    "font-medium text-sm",
+                    "font-medium text-sm leading-tight",
                     item.completed ? "text-ui-text-tertiary line-through" : "text-ui-text",
                   )}
                 >
                   {item.title}
                 </Typography>
-                <Typography className="text-xs text-ui-text-tertiary">
+                <Typography className="text-xs text-ui-text-tertiary mt-0.5">
                   {item.description}
                 </Typography>
               </div>
             </Flex>
           ))}
 
-          {/* Completion Message */}
+          {/* Completion Message - Mintlify-inspired success state */}
           {allComplete && (
-            <div className="mt-4 p-3 bg-status-success/10 rounded-lg border border-status-success/30">
-              <Typography className="text-sm font-medium text-status-success">
-                🎉 Congratulations! You've completed the basics.
-              </Typography>
-              <Typography className="text-xs text-status-success/90 mt-1">
-                You're ready to use Nixelo! Feel free to dismiss this checklist.
-              </Typography>
+            <div className="mt-2 p-4 bg-status-success-bg rounded-lg border border-status-success/20">
+              <Flex gap="md" align="start">
+                <Flex
+                  align="center"
+                  justify="center"
+                  className="w-8 h-8 rounded-full bg-status-success/20 shrink-0"
+                >
+                  <Check className="w-4 h-4 text-status-success" />
+                </Flex>
+                <div>
+                  <Typography className="text-sm font-semibold text-status-success-text">
+                    All done!
+                  </Typography>
+                  <Typography className="text-xs text-status-success-text/80 mt-1">
+                    You're ready to use Nixelo. Feel free to dismiss this checklist.
+                  </Typography>
+                </div>
+              </Flex>
             </div>
           )}
         </Flex>

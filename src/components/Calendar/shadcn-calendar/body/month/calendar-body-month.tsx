@@ -38,12 +38,12 @@ export function CalendarBodyMonth(): React.ReactElement {
   );
 
   return (
-    <div className="flex flex-col flex-grow overflow-hidden">
-      <div className="hidden md:grid grid-cols-7 border-ui-border divide-x divide-ui-border">
+    <div className="flex flex-col flex-grow overflow-hidden bg-ui-bg">
+      <div className="hidden md:grid grid-cols-7 bg-ui-bg-secondary/50">
         {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((day) => (
           <div
             key={day}
-            className="py-2 text-center text-sm font-medium text-ui-text-secondary border-b border-ui-border"
+            className="py-2.5 text-center text-xs font-medium uppercase tracking-wide text-ui-text-tertiary border-b border-r border-ui-border last:border-r-0"
           >
             {day}
           </div>
@@ -73,8 +73,10 @@ export function CalendarBodyMonth(): React.ReactElement {
                 role="button"
                 tabIndex={0}
                 className={cn(
-                  "relative flex flex-col border-b border-r border-ui-border p-2 min-h-30 cursor-pointer hover:bg-ui-bg-tertiary/30 transition-colors",
-                  !isCurrentMonth && "bg-ui-bg-tertiary/50 hidden md:flex",
+                  "relative flex flex-col border-b border-r border-ui-border p-2 min-h-30 cursor-pointer transition-colors duration-default",
+                  isCurrentMonth
+                    ? "bg-ui-bg hover:bg-ui-bg-hover"
+                    : "bg-ui-bg-secondary/30 hidden md:flex hover:bg-ui-bg-secondary/50",
                 )}
                 onClick={(e) => {
                   e.stopPropagation();
@@ -91,8 +93,12 @@ export function CalendarBodyMonth(): React.ReactElement {
               >
                 <div
                   className={cn(
-                    "text-sm font-medium w-fit p-1 flex flex-col items-center justify-center rounded-full aspect-square",
-                    isToday && "bg-brand text-brand-foreground",
+                    "text-sm font-medium w-7 h-7 flex items-center justify-center rounded-full transition-colors duration-default",
+                    isToday
+                      ? "bg-brand text-brand-foreground shadow-sm"
+                      : isCurrentMonth
+                        ? "text-ui-text hover:bg-ui-bg-tertiary"
+                        : "text-ui-text-tertiary",
                   )}
                 >
                   {format(day, "d")}
@@ -114,7 +120,7 @@ export function CalendarBodyMonth(): React.ReactElement {
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         transition={{ duration: 0.2 }}
-                        className="text-xs text-ui-text-secondary"
+                        className="text-xs font-medium text-ui-text-tertiary hover:text-brand cursor-pointer transition-colors duration-default mt-0.5"
                         onClick={(e) => {
                           e.stopPropagation();
                           setDate(day);

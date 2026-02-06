@@ -65,10 +65,10 @@ export function CreateWorkspaceModal({ isOpen, onClose, onCreated }: CreateWorks
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Create Workspace</DialogTitle>
+          <DialogTitle className="tracking-tight">Create Workspace</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit}>
-          <Flex direction="column" gap="md" className="py-4">
+          <Flex direction="column" gap="md" className="py-2">
             <div className="grid w-full items-center gap-1.5">
               <Label htmlFor="workspace-name">Workspace Name</Label>
               <Input
@@ -81,7 +81,9 @@ export function CreateWorkspaceModal({ isOpen, onClose, onCreated }: CreateWorks
               />
             </div>
             <div className="grid w-full items-center gap-1.5">
-              <Label htmlFor="workspace-description">Description (Optional)</Label>
+              <Label htmlFor="workspace-description" className="text-ui-text-secondary">
+                Description (Optional)
+              </Label>
               <Textarea
                 id="workspace-description"
                 placeholder="What is this workspace for?"

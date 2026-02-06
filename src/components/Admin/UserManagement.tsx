@@ -5,6 +5,8 @@ import { useState } from "react";
 import { useOrganization } from "@/hooks/useOrgContext";
 import { showError, showSuccess } from "@/lib/toast";
 import { cn } from "@/lib/utils";
+import { Avatar } from "../ui/Avatar";
+import { Badge } from "../ui/Badge";
 import { Button } from "../ui/Button";
 import { Card, CardBody, CardHeader } from "../ui/Card";
 import { EmptyState } from "../ui/EmptyState";
@@ -23,50 +25,49 @@ function UserRow({
   user: Doc<"users"> & { projectsCreated: number; projectMemberships: number };
 }) {
   return (
-    <tr>
+    <tr className="transition-default hover:bg-ui-bg-hover">
       <td className="px-6 py-4 whitespace-nowrap">
-        <Flex align="center">
-          {user.image ? (
-            <img
-              src={user.image}
-              alt={user.name || user.email || "User"}
-              className="h-8 w-8 rounded-full mr-3"
-            />
-          ) : (
-            <Flex
-              align="center"
-              justify="center"
-              className="h-8 w-8 rounded-full bg-brand text-white font-semibold mr-3"
-            >
-              {(user.name || user.email || "?")[0].toUpperCase()}
-            </Flex>
-          )}
-          <div className="text-sm font-medium text-ui-text">{user.name || "Anonymous"}</div>
+        <Flex align="center" gap="md">
+          <Avatar
+            src={user.image}
+            name={user.name}
+            email={user.email}
+            size="sm"
+          />
+          <Typography variant="small" className="font-medium text-ui-text">
+            {user.name || "Anonymous"}
+          </Typography>
         </Flex>
       </td>
-      <td className="px-6 py-4 whitespace-nowrap text-sm text-ui-text-secondary">
-        {user.email || "No email"}
+      <td className="px-6 py-4 whitespace-nowrap">
+        <Typography variant="small" color="secondary">
+          {user.email || "No email"}
+        </Typography>
       </td>
-      <td className="px-6 py-4 whitespace-nowrap text-sm">
+      <td className="px-6 py-4 whitespace-nowrap">
         {user.isAnonymous ? (
-          <span className="px-2 py-1 rounded text-xs font-medium bg-ui-bg-tertiary text-ui-text-secondary">
+          <Badge variant="neutral" size="sm">
             Anonymous
-          </span>
+          </Badge>
         ) : user.emailVerificationTime ? (
-          <span className="px-2 py-1 rounded text-xs font-medium bg-status-success-bg text-status-success">
+          <Badge variant="success" size="sm">
             Verified
-          </span>
+          </Badge>
         ) : (
-          <span className="px-2 py-1 rounded text-xs font-medium bg-status-warning-bg text-status-warning">
+          <Badge variant="warning" size="sm">
             Unverified
-          </span>
+          </Badge>
         )}
       </td>
-      <td className="px-6 py-4 whitespace-nowrap text-sm text-ui-text-secondary">
-        {user.projectsCreated}
+      <td className="px-6 py-4 whitespace-nowrap">
+        <Typography variant="small" color="secondary">
+          {user.projectsCreated}
+        </Typography>
       </td>
-      <td className="px-6 py-4 whitespace-nowrap text-sm text-ui-text-secondary">
-        {user.projectMemberships}
+      <td className="px-6 py-4 whitespace-nowrap">
+        <Typography variant="small" color="secondary">
+          {user.projectMemberships}
+        </Typography>
       </td>
     </tr>
   );

@@ -139,10 +139,10 @@ export function FileAttachments({ issueId }: FileAttachmentsProps) {
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         className={cn(
-          "border-2 border-dashed rounded-lg p-6 text-center transition-colors",
+          "border-2 border-dashed rounded-lg p-6 text-center transition-colors duration-default",
           dragOver
-            ? "border-brand-ring bg-brand-subtle"
-            : "border-ui-border hover:border-ui-border-secondary",
+            ? "border-brand bg-ui-bg-hover"
+            : "border-ui-border hover:border-ui-border-secondary hover:bg-ui-bg-hover",
         )}
       >
         <input
@@ -181,7 +181,7 @@ export function FileAttachments({ issueId }: FileAttachmentsProps) {
               key={attachment.storageId}
               align="center"
               justify="between"
-              className="p-3 bg-ui-bg-secondary rounded-lg hover:bg-ui-bg-tertiary transition-colors"
+              className="p-3 bg-ui-bg-soft rounded-lg border border-ui-border hover:bg-ui-bg-hover hover:border-ui-border-secondary transition-colors duration-default group"
             >
               <Flex align="center" gap="md" className="flex-1 min-w-0">
                 <span className="text-2xl shrink-0">{getFileIcon(attachment.filename)}</span>
@@ -189,7 +189,7 @@ export function FileAttachments({ issueId }: FileAttachmentsProps) {
                   <a
                     href={attachment.url || "#"}
                     download={attachment.filename}
-                    className="text-sm font-medium text-brand hover:text-brand-hover:text-brand-ring truncate block"
+                    className="text-sm font-medium text-ui-text hover:text-brand truncate block transition-colors duration-default"
                   >
                     {attachment.filename}
                   </a>
@@ -203,7 +203,7 @@ export function FileAttachments({ issueId }: FileAttachmentsProps) {
                   <a
                     href={attachment.url || "#"}
                     download={attachment.filename}
-                    className="p-1 text-ui-text-secondary hover:text-brand:text-brand-muted rounded"
+                    className="p-1.5 text-ui-text-tertiary hover:text-ui-text rounded-md hover:bg-ui-bg-tertiary transition-colors duration-default opacity-0 group-hover:opacity-100"
                   >
                     <span className="sr-only">Download {attachment.filename}</span>
                     <svg
@@ -226,7 +226,7 @@ export function FileAttachments({ issueId }: FileAttachmentsProps) {
                   <button
                     type="button"
                     onClick={() => setDeleteConfirm(attachment.storageId)}
-                    className="p-1 text-ui-text-secondary hover:text-status-error rounded"
+                    className="p-1.5 text-ui-text-tertiary hover:text-status-error rounded-md hover:bg-status-error-bg transition-colors duration-default opacity-0 group-hover:opacity-100"
                     aria-label="Delete attachment"
                   >
                     <svg

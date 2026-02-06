@@ -24,7 +24,10 @@ export function IssueDetailLayout({
       {header}
 
       <div className="flex-1 overflow-auto">
-        <Flex direction="column" className="max-w-400 mx-auto md:flex-row">
+        <Flex
+          direction="column"
+          className="max-w-400 mx-auto md:flex-row bg-ui-bg-elevated border border-ui-border rounded-lg shadow-card m-4"
+        >
           <IssueDetailContent
             issueId={issue._id}
             projectId={issue.projectId}

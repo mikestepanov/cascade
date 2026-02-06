@@ -126,7 +126,7 @@ export function FilterBar({ projectId, filters, onFilterChange }: FilterBarProps
     (filters.labels?.length ?? 0);
 
   return (
-    <div className="border-b border-ui-border px-4 py-2">
+    <div className="bg-ui-bg-soft border-b border-ui-border px-4 py-2.5">
       <Flex align="center" gap="sm" className="flex-wrap">
         {/* Type Filter */}
         <DropdownMenu>
@@ -134,7 +134,12 @@ export function FilterBar({ projectId, filters, onFilterChange }: FilterBarProps
             <Button
               variant="ghost"
               size="sm"
-              className={cn("h-8 px-3", filters.type?.length ? "bg-brand-subtle text-brand" : "")}
+              className={cn(
+                "h-8 px-3 transition-default",
+                filters.type?.length
+                  ? "bg-brand-subtle text-brand border border-brand-border"
+                  : "hover:bg-ui-bg-hover",
+              )}
             >
               Type
               {filters.type?.length ? ` (${filters.type.length})` : ""}
@@ -164,8 +169,10 @@ export function FilterBar({ projectId, filters, onFilterChange }: FilterBarProps
               variant="ghost"
               size="sm"
               className={cn(
-                "h-8 px-3",
-                filters.priority?.length ? "bg-brand-subtle text-brand" : "",
+                "h-8 px-3 transition-default",
+                filters.priority?.length
+                  ? "bg-brand-subtle text-brand border border-brand-border"
+                  : "hover:bg-ui-bg-hover",
               )}
             >
               Priority
@@ -193,8 +200,10 @@ export function FilterBar({ projectId, filters, onFilterChange }: FilterBarProps
               variant="ghost"
               size="sm"
               className={cn(
-                "h-8 px-3",
-                filters.assigneeId?.length ? "bg-brand-subtle text-brand" : "",
+                "h-8 px-3 transition-default",
+                filters.assigneeId?.length
+                  ? "bg-brand-subtle text-brand border border-brand-border"
+                  : "hover:bg-ui-bg-hover",
               )}
             >
               Assignee
@@ -224,7 +233,12 @@ export function FilterBar({ projectId, filters, onFilterChange }: FilterBarProps
             <Button
               variant="ghost"
               size="sm"
-              className={cn("h-8 px-3", filters.labels?.length ? "bg-brand-subtle text-brand" : "")}
+              className={cn(
+                "h-8 px-3 transition-default",
+                filters.labels?.length
+                  ? "bg-brand-subtle text-brand border border-brand-border"
+                  : "hover:bg-ui-bg-hover",
+              )}
             >
               Labels
               {filters.labels?.length ? ` (${filters.labels.length})` : ""}
@@ -258,7 +272,12 @@ export function FilterBar({ projectId, filters, onFilterChange }: FilterBarProps
 
         {/* Clear Filters */}
         {hasActiveFilters && (
-          <Button variant="ghost" size="sm" onClick={handleClearFilters} className="h-8 px-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleClearFilters}
+            className="h-8 px-2 text-ui-text-secondary hover:text-ui-text hover:bg-ui-bg-hover transition-default"
+          >
             <X className="w-4 h-4 mr-1" />
             Clear ({activeFilterCount})
           </Button>
@@ -270,7 +289,7 @@ export function FilterBar({ projectId, filters, onFilterChange }: FilterBarProps
             variant="ghost"
             size="sm"
             onClick={() => setShowSaveDialog(true)}
-            className="h-8 px-3"
+            className="h-8 px-3 text-ui-text-secondary hover:text-brand hover:bg-ui-bg-hover transition-default"
           >
             Save Filter
           </Button>
@@ -282,23 +301,30 @@ export function FilterBar({ projectId, filters, onFilterChange }: FilterBarProps
             <div className="w-px h-6 bg-ui-border" />
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm" className="h-8 px-3">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-8 px-3 hover:bg-ui-bg-hover transition-default"
+                >
                   Saved Filters ({savedFilters.length})
                   <ChevronDown className="ml-1 w-4 h-4" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="start" className="max-h-64 overflow-y-auto min-w-48">
+              <DropdownMenuContent
+                align="start"
+                className="max-h-64 overflow-y-auto min-w-48 scrollbar-subtle"
+              >
                 {savedFilters.map((filter) => (
                   <Flex
                     key={filter._id}
                     align="center"
                     justify="between"
-                    className="px-2 py-1.5 hover:bg-ui-bg-secondary rounded cursor-pointer"
+                    className="px-2 py-1.5 hover:bg-ui-bg-hover rounded cursor-pointer transition-fast group"
                   >
                     <button
                       type="button"
                       onClick={() => handleLoadFilter(filter)}
-                      className="flex-1 text-left text-sm"
+                      className="flex-1 text-left text-sm text-ui-text group-hover:text-ui-text"
                     >
                       {filter.name}
                       {filter.isPublic && (
@@ -312,7 +338,7 @@ export function FilterBar({ projectId, filters, onFilterChange }: FilterBarProps
                           e.stopPropagation();
                           void handleDeleteFilter(filter._id);
                         }}
-                        className="p-1 text-ui-text-tertiary hover:text-status-error"
+                        className="p-1 text-ui-text-tertiary hover:text-status-error opacity-0 group-hover:opacity-100 transition-fast"
                         aria-label="Delete filter"
                       >
                         <X className="w-3 h-3" />

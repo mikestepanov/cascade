@@ -94,7 +94,7 @@ export const KanbanColumn = memo(function KanbanColumn({
       aria-label={`${state.name} column`}
       data-board-column
       className={cn(
-        "flex-shrink-0 w-full lg:w-80 bg-ui-bg-secondary rounded-lg animate-slide-up border-t-4",
+        "flex-shrink-0 w-full lg:w-80 bg-ui-bg-soft rounded-container animate-slide-up border border-ui-border border-t-2 transition-default",
         getWorkflowCategoryColor(state.category),
       )}
       style={{
@@ -104,10 +104,10 @@ export const KanbanColumn = memo(function KanbanColumn({
       onDrop={handleDrop}
     >
       {/* Column Header */}
-      <div className="p-3 sm:p-4 border-b border-ui-border bg-ui-bg rounded-t-lg">
+      <div className="p-3 sm:p-4 border-b border-ui-border/50 bg-transparent rounded-t-container">
         <Flex align="center" justify="between" gap="sm">
           <Flex align="center" className="space-x-2 min-w-0">
-            <Typography variant="h3" className="font-medium text-ui-text truncate">
+            <Typography variant="h3" className="font-medium text-ui-text-secondary truncate tracking-tight text-sm">
               {state.name}
             </Typography>
             <Badge variant="neutral" shape="pill" className="shrink-0">
@@ -119,7 +119,7 @@ export const KanbanColumn = memo(function KanbanColumn({
               <button
                 type="button"
                 onClick={handleCreateIssue}
-                className="text-ui-text-tertiary hover:text-ui-text p-2.5 sm:p-3 shrink-0"
+                className="text-ui-text-tertiary hover:text-ui-text hover:bg-ui-bg-hover p-2.5 sm:p-3 shrink-0 rounded-secondary transition-fast"
                 aria-label={`Add issue to ${state.name}`}
                 {...(columnIndex === 0 ? { "data-tour": "create-issue" } : {})}
               >
@@ -131,48 +131,76 @@ export const KanbanColumn = memo(function KanbanColumn({
       </div>
 
       {/* Issues */}
-      <div className="p-2 space-y-2 min-h-96">
-        {stateIssues.map((issue, issueIndex) => (
-          <div
-            key={issue._id}
-            className="animate-scale-in"
-            style={{
-              animationDelay: `${columnIndex * (ANIMATION.STAGGER_DELAY * 2) + issueIndex * ANIMATION.STAGGER_DELAY}ms`,
-            }}
+      <div className="p-2 space-y-2 min-h-96 transition-default">
+        {stateIssues.length === 0 && hiddenCount === 0 ? (
+          /* Empty column state */
+          <Flex
+            direction="column"
+            align="center"
+            justify="center"
+            className="py-12 px-4 text-center"
           >
-            <IssueCard
-              issue={issue}
-              onDragStart={onDragStart}
-              onClick={onIssueClick}
-              selectionMode={selectionMode}
-              isSelected={selectedIssueIds.has(issue._id)}
-              isFocused={issue._id === focusedIssueId}
-              onToggleSelect={onToggleSelect}
-              canEdit={canEdit}
-            />
-          </div>
-        ))}
+            <Flex
+              align="center"
+              justify="center"
+              className="w-10 h-10 rounded-full bg-ui-bg-hover mb-3"
+            >
+              <Plus className="w-5 h-5 text-ui-text-tertiary" />
+            </Flex>
+            <Typography variant="small" className="text-ui-text-tertiary mb-1">
+              No issues yet
+            </Typography>
+            {canEdit && onCreateIssue && (
+              <Typography variant="small" className="text-ui-text-tertiary">
+                Drop issues here or click + to add
+              </Typography>
+            )}
+          </Flex>
+        ) : (
+          <>
+            {stateIssues.map((issue, issueIndex) => (
+              <div
+                key={issue._id}
+                className="animate-scale-in"
+                style={{
+                  animationDelay: `${columnIndex * (ANIMATION.STAGGER_DELAY * 2) + issueIndex * ANIMATION.STAGGER_DELAY}ms`,
+                }}
+              >
+                <IssueCard
+                  issue={issue}
+                  onDragStart={onDragStart}
+                  onClick={onIssueClick}
+                  selectionMode={selectionMode}
+                  isSelected={selectedIssueIds.has(issue._id)}
+                  isFocused={issue._id === focusedIssueId}
+                  onToggleSelect={onToggleSelect}
+                  canEdit={canEdit}
+                />
+              </div>
+            ))}
 
-        {/* Load More Button for done columns with hidden items */}
-        {onLoadMore && hiddenCount > 0 && (
-          <div className="pt-2">
-            <LoadMoreButton
-              onClick={handleLoadMore}
-              isLoading={isLoadingMore}
-              remainingCount={hiddenCount}
-              className="w-full"
-            />
-          </div>
-        )}
+            {/* Load More Button for done columns with hidden items */}
+            {onLoadMore && hiddenCount > 0 && (
+              <div className="pt-2">
+                <LoadMoreButton
+                  onClick={handleLoadMore}
+                  isLoading={isLoadingMore}
+                  remainingCount={hiddenCount}
+                  className="w-full"
+                />
+              </div>
+            )}
 
-        {/* Pagination info when there are hidden items */}
-        {hiddenCount > 0 && (
-          <PaginationInfo
-            loaded={stateIssues.length}
-            total={totalCount}
-            itemName="issues"
-            className="text-center pt-1"
-          />
+            {/* Pagination info when there are hidden items */}
+            {hiddenCount > 0 && (
+              <PaginationInfo
+                loaded={stateIssues.length}
+                total={totalCount}
+                itemName="issues"
+                className="text-center pt-1"
+              />
+            )}
+          </>
         )}
       </div>
     </section>

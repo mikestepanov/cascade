@@ -166,7 +166,7 @@ export function ExportPanel({ projectId, sprintId, status }: ExportPanelProps) {
       <Button onClick={handleExport} disabled={isExporting} className="w-full">
         {isExporting ? (
           <Flex align="center" justify="center" gap="sm">
-            <LoadingSpinner size="sm" color="white" />
+            <LoadingSpinner size="sm" variant="inherit" />
             Exporting...
           </Flex>
         ) : (

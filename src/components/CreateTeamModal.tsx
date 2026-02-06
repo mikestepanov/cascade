@@ -79,13 +79,13 @@ export function CreateTeamModal({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Create Team</DialogTitle>
-          <DialogDescription>
+          <DialogTitle className="tracking-tight">Create Team</DialogTitle>
+          <DialogDescription className="text-ui-text-secondary">
             Create a new team to organize your projects and members.
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit}>
-          <Flex direction="column" gap="md" className="py-4">
+          <Flex direction="column" gap="md" className="py-2">
             <div className="grid w-full items-center gap-1.5">
               <Label htmlFor="team-name">Team Name</Label>
               <Input
@@ -98,7 +98,9 @@ export function CreateTeamModal({
               />
             </div>
             <div className="grid w-full items-center gap-1.5">
-              <Label htmlFor="team-description">Description (Optional)</Label>
+              <Label htmlFor="team-description" className="text-ui-text-secondary">
+                Description (Optional)
+              </Label>
               <Textarea
                 id="team-description"
                 placeholder="What is this team for?"

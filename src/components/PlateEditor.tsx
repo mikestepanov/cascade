@@ -104,7 +104,7 @@ export function PlateEditor({ documentId }: PlateEditorProps) {
   if (document === undefined || userId === undefined) {
     return (
       <Flex direction="column" className="h-full bg-ui-bg">
-        <div className="border-b border-ui-border p-6">
+        <div className="border-b border-ui-border bg-ui-bg p-4 sm:p-6">
           <Flex align="center" justify="between" className="mb-4">
             <Skeleton className="h-8 w-1/2" />
             <Flex align="center" className="space-x-4">
@@ -117,8 +117,8 @@ export function PlateEditor({ documentId }: PlateEditorProps) {
             <Skeleton className="h-4 w-40" />
           </Flex>
         </div>
-        <div className="flex-1 overflow-auto">
-          <div className="max-w-4xl mx-auto p-6">
+        <div className="flex-1 overflow-auto bg-ui-bg">
+          <div className="max-w-3xl mx-auto px-4 py-8 sm:px-8 sm:py-12">
             <SkeletonText lines={8} />
           </div>
         </div>
@@ -177,16 +177,16 @@ export function PlateEditor({ documentId }: PlateEditorProps) {
         editorReady={true}
       />
 
-      {/* Editor */}
-      <div className="flex-1 overflow-auto">
-        <div className="max-w-4xl mx-auto p-3 sm:p-6">
+      {/* Editor - Clean Mintlify-inspired layout */}
+      <div className="flex-1 overflow-auto bg-ui-bg scrollbar-subtle">
+        <div className="max-w-3xl mx-auto px-4 py-8 sm:px-8 sm:py-12">
           <ErrorBoundary
             fallback={
-              <div className="p-4 border border-status-error/20 bg-status-error/5 rounded-md text-status-error text-center">
-                <Typography variant="p" className="font-medium">
+              <div className="p-6 border border-status-error/20 bg-status-error-bg rounded-container text-status-error text-center">
+                <Typography variant="p" className="font-medium tracking-tight">
                   Editor failed to load
                 </Typography>
-                <Typography variant="muted" className="opacity-80">
+                <Typography variant="muted" className="mt-2 opacity-80">
                   There was an issue initializing the rich text editor.
                 </Typography>
               </div>
@@ -196,7 +196,7 @@ export function PlateEditor({ documentId }: PlateEditorProps) {
               <SlashMenu />
               <FloatingToolbar />
               <PlateContent
-                className="min-h-96 prose prose-sm max-w-none focus:outline-none"
+                className="min-h-96 prose prose-sm max-w-none focus:outline-none text-ui-text leading-relaxed"
                 data-testid="plate-editor"
                 placeholder="Start writing..."
               />

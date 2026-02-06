@@ -77,7 +77,7 @@ describe("ErrorBoundary", () => {
       </ErrorBoundary>,
     );
 
-    const details = screen.getByText("Error details");
+    const details = screen.getByText("View error details");
     expect(details).toBeInTheDocument();
 
     const errorMessage = screen.getByText("Test error");

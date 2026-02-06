@@ -12,7 +12,7 @@ export function CalendarHeaderActionsMode(): React.ReactElement {
   return (
     <LayoutGroup>
       <ToggleGroup
-        className="flex gap-0 -space-x-px rounded-sm border overflow-hidden shadow-sm shadow-black/5 rtl:space-x-reverse"
+        className="flex gap-0 -space-x-px rounded-secondary border border-ui-border overflow-hidden shadow-soft rtl:space-x-reverse"
         type="single"
         variant="outline"
         value={mode}

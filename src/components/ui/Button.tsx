@@ -5,21 +5,23 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg font-medium transition-default focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 active:scale-[0.98]",
   {
     variants: {
       variant: {
-        primary: "bg-brand text-white hover:bg-brand-hover focus-visible:ring-brand-ring:bg-brand",
+        primary:
+          "bg-brand text-white hover:bg-brand-hover focus-visible:ring-brand-ring",
         secondary:
-          "bg-ui-bg text-ui-text border border-ui-border hover:bg-ui-bg-secondary hover:border-brand-ring focus-visible:ring-brand-ring",
+          "bg-ui-bg text-ui-text border border-ui-border hover:bg-ui-bg-secondary hover:border-ui-border-secondary focus-visible:ring-brand-ring",
         success:
           "bg-status-success text-white hover:bg-status-success/90 focus-visible:ring-status-success",
         danger:
           "bg-status-error text-white hover:bg-status-error/90 focus-visible:ring-status-error",
-        ghost: "text-ui-text-secondary hover:bg-ui-bg-secondary focus-visible:ring-brand-ring",
-        link: "text-brand underline-offset-4 hover:underline",
+        ghost:
+          "text-ui-text-secondary hover:bg-ui-bg-hover focus-visible:ring-brand-ring",
+        link: "text-brand underline-offset-4 hover:underline active:scale-100",
         outline:
-          "bg-transparent text-ui-text border border-ui-border hover:bg-ui-bg-secondary focus-visible:ring-brand-ring",
+          "bg-transparent text-ui-text border border-ui-border hover:bg-ui-bg-hover hover:border-ui-border-secondary focus-visible:ring-brand-ring",
       },
       size: {
         sm: "h-9 px-3 text-sm",

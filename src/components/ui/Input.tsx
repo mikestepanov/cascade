@@ -3,14 +3,14 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 
 const inputVariants = cva(
-  "flex w-full rounded-lg border transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-ui-text-tertiary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
+  "flex w-full rounded-lg border transition-[border-color,box-shadow] duration-200 file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-ui-text-tertiary focus-visible:outline-none focus-visible:border-ui-border-secondary focus-visible:shadow-soft disabled:cursor-not-allowed disabled:opacity-50",
   {
     variants: {
       variant: {
-        default: "bg-ui-bg text-ui-text border-ui-border-base",
-        search: "bg-ui-bg-secondary text-ui-text pl-9 border-ui-border-base",
+        default: "bg-transparent text-ui-text border-ui-border",
+        search: "bg-ui-bg-soft text-ui-text pl-9 border-ui-border",
         ghost: "border-transparent bg-transparent text-ui-text hover:bg-ui-bg-secondary",
-        error: "border-status-error focus-visible:ring-status-error",
+        error: "border-status-error focus-visible:border-status-error",
       },
       inputSize: {
         sm: "h-9 px-3 text-sm",

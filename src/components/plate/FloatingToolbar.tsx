@@ -34,7 +34,11 @@ function MarkButton({ nodeType, icon: Icon, tooltip }: MarkButtonProps) {
     <Button
       variant="ghost"
       size="sm"
-      className={cn("h-7 w-7 p-0", state.pressed && "bg-ui-bg-secondary")}
+      className={cn(
+        "h-7 w-7 p-0 text-ui-text-secondary transition-default",
+        "hover:text-ui-text hover:bg-ui-bg-hover",
+        state.pressed && "bg-brand-subtle text-brand",
+      )}
       onMouseDown={props.onMouseDown}
       aria-label={tooltip}
       title={tooltip}
@@ -130,8 +134,9 @@ export function FloatingToolbar() {
       />
       <PopoverContent
         className={cn(
-          "w-auto p-1 flex items-center gap-0.5",
-          "bg-ui-bg border border-ui-border shadow-lg",
+          "w-auto p-1.5 flex items-center gap-0.5",
+          "bg-ui-bg-elevated border border-ui-border shadow-elevated rounded-container",
+          "animate-scale-in",
         )}
         side="top"
         align="center"
@@ -147,16 +152,16 @@ export function FloatingToolbar() {
           tooltip="Strikethrough"
         />
 
-        <Separator orientation="vertical" className="h-6 mx-1" />
+        <Separator orientation="vertical" className="h-5 mx-1.5 bg-ui-border" />
 
         <MarkButton nodeType={NODE_TYPES.code} icon={Code} tooltip="Inline Code (Ctrl+`)" />
 
-        <Separator orientation="vertical" className="h-6 mx-1" />
+        <Separator orientation="vertical" className="h-5 mx-1.5 bg-ui-border" />
 
         <Button
           variant="ghost"
           size="sm"
-          className="h-7 w-7 p-0"
+          className="h-7 w-7 p-0 text-ui-text-secondary transition-default hover:text-ui-text hover:bg-ui-bg-hover"
           onClick={handleLink}
           aria-label="Insert Link"
           title="Insert Link (Ctrl+K)"

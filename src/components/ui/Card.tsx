@@ -3,22 +3,31 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 import { Flex } from "./Flex";
 
-const cardVariants = cva("bg-ui-bg rounded-lg border border-ui-border", {
-  variants: {
-    hoverable: {
-      true: "hover:shadow-md transition-shadow cursor-pointer",
-      false: "",
+const cardVariants = cva(
+  "bg-ui-bg rounded-lg border border-ui-border transition-[border-color,box-shadow] duration-[var(--duration-default)]",
+  {
+    variants: {
+      hoverable: {
+        true: "hover:border-ui-border-secondary hover:shadow-card-hover cursor-pointer",
+        false: "",
+      },
+      variant: {
+        default: "",
+        soft: "bg-ui-bg-soft",
+      },
+    },
+    defaultVariants: {
+      hoverable: false,
+      variant: "default",
     },
   },
-  defaultVariants: {
-    hoverable: false,
-  },
-});
+);
 
 export interface CardProps
   extends React.HTMLAttributes<HTMLDivElement>,
     VariantProps<typeof cardVariants> {
   hoverable?: boolean;
+  variant?: "default" | "soft";
 }
 
 /**
@@ -32,7 +41,7 @@ export interface CardProps
  * <Card hoverable onClick={() => {}}>Clickable</Card>
  */
 const Card = React.forwardRef<HTMLDivElement, CardProps>(
-  ({ className, hoverable = false, onClick, children, ...props }, ref) => {
+  ({ className, hoverable = false, variant = "default", onClick, children, ...props }, ref) => {
     const interactiveProps = onClick
       ? {
           role: "button" as const,
@@ -50,7 +59,7 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
     return (
       <div
         ref={ref}
-        className={cn(cardVariants({ hoverable }), className)}
+        className={cn(cardVariants({ hoverable, variant }), className)}
         {...interactiveProps}
         {...props}
       >

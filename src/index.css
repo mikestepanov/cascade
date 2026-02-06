@@ -191,6 +191,12 @@
   --color-brand-emerald-border: light-dark(var(--p-emerald-600), var(--p-emerald-400));
   --color-brand-emerald-track: light-dark(var(--p-emerald-100), rgba(6, 78, 59, 0.4));
 
+  /* --- Scrollbar (4 vars) --- */
+  /* Mintlify-inspired: subtle scrollbar with transparent track */
+  --color-scrollbar-thumb: light-dark(rgba(0, 0, 0, 0.2), rgba(255, 255, 255, 0.2));
+  --color-scrollbar-thumb-hover: light-dark(rgba(0, 0, 0, 0.3), rgba(255, 255, 255, 0.3));
+  --color-scrollbar-track: transparent;
+
   /* Scrollable Panel Heights */
   --max-height-panel: 80vh;
   --max-height-panel-lg: 85vh;
@@ -296,6 +302,52 @@
     100% { transform: rotate(360deg); }
   }
 
+  /* Fade out */
+  @keyframes fade-out {
+    from { opacity: 1; }
+    to { opacity: 0; }
+  }
+
+  /* Slide down (for sheet from top) */
+  @keyframes slide-down {
+    from { opacity: 0; transform: translateY(-100%); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Slide up out (exit for top sheet) */
+  @keyframes slide-up-out {
+    from { opacity: 1; transform: translateY(0); }
+    to { opacity: 0; transform: translateY(-100%); }
+  }
+
+  /* Slide down out (exit for bottom sheet) */
+  @keyframes slide-down-out {
+    from { opacity: 1; transform: translateY(0); }
+    to { opacity: 0; transform: translateY(100%); }
+  }
+
+  /* Accordion expand/collapse */
+  @keyframes accordion-down {
+    from { height: 0; }
+    to { height: var(--radix-accordion-content-height); }
+  }
+
+  @keyframes accordion-up {
+    from { height: var(--radix-accordion-content-height); }
+    to { height: 0; }
+  }
+
+  /* Collapsible expand/collapse with fade */
+  @keyframes collapsible-down {
+    from { height: 0; opacity: 0; }
+    to { height: var(--radix-collapsible-content-height); opacity: 1; }
+  }
+
+  @keyframes collapsible-up {
+    from { height: var(--radix-collapsible-content-height); opacity: 1; }
+    to { height: 0; opacity: 0; }
+  }
+
   /* Animation tokens */
   --animation-fade-in: fade-in 0.2s ease-out;
   --animation-slide-up: slide-up 0.3s ease-out;
@@ -308,6 +360,8 @@
   --animation-shimmer: shimmer 2s infinite;
   --animation-pulse: pulse 2s ease-in-out infinite;
   --animation-spin: spin 1s linear infinite;
+  --animation-accordion-down: accordion-down 0.2s ease-out;
+  --animation-accordion-up: accordion-up 0.2s ease-out;
 }
 
 /* ============================================================
@@ -639,6 +693,38 @@ body {
   animation: var(--animation-enter-left);
 }
 
+.animate-exit-right {
+  animation: var(--animation-exit-right);
+}
+
+.animate-exit-left {
+  animation: var(--animation-exit-left);
+}
+
+.animate-fade-out {
+  animation: fade-out 0.15s ease-in forwards;
+}
+
+.animate-slide-down {
+  animation: slide-down 0.3s ease-out;
+}
+
+.animate-slide-up-out {
+  animation: slide-up-out 0.2s ease-in forwards;
+}
+
+.animate-slide-down-out {
+  animation: slide-down-out 0.2s ease-in forwards;
+}
+
+.animate-accordion-down {
+  animation: var(--animation-accordion-down);
+}
+
+.animate-accordion-up {
+  animation: var(--animation-accordion-up);
+}
+
 .animate-shimmer {
   animation: var(--animation-shimmer);
   background: linear-gradient(
@@ -671,10 +757,10 @@ body {
   box-shadow: var(--shadow-card-hover);
 }
 
-/* Premium scrollbar styling */
+/* Premium scrollbar styling (uses scrollbar tokens from @theme) */
 .scrollbar-subtle {
   scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+  scrollbar-color: var(--color-scrollbar-thumb) var(--color-scrollbar-track);
 }
 
 .scrollbar-subtle::-webkit-scrollbar {
@@ -683,16 +769,16 @@ body {
 }
 
 .scrollbar-subtle::-webkit-scrollbar-track {
-  background: transparent;
+  background: var(--color-scrollbar-track);
 }
 
 .scrollbar-subtle::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.2);
+  background: var(--color-scrollbar-thumb);
   border-radius: 3px;
 }
 
 .scrollbar-subtle::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.3);
+  background: var(--color-scrollbar-thumb-hover);
 }
 
 /* Typography utilities with tight letter-spacing */

@@ -123,7 +123,7 @@ export function CreateEventModal({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-2xl">
         <DialogHeader>
-          <DialogTitle>Create Event</DialogTitle>
+          <DialogTitle className="tracking-tight">Create Event</DialogTitle>
         </DialogHeader>
         <form
           onSubmit={(e) => {

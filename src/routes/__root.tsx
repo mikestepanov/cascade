@@ -1,9 +1,11 @@
 import { ConvexAuthProvider } from "@convex-dev/auth/react";
 import { createRootRoute, Outlet } from "@tanstack/react-router";
 import { ConvexReactClient } from "convex/react";
+import { CloudOff } from "lucide-react";
 import { useEffect } from "react";
-import { Toaster } from "sonner";
+import { Toaster } from "@/components/ui/sonner";
 import { Flex } from "@/components/ui/Flex";
+import { Button } from "@/components/ui/Button";
 import { LazyPostHog } from "../components/LazyPostHog";
 import { NotFoundPage } from "../components/NotFoundPage";
 import { TooltipProvider } from "../components/ui/Tooltip";
@@ -63,16 +65,39 @@ function RootComponent() {
               direction="column"
               align="center"
               justify="center"
-              className="min-h-screen bg-ui-bg-secondary p-4"
+              className="min-h-screen bg-ui-bg animate-fade-in"
             >
-              <div className="text-center max-w-md">
-                <Typography variant="h1" className="text-2xl font-bold mb-4 text-ui-text">
+              <Flex direction="column" align="center" className="max-w-md text-center px-6">
+                {/* Subtle icon */}
+                <Flex
+                  align="center"
+                  justify="center"
+                  className="mb-8 h-20 w-20 rounded-full bg-ui-bg-soft"
+                >
+                  <CloudOff className="h-10 w-10 text-ui-text-tertiary" />
+                </Flex>
+
+                {/* Large error code with tight tracking */}
+                <Typography
+                  variant="h1"
+                  className="text-8xl font-bold tracking-tightest text-ui-text"
+                >
+                  503
+                </Typography>
+
+                {/* Message with secondary text styling */}
+                <Typography className="mt-4 text-lg text-ui-text-secondary">
                   Service Unavailable
                 </Typography>
-                <Typography className="text-ui-text-secondary mb-6">
+                <Typography className="mt-2 text-ui-text-tertiary">
                   The application could not connect to the backend services. Please try again later.
                 </Typography>
-              </div>
+
+                {/* Retry button */}
+                <Button onClick={() => window.location.reload()} size="lg" className="mt-8">
+                  Try again
+                </Button>
+              </Flex>
             </Flex>
           )}
           <Toaster />

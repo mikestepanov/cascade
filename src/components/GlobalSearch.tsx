@@ -302,7 +302,7 @@ export function GlobalSearch() {
         size="sm"
         onClick={() => setIsOpen(true)}
         aria-label="Open search (⌘K)"
-        className="bg-ui-bg-tertiary hover:bg-ui-bg-secondary"
+        className="bg-ui-bg-soft border border-ui-border/50 hover:bg-ui-bg-hover hover:border-ui-border text-ui-text-secondary hover:text-ui-text transition-all duration-default"
       >
         <svg
           aria-hidden="true"
@@ -318,8 +318,8 @@ export function GlobalSearch() {
             d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
           />
         </svg>
-        <span>Search...</span>
-        <kbd className="hidden sm:inline-block px-2 py-0.5 text-xs font-semibold text-ui-text-secondary bg-ui-bg border border-ui-border rounded">
+        <span className="text-ui-text-tertiary">Search...</span>
+        <kbd className="hidden sm:inline-block px-2 py-0.5 text-xs text-ui-text-tertiary bg-ui-bg border border-ui-border/50 rounded font-mono">
           ⌘K
         </kbd>
       </Button>

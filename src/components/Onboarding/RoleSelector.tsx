@@ -25,33 +25,26 @@ function RoleCard({ icon, title, description, selected, disabled, onClick }: Rol
       disabled={disabled}
       aria-pressed={selected}
       className={cn(
-        "relative p-8 rounded-3xl border-2 text-left transition-all duration-300 cursor-pointer overflow-hidden group w-full",
-        "hover:shadow-2xl hover:-translate-y-1 active:scale-95",
+        "relative p-8 rounded-container border-2 text-left transition-all duration-default cursor-pointer overflow-hidden group w-full",
+        "hover:shadow-card-hover hover:-translate-y-1 active:scale-98",
         selected
-          ? "border-brand-ring bg-brand-subtle/50 ring-4 ring-brand-ring/10"
-          : "border-ui-border bg-ui-bg hover:border-brand-muted/50",
+          ? "border-brand bg-brand-subtle/50 ring-4 ring-brand/10"
+          : "border-ui-border bg-ui-bg hover:border-ui-border-secondary",
         disabled && "opacity-50 cursor-wait",
       )}
     >
-      {/* Background Glow */}
+      {/* Selection indicator - Mintlify-inspired */}
       <div
         className={cn(
-          "absolute inset-0 opacity-0 group-hover:opacity-10:opacity-5 transition-opacity duration-500 bg-gradient-to-br from-brand-ring to-accent-ring",
-          selected && "opacity-10",
-        )}
-      />
-
-      <div
-        className={cn(
-          "absolute top-4 right-4 w-6 h-6 rounded-full border-2 transition-all duration-300 flex items-center justify-center z-10",
+          "absolute top-4 right-4 w-6 h-6 rounded-full transition-all duration-default flex items-center justify-center z-10",
           selected
-            ? "bg-brand border-brand scale-110 shadow-lg shadow-brand-ring/40"
-            : "border-ui-border-secondary group-hover:border-brand-muted",
+            ? "bg-brand scale-100"
+            : "border-2 border-ui-border-secondary group-hover:border-brand-muted scale-100",
         )}
       >
         <Check
           className={cn(
-            "w-3.5 h-3.5 text-white transition-all duration-300",
+            "w-3.5 h-3.5 text-white transition-all duration-default",
             selected ? "opacity-100 scale-100" : "opacity-0 scale-50",
           )}
         />
@@ -60,10 +53,10 @@ function RoleCard({ icon, title, description, selected, disabled, onClick }: Rol
       <Flex direction="column" align="center" gap="xl" className="text-center relative z-10">
         <div
           className={cn(
-            "p-5 rounded-2xl transition-all duration-500",
+            "p-5 rounded-xl transition-all duration-default",
             selected
-              ? "bg-brand text-white scale-110 shadow-xl shadow-brand-ring/25 rotate-3"
-              : "bg-ui-bg-tertiary text-ui-text-tertiary group-hover:scale-110 group-hover:bg-brand-ring/10 group-hover:text-brand group-hover:-rotate-3",
+              ? "bg-brand text-white scale-105"
+              : "bg-ui-bg-tertiary text-ui-text-secondary group-hover:scale-105 group-hover:bg-brand-subtle group-hover:text-brand",
           )}
         >
           {icon}

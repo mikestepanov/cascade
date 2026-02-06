@@ -41,7 +41,7 @@ export function EventDetailsModal({ eventId, open, onOpenChange }: EventDetailsM
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent className="sm:max-w-2xl">
           <DialogHeader>
-            <DialogTitle>Event Details</DialogTitle>
+            <DialogTitle className="tracking-tight">Event Details</DialogTitle>
           </DialogHeader>
           <Flex justify="center" className="p-8">
             <LoadingSpinner size="lg" />
@@ -102,7 +102,7 @@ export function EventDetailsModal({ eventId, open, onOpenChange }: EventDetailsM
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-2xl">
         <DialogHeader>
-          <DialogTitle>{event.title}</DialogTitle>
+          <DialogTitle className="tracking-tight">{event.title}</DialogTitle>
         </DialogHeader>
         <Flex direction="column" gap="lg">
           {/* Badges */}

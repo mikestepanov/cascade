@@ -23,7 +23,7 @@ interface IssueDetailSidebarProps {
 
 function SidebarSection({ title, children }: { title: string; children: ReactNode }): ReactNode {
   return (
-    <section>
+    <section className="pb-6 border-b border-ui-border/30 last:border-b-0 last:pb-0">
       <Typography
         variant="h4"
         className="text-xs font-bold uppercase tracking-widest text-ui-text-tertiary mb-4"
@@ -48,7 +48,7 @@ export function IssueDetailSidebar({
   billingEnabled,
 }: IssueDetailSidebarProps): ReactNode {
   return (
-    <div className="w-full md:w-80 lg:w-96 p-6 space-y-8 bg-ui-bg-secondary/30">
+    <div className="w-full md:w-80 lg:w-96 p-6 space-y-8 bg-ui-bg-soft">
       <SidebarSection title="Properties">
         <IssueMetadataSection
           status={status}
@@ -73,14 +73,12 @@ export function IssueDetailSidebar({
         <FileAttachments issueId={issueId} />
       </SidebarSection>
 
-      <section className="space-y-6">
-        <SidebarSection title="Watchers">
-          <IssueWatchers issueId={issueId} />
-        </SidebarSection>
-        <SidebarSection title="Dependencies">
-          <IssueDependencies issueId={issueId} projectId={projectId} />
-        </SidebarSection>
-      </section>
+      <SidebarSection title="Watchers">
+        <IssueWatchers issueId={issueId} />
+      </SidebarSection>
+      <SidebarSection title="Dependencies">
+        <IssueDependencies issueId={issueId} projectId={projectId} />
+      </SidebarSection>
     </div>
   );
 }

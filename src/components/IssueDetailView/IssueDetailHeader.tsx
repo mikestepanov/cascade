@@ -30,9 +30,16 @@ export function IssueDetailHeader({
           {breadcrumb && <span className="text-ui-text-tertiary">/</span>}
           <Flex align="center" gap="sm">
             <span className="text-lg">{getTypeIcon(issueType)}</span>
-            <span className="font-mono text-sm text-ui-text-secondary">{issueKey}</span>
+            <span className="font-mono text-sm tracking-tight text-ui-text-secondary">
+              {issueKey}
+            </span>
             <Tooltip content={hasCopied ? "Copied!" : "Copy issue key"}>
-              <Button variant="ghost" size="sm" onClick={onCopyKey} className="h-6 w-6 p-0">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={onCopyKey}
+                className="h-6 w-6 p-0 transition-colors duration-default hover:bg-ui-bg-hover"
+              >
                 {hasCopied ? (
                   <Check className="w-3 h-3 text-status-success" />
                 ) : (

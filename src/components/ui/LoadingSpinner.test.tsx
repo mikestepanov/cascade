@@ -91,8 +91,32 @@ describe("LoadingSpinner", () => {
       const spinner = screen.getByRole("status");
       expect(spinner).toHaveClass("animate-spin");
       expect(spinner).toHaveClass("rounded-full");
-      expect(spinner).toHaveClass("border-ui-text");
+      expect(spinner).toHaveClass("border-ui-text-secondary");
       expect(spinner).toHaveClass("border-t-transparent");
+    });
+
+    it("should render with brand variant", () => {
+      render(<LoadingSpinner variant="brand" />);
+
+      const spinner = screen.getByRole("status");
+      expect(spinner).toHaveClass("border-brand");
+      expect(spinner).toHaveClass("border-t-transparent");
+    });
+
+    it("should render with inherit variant", () => {
+      render(<LoadingSpinner variant="inherit" />);
+
+      const spinner = screen.getByRole("status");
+      expect(spinner).toHaveClass("border-current");
+      expect(spinner).toHaveClass("border-t-transparent");
+    });
+
+    it("should apply pulse animation when animation is pulse", () => {
+      render(<LoadingSpinner animation="pulse" />);
+
+      const spinner = screen.getByRole("status");
+      expect(spinner).toHaveClass("animate-pulse");
+      expect(spinner).not.toHaveClass("animate-spin");
     });
 
     it("should work without custom className", () => {

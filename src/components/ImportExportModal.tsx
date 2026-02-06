@@ -43,7 +43,7 @@ export function ImportExportModal({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-4xl">
         <DialogHeader>
-          <DialogTitle>Import / Export Issues</DialogTitle>
+          <DialogTitle className="tracking-tight">Import / Export Issues</DialogTitle>
           <DialogDescription className="sr-only">Manage issue import and export</DialogDescription>
         </DialogHeader>
         <div className="space-y-6">

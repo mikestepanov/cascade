@@ -59,27 +59,59 @@ export function SignUpForm() {
       });
   };
 
+  // Determine current step for indicator
+  const currentStep = showVerification ? 2 : showEmailForm ? 1 : 0;
+
   if (showVerification) {
     return (
-      <EmailVerificationForm
-        email={email}
-        onVerified={() => {
-          // Redirect to /app gateway which handles auth routing
-          navigate({ to: ROUTES.app.path });
-        }}
-        onResend={() => {
-          // Stay on verification view
-        }}
-      />
+      <div className="w-full">
+        {/* Step indicator */}
+        <Flex justify="center" gap="sm" className="mb-6">
+          {[0, 1, 2].map((step) => (
+            <div
+              key={step}
+              className={cn(
+                "h-1.5 rounded-pill transition-all duration-300",
+                step <= currentStep ? "w-8 bg-brand" : "w-4 bg-ui-border",
+              )}
+            />
+          ))}
+        </Flex>
+        <div className="animate-fade-in">
+          <EmailVerificationForm
+            email={email}
+            onVerified={() => {
+              // Redirect to /app gateway which handles auth routing
+              navigate({ to: ROUTES.app.path });
+            }}
+            onResend={() => {
+              // Stay on verification view
+            }}
+          />
+        </div>
+      </div>
     );
   }
 
   return (
     <div className="w-full">
+      {/* Step indicator */}
+      <Flex justify="center" gap="sm" className="mb-6">
+        {[0, 1, 2].map((step) => (
+          <div
+            key={step}
+            className={cn(
+              "h-1.5 rounded-pill transition-all duration-300",
+              step <= currentStep ? "w-8 bg-brand" : "w-4 bg-ui-border",
+            )}
+          />
+        ))}
+      </Flex>
+
       <GoogleAuthButton redirectTo={ROUTES.app.path} text="Sign up with Google" />
       <Flex align="center" justify="center" className="my-4">
         <hr className="grow border-ui-border" />
-        <span className="mx-4 text-ui-text-secondary text-sm">or</span>
+        <span className="mx-4 text-ui-text-tertiary text-sm">or</span>
         <hr className="grow border-ui-border" />
       </Flex>
       <form
@@ -95,21 +127,32 @@ export function SignUpForm() {
           )}
         >
           <Flex direction="column" className="overflow-hidden gap-form-field">
-            <Input type="email" name="email" placeholder="Email" required={formReady} />
+            <Input
+              type="email"
+              name="email"
+              placeholder="Email"
+              required={formReady}
+              className="transition-default"
+            />
             <Input
               type="password"
               name="password"
               placeholder="Password"
               minLength={8}
               required={formReady}
+              className="transition-default"
             />
+            {/* Password hint */}
+            <span className="text-xs text-ui-text-tertiary -mt-2">
+              Must be at least 8 characters
+            </span>
           </Flex>
         </div>
         <Button
           type="submit"
           variant={showEmailForm ? "primary" : "secondary"}
           size="lg"
-          className="w-full"
+          className={cn("w-full transition-all duration-300", showEmailForm && "shadow-card")}
           disabled={submitting || !hydrated}
         >
           {!showEmailForm ? (
@@ -130,7 +173,20 @@ export function SignUpForm() {
               <span>Continue with email</span>
             </Flex>
           ) : submitting ? (
-            "Creating account..."
+            <Flex align="center" gap="sm">
+              <svg
+                className="w-4 h-4 animate-spin"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                aria-hidden="true"
+              >
+                <circle cx="12" cy="12" r="10" strokeOpacity="0.25" />
+                <path d="M12 2a10 10 0 0 1 10 10" strokeLinecap="round" />
+              </svg>
+              <span>Creating account...</span>
+            </Flex>
           ) : (
             "Create account"
           )}

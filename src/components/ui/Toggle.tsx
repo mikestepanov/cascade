@@ -106,15 +106,19 @@ export function Toggle({
       <div
         className={cn(
           // Base styles
-          "rounded-full peer transition-colors duration-200 ease-in-out",
+          "rounded-full peer transition-default",
+          // Ultra-subtle border
+          "border border-ui-border-subtle",
           // Focus ring
           "peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-brand-ring/20",
-          // Track background
-          checked ? "bg-brand" : "bg-ui-bg-tertiary",
-          // Thumb pseudo-element
-          "after:content-[''] after:absolute after:rounded-full after:transition-all after:duration-200 after:ease-in-out",
+          // Track background - transparent default, brand on checked
+          checked ? "bg-brand" : "bg-ui-bg-soft",
+          // Hover state
+          !checked && !disabled && "hover:bg-ui-bg-hover",
+          // Thumb pseudo-element with smooth transition
+          "after:content-[''] after:absolute after:rounded-full after:transition-default",
           "after:bg-ui-bg",
-          "after:border after:border-ui-border",
+          "after:shadow-sm",
           // Size-specific
           sizes.track,
           sizes.offset,

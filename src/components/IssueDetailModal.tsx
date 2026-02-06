@@ -52,7 +52,7 @@ export function IssueDetailModal({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        className="sm:max-w-5xl max-h-panel-lg overflow-y-auto p-0"
+        className="sm:max-w-5xl max-h-panel-lg overflow-y-auto p-0 bg-ui-bg-elevated border border-ui-border shadow-elevated"
         data-testid="issue-detail-modal"
       >
         <DialogHeader className="px-6 pt-6 pb-0">
@@ -62,13 +62,16 @@ export function IssueDetailModal({
               <div>
                 <DialogTitle className="flex items-center space-x-2">
                   <Flex align="center" className="gap-1.5">
-                    <span className="text-sm text-ui-text-secondary font-mono">{issue.key}</span>
+                    <span className="text-sm text-ui-text-secondary font-mono tracking-tight">
+                      {issue.key}
+                    </span>
                     <Tooltip content={detail.hasCopied ? "Copied!" : "Copy issue key"}>
                       <Button
                         variant="ghost"
                         size="sm"
                         onClick={detail.handleCopyKey}
                         aria-label="Copy issue key"
+                        className="transition-colors duration-default hover:bg-ui-bg-hover"
                       >
                         {detail.hasCopied ? (
                           <Check className="w-3.5 h-3.5 text-status-success" />
@@ -85,7 +88,12 @@ export function IssueDetailModal({
               </div>
             </Flex>
             {canEdit && !detail.isEditing && (
-              <Button variant="ghost" size="sm" onClick={detail.handleEdit}>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={detail.handleEdit}
+                className="transition-colors duration-default hover:bg-ui-bg-hover"
+              >
                 Edit
               </Button>
             )}

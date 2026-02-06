@@ -2,6 +2,7 @@ import { useAuthActions } from "@convex-dev/auth/react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "../ui/Button";
+import { Flex } from "../ui/Flex";
 import { Input } from "../ui/form/Input";
 import { Typography } from "../ui/Typography";
 import { AuthLinkButton } from "./AuthLink";
@@ -56,28 +57,72 @@ export function EmailVerificationForm({ email, onVerified, onResend }: EmailVeri
   };
 
   return (
-    <div className="w-full">
-      <Typography variant="h2" className="text-xl font-semibold mb-4">
+    <div className="w-full text-center">
+      {/* Email icon */}
+      <Flex justify="center" className="mb-4">
+        <Flex align="center" justify="center" className="w-16 h-16 rounded-2xl bg-brand-subtle">
+          <svg
+            className="w-8 h-8 text-brand"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+          >
+            <rect width="20" height="16" x="2" y="4" rx="2" />
+            <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+          </svg>
+        </Flex>
+      </Flex>
+      <Typography variant="h2" className="text-xl font-semibold mb-2 tracking-tight">
         Verify your email
       </Typography>
-      <Typography variant="p" color="secondary" className="mb-4 text-sm">
-        We sent a verification code to <strong>{email}</strong>. Enter it below to continue.
+      <Typography variant="p" color="secondary" className="mb-6 text-sm">
+        We sent a verification code to <span className="font-medium text-ui-text">{email}</span>
       </Typography>
       <form className="flex flex-col gap-form-field" onSubmit={handleSubmit}>
         <Input
           type="text"
           name="code"
-          placeholder="8-digit code"
+          placeholder="Enter 8-digit code"
           required
           pattern="[0-9]{8}"
           maxLength={8}
+          className="text-center tracking-widest text-lg transition-default"
+          autoComplete="one-time-code"
         />
-        <Button type="submit" size="lg" className="w-full" disabled={submitting}>
-          {submitting ? "Verifying..." : "Verify email"}
+        <Button
+          type="submit"
+          size="lg"
+          className="w-full shadow-card transition-all duration-300"
+          disabled={submitting}
+        >
+          {submitting ? (
+            <Flex align="center" justify="center" gap="sm">
+              <svg
+                className="w-4 h-4 animate-spin"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                aria-hidden="true"
+              >
+                <circle cx="12" cy="12" r="10" strokeOpacity="0.25" />
+                <path d="M12 2a10 10 0 0 1 10 10" strokeLinecap="round" />
+              </svg>
+              <span>Verifying...</span>
+            </Flex>
+          ) : (
+            "Verify email"
+          )}
         </Button>
-        <AuthLinkButton onClick={handleResend} disabled={resending}>
-          {resending ? "Sending..." : "Didn't receive a code? Resend"}
-        </AuthLinkButton>
+        <div className="text-center mt-2">
+          <AuthLinkButton onClick={handleResend} disabled={resending}>
+            {resending ? "Sending..." : "Didn't receive a code? Resend"}
+          </AuthLinkButton>
+        </div>
       </form>
     </div>
   );

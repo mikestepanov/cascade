@@ -1,10 +1,18 @@
 import { Link } from "@tanstack/react-router";
 import type { ReactNode } from "react";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
 import { Flex } from "@/components/ui/Flex";
 import { Typography } from "@/components/ui/Typography";
 import { cn } from "@/lib/utils";
 
-interface Breadcrumb {
+interface BreadcrumbData {
   label: string;
   to?: string;
 }
@@ -13,7 +21,7 @@ interface PageHeaderProps {
   title: string;
   description?: string;
   actions?: ReactNode;
-  breadcrumbs?: Breadcrumb[];
+  breadcrumbs?: BreadcrumbData[];
   className?: string;
 }
 
@@ -27,25 +35,22 @@ export function PageHeader({
   return (
     <div className={cn("mb-6", className)}>
       {breadcrumbs && breadcrumbs.length > 0 && (
-        <nav className="mb-2">
-          <Flex as="ol" gap="xs" align="center" className="list-none p-0 m-0">
+        <Breadcrumb className="mb-2">
+          <BreadcrumbList>
             {breadcrumbs.map((crumb, i) => (
-              <Flex as="li" key={crumb.label} gap="xs" align="center">
-                {i > 0 && <span className="text-ui-text-tertiary">/</span>}
+              <BreadcrumbItem key={crumb.label}>
+                {i > 0 && <BreadcrumbSeparator />}
                 {crumb.to ? (
-                  <Link
-                    to={crumb.to}
-                    className="text-sm text-ui-text-secondary hover:text-ui-text transition-colors"
-                  >
-                    {crumb.label}
-                  </Link>
+                  <BreadcrumbLink asChild>
+                    <Link to={crumb.to}>{crumb.label}</Link>
+                  </BreadcrumbLink>
                 ) : (
-                  <span className="text-sm text-ui-text-tertiary">{crumb.label}</span>
+                  <BreadcrumbPage>{crumb.label}</BreadcrumbPage>
                 )}
-              </Flex>
+              </BreadcrumbItem>
             ))}
-          </Flex>
-        </nav>
+          </BreadcrumbList>
+        </Breadcrumb>
       )}
       <Flex justify="between" align="start" gap="md">
         <div>

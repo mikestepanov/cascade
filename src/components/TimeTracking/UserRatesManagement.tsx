@@ -98,7 +98,7 @@ export function UserRatesManagement() {
       {userRates && userRates.length > 0 ? (
         <Flex direction="column" gap="md">
           {(userRates as EnrichedUserRate[]).map((rate) => (
-            <div key={rate._id} className="p-4 bg-ui-bg border border-ui-border rounded-lg">
+            <div key={rate._id} className="p-4 bg-ui-bg border border-ui-border rounded-lg transition-default hover:bg-ui-bg-hover">
               <Flex justify="between" align="start">
                 <div className="flex-1">
                   <Flex align="center" gap="md">

@@ -92,14 +92,14 @@ export function LeadOnboarding({
   if (step === "features") {
     return (
       <div className="space-y-8">
-        {/* Back button */}
+        {/* Back button - Mintlify-inspired */}
         <button
           type="button"
           onClick={onBack}
-          className="flex items-center gap-2 text-ui-text-secondary hover:text-ui-text transition-colors"
+          className="flex items-center gap-2 text-ui-text-secondary hover:text-ui-text transition-colors duration-fast group"
         >
-          <ArrowLeft className="w-4 h-4" />
-          <span>Back</span>
+          <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-0.5" />
+          <span className="text-sm font-medium">Back</span>
         </button>
 
         {/* Header */}
@@ -149,14 +149,14 @@ export function LeadOnboarding({
   if (step === "project") {
     return (
       <div className="space-y-8">
-        {/* Back button */}
+        {/* Back button - Mintlify-inspired */}
         <button
           type="button"
           onClick={() => setStep("features")}
-          className="flex items-center gap-2 text-ui-text-secondary hover:text-ui-text transition-colors"
+          className="flex items-center gap-2 text-ui-text-secondary hover:text-ui-text transition-colors duration-fast group"
         >
-          <ArrowLeft className="w-4 h-4" />
-          <span>Back</span>
+          <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-0.5" />
+          <span className="text-sm font-medium">Back</span>
         </button>
 
         {/* Header */}
@@ -220,19 +220,19 @@ export function LeadOnboarding({
   if (step === "project-choice") {
     return (
       <div className="space-y-8">
-        {/* Back button */}
+        {/* Back button - Mintlify-inspired subtle styling */}
         <button
           type="button"
           onClick={() => setStep("project")}
-          className="flex items-center gap-2 text-ui-text-secondary hover:text-ui-text transition-colors"
+          className="flex items-center gap-2 text-ui-text-secondary hover:text-ui-text transition-colors duration-fast group"
         >
-          <ArrowLeft className="w-4 h-4" />
-          <span>Back</span>
+          <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-0.5" />
+          <span className="text-sm font-medium">Back</span>
         </button>
 
         {/* Header */}
         <div className="text-center">
-          <Typography variant="h1" className="text-3xl font-bold mb-3">
+          <Typography variant="h1" className="text-3xl font-bold mb-3 tracking-tight">
             Start Your First Project
           </Typography>
           <Typography variant="p" color="secondary" className="text-lg">
@@ -240,28 +240,32 @@ export function LeadOnboarding({
           </Typography>
         </div>
 
-        {/* Options */}
+        {/* Options - Mintlify-inspired card styling */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {/* Sample Project */}
+          {/* Sample Project - Highlighted as recommended */}
           <button
             type="button"
             onClick={handleCreateSample}
             disabled={isCreating}
-            className="p-6 rounded-xl border-2 border-ui-border bg-ui-bg text-left transition-all hover:border-brand-ring hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
+            className="group p-6 rounded-container border-2 border-brand/30 bg-brand-subtle/30 text-left transition-all duration-default hover:border-brand hover:shadow-card-hover hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
           >
             <Flex direction="column" gap="lg">
-              <div className="p-3 rounded-lg bg-brand-indigo-track w-fit">
-                <Sparkles className="w-6 h-6 text-brand" />
-              </div>
+              <Flex align="center" justify="between">
+                <div className="p-3 rounded-lg bg-brand-subtle group-hover:bg-brand/10 transition-colors">
+                  <Sparkles className="w-6 h-6 text-brand" />
+                </div>
+                <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-brand text-brand-foreground">
+                  Recommended
+                </span>
+              </Flex>
               <div>
-                <Typography variant="h3" className="font-semibold mb-1">
+                <Typography variant="h3" className="font-semibold mb-1 text-ui-text">
                   {isCreating ? "Creating..." : "Start with a Sample"}
                 </Typography>
                 <Typography variant="p" color="secondary" className="text-sm">
                   Explore Nixelo with pre-filled demo issues and sprints
                 </Typography>
               </div>
-              <span className="text-xs text-brand font-medium">Recommended</span>
             </Flex>
           </button>
 
@@ -270,14 +274,14 @@ export function LeadOnboarding({
             type="button"
             onClick={handleFinishWithoutProject}
             disabled={isCreating}
-            className="p-6 rounded-xl border-2 border-ui-border bg-ui-bg text-left transition-all hover:border-brand-ring hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
+            className="group p-6 rounded-container border-2 border-ui-border bg-ui-bg text-left transition-all duration-default hover:border-ui-border-secondary hover:shadow-card-hover hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
           >
             <Flex direction="column" gap="lg">
-              <div className="p-3 rounded-lg bg-ui-bg-tertiary w-fit">
+              <div className="p-3 rounded-lg bg-ui-bg-tertiary group-hover:bg-ui-bg-hover transition-colors w-fit">
                 <FolderPlus className="w-6 h-6 text-ui-text-secondary" />
               </div>
               <div>
-                <Typography variant="h3" className="font-semibold mb-1">
+                <Typography variant="h3" className="font-semibold mb-1 text-ui-text">
                   Start from Scratch
                 </Typography>
                 <Typography variant="p" color="secondary" className="text-sm">
@@ -296,6 +300,7 @@ export function LeadOnboarding({
             size="sm"
             onClick={handleFinishWithoutProject}
             disabled={isCreating}
+            className="text-ui-text-tertiary hover:text-ui-text"
           >
             I'll explore on my own
           </Button>

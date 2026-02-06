@@ -81,27 +81,42 @@ export function WorkspacesList({ projects, projectNavigation }: WorkspacesListPr
                 onClick={() => navigateToWorkspace(project.key)}
                 {...projectNavigation.getItemProps(index)}
                 className={cn(
-                  "w-full text-left p-3 bg-ui-bg-secondary/20 hover:bg-ui-bg-secondary/40 rounded-lg group cursor-pointer transition-colors",
+                  "w-full text-left p-3 rounded-lg group cursor-pointer",
+                  "bg-ui-bg-soft border border-transparent",
+                  "hover:border-ui-border-secondary hover:bg-ui-bg-hover",
+                  "transition-all duration-200",
                   projectNavigation.getItemProps(index).className,
                 )}
               >
-                <Flex justify="between" align="center" gap="sm" className="mb-0.5">
-                  <Typography
-                    variant="small"
-                    className="font-bold text-ui-text truncate group-hover:text-brand:text-brand-muted transition-colors"
+                <Flex align="center" gap="sm">
+                  {/* Project avatar/icon */}
+                  <Flex
+                    align="center"
+                    justify="center"
+                    className="w-8 h-8 rounded-md bg-brand/10 text-brand font-semibold text-xs shrink-0 ring-1 ring-brand/20 group-hover:ring-brand/40 transition-all"
                   >
-                    {project.name}
-                  </Typography>
-                  <Badge
-                    variant="neutral"
-                    className="text-xs uppercase tracking-tighter bg-ui-bg-tertiary/50"
-                  >
-                    {project.role}
-                  </Badge>
+                    {project.key.substring(0, 2).toUpperCase()}
+                  </Flex>
+                  <Flex direction="column" className="flex-1 min-w-0">
+                    <Flex justify="between" align="center" gap="sm">
+                      <Typography
+                        variant="small"
+                        className="font-semibold text-ui-text truncate group-hover:text-brand transition-colors tracking-tight"
+                      >
+                        {project.name}
+                      </Typography>
+                      <Badge
+                        variant="neutral"
+                        className="text-xs uppercase tracking-tighter bg-ui-bg-tertiary/50 shrink-0"
+                      >
+                        {project.role}
+                      </Badge>
+                    </Flex>
+                    <Typography variant="small" className="text-ui-text-secondary">
+                      {project.myIssues} assigned issues
+                    </Typography>
+                  </Flex>
                 </Flex>
-                <div className="text-xs text-ui-text-tertiary uppercase tracking-wider font-bold">
-                  {project.myIssues} assigned issues
-                </div>
               </button>
             ))}
           </Flex>

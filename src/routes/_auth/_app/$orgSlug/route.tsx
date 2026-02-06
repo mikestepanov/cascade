@@ -181,7 +181,7 @@ function OrganizationLayoutInner() {
           />
 
           {/* Page content */}
-          <main className="flex-1 overflow-auto">
+          <main className="flex-1 overflow-auto bg-ui-bg scrollbar-subtle">
             <Outlet />
           </main>
         </Flex>

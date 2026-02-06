@@ -139,12 +139,14 @@ export function WorkflowSettings({ projectId, workflowStates }: WorkflowSettings
   };
 
   return (
-    <Card>
+    <Card variant="soft">
       <div className="p-6">
-        <Flex justify="between" align="center" className="mb-4">
+        <Flex justify="between" align="center" className="mb-6">
           <div>
-            <Typography variant="large">Workflow</Typography>
-            <Typography variant="small" color="secondary">
+            <Typography variant="large" className="font-semibold tracking-tight">
+              Workflow
+            </Typography>
+            <Typography variant="small" color="secondary" className="mt-0.5">
               Configure issue status workflow
             </Typography>
           </div>
@@ -162,7 +164,7 @@ export function WorkflowSettings({ projectId, workflowStates }: WorkflowSettings
                 <Flex
                   align="center"
                   gap="md"
-                  className="p-3 bg-ui-bg-secondary rounded-lg"
+                  className="p-3 bg-ui-bg-tertiary rounded-lg border border-ui-border transition-default hover:border-ui-border-secondary"
                   key={state.id}
                 >
                   <Flex gap="xs" direction="column">
@@ -171,7 +173,7 @@ export function WorkflowSettings({ projectId, workflowStates }: WorkflowSettings
                       size="sm"
                       onClick={() => handleMoveState(index, "up")}
                       disabled={index === 0}
-                      className="p-1 h-6"
+                      className="p-1 h-6 hover:bg-ui-bg-hover"
                     >
                       ↑
                     </Button>
@@ -180,7 +182,7 @@ export function WorkflowSettings({ projectId, workflowStates }: WorkflowSettings
                       size="sm"
                       onClick={() => handleMoveState(index, "down")}
                       disabled={index === states.length - 1}
-                      className="p-1 h-6"
+                      className="p-1 h-6 hover:bg-ui-bg-hover"
                     >
                       ↓
                     </Button>
@@ -201,7 +203,7 @@ export function WorkflowSettings({ projectId, workflowStates }: WorkflowSettings
                     variant="ghost"
                     size="sm"
                     onClick={() => handleRemoveState(index)}
-                    className="text-status-error hover:text-status-error"
+                    className="text-status-error hover:text-status-error hover:bg-status-error/10"
                   >
                     Remove
                   </Button>
@@ -213,9 +215,9 @@ export function WorkflowSettings({ projectId, workflowStates }: WorkflowSettings
               + Add State
             </Button>
 
-            <Flex gap="sm" className="pt-4 border-t border-ui-border">
-              <Button onClick={handleSave} disabled={isSaving}>
-                {isSaving ? "Saving..." : "Save Changes"}
+            <Flex gap="sm" className="pt-5 border-t border-ui-border">
+              <Button onClick={handleSave} disabled={isSaving} isLoading={isSaving}>
+                Save Changes
               </Button>
               <Button variant="secondary" onClick={handleCancel} disabled={isSaving}>
                 Cancel
@@ -223,10 +225,10 @@ export function WorkflowSettings({ projectId, workflowStates }: WorkflowSettings
             </Flex>
           </div>
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-5">
             {(["todo", "inprogress", "done"] as const).map((category) => (
-              <div key={category}>
-                <Typography variant="small" color="secondary" className="mb-2 capitalize">
+              <div key={category} className="p-4 bg-ui-bg-tertiary rounded-lg">
+                <Typography variant="small" color="secondary" className="mb-2.5 font-medium">
                   {category === "inprogress"
                     ? "In Progress"
                     : category === "todo"

@@ -16,13 +16,13 @@ export function AppHeader({ onShowCommandPalette, onShowShortcutsHelp }: AppHead
   const { isMobileOpen, toggleMobile } = useSidebarState();
 
   return (
-    <header className="bg-ui-bg border-b border-ui-border px-4 sm:px-6 py-3 flex justify-between items-center gap-2">
+    <header className="sticky top-0 z-40 bg-ui-bg/80 backdrop-blur-md border-b border-ui-border/50 px-4 sm:px-6 py-3 flex justify-between items-center gap-2 transition-all duration-default">
       <Flex align="center" gap="sm" className="sm:gap-4">
         {/* Mobile Hamburger Menu */}
         <button
           type="button"
           onClick={toggleMobile}
-          className="lg:hidden p-2 text-ui-text-secondary hover:bg-ui-bg-tertiary rounded-lg transition-colors"
+          className="lg:hidden p-2 text-ui-text-secondary hover:text-ui-text hover:bg-ui-bg-hover rounded-lg transition-all duration-default"
           aria-label="Toggle sidebar menu"
           aria-expanded={isMobileOpen}
         >
@@ -35,7 +35,7 @@ export function AppHeader({ onShowCommandPalette, onShowShortcutsHelp }: AppHead
           <button
             type="button"
             onClick={onShowCommandPalette}
-            className="flex items-center gap-2 px-2 sm:px-3 py-1.5 text-xs sm:text-sm text-ui-text-secondary bg-ui-bg-tertiary rounded-lg hover:bg-ui-border transition-colors"
+            className="flex items-center gap-2 px-2 sm:px-3 py-1.5 text-xs sm:text-sm text-ui-text-secondary bg-ui-bg-soft border border-ui-border/50 rounded-lg hover:bg-ui-bg-hover hover:border-ui-border hover:text-ui-text transition-all duration-default"
             aria-label="Open command palette"
             data-tour="command-palette"
           >
@@ -54,7 +54,7 @@ export function AppHeader({ onShowCommandPalette, onShowShortcutsHelp }: AppHead
               />
             </svg>
             <span className="hidden sm:inline">Commands</span>
-            <kbd className="hidden lg:inline px-1.5 py-0.5 text-xs bg-ui-bg border border-ui-border-secondary rounded">
+            <kbd className="hidden lg:inline px-1.5 py-0.5 text-xs text-ui-text-tertiary bg-ui-bg border border-ui-border/50 rounded font-mono">
               ⌘K
             </kbd>
           </button>
@@ -65,7 +65,7 @@ export function AppHeader({ onShowCommandPalette, onShowShortcutsHelp }: AppHead
             <button
               type="button"
               onClick={onShowShortcutsHelp}
-              className="hidden sm:block p-2 text-ui-text-secondary hover:bg-ui-bg-tertiary rounded-lg transition-colors"
+              className="hidden sm:flex items-center justify-center p-2 text-ui-text-secondary hover:text-ui-text hover:bg-ui-bg-hover rounded-lg transition-all duration-default"
               aria-label="Keyboard shortcuts"
             >
               <svg

@@ -8,7 +8,6 @@ import { Button } from "../ui/Button";
 import { Dialog, DialogContent, DialogFooter } from "../ui/Dialog";
 import { Flex } from "../ui/Flex";
 import { Textarea } from "../ui/form";
-import { Progress } from "../ui/progress";
 import { Typography } from "../ui/Typography";
 
 interface ProjectWizardProps {
@@ -106,15 +105,55 @@ export function ProjectWizard({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-2xl">
         <div className="space-y-6">
-          {/* Progress indicator */}
-          <div className="mb-6">
-            <Flex justify="between" className="mb-2">
-              <span className="text-sm font-medium text-ui-text">Step {step} of 4</span>
-              <span className="text-sm text-ui-text-tertiary">
-                {Math.round((step / 4) * 100)}% complete
-              </span>
+          {/* Mintlify-inspired step indicator */}
+          <div className="mb-8">
+            <Flex gap="sm" className="mb-4">
+              {[1, 2, 3, 4].map((stepNum) => (
+                <Flex key={stepNum} align="center" gap="sm" className="flex-1">
+                  <Flex
+                    align="center"
+                    justify="center"
+                    className={cn(
+                      "w-8 h-8 rounded-full text-sm font-medium transition-all duration-default shrink-0",
+                      stepNum < step
+                        ? "bg-status-success text-white"
+                        : stepNum === step
+                          ? "bg-brand text-brand-foreground ring-4 ring-brand/20"
+                          : "bg-ui-bg-tertiary text-ui-text-tertiary",
+                    )}
+                  >
+                    {stepNum < step ? (
+                      <svg
+                        className="w-4 h-4"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        strokeWidth={3}
+                        aria-hidden="true"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                      </svg>
+                    ) : (
+                      stepNum
+                    )}
+                  </Flex>
+                  {stepNum < 4 && (
+                    <div
+                      className={cn(
+                        "flex-1 h-0.5 rounded-full transition-colors duration-default",
+                        stepNum < step ? "bg-status-success" : "bg-ui-border",
+                      )}
+                    />
+                  )}
+                </Flex>
+              ))}
             </Flex>
-            <Progress value={(step / 4) * 100} />
+            <Flex justify="between" className="px-1">
+              <Typography className="text-sm font-medium text-ui-text">Step {step} of 4</Typography>
+              <Typography className="text-sm text-ui-text-tertiary">
+                {Math.round((step / 4) * 100)}% complete
+              </Typography>
+            </Flex>
           </div>
 
           {/* Step 1: Project Name & Key */}
@@ -361,26 +400,52 @@ export function ProjectWizard({
             </div>
           )}
 
-          {/* Navigation Buttons */}
-          <DialogFooter className="flex justify-between sm:justify-between">
+          {/* Navigation Buttons - Mintlify-inspired with proper spacing */}
+          <DialogFooter className="flex justify-between sm:justify-between pt-6 border-t border-ui-border">
             <div>
               {step > 1 && (
-                <Button onClick={handlePrevious} variant="secondary">
+                <Button
+                  onClick={handlePrevious}
+                  variant="ghost"
+                  className="text-ui-text-secondary hover:text-ui-text"
+                >
+                  <svg
+                    className="w-4 h-4 mr-2"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+                  </svg>
                   Previous
                 </Button>
               )}
             </div>
-            <Flex gap="sm">
-              <Button onClick={() => onOpenChange(false)} variant="secondary">
+            <Flex gap="md">
+              <Button
+                onClick={() => onOpenChange(false)}
+                variant="ghost"
+                className="text-ui-text-tertiary hover:text-ui-text"
+              >
                 Cancel
               </Button>
               {step < 4 ? (
-                <Button onClick={handleNext} variant="primary">
+                <Button onClick={handleNext} variant="primary" className="min-w-24">
                   Next
+                  <svg
+                    className="w-4 h-4 ml-2"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                  </svg>
                 </Button>
               ) : (
-                <Button onClick={handleFinish} variant="primary" className="font-medium">
-                  Create Project 🚀
+                <Button onClick={handleFinish} variant="primary" className="font-medium min-w-36">
+                  Create Project
                 </Button>
               )}
             </Flex>

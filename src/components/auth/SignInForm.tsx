@@ -62,7 +62,7 @@ export function SignInForm() {
       <GoogleAuthButton redirectTo={ROUTES.app.path} text="Sign in with Google" />
       <Flex align="center" justify="center" className="my-4">
         <hr className="grow border-ui-border" />
-        <span className="mx-4 text-ui-text-secondary text-sm">or</span>
+        <span className="mx-4 text-ui-text-tertiary text-sm">or</span>
         <hr className="grow border-ui-border" />
       </Flex>
       <form
@@ -78,8 +78,20 @@ export function SignInForm() {
           )}
         >
           <Flex direction="column" className="overflow-hidden gap-form-field">
-            <Input type="email" name="email" placeholder="Email" required={formReady} />
-            <Input type="password" name="password" placeholder="Password" required={formReady} />
+            <Input
+              type="email"
+              name="email"
+              placeholder="Email"
+              required={formReady}
+              className="transition-default"
+            />
+            <Input
+              type="password"
+              name="password"
+              placeholder="Password"
+              required={formReady}
+              className="transition-default"
+            />
           </Flex>
         </div>
         {showEmailForm && (
@@ -93,7 +105,7 @@ export function SignInForm() {
           type="submit"
           variant={showEmailForm ? "primary" : "secondary"}
           size="lg"
-          className="w-full"
+          className={cn("w-full transition-all duration-300", showEmailForm && "shadow-card")}
           disabled={submitting || !hydrated}
         >
           {!showEmailForm ? (
@@ -114,7 +126,20 @@ export function SignInForm() {
               <span>Continue with email</span>
             </Flex>
           ) : submitting ? (
-            "Signing in..."
+            <Flex align="center" gap="sm">
+              <svg
+                className="w-4 h-4 animate-spin"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                aria-hidden="true"
+              >
+                <circle cx="12" cy="12" r="10" strokeOpacity="0.25" />
+                <path d="M12 2a10 10 0 0 1 10 10" strokeLinecap="round" />
+              </svg>
+              <span>Signing in...</span>
+            </Flex>
           ) : (
             "Sign in"
           )}

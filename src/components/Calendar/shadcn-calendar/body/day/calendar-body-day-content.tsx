@@ -12,12 +12,15 @@ export function CalendarBodyDayContent({ date }: { date: Date }): React.ReactEle
   const today = isToday(date);
 
   return (
-    <div className={cn("flex flex-col flex-grow", today && "bg-brand/[0.03]")}>
+    <div className={cn("flex flex-col flex-grow", today && "bg-brand/[0.02]")}>
       <CalendarBodyHeader date={date} />
 
       <div className="flex-1 relative">
         {hours.map((hour) => (
-          <div key={hour} className="h-32 border-b border-ui-border group" />
+          <div
+            key={hour}
+            className="h-32 border-b border-ui-border hover:bg-ui-bg-hover/30 transition-colors duration-default"
+          />
         ))}
 
         {dayEvents.map((event) => (

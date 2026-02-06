@@ -14,12 +14,12 @@ function DocumentPage() {
   const { id } = Route.useParams();
 
   return (
-    <div className="h-full overflow-auto">
+    <div className="h-full overflow-auto bg-ui-bg">
       <ErrorBoundary>
         <Suspense
           key={id} // Force remount on document change to avoid stale error states
           fallback={
-            <Flex align="center" justify="center" className="h-full">
+            <Flex align="center" justify="center" className="h-full bg-ui-bg">
               <LoadingSpinner size="lg" />
             </Flex>
           }

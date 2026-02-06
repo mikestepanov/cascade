@@ -1,5 +1,6 @@
 import type { Id } from "@convex/_generated/dataModel";
-import { memo, useEffect, useRef } from "react";
+import { GripVertical } from "lucide-react";
+import { memo, useEffect, useRef, useState } from "react";
 import { Flex } from "@/components/ui/Flex";
 import type { IssuePriority, IssueType } from "@/lib/issue-utils";
 import { getPriorityColor, getPriorityIcon, getTypeIcon, getTypeLabel } from "@/lib/issue-utils";
@@ -44,12 +45,22 @@ export const IssueCard = memo(function IssueCard({
   canEdit = true,
 }: IssueCardProps) {
   const cardRef = useRef<HTMLButtonElement>(null);
+  const [isDragging, setIsDragging] = useState(false);
 
   useEffect(() => {
     if (isFocused && cardRef.current) {
       cardRef.current.scrollIntoView({ behavior: "smooth", block: "nearest" });
     }
   }, [isFocused]);
+
+  const handleDragStart = (e: React.DragEvent) => {
+    setIsDragging(true);
+    onDragStart(e, issue._id);
+  };
+
+  const handleDragEnd = () => {
+    setIsDragging(false);
+  };
 
   const handleClick = (e: React.MouseEvent | React.KeyboardEvent) => {
     if (selectionMode && onToggleSelect) {
@@ -72,20 +83,30 @@ export const IssueCard = memo(function IssueCard({
       ref={cardRef}
       type="button"
       draggable={canEdit && !selectionMode}
-      onDragStart={canEdit && !selectionMode ? (e) => onDragStart(e, issue._id) : undefined}
+      onDragStart={canEdit && !selectionMode ? handleDragStart : undefined}
+      onDragEnd={handleDragEnd}
       onClick={handleClick}
       className={cn(
-        "w-full text-left bg-ui-bg p-2 sm:p-3 rounded-lg border-2 shadow-sm hover:shadow-md hover:scale-hover-subtle transition-all duration-200 cursor-pointer",
+        "group w-full text-left bg-ui-bg-soft p-2 sm:p-3 rounded-container cursor-pointer",
+        "border transition-default",
+        isDragging && "opacity-50 scale-95",
         isSelected
-          ? "border-brand-indigo-border bg-brand-indigo-track"
+          ? "border-brand-indigo-border/60 bg-brand-indigo-track shadow-soft"
           : isFocused
-            ? "border-ui-border-focus ring-2 ring-ui-border-focus/50"
-            : "border-ui-border",
+            ? "border-ui-border-focus/50 ring-1 ring-ui-border-focus/20 bg-ui-bg-hover"
+            : "border-ui-border hover:border-ui-border-secondary hover:bg-ui-bg-hover",
       )}
     >
       {/* Header */}
       <Flex align="start" justify="between" className="mb-2">
         <Flex align="center" className="space-x-2">
+          {/* Drag handle - minimal, appears on hover */}
+          {canEdit && !selectionMode && (
+            <GripVertical
+              className="w-3 h-3 text-ui-text-tertiary opacity-0 group-hover:opacity-40 transition-fast cursor-grab -ml-0.5 shrink-0"
+              aria-hidden="true"
+            />
+          )}
           {/* Checkbox in selection mode */}
           {selectionMode && (
             <input
