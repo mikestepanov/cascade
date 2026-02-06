@@ -87,16 +87,6 @@ export function isCI(): boolean {
 }
 
 /**
- * Slow down test execution (for debugging)
- * @deprecated Use Playwright's --slow-mo flag or browser context slowMo option instead
- */
-export async function slowMo(page: Page, ms = 100): Promise<void> {
-  // This function intentionally uses waitForTimeout for debugging purposes only.
-  // It should NOT be used in production tests - use Playwright's native slowMo options.
-  await page.waitForTimeout(ms);
-}
-
-/**
  * Screenshot helper with auto-naming
  */
 export async function takeScreenshot(

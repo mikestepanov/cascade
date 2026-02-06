@@ -55,7 +55,7 @@ function requireBotApiKey(ctx: QueryCtx | MutationCtx, apiKey: string | undefine
 // Queries
 // ===========================================
 
-// Get all recordings for a user
+/** List meeting recordings for the current user, optionally filtered by project. */
 export const listRecordings = authenticatedQuery({
   args: {
     projectId: v.optional(v.id("projects")),
@@ -169,7 +169,7 @@ export const listRecordings = authenticatedQuery({
   },
 });
 
-// Get recording by calendar event ID (optimized for MeetingRecordingSection)
+/** Get a meeting recording by its linked calendar event, including summary and job status. */
 export const getRecordingByCalendarEvent = authenticatedQuery({
   args: { calendarEventId: v.id("calendarEvents") },
   handler: async (ctx, args) => {
@@ -204,7 +204,7 @@ export const getRecordingByCalendarEvent = authenticatedQuery({
   },
 });
 
-// Get a single recording with all details
+/** Get a single recording with full details including transcript, summary, participants, and job status. */
 export const getRecording = authenticatedQuery({
   args: { recordingId: v.id("meetingRecordings") },
   handler: async (ctx, args) => {
@@ -251,7 +251,7 @@ export const getRecording = authenticatedQuery({
   },
 });
 
-// Get transcript for a recording
+/** Get the transcript for a meeting recording. Requires ownership or public access. */
 export const getTranscript = authenticatedQuery({
   args: { recordingId: v.id("meetingRecordings") },
   handler: async (ctx, args) => {
@@ -269,7 +269,7 @@ export const getTranscript = authenticatedQuery({
   },
 });
 
-// Get summary for a recording
+/** Get the AI-generated summary for a meeting recording. Requires ownership or public access. */
 export const getSummary = authenticatedQuery({
   args: { recordingId: v.id("meetingRecordings") },
   handler: async (ctx, args) => {
@@ -287,8 +287,7 @@ export const getSummary = authenticatedQuery({
   },
 });
 
-// Get pending bot jobs (for the bot service to poll)
-// Requires bot service API key authentication
+/** Return pending bot jobs ready to execute within the next 5 minutes. Authenticated via bot service API key. */
 export const getPendingJobs = query({
   args: {
     apiKey: v.string(),
@@ -325,7 +324,7 @@ export const getPendingJobs = query({
 // Mutations
 // ===========================================
 
-// Schedule a bot to join a meeting
+/** Schedule a meeting bot to join and record a meeting at a specified time. */
 export const scheduleRecording = authenticatedMutation({
   args: {
     calendarEventId: v.optional(v.id("calendarEvents")),
@@ -382,7 +381,7 @@ export const scheduleRecording = authenticatedMutation({
   },
 });
 
-// Quick record - start recording immediately for an ad-hoc meeting
+/** Start recording an ad-hoc meeting immediately by dispatching the bot now. */
 export const startRecordingNow = authenticatedMutation({
   args: {
     meetingUrl: v.string(),
@@ -431,7 +430,7 @@ export const startRecordingNow = authenticatedMutation({
   },
 });
 
-// Cancel a scheduled recording
+/** Cancel a scheduled recording. Only the creator can cancel, and only while status is 'scheduled'. */
 export const cancelRecording = authenticatedMutation({
   args: { recordingId: v.id("meetingRecordings") },
   returns: v.null(),
@@ -470,8 +469,7 @@ export const cancelRecording = authenticatedMutation({
   },
 });
 
-// Update recording status (called by bot service)
-// Requires bot service API key authentication
+/** Update a recording's status and metadata. Called by the bot service via API key auth. */
 export const updateRecordingStatus = mutation({
   args: {
     apiKey: v.string(),
@@ -515,8 +513,7 @@ export const updateRecordingStatus = mutation({
   },
 });
 
-// Save transcript (called after transcription processing)
-// Requires bot service API key authentication
+/** Save a meeting transcript and advance the recording to 'summarizing' status. Bot service API key required. */
 export const saveTranscript = mutation({
   args: {
     apiKey: v.string(),
@@ -567,8 +564,7 @@ export const saveTranscript = mutation({
   },
 });
 
-// Save summary (called after Claude processing)
-// Requires bot service API key authentication
+/** Save an AI-generated meeting summary and mark the recording as completed. Bot service API key required. */
 export const saveSummary = mutation({
   args: {
     apiKey: v.string(),
@@ -656,8 +652,7 @@ export const saveSummary = mutation({
   },
 });
 
-// Save participants
-// Requires bot service API key authentication
+/** Save meeting participant data, automatically matching emails to Nixelo users. Bot service API key required. */
 export const saveParticipants = mutation({
   args: {
     apiKey: v.string(),
@@ -723,7 +718,7 @@ export const saveParticipants = mutation({
   },
 });
 
-// Create issue from action item
+/** Create a project issue from a meeting summary action item and link it back to the summary. */
 export const createIssueFromActionItem = authenticatedMutation({
   args: {
     summaryId: v.id("meetingSummaries"),
@@ -806,7 +801,7 @@ export const createIssueFromActionItem = authenticatedMutation({
 // Internal Functions (called by scheduler)
 // ===========================================
 
-// Trigger bot job - called by scheduler when it's time to join a meeting
+/** Trigger a pending bot job to join a meeting. Called by the Convex scheduler at the scheduled start time. */
 export const triggerBotJob = internalMutation({
   args: { recordingId: v.id("meetingRecordings") },
   handler: async (ctx, args) => {
@@ -845,7 +840,7 @@ export const triggerBotJob = internalMutation({
   },
 });
 
-// Notify bot service to start a job
+/** Send an HTTP request to the external bot service to start a recording job. */
 export const notifyBotService = internalAction({
   args: {
     jobId: v.id("meetingBotJobs"),
@@ -910,6 +905,7 @@ export const notifyBotService = internalAction({
   },
 });
 
+/** Store the external bot service job ID and mark the job as running. */
 export const updateJobBotServiceId = internalMutation({
   args: {
     jobId: v.id("meetingBotJobs"),
@@ -924,6 +920,7 @@ export const updateJobBotServiceId = internalMutation({
   },
 });
 
+/** Mark a bot job as failed. Retries automatically up to maxAttempts, then fails the recording. */
 export const markJobFailed = internalMutation({
   args: {
     jobId: v.id("meetingBotJobs"),

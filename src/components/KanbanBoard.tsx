@@ -25,41 +25,47 @@ interface KanbanBoardProps {
   filters?: BoardFilters;
 }
 
+/** Check if issue matches type filter */
+function matchesTypeFilter(issue: EnrichedIssue, types?: BoardFilters["type"]): boolean {
+  if (!types?.length) return true;
+  return types.includes(issue.type as Exclude<IssueType, "subtask">);
+}
+
+/** Check if issue matches priority filter */
+function matchesPriorityFilter(
+  issue: EnrichedIssue,
+  priorities?: BoardFilters["priority"],
+): boolean {
+  if (!priorities?.length) return true;
+  return priorities.includes(issue.priority);
+}
+
+/** Check if issue matches assignee filter */
+function matchesAssigneeFilter(
+  issue: EnrichedIssue,
+  assigneeIds?: BoardFilters["assigneeId"],
+): boolean {
+  if (!assigneeIds?.length) return true;
+  return !!issue.assigneeId && assigneeIds.includes(issue.assigneeId);
+}
+
+/** Check if issue matches labels filter (issue must have at least one of the selected labels) */
+function matchesLabelsFilter(issue: EnrichedIssue, labelNames?: BoardFilters["labels"]): boolean {
+  if (!labelNames?.length) return true;
+  return issue.labels?.some((label) => labelNames.includes(label.name)) ?? false;
+}
+
 /** Apply client-side filters to issues */
 function applyFilters(issues: EnrichedIssue[], filters?: BoardFilters): EnrichedIssue[] {
   if (!filters) return issues;
 
-  return issues.filter((issue) => {
-    // Type filter
-    if (
-      filters.type?.length &&
-      !filters.type.includes(issue.type as Exclude<IssueType, "subtask">)
-    ) {
-      return false;
-    }
-
-    // Priority filter
-    if (filters.priority?.length && !filters.priority.includes(issue.priority)) {
-      return false;
-    }
-
-    // Assignee filter
-    if (filters.assigneeId?.length) {
-      if (!issue.assigneeId || !filters.assigneeId.includes(issue.assigneeId)) {
-        return false;
-      }
-    }
-
-    // Labels filter (issue must have at least one of the selected labels)
-    if (filters.labels?.length) {
-      const hasMatchingLabel = issue.labels?.some((label) => filters.labels?.includes(label.name));
-      if (!hasMatchingLabel) {
-        return false;
-      }
-    }
-
-    return true;
-  });
+  return issues.filter(
+    (issue) =>
+      matchesTypeFilter(issue, filters.type) &&
+      matchesPriorityFilter(issue, filters.priority) &&
+      matchesAssigneeFilter(issue, filters.assigneeId) &&
+      matchesLabelsFilter(issue, filters.labels),
+  );
 }
 
 export function KanbanBoard({ projectId, teamId, sprintId, filters }: KanbanBoardProps) {

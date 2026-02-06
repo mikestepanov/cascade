@@ -319,23 +319,41 @@ export class SettingsPage extends BasePage {
     // Wait for button to be enabled (stable)
     await expect(inviteBtn).toBeEnabled();
 
-    // Click using standard Playwright click
-    await inviteBtn.click();
-
-    // Wait for form to appear
-    await expect(this.inviteUserModal).toBeVisible();
+    // Click using evaluate for reliable React event handling
+    // Retry pattern handles potential element detachment during re-renders
+    await expect(async () => {
+      await inviteBtn.evaluate((el: HTMLElement) => el.click());
+      await expect(this.inviteUserModal).toBeVisible();
+    }).toPass();
   }
 
   async inviteUser(email: string, role?: string) {
     await this.openInviteUserModal();
     await this.inviteEmailInput.fill(email);
-    if (role) {
-      // Radix Select - click trigger with "User" text (default value), then select option
-      const selectTrigger = this.page.getByRole("combobox").filter({ hasText: /^User$|^Admin$/ });
-      await selectTrigger.click();
-      await this.page.getByRole("option", { name: new RegExp(`^${role}$`, "i") }).click();
+    // Only change role if it's not "user" (which is the default)
+    if (role && role.toLowerCase() !== "user") {
+      // Radix Select - click trigger with current value text, then select option
+      // The select shows "User" or "Super Admin" (or placeholder "Select role")
+      // Use retry pattern to handle element detachment during React updates
+      const displayRole = "Super Admin";
+      await expect(async () => {
+        const selectTrigger = this.page
+          .getByRole("combobox")
+          .filter({ hasText: /^User$|^Super Admin$|Select role/i });
+        await expect(selectTrigger).toBeVisible();
+        await selectTrigger.evaluate((el: HTMLElement) => el.click());
+        await expect(this.page.getByRole("option", { name: displayRole })).toBeVisible();
+      }).toPass();
+      await this.page.getByRole("option", { name: displayRole }).click();
+      // Wait for select dropdown to close (React re-render completes)
+      await expect(this.page.getByRole("option", { name: displayRole })).not.toBeVisible();
     }
-    await this.sendInviteButton.click();
+    // Wait for the submit button to be stable and click with retry pattern
+    await expect(async () => {
+      await expect(this.sendInviteButton).toBeVisible();
+      await expect(this.sendInviteButton).toBeEnabled();
+      await this.sendInviteButton.evaluate((el: HTMLElement) => el.click());
+    }).toPass();
   }
 
   async setTheme(theme: "light" | "dark" | "system") {

@@ -22,11 +22,7 @@ test.describe("Permission Cascade", () => {
     if (!seedResult) console.warn("WARNING: Failed to seed templates in test setup");
   });
 
-  test("org owner can access organization settings", async ({
-    dashboardPage,
-    settingsPage,
-    page,
-  }) => {
+  test("org owner can access organization settings", async ({ dashboardPage, page }) => {
     // Navigate to dashboard (user is org owner from setup)
     await dashboardPage.goto();
     await dashboardPage.expectLoaded();
@@ -39,12 +35,12 @@ test.describe("Permission Cascade", () => {
     console.log("✓ Navigated to settings");
 
     // Verify org-level settings are accessible
-    // Organization tab should be visible for org admins
-    const orgTab = page
-      .getByRole("link", { name: /organization/i })
-      .or(page.getByRole("tab", { name: /organization/i }));
-    await expect(orgTab).toBeVisible();
-    console.log("✓ Organization settings tab visible (org admin access)");
+    // Admin tab should be visible for org admins (contains org-level settings like invites)
+    const adminTab = page
+      .getByRole("link", { name: /admin/i })
+      .or(page.getByRole("tab", { name: /admin/i }));
+    await expect(adminTab).toBeVisible();
+    console.log("✓ Admin settings tab visible (org admin access)");
   });
 
   test("org owner can create workspaces", async ({ workspacesPage, page }) => {
@@ -58,11 +54,16 @@ test.describe("Permission Cascade", () => {
     await workspacesPage.createWorkspace(workspaceName);
     console.log("✓ Created workspace as org owner");
 
-    // Verify workspace was created (should be on workspace detail or list)
-    // Either redirected to new workspace or still on list with new item
-    const workspaceItem = page.getByText(workspaceName);
-    await expect(workspaceItem).toBeVisible();
-    console.log("✓ Workspace visible in list");
+    // Verify workspace was created - check for workspace detail page or list item
+    // After creation, page may redirect to workspace detail OR stay on list
+    await expect(page).toHaveURL(/\/workspaces\//);
+    const mainContent = page.getByRole("main");
+    const workspaceItem = mainContent
+      .locator(`a[href*="/workspaces/"]`)
+      .filter({ hasText: workspaceName });
+    const workspaceHeading = mainContent.getByRole("heading", { name: workspaceName, level: 3 });
+    await expect(workspaceItem.or(workspaceHeading)).toBeVisible();
+    console.log("✓ Workspace visible");
   });
 
   test("org owner can create projects in any workspace", async ({ projectsPage, page }) => {
@@ -125,20 +126,10 @@ test.describe("Permission Cascade", () => {
     await page.goto(`/${orgSlug}/projects/NONEXISTENT/board`);
     await page.waitForLoadState("domcontentloaded");
 
-    // Should show error or redirect
-    // Either "not found" message or redirect to projects list
-    const notFoundMessage = page.getByText(/not found|doesn't exist|no access/i);
-    const projectsUrl = /\/projects\/?$/;
-
-    const hasNotFound = await notFoundMessage.isVisible().catch(() => false);
-    const redirectedToProjects = projectsUrl.test(page.url());
-
-    expect(hasNotFound || redirectedToProjects).toBe(true);
-    console.log(
-      hasNotFound
-        ? "✓ Shows 'not found' error for non-existent project"
-        : "✓ Redirected away from non-existent project",
-    );
+    // Wait for the "Project Not Found" heading
+    const notFoundHeading = page.getByRole("heading", { name: /project not found/i });
+    await expect(notFoundHeading).toBeVisible();
+    console.log("✓ Shows 'Project Not Found' error for non-existent project");
   });
 
   test("project settings require appropriate permissions", async ({ projectsPage, page }) => {
@@ -173,25 +164,19 @@ test.describe("Permission Cascade", () => {
     const timestamp = Date.now();
     const workspaceName = `Settings WS ${timestamp}`;
 
-    // Create a workspace
+    // Create a workspace - this navigates to the workspace detail page after creation
     await workspacesPage.goto();
     await workspacesPage.createWorkspace(workspaceName);
 
-    // Go back to workspaces list
-    await workspacesPage.goto();
+    // After creation, we should be on the workspace detail page (may be on /teams tab)
+    await expect(page).toHaveURL(/\/workspaces\/[^/]+/);
 
-    // Find and click on the workspace
-    const workspaceCard = page
-      .locator(`a[href*="/workspaces/"]`)
-      .filter({ hasText: workspaceName });
-    await expect(workspaceCard).toBeVisible();
-    await workspaceCard.click();
+    // Verify the workspace heading is visible
+    const workspaceHeading = page.getByRole("heading", { name: workspaceName, level: 3 });
+    await expect(workspaceHeading).toBeVisible();
+    console.log("✓ On workspace detail page");
 
-    // Should be in workspace now
-    await expect(page).toHaveURL(/\/workspaces\/[^/]+$/);
-    console.log("✓ Navigated to workspace");
-
-    // Look for settings link/button
+    // Look for settings link/button in the workspace tabs
     const settingsLink = page.getByRole("link", { name: /settings/i });
     if (await settingsLink.isVisible().catch(() => false)) {
       await settingsLink.click();
@@ -202,11 +187,7 @@ test.describe("Permission Cascade", () => {
     }
   });
 
-  test("organization members list is accessible to admins", async ({
-    settingsPage,
-    dashboardPage,
-    page,
-  }) => {
+  test("organization members list is accessible to admins", async ({ dashboardPage, page }) => {
     // Navigate to settings
     await dashboardPage.goto();
     await dashboardPage.navigateTo("settings");

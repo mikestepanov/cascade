@@ -6,7 +6,7 @@ import { decrypt, encrypt } from "./lib/encryption";
 import { notFound } from "./lib/errors";
 import { syncDirections } from "./validators";
 
-// Internal mutation for connecting Google Calendar (called from HTTP action)
+/** Connect a Google Calendar account via OAuth. Encrypts tokens before storage. Called from HTTP action. */
 export const connectGoogleInternal = internalMutation({
   args: {
     userId: v.id("users"),
@@ -62,7 +62,7 @@ export const connectGoogleInternal = internalMutation({
   },
 });
 
-// Connect Google Calendar (OAuth callback) - for authenticated users
+/** Connect Google Calendar for the authenticated user via OAuth callback. Encrypts and stores tokens. */
 export const connectGoogle = authenticatedMutation({
   args: {
     providerAccountId: v.string(), // Google email
@@ -112,7 +112,7 @@ export const connectGoogle = authenticatedMutation({
   },
 });
 
-// Get Google Calendar connection (without decrypted tokens - for UI display)
+/** Get the current user's Google Calendar connection status without exposing tokens. */
 export const getConnection = authenticatedQuery({
   args: {},
   handler: async (ctx) => {
@@ -142,7 +142,7 @@ export const getConnection = authenticatedQuery({
   },
 });
 
-// Internal helper to get decrypted tokens (for backend sync processes)
+/** Retrieve decrypted OAuth tokens for a calendar connection. Internal use only for sync processes. */
 export const getDecryptedTokens = internalMutation({
   args: {
     connectionId: v.id("calendarConnections"),
@@ -159,7 +159,7 @@ export const getDecryptedTokens = internalMutation({
   },
 });
 
-// Disconnect Google Calendar
+/** Disconnect and delete the current user's Google Calendar connection. */
 export const disconnectGoogle = authenticatedMutation({
   args: {},
   handler: async (ctx) => {
@@ -174,7 +174,7 @@ export const disconnectGoogle = authenticatedMutation({
   },
 });
 
-// Update sync settings
+/** Update sync preferences (enabled/direction) for the current user's Google Calendar connection. */
 export const updateSyncSettings = authenticatedMutation({
   args: {
     syncEnabled: v.optional(v.boolean()),
@@ -198,7 +198,7 @@ export const updateSyncSettings = authenticatedMutation({
   },
 });
 
-// Refresh access token (called by backend sync process)
+/** Store a refreshed OAuth access token. Called by the backend sync process after token renewal. */
 export const refreshToken = mutation({
   args: {
     connectionId: v.id("calendarConnections"),
@@ -225,7 +225,7 @@ export const refreshToken = mutation({
   },
 });
 
-// Mark sync as completed
+/** Update the lastSyncAt timestamp for a calendar connection after a successful sync. */
 export const markSynced = mutation({
   args: {
     connectionId: v.id("calendarConnections"),
@@ -238,7 +238,7 @@ export const markSynced = mutation({
   },
 });
 
-// Get all calendar connections for user (for settings UI)
+/** List all calendar provider connections for the current user. */
 export const listConnections = authenticatedQuery({
   args: {},
   handler: async (ctx) => {
@@ -249,8 +249,7 @@ export const listConnections = authenticatedQuery({
   },
 });
 
-// Sync Google Calendar events to Nixelo (called by scheduled action)
-// This would be implemented with Google Calendar API calls in production
+/** Import Google Calendar events into Nixelo calendar. Respects sync direction settings. */
 export const syncFromGoogle = mutation({
   args: {
     connectionId: v.id("calendarConnections"),
@@ -307,7 +306,7 @@ export const syncFromGoogle = mutation({
   },
 });
 
-// Get events that need to be synced to Google
+/** Get calendar events updated since the last sync, for export to Google Calendar. */
 export const getEventsToSync = authenticatedQuery({
   args: {
     since: v.optional(v.number()),

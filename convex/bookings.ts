@@ -13,7 +13,7 @@ import { MINUTE } from "./lib/timeUtils";
  * Supports confirmation workflow and calendar integration
  */
 
-// Create a new booking (public - no auth required)
+/** Creates a new booking for a booking page with rate limiting, conflict detection, and optional auto-confirmation. */
 export const createBooking = mutation({
   args: {
     bookingPageSlug: v.string(),
@@ -142,7 +142,7 @@ export const createBooking = mutation({
   },
 });
 
-// Get available time slots for a booking page
+/** Generates available time slots for a booking page on a specific date, accounting for existing bookings and availability. */
 export const getAvailableSlots = query({
   args: {
     bookingPageSlug: v.string(),

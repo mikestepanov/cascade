@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Flex } from "@/components/ui/Flex";
 import { ROUTES } from "@/config/routes";
+import { TEST_IDS } from "@/lib/test-ids";
 import { cn } from "@/lib/utils";
 import { Button } from "../ui/Button";
 import { Input } from "../ui/form/Input";
@@ -95,13 +96,20 @@ export function SignUpForm() {
           )}
         >
           <Flex direction="column" className="overflow-hidden gap-form-field">
-            <Input type="email" name="email" placeholder="Email" required={formReady} />
+            <Input
+              type="email"
+              name="email"
+              placeholder="Email"
+              required={formReady}
+              data-testid={TEST_IDS.AUTH.EMAIL_INPUT}
+            />
             <Input
               type="password"
               name="password"
               placeholder="Password"
               minLength={8}
               required={formReady}
+              data-testid={TEST_IDS.AUTH.PASSWORD_INPUT}
             />
           </Flex>
         </div>
@@ -111,6 +119,7 @@ export function SignUpForm() {
           size="lg"
           className="w-full"
           disabled={submitting || !hydrated}
+          data-testid={TEST_IDS.AUTH.SUBMIT_BUTTON}
         >
           {!showEmailForm ? (
             <Flex align="center" gap="md">

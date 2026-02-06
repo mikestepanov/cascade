@@ -1,5 +1,6 @@
 import { api } from "@convex/_generated/api";
 import type { Id } from "@convex/_generated/dataModel";
+import { ISSUE_PRIORITIES, ISSUE_TYPES } from "@convex/validators";
 import { useForm } from "@tanstack/react-form";
 import { useMutation } from "convex/react";
 import { useEffect } from "react";
@@ -14,15 +15,12 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "
 // Schema
 // =============================================================================
 
-const issueTypes = ["task", "bug", "story", "epic"] as const;
-const priorities = ["lowest", "low", "medium", "high", "highest"] as const;
-
 const templateSchema = z.object({
   name: z.string().min(1, "Name is required"),
-  type: z.enum(issueTypes),
+  type: z.enum(ISSUE_TYPES),
   titleTemplate: z.string().min(1, "Title template is required"),
   descriptionTemplate: z.string(),
-  defaultPriority: z.enum(priorities),
+  defaultPriority: z.enum(ISSUE_PRIORITIES),
   defaultLabels: z.string(),
 });
 
@@ -52,10 +50,10 @@ export function TemplateForm({ projectId, template, open, onOpenChange }: Templa
   const form = useForm({
     defaultValues: {
       name: "",
-      type: "task" as (typeof issueTypes)[number],
+      type: "task" satisfies IssueType,
       titleTemplate: "",
       descriptionTemplate: "",
-      defaultPriority: "medium" as (typeof priorities)[number],
+      defaultPriority: "medium" satisfies IssuePriority,
       defaultLabels: "",
     },
     validators: { onChange: templateSchema },
@@ -92,13 +90,10 @@ export function TemplateForm({ projectId, template, open, onOpenChange }: Templa
   useEffect(() => {
     if (template) {
       form.setFieldValue("name", template.name);
-      form.setFieldValue("type", template.type as (typeof issueTypes)[number]);
+      form.setFieldValue("type", template.type);
       form.setFieldValue("titleTemplate", template.titleTemplate);
       form.setFieldValue("descriptionTemplate", template.descriptionTemplate);
-      form.setFieldValue(
-        "defaultPriority",
-        template.defaultPriority as (typeof priorities)[number],
-      );
+      form.setFieldValue("defaultPriority", template.defaultPriority);
       form.setFieldValue("defaultLabels", template.defaultLabels?.join(", ") || "");
     } else {
       form.reset();

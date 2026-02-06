@@ -4,6 +4,7 @@
  * Provides helpers for cursor-based pagination and smart loading strategies.
  */
 
+import type { WorkflowCategory } from "../validators";
 import { validation } from "./errors";
 import { DAY } from "./timeUtils";
 
@@ -58,11 +59,6 @@ export function decodeCursor(cursor: string): { timestamp: number; id: string } 
 export function getDoneColumnThreshold(now: number, days: number = DONE_COLUMN_DAYS): number {
   return now - days * DAY;
 }
-
-/**
- * Workflow state categories
- */
-export type WorkflowCategory = "todo" | "inprogress" | "done";
 
 /**
  * Determine loading strategy based on workflow category
