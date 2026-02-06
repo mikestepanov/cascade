@@ -344,20 +344,24 @@ export class AuthPage extends BasePage {
   // ===================
 
   async clickForgotPassword() {
-    // Forgot password link appears after form is expanded
-    await this.expandEmailForm();
-    // Wait for form to stabilize (formReady state) before clicking
-    await this.waitForFormReady();
+    // Use retry pattern to handle form expansion and navigation
+    await expect(async () => {
+      // Forgot password link appears after form is expanded
+      await this.expandEmailForm();
+      // Wait for form to stabilize (formReady state) before clicking
+      await this.waitForFormReady();
 
-    await this.forgotPasswordLink.waitFor({ state: "visible" });
-    await expect(this.forgotPasswordLink).toBeEnabled();
+      // Verify forgot password link is visible before clicking
+      await expect(this.forgotPasswordLink).toBeVisible({ timeout: 2000 });
+      await expect(this.forgotPasswordLink).toBeEnabled({ timeout: 1000 });
 
-    // Click with force to bypass actionability checks (button may be styled as link)
-    await this.forgotPasswordLink.click({ force: true });
+      // Click the link
+      await this.forgotPasswordLink.click({ force: true });
 
-    // Wait for navigation to complete
-    await this.page.waitForURL("**/forgot-password*");
-    await this.forgotPasswordHeading.waitFor({ state: "visible" });
+      // Verify navigation completed
+      await expect(this.page).toHaveURL(/forgot-password/, { timeout: 3000 });
+      await expect(this.forgotPasswordHeading).toBeVisible({ timeout: 2000 });
+    }).toPass({ intervals: [500, 1000, 2000], timeout: 15000 });
   }
 
   /**
