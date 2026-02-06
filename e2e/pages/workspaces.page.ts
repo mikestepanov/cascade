@@ -84,6 +84,8 @@ export class WorkspacesPage extends BasePage {
 
     // Click and retry until modal opens
     await expect(async () => {
+      // Press Escape first to clear any existing modal state
+      await this.page.keyboard.press("Escape");
       await createButton.scrollIntoViewIfNeeded();
       await createButton.click();
       // Wait for modal dialog to appear
