@@ -1,7 +1,6 @@
 {
   "$schema": "https://mintlify.com/schema.json",
   "name": "Nixelo Docs",
-  "favicon": "/docs/favicon.png",
   "colors": {
     "primary": "#0F53FF",
     "light": "#4D8AFF",
