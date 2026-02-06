@@ -57,7 +57,7 @@ function validateE2EApiKey(request: Request): Response | null {
     }
 
     const env = process.env.NODE_ENV;
-    // FAIL SECURE: Only allow if explicitly in development or test
+    // FAIL SECURE: Only allow if explicitly in development or test or CI
     // This prevents accidental exposure in misconfigured staging/prod environments
     if (env === "development" || env === "test" || process.env.CI) {
       return null; // Allow in explicitly unsafe environments
