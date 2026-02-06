@@ -252,6 +252,21 @@ export const webhookPayload = v.any();
 // Type Exports (for TypeScript usage)
 // =============================================================================
 
+// Enum types — only types that are imported elsewhere to avoid duplication
+export type IssueType = Infer<typeof issueTypes>;
+export type IssueTypeWithSubtask = Infer<typeof issueTypesWithSubtask>;
+export type IssuePriority = Infer<typeof issuePriorities>;
+export type WorkflowCategory = Infer<typeof workflowCategories>;
+export type ProjectRole = Infer<typeof projectRoles>;
+export type OrganizationRole = Infer<typeof organizationRoles>;
+export type ServiceType = Infer<typeof serviceTypes>;
+
+// Runtime arrays (for UI dropdowns, form validation, etc.)
+export const ISSUE_TYPES = ["task", "bug", "story", "epic"] as const;
+export const ISSUE_TYPES_WITH_SUBTASK = ["task", "bug", "story", "epic", "subtask"] as const;
+export const ISSUE_PRIORITIES = ["lowest", "low", "medium", "high", "highest"] as const;
+
+// Complex types
 export type ProseMirrorNode = Infer<typeof proseMirrorNode>;
 export type ProseMirrorSnapshot = Infer<typeof proseMirrorSnapshot>;
 export type BlockNoteContent = Infer<typeof blockNoteContent>;

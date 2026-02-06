@@ -1,6 +1,7 @@
 import { useAuthActions } from "@convex-dev/auth/react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { TEST_IDS } from "@/lib/test-ids";
 import { Button } from "../ui/Button";
 import { Input } from "../ui/form/Input";
 import { Typography } from "../ui/Typography";
@@ -43,7 +44,13 @@ export function ForgotPasswordForm({ onCodeSent, onBack }: ForgotPasswordFormPro
         Enter your email and we'll send you a code to reset your password.
       </Typography>
       <form className="flex flex-col gap-form-field" onSubmit={handleSubmit}>
-        <Input type="email" name="email" placeholder="Email" required />
+        <Input
+          type="email"
+          name="email"
+          placeholder="Email"
+          required
+          data-testid={TEST_IDS.AUTH.EMAIL_INPUT}
+        />
         <Button type="submit" size="lg" className="w-full" disabled={submitting}>
           {submitting ? "Sending..." : "Send reset code"}
         </Button>

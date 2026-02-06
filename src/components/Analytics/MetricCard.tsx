@@ -14,15 +14,17 @@ export const MetricCard = memo(function MetricCard({
   subtitle,
   icon,
   highlight,
+  testId,
 }: {
   title: string;
   value: number;
   subtitle?: string;
   icon: string;
   highlight?: boolean;
+  testId?: string;
 }) {
   return (
-    <Card className={cn(highlight && "ring-2 ring-status-warning")}>
+    <Card className={cn(highlight && "ring-2 ring-status-warning")} data-testid={testId}>
       <CardBody className="p-6">
         <Flex justify="between" align="center">
           <div>

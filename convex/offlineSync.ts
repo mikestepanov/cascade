@@ -186,10 +186,7 @@ export const retryFailed = authenticatedMutation({
   },
 });
 
-/**
- * Automatically retry failed sync items (called by cron)
- * Uses exponential backoff based on number of attempts
- */
+/** Automatically retries failed sync items using exponential backoff, archiving items after max attempts. */
 export const autoRetryFailed = internalMutation({
   handler: async (ctx) => {
     const now = Date.now();
@@ -235,10 +232,7 @@ export const autoRetryFailed = internalMutation({
   },
 });
 
-/**
- * Cleanup old completed sync items (called by cron)
- * Removes items completed more than 7 days ago to prevent table bloat
- */
+/** Cleans up completed sync items older than 7 days to prevent table bloat. */
 export const cleanupOldItems = internalMutation({
   handler: async (ctx) => {
     const now = Date.now();

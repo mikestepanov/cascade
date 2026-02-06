@@ -61,6 +61,27 @@ function isSelectionCollapsed(selection: { anchor: unknown; focus: unknown } | n
 }
 
 /**
+ * Get the DOMRect for the current text selection, or null if invalid
+ */
+function getSelectionRect(): DOMRect | null {
+  const domSelection = window.getSelection();
+  if (!domSelection || domSelection.rangeCount === 0) return null;
+
+  const domRange = domSelection.getRangeAt(0);
+  const text = domRange.toString();
+
+  // Must have actual selected text
+  if (!text || text.trim().length === 0) return null;
+
+  const rect = domRange.getBoundingClientRect();
+
+  // Must have valid dimensions
+  if (rect.width <= 0 || rect.height <= 0) return null;
+
+  return rect;
+}
+
+/**
  * Floating toolbar component
  * Must be rendered inside Plate context
  */
@@ -72,32 +93,16 @@ export function FloatingToolbar() {
 
   // Show toolbar when text is selected
   useEffect(() => {
+    // Early return if no valid selection
     if (!selection || isSelectionCollapsed(selection)) {
       setOpen(false);
       return;
     }
 
-    // Get selection bounding rect from DOM
-    const domSelection = window.getSelection();
-    if (domSelection && domSelection.rangeCount > 0) {
-      const domRange = domSelection.getRangeAt(0);
-      const text = domRange.toString();
-
-      // Only show if there's selected text
-      if (!text || text.trim().length === 0) {
-        setOpen(false);
-        return;
-      }
-
-      const rect = domRange.getBoundingClientRect();
-
-      // Only show if there's a valid rect
-      if (rect.width > 0 && rect.height > 0) {
-        setAnchorRect(rect);
-        setOpen(true);
-      } else {
-        setOpen(false);
-      }
+    const rect = getSelectionRect();
+    if (rect) {
+      setAnchorRect(rect);
+      setOpen(true);
     } else {
       setOpen(false);
     }

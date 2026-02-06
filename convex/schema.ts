@@ -205,12 +205,12 @@ const applicationTables = {
     .index("by_workspace", ["workspaceId"]) // Standardized
     .index("by_team", ["teamId"]) // NEW
     .index("by_key", ["key"])
-    .index("by_assignee", ["assigneeId"])
-    .index("by_reporter", ["reporterId"])
+    .index("by_assignee", ["assigneeId", "isDeleted"])
+    .index("by_reporter", ["reporterId", "isDeleted"])
     .index("by_status", ["status"])
-    .index("by_sprint", ["sprintId"])
-    .index("by_epic", ["epicId"])
-    .index("by_parent", ["parentId"])
+    .index("by_sprint", ["sprintId", "isDeleted"])
+    .index("by_epic", ["epicId", "isDeleted"])
+    .index("by_parent", ["parentId", "isDeleted"])
     .index("by_project_status", ["projectId", "status", "isDeleted"])
     .index("by_project_status_updated", ["projectId", "status", "updatedAt"])
     .index("by_project_sprint_status", ["projectId", "sprintId", "status", "isDeleted"]) // Optimized for sprint board counts

@@ -121,7 +121,7 @@ jobs:
       - name: Build
         run: pnpm run build
         env:
-          VITE_CONVEX_URL: ${{ github.ref == 'refs/heads/main' && secrets.VITE_CONVEX_URL || 'http://localhost:3211' }}
+          VITE_CONVEX_URL: ${{ github.ref == 'refs/heads/main' && secrets.VITE_CONVEX_URL || 'http://localhost:3210' }}
           CONVEX_DEPLOYMENT: ${{ secrets.CONVEX_DEPLOYMENT }}
           CONVEX_DEPLOY_KEY: ${{ secrets.CONVEX_DEPLOY_KEY }}
 

@@ -136,27 +136,41 @@ async function setupTestUser(
  * Wait for the Convex Backend (HTTP Actions) to be ready
  * Polling loop for local dev server
  */
-async function waitForBackendReady(maxRetries = 60, intervalMs = 1000): Promise<boolean> {
+async function waitForBackendReady(
+  clientUrl: string,
+  maxRetries = 60,
+  intervalMs = 1000,
+): Promise<boolean> {
   // Use a simple known endpoint (or just root) to check connectivity
-  // Actually, we can't easily GET a POST-only endpoint, but we can check if connection is refused.
-  // Better: use a dedicated health check if available, or just try to fetch root and accept 404 (as long as it connects).
-  // The CI failure was ECONNREFUSED, so connection is key.
+  // We check BOTH the client URL (3210) and the site URL (3211)
+  // If either is up, we assume the backend process is running.
 
-  console.log(`⏳ Waiting for Convex Backend at ${CONVEX_SITE_URL} ...`);
+  const siteUrl = CONVEX_SITE_URL;
+  console.log(`⏳ Waiting for Convex Backend (checking ${clientUrl} OR ${siteUrl}) ...`);
 
   for (let i = 0; i < maxRetries; i++) {
     try {
-      // Just check if we can connect to the port
-      const res = await fetch(CONVEX_SITE_URL);
-      // If we get a response (even 404), the server is up
-      if (res.status !== undefined) {
-        console.log(`✓ Convex Backend is ready (status: ${res.status})`);
+      // Try Site URL first (HTTP Actions)
+      const resSite = await fetch(siteUrl).catch(() => null);
+      if (resSite && resSite.status !== undefined) {
+        console.log(`✓ Convex Backend (Site) is ready at ${siteUrl} (status: ${resSite.status})`);
+        return true;
+      }
+
+      // Fallback: Try Client URL (WebSocket/Dashboard) - it serves HTTP too
+      const resClient = await fetch(clientUrl).catch(() => null);
+      if (resClient && resClient.status !== undefined) {
+        console.log(
+          `✓ Convex Backend (Client) is ready at ${clientUrl} (status: ${resClient.status})`,
+        );
         return true;
       }
     } catch {
-      if (i % 5 === 0) console.log(`  ...waiting (${i}/${maxRetries})`);
-      await new Promise((resolve) => setTimeout(resolve, intervalMs));
+      // Ignore errors and retry
     }
+
+    if (i % 5 === 0) console.log(`  ...waiting (${i}/${maxRetries})`);
+    await new Promise((resolve) => setTimeout(resolve, intervalMs));
   }
   console.error("❌ Convex Backend failed to start within timeout");
   return false;
@@ -199,6 +213,7 @@ async function waitForAppReady(page: Page, baseURL: string): Promise<boolean> {
  */
 async function globalSetup(config: FullConfig): Promise<void> {
   const baseURL = config.projects[0].use.baseURL || "http://localhost:5555";
+  const clientURL = process.env.VITE_CONVEX_URL || "http://127.0.0.1:3210";
 
   // Determine number of workers to setup for
   // Default to 4 if not specified (matching common CI configs)
@@ -213,7 +228,8 @@ async function globalSetup(config: FullConfig): Promise<void> {
   fs.mkdirSync(AUTH_DIR, { recursive: true });
 
   // 0. Wait for Convex Backend (HTTP Actions)
-  const backendReady = await waitForBackendReady();
+  // Check against Client URL (passed in config) or Site URL (derived)
+  const backendReady = await waitForBackendReady(clientURL);
   if (!backendReady) {
     throw new Error(
       "Convex Backend (HTTP Actions) failed to start. Cannot proceed with global setup.",

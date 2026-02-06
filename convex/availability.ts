@@ -140,7 +140,7 @@ export const getMyAvailability = authenticatedQuery({
   },
 });
 
-// Get another user's availability (for booking)
+/** Gets another user's active availability slots for booking purposes. */
 export const getUserAvailability = query({
   args: { userId: v.id("users") },
   handler: async (ctx, args) => {

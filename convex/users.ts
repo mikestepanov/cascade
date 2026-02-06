@@ -303,10 +303,7 @@ export const getUserStats = authenticatedQuery({
   },
 });
 
-/**
- * Internal query to get users with specific digest preferences
- * Used by cron jobs to send digest emails
- */
+/** Lists users with a specific email digest frequency preference for cron job processing. */
 export const listWithDigestPreference = internalQuery({
   args: {
     frequency: digestFrequencies,

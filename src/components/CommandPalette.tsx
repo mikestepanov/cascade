@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { Flex } from "@/components/ui/Flex";
 import { ROUTES } from "@/config/routes";
 import { useOrganization } from "@/hooks/useOrgContext";
+import { TEST_IDS } from "@/lib/test-ids";
 import {
   Command,
   CommandDialog,
@@ -61,7 +62,7 @@ export function CommandPalette({ isOpen, onClose, commands }: CommandPaletteProp
   return (
     <CommandDialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <Command
-        data-testid="command-palette"
+        data-testid={TEST_IDS.EDITOR.COMMAND_PALETTE}
         className="bg-ui-bg"
         filter={(value, search) => {
           const cmd = commands.find((c) => c.id === value);

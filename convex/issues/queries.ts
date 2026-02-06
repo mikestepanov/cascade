@@ -68,8 +68,7 @@ export const getUserIssueCount = authenticatedQuery({
   handler: async (ctx) => {
     const issues = await ctx.db
       .query("issues")
-      .withIndex("by_assignee", (q) => q.eq("assigneeId", ctx.userId))
-      .filter(notDeleted)
+      .withIndex("by_assignee", (q) => q.eq("assigneeId", ctx.userId).lt("isDeleted", true))
       .take(1); // Just need to know if there's at least one
 
     return issues.length;
@@ -84,8 +83,7 @@ export const listByUser = authenticatedQuery({
     // Paginate assigned issues
     const assignedResult = await ctx.db
       .query("issues")
-      .withIndex("by_assignee", (q) => q.eq("assigneeId", ctx.userId))
-      .filter(notDeleted)
+      .withIndex("by_assignee", (q) => q.eq("assigneeId", ctx.userId).lt("isDeleted", true))
       .paginate(args.paginationOpts);
 
     const mappedIssues = assignedResult.page.map((issue) => ({
@@ -161,19 +159,22 @@ export const listRoadmapIssues = authenticatedQuery({
     let issues: Doc<"issues">[] = [];
     if (args.sprintId) {
       // Bounded: sprint issues are typically limited (<500 per sprint)
+      // Optimization: use index with isDeleted to skip deleted items efficiently
       const allSprintIssues = await safeCollect(
         ctx.db
           .query("issues")
-          .withIndex("by_project_sprint_status", (q) =>
-            q.eq("projectId", args.projectId).eq("sprintId", args.sprintId),
-          )
-          .filter(notDeleted),
+          .withIndex("by_sprint", (q) =>
+            q.eq("sprintId", args.sprintId as Id<"sprints">).lt("isDeleted", true),
+          ),
         BOUNDED_LIST_LIMIT,
         "roadmap sprint issues",
       );
 
-      issues = allSprintIssues.filter((i) =>
-        (ROOT_ISSUE_TYPES as readonly string[]).includes(i.type),
+      // Verify projectId matches (security check) and filter root types
+      issues = allSprintIssues.filter(
+        (i) =>
+          i.projectId === args.projectId &&
+          (ROOT_ISSUE_TYPES as readonly string[]).includes(i.type),
       );
     } else if (args.epicId) {
       // Optimization: Fetch by epic directly if filtering by specific epic
@@ -181,8 +182,7 @@ export const listRoadmapIssues = authenticatedQuery({
       const allEpicIssues = await safeCollect(
         ctx.db
           .query("issues")
-          .withIndex("by_epic", (q) => q.eq("epicId", args.epicId))
-          .filter(notDeleted),
+          .withIndex("by_epic", (q) => q.eq("epicId", args.epicId).lt("isDeleted", true)),
         BOUNDED_LIST_LIMIT,
         "roadmap epic issues",
       );
@@ -597,8 +597,7 @@ export const listSubtasks = authenticatedQuery({
     const subtasks = await safeCollect(
       ctx.db
         .query("issues")
-        .withIndex("by_parent", (q) => q.eq("parentId", args.parentId))
-        .filter(notDeleted),
+        .withIndex("by_parent", (q) => q.eq("parentId", args.parentId).lt("isDeleted", true)),
       100, // Issues rarely have >100 subtasks
       "subtasks",
     );

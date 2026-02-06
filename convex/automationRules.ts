@@ -100,7 +100,7 @@ export const remove = authenticatedMutation({
   },
 });
 
-// Internal mutation to execute automation rules
+/** Executes automation rules for an issue based on trigger events, applying actions like assignee changes or label additions. */
 export const executeRules = internalMutation({
   args: {
     projectId: v.id("projects"),

@@ -6,10 +6,7 @@ declare global {
   var IS_TEST_ENV: boolean | undefined;
 }
 
-/**
- * Log an audit entry
- * Intended to be scheduled via ctx.scheduler.runAfter(0, internal.auditLogs.log, ...)
- */
+/** Logs an audit entry to track actions, skipping in test environments to prevent transaction errors. */
 export const log = internalMutation({
   args: {
     action: v.string(),

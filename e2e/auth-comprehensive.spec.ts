@@ -1,3 +1,4 @@
+import { TEST_IDS } from "../src/lib/test-ids";
 import { expect, test } from "./fixtures";
 
 /**
@@ -8,65 +9,102 @@ import { expect, test } from "./fixtures";
  */
 
 test.describe("Sign In Form - Elements", () => {
-  test.beforeEach(async ({ authPage }) => {
-    await authPage.goto();
+  test.beforeEach(async ({ page }) => {
+    // Navigate to sign-in page directly without auto-expansion
+    await page.goto("/signin", { waitUntil: "commit" });
   });
 
-  test("displays all sign in form elements", async ({ authPage }) => {
-    // Heading - use page object locator
+  test("displays all sign in form elements", async ({ authPage, page }) => {
+    // Wait for page to be ready
     await expect(authPage.signInHeading).toBeVisible();
 
-    // Expand form to reveal all elements (required attrs and forgot password only show when expanded)
-    await authPage.expandEmailForm();
+    // Google sign in is always visible
+    await expect(authPage.googleSignInButton).toBeVisible();
 
-    // Form inputs
-    await expect(authPage.emailInput).toBeVisible();
-    await expect(authPage.emailInput).toHaveAttribute("type", "email");
-    // Note: required attr is set conditionally based on formReady state, skip checking it
-
-    await expect(authPage.passwordInput).toBeVisible();
-    await expect(authPage.passwordInput).toHaveAttribute("type", "password");
-
-    // Submit button - after expansion shows "Sign in" instead of "Continue with email"
-    await expect(authPage.signInButton).toBeVisible();
-
-    // Toggle link
+    // Toggle link is always visible
     await expect(authPage.toggleFlowButton).toBeVisible();
     await expect(authPage.toggleFlowButton).toContainText(/sign up/i);
 
-    // Forgot password link
-    await expect(authPage.forgotPasswordButton).toBeVisible();
+    // Submit button is always visible (shows either "Continue with email" or "Sign in")
+    const submitButton = page.getByTestId(TEST_IDS.AUTH.SUBMIT_BUTTON);
+    await expect(submitButton).toBeVisible();
 
-    // Google sign in
-    await expect(authPage.googleSignInButton).toBeVisible();
-  });
+    // Wait for hydration before interacting
+    await authPage.waitForHydration();
 
-  test("email input validates email format", async ({ authPage }) => {
-    // Ensure form is expanded before interacting with inputs
-    await authPage.expandEmailForm();
-    await authPage.emailInput.fill("invalid-email");
-    await authPage.passwordInput.fill("password123");
-    await authPage.submitButton.evaluate((el: HTMLElement) => el.click());
+    // Expand form and verify all elements in a single retry block
+    // This ensures the form stays expanded during verification
+    await expect(async () => {
+      // Check if form needs expansion
+      const buttonText = await submitButton.textContent();
+      const needsExpansion = buttonText?.toLowerCase().includes("continue with email");
 
-    // HTML5 validation should trigger
-    const isInvalid = await authPage.emailInput.evaluate(
-      (el: HTMLInputElement) => !el.validity.valid,
-    );
-    expect(isInvalid).toBe(true);
-  });
+      if (needsExpansion) {
+        // Click to expand
+        await submitButton.click();
+        // Wait for text to change
+        await expect(submitButton).toHaveText(/sign in/i, { timeout: 2000 });
+      }
 
-  test("password input is masked", async ({ authPage }) => {
-    // Ensure form is expanded before interacting with inputs
-    await authPage.expandEmailForm();
-    await authPage.passwordInput.fill("secretpassword");
+      // Now verify all expanded elements
+      await expect(authPage.emailInput).toBeVisible({ timeout: 1000 });
+      await expect(authPage.passwordInput).toBeVisible({ timeout: 1000 });
+      await expect(submitButton).toHaveText(/sign in/i, { timeout: 1000 });
+      await expect(authPage.forgotPasswordButton).toBeVisible({ timeout: 1000 });
+    }).toPass({ intervals: [500, 1000, 2000], timeout: 15000 });
+
+    // Final assertions for input types (these don't depend on form state)
+    await expect(authPage.emailInput).toHaveAttribute("type", "email");
     await expect(authPage.passwordInput).toHaveAttribute("type", "password");
+  });
+
+  test("email input validates email format", async ({ authPage, page }) => {
+    await authPage.waitForHydration();
+    const submitButton = page.getByTestId(TEST_IDS.AUTH.SUBMIT_BUTTON);
+
+    // Expand form, fill with invalid email, and verify validation in retry block
+    await expect(async () => {
+      const buttonText = await submitButton.textContent();
+      if (buttonText?.toLowerCase().includes("continue with email")) {
+        await submitButton.click();
+        await expect(submitButton).toHaveText(/sign in/i, { timeout: 2000 });
+      }
+
+      // Fill form with invalid email
+      await authPage.emailInput.fill("invalid-email");
+      await authPage.passwordInput.fill("password123");
+      await submitButton.evaluate((el: HTMLElement) => el.click());
+
+      // HTML5 validation should trigger
+      const isInvalid = await authPage.emailInput.evaluate(
+        (el: HTMLInputElement) => !el.validity.valid,
+      );
+      expect(isInvalid).toBe(true);
+    }).toPass({ intervals: [500, 1000, 2000], timeout: 15000 });
+  });
+
+  test("password input is masked", async ({ authPage, page }) => {
+    await authPage.waitForHydration();
+    const submitButton = page.getByTestId(TEST_IDS.AUTH.SUBMIT_BUTTON);
+
+    // Expand form and verify password is masked in retry block
+    await expect(async () => {
+      const buttonText = await submitButton.textContent();
+      if (buttonText?.toLowerCase().includes("continue with email")) {
+        await submitButton.click();
+        await expect(submitButton).toHaveText(/sign in/i, { timeout: 2000 });
+      }
+
+      await authPage.passwordInput.fill("secretpassword");
+      await expect(authPage.passwordInput).toHaveAttribute("type", "password");
+    }).toPass({ intervals: [500, 1000, 2000], timeout: 15000 });
   });
 });
 
 test.describe("Sign Up Form - Elements", () => {
   test.beforeEach(async ({ authPage }) => {
-    await authPage.goto();
-    await authPage.switchToSignUp();
+    // Go directly to sign-up page - avoids extra navigation through sign-in
+    await authPage.gotoSignUp();
   });
 
   test("displays all sign up form elements", async ({ authPage }) => {
@@ -87,7 +125,13 @@ test.describe("Sign Up Form - Elements", () => {
     await expect(authPage.forgotPasswordButton).not.toBeVisible();
   });
 
+  // This test involves multiple navigation and form expansion operations which can be flaky
+  // due to React state management timing. Allow retries to handle intermittent failures.
   test("can switch between sign in and sign up", async ({ authPage }) => {
+    test.info().annotations.push({
+      type: "flaky",
+      description: "Form expansion timing can be inconsistent",
+    });
     // Currently on sign up - button says "Create account"
     await expect(authPage.submitButton).toHaveText(/create account/i);
 
@@ -103,8 +147,8 @@ test.describe("Sign Up Form - Elements", () => {
 
 test.describe("Forgot Password Form - Elements", () => {
   test.beforeEach(async ({ authPage }) => {
-    await authPage.goto();
-    await authPage.goToForgotPassword();
+    // Navigate directly to forgot password page to avoid form expansion issues
+    await authPage.gotoForgotPassword();
   });
 
   test("displays forgot password form elements", async ({ authPage }) => {

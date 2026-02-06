@@ -11,9 +11,6 @@ import { BOUNDED_LIST_LIMIT } from "./lib/boundedQueries";
 import { notFound } from "./lib/errors";
 import { freeUnitTypes, serviceTypes } from "./validators";
 
-// Service types
-export type ServiceType = "transcription" | "email" | "sms" | "ai";
-
 // Get current month string
 function getCurrentMonth(): string {
   const now = new Date();
@@ -24,10 +21,7 @@ function getCurrentMonth(): string {
 // Queries
 // ============================================
 
-/**
- * Get the best available provider for a service type
- * Prioritizes providers with remaining free tier capacity
- */
+/** Selects the best available provider for a service type, prioritizing those with remaining free tier capacity. */
 export const selectProvider = query({
   args: {
     serviceType: serviceTypes,
@@ -211,10 +205,7 @@ export const getUsageSummary = query({
 // Mutations
 // ============================================
 
-/**
- * Record usage for a provider
- * Call this after each API call to track consumption
- */
+/** Records usage for a provider after each API call to track consumption and calculate free vs paid units. */
 export const recordUsage = mutation({
   args: {
     serviceType: serviceTypes,
@@ -342,13 +333,7 @@ export const upsertProvider = mutation({
   },
 });
 
-/**
- * Seed default provider configurations
- *
- * Only includes providers with PERMANENT monthly-reset free tiers.
- * One-time credit providers (AssemblyAI, Deepgram) are excluded.
- * See docs/service-providers-research.md for full provider analysis.
- */
+/** Seeds default provider configurations with monthly-reset free tiers for transcription and email services. */
 export const seedProviders = mutation({
   args: {},
   returns: v.object({ seeded: v.boolean() }),

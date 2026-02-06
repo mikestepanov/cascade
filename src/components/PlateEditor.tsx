@@ -20,6 +20,7 @@ import { Flex } from "@/components/ui/Flex";
 import { Skeleton, SkeletonText } from "@/components/ui/Skeleton";
 import { Typography } from "@/components/ui/Typography";
 import { getEditorPlugins, getInitialValue } from "@/lib/plate/editor";
+import { TEST_IDS } from "@/lib/test-ids";
 import { showError, showSuccess } from "@/lib/toast";
 import { DocumentHeader } from "./DocumentHeader";
 import { ErrorBoundary } from "./ErrorBoundary";
@@ -197,7 +198,7 @@ export function PlateEditor({ documentId }: PlateEditorProps) {
               <FloatingToolbar />
               <PlateContent
                 className="min-h-96 prose prose-sm max-w-none focus:outline-none"
-                data-testid="plate-editor"
+                data-testid={TEST_IDS.EDITOR.PLATE}
                 placeholder="Start writing..."
               />
             </Plate>

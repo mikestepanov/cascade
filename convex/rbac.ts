@@ -7,7 +7,7 @@
  * Roles hierarchy: viewer < editor < admin
  */
 
-export type ProjectRole = "admin" | "editor" | "viewer";
+import type { ProjectRole } from "./validators";
 
 /**
  * Check if user has at least the specified role
