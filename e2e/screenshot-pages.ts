@@ -1,50 +1,71 @@
 /**
- * Two-pass visual screenshot tool for reviewing all app pages.
+ * Visual screenshot tool for reviewing all app pages.
  *
- * Pass 1 (empty): Screenshots top-level pages before any data is seeded.
- * Pass 2 (filled): Seeds data via E2E endpoint, then screenshots all pages + sub-pages.
+ * Captures screenshots across viewport/theme combinations:
+ *   - desktop-dark (1920x1080)
+ *   - tablet-light (768x1024)
+ *   - mobile-light (390x844)
  *
- * Output filenames are prefixed for easy visual comparison:
- *   01-empty-dashboard.png  vs  01-filled-dashboard.png
+ * Output structure:
+ *   e2e/screenshots/
+ *   ├── desktop-dark/
+ *   ├── tablet-light/
+ *   └── mobile-light/
  *
  * Usage:
- *   pnpm screenshots                # auto-detect color scheme
- *   pnpm screenshots:light-mode     # force light mode
- *   pnpm screenshots -- --light     # force light mode (explicit)
- *   pnpm screenshots -- --headed    # visible browser
+ *   pnpm screenshots              # capture all
+ *   pnpm screenshots -- --headed  # visible browser
  *
  * Requires dev server running (pnpm dev).
- * Automatically creates a test user, logs in via API, and screenshots every page.
- * Screenshots are saved to e2e/screenshots/ with numbered filenames.
  */
 
 import * as fs from "node:fs";
 import * as path from "node:path";
-import { chromium, type BrowserContext, type Page } from "@playwright/test";
-// Env loaded via --env-file=.env.local in the npm script
+import { chromium, type Browser, type BrowserContext, type Page } from "@playwright/test";
 import { TEST_USERS } from "./config";
 import { type SeedScreenshotResult, testUserService } from "./utils/test-user-service";
 
+// ---------------------------------------------------------------------------
+// Configuration
+// ---------------------------------------------------------------------------
+
 const BASE_URL = process.env.BASE_URL || "http://localhost:5555";
 const CONVEX_URL = process.env.VITE_CONVEX_URL || "";
-const SCREENSHOT_DIR = path.join(process.cwd(), "e2e", "screenshots");
-const VIEWPORT = { width: 1920, height: 1080 };
-const SETTLE_MS = 2500;
+const SCREENSHOT_BASE_DIR = path.join(process.cwd(), "e2e", "screenshots");
+const SETTLE_MS = 2000;
 
-// CLI flags
-const COLOR_SCHEME: "light" | "dark" | "no-preference" = process.argv.includes("--light")
-  ? "light"
-  : process.argv.includes("--dark")
-    ? "dark"
-    : "no-preference";
+const VIEWPORTS = {
+  desktop: { width: 1920, height: 1080 },
+  tablet: { width: 768, height: 1024 },
+  mobile: { width: 390, height: 844 },
+} as const;
+
+// Desktop = dark mode, tablet/mobile = light mode
+const CONFIGS: Array<{ viewport: keyof typeof VIEWPORTS; theme: "dark" | "light" }> = [
+  { viewport: "desktop", theme: "dark" },
+  { viewport: "tablet", theme: "light" },
+  { viewport: "mobile", theme: "light" },
+];
+
+type ViewportName = keyof typeof VIEWPORTS;
+type ThemeName = "dark" | "light";
 
 const SCREENSHOT_USER = {
   email: TEST_USERS.teamLead.email.replace("@", "-screenshots@"),
   password: TEST_USERS.teamLead.password,
 };
 
-// Per-prefix counters for numbered filenames
-const counters = new Map<string, number>();
+// ---------------------------------------------------------------------------
+// State
+// ---------------------------------------------------------------------------
+
+let currentOutputDir = "";
+let counters = new Map<string, number>();
+let totalScreenshots = 0;
+
+function resetCounters(): void {
+  counters = new Map<string, number>();
+}
 
 function nextIndex(prefix: string): number {
   const n = (counters.get(prefix) ?? 0) + 1;
@@ -52,7 +73,9 @@ function nextIndex(prefix: string): number {
   return n;
 }
 
-let totalScreenshots = 0;
+// ---------------------------------------------------------------------------
+// Screenshot helpers
+// ---------------------------------------------------------------------------
 
 async function takeScreenshot(
   page: Page,
@@ -69,9 +92,9 @@ async function takeScreenshot(
     // networkidle often times out on real-time apps -- page is still usable
   }
   await page.waitForTimeout(SETTLE_MS);
-  await page.screenshot({ path: path.join(SCREENSHOT_DIR, filename) });
+  await page.screenshot({ path: path.join(currentOutputDir, filename) });
   totalScreenshots++;
-  console.log(`  ${num}  [${prefix}] ${name}`);
+  console.log(`    ${num}  [${prefix}] ${name}`);
 }
 
 async function discoverFirstHref(page: Page, pattern: RegExp): Promise<string | null> {
@@ -89,34 +112,36 @@ async function discoverFirstHref(page: Page, pattern: RegExp): Promise<string | 
   return null;
 }
 
+// ---------------------------------------------------------------------------
+// Authentication
+// ---------------------------------------------------------------------------
+
 async function autoLogin(page: Page): Promise<string | null> {
-  console.log("  Creating test user...");
+  console.log("    Creating test user...");
   await testUserService.deleteTestUser(SCREENSHOT_USER.email);
   const createResult = await testUserService.createTestUser(
     SCREENSHOT_USER.email,
     SCREENSHOT_USER.password,
-    true, // skip onboarding
+    true,
   );
   if (!createResult.success) {
-    console.error(`  Failed to create user: ${createResult.error}`);
+    console.error(`    Failed to create user: ${createResult.error}`);
     return null;
   }
-  console.log(`  User ready: ${SCREENSHOT_USER.email}`);
+  console.log(`    User ready: ${SCREENSHOT_USER.email}`);
 
-  console.log("  Logging in via API...");
+  console.log("    Logging in via API...");
   const loginResult = await testUserService.loginTestUser(
     SCREENSHOT_USER.email,
     SCREENSHOT_USER.password,
   );
   if (!(loginResult.success && loginResult.token)) {
-    console.error(`  API login failed: ${loginResult.error}`);
+    console.error(`    API login failed: ${loginResult.error}`);
     return null;
   }
 
-  // Navigate to signin first so we have a page context for localStorage
   await page.goto(`${BASE_URL}/signin`, { waitUntil: "domcontentloaded" });
 
-  // Inject tokens into localStorage
   await page.evaluate(
     ({ token, refreshToken, convexUrl }) => {
       localStorage.setItem("convexAuthToken", token);
@@ -138,47 +163,39 @@ async function autoLogin(page: Page): Promise<string | null> {
     },
   );
 
-  // Navigate to /app which routes to /$orgSlug/dashboard
   await page.goto(`${BASE_URL}/app`, { waitUntil: "domcontentloaded" });
 
-  // Wait for redirect to dashboard
   try {
-    await page.waitForURL((u) => /\/[^/]+\/(dashboard|projects|issues)/.test(new URL(u).pathname), {
-      timeout: 20000,
-    });
+    await page.waitForURL(
+      (u) => /\/[^/]+\/(dashboard|projects|issues)/.test(new URL(u).pathname),
+      { timeout: 20000 },
+    );
   } catch {
-    console.error("  Login redirect timed out. Current URL:", page.url());
+    console.error("    Login redirect timed out. Current URL:", page.url());
     return null;
   }
 
   await page.waitForTimeout(2000);
   const orgSlug = new URL(page.url()).pathname.split("/").filter(Boolean)[0];
-  console.log(`  Logged in. Org: ${orgSlug}\n`);
-  return orgSlug;
-}
-
-async function manualLogin(page: Page): Promise<string | null> {
-  console.log("\n  Auto-login unavailable. Please sign in manually.");
-  console.log("  The script will resume once you reach the dashboard.\n");
-
-  await page.goto(BASE_URL);
-  await page.waitForURL(
-    (u) => /\/[^/]+\/(dashboard|projects|issues|documents)/.test(new URL(u).pathname),
-    { timeout: 300_000 },
-  );
-  await page.waitForTimeout(2000);
-  const orgSlug = new URL(page.url()).pathname.split("/").filter(Boolean)[0];
-  console.log(`  Logged in. Org: ${orgSlug}\n`);
+  console.log(`    Logged in. Org: ${orgSlug}`);
   return orgSlug;
 }
 
 // ---------------------------------------------------------------------------
-// Pass 1: Empty state screenshots (top-level pages only, no data seeded)
+// Screenshot passes
 // ---------------------------------------------------------------------------
-async function screenshotEmpty(page: Page, orgSlug: string): Promise<void> {
+
+async function screenshotPublicPages(page: Page): Promise<void> {
+  console.log("    --- Public pages ---");
+  await takeScreenshot(page, "public", "landing", "/");
+  await takeScreenshot(page, "public", "signin", "/signin");
+  await takeScreenshot(page, "public", "signup", "/signup");
+  await takeScreenshot(page, "public", "invite-invalid", "/invite/screenshot-test-token");
+}
+
+async function screenshotEmptyStates(page: Page, orgSlug: string): Promise<void> {
+  console.log("    --- Empty states ---");
   const p = "empty";
-  console.log("--- Pass 1: Empty states ---\n");
-
   await takeScreenshot(page, p, "dashboard", `/${orgSlug}/dashboard`);
   await takeScreenshot(page, p, "projects", `/${orgSlug}/projects`);
   await takeScreenshot(page, p, "issues", `/${orgSlug}/issues`);
@@ -188,20 +205,15 @@ async function screenshotEmpty(page: Page, orgSlug: string): Promise<void> {
   await takeScreenshot(page, p, "time-tracking", `/${orgSlug}/time-tracking`);
   await takeScreenshot(page, p, "settings", `/${orgSlug}/settings`);
   await takeScreenshot(page, p, "settings-profile", `/${orgSlug}/settings/profile`);
-
-  console.log("");
 }
 
-// ---------------------------------------------------------------------------
-// Pass 2: Filled state screenshots (all pages + sub-pages with seeded data)
-// ---------------------------------------------------------------------------
-async function screenshotFilled(
+async function screenshotFilledStates(
   page: Page,
   orgSlug: string,
   seed: SeedScreenshotResult,
 ): Promise<void> {
+  console.log("    --- Filled states ---");
   const p = "filled";
-  console.log("--- Pass 2: Filled states ---\n");
 
   // Top-level pages
   await takeScreenshot(page, p, "dashboard", `/${orgSlug}/dashboard`);
@@ -214,10 +226,9 @@ async function screenshotFilled(
   await takeScreenshot(page, p, "settings", `/${orgSlug}/settings`);
   await takeScreenshot(page, p, "settings-profile", `/${orgSlug}/settings/profile`);
 
-  // Project sub-pages (deterministic using seed data)
+  // Project sub-pages
   const projectKey = seed.projectKey;
   if (projectKey) {
-    console.log(`\n  Project: ${projectKey}\n`);
     const tabs = [
       "board",
       "backlog",
@@ -239,18 +250,13 @@ async function screenshotFilled(
       );
     }
 
-    // Calendar view-mode screenshots (day, week, month)
-    console.log(`\n  Calendar views:\n`);
+    // Calendar view modes
     const calendarUrl = `/${orgSlug}/projects/${projectKey}/calendar`;
     try {
       await page.goto(`${BASE_URL}${calendarUrl}`, { waitUntil: "networkidle", timeout: 15000 });
-    } catch {
-      // networkidle often times out
-    }
+    } catch {}
     await page.waitForTimeout(SETTLE_MS);
 
-    // Calendar view-mode screenshots: day, week, month
-    // Toggle items have data-testid="calendar-mode-{day|week|month}".
     for (const mode of ["day", "week", "month"] as const) {
       const toggleItem = page.getByTestId(`calendar-mode-${mode}`);
       if ((await toggleItem.count()) > 0) {
@@ -260,50 +266,19 @@ async function screenshotFilled(
       const n = nextIndex(p);
       const num = String(n).padStart(2, "0");
       const filename = `${num}-${p}-calendar-${mode}.png`;
-      await page.screenshot({ path: path.join(SCREENSHOT_DIR, filename) });
+      await page.screenshot({ path: path.join(currentOutputDir, filename) });
       totalScreenshots++;
-      console.log(`  ${num}  [${p}] calendar-${mode}`);
-    }
-
-    // Event details modal screenshot — click first visible calendar event
-    // Switch back to week view for the modal screenshot (events are most visible)
-    const weekToggle = page.getByTestId("calendar-mode-week");
-    if ((await weekToggle.count()) > 0) {
-      await weekToggle.first().click();
-      await page.waitForTimeout(SETTLE_MS);
-    }
-    // Events are rendered as tabIndex={0} divs with event titles
-    const eventEl = page
-      .locator("[tabindex='0']")
-      .filter({ hasText: /Sprint Planning|Design Review|Focus Time|Standup/i });
-    if ((await eventEl.count()) > 0) {
-      await eventEl.first().click();
-      await page.waitForTimeout(SETTLE_MS);
-      const n = nextIndex(p);
-      const num = String(n).padStart(2, "0");
-      const filename = `${num}-${p}-calendar-event-modal.png`;
-      await page.screenshot({ path: path.join(SCREENSHOT_DIR, filename) });
-      totalScreenshots++;
-      console.log(`  ${num}  [${p}] calendar-event-modal`);
-
-      // Close the modal via Escape
-      await page.keyboard.press("Escape");
-      await page.waitForTimeout(500);
+      console.log(`    ${num}  [${p}] calendar-${mode}`);
     }
   }
 
-  // Issue detail (deterministic using first seeded issue)
+  // Issue detail
   const firstIssue = seed.issueKeys?.[0];
   if (firstIssue) {
-    await takeScreenshot(
-      page,
-      p,
-      `issue-${firstIssue.toLowerCase()}`,
-      `/${orgSlug}/issues/${firstIssue}`,
-    );
+    await takeScreenshot(page, p, `issue-${firstIssue.toLowerCase()}`, `/${orgSlug}/issues/${firstIssue}`);
   }
 
-  // Workspace & team sub-pages
+  // Workspace & team pages
   const wsSlug = seed.workspaceSlug;
   const teamSlug = seed.teamSlug;
 
@@ -312,175 +287,168 @@ async function screenshotFilled(
     await takeScreenshot(page, p, `workspace-${wsSlug}`, wsBase);
     await takeScreenshot(page, p, `workspace-${wsSlug}-settings`, `${wsBase}/settings`);
 
-    // Try seed-provided team slug first, fall back to discovery
     const resolvedTeam = teamSlug ?? (await discoverFirstHref(page, /\/teams\/([^/]+)/));
     if (resolvedTeam) {
       const teamBase = `${wsBase}/teams/${resolvedTeam}`;
-      const teamTabs = ["board", "calendar", "settings"] as const;
-      // Team index (projects list)
       await takeScreenshot(page, p, `team-${resolvedTeam}`, teamBase);
-      for (const tab of teamTabs) {
+      for (const tab of ["board", "calendar", "settings"] as const) {
         await takeScreenshot(page, p, `team-${resolvedTeam}-${tab}`, `${teamBase}/${tab}`);
       }
     }
-  } else {
-    // No seed workspace — try discovery
-    await takeScreenshot(page, p, "workspaces-nav", `/${orgSlug}/workspaces`);
-    const discoveredWs = await discoverFirstHref(page, /\/workspaces\/([^/]+)/);
-    if (discoveredWs) {
-      await takeScreenshot(
-        page,
-        p,
-        `workspace-${discoveredWs}`,
-        `/${orgSlug}/workspaces/${discoveredWs}`,
-      );
-    }
   }
 
-  // Document editor (discover first document link from the documents page)
-  await page
-    .goto(`${BASE_URL}/${orgSlug}/documents`, {
-      waitUntil: "domcontentloaded",
-      timeout: 15000,
-    })
-    .catch(() => {});
+  // Document editor
+  await page.goto(`${BASE_URL}/${orgSlug}/documents`, { waitUntil: "domcontentloaded", timeout: 15000 }).catch(() => {});
   await page.waitForTimeout(SETTLE_MS);
   const docId = await discoverFirstHref(page, /\/documents\/([a-z0-9]+)/);
   if (docId) {
     await takeScreenshot(page, p, "document-editor", `/${orgSlug}/documents/${docId}`);
   }
+}
 
-  // Public pages (landing + signin + invite) captured in pre-login phase too
-  await takeScreenshot(page, p, "landing", "/");
-  await takeScreenshot(page, p, "signin", "/signin");
-  await takeScreenshot(page, p, "invite-invalid", "/invite/screenshot-test-token");
+// ---------------------------------------------------------------------------
+// Main capture function for a single viewport/theme combination
+// ---------------------------------------------------------------------------
 
-  console.log("");
+async function captureForConfig(
+  browser: Browser,
+  viewport: ViewportName,
+  theme: ThemeName,
+  orgSlug: string,
+  seedResult: SeedScreenshotResult,
+): Promise<void> {
+  const dirName = `${viewport}-${theme}`;
+  currentOutputDir = path.join(SCREENSHOT_BASE_DIR, dirName);
+  fs.mkdirSync(currentOutputDir, { recursive: true });
+  resetCounters();
+
+  console.log(`\n  📸 ${dirName.toUpperCase()} (${VIEWPORTS[viewport].width}x${VIEWPORTS[viewport].height})`);
+
+  const context = await browser.newContext({
+    viewport: VIEWPORTS[viewport],
+    colorScheme: theme,
+  });
+  const page = await context.newPage();
+
+  // Public pages (no auth needed)
+  await screenshotPublicPages(page);
+
+  // Inject auth tokens
+  await page.goto(`${BASE_URL}/signin`, { waitUntil: "domcontentloaded" });
+  const loginResult = await testUserService.loginTestUser(
+    SCREENSHOT_USER.email,
+    SCREENSHOT_USER.password,
+  );
+
+  if (loginResult.success && loginResult.token) {
+    await page.evaluate(
+      ({ token, refreshToken, convexUrl }) => {
+        localStorage.setItem("convexAuthToken", token);
+        if (refreshToken) localStorage.setItem("convexAuthRefreshToken", refreshToken);
+        if (convexUrl) {
+          const ns = convexUrl.replace(/[^a-zA-Z0-9]/g, "");
+          localStorage.setItem(`__convexAuthJWT_${ns}`, token);
+          if (refreshToken) localStorage.setItem(`__convexAuthRefreshToken_${ns}`, refreshToken);
+        }
+      },
+      { token: loginResult.token, refreshToken: loginResult.refreshToken ?? null, convexUrl: CONVEX_URL },
+    );
+
+    await page.goto(`${BASE_URL}/app`, { waitUntil: "domcontentloaded" });
+    try {
+      await page.waitForURL((u) => /\/[^/]+\/(dashboard|projects|issues)/.test(new URL(u).pathname), { timeout: 15000 });
+      await page.waitForTimeout(1500);
+
+      // Empty states (before seed data is visible in this context)
+      await screenshotEmptyStates(page, orgSlug);
+
+      // Filled states
+      await screenshotFilledStates(page, orgSlug, seedResult);
+    } catch {
+      console.log(`    ⚠️ Auth failed for ${dirName}, skipping authenticated pages`);
+    }
+  }
+
+  await context.close();
 }
 
 // ---------------------------------------------------------------------------
 // Main
 // ---------------------------------------------------------------------------
-async function run(): Promise<void> {
-  // Clean output directory
-  if (fs.existsSync(SCREENSHOT_DIR)) {
-    fs.rmSync(SCREENSHOT_DIR, { recursive: true });
-  }
-  fs.mkdirSync(SCREENSHOT_DIR, { recursive: true });
 
-  console.log(`\n  Base URL:       ${BASE_URL}`);
-  console.log(`  Output dir:    ${SCREENSHOT_DIR}`);
-  console.log(`  Color scheme:  ${COLOR_SCHEME}\n`);
+async function run(): Promise<void> {
+  // Clean and recreate base directory
+  if (fs.existsSync(SCREENSHOT_BASE_DIR)) {
+    fs.rmSync(SCREENSHOT_BASE_DIR, { recursive: true });
+  }
+  fs.mkdirSync(SCREENSHOT_BASE_DIR, { recursive: true });
+
+  console.log("\n╔════════════════════════════════════════════════════════════╗");
+  console.log("║         NIXELO SCREENSHOT CAPTURE                          ║");
+  console.log("╚════════════════════════════════════════════════════════════╝");
+  console.log(`\n  Base URL: ${BASE_URL}`);
+  console.log(`  Configs: ${CONFIGS.map((c) => `${c.viewport}-${c.theme}`).join(", ")}`);
 
   const headless = !process.argv.includes("--headed");
-  const authStatePath = path.join(process.cwd(), "e2e", ".auth", "user-teamlead-0.json");
-  const hasStoredAuth = fs.existsSync(authStatePath);
-
   const browser = await chromium.launch({ headless });
 
-  // First context: no auth, for public pages
-  const publicContext = await browser.newContext({ viewport: VIEWPORT, colorScheme: COLOR_SCHEME });
-  const publicPage = await publicContext.newPage();
-
-  // Capture public pages before login
-  console.log("--- Pre-login: Public pages ---\n");
-  await takeScreenshot(publicPage, "empty", "landing", "/");
-  await takeScreenshot(publicPage, "empty", "signin", "/signin");
-  await takeScreenshot(publicPage, "empty", "invite-invalid", "/invite/screenshot-test-token");
-  console.log("");
-  await publicContext.close();
-
-  // Second context: with auth
-  let orgSlug: string | null = null;
-  let page: Page;
-  let context: BrowserContext;
-
-  // Try saved auth state first (like regular E2E tests)
-  if (hasStoredAuth) {
-    console.log("  Using saved auth state from .auth/user-teamlead-0.json...");
-    context = await browser.newContext({
-      viewport: VIEWPORT,
-      colorScheme: COLOR_SCHEME,
-      storageState: authStatePath,
-    });
-    page = await context.newPage();
-
-    // Navigate to /app and wait for redirect
-    await page.goto(`${BASE_URL}/app`, { waitUntil: "domcontentloaded" });
-    try {
-      await page.waitForURL((u) => /\/[^/]+\/(dashboard|projects|issues)/.test(new URL(u).pathname), {
-        timeout: 15000,
-      });
-      await page.waitForTimeout(2000);
-      orgSlug = new URL(page.url()).pathname.split("/").filter(Boolean)[0];
-      console.log(`  Logged in via stored auth. Org: ${orgSlug}\n`);
-    } catch {
-      console.log("  Stored auth expired or invalid. Falling back to API login...\n");
-      await context.close();
-    }
+  // Setup: Create test user and seed data once
+  console.log("\n  🔧 Setting up test data...");
+  await testUserService.deleteTestUser(SCREENSHOT_USER.email);
+  const createResult = await testUserService.createTestUser(
+    SCREENSHOT_USER.email,
+    SCREENSHOT_USER.password,
+    true,
+  );
+  if (!createResult.success) {
+    console.error(`  ❌ Failed to create user: ${createResult.error}`);
+    await browser.close();
+    return;
   }
+  console.log(`  ✓ User: ${SCREENSHOT_USER.email}`);
 
-  // Fallback to API login if stored auth didn't work
-  if (!orgSlug && CONVEX_URL) {
-    context = await browser.newContext({ viewport: VIEWPORT, colorScheme: COLOR_SCHEME });
-    page = await context.newPage();
-    orgSlug = await autoLogin(page);
-  }
+  // Get org slug via initial login
+  const setupContext = await browser.newContext({ viewport: VIEWPORTS.desktop, colorScheme: "dark" });
+  const setupPage = await setupContext.newPage();
+  const orgSlug = await autoLogin(setupPage);
+  await setupContext.close();
 
   if (!orgSlug) {
-    // Reopen headed so user can interact
+    console.error("  ❌ Could not authenticate. Aborting.");
     await browser.close();
-    const fallbackBrowser = await chromium.launch({ headless: false });
-    const fallbackContext = await fallbackBrowser.newContext({
-      viewport: VIEWPORT,
-      colorScheme: COLOR_SCHEME,
-    });
-    const fallbackPage = await fallbackContext.newPage();
-    orgSlug = await manualLogin(fallbackPage);
-    if (!orgSlug) {
-      console.error("  Could not detect org slug. Aborting.");
-      await fallbackBrowser.close();
-      return;
-    }
-    // Fallback: single-pass (filled only) since we can't seed via API without CONVEX_URL
-    console.log("  Manual login — running filled pass only (no seed endpoint available)\n");
-    const emptySeed: SeedScreenshotResult = { success: false };
-    await screenshotFilled(fallbackPage, orgSlug, emptySeed);
-    await fallbackBrowser.close();
     return;
   }
 
-  // Pass 1: Empty state
-  await screenshotEmpty(page, orgSlug);
-
-  // Seed data for filled state
+  // Seed data for filled states
   console.log("  Seeding screenshot data...");
   const seedResult = await testUserService.seedScreenshotData(SCREENSHOT_USER.email);
-  if (!seedResult.success) {
-    console.error(`  Seed failed: ${seedResult.error}`);
-    console.log("  Continuing with filled pass anyway (may show empty states)\n");
+  if (seedResult.success) {
+    console.log(`  ✓ Seeded: project=${seedResult.projectKey}, issues=${seedResult.issueKeys?.length ?? 0}`);
   } else {
-    console.log(
-      `  Seeded: project=${seedResult.projectKey}, issues=${seedResult.issueKeys?.length ?? 0}\n`,
-    );
+    console.log(`  ⚠️ Seed failed: ${seedResult.error} (continuing anyway)`);
   }
 
-  // Reload to ensure Convex reactivity has propagated
-  try {
-    await page.goto(`${BASE_URL}/${orgSlug}/dashboard`, {
-      waitUntil: "networkidle",
-      timeout: 15000,
-    });
-  } catch {
-    // networkidle often times out on real-time apps
+  // Capture configured combinations
+  for (const config of CONFIGS) {
+    await captureForConfig(browser, config.viewport, config.theme, orgSlug, seedResult);
   }
-  await page.waitForTimeout(3000);
-
-  // Pass 2: Filled state
-  await screenshotFilled(page, orgSlug, seedResult);
 
   await browser.close();
-  console.log(`Done! ${totalScreenshots} screenshots saved to e2e/screenshots/\n`);
+
+  console.log("\n╔════════════════════════════════════════════════════════════╗");
+  console.log(`║  ✅ COMPLETE: ${totalScreenshots} screenshots captured`);
+  console.log("╚════════════════════════════════════════════════════════════╝\n");
+
+  // Summary
+  console.log("  Output directories:");
+  for (const config of CONFIGS) {
+    const dir = `${config.viewport}-${config.theme}`;
+    const files = fs.existsSync(path.join(SCREENSHOT_BASE_DIR, dir))
+      ? fs.readdirSync(path.join(SCREENSHOT_BASE_DIR, dir)).length
+      : 0;
+    console.log(`    ${SCREENSHOT_BASE_DIR}/${dir}/ (${files} files)`);
+  }
+  console.log("");
 }
 
 run().catch(console.error);

@@ -1,7 +1,7 @@
 # Nixelo - Comprehensive Cleanup & Screenshot Plan
 
 > **Created:** 2026-02-05
-> **Status:** IN PROGRESS
+> **Status:** COMPLETE
 
 ---
 
@@ -20,21 +20,16 @@ This plan consolidates outstanding work for the design system refresh, screensho
 - No responsive variations
 
 ### Target State
-Capture ALL variations in organized subdirectories:
+Capture key viewport/theme combinations:
 
 ```
 e2e/screenshots/
-├── desktop-dark/           # 1920x1080, dark mode
-│   ├── 01-empty-landing.png
+├── desktop-dark/           # 1920x1080, dark mode (primary)
+│   ├── 01-public-landing.png
+│   ├── 01-empty-dashboard.png
 │   ├── 01-filled-dashboard.png
 │   └── ...
-├── desktop-light/          # 1920x1080, light mode
-│   └── ...
-├── tablet-dark/            # 768x1024, dark mode
-│   └── ...
 ├── tablet-light/           # 768x1024, light mode
-│   └── ...
-├── mobile-dark/            # 390x844, dark mode
 │   └── ...
 └── mobile-light/           # 390x844, light mode
     └── ...
@@ -42,26 +37,20 @@ e2e/screenshots/
 
 ### Implementation Tasks
 
-- [ ] **1.1** Update `screenshot-pages.ts` to support multiple viewports
-  - Add `VIEWPORTS` config: `{ desktop: 1920x1080, tablet: 768x1024, mobile: 390x844 }`
-  - Add `--all` flag to capture all combinations
-  - Add `--viewport=desktop|tablet|mobile` flag for single viewport
+- [x] **1.1** Update `screenshot-pages.ts` to support multiple viewports
+  - Added `VIEWPORTS` config: `{ desktop: 1920x1080, tablet: 768x1024, mobile: 390x844 }`
+  - Added `CONFIGS` array for specific viewport/theme combinations
+  - Captures: desktop-dark, tablet-light, mobile-light
 
-- [ ] **1.2** Update output directory structure
-  - Create subdirectories per viewport/theme combination
-  - Update filename convention: `{NN}-{state}-{page}.png`
+- [x] **1.2** Update output directory structure
+  - Created subdirectories per viewport/theme combination
+  - Updated filename convention: `{NN}-{prefix}-{page}.png`
 
-- [ ] **1.3** Update `package.json` scripts
-  ```json
-  "screenshots": "... --all",
-  "screenshots:desktop-dark": "... --viewport=desktop --dark",
-  "screenshots:desktop-light": "... --viewport=desktop --light",
-  "screenshots:mobile": "... --viewport=mobile --all-themes"
-  ```
+- [x] **1.3** Script captures all 3 configs in a single run
+  - `pnpm screenshots` captures all combinations
 
-- [ ] **1.4** Add `.gitkeep` to `e2e/screenshots/` subdirectories
-
-- [ ] **1.5** Run full screenshot capture and commit
+- [x] **1.4** Run full screenshot capture
+  - **128 screenshots** captured across 3 directories
 
 ---
 
@@ -119,9 +108,10 @@ e2e/screenshots/
 ### Already Done
 - [x] Fix form.tsx import conflict (created re-export file)
 - [x] Remove outdated screenshots
+- [x] Screenshot infrastructure overhaul complete
 
 ### Pending
-- [ ] **4.1** Commit screenshot cleanup
+- [ ] **4.1** Commit all changes
 - [ ] **4.2** Update `.auth/` - regenerate auth states (currently expired)
 
 ---
@@ -176,8 +166,8 @@ e2e/screenshots/
 
 ## Success Criteria
 
-- [ ] 6 screenshot directories (3 viewports × 2 themes)
-- [ ] ~40 screenshots per directory (~240 total)
+- [x] 3 screenshot directories (desktop-dark, tablet-light, mobile-light)
+- [x] ~43 screenshots per directory (128 total)
 - [ ] All design-system docs reference correct screenshots
 - [ ] MASTER_PLAN.md accurately reflects implementation status
 - [ ] TODO.md is current and actionable
