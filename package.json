@@ -56,7 +56,9 @@
     "select:targets": "node scripts/select_targets.js",
     "analyze": "node scripts/analyze_design.js",
     "setup:auth": "node scripts/setup_auth.js",
-    "auth:manual": "node scripts/manual_handshake.js"
+    "auth:manual": "node scripts/manual_handshake.js",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^3.0.35",
@@ -142,6 +144,12 @@
     "@radix-ui/react-radio-group": "^1.2.6"
   },
   "devDependencies": {
+    "@storybook/addon-a11y": "^8.6.12",
+    "@storybook/addon-essentials": "^8.6.12",
+    "@storybook/blocks": "^8.6.12",
+    "@storybook/react": "^8.6.12",
+    "@storybook/react-vite": "^8.6.12",
+    "storybook": "^8.6.12",
     "@biomejs/biome": "^2.3.13",
     "@edge-runtime/vm": "^5.0.0",
     "@playwright/test": "^1.58.1",
