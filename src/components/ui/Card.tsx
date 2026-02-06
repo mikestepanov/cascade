@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 import { Flex } from "./Flex";
 
 const cardVariants = cva(
-  "bg-ui-bg rounded-lg border border-ui-border transition-[border-color,box-shadow] duration-[var(--duration-default)]",
+  "bg-ui-bg rounded-lg border border-ui-border shadow-card transition-[border-color,box-shadow] duration-[var(--duration-default)]",
   {
     variants: {
       hoverable: {
@@ -14,6 +14,7 @@ const cardVariants = cva(
       variant: {
         default: "",
         soft: "bg-ui-bg-soft",
+        flat: "shadow-none",
       },
     },
     defaultVariants: {
@@ -27,7 +28,7 @@ export interface CardProps
   extends React.HTMLAttributes<HTMLDivElement>,
     VariantProps<typeof cardVariants> {
   hoverable?: boolean;
-  variant?: "default" | "soft";
+  variant?: "default" | "soft" | "flat";
 }
 
 /**

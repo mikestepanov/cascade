@@ -54,7 +54,7 @@ function TeamsList() {
               to={ROUTES.workspaces.teams.detail.path}
               params={{ orgSlug, workspaceSlug, teamSlug: team.slug }}
             >
-              <Card className="p-6 hover:shadow-lg transition-shadow cursor-pointer">
+              <Card hoverable className="p-6">
                 <Flex direction="column" gap="md">
                   <Flex align="center" gap="sm">
                     {team.icon && <span className="text-3xl">{team.icon}</span>}

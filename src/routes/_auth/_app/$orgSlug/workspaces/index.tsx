@@ -69,7 +69,7 @@ function WorkspacesList() {
               to={ROUTES.workspaces.detail.path}
               params={{ orgSlug, workspaceSlug: workspace.slug }}
             >
-              <Card className="p-6 hover:shadow-lg transition-shadow cursor-pointer">
+              <Card hoverable className="p-6">
                 <Flex direction="column" gap="md">
                   <Flex align="center" gap="sm">
                     {workspace.icon && <span className="text-3xl">{workspace.icon}</span>}

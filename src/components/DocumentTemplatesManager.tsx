@@ -227,7 +227,7 @@ export function DocumentTemplatesManager({
                       key={template._id}
                       type="button"
                       onClick={() => onSelectTemplate?.(template._id)}
-                      className="p-4 bg-linear-to-br from-brand-subtle to-brand-subtle rounded-lg hover:shadow-md transition-all text-left border-2 border-transparent hover:border-brand-muted:border-brand-hover"
+                      className="p-4 bg-linear-to-br from-brand-subtle to-brand-subtle rounded-lg hover:shadow-card-hover transition-all text-left border-2 border-transparent hover:border-brand-muted"
                     >
                       <Flex align="start" gap="md">
                         <span className="text-3xl">{template.icon}</span>

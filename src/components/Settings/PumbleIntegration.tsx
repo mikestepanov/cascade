@@ -46,7 +46,7 @@ export function PumbleIntegration() {
   const projects: Project[] = projectsResult?.page ?? [];
 
   return (
-    <div className="bg-ui-bg rounded-lg shadow-sm border border-ui-border">
+    <div className="bg-ui-bg rounded-lg shadow-card border border-ui-border">
       {/* Header */}
       <div className="p-6 border-b border-ui-border">
         <Flex justify="between" align="start">
