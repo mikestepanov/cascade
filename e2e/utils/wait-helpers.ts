@@ -46,16 +46,19 @@ export async function waitForFormReady(page: Page, timeout = 5000): Promise<bool
 }
 
 /**
- * Wait for an animation or transition to complete.
+ * Wait for all CSS animations to complete.
  * Use this after clicking elements that trigger CSS transitions.
- *
- * NOTE: This is one of the few acceptable uses of waitForTimeout -
- * CSS animations don't have JS hooks. Consider using CSS animation-end
- * events or data attributes if this becomes flaky.
- * @deprecated Prefer waiting for specific element states instead
  */
 export async function waitForAnimation(page: Page): Promise<void> {
-  await page.waitForTimeout(WAIT_TIMEOUTS.animation);
+  await page.evaluate(() => {
+    const animations = document.getAnimations().filter((a) => {
+      const timing = a.effect?.getComputedTiming();
+      // Only wait for finite animations (skip infinite loaders)
+      return timing && timing.duration !== Infinity && timing.iterations !== Infinity;
+    });
+    if (!animations.length) return Promise.resolve();
+    return Promise.all(animations.map((a) => a.finished));
+  });
 }
 
 /**

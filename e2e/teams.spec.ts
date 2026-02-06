@@ -98,8 +98,8 @@ test.describe("Teams", () => {
     await expect(teamsLink).toBeVisible();
     await teamsLink.evaluate((el: HTMLElement) => el.click());
 
-    // Should show "Create Team" button
-    const createTeamButton = page.getByRole("button", { name: /create team/i });
+    // Should show "Create Team" button (may be multiple on page, use first)
+    const createTeamButton = page.getByRole("button", { name: /create team/i }).first();
     await expect(createTeamButton).toBeVisible();
   });
 

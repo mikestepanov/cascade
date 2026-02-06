@@ -215,18 +215,21 @@ export class AuthPage extends BasePage {
     }
 
     // Click the button and retry until the form expands
-    // Use evaluate to trigger the click at the DOM level which ensures React event handlers fire
+    // The button is type="submit" so clicking it triggers form submission
+    // which in turn calls handleShowEmailForm() when !showEmailForm
     await expect(async () => {
       // Check current state before clicking
       const currentText = await submitButton.textContent();
       if (currentText?.includes("Sign in") || currentText?.includes("Create account")) {
         return; // Already expanded
       }
-      // Use evaluate to trigger a real DOM click that React will handle
-      await submitButton.evaluate((btn: HTMLButtonElement) => btn.click());
+      // Submit the form by pressing Enter on the button or clicking
+      // Using keyboard Enter ensures form submission is triggered
+      await submitButton.focus();
+      await this.page.keyboard.press("Enter");
       // Verify the form expanded by checking button text changed
-      await expect(submitButton).toHaveText(/Sign in|Create account/i, { timeout: 3000 });
-    }).toPass({ intervals: [300, 600, 1200, 2000, 3000], timeout: 20000 });
+      await expect(submitButton).toHaveText(/Sign in|Create account/i);
+    }).toPass();
 
     // Wait for form-ready state
     await this.waitForFormReady();
@@ -253,23 +256,46 @@ export class AuthPage extends BasePage {
   }
 
   async signUp(email: string, password: string) {
-    await this.expandEmailForm();
-    await this.emailInput.fill(email);
-    await this.passwordInput.fill(password);
+    // Use retry pattern for the entire sign-up flow to handle form state issues
+    await expect(async () => {
+      // Ensure the email form is expanded
+      await this.expandEmailForm();
 
-    // Ensure form is ready before clicking submit
-    await this.waitForFormReady();
+      // Verify form is actually expanded by checking button text
+      const submitButton = this.page.getByTestId(TEST_IDS.AUTH.SUBMIT_BUTTON);
+      const buttonText = await submitButton.textContent();
+      if (!buttonText?.includes("Create account")) {
+        throw new Error(`Form not expanded - button shows: ${buttonText}`);
+      }
 
-    // Wait for button to be enabled
-    await expect(this.signUpButton).toBeEnabled();
+      // Fill the form fields - wait for inputs to be ready
+      await expect(this.emailInput).toBeVisible();
+      await this.emailInput.fill(email);
 
-    // Click the submit button
-    await this.signUpButton.click();
+      // Verify form still expanded after filling email
+      const textAfterEmail = await submitButton.textContent();
+      if (!textAfterEmail?.includes("Create account")) {
+        throw new Error(`Form collapsed after email fill - button shows: ${textAfterEmail}`);
+      }
 
-    // Wait for form submission to complete - verification form or error toast appears
-    await expect(this.verifyHeading.or(this.page.locator(".sonner-toast"))).toBeVisible({
-      timeout: 15000,
-    });
+      await expect(this.passwordInput).toBeVisible();
+      await this.passwordInput.fill(password);
+
+      // Verify form still expanded after filling password
+      const textAfterPassword = await submitButton.textContent();
+      if (!textAfterPassword?.includes("Create account")) {
+        throw new Error(`Form collapsed after password fill - button shows: ${textAfterPassword}`);
+      }
+
+      // Ensure form is ready before clicking submit
+      await this.waitForFormReady();
+
+      // Submit the form
+      await submitButton.click();
+
+      // Wait for either verification form or toast to appear
+      await expect(this.verifyHeading.or(this.page.locator(".sonner-toast"))).toBeVisible();
+    }).toPass({ intervals: [500, 1000, 2000], timeout: 30000 });
   }
 
   async navigateToSignUp() {

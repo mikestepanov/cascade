@@ -126,20 +126,10 @@ test.describe("Permission Cascade", () => {
     await page.goto(`/${orgSlug}/projects/NONEXISTENT/board`);
     await page.waitForLoadState("domcontentloaded");
 
-    // Should show error or redirect
-    // Either "not found" message or redirect to projects list
-    const notFoundMessage = page.getByText(/not found|doesn't exist|no access/i);
-    const projectsUrl = /\/projects\/?$/;
-
-    const hasNotFound = await notFoundMessage.isVisible().catch(() => false);
-    const redirectedToProjects = projectsUrl.test(page.url());
-
-    expect(hasNotFound || redirectedToProjects).toBe(true);
-    console.log(
-      hasNotFound
-        ? "✓ Shows 'not found' error for non-existent project"
-        : "✓ Redirected away from non-existent project",
-    );
+    // Wait for the "Project Not Found" heading
+    const notFoundHeading = page.getByRole("heading", { name: /project not found/i });
+    await expect(notFoundHeading).toBeVisible();
+    console.log("✓ Shows 'Project Not Found' error for non-existent project");
   });
 
   test("project settings require appropriate permissions", async ({ projectsPage, page }) => {
