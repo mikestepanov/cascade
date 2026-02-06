@@ -1,3 +1,4 @@
+import { TEST_IDS } from "../src/lib/test-ids";
 import { E2E_ENDPOINTS, getE2EHeaders, TEST_USERS } from "./config";
 import { expect, onboardingTest as test } from "./fixtures";
 import { OnboardingPage } from "./pages";
@@ -91,8 +92,8 @@ test.describe("Onboarding Wizard", () => {
     await page.waitForURL(/\/[^/]+\/dashboard/);
     await page.waitForLoadState("domcontentloaded");
 
-    // Wait for dashboard to finish loading — check for dashboard content, not generic spinner class
-    await expect(page.getByRole("heading", { name: /feed/i })).toBeVisible({ timeout: 10000 });
+    // Wait for dashboard to finish loading — use test ID to avoid matching multiple headings
+    await expect(page.getByTestId(TEST_IDS.DASHBOARD.FEED_HEADING)).toBeVisible({ timeout: 10000 });
 
     // Should navigate to dashboard
     await onboarding.expectDashboard();
@@ -186,8 +187,8 @@ test.describe("Onboarding - Team Member Flow", () => {
     await page.waitForURL(/\/[^/]+\/dashboard/);
     await page.waitForLoadState("domcontentloaded");
 
-    // Wait for dashboard to finish loading — check for dashboard content, not generic spinner class
-    await expect(page.getByRole("heading", { name: /feed/i })).toBeVisible({ timeout: 10000 });
+    // Wait for dashboard to finish loading — use test ID to avoid matching multiple headings
+    await expect(page.getByTestId(TEST_IDS.DASHBOARD.FEED_HEADING)).toBeVisible({ timeout: 10000 });
 
     // Should navigate to dashboard
     await onboarding.expectDashboard();

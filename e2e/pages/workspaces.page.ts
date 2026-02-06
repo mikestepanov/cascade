@@ -122,8 +122,14 @@ export class WorkspacesPage extends BasePage {
     // Wait for modal to close (name input disappears)
     await expect(this.workspaceNameInput).not.toBeVisible();
 
-    // Wait for network to settle after mutation
-    await this.page.waitForLoadState("networkidle");
+    // After workspace creation, the page may redirect to the workspace detail page
+    // Wait for either the workspace to appear in the list OR the workspace detail page to load
+    const mainContent = this.page.getByRole("main");
+    const newWorkspaceCard = mainContent
+      .locator(`a[href*="/workspaces/"]`)
+      .filter({ hasText: name });
+    const workspaceHeading = mainContent.getByRole("heading", { name, level: 3 });
+    await expect(newWorkspaceCard.or(workspaceHeading)).toBeVisible({ timeout: 15000 });
   }
 
   async expectWorkspacesView() {

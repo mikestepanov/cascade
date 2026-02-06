@@ -48,15 +48,16 @@ test.describe("Activity Feed", () => {
     console.log("✓ Project Activity header visible");
 
     // A new project might have initial "created" activity or show empty state
-    // Check for either the empty state or the scoped activity feed container
-    const emptyState = page.getByText(/no activity yet/i);
+    // Use test IDs to reliably wait for content to load
+    const emptyState = page.getByTestId(TEST_IDS.ACTIVITY.EMPTY_STATE);
     const activityFeed = page.getByTestId(TEST_IDS.ACTIVITY.FEED);
 
-    const hasEmptyState = await emptyState.isVisible().catch(() => false);
-    const hasActivity = await activityFeed.isVisible().catch(() => false);
+    // Wait for either the empty state OR activity feed to appear (max 10s)
+    // This assertion is sufficient - if it passes, one of them is visible
+    await expect(emptyState.or(activityFeed)).toBeVisible({ timeout: 10000 });
 
-    // Either empty state or activity feed should be visible
-    expect(hasEmptyState || hasActivity).toBe(true);
+    // Determine which one appeared for logging purposes
+    const hasEmptyState = await emptyState.isVisible().catch(() => false);
     console.log(`✓ Activity page shows ${hasEmptyState ? "empty state" : "activity entries"}`);
   });
 

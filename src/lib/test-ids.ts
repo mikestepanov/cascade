@@ -141,6 +141,8 @@ export const TEST_IDS = {
     FEED: "activity-feed",
     /** @see src/components/ActivityFeed.tsx */
     ENTRY: "activity-entry",
+    /** @see src/components/ActivityFeed.tsx - shown when no activity */
+    EMPTY_STATE: "activity-empty-state",
   },
 
   // ============================================================
@@ -161,6 +163,49 @@ export const TEST_IDS = {
   ANALYTICS: {
     /** @see src/components/AnalyticsDashboard.tsx */
     CARD: "analytics-card",
+    /** @see src/routes/_app.$orgSlug.projects.$projectKey.analytics.tsx */
+    PAGE: "analytics-page",
+    /** Metric card labels */
+    METRIC_TOTAL_ISSUES: "analytics-metric-total-issues",
+    METRIC_UNASSIGNED: "analytics-metric-unassigned",
+    METRIC_AVG_VELOCITY: "analytics-metric-avg-velocity",
+    METRIC_COMPLETED_SPRINTS: "analytics-metric-completed-sprints",
+  },
+
+  // ============================================================
+  // Search (Global Search)
+  // ============================================================
+
+  GLOBAL_SEARCH: {
+    /** @see src/components/GlobalSearch.tsx */
+    NO_RESULTS: "search-no-results",
+  },
+
+  // ============================================================
+  // Settings
+  // ============================================================
+
+  SETTINGS: {
+    /** @see src/routes/_app.$orgSlug.settings.tsx */
+    ORG_TAB: "settings-org-tab",
+  },
+
+  // ============================================================
+  // Teams
+  // ============================================================
+
+  TEAMS: {
+    /** @see src/routes/_app.$orgSlug.workspaces.$workspaceSlug.teams.tsx */
+    LIST_HEADING: "teams-list-heading",
+  },
+
+  // ============================================================
+  // Dashboard
+  // ============================================================
+
+  DASHBOARD: {
+    /** @see src/routes/_app.$orgSlug.dashboard.tsx */
+    FEED_HEADING: "dashboard-feed-heading",
   },
 
   // ============================================================

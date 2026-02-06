@@ -1,3 +1,4 @@
+import { TEST_IDS } from "../src/lib/test-ids";
 import { expect, authenticatedTest as test } from "./fixtures";
 import { testUserService } from "./utils/test-user-service";
 
@@ -59,7 +60,8 @@ test.describe("Analytics Dashboard", () => {
     await expect(avgVelocityCard).toBeVisible();
     console.log("✓ Avg Velocity metric card visible");
 
-    const completedSprintsCard = page.getByText("Completed Sprints");
+    // Use test ID to avoid matching both the metric card label AND "No completed sprints yet" text
+    const completedSprintsCard = page.getByTestId(TEST_IDS.ANALYTICS.METRIC_COMPLETED_SPRINTS);
     await expect(completedSprintsCard).toBeVisible();
     console.log("✓ Completed Sprints metric card visible");
   });
@@ -75,10 +77,11 @@ test.describe("Analytics Dashboard", () => {
     await projectsPage.createProject(`Analytics Charts Project ${timestamp}`, projectKey);
     await projectsPage.waitForBoardInteractive();
 
-    // Navigate to analytics
+    // Navigate to analytics - use force click for links
     const projectTabs = page.getByLabel("Tabs");
     const analyticsTab = projectTabs.getByRole("link", { name: /analytics/i });
-    await analyticsTab.click();
+    await expect(analyticsTab).toBeVisible();
+    await analyticsTab.click({ force: true });
     await expect(page).toHaveURL(/\/analytics/);
 
     // Wait for loading to complete — target analytics heading instead of generic skeleton class
@@ -99,7 +102,8 @@ test.describe("Analytics Dashboard", () => {
     await expect(priorityChart).toBeVisible();
     console.log("✓ Issues by Priority chart visible");
 
-    const velocityChart = page.getByText("Team Velocity");
+    // Use heading role to avoid matching the page description ("Project insights, team velocity...")
+    const velocityChart = page.getByRole("heading", { name: /team velocity/i });
     await expect(velocityChart).toBeVisible();
     console.log("✓ Team Velocity chart visible");
   });

@@ -16,8 +16,9 @@ test.describe("Sign In Form - Elements", () => {
     // Heading - use page object locator
     await expect(authPage.signInHeading).toBeVisible();
 
-    // Expand form to reveal all elements (required attrs and forgot password only show when expanded)
+    // Ensure form is expanded - explicitly expand in case goto's expansion was flaky
     await authPage.expandEmailForm();
+    await authPage.waitForFormReady();
 
     // Form inputs
     await expect(authPage.emailInput).toBeVisible();
@@ -34,7 +35,8 @@ test.describe("Sign In Form - Elements", () => {
     await expect(authPage.toggleFlowButton).toBeVisible();
     await expect(authPage.toggleFlowButton).toContainText(/sign up/i);
 
-    // Forgot password link
+    // Forgot password link - conditionally rendered when form is expanded
+    // Use the page object's locator which is more stable
     await expect(authPage.forgotPasswordButton).toBeVisible();
 
     // Google sign in
@@ -65,8 +67,8 @@ test.describe("Sign In Form - Elements", () => {
 
 test.describe("Sign Up Form - Elements", () => {
   test.beforeEach(async ({ authPage }) => {
-    await authPage.goto();
-    await authPage.switchToSignUp();
+    // Go directly to sign-up page - avoids extra navigation through sign-in
+    await authPage.gotoSignUp();
   });
 
   test("displays all sign up form elements", async ({ authPage }) => {
@@ -87,7 +89,13 @@ test.describe("Sign Up Form - Elements", () => {
     await expect(authPage.forgotPasswordButton).not.toBeVisible();
   });
 
+  // This test involves multiple navigation and form expansion operations which can be flaky
+  // due to React state management timing. Allow retries to handle intermittent failures.
   test("can switch between sign in and sign up", async ({ authPage }) => {
+    test.info().annotations.push({
+      type: "flaky",
+      description: "Form expansion timing can be inconsistent",
+    });
     // Currently on sign up - button says "Create account"
     await expect(authPage.submitButton).toHaveText(/create account/i);
 
@@ -103,8 +111,8 @@ test.describe("Sign Up Form - Elements", () => {
 
 test.describe("Forgot Password Form - Elements", () => {
   test.beforeEach(async ({ authPage }) => {
-    await authPage.goto();
-    await authPage.goToForgotPassword();
+    // Navigate directly to forgot password page to avoid form expansion issues
+    await authPage.gotoForgotPassword();
   });
 
   test("displays forgot password form elements", async ({ authPage }) => {

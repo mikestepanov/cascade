@@ -35,12 +35,12 @@ test.describe("Permission Cascade", () => {
     console.log("✓ Navigated to settings");
 
     // Verify org-level settings are accessible
-    // Organization tab should be visible for org admins
-    const orgTab = page
-      .getByRole("link", { name: /organization/i })
-      .or(page.getByRole("tab", { name: /organization/i }));
-    await expect(orgTab).toBeVisible();
-    console.log("✓ Organization settings tab visible (org admin access)");
+    // Admin tab should be visible for org admins (contains org-level settings like invites)
+    const adminTab = page
+      .getByRole("link", { name: /admin/i })
+      .or(page.getByRole("tab", { name: /admin/i }));
+    await expect(adminTab).toBeVisible();
+    console.log("✓ Admin settings tab visible (org admin access)");
   });
 
   test("org owner can create workspaces", async ({ workspacesPage, page }) => {
@@ -54,11 +54,16 @@ test.describe("Permission Cascade", () => {
     await workspacesPage.createWorkspace(workspaceName);
     console.log("✓ Created workspace as org owner");
 
-    // Verify workspace was created (should be on workspace detail or list)
-    // Either redirected to new workspace or still on list with new item
-    const workspaceItem = page.getByText(workspaceName);
-    await expect(workspaceItem).toBeVisible();
-    console.log("✓ Workspace visible in list");
+    // Verify workspace was created - check for workspace detail page or list item
+    // After creation, page may redirect to workspace detail OR stay on list
+    await expect(page).toHaveURL(/\/workspaces\//);
+    const mainContent = page.getByRole("main");
+    const workspaceItem = mainContent
+      .locator(`a[href*="/workspaces/"]`)
+      .filter({ hasText: workspaceName });
+    const workspaceHeading = mainContent.getByRole("heading", { name: workspaceName, level: 3 });
+    await expect(workspaceItem.or(workspaceHeading)).toBeVisible();
+    console.log("✓ Workspace visible");
   });
 
   test("org owner can create projects in any workspace", async ({ projectsPage, page }) => {

@@ -236,10 +236,10 @@ export class ProjectsPage extends BasePage {
         await this.projectDescriptionInput.fill(description);
       }
 
-      // Create project
+      // Create project - use evaluate to ensure React event handler fires
       await this.createButton.waitFor({ state: "visible" });
       await expect(this.createButton).toBeEnabled();
-      await this.createButton.click();
+      await this.createButton.evaluate((btn: HTMLButtonElement) => btn.click());
 
       // Wait for navigation to the new project's board page
       // The app redirects to /projects/[KEY]/board after creation

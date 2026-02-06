@@ -4,6 +4,7 @@ import { useQuery } from "convex/react";
 import { useMemo } from "react";
 import { PageHeader, PageLayout } from "@/components/layout";
 import { Flex } from "@/components/ui/Flex";
+import { TEST_IDS } from "@/lib/test-ids";
 import { BarChart } from "./Analytics/BarChart";
 import { ChartCard } from "./Analytics/ChartCard";
 import { MetricCard } from "./Analytics/MetricCard";
@@ -161,20 +162,32 @@ export function AnalyticsDashboard({ projectId }: Props) {
 
         {/* Key Metrics */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
-          <MetricCard title="Total Issues" value={analytics.totalIssues} icon="📊" />
+          <MetricCard
+            title="Total Issues"
+            value={analytics.totalIssues}
+            icon="📊"
+            testId={TEST_IDS.ANALYTICS.METRIC_TOTAL_ISSUES}
+          />
           <MetricCard
             title="Unassigned"
             value={analytics.unassignedCount}
             icon="📌"
             highlight={analytics.unassignedCount > 0}
+            testId={TEST_IDS.ANALYTICS.METRIC_UNASSIGNED}
           />
           <MetricCard
             title="Avg Velocity"
             value={velocity.averageVelocity}
             subtitle="points/sprint"
             icon="⚡"
+            testId={TEST_IDS.ANALYTICS.METRIC_AVG_VELOCITY}
           />
-          <MetricCard title="Completed Sprints" value={velocity.velocityData.length} icon="✅" />
+          <MetricCard
+            title="Completed Sprints"
+            value={velocity.velocityData.length}
+            icon="✅"
+            testId={TEST_IDS.ANALYTICS.METRIC_COMPLETED_SPRINTS}
+          />
         </div>
 
         {/* Charts Grid */}

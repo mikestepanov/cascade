@@ -137,11 +137,13 @@ export function ActivityFeed({ projectId, limit = 50, compact = false }: Activit
 
   if (activities.length === 0) {
     return (
-      <EmptyState
-        icon="🕐"
-        title="No activity yet"
-        description="Activity will appear here as work progresses"
-      />
+      <div data-testid={TEST_IDS.ACTIVITY.EMPTY_STATE}>
+        <EmptyState
+          icon="🕐"
+          title="No activity yet"
+          description="Activity will appear here as work progresses"
+        />
+      </div>
     );
   }
 

@@ -154,7 +154,7 @@ function SearchListContent({
 
   return (
     <>
-      <CommandEmpty className="p-8">
+      <CommandEmpty className="p-8" data-testid={TEST_IDS.GLOBAL_SEARCH.NO_RESULTS}>
         <div className="text-center">
           <span className="text-4xl mb-4 block">🔍</span>
           <Typography variant="p" className="font-medium">

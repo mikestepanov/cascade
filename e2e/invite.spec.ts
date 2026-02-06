@@ -32,22 +32,23 @@ test.describe("Invite Page", () => {
 
   test("invalid invite page has Go to Home button that works", async ({ page }) => {
     // Navigate to invite page with a fake token
-    await page.goto("/invite/another-fake-token");
+    await page.goto("/invite/another-fake-token", { waitUntil: "load" });
 
-    // Wait for the invalid state to show
-    await expect(page.getByRole("heading", { name: /invalid invitation/i })).toBeVisible({
-      timeout: 15000,
-    });
+    // Wait for Convex query to resolve and show invalid state
+    // The page shows loading first, then the Convex query returns null for invalid token
+    const invalidHeading = page.getByRole("heading", { name: /invalid invitation/i });
+    await expect(invalidHeading).toBeVisible({ timeout: 15000 });
 
     // Click the "Go to Home" button - may be a link or button
     const homeButton = page
       .getByRole("button", { name: /go to home/i })
       .or(page.getByRole("link", { name: /go to home/i }));
-    await expect(homeButton).toBeVisible({ timeout: 5000 });
-    await homeButton.click();
+    await expect(homeButton).toBeVisible();
+    await homeButton.evaluate((el: HTMLElement) => el.click());
 
-    // Should navigate to home page (could be / or /sign-in for unauthenticated)
-    await expect(page).toHaveURL(/^\/($|sign-in)/);
+    // Should navigate to home page (could be / or /signin for unauthenticated)
+    // The full URL includes the host, so match the path portion
+    await expect(page).toHaveURL(/\/($|signin)/);
   });
 
   test("shows loading state initially", async ({ page }) => {

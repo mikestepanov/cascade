@@ -1,5 +1,6 @@
 import type { Locator, Page } from "@playwright/test";
 import { expect } from "@playwright/test";
+import { TEST_IDS } from "../../src/lib/test-ids";
 import { BasePage } from "./base.page";
 
 /**
@@ -101,12 +102,13 @@ export class AuthPage extends BasePage {
 
     // Sign In / Sign Up form - two-step flow
     this.continueWithEmailButton = page.getByRole("button", { name: /continue with email/i });
-    this.emailInput = page.getByPlaceholder("Email");
-    this.passwordInput = page.getByPlaceholder("Password");
-    // These buttons appear after clicking "Continue with email"
+    this.emailInput = page.getByTestId(TEST_IDS.AUTH.EMAIL_INPUT);
+    this.passwordInput = page.getByTestId(TEST_IDS.AUTH.PASSWORD_INPUT);
+    // These buttons appear after clicking "Continue with email" - text changes on the same button
+    // Use getByRole with the specific text that appears after form expansion
     this.signInButton = page.getByRole("button", { name: "Sign in", exact: true });
     this.signUpButton = page.getByRole("button", { name: "Create account", exact: true });
-    this.forgotPasswordLink = page.getByRole("button", { name: /forgot password\?/i });
+    this.forgotPasswordLink = page.getByRole("button", { name: "Forgot password?" });
     this.googleSignInButton = page.getByRole("button", { name: /sign in with google/i });
 
     // Navigation links between auth pages
@@ -157,8 +159,13 @@ export class AuthPage extends BasePage {
   async gotoSignUp() {
     await this.page.goto("/signup", { waitUntil: "commit" });
     await this.signUpHeading.waitFor({ state: "visible" });
+    // Wait for hydration before expanding
+    await this.waitForHydration();
     // Expand form using robust click logic
     await this.expandEmailForm();
+    // Verify form is expanded by checking button text shows "Create account"
+    const submitButton = this.page.getByTestId(TEST_IDS.AUTH.SUBMIT_BUTTON);
+    await expect(submitButton).toHaveText(/Create account/i);
   }
 
   /**
@@ -192,30 +199,46 @@ export class AuthPage extends BasePage {
     // Wait for hydration first
     await this.waitForHydration();
 
-    // Use retry logic to handle timing issues with form expansion
+    // The submit button with test ID - text changes from "Continue with email" to "Sign in"/"Create account"
+    const submitButton = this.page.getByTestId(TEST_IDS.AUTH.SUBMIT_BUTTON);
+    await expect(submitButton).toBeVisible({ timeout: 5000 });
+    await expect(submitButton).toBeEnabled({ timeout: 5000 });
+
+    // Check button text to determine if already expanded
+    // The same button changes text: "Continue with email" -> "Sign in" or "Create account"
+    const buttonText = await submitButton.textContent();
+    const isExpanded = buttonText?.includes("Sign in") || buttonText?.includes("Create account");
+
+    if (isExpanded) {
+      await this.waitForFormReady();
+      return;
+    }
+
+    // Click the button and retry until the form expands
+    // Use evaluate to trigger the click at the DOM level which ensures React event handlers fire
     await expect(async () => {
-      // Check if form is already expanded (either "Sign in" or "Create account" button visible)
-      const isSignInExpanded = await this.signInButton.isVisible().catch(() => false);
-      const isSignUpExpanded = await this.signUpButton.isVisible().catch(() => false);
-
-      if (isSignInExpanded || isSignUpExpanded) {
-        return; // Form is expanded, we're done
+      // Check current state before clicking
+      const currentText = await submitButton.textContent();
+      if (currentText?.includes("Sign in") || currentText?.includes("Create account")) {
+        return; // Already expanded
       }
+      // Use evaluate to trigger a real DOM click that React will handle
+      await submitButton.evaluate((btn: HTMLButtonElement) => btn.click());
+      // Verify the form expanded by checking button text changed
+      await expect(submitButton).toHaveText(/Sign in|Create account/i, { timeout: 3000 });
+    }).toPass({ intervals: [300, 600, 1200, 2000, 3000], timeout: 20000 });
 
-      // Click "Continue with email" to expand
-      const continueBtn = this.continueWithEmailButton;
-      if (await continueBtn.isVisible().catch(() => false)) {
-        await continueBtn.click();
-      }
-
-      // Check expansion again
-      const nowSignInVisible = await this.signInButton.isVisible().catch(() => false);
-      const nowSignUpVisible = await this.signUpButton.isVisible().catch(() => false);
-      expect(nowSignInVisible || nowSignUpVisible).toBe(true);
-    }).toPass({ intervals: [500, 1000, 2000] });
-
-    // Also wait for form-ready state
+    // Wait for form-ready state
     await this.waitForFormReady();
+
+    // On sign-in page, also wait for "Forgot password?" to render (conditionally shown when expanded)
+    // This ensures React has finished rendering all conditional elements
+    const currentUrl = this.page.url();
+    if (currentUrl.includes("/signin") || currentUrl.endsWith("/signin")) {
+      await this.forgotPasswordLink.waitFor({ state: "visible", timeout: 5000 }).catch(() => {
+        // May not be on sign-in page, ignore
+      });
+    }
   }
 
   // ===================
@@ -243,28 +266,40 @@ export class AuthPage extends BasePage {
     // Click the submit button
     await this.signUpButton.click();
 
-    // Wait for form submission to complete - either verification form appears or error shows
-    await this.page.waitForLoadState("networkidle");
+    // Wait for form submission to complete - verification form or error toast appears
+    await expect(this.verifyHeading.or(this.page.locator(".sonner-toast"))).toBeVisible({
+      timeout: 15000,
+    });
   }
 
   async navigateToSignUp() {
     await this.signUpLink.click();
     await this.signUpHeading.waitFor({ state: "visible" });
+    // Wait for the new page's form to hydrate - it's a different component instance
+    await this.waitForHydration();
   }
 
   async navigateToSignIn() {
     await this.signInLink.click();
     await this.signInHeading.waitFor({ state: "visible" });
+    // Wait for the new page's form to hydrate - it's a different component instance
+    await this.waitForHydration();
   }
 
   async switchToSignUp() {
     await this.navigateToSignUp();
     await this.expandEmailForm();
+    // Verify form is expanded by checking button text
+    const submitButton = this.page.getByTestId(TEST_IDS.AUTH.SUBMIT_BUTTON);
+    await expect(submitButton).toHaveText(/Create account/i, { timeout: 5000 });
   }
 
   async switchToSignIn() {
     await this.navigateToSignIn();
     await this.expandEmailForm();
+    // Verify form is expanded by checking button text
+    const submitButton = this.page.getByTestId(TEST_IDS.AUTH.SUBMIT_BUTTON);
+    await expect(submitButton).toHaveText(/Sign in/i, { timeout: 5000 });
   }
 
   async signInWithGoogle() {
