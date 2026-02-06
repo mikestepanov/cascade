@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Flex } from "@/components/ui/Flex";
 import { useOrganization } from "@/hooks/useOrgContext";
+import { TEST_IDS } from "@/lib/test-ids";
 import { cn } from "@/lib/utils";
 import { Button } from "./ui/Button";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "./ui/Dialog";
@@ -117,7 +118,7 @@ export function CreateProjectFromTemplate({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-4xl" data-testid="create-project-modal">
+      <DialogContent className="sm:max-w-4xl" data-testid={TEST_IDS.PROJECT.CREATE_MODAL}>
         <DialogHeader>
           <DialogTitle>{step === "select" ? "Choose a Template" : "Configure Project"}</DialogTitle>
         </DialogHeader>
@@ -216,7 +217,7 @@ export function CreateProjectFromTemplate({
                 onChange={(e) => setProjectName(e.target.value)}
                 placeholder="My Awesome Project"
                 required
-                data-testid="project-name-input"
+                data-testid={TEST_IDS.PROJECT.NAME_INPUT}
               />
 
               <Input
@@ -226,7 +227,7 @@ export function CreateProjectFromTemplate({
                 placeholder="MAP"
                 required
                 helperText="Short code for issue keys (e.g., MAP-123)"
-                data-testid="project-key-input"
+                data-testid={TEST_IDS.PROJECT.KEY_INPUT}
               />
 
               <Textarea

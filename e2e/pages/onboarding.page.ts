@@ -1,5 +1,6 @@
 import type { Locator, Page } from "@playwright/test";
 import { expect } from "@playwright/test";
+import { TEST_IDS } from "../../src/lib/test-ids";
 
 const TRANSITION_TIMEOUT = 15000;
 
@@ -80,8 +81,8 @@ export class OnboardingPage {
     this.documentsText = page.getByText(/documents/i);
     this.sprintPlanningText = page.getByText(/sprint planning/i);
 
-    // Dashboard
-    this.myWorkHeading = page.getByRole("heading", { name: /feed/i }).first();
+    // Dashboard - use test ID to avoid matching multiple headings
+    this.myWorkHeading = page.getByTestId(TEST_IDS.DASHBOARD.FEED_HEADING);
 
     // Driver.js uses these CSS classes
     this.tourOverlay = page.locator(".driver-overlay");
@@ -172,8 +173,19 @@ export class OnboardingPage {
       try {
         await expect(this.tourNextButton).toBeVisible();
         await this.tourNextButton.click();
-        // Small delay to let animations complete
-        await this.page.waitForTimeout(300);
+        // Wait for animation to complete using Web Animations API
+        await this.tourPopover
+          .evaluate((el) => {
+            return new Promise<void>((resolve) => {
+              const animations = el.getAnimations();
+              if (!animations.length) {
+                resolve();
+                return;
+              }
+              Promise.all(animations.map((a) => a.finished)).then(() => resolve());
+            });
+          })
+          .catch(() => {});
       } catch {
         hasNext = false;
       }

@@ -4,6 +4,7 @@ import { memo, useEffect, useRef, useState } from "react";
 import { Flex } from "@/components/ui/Flex";
 import type { IssuePriority, IssueType } from "@/lib/issue-utils";
 import { getPriorityColor, getPriorityIcon, getTypeIcon, getTypeLabel } from "@/lib/issue-utils";
+import { TEST_IDS } from "@/lib/test-ids";
 import { cn } from "@/lib/utils";
 import { Tooltip } from "./ui/Tooltip";
 import { Typography } from "./ui/Typography";
@@ -82,6 +83,7 @@ export const IssueCard = memo(function IssueCard({
     <button
       ref={cardRef}
       type="button"
+      data-testid={TEST_IDS.ISSUE.CARD}
       draggable={canEdit && !selectionMode}
       onDragStart={canEdit && !selectionMode ? handleDragStart : undefined}
       onDragEnd={handleDragEnd}
@@ -123,13 +125,19 @@ export const IssueCard = memo(function IssueCard({
               {getTypeIcon(issue.type)}
             </span>
           </Tooltip>
-          <span className="text-xs text-ui-text-secondary font-mono">{issue.key}</span>
+          <span
+            data-testid={TEST_IDS.ISSUE.KEY}
+            className="text-xs text-ui-text-secondary font-mono"
+          >
+            {issue.key}
+          </span>
         </Flex>
         <Tooltip
           content={`Priority: ${issue.priority.charAt(0).toUpperCase() + issue.priority.slice(1)}`}
         >
           <div
             role="img"
+            data-testid={TEST_IDS.ISSUE.PRIORITY}
             aria-label={`Priority: ${issue.priority}`}
             className={cn("text-xs cursor-help", getPriorityColor(issue.priority))}
           >

@@ -295,10 +295,7 @@ export const testWebhook = action({
   },
 });
 
-/**
- * Send issue notification to Pumble
- * Called when issue events occur (created, updated, assigned, etc.)
- */
+/** Sends issue notifications to Pumble webhooks when issue events occur. */
 export const sendIssueNotification = action({
   args: {
     issueId: v.id("issues"),

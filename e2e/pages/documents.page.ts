@@ -43,7 +43,7 @@ export class DocumentsPage extends BasePage {
     super(page, orgSlug);
 
     // Sidebar
-    this.sidebar = page.locator("[data-tour='sidebar']").or(page.locator("aside").first());
+    this.sidebar = page.locator("[data-tour='sidebar']").or(page.getByRole("complementary"));
     this.searchInput = page.getByPlaceholder(/search.*document/i);
     this.newDocumentButton = page
       .getByRole("button", { name: /new.*document|\+ new|add/i })
@@ -153,8 +153,9 @@ export class DocumentsPage extends BasePage {
 
   async expectEditorVisible() {
     // Wait for React to be ready (avoid dispatcher errors)
+    // domcontentloaded fires first, then networkidle when all resources loaded
+    await this.page.waitForLoadState("domcontentloaded");
     await this.page.waitForLoadState("networkidle").catch(() => {});
-    await this.page.waitForTimeout(500);
 
     // Check for React error boundary
     const errorBoundary = this.page.locator("text=/Something went wrong/i");

@@ -12,7 +12,7 @@ import { assertIsProjectAdmin } from "./projectAccess";
 import { isTest } from "./testConfig";
 import { webhookResultStatuses } from "./validators";
 
-// Create a webhook
+/** Create a new webhook for a project. Requires project admin role. */
 export const createWebhook = projectAdminMutation({
   args: {
     name: v.string(),
@@ -52,7 +52,7 @@ export const createWebhook = projectAdminMutation({
   },
 });
 
-// List webhooks for a project
+/** List all webhooks for a project. Returns webhooks with hasSecret flag instead of exposing secret values. */
 export const listByProject = authenticatedQuery({
   args: { projectId: v.id("projects") },
   handler: async (ctx, args) => {
@@ -74,7 +74,7 @@ export const listByProject = authenticatedQuery({
   },
 });
 
-// Update a webhook
+/** Update webhook configuration including name, URL, events, secret, or active status. Requires project admin role. */
 export const updateWebhook = authenticatedMutation({
   args: {
     id: v.id("webhooks"),
@@ -118,7 +118,7 @@ export const updateWebhook = authenticatedMutation({
   },
 });
 
-// Delete a webhook
+/** Soft-delete a webhook by setting deletion metadata. Requires project admin role. */
 export const softDeleteWebhook = authenticatedMutation({
   args: { id: v.id("webhooks") },
   handler: async (ctx, args) => {
@@ -144,7 +144,7 @@ export const softDeleteWebhook = authenticatedMutation({
   },
 });
 
-// Internal action to trigger webhooks
+/** Deliver webhook payloads to all active webhooks for a given project event. Creates execution logs for each delivery attempt. */
 export const trigger = internalAction({
   args: {
     projectId: v.id("projects"),
@@ -214,7 +214,7 @@ export const trigger = internalAction({
   },
 });
 
-// Internal query to get active webhooks for an event
+/** Retrieve all active webhooks subscribed to a specific event type within a project. */
 export const getActiveWebhooksForEvent = internalQuery({
   args: {
     projectId: v.id("projects"),
@@ -233,7 +233,7 @@ export const getActiveWebhooksForEvent = internalQuery({
   },
 });
 
-// Internal mutation to update last triggered time
+/** Update the lastTriggered timestamp for a webhook after successful delivery. Skipped in test mode. */
 export const updateLastTriggered = internalMutation({
   args: { id: v.id("webhooks") },
   handler: async (ctx, args) => {
@@ -244,7 +244,7 @@ export const updateLastTriggered = internalMutation({
   },
 });
 
-// Query webhook executions for a webhook
+/** Retrieve paginated execution logs for a webhook. Requires project admin role. */
 export const listExecutions = authenticatedQuery({
   args: {
     webhookId: v.id("webhooks"),
@@ -271,7 +271,7 @@ export const listExecutions = authenticatedQuery({
   },
 });
 
-// Test webhook (sends ping event)
+/** Send a test ping event to a webhook endpoint. Requires project admin role. */
 export const test = authenticatedMutation({
   args: { id: v.id("webhooks") },
   handler: async (ctx, args) => {
@@ -293,7 +293,7 @@ export const test = authenticatedMutation({
   },
 });
 
-// Internal action to deliver test webhook
+/** Deliver a test ping payload to a webhook endpoint and log the execution result. */
 export const deliverTestWebhook = internalAction({
   args: { webhookId: v.id("webhooks") },
   handler: async (ctx, args) => {
@@ -348,7 +348,7 @@ export const deliverTestWebhook = internalAction({
   },
 });
 
-// Internal query to get webhook by ID
+/** Retrieve a webhook by its ID. Returns null if webhook does not exist. */
 export const getWebhookById = internalQuery({
   args: { id: v.id("webhooks") },
   handler: async (ctx, args) => {
@@ -356,7 +356,7 @@ export const getWebhookById = internalQuery({
   },
 });
 
-// Internal mutation to create execution log
+/** Create a new execution log entry for a webhook delivery attempt. Returns mock ID in test mode. */
 export const createExecution = internalMutation({
   args: {
     webhookId: v.id("webhooks"),
@@ -377,7 +377,7 @@ export const createExecution = internalMutation({
   },
 });
 
-// Internal mutation to update execution log
+/** Update an execution log with delivery status, response data, and error information. Skipped in test mode. */
 export const updateExecution = internalMutation({
   args: {
     id: v.id("webhookExecutions"),
@@ -398,7 +398,7 @@ export const updateExecution = internalMutation({
   },
 });
 
-// Retry failed webhook execution
+/** Retry a failed webhook execution by scheduling a new delivery attempt. Requires project admin role. */
 export const retryExecution = authenticatedMutation({
   args: { id: v.id("webhookExecutions") },
   handler: async (ctx, args) => {
@@ -424,7 +424,7 @@ export const retryExecution = authenticatedMutation({
   },
 });
 
-// Internal action to retry webhook delivery
+/** Reattempt webhook delivery for a failed execution and increment the attempt counter. */
 export const retryWebhookDelivery = internalAction({
   args: {
     executionId: v.id("webhookExecutions"),
@@ -477,7 +477,7 @@ export const retryWebhookDelivery = internalAction({
   },
 });
 
-// Internal query to get execution by ID
+/** Retrieve a webhook execution log by its ID. Returns null if execution does not exist. */
 export const getExecutionById = internalQuery({
   args: { id: v.id("webhookExecutions") },
   handler: async (ctx, args) => {
@@ -485,7 +485,7 @@ export const getExecutionById = internalQuery({
   },
 });
 
-// Internal mutation to increment execution attempt
+/** Update execution log with retry results and increment the attempt counter. Skipped in test mode. */
 export const incrementExecutionAttempt = internalMutation({
   args: {
     id: v.id("webhookExecutions"),

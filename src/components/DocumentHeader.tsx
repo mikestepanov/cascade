@@ -3,9 +3,10 @@ import { useState } from "react";
 import { Flex } from "@/components/ui/Flex";
 import { Tooltip } from "@/components/ui/Tooltip";
 import { Typography } from "@/components/ui/Typography";
-import { History } from "@/lib/icons";
+import { Download, History, Upload } from "@/lib/icons";
 import { cn } from "@/lib/utils";
 import { PresenceIndicator } from "./PresenceIndicator";
+import { Badge } from "./ui/Badge";
 import { Button } from "./ui/Button";
 import { Input } from "./ui/form/Input";
 
@@ -119,18 +120,16 @@ export function DocumentHeader({
               variant="ghost"
               size="sm"
               onClick={onShowVersionHistory}
+              leftIcon={<History className="w-4 h-4" aria-hidden="true" />}
               className="px-2 sm:px-3 py-1.5 border border-ui-border text-ui-text-secondary hover:text-ui-text hover:bg-ui-bg-hover hover:border-ui-border-secondary transition-default min-h-0"
               aria-label="Version history"
             >
-              <Flex inline as="span" align="center" gap="xs" className="sm:gap-1.5">
-                <History className="w-3.5 h-3.5 sm:w-4 sm:h-4" aria-hidden="true" />
-                <span className="hidden sm:inline text-sm">History</span>
-                {versionCount !== undefined && versionCount > 0 && (
-                  <span className="ml-0.5 sm:ml-1 px-1.5 py-0.5 text-xs bg-ui-bg-soft text-ui-text-tertiary rounded-secondary">
-                    {versionCount}
-                  </span>
-                )}
-              </Flex>
+              <span className="hidden sm:inline text-sm">History</span>
+              {versionCount !== undefined && versionCount > 0 && (
+                <Badge variant="secondary" className="ml-1">
+                  {versionCount}
+                </Badge>
+              )}
             </Button>
           </Tooltip>
 
@@ -141,26 +140,11 @@ export function DocumentHeader({
               size="sm"
               onClick={() => void onImportMarkdown()}
               disabled={!editorReady}
+              leftIcon={<Upload className="w-4 h-4" aria-hidden="true" />}
               className="px-2 sm:px-3 py-1.5 border border-ui-border text-ui-text-secondary hover:text-brand hover:bg-brand-subtle hover:border-brand-border transition-default min-h-0 disabled:opacity-50"
               aria-label="Import from Markdown"
             >
-              <Flex inline as="span" align="center" gap="xs" className="sm:gap-1.5">
-                <svg
-                  aria-hidden="true"
-                  className="w-3.5 h-3.5 sm:w-4 sm:h-4"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
-                  />
-                </svg>
-                <span className="hidden sm:inline text-sm">Import</span>
-              </Flex>
+              <span className="hidden sm:inline text-sm">Import</span>
             </Button>
           </Tooltip>
 
@@ -171,26 +155,11 @@ export function DocumentHeader({
               size="sm"
               onClick={() => void onExportMarkdown()}
               disabled={!editorReady}
+              leftIcon={<Download className="w-4 h-4" aria-hidden="true" />}
               className="px-2 sm:px-3 py-1.5 border border-ui-border text-ui-text-secondary hover:text-brand hover:bg-brand-subtle hover:border-brand-border transition-default min-h-0 disabled:opacity-50"
               aria-label="Export as Markdown"
             >
-              <Flex inline as="span" align="center" gap="xs" className="sm:gap-1.5">
-                <svg
-                  aria-hidden="true"
-                  className="w-3.5 h-3.5 sm:w-4 sm:h-4"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"
-                  />
-                </svg>
-                <span className="hidden sm:inline text-sm">Export</span>
-              </Flex>
+              <span className="hidden sm:inline text-sm">Export</span>
             </Button>
           </Tooltip>
 

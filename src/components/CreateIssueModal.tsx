@@ -1,5 +1,7 @@
 import { api } from "@convex/_generated/api";
 import type { Doc, Id } from "@convex/_generated/dataModel";
+import type { IssuePriority, IssueTypeWithSubtask } from "@convex/validators";
+import { ISSUE_PRIORITIES, ISSUE_TYPES_WITH_SUBTASK } from "@convex/validators";
 import { useForm } from "@tanstack/react-form";
 import { useAction, useMutation, useQuery } from "convex/react";
 import { useEffect, useState } from "react";
@@ -25,14 +27,11 @@ import { Select } from "./ui/form";
 // Schema
 // =============================================================================
 
-const issueTypes = ["task", "bug", "story", "epic", "subtask"] as const;
-const priorities = ["lowest", "low", "medium", "high", "highest"] as const;
-
 const createIssueSchema = z.object({
   title: z.string().min(1, "Title is required"),
   description: z.string(),
-  type: z.enum(issueTypes),
-  priority: z.enum(priorities),
+  type: z.enum(ISSUE_TYPES_WITH_SUBTASK),
+  priority: z.enum(ISSUE_PRIORITIES),
   assigneeId: z.string(),
   storyPoints: z.string(),
 });
@@ -114,8 +113,8 @@ export function CreateIssueModal({
     defaultValues: {
       title: "",
       description: "",
-      type: "task" as CreateIssueForm["type"],
-      priority: "medium" as CreateIssueForm["priority"],
+      type: "task" satisfies IssueTypeWithSubtask,
+      priority: "medium" satisfies IssuePriority,
       assigneeId: "",
       storyPoints: "",
     },
@@ -173,7 +172,7 @@ export function CreateIssueModal({
 
   interface AISuggestions {
     description?: string;
-    priority?: string;
+    priority?: IssuePriority;
     labels?: string[];
   }
 
@@ -182,7 +181,7 @@ export function CreateIssueModal({
       form.setFieldValue("description", suggestions.description as string);
     }
     if (suggestions.priority) {
-      form.setFieldValue("priority", suggestions.priority as (typeof priorities)[number]);
+      form.setFieldValue("priority", suggestions.priority);
     }
     if (suggestions.labels && (suggestions.labels as string[]).length > 0 && labels) {
       const suggestedLabelIds = labels

@@ -44,6 +44,8 @@ export function SidebarTeamItem({
           size="icon"
           onClick={() => onToggle(team.slug)}
           className="h-6 w-6 p-0.5"
+          aria-expanded={isExpanded}
+          aria-label={isExpanded ? `Collapse ${team.name}` : `Expand ${team.name}`}
         >
           {isExpanded ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
         </Button>

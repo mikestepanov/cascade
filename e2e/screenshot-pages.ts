@@ -21,7 +21,8 @@
 
 import * as fs from "node:fs";
 import * as path from "node:path";
-import { chromium, type Browser, type BrowserContext, type Page } from "@playwright/test";
+import { chromium, type Browser, type Page } from "@playwright/test";
+import { TEST_IDS } from "../src/lib/test-ids";
 import { TEST_USERS } from "./config";
 import { type SeedScreenshotResult, testUserService } from "./utils/test-user-service";
 
@@ -257,8 +258,14 @@ async function screenshotFilledStates(
     } catch {}
     await page.waitForTimeout(SETTLE_MS);
 
+    // Calendar view-mode screenshots: day, week, month
+    const calendarModeTestIds = {
+      day: TEST_IDS.CALENDAR.MODE_DAY,
+      week: TEST_IDS.CALENDAR.MODE_WEEK,
+      month: TEST_IDS.CALENDAR.MODE_MONTH,
+    } as const;
     for (const mode of ["day", "week", "month"] as const) {
-      const toggleItem = page.getByTestId(`calendar-mode-${mode}`);
+      const toggleItem = page.getByTestId(calendarModeTestIds[mode]);
       if ((await toggleItem.count()) > 0) {
         await toggleItem.first().click();
         await page.waitForTimeout(SETTLE_MS);
@@ -269,6 +276,32 @@ async function screenshotFilledStates(
       await page.screenshot({ path: path.join(currentOutputDir, filename) });
       totalScreenshots++;
       console.log(`    ${num}  [${p}] calendar-${mode}`);
+    }
+
+    // Event details modal screenshot — click first visible calendar event
+    // Switch back to week view for the modal screenshot (events are most visible)
+    const weekToggle = page.getByTestId(TEST_IDS.CALENDAR.MODE_WEEK);
+    if ((await weekToggle.count()) > 0) {
+      await weekToggle.first().click();
+      await page.waitForTimeout(SETTLE_MS);
+    }
+    // Events are rendered as tabIndex={0} divs with event titles
+    const eventEl = page
+      .locator("[tabindex='0']")
+      .filter({ hasText: /Sprint Planning|Design Review|Focus Time|Standup/i });
+    if ((await eventEl.count()) > 0) {
+      await eventEl.first().click();
+      await page.waitForTimeout(SETTLE_MS);
+      const n = nextIndex(p);
+      const num = String(n).padStart(2, "0");
+      const filename = `${num}-${p}-calendar-event-modal.png`;
+      await page.screenshot({ path: path.join(currentOutputDir, filename) });
+      totalScreenshots++;
+      console.log(`    ${num}  [${p}] calendar-event-modal`);
+
+      // Close the modal via Escape
+      await page.keyboard.press("Escape");
+      await page.waitForTimeout(500);
     }
   }
 

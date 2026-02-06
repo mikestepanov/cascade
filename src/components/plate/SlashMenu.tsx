@@ -188,6 +188,66 @@ function isSlashSelectionCollapsed(selection: { anchor: unknown; focus: unknown 
   );
 }
 
+interface SlashTriggerResult {
+  isActive: boolean;
+  searchText: string;
+  rect: DOMRect | null;
+}
+
+/**
+ * Check if slash command is triggered and get search text
+ */
+function detectSlashTrigger(): SlashTriggerResult {
+  const inactive: SlashTriggerResult = { isActive: false, searchText: "", rect: null };
+
+  const domSelection = window.getSelection();
+  if (!domSelection || domSelection.rangeCount === 0) return inactive;
+
+  const domRange = domSelection.getRangeAt(0);
+  const node = domRange.startContainer;
+  if (node.nodeType !== Node.TEXT_NODE) return inactive;
+
+  const textContent = node.textContent?.slice(0, domRange.startOffset) || "";
+  const lastSlashIndex = textContent.lastIndexOf("/");
+  if (lastSlashIndex === -1) return inactive;
+
+  // Only show menu if slash is at start of word (preceded by space or start of text)
+  const charBeforeSlash = textContent[lastSlashIndex - 1];
+  const isValidPosition =
+    lastSlashIndex === 0 || charBeforeSlash === " " || charBeforeSlash === "\n";
+  if (!isValidPosition) return inactive;
+
+  return {
+    isActive: true,
+    searchText: textContent.slice(lastSlashIndex + 1),
+    rect: domRange.getBoundingClientRect(),
+  };
+}
+
+/**
+ * Delete slash command text from current position back to the slash
+ * Returns the number of characters deleted, or 0 if nothing deleted
+ */
+function deleteSlashCommand(editor: PlateEditor): number {
+  const domSelection = window.getSelection();
+  if (!domSelection || domSelection.rangeCount === 0) return 0;
+
+  const range = domSelection.getRangeAt(0);
+  const node = range.startContainer;
+  if (node.nodeType !== Node.TEXT_NODE) return 0;
+
+  const textContent = node.textContent || "";
+  const cursorPos = range.startOffset;
+  const lastSlashIndex = textContent.lastIndexOf("/", cursorPos - 1);
+  if (lastSlashIndex === -1) return 0;
+
+  const deleteLength = cursorPos - lastSlashIndex;
+  for (let i = 0; i < deleteLength; i++) {
+    editor.tf.deleteBackward("character");
+  }
+  return deleteLength;
+}
+
 /**
  * Slash command menu component
  * Must be rendered inside Plate context
@@ -206,64 +266,21 @@ export function SlashMenu() {
       return;
     }
 
-    // Get text from DOM to detect slash commands
-    const domSelection = window.getSelection();
-    if (!domSelection || domSelection.rangeCount === 0) {
+    const trigger = detectSlashTrigger();
+    if (trigger.isActive && trigger.rect) {
+      setSearch(trigger.searchText);
+      setOpen(true);
+      setAnchorRect(trigger.rect);
+    } else {
       setOpen(false);
-      return;
+      setSearch("");
     }
-
-    const domRange = domSelection.getRangeAt(0);
-    const node = domRange.startContainer;
-
-    // Get the text content up to cursor
-    if (node.nodeType === Node.TEXT_NODE) {
-      const textContent = node.textContent?.slice(0, domRange.startOffset) || "";
-      // Find the last "/" in the current text
-      const lastSlashIndex = textContent.lastIndexOf("/");
-
-      if (lastSlashIndex !== -1) {
-        const textAfterSlash = textContent.slice(lastSlashIndex + 1);
-        // Only show menu if slash is at start of word (preceded by space or start of text)
-        const charBeforeSlash = textContent[lastSlashIndex - 1];
-        if (lastSlashIndex === 0 || charBeforeSlash === " " || charBeforeSlash === "\n") {
-          setSearch(textAfterSlash);
-          setOpen(true);
-          setAnchorRect(domRange.getBoundingClientRect());
-          return;
-        }
-      }
-    }
-
-    setOpen(false);
-    setSearch("");
   }, [selection]);
 
   // Handle item selection
   const handleSelect = useCallback(
     (item: SlashMenuItem) => {
-      // Delete the slash command text first using DOM-based approach
-      const domSelection = window.getSelection();
-      if (domSelection && domSelection.rangeCount > 0) {
-        const range = domSelection.getRangeAt(0);
-        const node = range.startContainer;
-
-        if (node.nodeType === Node.TEXT_NODE) {
-          const textContent = node.textContent || "";
-          const cursorPos = range.startOffset;
-          const lastSlashIndex = textContent.lastIndexOf("/", cursorPos - 1);
-
-          if (lastSlashIndex !== -1) {
-            // Delete from slash to cursor using editor transforms
-            const deleteLength = cursorPos - lastSlashIndex;
-            for (let i = 0; i < deleteLength; i++) {
-              editor.tf.deleteBackward("character");
-            }
-          }
-        }
-      }
-
-      // Execute the action
+      deleteSlashCommand(editor);
       item.action(editor);
       setOpen(false);
       setSearch("");

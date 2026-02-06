@@ -2,6 +2,7 @@ import { api } from "@convex/_generated/api";
 import type { Id } from "@convex/_generated/dataModel";
 import { useQuery } from "convex/react";
 import { formatRelativeTime } from "@/lib/dates";
+import { TEST_IDS } from "@/lib/test-ids";
 import { cn } from "@/lib/utils";
 import { EmptyState } from "./ui/EmptyState";
 import { Flex } from "./ui/Flex";
@@ -136,16 +137,18 @@ export function ActivityFeed({ projectId, limit = 50, compact = false }: Activit
 
   if (activities.length === 0) {
     return (
-      <EmptyState
-        icon="🕐"
-        title="No activity yet"
-        description="Activity will appear here as work progresses"
-      />
+      <div data-testid={TEST_IDS.ACTIVITY.EMPTY_STATE}>
+        <EmptyState
+          icon="🕐"
+          title="No activity yet"
+          description="Activity will appear here as work progresses"
+        />
+      </div>
     );
   }
 
   return (
-    <Flex direction="column" gap="none" className="relative">
+    <Flex direction="column" gap="none" className="relative" data-testid={TEST_IDS.ACTIVITY.FEED}>
       {/* Timeline line */}
       {!compact && activities.length > 1 && (
         <div className="absolute left-3 top-6 bottom-6 w-px bg-ui-border" />
@@ -161,6 +164,7 @@ export function ActivityFeed({ projectId, limit = 50, compact = false }: Activit
               ? "py-2 hover:bg-ui-bg-secondary/50 rounded-md px-2"
               : "p-4 hover:bg-ui-bg-secondary/30 rounded-lg",
           )}
+          data-testid={TEST_IDS.ACTIVITY.ENTRY}
         >
           {/* Timeline icon */}
           <Flex

@@ -2,8 +2,10 @@
  * Issue utility functions for consistent handling of issue types, priorities, and statuses
  */
 
-export type IssueType = "task" | "bug" | "story" | "epic" | "subtask";
-export type IssuePriority = "lowest" | "low" | "medium" | "high" | "highest";
+import type { IssuePriority, IssueTypeWithSubtask } from "@convex/validators";
+
+export type IssueType = IssueTypeWithSubtask;
+export type { IssuePriority };
 
 /**
  * Get the icon for an issue type

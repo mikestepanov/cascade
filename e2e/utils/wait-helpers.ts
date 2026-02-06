@@ -39,18 +39,26 @@ export async function waitForFormReady(page: Page, timeout = 5000): Promise<bool
     });
     return true;
   } catch {
-    // Fallback: wait the standard delay if attribute not found
-    await page.waitForTimeout(WAIT_TIMEOUTS.formReady);
+    // Fallback: wait for DOM to be ready if attribute not found
+    await page.waitForLoadState("domcontentloaded");
     return false;
   }
 }
 
 /**
- * Wait for an animation or transition to complete.
+ * Wait for all CSS animations to complete.
  * Use this after clicking elements that trigger CSS transitions.
  */
 export async function waitForAnimation(page: Page): Promise<void> {
-  await page.waitForTimeout(WAIT_TIMEOUTS.animation);
+  await page.evaluate(() => {
+    const animations = document.getAnimations().filter((a) => {
+      const timing = a.effect?.getComputedTiming();
+      // Only wait for finite animations (skip infinite loaders)
+      return timing && timing.duration !== Infinity && timing.iterations !== Infinity;
+    });
+    if (!animations.length) return Promise.resolve();
+    return Promise.all(animations.map((a) => a.finished));
+  });
 }
 
 /**
@@ -58,10 +66,9 @@ export async function waitForAnimation(page: Page): Promise<void> {
  * Use this on cold starts when elements might not be interactive yet.
  */
 export async function waitForReactHydration(page: Page): Promise<void> {
-  // Wait for the page to have no pending network requests
+  // Wait for DOM to be ready and network to settle
   await page.waitForLoadState("domcontentloaded");
-  // Small additional buffer for React hydration
-  await page.waitForTimeout(WAIT_TIMEOUTS.reactHydration);
+  await page.waitForLoadState("networkidle");
 }
 
 /**
@@ -69,16 +76,34 @@ export async function waitForReactHydration(page: Page): Promise<void> {
  * Waits for the dropdown to have the expected visible state.
  */
 export async function waitForDropdown(page: Page, dropdownSelector: string): Promise<void> {
-  await page.locator(dropdownSelector).waitFor({ state: "visible" });
-  await page.waitForTimeout(WAIT_TIMEOUTS.animation);
+  const dropdown = page.locator(dropdownSelector);
+  await dropdown.waitFor({ state: "visible" });
+  // Wait for finite animations to complete (skip infinite ones like loaders)
+  await dropdown.evaluate((el) => {
+    const finiteAnimations = el.getAnimations().filter((a) => {
+      const timing = a.effect?.getComputedTiming();
+      return timing && timing.duration !== Infinity && timing.iterations !== Infinity;
+    });
+    if (!finiteAnimations.length) return Promise.resolve();
+    return Promise.all(finiteAnimations.map((a) => a.finished));
+  });
 }
 
 /**
  * Wait for a modal/dialog to open and be interactive.
  */
 export async function waitForModal(page: Page, modalSelector = '[role="dialog"]'): Promise<void> {
-  await page.locator(modalSelector).waitFor({ state: "visible" });
-  await page.waitForTimeout(WAIT_TIMEOUTS.animation);
+  const modal = page.locator(modalSelector);
+  await modal.waitFor({ state: "visible" });
+  // Wait for finite animations to complete (skip infinite ones like loaders)
+  await modal.evaluate((el) => {
+    const finiteAnimations = el.getAnimations().filter((a) => {
+      const timing = a.effect?.getComputedTiming();
+      return timing && timing.duration !== Infinity && timing.iterations !== Infinity;
+    });
+    if (!finiteAnimations.length) return Promise.resolve();
+    return Promise.all(finiteAnimations.map((a) => a.finished));
+  });
 }
 
 /**

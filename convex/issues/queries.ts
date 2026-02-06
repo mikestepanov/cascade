@@ -68,8 +68,7 @@ export const getUserIssueCount = authenticatedQuery({
   handler: async (ctx) => {
     const issues = await ctx.db
       .query("issues")
-      .withIndex("by_assignee", (q) => q.eq("assigneeId", ctx.userId))
-      .filter(notDeleted)
+      .withIndex("by_assignee", (q) => q.eq("assigneeId", ctx.userId).lt("isDeleted", true))
       .take(1); // Just need to know if there's at least one
 
     return issues.length;
@@ -84,8 +83,7 @@ export const listByUser = authenticatedQuery({
     // Paginate assigned issues
     const assignedResult = await ctx.db
       .query("issues")
-      .withIndex("by_assignee", (q) => q.eq("assigneeId", ctx.userId))
-      .filter(notDeleted)
+      .withIndex("by_assignee", (q) => q.eq("assigneeId", ctx.userId).lt("isDeleted", true))
       .paginate(args.paginationOpts);
 
     const mappedIssues = assignedResult.page.map((issue) => ({
@@ -123,8 +121,9 @@ export const listEpics = authenticatedQuery({
     const epics = await safeCollect(
       ctx.db
         .query("issues")
-        .withIndex("by_project_type", (q) => q.eq("projectId", args.projectId).eq("type", "epic"))
-        .filter(notDeleted),
+        .withIndex("by_project_type", (q) =>
+          q.eq("projectId", args.projectId).eq("type", "epic").lt("isDeleted", true),
+        ),
       200, // Reasonable limit for epics
       "project epics",
     );
@@ -160,19 +159,22 @@ export const listRoadmapIssues = authenticatedQuery({
     let issues: Doc<"issues">[] = [];
     if (args.sprintId) {
       // Bounded: sprint issues are typically limited (<500 per sprint)
+      // Optimization: use index with isDeleted to skip deleted items efficiently
       const allSprintIssues = await safeCollect(
         ctx.db
           .query("issues")
-          .withIndex("by_project_sprint_status", (q) =>
-            q.eq("projectId", args.projectId).eq("sprintId", args.sprintId),
-          )
-          .filter(notDeleted),
+          .withIndex("by_sprint", (q) =>
+            q.eq("sprintId", args.sprintId as Id<"sprints">).lt("isDeleted", true),
+          ),
         BOUNDED_LIST_LIMIT,
         "roadmap sprint issues",
       );
 
-      issues = allSprintIssues.filter((i) =>
-        (ROOT_ISSUE_TYPES as readonly string[]).includes(i.type),
+      // Verify projectId matches (security check) and filter root types
+      issues = allSprintIssues.filter(
+        (i) =>
+          i.projectId === args.projectId &&
+          (ROOT_ISSUE_TYPES as readonly string[]).includes(i.type),
       );
     } else if (args.epicId) {
       // Optimization: Fetch by epic directly if filtering by specific epic
@@ -180,8 +182,7 @@ export const listRoadmapIssues = authenticatedQuery({
       const allEpicIssues = await safeCollect(
         ctx.db
           .query("issues")
-          .withIndex("by_epic", (q) => q.eq("epicId", args.epicId))
-          .filter(notDeleted),
+          .withIndex("by_epic", (q) => q.eq("epicId", args.epicId).lt("isDeleted", true)),
         BOUNDED_LIST_LIMIT,
         "roadmap epic issues",
       );
@@ -203,12 +204,12 @@ export const listRoadmapIssues = authenticatedQuery({
       const outcomes = await Promise.all(
         typesToFetch.map((type) =>
           safeCollect(
-            ctx.db
-              .query("issues")
-              .withIndex("by_project_type", (q) =>
-                q.eq("projectId", args.projectId).eq("type", type as Doc<"issues">["type"]),
-              )
-              .filter(notDeleted),
+            ctx.db.query("issues").withIndex("by_project_type", (q) =>
+              q
+                .eq("projectId", args.projectId)
+                .eq("type", type as Doc<"issues">["type"])
+                .lt("isDeleted", true),
+            ),
             BOUNDED_LIST_LIMIT,
             `roadmap issues type=${type}`,
           ),
@@ -279,9 +280,8 @@ export const listRoadmapIssuesPaginated = authenticatedQuery({
     const result = await ctx.db
       .query("issues")
       .withIndex("by_project_type", (q) =>
-        q.eq("projectId", args.projectId).eq("type", ROOT_ISSUE_TYPES[0]),
+        q.eq("projectId", args.projectId).eq("type", ROOT_ISSUE_TYPES[0]).lt("isDeleted", true),
       )
-      .filter(notDeleted)
       .paginate(args.paginationOpts);
 
     return {
@@ -304,7 +304,9 @@ export const listSelectableIssues = authenticatedQuery({
 
     const issues = await ctx.db
       .query("issues")
-      .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
+      .withIndex("by_project_deleted", (q) =>
+        q.eq("projectId", args.projectId).lt("isDeleted", true),
+      )
       .order("desc")
       .take(500);
 
@@ -443,7 +445,7 @@ export const get = query({
     const userId = await getAuthUserId(ctx);
     const issue = await ctx.db.get(args.id);
 
-    if (!issue) {
+    if (!issue || issue.isDeleted) {
       return null;
     }
 
@@ -512,7 +514,7 @@ export const listComments = query({
     const userId = await getAuthUserId(ctx);
     const issue = await ctx.db.get(args.issueId);
 
-    if (!issue) {
+    if (!issue || issue.isDeleted) {
       throw notFound("issue", args.issueId);
     }
 
@@ -582,7 +584,7 @@ export const listSubtasks = authenticatedQuery({
   args: { parentId: v.id("issues") },
   handler: async (ctx, args) => {
     const parentIssue = await ctx.db.get(args.parentId);
-    if (!parentIssue) {
+    if (!parentIssue || parentIssue.isDeleted) {
       return [];
     }
 
@@ -595,8 +597,7 @@ export const listSubtasks = authenticatedQuery({
     const subtasks = await safeCollect(
       ctx.db
         .query("issues")
-        .withIndex("by_parent", (q) => q.eq("parentId", args.parentId))
-        .filter(notDeleted),
+        .withIndex("by_parent", (q) => q.eq("parentId", args.parentId).lt("isDeleted", true)),
       100, // Issues rarely have >100 subtasks
       "subtasks",
     );
@@ -673,8 +674,9 @@ export const search = authenticatedQuery({
       issues = await safeCollect(
         ctx.db
           .query("issues")
-          .withIndex("by_project", (q) => q.eq("projectId", projectId))
-          .filter(notDeleted)
+          .withIndex("by_project_deleted", (q) =>
+            q.eq("projectId", projectId).lt("isDeleted", true),
+          )
           .order("desc"),
         fetchLimit,
         "issue search by project",

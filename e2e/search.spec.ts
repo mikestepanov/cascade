@@ -1,3 +1,4 @@
+import { TEST_IDS } from "../src/lib/test-ids";
 import { expect, authenticatedTest as test } from "./fixtures";
 import { testUserService } from "./utils/test-user-service";
 
@@ -55,12 +56,11 @@ test.describe("Global Search", () => {
     await expect(issueResult).toBeVisible();
     console.log("✓ Issue found in search results");
 
-    // Verify result shows issue type badge
-    const issueBadge = page
-      .locator("[cmdk-item]")
-      .filter({ hasText: uniqueSearchTerm })
-      .getByText("issue");
-    await expect(issueBadge).toBeVisible();
+    // Verify result shows issue type badge (lowercase "issue" from result.type)
+    const issueItem = page.locator("[cmdk-item]").filter({ hasText: uniqueSearchTerm });
+    await expect(issueItem).toBeVisible();
+    // The Badge renders result.type which is "issue"
+    await expect(issueItem.getByText("issue", { exact: true })).toBeVisible();
     console.log("✓ Issue badge visible");
 
     // Close search
@@ -73,15 +73,21 @@ test.describe("Global Search", () => {
   }) => {
     await dashboardPage.goto();
     await dashboardPage.expectLoaded();
+
+    // Open global search - the page object method has retry logic built in
     await dashboardPage.openGlobalSearch();
+
+    // Verify search modal and input are visible before typing
+    await expect(dashboardPage.globalSearchModal).toBeVisible();
+    await expect(dashboardPage.globalSearchInput).toBeVisible();
 
     // Type a query that won't match anything
     const nonExistentTerm = `NonExistent${Date.now()}XYZ`;
     await dashboardPage.globalSearchInput.fill(nonExistentTerm);
 
-    // Wait for search to complete
-    const noResultsMessage = page.getByText("No results found");
-    await expect(noResultsMessage).toBeVisible({ timeout: 10000 });
+    // Wait for search to complete - use test ID for reliable selection
+    const noResultsMessage = page.getByTestId(TEST_IDS.GLOBAL_SEARCH.NO_RESULTS);
+    await expect(noResultsMessage).toBeVisible();
     console.log("✓ 'No results found' message displayed");
 
     // Close search
@@ -141,17 +147,19 @@ test.describe("Global Search", () => {
     await expect(allTab).toBeVisible();
     console.log("✓ All tab visible");
 
-    // Click on "Issues" tab
+    // Click on "Issues" tab - use evaluate for React event handling
     const issuesTab = page.getByRole("button", { name: /^issues/i });
-    await issuesTab.click();
+    await expect(issuesTab).toBeVisible();
+    await issuesTab.evaluate((el: HTMLElement) => el.click());
 
     // Issue should still be visible (it's an issue)
     await expect(page.getByText(uniqueSearchTerm)).toBeVisible();
     console.log("✓ Issue visible in Issues tab");
 
-    // Click on "Documents" tab
+    // Click on "Documents" tab - use evaluate for React event handling
     const documentsTab = page.getByRole("button", { name: /^documents/i });
-    await documentsTab.click();
+    await expect(documentsTab).toBeVisible();
+    await documentsTab.evaluate((el: HTMLElement) => el.click());
 
     // Wait for tab to switch - check if either no results or no issue visible
     // Since we created an issue but no document, either "no results" shows or our issue is filtered out

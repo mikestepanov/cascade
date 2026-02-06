@@ -121,7 +121,7 @@ jobs:
       - name: Build
         run: pnpm run build
         env:
-          VITE_CONVEX_URL: ${{ github.ref == 'refs/heads/main' && secrets.VITE_CONVEX_URL || 'http://localhost:3211' }}
+          VITE_CONVEX_URL: ${{ github.ref == 'refs/heads/main' && secrets.VITE_CONVEX_URL || 'http://localhost:3210' }}
           CONVEX_DEPLOYMENT: ${{ secrets.CONVEX_DEPLOYMENT }}
           CONVEX_DEPLOY_KEY: ${{ secrets.CONVEX_DEPLOY_KEY }}
 
@@ -190,7 +190,9 @@ jobs:
           CONVEX_AGENT_MODE: anonymous
         run: |
           # Start convex in background and capture output to file
-          npx convex dev --local --until-success > convex.log 2>&1 &
+          # Do NOT use --until-success because it exits after the first success, stopping the server.
+          # We need the server to stay running for the E2E tests.
+          npx convex dev --local > convex.log 2>&1 &
           CONVEX_PID=$!
 
           # Wait for the initial push to complete (look for "Convex functions ready" message)
@@ -209,7 +211,7 @@ jobs:
         env:
           SHARD_INDEX: ${{ matrix.shardIndex }}
           CI: true
-          VITE_CONVEX_URL: ${{ github.ref == 'refs/heads/main' && secrets.VITE_CONVEX_URL || 'http://127.0.0.1:3211' }}
+          VITE_CONVEX_URL: ${{ github.ref == 'refs/heads/main' && secrets.VITE_CONVEX_URL || 'http://127.0.0.1:3210' }}
           E2E_API_KEY: ${{ secrets.E2E_API_KEY }}
           MAILTRAP_API_TOKEN: ${{ secrets.MAILTRAP_API_TOKEN }}
           MAILTRAP_ACCOUNT_ID: ${{ secrets.MAILTRAP_ACCOUNT_ID }}

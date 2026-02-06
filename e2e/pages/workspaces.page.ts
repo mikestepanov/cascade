@@ -24,7 +24,7 @@ export class WorkspacesPage extends BasePage {
     this.workspaceNameInput = page.locator("#workspace-name");
     this.workspaceDescriptionInput = page.locator("#workspace-description");
     this.submitWorkspaceButton = page.getByRole("button", { name: /create workspace/i });
-    this.workspaceList = page.locator(".grid"); // Adjust based on actual container
+    this.workspaceList = page.getByRole("main").locator("a[href*='/workspaces/']").locator("..");
     this.workspaceCards = page.locator("a[href*='/workspaces/']");
   }
 
@@ -92,9 +92,9 @@ export class WorkspacesPage extends BasePage {
     const modal = this.page.getByRole("dialog");
     await modal.waitFor({ state: "visible" });
 
-    // Wait for input to be visible and stable
+    // Wait for input to be visible and editable
     await this.workspaceNameInput.waitFor({ state: "visible" });
-    await this.page.waitForTimeout(500);
+    await expect(this.workspaceNameInput).toBeEnabled();
 
     // Fill with name
     await this.workspaceNameInput.fill(name);
@@ -104,8 +104,7 @@ export class WorkspacesPage extends BasePage {
 
     if (description) {
       await this.workspaceDescriptionInput.waitFor({ state: "visible" });
-      // Ensure it's stable
-      await this.page.waitForTimeout(500);
+      await expect(this.workspaceDescriptionInput).toBeEnabled();
       await this.workspaceDescriptionInput.fill(description, { force: true });
     }
 
@@ -123,8 +122,14 @@ export class WorkspacesPage extends BasePage {
     // Wait for modal to close (name input disappears)
     await expect(this.workspaceNameInput).not.toBeVisible();
 
-    // Additional wait for list to refresh
-    await this.page.waitForTimeout(500);
+    // After workspace creation, the page may redirect to the workspace detail page
+    // Wait for either the workspace to appear in the list OR the workspace detail page to load
+    const mainContent = this.page.getByRole("main");
+    const newWorkspaceCard = mainContent
+      .locator(`a[href*="/workspaces/"]`)
+      .filter({ hasText: name });
+    const workspaceHeading = mainContent.getByRole("heading", { name, level: 3 });
+    await expect(newWorkspaceCard.or(workspaceHeading)).toBeVisible({ timeout: 15000 });
   }
 
   async expectWorkspacesView() {

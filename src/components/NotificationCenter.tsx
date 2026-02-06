@@ -3,6 +3,7 @@ import type { Id } from "@convex/_generated/dataModel";
 import { useMutation, usePaginatedQuery, useQuery } from "convex/react";
 import { useCallback, useState } from "react";
 import { Flex } from "@/components/ui/Flex";
+import { useOrganizationOptional } from "@/hooks/useOrgContext";
 import { showError } from "@/lib/toast";
 import { NotificationItem, type NotificationWithActor } from "./NotificationItem";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/Popover";
@@ -12,6 +13,8 @@ import { Typography } from "./ui/Typography";
 export function NotificationCenter() {
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const orgContext = useOrganizationOptional();
+
   const { results: notificationsRaw } = usePaginatedQuery(
     api.notifications.list,
     {},
@@ -135,6 +138,7 @@ export function NotificationCenter() {
                   notification={notification}
                   onMarkAsRead={handleMarkAsRead}
                   onDelete={handleDelete}
+                  orgSlug={orgContext?.orgSlug}
                 />
               ))}
             </div>

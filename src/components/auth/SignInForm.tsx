@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Flex } from "@/components/ui/Flex";
 import { ROUTES } from "@/config/routes";
+import { TEST_IDS } from "@/lib/test-ids";
 import { cn } from "@/lib/utils";
 import { Button } from "../ui/Button";
 import { Input } from "../ui/form/Input";
@@ -84,6 +85,7 @@ export function SignInForm() {
               placeholder="Email"
               required={formReady}
               className="transition-default"
+              data-testid={TEST_IDS.AUTH.EMAIL_INPUT}
             />
             <Input
               type="password"
@@ -91,6 +93,7 @@ export function SignInForm() {
               placeholder="Password"
               required={formReady}
               className="transition-default"
+              data-testid={TEST_IDS.AUTH.PASSWORD_INPUT}
             />
           </Flex>
         </div>
@@ -107,6 +110,7 @@ export function SignInForm() {
           size="lg"
           className={cn("w-full transition-all duration-300", showEmailForm && "shadow-card")}
           disabled={submitting || !hydrated}
+          data-testid={TEST_IDS.AUTH.SUBMIT_BUTTON}
         >
           {!showEmailForm ? (
             <Flex align="center" gap="md">

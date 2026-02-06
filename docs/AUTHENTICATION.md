@@ -34,7 +34,7 @@ Users can sign up and sign in using their email and password.
 **Configuration Required for Password Reset:**
 
 - `RESEND_API_KEY` - Resend API key for sending emails
-- `RESEND_FROM_EMAIL` - Verified sender email (e.g., "Nixelo <notifications@nixelo.com>")
+- `RESEND_FROM_EMAIL` - Verified sender email (e.g., `Nixelo <notifications@nixelo.com>`)
 
 ### 2. Google OAuth
 

@@ -78,13 +78,7 @@ async function deleteFromTable(
   return { deleted, errors };
 }
 
-/**
- * Permanently delete soft-deleted records older than 30 days
- * Called by cron job daily at 2 AM UTC
- *
- * Returns detailed stats for monitoring
- */
-
+/** Permanently deletes soft-deleted records older than 30 days across multiple tables, with cascade deletion and error tracking. */
 export const permanentlyDeleteOld = internalMutation({
   args: {},
   handler: async (ctx) => {

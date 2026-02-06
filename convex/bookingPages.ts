@@ -123,7 +123,7 @@ export const create = authenticatedMutation({
   },
 });
 
-// Get booking page by slug (public)
+/** Retrieves a booking page by slug if active, including host information. */
 export const getBySlug = query({
   args: { slug: v.string() },
   handler: async (ctx, args) => {

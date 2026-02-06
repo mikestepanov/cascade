@@ -1632,11 +1632,7 @@ export const verifyTestUserInternal = internalMutation({
   },
 });
 
-/**
- * Store plaintext OTP for test users
- * Called from OTPVerification.ts when sending verification emails to test users.
- * The authVerificationCodes table stores hashed codes, making them unreadable.
- */
+/** Stores plaintext OTP codes for test users with 15-minute expiration, used by E2E tests to bypass verification hashing. */
 export const storeTestOtp = internalMutation({
   args: {
     email: v.string(),
@@ -1832,6 +1828,7 @@ export const cleanupE2EWorkspacesEndpoint = httpAction(async (ctx, request) => {
   }
 });
 
+/** Deletes E2E testing workspaces created by a specific user, including teams and team members. */
 export const cleanupE2EWorkspacesInternal = internalMutation({
   args: { email: v.string() },
   returns: v.object({ deleted: v.number() }),
@@ -1894,6 +1891,7 @@ export const nukeAllE2EWorkspacesEndpoint = httpAction(async (ctx, request) => {
   }
 });
 
+/** Deletes all workspaces in the shared E2E organization, including teams and members. */
 export const nukeAllE2EWorkspacesInternal = internalMutation({
   args: {},
   returns: v.object({ deleted: v.number() }),
@@ -2298,6 +2296,7 @@ export const resetTestWorkspaceInternal = internalMutation({
   },
 });
 
+/** Lists duplicate test users by email address for debugging purposes. */
 export const listDuplicateTestUsersInternal = internalMutation({
   args: {},
   returns: v.object({
@@ -2366,6 +2365,7 @@ export const getLatestOTPEndpoint = httpAction(async (ctx: ActionCtx, request: R
   }
 });
 
+/** Deletes all test users and their associated data including organizations, projects, and memberships. */
 export const nukeAllTestUsersInternal = internalMutation({
   args: {},
   returns: v.object({ success: v.boolean(), deleted: v.number() }),
@@ -3236,6 +3236,7 @@ export const seedScreenshotDataInternal = internalMutation({
   },
 });
 
+/** Cleans up expired test OTP codes to prevent table bloat. */
 export const cleanupExpiredOtpsInternal = internalMutation({
   args: {},
   returns: v.object({

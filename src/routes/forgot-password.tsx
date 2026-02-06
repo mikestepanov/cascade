@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/form/Input";
 import { Typography } from "@/components/ui/Typography";
 import { ROUTES } from "@/config/routes";
 import { getConvexSiteUrl } from "@/lib/convex";
+import { TEST_IDS } from "@/lib/test-ids";
 
 export const Route = createFileRoute("/forgot-password")({
   component: ForgotPasswordRoute,
@@ -78,7 +79,13 @@ function ForgotPasswordPage() {
       subtitle="Enter your email and we'll send you a reset code"
     >
       <form className="flex flex-col gap-form-field" onSubmit={handleSubmit}>
-        <Input type="email" name="email" placeholder="Email" required />
+        <Input
+          type="email"
+          name="email"
+          placeholder="Email"
+          required
+          data-testid={TEST_IDS.AUTH.EMAIL_INPUT}
+        />
         <Button className="w-full" type="submit" disabled={submitting}>
           {submitting ? "Sending..." : "Send reset code"}
         </Button>

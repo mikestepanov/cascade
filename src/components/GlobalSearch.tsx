@@ -3,6 +3,7 @@ import type { Doc, Id } from "@convex/_generated/dataModel";
 import { useQuery } from "convex/react";
 import { Flex } from "@/components/ui/Flex";
 import { useSearchKeyboard, useSearchPagination } from "@/hooks/useGlobalSearch";
+import { TEST_IDS } from "@/lib/test-ids";
 import { cn } from "@/lib/utils";
 import { Badge } from "./ui/Badge";
 import { Button } from "./ui/Button";
@@ -153,7 +154,7 @@ function SearchListContent({
 
   return (
     <>
-      <CommandEmpty className="p-8">
+      <CommandEmpty className="p-8" data-testid={TEST_IDS.GLOBAL_SEARCH.NO_RESULTS}>
         <div className="text-center">
           <span className="text-4xl mb-4 block">🔍</span>
           <Typography variant="p" className="font-medium">
@@ -199,6 +200,7 @@ function SearchResultItem({ result, onClose }: { result: SearchResult; onClose: 
         onClose();
       }}
       className="p-3 sm:p-4 cursor-pointer data-[selected=true]:bg-ui-bg-secondary"
+      data-testid={TEST_IDS.SEARCH.RESULT_ITEM}
     >
       <Flex align="start" gap="md" className="w-full">
         {/* Icon */}
@@ -242,7 +244,7 @@ function SearchResultItem({ result, onClose }: { result: SearchResult; onClose: 
             {result.type === "issue" && (
               <span className="text-xs font-mono text-ui-text-secondary">{result.key}</span>
             )}
-            <Badge variant="neutral" shape="pill">
+            <Badge variant="neutral" shape="pill" data-testid={TEST_IDS.SEARCH.RESULT_TYPE}>
               {result.type}
             </Badge>
           </Flex>
@@ -326,7 +328,7 @@ export function GlobalSearch() {
 
       {/* Search Modal */}
       <CommandDialog open={isOpen} onOpenChange={(open) => !open && setIsOpen(false)}>
-        <Command data-testid="global-search-modal" className="bg-ui-bg" shouldFilter={false}>
+        <Command data-testid={TEST_IDS.SEARCH.MODAL} className="bg-ui-bg" shouldFilter={false}>
           <CommandInput
             placeholder="Search issues and documents..."
             value={query}

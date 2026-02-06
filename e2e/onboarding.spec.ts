@@ -1,3 +1,4 @@
+import { TEST_IDS } from "../src/lib/test-ids";
 import { E2E_ENDPOINTS, getE2EHeaders, TEST_USERS } from "./config";
 import { expect, onboardingTest as test } from "./fixtures";
 import { OnboardingPage } from "./pages";
@@ -25,8 +26,7 @@ async function resetOnboarding(parallelIndex: number): Promise<void> {
     if (!response.ok) {
       console.warn(`Failed to reset onboarding for ${email}: ${response.status}`);
     }
-    // Small delay to allow DB changes to propagate and UI to react
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    // Note: DB changes propagate reactively via Convex, no hardcoded delay needed
   } catch (e) {
     console.warn(`Failed to reset onboarding: ${e}`);
   }
@@ -92,8 +92,8 @@ test.describe("Onboarding Wizard", () => {
     await page.waitForURL(/\/[^/]+\/dashboard/);
     await page.waitForLoadState("domcontentloaded");
 
-    // Wait for dashboard to finish loading (spinner disappears)
-    await expect(page.locator(".animate-spin")).not.toBeVisible();
+    // Wait for dashboard to finish loading — use test ID to avoid matching multiple headings
+    await expect(page.getByTestId(TEST_IDS.DASHBOARD.FEED_HEADING)).toBeVisible({ timeout: 10000 });
 
     // Should navigate to dashboard
     await onboarding.expectDashboard();
@@ -187,8 +187,8 @@ test.describe("Onboarding - Team Member Flow", () => {
     await page.waitForURL(/\/[^/]+\/dashboard/);
     await page.waitForLoadState("domcontentloaded");
 
-    // Wait for dashboard to finish loading (spinner disappears)
-    await expect(page.locator(".animate-spin")).not.toBeVisible();
+    // Wait for dashboard to finish loading — use test ID to avoid matching multiple headings
+    await expect(page.getByTestId(TEST_IDS.DASHBOARD.FEED_HEADING)).toBeVisible({ timeout: 10000 });
 
     // Should navigate to dashboard
     await onboarding.expectDashboard();

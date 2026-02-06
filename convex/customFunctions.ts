@@ -77,22 +77,21 @@ async function requireAuth(ctx: QueryCtx | MutationCtx): Promise<Id<"users">> {
 // Role Checking Helpers
 // =============================================================================
 
-const ROLE_HIERARCHY = { viewer: 1, editor: 2, admin: 3 } as const;
-type Role = "viewer" | "editor" | "admin";
+import type { OrganizationRole, ProjectRole } from "./validators";
 
-function hasMinimumRole(role: Role | null, requiredRole: Role): boolean {
+const ROLE_HIERARCHY = { viewer: 1, editor: 2, admin: 3 } as const;
+
+function hasMinimumRole(role: ProjectRole | null, requiredRole: ProjectRole): boolean {
   const userLevel = role ? ROLE_HIERARCHY[role] : 0;
   const requiredLevel = ROLE_HIERARCHY[requiredRole];
   return userLevel >= requiredLevel;
 }
 
-function requireMinimumRole(role: Role | null, requiredRole: Role): void {
+function requireMinimumRole(role: ProjectRole | null, requiredRole: ProjectRole): void {
   if (!hasMinimumRole(role, requiredRole)) {
     throw forbidden(requiredRole);
   }
 }
-
-type OrganizationRole = "owner" | "admin" | "member";
 
 function hasMinimumOrgRole(role: OrganizationRole | null, requiredRole: OrganizationRole): boolean {
   const ORG_ROLE_HIERARCHY = { member: 1, admin: 2, owner: 3 } as const;

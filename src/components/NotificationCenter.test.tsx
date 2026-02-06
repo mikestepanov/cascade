@@ -224,9 +224,24 @@ describe("NotificationCenter", () => {
 
     // Find the notification container by traversing up from the title
     const titleElement = screen.getByText("Unread");
-    // The notification div is a few levels up - it has the bg-status-info-bg class for unread notifications
-    const notificationDiv = titleElement.closest(".bg-status-info-bg");
-    expect(notificationDiv).toBeInTheDocument();
+    // The notification div is a few levels up - it has the bg-brand-subtle/10 class for unread notifications
+    // Note: Tailwind classes might be compiled, but let's check for the partial class match or structure
+    // Since we can't reliably check compiled tailwind classes by exact string if they are complex,
+    // we can check if it has the background color class we added.
+    // In our implementation: !notification.isRead && "bg-brand-subtle/10"
+    // However, escaping special characters in class selection is tricky.
+    // Let's assume the render output contains the class string.
+
+    // Alternative: check if the container has the class.
+    // We can't use closest(".bg-brand-subtle/10") easily because of the slash.
+    // Let's check parent elements.
+
+    let parent = titleElement.parentElement;
+    while (parent && !parent.className.includes("bg-brand-subtle/10")) {
+      parent = parent.parentElement;
+    }
+
+    expect(parent).toBeInTheDocument();
   });
 
   it("should call markAsRead when mark as read button is clicked", async () => {
@@ -415,7 +430,7 @@ describe("NotificationCenter", () => {
     });
     vi.mocked(useQuery).mockReturnValue(2); // Unread count
 
-    render(<NotificationCenter />);
+    const { container } = render(<NotificationCenter />);
 
     const button = screen.getByRole("button");
     await user.click(button);
@@ -424,9 +439,12 @@ describe("NotificationCenter", () => {
       expect(screen.getByText("Assigned")).toBeInTheDocument();
     });
 
-    // Check that icons are rendered (emojis)
-    expect(screen.getByText("👤")).toBeInTheDocument();
-    expect(screen.getByText("🚀")).toBeInTheDocument();
+    // Check that Lucide icons are rendered by looking for their SVG class names
+    // issue_assigned -> User icon -> .lucide-user
+    expect(document.querySelector(".lucide-user")).toBeInTheDocument();
+
+    // sprint_started -> Rocket icon -> .lucide-rocket
+    expect(document.querySelector(".lucide-rocket")).toBeInTheDocument();
   });
 
   it("should close dropdown when backdrop is clicked", async () => {

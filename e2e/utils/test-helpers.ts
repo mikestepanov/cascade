@@ -71,9 +71,10 @@ export async function dismissAllToasts(page: Page, maxAttempts = 10): Promise<vo
     const count = await toasts.count();
     if (count === 0) break;
 
-    await toasts.nth(0).click();
-    // Wait briefly for toast to disappear
-    await page.waitForTimeout(100);
+    const firstToast = toasts.nth(0);
+    await firstToast.click();
+    // Wait for toast to disappear after clicking
+    await firstToast.waitFor({ state: "hidden" }).catch(() => {});
     attempts++;
   }
 }
@@ -83,13 +84,6 @@ export async function dismissAllToasts(page: Page, maxAttempts = 10): Promise<vo
  */
 export function isCI(): boolean {
   return !!process.env.CI;
-}
-
-/**
- * Slow down test execution (for debugging)
- */
-export async function slowMo(page: Page, ms = 100): Promise<void> {
-  await page.waitForTimeout(ms);
 }
 
 /**

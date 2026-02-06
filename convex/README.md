@@ -1,171 +1,90 @@
-# Backend Testing Guide
+# Welcome to your Convex functions directory!
 
-## Overview
+Write your Convex functions here.
+See https://docs.convex.dev/functions for more.
 
-This directory contains backend tests for Nixelo's Convex functions. The testing infrastructure uses `convex-test` for integration tests and vitest for test running.
+A query function that takes two arguments looks like:
 
-## Quick Start (Local Development)
+```ts
+// convex/myFunctions.ts
+import { query } from "./_generated/server";
+import { v } from "convex/values";
 
-### Prerequisites
+export const myQueryFunction = query({
+  // Validators for arguments.
+  args: {
+    first: v.number(),
+    second: v.string(),
+  },
 
-1. **Active Convex deployment** - You must have Convex configured locally
-2. **Environment file** - `.env` or `.env.local` with your Convex deployment settings
+  // Function implementation.
+  handler: async (ctx, args) => {
+    // Read the database as many times as you need here.
+    // See https://docs.convex.dev/database/reading-data.
+    const documents = await ctx.db.query("tablename").collect();
 
-### Running Tests
+    // Arguments passed from the client are properties of the args object.
+    console.log(args.first, args.second);
 
-```bash
-# 1. Start Convex dev server (in one terminal)
-npx convex dev
-
-# 2. Run backend tests (in another terminal)
-pnpm run test:convex
-
-# Or run with UI
-pnpm run test:convex:ui
-
-# Or run with coverage report
-pnpm run test:convex:coverage
-```
-
-## Test Structure
-
-### Pure Function Tests
-
-Tests for utility functions that don't require database access:
-
-- ✅ Can run anywhere (even without Convex deployment)
-- Example: `hasMinimumRole()` in `rbac.test.ts`
-
-### Integration Tests
-
-Tests for queries/mutations that interact with the database:
-
-- ⚠️ Require active Convex deployment
-- Use `convexTest()` to create isolated test database
-- Example: `getUserRole()`, `canAccessProject()` in `rbac.test.ts`
-
-## File Organization
-
-```
-convex/
-├── rbac.test.ts          # RBAC function tests (19 tests)
-├── testSetup.ts          # Module exports for convex-test
-├── test-utils.ts         # Test helper functions
-└── TESTING_STATUS.md     # Current testing status and blockers
-```
-
-## Test Utilities
-
-### Helper Functions (`test-utils.ts`)
-
-```typescript
-// Create a test user
-const userId = await createTestUser(t, {
-  name: "Test User",
-  email: "test@example.com",
-});
-
-// Create a test project
-const projectId = await createTestProject(t, userId, {
-  name: "Test Project",
-  key: "TEST",
-  isPublic: false,
-});
-
-// Add a member to a project
-await addProjectMember(t, projectId, memberId, "editor", adminId);
-
-// Create a test issue
-const issueId = await createTestIssue(t, projectId, reporterId, {
-  title: "Test Issue",
-  type: "task",
-  priority: "high",
+    // Write arbitrary JavaScript here: filter, aggregate, build derived data,
+    // remove non-public properties, or create new objects.
+    return documents;
+  },
 });
 ```
 
-## Writing New Tests
+Using this query function in a React component looks like:
 
-### Example Test File
-
-```typescript
-import { convexTest } from "convex-test";
-import { describe, expect, it } from "vitest";
-import schema from "./schema";
-import { modules } from "./testSetup";
-import { createTestUser, createTestProject } from "./testUtils";
-
-describe("MyModule", () => {
-  it("should do something", async () => {
-    const t = convexTest(schema, modules);
-
-    // Setup test data
-    const userId = await createTestUser(t);
-    const projectId = await createTestProject(t, userId);
-
-    // Run your test
-    const result = await t.run(async (ctx) => {
-      const { myFunction } = await import("./myModule");
-      return await myFunction(ctx, projectId, userId);
-    });
-
-    // Assert
-    expect(result).toBeDefined();
-  });
+```ts
+const data = useQuery(api.myFunctions.myQueryFunction, {
+  first: 10,
+  second: "hello",
 });
 ```
 
-## Current Test Coverage
+A mutation function looks like:
 
-- **RBAC (rbac.ts):** 19 tests
-  - ✅ 5 pure function tests passing
-  - ⚠️ 14 integration tests (require Convex deployment)
+```ts
+// convex/myFunctions.ts
+import { mutation } from "./_generated/server";
+import { v } from "convex/values";
 
-## Troubleshooting
+export const myMutationFunction = mutation({
+  // Validators for arguments.
+  args: {
+    first: v.string(),
+    second: v.string(),
+  },
 
-### Error: "Could not find the \_generated directory"
+  // Function implementation.
+  handler: async (ctx, args) => {
+    // Insert or modify documents in the database here.
+    // Mutations can also read from the database like queries.
+    // See https://docs.convex.dev/database/writing-data.
+    const message = { body: args.first, author: args.second };
+    const id = await ctx.db.insert("messages", message);
 
-**Cause:** `convex-test` needs an active Convex deployment to discover modules.
-
-**Solution:**
-
-```bash
-# Make sure Convex dev server is running
-npx convex dev
-
-# Then run tests in another terminal
-pnpm run test:convex
+    // Optionally, return a value from your mutation.
+    return await ctx.db.get("messages", id);
+  },
+});
 ```
 
-### Error: "CONVEX_DEPLOYMENT not set"
+Using this mutation function in a React component looks like:
 
-**Cause:** Missing Convex configuration.
+```ts
+const mutation = useMutation(api.myFunctions.myMutationFunction);
+function handleButtonPress() {
+  // fire and forget, the most common way to use mutations
+  mutation({ first: "Hello!", second: "me" });
+  // OR
+  // use the result once the mutation has completed
+  mutation({ first: "Hello!", second: "me" }).then((result) =>
+    console.log(result),
+  );
+}
+```
 
-**Solution:**
-
-1. Check your `.env` or `.env.local` file exists
-2. Run `npx convex dev` to set up deployment
-3. Follow Convex setup instructions
-
-### Tests Pass Locally But Fail in CI
-
-**Cause:** CI environment doesn't have Convex deployment configured.
-
-**Solution:**
-Add Convex deployment configuration to CI:
-
-1. Add `CONVEX_DEPLOY_KEY` secret to GitHub
-2. Update CI workflow to run `npx convex deploy` before tests
-
-## What's Next
-
-See `TESTING_STATUS.md` for:
-
-- Current implementation status
-- Known blockers
-- Roadmap for additional test coverage
-
-## Resources
-
-- [Convex Testing Docs](https://docs.convex.dev/functions/testing)
-- [convex-test on npm](https://www.npmjs.com/package/convex-test)
-- [Vitest Documentation](https://vitest.dev/)
+Use the Convex CLI to push your functions to a deployment. See everything
+the Convex CLI can do by running `npx convex -h` in your project root
+directory. To learn more, launch the docs with `npx convex docs`.

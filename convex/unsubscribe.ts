@@ -123,10 +123,7 @@ function generateRandomToken(): string {
     .join("");
 }
 
-/**
- * Internal mutation to generate unsubscribe token
- * Used by digest email actions
- */
+/** Generates an unsubscribe token for a user, used by digest email actions. */
 export const generateTokenInternal = internalMutation({
   args: { userId: v.id("users") },
   handler: async (ctx, args): Promise<string> => {

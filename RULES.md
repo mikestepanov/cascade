@@ -141,15 +141,62 @@ export default function ComponentName() {}
 
 ### Playwright/E2E Testing
 
+**Selector priority** (most preferred → least preferred):
+1. Accessible selectors: `getByRole`, `getByLabel`, `getByText`
+2. Test IDs from shared constants: `getByTestId(TEST_IDS.ISSUE.CARD)`
+3. Data attributes: `locator("[data-tour='sidebar']")`
+4. Scoped CSS selectors (on a container, not `page`)
+
 ```typescript
 // ✅ CORRECT - Accessible selectors
 await page.getByRole('button', { name: /submit/i });
 await page.getByLabel('Email');
-await page.getByTestId('complex-widget'); // Last resort
+await page.getByTestId(TEST_IDS.ISSUE.CARD);
 
-// ❌ WRONG - Raw selectors
+// ❌ WRONG - Raw selectors, unscoped, deprecated patterns
 await page.waitForSelector('[data-testid="..."]');
 await page.waitForLoadState('networkidle');
+await page.locator("img").first();         // Matches any <img> on page
+await page.locator(".animate-pulse");       // Generic CSS class
+await page.getByTestId("issue-card");       // Raw string — use TEST_IDS constant
+```
+
+### Test ID Constants
+
+All `data-testid` values must use constants from `src/lib/test-ids.ts` — both in components and E2E tests. The `check-test-ids.js` validator enforces this in CI.
+
+```typescript
+// In components:
+import { TEST_IDS } from "@/lib/test-ids";
+<div data-testid={TEST_IDS.ACTIVITY.FEED}>
+
+// In E2E tests:
+import { TEST_IDS } from "../src/lib/test-ids";
+page.getByTestId(TEST_IDS.ACTIVITY.FEED);
+```
+
+### E2E Anti-Patterns (enforced by `check-e2e-quality.js`)
+
+| Pattern | Problem | Fix |
+|---------|---------|-----|
+| `page.locator("img").first()` | Matches any `<img>` on page | Scope to container or use `getByRole` |
+| `page.locator(".animate-pulse")` | Generic CSS class | Wait for specific content to appear instead |
+| `page.waitForSelector(...)` | Deprecated Playwright API | Use `locator().waitFor()` or `expect(locator).toBeVisible()` |
+| `waitForLoadState("networkidle")` | Flaky, unreliable timing | Wait for a specific element assertion |
+| `getByTestId("raw-string")` | Breaks if ID changes | Use `TEST_IDS.SECTION.ELEMENT` constant |
+
+### Scoping Selectors
+
+Always scope child queries to a container instead of searching the entire page:
+
+```typescript
+// ✅ CORRECT - Scoped to feed container
+const feed = page.getByTestId(TEST_IDS.ACTIVITY.FEED);
+const entry = feed.getByTestId(TEST_IDS.ACTIVITY.ENTRY).first();
+await expect(entry.getByText(/created/i)).toBeVisible();
+
+// ❌ WRONG - Unscoped page queries
+const entry = page.getByText(/created/i).first(); // Could match anything
 ```
 
 ---
