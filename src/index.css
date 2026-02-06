@@ -7,37 +7,62 @@
 @theme {
   /* Font Family */
   --font-family-sans: "Inter var", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+  --font-family-mono: "Geist Mono", ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, Monaco, Consolas, "Courier New", monospace;
 
   /* Border Radius */
   --radius: 8px;
   --radius-secondary: 4px;
   --radius-container: 12px;
+  --radius-lg: 16px;
+  --radius-pill: 9999px;
 
-  /* Box Shadows */
+  /* Box Shadows - Premium tiers */
   --shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
   --shadow-hover: 0 2px 8px rgba(0, 0, 0, 0.12);
+  --shadow-soft: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.06);
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.08), 0 2px 6px rgba(0, 0, 0, 0.04);
+  --shadow-card-hover: 0 4px 12px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.06);
+  --shadow-elevated: 0 4px 16px rgba(0, 0, 0, 0.12), 0 2px 6px rgba(0, 0, 0, 0.08);
+
+  /* Transition Durations (Mintlify standard: 0.2s) */
+  --duration-fast: 0.15s;
+  --duration-default: 0.2s;
+  --duration-slow: 0.3s;
+
+  /* Letter Spacing (tighter for headings = premium feel) */
+  --tracking-tight: -0.24px;
+  --tracking-tighter: -0.5px;
+  --tracking-tightest: -1px;
 
   /* ============================================================
    * TIER 2 — Semantic tokens (what components use)
    * All defined via light-dark() so dark mode is automatic.
+   * Mintlify-inspired: near-black bg, ultra-subtle borders, opacity text
    * ============================================================ */
 
-  /* --- Surface (5 vars) --- */
-  --color-ui-bg: light-dark(var(--p-white), var(--p-gray-900));
-  --color-ui-bg-secondary: light-dark(var(--p-gray-50), var(--p-gray-800));
-  --color-ui-bg-tertiary: light-dark(var(--p-gray-100), var(--p-gray-700));
-  --color-ui-bg-elevated: light-dark(var(--p-white), var(--p-gray-800));
-  --color-ui-bg-overlay: light-dark(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.75));
+  /* --- Surface (8 vars) --- */
+  /* Near-black dark mode (#08090a) instead of gray (#111827) */
+  --color-ui-bg: light-dark(var(--p-white), #08090a);
+  --color-ui-bg-secondary: light-dark(var(--p-gray-50), #0f1011);
+  --color-ui-bg-tertiary: light-dark(var(--p-gray-100), #161718);
+  --color-ui-bg-elevated: light-dark(var(--p-white), #0f1011);
+  --color-ui-bg-overlay: light-dark(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.8));
+  --color-ui-bg-sidebar: light-dark(#f8f9fb, #0a0b0c);
+  /* Ultra-soft background for cards/sections (nearly transparent) */
+  --color-ui-bg-soft: light-dark(var(--p-gray-50), rgba(255, 255, 255, 0.03));
+  --color-ui-bg-hover: light-dark(var(--p-gray-100), rgba(255, 255, 255, 0.05));
 
   /* --- Text (4 vars) --- */
-  --color-ui-text: light-dark(var(--p-gray-900), var(--p-gray-50));
-  --color-ui-text-secondary: light-dark(var(--p-gray-500), var(--p-gray-300));
-  --color-ui-text-tertiary: light-dark(var(--p-gray-400), var(--p-gray-400));
-  --color-ui-text-inverse: light-dark(var(--p-white), var(--p-gray-900));
+  /* Opacity-based hierarchy in dark mode for premium feel */
+  --color-ui-text: light-dark(var(--p-gray-900), #ffffff);
+  --color-ui-text-secondary: light-dark(var(--p-gray-500), rgba(255, 255, 255, 0.7));
+  --color-ui-text-tertiary: light-dark(var(--p-gray-400), rgba(255, 255, 255, 0.5));
+  --color-ui-text-inverse: light-dark(var(--p-white), #08090a);
 
   /* --- Border (4 vars) --- */
-  --color-ui-border: light-dark(var(--p-gray-200), var(--p-gray-700));
-  --color-ui-border-secondary: light-dark(var(--p-gray-300), var(--p-gray-600));
+  /* Ultra-subtle borders in dark mode - nearly invisible */
+  --color-ui-border: light-dark(var(--p-gray-200), rgba(255, 255, 255, 0.07));
+  --color-ui-border-secondary: light-dark(var(--p-gray-300), rgba(255, 255, 255, 0.15));
   --color-ui-border-focus: light-dark(var(--p-indigo-600), var(--p-indigo-400));
   --color-ui-border-error: light-dark(var(--p-red-500), var(--p-red-400));
 
@@ -166,6 +191,12 @@
   --color-brand-emerald-border: light-dark(var(--p-emerald-600), var(--p-emerald-400));
   --color-brand-emerald-track: light-dark(var(--p-emerald-100), rgba(6, 78, 59, 0.4));
 
+  /* --- Scrollbar (4 vars) --- */
+  /* Mintlify-inspired: subtle scrollbar with transparent track */
+  --color-scrollbar-thumb: light-dark(rgba(0, 0, 0, 0.2), rgba(255, 255, 255, 0.2));
+  --color-scrollbar-thumb-hover: light-dark(rgba(0, 0, 0, 0.3), rgba(255, 255, 255, 0.3));
+  --color-scrollbar-track: transparent;
+
   /* Scrollable Panel Heights */
   --max-height-panel: 80vh;
   --max-height-panel-lg: 85vh;
@@ -202,23 +233,137 @@
   --spacing-form-field: 16px;
   --spacing-section: 32px;
 
-  /* Project Animations */
+  /* ============================================================
+   * ANIMATIONS - Mintlify-inspired premium motion
+   * ============================================================ */
+
+  /* Basic fade */
   @keyframes fade-in {
     from { opacity: 0; }
     to { opacity: 1; }
   }
+
+  /* Slide up with fade (toasts, cards) */
   @keyframes slide-up {
     from { opacity: 0; transform: translateY(10px); }
     to { opacity: 1; transform: translateY(0); }
   }
+
+  /* Scale in with subtle 3D rotation (modals, popovers) */
   @keyframes scale-in {
-    from { opacity: 0; transform: scale(0.95); }
-    to { opacity: 1; transform: scale(1); }
+    from { opacity: 0; transform: rotateX(-10deg) scale(0.96); }
+    to { opacity: 1; transform: rotateX(0deg) scale(1); }
   }
 
-  --animation-fade-in: fade-in 0.3s ease-out;
-  --animation-slide-up: slide-up 0.4s ease-out;
+  /* Scale out with 3D rotation */
+  @keyframes scale-out {
+    from { opacity: 1; transform: rotateX(0deg) scale(1); }
+    to { opacity: 0; transform: rotateX(-10deg) scale(0.96); }
+  }
+
+  /* Enter from right (drawer, slide panels) */
+  @keyframes enter-from-right {
+    from { opacity: 0; transform: translateX(200px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  /* Enter from left */
+  @keyframes enter-from-left {
+    from { opacity: 0; transform: translateX(-200px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  /* Exit to right */
+  @keyframes exit-to-right {
+    from { opacity: 1; transform: translateX(0); }
+    to { opacity: 0; transform: translateX(200px); }
+  }
+
+  /* Exit to left */
+  @keyframes exit-to-left {
+    from { opacity: 1; transform: translateX(0); }
+    to { opacity: 0; transform: translateX(-200px); }
+  }
+
+  /* Shimmer for skeleton loaders */
+  @keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+
+  /* Pulse for loading states */
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+
+  /* Spin for loaders */
+  @keyframes spin {
+    100% { transform: rotate(360deg); }
+  }
+
+  /* Fade out */
+  @keyframes fade-out {
+    from { opacity: 1; }
+    to { opacity: 0; }
+  }
+
+  /* Slide down (for sheet from top) */
+  @keyframes slide-down {
+    from { opacity: 0; transform: translateY(-100%); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Slide up out (exit for top sheet) */
+  @keyframes slide-up-out {
+    from { opacity: 1; transform: translateY(0); }
+    to { opacity: 0; transform: translateY(-100%); }
+  }
+
+  /* Slide down out (exit for bottom sheet) */
+  @keyframes slide-down-out {
+    from { opacity: 1; transform: translateY(0); }
+    to { opacity: 0; transform: translateY(100%); }
+  }
+
+  /* Accordion expand/collapse */
+  @keyframes accordion-down {
+    from { height: 0; }
+    to { height: var(--radix-accordion-content-height); }
+  }
+
+  @keyframes accordion-up {
+    from { height: var(--radix-accordion-content-height); }
+    to { height: 0; }
+  }
+
+  /* Collapsible expand/collapse with fade */
+  @keyframes collapsible-down {
+    from { height: 0; opacity: 0; }
+    to { height: var(--radix-collapsible-content-height); opacity: 1; }
+  }
+
+  @keyframes collapsible-up {
+    from { height: var(--radix-collapsible-content-height); opacity: 1; }
+    to { height: 0; opacity: 0; }
+  }
+
+  /* Animation tokens */
+  --animation-fade-in: fade-in 0.2s ease-out;
+  --animation-slide-up: slide-up 0.3s ease-out;
   --animation-scale-in: scale-in 0.2s ease-out;
+  --animation-scale-out: scale-out 0.15s ease-in;
+  --animation-enter-right: enter-from-right 0.3s ease-out;
+  --animation-enter-left: enter-from-left 0.3s ease-out;
+  --animation-exit-right: exit-to-right 0.2s ease-in;
+  --animation-exit-left: exit-to-left 0.2s ease-in;
+  --animation-shimmer: shimmer 2s infinite;
+  --animation-pulse: pulse 2s ease-in-out infinite;
+  --animation-spin: spin 1s linear infinite;
+  --animation-accordion-down: accordion-down 0.2s ease-out;
+  --animation-accordion-up: accordion-up 0.2s ease-out;
+  --animation-collapsible-down: collapsible-down 0.25s ease-out;
+  --animation-collapsible-up: collapsible-up 0.2s ease-in;
 }
 
 /* ============================================================
@@ -519,4 +664,164 @@ body {
   box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.5), 0 0 0 9999px rgba(0, 0, 0, 0.5);
   border-radius: 8px;
   transition: all 0.3s ease;
+}
+
+/* ============================================================
+ * MINTLIFY-INSPIRED UTILITY CLASSES
+ * ============================================================ */
+
+/* Animation utilities */
+.animate-fade-in {
+  animation: var(--animation-fade-in);
+}
+
+.animate-slide-up {
+  animation: var(--animation-slide-up);
+}
+
+.animate-scale-in {
+  animation: var(--animation-scale-in);
+}
+
+.animate-scale-out {
+  animation: var(--animation-scale-out);
+}
+
+.animate-enter-right {
+  animation: var(--animation-enter-right);
+}
+
+.animate-enter-left {
+  animation: var(--animation-enter-left);
+}
+
+.animate-exit-right {
+  animation: var(--animation-exit-right);
+}
+
+.animate-exit-left {
+  animation: var(--animation-exit-left);
+}
+
+.animate-fade-out {
+  animation: fade-out 0.15s ease-in forwards;
+}
+
+.animate-slide-down {
+  animation: slide-down 0.3s ease-out;
+}
+
+.animate-slide-up-out {
+  animation: slide-up-out 0.2s ease-in forwards;
+}
+
+.animate-slide-down-out {
+  animation: slide-down-out 0.2s ease-in forwards;
+}
+
+.animate-accordion-down {
+  animation: var(--animation-accordion-down);
+}
+
+.animate-accordion-up {
+  animation: var(--animation-accordion-up);
+}
+
+.animate-collapsible-down {
+  animation: var(--animation-collapsible-down);
+}
+
+.animate-collapsible-up {
+  animation: var(--animation-collapsible-up);
+}
+
+.animate-shimmer {
+  animation: var(--animation-shimmer);
+  background: linear-gradient(
+    90deg,
+    var(--color-ui-bg-soft) 25%,
+    var(--color-ui-bg-hover) 50%,
+    var(--color-ui-bg-soft) 75%
+  );
+  background-size: 200% 100%;
+}
+
+.animate-pulse {
+  animation: var(--animation-pulse);
+}
+
+.animate-spin {
+  animation: var(--animation-spin);
+}
+
+/* Subtle card styling (Mintlify-inspired) */
+.card-subtle {
+  background: var(--color-ui-bg-soft);
+  border: 1px solid var(--color-ui-border);
+  border-radius: var(--radius-container);
+  transition: border-color var(--duration-default), box-shadow var(--duration-default);
+}
+
+.card-subtle:hover {
+  border-color: var(--color-ui-border-secondary);
+  box-shadow: var(--shadow-card-hover);
+}
+
+/* Premium scrollbar styling (uses scrollbar tokens from @theme) */
+.scrollbar-subtle {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-scrollbar-thumb) var(--color-scrollbar-track);
+}
+
+.scrollbar-subtle::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.scrollbar-subtle::-webkit-scrollbar-track {
+  background: var(--color-scrollbar-track);
+}
+
+.scrollbar-subtle::-webkit-scrollbar-thumb {
+  background: var(--color-scrollbar-thumb);
+  border-radius: 3px;
+}
+
+.scrollbar-subtle::-webkit-scrollbar-thumb:hover {
+  background: var(--color-scrollbar-thumb-hover);
+}
+
+/* Typography utilities with tight letter-spacing */
+.tracking-tight {
+  letter-spacing: var(--tracking-tight);
+}
+
+.tracking-tighter {
+  letter-spacing: var(--tracking-tighter);
+}
+
+.tracking-tightest {
+  letter-spacing: var(--tracking-tightest);
+}
+
+/* Text opacity utilities for hierarchy */
+.text-soft {
+  color: var(--color-ui-text-secondary);
+}
+
+.text-muted {
+  color: var(--color-ui-text-tertiary);
+}
+
+/* Default transition utility */
+.transition-default {
+  transition: all var(--duration-default) ease;
+}
+
+.transition-fast {
+  transition: all var(--duration-fast) ease;
+}
+
+.transition-slow {
+  transition: all var(--duration-slow) ease;
 }

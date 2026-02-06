@@ -9,7 +9,7 @@ interface SkeletonProps {
  * Base Skeleton component with shimmer animation
  */
 export function Skeleton({ className }: SkeletonProps) {
-  return <div className={cn("animate-pulse bg-ui-bg-tertiary rounded", className)} />;
+  return <div className={cn("animate-shimmer bg-ui-bg-soft rounded-md", className)} />;
 }
 
 /**

@@ -22,3 +22,8 @@
 **Vulnerability:** The `createProject` mutation accepted `organizationId` and `workspaceId` arguments without verifying the caller's membership in those resources. This allowed any authenticated user to create projects in any organization or workspace by guessing their IDs.
 **Learning:** Relying on `authenticatedMutation` is insufficient for resource creation. You must explicitly verify that the user has write/admin permissions on the *parent* container (Organization/Workspace) where the new resource is being created.
 **Prevention:** Added explicit `getOrganizationRole` and `getWorkspaceRole` checks in the mutation handler to ensure the caller is an organization admin or workspace member.
+
+## 2025-05-28 - Secure E2E Testing Pattern
+**Vulnerability:** Concern about `testOtpCodes` storing plaintext OTPs.
+**Learning:** The project uses a dedicated table `testOtpCodes` for E2E tests, separate from `authVerificationCodes` (hashed). Writes are strictly limited to `@inbox.mailtrap.io` emails via `isTestEmail` check in `OTPVerification.ts`. Read access via `/e2e/get-latest-otp` is protected by `validateE2EApiKey` which enforces an API key or Development environment.
+**Prevention:** Maintain this strict separation. Ensure `validateE2EApiKey` continues to fail secure if no API key is configured in non-dev environments.

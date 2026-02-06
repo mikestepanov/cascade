@@ -49,9 +49,11 @@ export function FocusZone({ task }: FocusZoneProps) {
         tabIndex={0}
         role="button"
         aria-label={`Focus task: ${task.title}`}
-        className="group"
+        className="group relative overflow-hidden hover:shadow-card-hover transition-shadow"
       >
-        <CardBody className="p-6">
+        {/* Brand left border accent */}
+        <div className="absolute left-0 top-0 h-full w-1 bg-brand" />
+        <CardBody className="p-6 pl-7">
           <Flex direction="column" gap="md">
             <Flex justify="between" align="center">
               <Badge variant="primary">{task.priority.toUpperCase()}</Badge>

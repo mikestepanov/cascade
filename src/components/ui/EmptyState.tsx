@@ -1,5 +1,9 @@
 import type { ReactNode } from "react";
+import { cn } from "@/lib/utils";
 import { Button } from "./Button";
+import { Typography } from "./Typography";
+
+type EmptyStateVariant = "default" | "info" | "warning" | "error";
 
 interface EmptyStateProps {
   icon: string;
@@ -11,9 +15,20 @@ interface EmptyStateProps {
         label: string;
         onClick: () => void;
       };
+  /** Visual variant for different contexts */
+  variant?: EmptyStateVariant;
+  /** Optional className for the container */
+  className?: string;
 }
 
-export function EmptyState({ icon, title, description, action }: EmptyStateProps) {
+export function EmptyState({
+  icon,
+  title,
+  description,
+  action,
+  variant = "default",
+  className,
+}: EmptyStateProps) {
   const renderAction = () => {
     if (!action) return null;
 
@@ -27,14 +42,29 @@ export function EmptyState({ icon, title, description, action }: EmptyStateProps
     return action as ReactNode;
   };
 
+  const iconColorClass = {
+    default: "text-ui-text-tertiary",
+    info: "text-status-info",
+    warning: "text-status-warning",
+    error: "text-status-error",
+  }[variant];
+
   return (
-    <div className="text-center py-12 px-4">
-      <div className="text-6xl mb-3 animate-in fade-in duration-500">{icon}</div>
-      <h3 className="text-lg font-medium text-ui-text mb-1">{title}</h3>
+    <div
+      className={cn("text-center py-12 px-4 animate-fade-in", className)}
+      role="status"
+      aria-label={title}
+    >
+      <div className={cn("text-6xl mb-4", iconColorClass)}>{icon}</div>
+      <Typography variant="large" className="mb-1">
+        {title}
+      </Typography>
       {description && (
-        <p className="text-sm text-ui-text-tertiary mb-4 max-w-sm mx-auto">{description}</p>
+        <Typography variant="small" color="secondary" className="mb-4 max-w-sm mx-auto">
+          {description}
+        </Typography>
       )}
-      {renderAction()}
+      {action && <div className="mt-4">{renderAction()}</div>}
     </div>
   );
 }

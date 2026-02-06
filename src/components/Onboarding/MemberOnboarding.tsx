@@ -68,14 +68,14 @@ export function MemberOnboarding({
   if (step === "project") {
     return (
       <div className="space-y-8">
-        {/* Back button */}
+        {/* Back button - Mintlify-inspired */}
         <button
           type="button"
           onClick={onBack}
-          className="flex items-center gap-2 text-ui-text-secondary hover:text-ui-text transition-colors"
+          className="flex items-center gap-2 text-ui-text-secondary hover:text-ui-text transition-colors duration-fast group"
         >
-          <ArrowLeft className="w-4 h-4" />
-          <span>Back</span>
+          <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-0.5" />
+          <span className="text-sm font-medium">Back</span>
         </button>
 
         {/* Header */}
@@ -138,14 +138,14 @@ export function MemberOnboarding({
 
   return (
     <div className="space-y-8">
-      {/* Back button */}
+      {/* Back button - Mintlify-inspired */}
       <button
         type="button"
         onClick={() => setStep("project")}
-        className="flex items-center gap-2 text-ui-text-secondary hover:text-ui-text transition-colors"
+        className="flex items-center gap-2 text-ui-text-secondary hover:text-ui-text transition-colors duration-fast group"
       >
-        <ArrowLeft className="w-4 h-4" />
-        <span>Back</span>
+        <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-0.5" />
+        <span className="text-sm font-medium">Back</span>
       </button>
 
       {/* Header */}
@@ -162,50 +162,90 @@ export function MemberOnboarding({
           Here's what you can do in Nixelo:
         </Typography>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <Flex align="start" gap="md" className="p-4 rounded-lg bg-ui-bg">
-            <Kanban className="w-5 h-5 text-priority-low mt-0.5 shrink-0" />
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <Flex
+            align="start"
+            gap="md"
+            className="p-4 rounded-container bg-ui-bg-soft border border-ui-border hover:border-ui-border-secondary transition-colors duration-fast"
+          >
+            <Flex
+              align="center"
+              justify="center"
+              className="w-9 h-9 rounded-lg bg-palette-blue-bg shrink-0"
+            >
+              <Kanban className="w-5 h-5 text-palette-blue" />
+            </Flex>
             <div>
               <Typography variant="h4" className="font-medium text-ui-text text-sm">
                 Work on Issues
               </Typography>
-              <Typography className="text-xs text-ui-text-secondary">
+              <Typography className="text-xs text-ui-text-secondary mt-0.5">
                 Drag issues across the board as you progress
               </Typography>
             </div>
           </Flex>
 
-          <Flex align="start" gap="md" className="p-4 rounded-lg bg-ui-bg">
-            <FileText className="w-5 h-5 text-status-success mt-0.5 shrink-0" />
+          <Flex
+            align="start"
+            gap="md"
+            className="p-4 rounded-container bg-ui-bg-soft border border-ui-border hover:border-ui-border-secondary transition-colors duration-fast"
+          >
+            <Flex
+              align="center"
+              justify="center"
+              className="w-9 h-9 rounded-lg bg-status-success-bg shrink-0"
+            >
+              <FileText className="w-5 h-5 text-status-success" />
+            </Flex>
             <div>
               <Typography variant="h4" className="font-medium text-ui-text text-sm">
                 Collaborate on Docs
               </Typography>
-              <Typography className="text-xs text-ui-text-secondary">
+              <Typography className="text-xs text-ui-text-secondary mt-0.5">
                 Edit documents together in real-time
               </Typography>
             </div>
           </Flex>
 
-          <Flex align="start" gap="md" className="p-4 rounded-lg bg-ui-bg">
-            <Clock className="w-5 h-5 text-status-warning mt-0.5 shrink-0" />
+          <Flex
+            align="start"
+            gap="md"
+            className="p-4 rounded-container bg-ui-bg-soft border border-ui-border hover:border-ui-border-secondary transition-colors duration-fast"
+          >
+            <Flex
+              align="center"
+              justify="center"
+              className="w-9 h-9 rounded-lg bg-status-warning-bg shrink-0"
+            >
+              <Clock className="w-5 h-5 text-status-warning" />
+            </Flex>
             <div>
               <Typography variant="h4" className="font-medium text-ui-text text-sm">
                 Track Time
               </Typography>
-              <Typography className="text-xs text-ui-text-secondary">
+              <Typography className="text-xs text-ui-text-secondary mt-0.5">
                 Log time spent on tasks
               </Typography>
             </div>
           </Flex>
 
-          <Flex align="start" gap="md" className="p-4 rounded-lg bg-ui-bg">
-            <Bell className="w-5 h-5 text-issue-type-story mt-0.5 shrink-0" />
+          <Flex
+            align="start"
+            gap="md"
+            className="p-4 rounded-container bg-ui-bg-soft border border-ui-border hover:border-ui-border-secondary transition-colors duration-fast"
+          >
+            <Flex
+              align="center"
+              justify="center"
+              className="w-9 h-9 rounded-lg bg-palette-purple-bg shrink-0"
+            >
+              <Bell className="w-5 h-5 text-palette-purple" />
+            </Flex>
             <div>
               <Typography variant="h4" className="font-medium text-ui-text text-sm">
                 Stay Updated
               </Typography>
-              <Typography className="text-xs text-ui-text-secondary">
+              <Typography className="text-xs text-ui-text-secondary mt-0.5">
                 Get notified when mentioned or assigned
               </Typography>
             </div>

@@ -1,14 +1,15 @@
 import { cva, type VariantProps } from "class-variance-authority";
 import * as React from "react";
 import { cn } from "@/lib/utils";
+import { Typography } from "./Typography";
 
 const textareaVariants = cva(
-  "flex min-h-20 w-full rounded-lg border bg-ui-bg px-3 py-2 text-sm text-ui-text transition-colors placeholder:text-ui-text-tertiary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
+  "flex min-h-20 w-full rounded-lg border bg-ui-bg-soft px-3 py-2 text-sm text-ui-text transition-[border-color] duration-150 placeholder:text-ui-text-tertiary focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50",
   {
     variants: {
       variant: {
-        default: "border-ui-border",
-        error: "border-status-error focus-visible:ring-status-error",
+        default: "border-ui-border focus-visible:border-brand",
+        error: "border-status-error focus-visible:border-status-error",
       },
     },
     defaultVariants: {
@@ -42,9 +43,14 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
         <textarea
           className={cn(textareaVariants({ variant: computedVariant, className }))}
           ref={ref}
+          aria-invalid={!!error}
           {...props}
         />
-        {error && <p className="mt-1 text-sm text-status-error">{error}</p>}
+        {error && (
+          <Typography variant="muted" className="mt-1 text-sm text-status-error">
+            {error}
+          </Typography>
+        )}
       </div>
     );
   },

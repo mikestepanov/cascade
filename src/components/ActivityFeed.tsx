@@ -148,22 +148,35 @@ export function ActivityFeed({ projectId, limit = 50, compact = false }: Activit
   }
 
   return (
-    <Flex direction="column" gap="lg" data-testid={TEST_IDS.ACTIVITY.FEED}>
+    <Flex direction="column" gap="none" className="relative" data-testid={TEST_IDS.ACTIVITY.FEED}>
+      {/* Timeline line */}
+      {!compact && activities.length > 1 && (
+        <div className="absolute left-3 top-6 bottom-6 w-px bg-ui-border" />
+      )}
+
       {activities.map((activity: Activity, index: number) => (
         <Flex
           key={`${activity._id}-${index}`}
           gap="lg"
-          className={compact ? "py-2" : "p-4 bg-ui-bg rounded-lg border border-ui-border"}
+          className={cn(
+            "relative transition-colors duration-150",
+            compact
+              ? "py-2 hover:bg-ui-bg-secondary/50 rounded-md px-2"
+              : "p-4 hover:bg-ui-bg-secondary/30 rounded-lg",
+          )}
           data-testid={TEST_IDS.ACTIVITY.ENTRY}
         >
-          {/* Timeline dot */}
-          <Flex direction="column" align="center" className="shrink-0">
-            <div className={cn("text-2xl", compact && "text-lg")}>
-              {getActionIcon(activity.action)}
-            </div>
-            {!compact && index < activities.length - 1 && (
-              <div className="w-0.5 flex-1 bg-ui-border mt-2" />
+          {/* Timeline icon */}
+          <Flex
+            align="center"
+            justify="center"
+            className={cn(
+              "shrink-0 relative z-10 bg-ui-bg rounded-full",
+              compact ? "w-5 h-5 text-sm" : "w-6 h-6 text-base",
+              "text-ui-text-secondary",
             )}
+          >
+            {getActionIcon(activity.action)}
           </Flex>
 
           {/* Activity content */}
@@ -174,7 +187,7 @@ export function ActivityFeed({ projectId, limit = 50, compact = false }: Activit
                   variant="p"
                   className={cn(compact ? "text-sm" : "text-base", "mb-0 mt-0")}
                 >
-                  <Typography as="span" className="font-medium">
+                  <Typography as="span" className="font-medium tracking-tight text-ui-text">
                     {activity.userName}
                   </Typography>{" "}
                   <Typography as="span" color={getActionColor(activity.action)}>
@@ -182,21 +195,24 @@ export function ActivityFeed({ projectId, limit = 50, compact = false }: Activit
                   </Typography>
                   {activity.issueKey && (
                     <Typography as="span" className="ml-1">
-                      <Typography as="span" className="font-mono text-sm" color="secondary">
+                      <Typography as="span" className="font-mono text-sm text-ui-text-secondary">
                         {activity.issueKey}
                       </Typography>
                     </Typography>
                   )}
                 </Typography>
                 {!compact && activity.field && activity.newValue && (
-                  <Typography variant="muted" className="mt-1 truncate" color="secondary">
+                  <Typography variant="muted" className="mt-1 truncate text-ui-text-secondary">
                     {activity.field}: {activity.newValue}
                   </Typography>
                 )}
               </div>
               <Typography
                 variant="muted"
-                className={cn(compact ? "text-xs" : "text-sm", "flex-shrink-0")}
+                className={cn(
+                  compact ? "text-xs" : "text-sm",
+                  "flex-shrink-0 text-ui-text-tertiary",
+                )}
               >
                 {formatRelativeTime(activity._creationTime)}
               </Typography>

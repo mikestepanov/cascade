@@ -55,22 +55,26 @@ export function DangerZone({
   }
 
   return (
-    <Card className="border-status-error/50">
+    <Card className="border-status-error/30 bg-status-error-bg/30">
       <div className="p-6">
-        <Typography variant="large" color="error" className="mb-2">
-          Danger Zone
-        </Typography>
-        <Typography variant="small" color="secondary" className="mb-4">
-          Irreversible actions that affect the entire project
-        </Typography>
+        <Flex justify="between" align="center" className="mb-6">
+          <div>
+            <Typography variant="large" className="font-semibold tracking-tight text-status-error">
+              Danger Zone
+            </Typography>
+            <Typography variant="small" color="secondary" className="mt-0.5">
+              Irreversible actions that affect the entire project
+            </Typography>
+          </div>
+        </Flex>
 
-        <div className="p-4 bg-status-error/5 border border-status-error/20 rounded-lg">
-          <Flex justify="between" align="start">
+        <div className="p-5 bg-status-error/5 border border-status-error/15 rounded-lg transition-default">
+          <Flex justify="between" align="start" gap="lg">
             <div className="flex-1">
-              <Typography variant="small" className="font-medium">
+              <Typography variant="small" className="font-semibold text-status-error-text">
                 Delete this project
               </Typography>
-              <Typography variant="small" color="secondary" className="mt-1">
+              <Typography variant="small" color="secondary" className="mt-1.5 leading-relaxed">
                 Once you delete a project, there is no going back. This will permanently delete the
                 project "{projectName}" and all its issues, sprints, and data.
               </Typography>
@@ -83,23 +87,24 @@ export function DangerZone({
           </Flex>
 
           {showConfirm && (
-            <div className="mt-4 pt-4 border-t border-status-error/20">
-              <Typography variant="small" className="mb-3">
-                To confirm, type <strong className="font-mono">{projectKey}</strong> below:
+            <div className="mt-5 pt-5 border-t border-status-error/15">
+              <Typography variant="small" className="mb-3 text-status-error-text">
+                To confirm, type <strong className="font-mono bg-status-error/10 px-1.5 py-0.5 rounded">{projectKey}</strong> below:
               </Typography>
               <Input
                 value={confirmText}
                 onChange={(e) => setConfirmText(e.target.value)}
                 placeholder={`Type ${projectKey} to confirm`}
-                className="mb-3"
+                className="mb-4"
               />
               <Flex gap="sm">
                 <Button
                   variant="danger"
                   onClick={handleDelete}
                   disabled={confirmText !== projectKey || isDeleting}
+                  isLoading={isDeleting}
                 >
-                  {isDeleting ? "Deleting..." : "I understand, delete this project"}
+                  I understand, delete this project
                 </Button>
                 <Button
                   variant="secondary"

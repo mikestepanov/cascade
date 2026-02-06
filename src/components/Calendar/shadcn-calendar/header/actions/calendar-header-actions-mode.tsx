@@ -12,7 +12,7 @@ export function CalendarHeaderActionsMode(): React.ReactElement {
   return (
     <LayoutGroup>
       <ToggleGroup
-        className="flex gap-0 -space-x-px rounded-sm border overflow-hidden shadow-sm shadow-black/5 rtl:space-x-reverse"
+        className="flex gap-0 -space-x-px rounded-secondary border border-ui-border overflow-hidden shadow-soft rtl:space-x-reverse"
         type="single"
         variant="outline"
         value={mode}
@@ -40,8 +40,10 @@ export function CalendarHeaderActionsMode(): React.ReactElement {
                 value={modeValue}
                 data-testid={`calendar-mode-${modeValue}`}
                 className={cn(
-                  "w-full rounded-none shadow-none focus-visible:z-10 text-base flex items-center justify-center gap-2 relative border-none",
-                  isSelected && "z-10",
+                  "w-full rounded-none shadow-none focus-visible:z-10 text-base flex items-center justify-center gap-2 relative border-none transition-colors duration-default",
+                  isSelected
+                    ? "bg-ui-bg-tertiary text-ui-text z-10"
+                    : "bg-ui-bg text-ui-text-secondary hover:bg-ui-bg-hover hover:text-ui-text",
                 )}
               >
                 <motion.div

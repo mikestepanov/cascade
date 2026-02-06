@@ -42,13 +42,14 @@ export function ProjectSettings({
   orgSlug,
 }: ProjectSettingsProps) {
   return (
-    <div className="max-w-3xl mx-auto">
-      <Flex direction="column" gap="lg">
-        <div>
-          <Typography variant="h2" className="text-xl font-semibold">
+    <div className="max-w-3xl mx-auto py-6">
+      <Flex direction="column" gap="xl">
+        {/* Page header with Mintlify-inspired typography */}
+        <div className="pb-2 border-b border-ui-border">
+          <Typography variant="h2" className="text-2xl font-semibold tracking-tight">
             Project Settings
           </Typography>
-          <Typography variant="p" color="secondary" className="mt-1">
+          <Typography variant="p" color="secondary" className="mt-1.5">
             Manage your project configuration and team
           </Typography>
         </div>
@@ -69,13 +70,15 @@ export function ProjectSettings({
 
         <WorkflowSettings projectId={projectId} workflowStates={workflowStates} />
 
-        <DangerZone
-          projectId={projectId}
-          projectName={name}
-          projectKey={projectKey}
-          isOwner={isOwner}
-          orgSlug={orgSlug}
-        />
+        {isOwner && (
+          <DangerZone
+            projectId={projectId}
+            projectName={name}
+            projectKey={projectKey}
+            isOwner={isOwner}
+            orgSlug={orgSlug}
+          />
+        )}
       </Flex>
     </div>
   );

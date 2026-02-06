@@ -4,8 +4,10 @@ import { NotFoundPage } from "./NotFoundPage";
 
 // Mock Link since we're not providing Router context
 vi.mock("@tanstack/react-router", () => ({
-  Link: ({ children, ...props }: { children: React.ReactNode; to: string }) => (
-    <a {...props}>{children}</a>
+  Link: ({ children, to, ...props }: { children: React.ReactNode; to: string }) => (
+    <a href={to} {...props}>
+      {children}
+    </a>
   ),
 }));
 
@@ -24,6 +26,6 @@ describe("NotFoundPage", () => {
 
     expect(screen.getByText("404")).toBeInTheDocument();
     expect(screen.getByText("Page not found")).toBeInTheDocument();
-    expect(screen.getByText("Go home")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /return home/i })).toBeInTheDocument();
   });
 });

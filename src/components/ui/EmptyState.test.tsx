@@ -220,13 +220,11 @@ describe("EmptyState", () => {
       expect(heading).toHaveTextContent("Heading Test");
     });
 
-    it("should apply animation classes to icon", () => {
+    it("should apply animation class to container", () => {
       const { container } = render(<EmptyState icon="📦" title="Test" />);
 
-      const iconDiv = container.querySelector(".animate-in");
-      expect(iconDiv).toBeInTheDocument();
-      expect(iconDiv).toHaveClass("fade-in");
-      expect(iconDiv).toHaveClass("duration-500");
+      const containerDiv = container.querySelector(".animate-fade-in");
+      expect(containerDiv).toBeInTheDocument();
     });
 
     it("should apply max-width to description", () => {

@@ -4,7 +4,7 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 
 const toggleGroupVariants = cva(
-  "inline-flex items-center justify-center rounded-lg bg-ui-bg-secondary p-1",
+  "inline-flex items-center justify-center rounded-lg bg-ui-bg-soft border border-ui-border p-1",
   {
     variants: {
       size: {
@@ -20,22 +20,22 @@ const toggleGroupVariants = cva(
 );
 
 const toggleGroupItemVariants = cva(
-  "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-ui-bg transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
+  "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-ui-bg transition-[background-color,color,box-shadow] duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
   {
     variants: {
       variant: {
         default:
-          "bg-transparent text-ui-text-secondary hover:bg-ui-bg-tertiary hover:text-ui-text data-[state=on]:bg-ui-bg data-[state=on]:text-ui-text data-[state=on]:shadow-sm",
+          "bg-transparent text-ui-text-secondary hover:bg-ui-bg-hover hover:text-ui-text data-[state=on]:bg-ui-bg data-[state=on]:text-ui-text data-[state=on]:shadow-soft",
         brand:
-          "bg-transparent text-ui-text-secondary hover:bg-brand-subtle hover:text-brand-hover data-[state=on]:bg-brand data-[state=on]:text-white",
+          "bg-transparent text-ui-text-secondary hover:bg-brand-subtle hover:text-brand-hover data-[state=on]:bg-brand data-[state=on]:text-brand-foreground data-[state=on]:shadow-soft",
         error:
-          "bg-transparent text-ui-text-secondary hover:bg-status-error-bg hover:text-status-error-text data-[state=on]:bg-status-error data-[state=on]:text-white",
+          "bg-transparent text-ui-text-secondary hover:bg-status-error-bg hover:text-status-error-text data-[state=on]:bg-status-error data-[state=on]:text-white data-[state=on]:shadow-soft",
         success:
-          "bg-transparent text-ui-text-secondary hover:bg-status-success-bg hover:text-status-success-text data-[state=on]:bg-status-success data-[state=on]:text-white",
+          "bg-transparent text-ui-text-secondary hover:bg-status-success-bg hover:text-status-success-text data-[state=on]:bg-status-success data-[state=on]:text-white data-[state=on]:shadow-soft",
         accent:
-          "bg-transparent text-ui-text-secondary hover:bg-accent-subtle hover:text-accent-hover data-[state=on]:bg-accent data-[state=on]:text-white",
+          "bg-transparent text-ui-text-secondary hover:bg-accent-subtle hover:text-accent-hover data-[state=on]:bg-accent data-[state=on]:text-accent-foreground data-[state=on]:shadow-soft",
         outline:
-          "border border-ui-border bg-transparent hover:bg-ui-bg-secondary data-[state=on]:bg-ui-bg-secondary data-[state=on]:border-brand-ring",
+          "border border-ui-border bg-transparent hover:bg-ui-bg-hover hover:border-ui-border-secondary data-[state=on]:bg-ui-bg data-[state=on]:border-brand-ring data-[state=on]:shadow-soft",
       },
       size: {
         sm: "h-8 px-2.5 text-xs",

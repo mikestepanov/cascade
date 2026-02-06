@@ -6,10 +6,28 @@ interface LoadingSpinnerProps {
   size?: "xs" | "sm" | "md" | "lg";
   className?: string;
   message?: string;
-  color?: string;
+  /**
+   * Spinner color variant:
+   * - "brand": Uses brand color (indigo) - good for primary actions
+   * - "secondary": Uses text-secondary color - subtle, blends with content
+   * - "inherit": Uses current text color - adapts to parent context
+   */
+  variant?: "brand" | "secondary" | "inherit";
+  /**
+   * Animation style:
+   * - "spin": Standard spinning animation (default)
+   * - "pulse": Subtle pulse animation for softer loading states
+   */
+  animation?: "spin" | "pulse";
 }
 
-export function LoadingSpinner({ size = "md", className = "", message }: LoadingSpinnerProps) {
+export function LoadingSpinner({
+  size = "md",
+  className = "",
+  message,
+  variant = "secondary",
+  animation = "spin",
+}: LoadingSpinnerProps) {
   const sizeClasses = {
     xs: "h-3 w-3 border",
     sm: "h-4 w-4 border-2",
@@ -17,11 +35,24 @@ export function LoadingSpinner({ size = "md", className = "", message }: Loading
     lg: "h-12 w-12 border-3",
   };
 
+  const variantClasses = {
+    brand: "border-brand border-t-transparent",
+    secondary: "border-ui-text-secondary border-t-transparent",
+    inherit: "border-current border-t-transparent",
+  };
+
+  const animationClasses = {
+    spin: "animate-spin",
+    pulse: "animate-pulse",
+  };
+
   return (
     <Flex direction="column" align="center" justify="center" gap="md">
       <output
         className={cn(
-          "animate-spin rounded-full border-ui-text border-t-transparent",
+          "rounded-full",
+          animationClasses[animation],
+          variantClasses[variant],
           sizeClasses[size],
           className,
         )}

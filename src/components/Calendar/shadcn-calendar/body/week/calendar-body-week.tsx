@@ -10,15 +10,15 @@ export function CalendarBodyWeek(): React.ReactElement {
   const weekDays = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
 
   return (
-    <div className="flex divide-x divide-ui-border flex-grow overflow-hidden">
+    <div className="flex divide-x divide-ui-border flex-grow overflow-hidden bg-ui-bg">
       <div className="flex flex-col flex-grow divide-y divide-ui-border overflow-hidden">
         <div className="flex flex-col flex-1 overflow-y-auto">
-          <div className="relative flex flex-1 divide-x divide-ui-border flex-col md:flex-row">
+          <div className="relative flex flex-1 flex-col md:flex-row">
             <CalendarBodyMarginDayMargin className="hidden md:block" />
             {weekDays.map((day) => (
               <div
                 key={day.toISOString()}
-                className="flex flex-1 divide-x divide-ui-border md:divide-x-0"
+                className="flex flex-1 border-r border-ui-border last:border-r-0 md:border-r"
               >
                 <CalendarBodyMarginDayMargin className="block md:hidden" />
                 <CalendarBodyDayContent date={day} />

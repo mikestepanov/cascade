@@ -28,7 +28,7 @@ export function PageLayout({
   return (
     <div
       className={cn(
-        "p-6",
+        "p-6 bg-ui-bg animate-fade-in",
         maxWidthClasses[maxWidth],
         fullHeight && "h-full overflow-y-auto",
         className,

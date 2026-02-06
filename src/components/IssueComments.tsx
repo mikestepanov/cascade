@@ -84,7 +84,11 @@ export function IssueComments({ issueId, projectId }: IssueCommentsProps) {
         ) : (
           <>
             {comments?.map((comment) => (
-              <Flex gap="md" className="p-4 bg-ui-bg-secondary rounded-lg" key={comment._id}>
+              <Flex
+                gap="md"
+                className="p-4 bg-ui-bg-soft border border-ui-border rounded-lg transition-colors duration-default hover:border-ui-border-secondary"
+                key={comment._id}
+              >
                 {/* Avatar */}
                 <div className="shrink-0">
                   <Avatar name={comment.author?.name} src={comment.author?.image} size="lg" />
@@ -94,14 +98,14 @@ export function IssueComments({ issueId, projectId }: IssueCommentsProps) {
                 <div className="flex-1 min-w-0">
                   {/* Author and Date */}
                   <Flex align="center" gap="sm" className="mb-2">
-                    <span className="font-medium text-ui-text">
+                    <span className="font-medium tracking-tight text-ui-text">
                       {comment.author?.name || "Unknown User"}
                     </span>
-                    <span className="text-xs text-ui-text-secondary">
+                    <span className="text-xs text-ui-text-tertiary">
                       {formatRelativeTime(comment._creationTime)}
                     </span>
                     {comment.updatedAt > comment._creationTime && (
-                      <span className="text-xs text-ui-text-tertiary">(edited)</span>
+                      <span className="text-xs text-ui-text-tertiary italic">(edited)</span>
                     )}
                   </Flex>
 

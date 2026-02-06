@@ -27,7 +27,7 @@ import {
   CommandGroup,
   CommandItem,
   CommandList,
-} from "@/components/ui/command";
+} from "@/components/ui/Command";
 import { Flex } from "@/components/ui/Flex";
 import { Popover, PopoverAnchor, PopoverContent } from "@/components/ui/Popover";
 import { NODE_TYPES } from "@/lib/plate/plugins";
@@ -325,21 +325,28 @@ export function SlashMenu() {
         }}
       />
       <PopoverContent
-        className="w-64 p-0"
+        className="w-72 p-0 bg-ui-bg-elevated border border-ui-border shadow-elevated rounded-container animate-scale-in"
         align="start"
         side="bottom"
-        sideOffset={0}
+        sideOffset={4}
         onOpenAutoFocus={(e) => e.preventDefault()}
       >
-        <Command>
-          <CommandList>
-            <CommandEmpty>No results found</CommandEmpty>
-            <CommandGroup heading="Basic blocks">
+        <Command className="bg-transparent">
+          <CommandList className="max-h-80 scrollbar-subtle">
+            <CommandEmpty className="py-6 text-center text-sm text-ui-text-tertiary">
+              No results found
+            </CommandEmpty>
+            <CommandGroup heading="Basic blocks" className="px-1 py-1.5 [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:py-1.5 [&_[cmdk-group-heading]]:text-xs [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-ui-text-tertiary">
               {filteredItems.map((item) => (
-                <CommandItem key={item.id} value={item.id} onSelect={() => handleSelect(item)}>
-                  <item.icon className="mr-2 h-4 w-4" />
-                  <Flex direction="column">
-                    <span>{item.label}</span>
+                <CommandItem
+                  key={item.id}
+                  value={item.id}
+                  onSelect={() => handleSelect(item)}
+                  className="px-2 py-2 mx-1 rounded transition-default cursor-pointer aria-selected:bg-ui-bg-hover"
+                >
+                  <item.icon className="mr-3 h-4 w-4 text-ui-text-secondary" />
+                  <Flex direction="column" className="gap-0.5">
+                    <span className="text-sm font-medium text-ui-text">{item.label}</span>
                     <span className="text-xs text-ui-text-tertiary">{item.description}</span>
                   </Flex>
                 </CommandItem>

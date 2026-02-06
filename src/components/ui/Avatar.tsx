@@ -4,23 +4,26 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 import { Flex } from "./Flex";
 
-const avatarVariants = cva("relative flex shrink-0 overflow-hidden rounded-full", {
-  variants: {
-    size: {
-      xs: "w-5 h-5",
-      sm: "w-6 h-6",
-      md: "w-8 h-8",
-      lg: "w-10 h-10",
-      xl: "w-12 h-12",
+const avatarVariants = cva(
+  "relative flex shrink-0 overflow-hidden rounded-full ring-1 ring-ui-border/50 transition-shadow duration-150",
+  {
+    variants: {
+      size: {
+        xs: "w-5 h-5",
+        sm: "w-6 h-6",
+        md: "w-8 h-8",
+        lg: "w-10 h-10",
+        xl: "w-12 h-12",
+      },
+    },
+    defaultVariants: {
+      size: "md",
     },
   },
-  defaultVariants: {
-    size: "md",
-  },
-});
+);
 
 const fallbackVariants = cva(
-  "flex h-full w-full items-center justify-center rounded-full font-medium",
+  "flex h-full w-full items-center justify-center rounded-full font-medium transition-colors duration-150",
   {
     variants: {
       size: {
@@ -31,17 +34,18 @@ const fallbackVariants = cva(
         xl: "text-lg",
       },
       variant: {
-        brand: "bg-brand text-white",
-        accent: "bg-accent text-white",
-        neutral: "bg-ui-bg-tertiary text-ui-text",
-        success: "bg-status-success text-white",
-        warning: "bg-status-warning text-white",
-        error: "bg-status-error text-white",
+        brand: "bg-brand/10 text-brand",
+        accent: "bg-accent/10 text-accent",
+        neutral: "bg-ui-bg-tertiary text-ui-text-secondary",
+        success: "bg-status-success/10 text-status-success",
+        warning: "bg-status-warning/10 text-status-warning",
+        error: "bg-status-error/10 text-status-error",
+        soft: "bg-ui-bg-soft text-ui-text-secondary",
       },
     },
     defaultVariants: {
       size: "md",
-      variant: "brand",
+      variant: "soft",
     },
   },
 );
@@ -54,7 +58,7 @@ export interface AvatarProps extends VariantProps<typeof avatarVariants> {
   /** Image URL for the avatar */
   src?: string | null;
   /** Color variant for the background */
-  variant?: "brand" | "accent" | "neutral" | "success" | "warning" | "error";
+  variant?: "brand" | "accent" | "neutral" | "success" | "warning" | "error" | "soft";
   /** Additional CSS classes */
   className?: string;
   /** Alt text for image (defaults to name) */
@@ -80,7 +84,7 @@ export function Avatar({
   email,
   src,
   size = "md",
-  variant = "brand",
+  variant = "soft",
   className,
   alt,
 }: AvatarProps) {

@@ -106,7 +106,7 @@ export function AttachmentUpload({ issueId, onAttached }: AttachmentUploadProps)
         disabled={isUploading}
         leftIcon={
           isUploading ? (
-            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current" />
+            <div className="animate-spin rounded-full h-4 w-4 border-2 border-ui-border border-t-brand" />
           ) : (
             <svg
               aria-hidden="true"

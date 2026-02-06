@@ -4,7 +4,6 @@ import { useMutation, useQuery } from "convex/react";
 import { Tooltip } from "@/components/ui/Tooltip";
 import { Typography } from "@/components/ui/Typography";
 import { showError, showSuccess } from "@/lib/toast";
-import { Button } from "./ui/Button";
 import { Flex } from "./ui/Flex";
 
 interface AttachmentListProps {
@@ -66,10 +65,10 @@ function AttachmentItem({
       <Flex
         align="center"
         gap="sm"
-        className="p-2 bg-ui-bg-secondary rounded border border-ui-border"
+        className="p-2.5 bg-ui-bg-soft rounded-lg border border-ui-border"
       >
-        <div className="animate-pulse h-8 w-8 bg-ui-bg-tertiary rounded" />
-        <div className="flex-1 animate-pulse h-4 bg-ui-bg-tertiary rounded" />
+        <div className="animate-pulse h-8 w-8 bg-ui-bg-tertiary rounded-md" />
+        <div className="flex-1 animate-pulse h-4 bg-ui-bg-tertiary rounded-md" />
       </Flex>
     );
   }
@@ -81,7 +80,7 @@ function AttachmentItem({
     <Flex
       align="center"
       gap="sm"
-      className="p-2 bg-ui-bg-secondary rounded border border-ui-border hover:bg-ui-bg-tertiary transition-colors"
+      className="p-2.5 bg-ui-bg-soft rounded-lg border border-ui-border hover:bg-ui-bg-hover hover:border-ui-border-secondary transition-colors duration-default group"
     >
       <div className="text-2xl">{fileIcon}</div>
       <div className="flex-1 min-w-0">
@@ -89,18 +88,25 @@ function AttachmentItem({
           href={url}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-sm font-medium text-brand hover:text-brand-hover:text-brand-muted hover:underline truncate block"
+          className="text-sm font-medium text-ui-text hover:text-brand hover:underline truncate block transition-colors duration-default"
         >
           {filename}
         </a>
       </div>
-      <Flex gap="xs">
+      <Flex
+        gap="xs"
+        className="opacity-0 group-hover:opacity-100 transition-opacity duration-default"
+      >
         <Tooltip content="Download attachment">
-          <a href={url} download className="text-ui-text-secondary hover:text-ui-text">
+          <a
+            href={url}
+            download
+            className="p-1.5 text-ui-text-tertiary hover:text-ui-text rounded-md hover:bg-ui-bg-tertiary transition-colors duration-default"
+          >
             <span className="sr-only">Download attachment</span>
             <svg
               aria-hidden="true"
-              className="w-5 h-5"
+              className="w-4 h-4"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -116,16 +122,15 @@ function AttachmentItem({
         </Tooltip>
         {canEdit && (
           <Tooltip content="Remove attachment">
-            <Button
-              variant="ghost"
-              size="sm"
+            <button
+              type="button"
               onClick={onRemove}
-              className="text-status-error hover:text-status-error-hover"
+              className="p-1.5 text-ui-text-tertiary hover:text-status-error rounded-md hover:bg-status-error-bg transition-colors duration-default"
               aria-label="Remove attachment"
             >
               <svg
                 aria-hidden="true"
-                className="w-5 h-5"
+                className="w-4 h-4"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -137,7 +142,7 @@ function AttachmentItem({
                   d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
                 />
               </svg>
-            </Button>
+            </button>
           </Tooltip>
         )}
       </Flex>

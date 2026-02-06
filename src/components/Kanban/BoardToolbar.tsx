@@ -29,25 +29,25 @@ export function BoardToolbar({
   showControls = true,
 }: BoardToolbarProps) {
   return (
-    <Flex align="center" justify="between" gap="sm" className="px-4 sm:px-6 pt-4 sm:pt-6 pb-2">
-      <Typography variant="h2" className="text-base sm:text-lg font-semibold">
+    <Flex align="center" justify="between" gap="sm" className="px-4 sm:px-6 pt-4 sm:pt-6 pb-3">
+      <Typography variant="h2" className="text-base sm:text-lg font-semibold tracking-tight">
         {sprintId ? "Sprint Board" : "Kanban Board"}
       </Typography>
       {showControls && (
         <Flex align="center" gap="xs" className="sm:gap-2 shrink-0">
           {/* Undo/Redo buttons */}
-          <div className="hidden sm:flex items-center gap-1 mr-2 sm:mr-4">
+          <Flex align="center" gap="xs" className="hidden sm:flex mr-2 sm:mr-4">
             <Tooltip content="Undo (Ctrl+Z)">
               <button
                 type="button"
                 onClick={onUndo}
                 disabled={historyStack.length === 0}
-                className="p-2.5 sm:p-3 rounded hover:bg-ui-bg-secondary disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="p-2 rounded-secondary text-ui-text-tertiary hover:text-ui-text hover:bg-ui-bg-hover disabled:opacity-30 disabled:cursor-not-allowed transition-fast"
                 aria-label="Undo (Ctrl+Z)"
               >
                 <svg
                   aria-hidden="true"
-                  className="w-4 h-4 sm:w-5 sm:h-5 text-ui-text"
+                  className="w-4 h-4"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -66,12 +66,12 @@ export function BoardToolbar({
                 type="button"
                 onClick={onRedo}
                 disabled={redoStack.length === 0}
-                className="p-2.5 sm:p-3 rounded hover:bg-ui-bg-secondary disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="p-2 rounded-secondary text-ui-text-tertiary hover:text-ui-text hover:bg-ui-bg-hover disabled:opacity-30 disabled:cursor-not-allowed transition-fast"
                 aria-label="Redo (Ctrl+Shift+Z)"
               >
                 <svg
                   aria-hidden="true"
-                  className="w-4 h-4 sm:w-5 sm:h-5 text-ui-text"
+                  className="w-4 h-4"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -85,22 +85,22 @@ export function BoardToolbar({
                 </svg>
               </button>
             </Tooltip>
-          </div>
+          </Flex>
 
           {/* Selection mode toggle */}
           <button
             type="button"
             onClick={onToggleSelectionMode}
             className={cn(
-              "px-2 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm rounded-lg transition-colors",
+              "px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm rounded-secondary transition-fast font-medium",
               selectionMode
                 ? "bg-brand text-brand-foreground"
-                : "bg-ui-bg-secondary text-ui-text hover:bg-ui-bg-tertiary",
+                : "text-ui-text-secondary hover:text-ui-text hover:bg-ui-bg-hover border border-ui-border",
             )}
             aria-label={selectionMode ? "Exit selection mode" : "Enable selection mode"}
           >
             <span className="hidden sm:inline">
-              {selectionMode ? "Exit Selection Mode" : "Select Multiple"}
+              {selectionMode ? "Exit Selection" : "Select Multiple"}
             </span>
             <span className="sm:hidden">{selectionMode ? "Exit" : "Select"}</span>
           </button>

@@ -299,7 +299,7 @@ export function FilterBar({ projectId, filters, onFilterChange }: FilterBarProps
   const hasActiveFilters = activeFilterCount > 0;
 
   return (
-    <div className="border-b border-ui-border px-4 py-2">
+    <div className="bg-ui-bg-soft border-b border-ui-border px-4 py-2.5">
       <Flex align="center" gap="sm" className="flex-wrap">
         {/* Type Filter */}
         <FilterDropdown
@@ -370,7 +370,12 @@ export function FilterBar({ projectId, filters, onFilterChange }: FilterBarProps
 
         {/* Clear Filters */}
         {hasActiveFilters && (
-          <Button variant="ghost" size="sm" onClick={handleClearFilters} className="h-8 px-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleClearFilters}
+            className="h-8 px-2 text-ui-text-secondary hover:text-ui-text hover:bg-ui-bg-hover transition-default"
+          >
             <X className="w-4 h-4 mr-1" />
             Clear ({activeFilterCount})
           </Button>
@@ -382,7 +387,7 @@ export function FilterBar({ projectId, filters, onFilterChange }: FilterBarProps
             variant="ghost"
             size="sm"
             onClick={() => setShowSaveDialog(true)}
-            className="h-8 px-3"
+            className="h-8 px-3 text-ui-text-secondary hover:text-brand hover:bg-ui-bg-hover transition-default"
           >
             Save Filter
           </Button>

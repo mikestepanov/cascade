@@ -1,4 +1,4 @@
-import { PartyPopper } from "lucide-react";
+import { Check, PartyPopper } from "lucide-react";
 import { Button } from "../ui/Button";
 import { Flex } from "../ui/Flex";
 import { Typography } from "../ui/Typography";
@@ -12,54 +12,71 @@ interface InvitedWelcomeProps {
 export function InvitedWelcome({ inviterName, onStartTour, onSkip }: InvitedWelcomeProps) {
   return (
     <div className="text-center space-y-8">
-      {/* Icon */}
+      {/* Icon - Mintlify-inspired with subtle ring */}
       <Flex justify="center">
-        <div className="p-6 rounded-full bg-brand-subtle">
-          <PartyPopper className="w-16 h-16 text-brand" />
+        <div className="relative">
+          <div className="p-6 rounded-full bg-brand-subtle ring-8 ring-brand/10">
+            <PartyPopper className="w-16 h-16 text-brand" />
+          </div>
+          {/* Decorative dot */}
+          <Flex
+            align="center"
+            justify="center"
+            className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-status-success ring-4 ring-ui-bg-secondary"
+          >
+            <Check className="w-3 h-3 text-brand-foreground" />
+          </Flex>
         </div>
       </Flex>
 
       {/* Welcome Message */}
       <div className="space-y-3">
-        <Typography variant="h1" className="text-3xl font-bold text-ui-text">
+        <Typography variant="h1" className="text-3xl font-bold text-ui-text tracking-tight">
           Welcome to Nixelo!
         </Typography>
         <Typography className="text-lg text-ui-text-secondary">
-          <span className="font-medium text-ui-text">{inviterName}</span> invited you to collaborate
+          <span className="font-semibold text-ui-text">{inviterName}</span> invited you to
+          collaborate
         </Typography>
       </div>
 
-      {/* Brief Description */}
-      <div className="bg-ui-bg rounded-xl p-6 text-left">
-        <Typography variant="h3" className="font-medium text-ui-text mb-3">
+      {/* Brief Description - Mintlify-inspired card */}
+      <div className="bg-ui-bg-soft rounded-container border border-ui-border p-6 text-left">
+        <Typography variant="h3" className="font-semibold text-ui-text mb-4 tracking-tight">
           What you can do in Nixelo:
         </Typography>
-        <ul className="space-y-2 text-ui-text-secondary">
-          <li className="flex items-center gap-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-brand-ring" />
-            View and work on project issues assigned to you
-          </li>
-          <li className="flex items-center gap-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-brand-ring" />
-            Collaborate on documents in real-time
-          </li>
-          <li className="flex items-center gap-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-brand-ring" />
-            Track time and participate in sprints
-          </li>
-          <li className="flex items-center gap-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-brand-ring" />
-            Get notifications for mentions and updates
-          </li>
+        <ul className="space-y-3">
+          {[
+            "View and work on project issues assigned to you",
+            "Collaborate on documents in real-time",
+            "Track time and participate in sprints",
+            "Get notifications for mentions and updates",
+          ].map((item) => (
+            <li key={item} className="flex items-start gap-3 text-ui-text-secondary">
+              <Flex
+                align="center"
+                justify="center"
+                className="w-5 h-5 rounded-full bg-brand-subtle shrink-0 mt-0.5"
+              >
+                <Check className="w-3 h-3 text-brand" />
+              </Flex>
+              <span>{item}</span>
+            </li>
+          ))}
         </ul>
       </div>
 
-      {/* Actions */}
+      {/* Actions - Mintlify-inspired button styling */}
       <Flex gap="md" justify="center">
-        <Button variant="primary" size="lg" onClick={onStartTour}>
+        <Button variant="primary" size="lg" onClick={onStartTour} className="min-w-40">
           Take a quick tour
         </Button>
-        <Button variant="secondary" size="lg" onClick={onSkip}>
+        <Button
+          variant="ghost"
+          size="lg"
+          onClick={onSkip}
+          className="text-ui-text-secondary hover:text-ui-text"
+        >
           Skip to dashboard
         </Button>
       </Flex>

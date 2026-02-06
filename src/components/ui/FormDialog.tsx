@@ -15,6 +15,7 @@ interface FormDialogProps {
   onOpenChange: (open: boolean) => void;
   onSave: () => void | Promise<void>;
   title: string;
+  description?: string;
   children: ReactNode;
   saveLabel?: string;
   isLoading?: boolean;
@@ -30,6 +31,7 @@ export function FormDialog({
   onOpenChange,
   onSave,
   title,
+  description,
   children,
   saveLabel = "Save",
   isLoading = false,
@@ -51,18 +53,32 @@ export function FormDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className={sizeClassMap[size]}>
         <DialogHeader>
-          <DialogTitle>{title}</DialogTitle>
-          <DialogDescription className="sr-only">Form dialog</DialogDescription>
+          <DialogTitle className="tracking-tight">{title}</DialogTitle>
+          {description ? (
+            <DialogDescription className="text-ui-text-secondary">{description}</DialogDescription>
+          ) : (
+            <DialogDescription className="sr-only">Form dialog</DialogDescription>
+          )}
         </DialogHeader>
-        <Flex direction="column" gap="lg">
+        <Flex direction="column" gap="lg" className="py-2">
           {children}
         </Flex>
-        <DialogFooter>
-          <Button variant="secondary" onClick={() => onOpenChange(false)} disabled={isLoading}>
+        <DialogFooter className="gap-3 pt-2">
+          <Button
+            variant="secondary"
+            onClick={() => onOpenChange(false)}
+            disabled={isLoading}
+            className="focus:ring-2 focus:ring-brand-ring focus:ring-offset-2 transition-all duration-default"
+          >
             Cancel
           </Button>
-          <Button onClick={handleSave} disabled={isLoading}>
-            {isLoading ? "Saving..." : saveLabel}
+          <Button
+            onClick={handleSave}
+            disabled={isLoading}
+            isLoading={isLoading}
+            className="focus:ring-2 focus:ring-brand-ring focus:ring-offset-2 transition-all duration-default"
+          >
+            {saveLabel}
           </Button>
         </DialogFooter>
       </DialogContent>

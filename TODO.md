@@ -12,6 +12,7 @@
 | **P2** | Tech Debt | [`todos/tech-debt.md`](./todos/tech-debt.md) |
 | **P2** | Agency MVP | [`todos/agency-mvp.md`](./todos/agency-mvp.md) |
 | **P3** | Public Launch | [`todos/public-launch.md`](./todos/public-launch.md) |
+| **P3** | Uptime Monitoring | [`todos/uptime-monitoring.md`](./todos/uptime-monitoring.md) |
 | **P4** | Enterprise | [`todos/enterprise.md`](./todos/enterprise.md) |
 | **P4** | Growth Features | [`todos/growth-features.md`](./todos/growth-features.md) |
 

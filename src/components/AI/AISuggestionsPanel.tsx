@@ -150,7 +150,7 @@ const SuggestionCard = React.memo(function SuggestionCard({
   const metadata = SUGGESTION_METADATA[suggestion.suggestionType as SuggestionType];
 
   return (
-    <div className="bg-ui-bg border border-ui-border rounded-lg p-3 sm:p-4 shadow-sm hover:shadow-md transition-shadow">
+    <div className="bg-ui-bg border border-ui-border rounded-lg p-3 sm:p-4 shadow-card hover:shadow-card-hover transition-shadow">
       <Flex align="start" gap="md">
         <div className="text-2xl shrink-0">{metadata?.icon || "💡"}</div>
         <div className="flex-1 min-w-0">

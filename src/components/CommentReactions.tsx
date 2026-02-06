@@ -39,10 +39,10 @@ export function CommentReactions({ commentId, reactions, currentUserId }: Commen
             type="button"
             onClick={() => handleToggle(reaction.emoji)}
             className={cn(
-              "inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-medium transition-all border",
+              "inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-medium transition-colors duration-default border",
               hasReacted
-                ? "bg-brand-subtle border-brand-border text-brand-hover"
-                : "bg-ui-bg-secondary border-ui-border text-ui-text-secondary hover:border-ui-border-secondary",
+                ? "bg-brand-subtle border-brand-border text-brand-subtle-foreground"
+                : "bg-ui-bg-soft border-ui-border text-ui-text-secondary hover:border-ui-border-secondary hover:bg-ui-bg-hover",
             )}
           >
             <span>{reaction.emoji}</span>
@@ -55,7 +55,7 @@ export function CommentReactions({ commentId, reactions, currentUserId }: Commen
         <PopoverTrigger asChild>
           <button
             type="button"
-            className="inline-flex items-center justify-center w-6 h-6 rounded-full text-ui-text-tertiary hover:text-ui-text-secondary hover:bg-ui-bg-secondary transition-colors"
+            className="inline-flex items-center justify-center w-6 h-6 rounded-full text-ui-text-tertiary hover:text-ui-text-secondary hover:bg-ui-bg-hover transition-colors duration-default"
           >
             <Smile size={16} />
           </button>
@@ -67,7 +67,7 @@ export function CommentReactions({ commentId, reactions, currentUserId }: Commen
                 key={emoji}
                 type="button"
                 onClick={() => handleToggle(emoji)}
-                className="w-8 h-8 flex items-center justify-center rounded hover:bg-ui-bg-secondary transition-colors text-lg"
+                className="w-8 h-8 flex items-center justify-center rounded hover:bg-ui-bg-hover transition-colors duration-default text-lg"
               >
                 {emoji}
               </button>

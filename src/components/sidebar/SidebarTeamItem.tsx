@@ -54,10 +54,10 @@ export function SidebarTeamItem({
           params={{ orgSlug, workspaceSlug, teamSlug: team.slug }}
           onClick={onNavClick}
           className={cn(
-            "block px-3 py-1.5 rounded-md text-sm truncate transition-colors flex-1",
+            "block px-3 py-1.5 rounded-md text-sm truncate transition-default flex-1",
             isActive
-              ? "bg-brand-subtle text-brand"
-              : "text-ui-text-secondary hover:bg-ui-bg-secondary hover:text-ui-text",
+              ? "bg-ui-bg-hover text-ui-text"
+              : "text-ui-text-tertiary hover:bg-ui-bg-hover hover:text-ui-text-secondary",
           )}
         >
           {team.name}
@@ -112,11 +112,11 @@ function SidebarTeamProjects({
             }}
             onClick={onNavClick}
             className={cn(
-              "block px-3 py-1.5 rounded-md text-sm truncate transition-colors",
+              "block px-3 py-1.5 rounded-md text-sm truncate transition-default",
               location.pathname === `/${orgSlug}/projects/${project.key}` ||
                 location.pathname.startsWith(`/${orgSlug}/projects/${project.key}/`)
-                ? "bg-brand-subtle text-brand font-medium"
-                : "text-ui-text-secondary hover:bg-ui-bg-secondary hover:text-ui-text",
+                ? "bg-ui-bg-hover text-ui-text font-medium"
+                : "text-ui-text-tertiary hover:bg-ui-bg-hover hover:text-ui-text-secondary",
             )}
           >
             {project.key} - {project.name}

@@ -350,7 +350,7 @@ export function UserTypeManager() {
               {configs.map((config: EmploymentTypeConfig) => (
                 <div
                   key={config.type}
-                  className="p-4 border border-ui-border rounded-lg hover:shadow-md transition-shadow"
+                  className="p-4 border border-ui-border rounded-lg transition-default hover:bg-ui-bg-hover"
                 >
                   <Flex justify="between" align="start" className="mb-3">
                     <Flex align="center" gap="sm">
@@ -438,11 +438,11 @@ export function UserTypeManager() {
                     key={user._id}
                     justify="between"
                     align="center"
-                    className="bg-ui-bg p-2 rounded"
+                    className="bg-ui-bg p-2 rounded transition-default hover:bg-ui-bg-hover"
                   >
-                    <span className="text-sm text-ui-text">
+                    <Typography variant="small" className="text-ui-text">
                       {user.name || user.email || "Unknown User"}
-                    </span>
+                    </Typography>
                     <Button size="sm" onClick={() => handleAssignUser(user._id)}>
                       Assign Type
                     </Button>
@@ -471,7 +471,7 @@ export function UserTypeManager() {
               {profiles.map((profile: UserProfileWithUser) => (
                 <div
                   key={profile._id}
-                  className="p-4 border border-ui-border rounded-lg hover:bg-ui-bg-secondary transition-colors"
+                  className="p-4 border border-ui-border rounded-lg transition-default hover:bg-ui-bg-hover"
                 >
                   <Flex justify="between" align="start">
                     <div className="flex-1">

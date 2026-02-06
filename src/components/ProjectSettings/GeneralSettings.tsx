@@ -62,10 +62,17 @@ export function GeneralSettings({
   };
 
   return (
-    <Card>
+    <Card variant="soft">
       <div className="p-6">
-        <Flex justify="between" align="center" className="mb-4">
-          <Typography variant="large">General</Typography>
+        <Flex justify="between" align="center" className="mb-6">
+          <div>
+            <Typography variant="large" className="font-semibold tracking-tight">
+              General
+            </Typography>
+            <Typography variant="small" color="secondary" className="mt-0.5">
+              Basic project information
+            </Typography>
+          </div>
           {!isEditing && (
             <Button variant="secondary" size="sm" onClick={handleEdit}>
               Edit
@@ -74,7 +81,7 @@ export function GeneralSettings({
         </Flex>
 
         {isEditing ? (
-          <div className="space-y-4">
+          <div className="space-y-5">
             <Input
               label="Project Name"
               value={editName}
@@ -82,16 +89,16 @@ export function GeneralSettings({
               placeholder="Enter project name"
             />
             <div>
-              <Typography variant="small" color="secondary" className="block mb-1">
+              <Typography variant="small" color="secondary" className="block mb-1.5 font-medium">
                 Project Key
               </Typography>
               <Typography
                 variant="muted"
-                className="font-mono bg-ui-bg-secondary px-3 py-2 rounded block"
+                className="font-mono bg-ui-bg-tertiary px-3 py-2.5 rounded-md block border border-ui-border"
               >
                 {projectKey}
               </Typography>
-              <Typography variant="muted" className="mt-1 text-xs">
+              <Typography variant="muted" className="mt-1.5 text-xs">
                 Project key cannot be changed after creation
               </Typography>
             </div>
@@ -102,9 +109,9 @@ export function GeneralSettings({
               placeholder="Enter project description"
               rows={3}
             />
-            <Flex gap="sm">
-              <Button onClick={handleSave} disabled={isSaving}>
-                {isSaving ? "Saving..." : "Save Changes"}
+            <Flex gap="sm" className="pt-2">
+              <Button onClick={handleSave} disabled={isSaving} isLoading={isSaving}>
+                Save Changes
               </Button>
               <Button variant="secondary" onClick={handleCancel} disabled={isSaving}>
                 Cancel
@@ -112,28 +119,28 @@ export function GeneralSettings({
             </Flex>
           </div>
         ) : (
-          <div className="space-y-4">
-            <div>
-              <Typography variant="small" color="secondary" className="block mb-1">
+          <div className="space-y-5">
+            <div className="p-4 bg-ui-bg-tertiary rounded-lg">
+              <Typography variant="small" color="secondary" className="block mb-1 font-medium">
                 Project Name
               </Typography>
-              <Typography variant="p" className="mt-0">
+              <Typography variant="p" className="mt-0 font-medium">
                 {name}
               </Typography>
             </div>
-            <div>
-              <Typography variant="small" color="secondary" className="block mb-1">
+            <div className="p-4 bg-ui-bg-tertiary rounded-lg">
+              <Typography variant="small" color="secondary" className="block mb-1 font-medium">
                 Project Key
               </Typography>
-              <Typography variant="p" className="mt-0 font-mono">
+              <Typography variant="p" className="mt-0 font-mono text-ui-text-secondary">
                 {projectKey}
               </Typography>
             </div>
-            <div>
-              <Typography variant="small" color="secondary" className="block mb-1">
+            <div className="p-4 bg-ui-bg-tertiary rounded-lg">
+              <Typography variant="small" color="secondary" className="block mb-1 font-medium">
                 Description
               </Typography>
-              <Typography variant="p" className="mt-0">
+              <Typography variant="p" className="mt-0 text-ui-text-secondary">
                 {description || "No description"}
               </Typography>
             </div>

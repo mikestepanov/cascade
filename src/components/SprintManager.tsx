@@ -8,7 +8,6 @@ import { getStatusColor } from "@/lib/issue-utils";
 import { showError, showSuccess } from "@/lib/toast";
 import { Badge } from "./ui/Badge";
 import { Button } from "./ui/Button";
-import { Card, CardBody } from "./ui/Card";
 import { EmptyState } from "./ui/EmptyState";
 import { Input } from "./ui/form/Input";
 import { Textarea } from "./ui/form/Textarea";
@@ -18,6 +17,100 @@ import { Typography } from "./ui/Typography";
 interface SprintManagerProps {
   projectId: Id<"projects">;
   canEdit?: boolean;
+}
+
+interface SprintCardProps {
+  sprint: Doc<"sprints"> & { issueCount: number };
+  canEdit: boolean;
+  onStartSprint: (sprintId: Id<"sprints">) => Promise<void>;
+  onCompleteSprint: (sprintId: Id<"sprints">) => Promise<void>;
+}
+
+function SprintCard({ sprint, canEdit, onStartSprint, onCompleteSprint }: SprintCardProps) {
+  // Calculate progress percentage for active sprints
+  const getProgressPercentage = () => {
+    if (!sprint.startDate || !sprint.endDate) return 0;
+    const now = Date.now();
+    const total = sprint.endDate - sprint.startDate;
+    const elapsed = now - sprint.startDate;
+    return Math.min(Math.max((elapsed / total) * 100, 0), 100);
+  };
+
+  const progress = sprint.status === "active" ? getProgressPercentage() : 0;
+
+  return (
+    <div className="card-subtle p-4 animate-fade-in">
+      <Flex
+        direction="column"
+        align="start"
+        justify="between"
+        gap="lg"
+        className="sm:flex-row sm:items-center"
+      >
+        <div className="flex-1 w-full sm:w-auto">
+          <Flex wrap align="center" gap="sm" className="sm:gap-3 mb-2">
+            <Typography
+              variant="h3"
+              className="text-base sm:text-lg font-medium text-ui-text tracking-tight"
+            >
+              {sprint.name}
+            </Typography>
+            <Badge size="md" className={getStatusColor(sprint.status)}>
+              {sprint.status}
+            </Badge>
+            <Typography as="span" className="text-sm text-ui-text-secondary">
+              {sprint.issueCount} issues
+            </Typography>
+          </Flex>
+          {sprint.goal && (
+            <Typography className="text-ui-text-secondary mb-2">{sprint.goal}</Typography>
+          )}
+
+          {/* Progress bar for active sprints */}
+          {sprint.status === "active" && sprint.startDate && sprint.endDate && (
+            <div className="mt-3 mb-2">
+              <Flex justify="between" className="mb-1">
+                <Typography className="text-xs text-ui-text-tertiary">Sprint progress</Typography>
+                <Typography className="text-xs text-brand font-medium">
+                  {Math.round(progress)}%
+                </Typography>
+              </Flex>
+              <div className="h-1.5 bg-ui-bg-tertiary rounded-pill overflow-hidden">
+                <div
+                  className="h-full bg-brand rounded-pill transition-default"
+                  style={{ width: `${progress}%` }}
+                />
+              </div>
+            </div>
+          )}
+
+          {sprint.startDate && sprint.endDate && (
+            <Typography className="text-sm text-ui-text-secondary">
+              {formatDate(sprint.startDate)} - {formatDate(sprint.endDate)}
+            </Typography>
+          )}
+        </div>
+        {canEdit && (
+          <Flex direction="column" gap="sm" className="sm:flex-row w-full sm:w-auto">
+            {sprint.status === "future" && (
+              <Button onClick={() => void onStartSprint(sprint._id)} variant="success" size="sm">
+                Start Sprint
+              </Button>
+            )}
+            {sprint.status === "active" && (
+              <Button
+                onClick={() => void onCompleteSprint(sprint._id)}
+                variant="secondary"
+                size="sm"
+              >
+                Complete Sprint
+              </Button>
+            )}
+          </Flex>
+        )}
+      </Flex>
+    </div>
+  );
 }
 
 export function SprintManager({ projectId, canEdit = true }: SprintManagerProps) {
@@ -79,7 +172,7 @@ export function SprintManager({ projectId, canEdit = true }: SprintManagerProps)
     return (
       <div>
         <Flex align="center" justify="between" className="mb-6">
-          <Typography variant="h2" className="text-xl font-semibold text-ui-text">
+          <Typography variant="h2" className="text-xl font-semibold text-ui-text tracking-tight">
             Sprint Management
           </Typography>
         </Flex>
@@ -101,7 +194,7 @@ export function SprintManager({ projectId, canEdit = true }: SprintManagerProps)
         gap="md"
         className="sm:flex-row sm:items-center mb-6"
       >
-        <Typography variant="h2" className="text-xl font-semibold text-ui-text">
+        <Typography variant="h2" className="text-xl font-semibold text-ui-text tracking-tight">
           Sprint Management
         </Typography>
         {canEdit && (
@@ -114,7 +207,7 @@ export function SprintManager({ projectId, canEdit = true }: SprintManagerProps)
 
       {/* Create Sprint Form */}
       {showCreateForm && (
-        <div className="bg-ui-bg-secondary p-4 rounded-lg mb-6 border border-ui-border">
+        <div className="card-subtle p-4 mb-6 animate-scale-in">
           <form onSubmit={(e) => void handleCreateSprint(e)} className="space-y-4">
             <Input
               label="Sprint Name"
@@ -165,64 +258,13 @@ export function SprintManager({ projectId, canEdit = true }: SprintManagerProps)
           />
         ) : (
           sprints.map((sprint: Doc<"sprints"> & { issueCount: number }) => (
-            <Card key={sprint._id}>
-              <CardBody>
-                <Flex
-                  direction="column"
-                  align="start"
-                  justify="between"
-                  gap="lg"
-                  className="sm:flex-row sm:items-center"
-                >
-                  <div className="flex-1 w-full sm:w-auto">
-                    <Flex wrap align="center" gap="sm" className="sm:gap-3 mb-2">
-                      <Typography
-                        variant="h3"
-                        className="text-base sm:text-lg font-medium text-ui-text"
-                      >
-                        {sprint.name}
-                      </Typography>
-                      <Badge size="md" className={getStatusColor(sprint.status)}>
-                        {sprint.status}
-                      </Badge>
-                      <span className="text-sm text-ui-text-secondary">
-                        {sprint.issueCount} issues
-                      </span>
-                    </Flex>
-                    {sprint.goal && (
-                      <Typography className="text-ui-text-secondary mb-2">{sprint.goal}</Typography>
-                    )}
-                    {sprint.startDate && sprint.endDate && (
-                      <Typography className="text-sm text-ui-text-secondary">
-                        {formatDate(sprint.startDate)} - {formatDate(sprint.endDate)}
-                      </Typography>
-                    )}
-                  </div>
-                  {canEdit && (
-                    <Flex direction="column" gap="sm" className="sm:flex-row w-full sm:w-auto">
-                      {sprint.status === "future" && (
-                        <Button
-                          onClick={() => void handleStartSprint(sprint._id)}
-                          variant="success"
-                          size="sm"
-                        >
-                          Start Sprint
-                        </Button>
-                      )}
-                      {sprint.status === "active" && (
-                        <Button
-                          onClick={() => void handleCompleteSprint(sprint._id)}
-                          variant="secondary"
-                          size="sm"
-                        >
-                          Complete Sprint
-                        </Button>
-                      )}
-                    </Flex>
-                  )}
-                </Flex>
-              </CardBody>
-            </Card>
+            <SprintCard
+              key={sprint._id}
+              sprint={sprint}
+              canEdit={canEdit}
+              onStartSprint={handleStartSprint}
+              onCompleteSprint={handleCompleteSprint}
+            />
           ))
         )}
       </div>

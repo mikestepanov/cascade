@@ -165,9 +165,9 @@ export function AppSidebar() {
       <aside
         className={cn(
           "fixed lg:relative z-50 lg:z-auto h-screen overflow-hidden",
-          "bg-ui-bg",
+          "bg-ui-bg-sidebar",
           "border-r border-ui-border",
-          "transition-all duration-200 ease-in-out",
+          "transition-default",
           isCollapsed ? "w-16" : "w-64",
           isMobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0",
         )}
@@ -198,7 +198,12 @@ export function AppSidebar() {
           </Flex>
 
           {/* Navigation */}
-          <Flex as="nav" direction="column" gap="xs" className="flex-1 overflow-y-auto p-2">
+          <Flex
+            as="nav"
+            direction="column"
+            gap="xs"
+            className="flex-1 overflow-y-auto p-2 scrollbar-subtle"
+          >
             {/* Dashboard */}
             <NavItem
               to={ROUTES.dashboard.path}
@@ -425,12 +430,12 @@ function NavItem({
       {...props}
       data-tour={dataTour}
       className={cn(
-        "flex items-center gap-3 px-3 py-2 rounded-md transition-colors",
+        "flex items-center gap-3 px-3 py-2 rounded-md transition-default",
         "text-sm font-medium",
         isActive
-          ? "bg-brand-indigo-track text-brand-indigo-text"
-          : "text-ui-text-secondary hover:bg-ui-bg-secondary hover:text-ui-text",
-        isCollapsed && "justify-center px-2",
+          ? "bg-ui-bg-hover text-ui-text border-l-2 border-brand"
+          : "text-ui-text-secondary hover:bg-ui-bg-hover hover:text-ui-text",
+        isCollapsed && "justify-center px-2 border-l-0",
       )}
     >
       <Icon className="w-5 h-5 shrink-0" />
@@ -494,10 +499,10 @@ function CollapsibleSection({
             search={props.search}
             data-tour={dataTour}
             className={cn(
-              "flex items-center justify-center px-2 py-2 rounded-md transition-colors",
+              "flex items-center justify-center px-2 py-2 rounded-md transition-default",
               isActive
-                ? "bg-brand-indigo-track text-brand-indigo-text"
-                : "text-ui-text-secondary hover:bg-ui-bg-secondary",
+                ? "bg-ui-bg-hover text-ui-text"
+                : "text-ui-text-secondary hover:bg-ui-bg-hover hover:text-ui-text",
             )}
           >
             <Icon className="w-5 h-5" />
@@ -506,7 +511,7 @@ function CollapsibleSection({
           <Flex
             align="center"
             justify="center"
-            className="px-2 py-2 rounded-md text-ui-text-secondary"
+            className="px-2 py-2 rounded-md text-ui-text-secondary transition-default hover:bg-ui-bg-hover"
           >
             <Icon className="w-5 h-5" />
           </Flex>
@@ -522,8 +527,8 @@ function CollapsibleSection({
         align="center"
         gap="sm"
         className={cn(
-          "px-3 py-2 rounded-md transition-colors group",
-          isActive ? "bg-brand-indigo-track" : "hover:bg-ui-bg-secondary",
+          "px-3 py-2 rounded-md transition-default group",
+          isActive ? "bg-ui-bg-hover border-l-2 border-brand" : "hover:bg-ui-bg-hover",
         )}
       >
         <Button
@@ -545,8 +550,8 @@ function CollapsibleSection({
             {...props}
             to={props.to}
             className={cn(
-              "flex-1 flex items-center gap-2 text-sm font-medium",
-              isActive ? "text-brand-indigo-text" : "text-ui-text-secondary",
+              "flex-1 flex items-center gap-2 text-sm font-medium transition-default",
+              isActive ? "text-ui-text" : "text-ui-text-secondary hover:text-ui-text",
             )}
           >
             <Icon className="w-5 h-5" />
@@ -556,7 +561,7 @@ function CollapsibleSection({
           <Flex
             align="center"
             gap="sm"
-            className="flex-1 text-sm font-medium text-ui-text-secondary"
+            className="flex-1 text-sm font-medium text-ui-text-secondary transition-default"
           >
             <Icon className="w-5 h-5" />
             <span>{label}</span>
@@ -610,10 +615,10 @@ function NavSubItem({
       params={params}
       {...props}
       className={cn(
-        "flex items-center gap-2 px-3 py-1.5 rounded-md text-sm truncate transition-colors",
+        "flex items-center gap-2 px-3 py-1.5 rounded-md text-sm truncate transition-default",
         isActive
-          ? "bg-brand-indigo-track text-brand-indigo-text"
-          : "text-ui-text-secondary hover:bg-ui-bg-secondary hover:text-ui-text",
+          ? "bg-ui-bg-hover text-ui-text"
+          : "text-ui-text-tertiary hover:bg-ui-bg-hover hover:text-ui-text-secondary",
       )}
     >
       {Icon && <Icon className="w-4 h-4 shrink-0" />}

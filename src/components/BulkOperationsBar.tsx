@@ -103,31 +103,35 @@ export function BulkOperationsBar({
 
   return (
     <>
-      <div className="fixed bottom-0 left-0 right-0 bg-brand text-white shadow-lg z-30 transition-transform">
-        <div className="max-w-7xl mx-auto px-4 py-4">
+      <div className="fixed bottom-0 left-0 right-0 bg-ui-bg-elevated border-t border-ui-border shadow-elevated z-30 animate-slide-up">
+        <div className="max-w-7xl mx-auto px-4 py-3">
           <Flex align="center" justify="between" gap="lg">
             {/* Selection Info */}
-            <Flex align="center" gap="lg">
-              <Typography variant="p" className="font-medium text-white">
+            <Flex align="center" gap="md">
+              <Typography variant="p" className="font-medium text-ui-text">
                 {count} issue{count !== 1 ? "s" : ""} selected
               </Typography>
               <Button
                 variant="link"
                 size="sm"
                 onClick={onClearSelection}
-                className="text-white hover:text-white/80"
+                className="text-ui-text-secondary hover:text-ui-text"
               >
-                Clear selection
+                Clear
               </Button>
             </Flex>
 
             {/* Actions */}
             <Flex align="center" gap="sm" className="flex-wrap">
-              <Button variant="secondary" onClick={() => setShowActions(!showActions)}>
-                {showActions ? "Hide Actions" : "Show Actions"}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowActions(!showActions)}
+              >
+                {showActions ? "Hide" : "Actions"}
               </Button>
 
-              <Button variant="danger" onClick={() => setDeleteConfirm(true)}>
+              <Button variant="danger" size="sm" onClick={() => setDeleteConfirm(true)}>
                 Delete
               </Button>
             </Flex>
@@ -135,11 +139,13 @@ export function BulkOperationsBar({
 
           {/* Expanded Actions */}
           {showActions && (
-            <div className="mt-4 pt-4 border-t border-white/20">
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="mt-3 pt-3 border-t border-ui-border">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                 {/* Status */}
                 <div>
-                  <div className="block text-sm font-medium mb-2">Change Status</div>
+                  <Typography variant="small" className="block font-medium text-ui-text-secondary mb-1.5">
+                    Status
+                  </Typography>
                   <Select onValueChange={handleUpdateStatus}>
                     <SelectTrigger className="w-full">
                       <SelectValue placeholder="Select status..." />
@@ -156,7 +162,9 @@ export function BulkOperationsBar({
 
                 {/* Priority */}
                 <div>
-                  <div className="block text-sm font-medium mb-2">Change Priority</div>
+                  <Typography variant="small" className="block font-medium text-ui-text-secondary mb-1.5">
+                    Priority
+                  </Typography>
                   <Select onValueChange={handleUpdatePriority}>
                     <SelectTrigger className="w-full">
                       <SelectValue placeholder="Select priority..." />
@@ -173,7 +181,9 @@ export function BulkOperationsBar({
 
                 {/* Assignee */}
                 <div>
-                  <div className="block text-sm font-medium mb-2">Assign To</div>
+                  <Typography variant="small" className="block font-medium text-ui-text-secondary mb-1.5">
+                    Assignee
+                  </Typography>
                   <Select onValueChange={handleAssign}>
                     <SelectTrigger className="w-full">
                       <SelectValue placeholder="Select assignee..." />
@@ -191,7 +201,9 @@ export function BulkOperationsBar({
 
                 {/* Sprint */}
                 <div>
-                  <div className="block text-sm font-medium mb-2">Move to Sprint</div>
+                  <Typography variant="small" className="block font-medium text-ui-text-secondary mb-1.5">
+                    Sprint
+                  </Typography>
                   <Select onValueChange={handleMoveToSprint}>
                     <SelectTrigger className="w-full">
                       <SelectValue placeholder="Select sprint..." />

@@ -3,6 +3,7 @@ import * as React from "react";
 import { Check } from "@/lib/icons";
 import { cn } from "@/lib/utils";
 import { Flex } from "./Flex";
+import { Typography } from "./Typography";
 
 export interface CheckboxProps
   extends React.ComponentPropsWithoutRef<typeof CheckboxPrimitive.Root> {
@@ -43,7 +44,7 @@ const Checkbox = React.forwardRef<React.ElementRef<typeof CheckboxPrimitive.Root
         ref={ref}
         id={checkboxId}
         className={cn(
-          "peer h-4 w-4 shrink-0 rounded border border-ui-border bg-ui-bg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-brand data-[state=checked]:border-brand[state=checked]:bg-brand-ring[state=checked]:border-brand-ring data-[state=checked]:text-white",
+          "peer h-4 w-4 shrink-0 rounded border border-ui-border-secondary bg-ui-bg transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-brand data-[state=checked]:border-brand data-[state=checked]:text-brand-foreground",
           className,
         )}
         {...props}
@@ -72,7 +73,11 @@ const Checkbox = React.forwardRef<React.ElementRef<typeof CheckboxPrimitive.Root
               {label}
             </label>
           )}
-          {description && <p className="text-sm text-ui-text-secondary">{description}</p>}
+          {description && (
+            <Typography variant="muted" className="text-sm">
+              {description}
+            </Typography>
+          )}
         </div>
       </Flex>
     );

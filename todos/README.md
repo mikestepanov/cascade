@@ -22,6 +22,7 @@ Each file in this folder is a complete feature specification with:
 | File | Feature | Priority |
 |------|---------|----------|
 | [public-launch.md](./public-launch.md) | Demo video, HN, Reddit, PH | P3 |
+| [uptime-monitoring.md](./uptime-monitoring.md) | Monitors, status pages, incident auto-creation | P3 |
 | [enterprise.md](./enterprise.md) | SSO/SAML, Stripe, AI | P4 |
 | [growth-features.md](./growth-features.md) | Slack sync, advanced search, version history | P4 |
 

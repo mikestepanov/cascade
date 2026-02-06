@@ -52,8 +52,8 @@ export function DashboardCustomizeModal() {
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Dashboard Customization</DialogTitle>
-          <DialogDescription>
+          <DialogTitle className="tracking-tight">Dashboard Customization</DialogTitle>
+          <DialogDescription className="text-ui-text-secondary">
             Choose which widgets to display on your personal dashboard.
           </DialogDescription>
         </DialogHeader>

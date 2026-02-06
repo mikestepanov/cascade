@@ -1,3 +1,4 @@
+import { Avatar } from "../ui/Avatar";
 import { Badge } from "../ui/Badge";
 import { Card, CardBody, CardHeader } from "../ui/Card";
 import { EmptyState } from "../ui/EmptyState";
@@ -18,20 +19,20 @@ interface RecentActivityProps {
   activities: Activity[] | undefined;
 }
 
-const getActionLabel = (action: string): string => {
+const getActionBadgeVariant = (action: string): "success" | "info" | "warning" | "neutral" => {
   switch (action) {
     case "created":
-      return "+";
+      return "success";
     case "updated":
-      return "~";
+      return "info";
     case "commented":
-      return "#";
+      return "info";
     case "assigned":
-      return "@";
+      return "warning";
     case "moved":
-      return ">";
+      return "neutral";
     default:
-      return "*";
+      return "neutral";
   }
 };
 
@@ -40,7 +41,7 @@ const getActionLabel = (action: string): string => {
  */
 export function RecentActivity({ activities }: RecentActivityProps) {
   return (
-    <Card>
+    <Card className="hover:shadow-card-hover transition-shadow">
       <CardHeader title="Feed" description="Latest updates across all projects" />
       <CardBody>
         {!activities ? (
@@ -53,59 +54,60 @@ export function RecentActivity({ activities }: RecentActivityProps) {
         ) : activities.length === 0 ? (
           <EmptyState icon="📊" title="No activity" description="No recent activity to show" />
         ) : (
-          <Flex direction="column" gap="md" className="h-96 overflow-y-auto pr-2 custom-scrollbar">
-            {activities.map((activity: Activity, activityIndex: number) => (
-              <div key={activity._id} className="relative">
-                {/* Timeline connector */}
-                {activityIndex < activities.length - 1 && (
-                  <div className="absolute left-4 top-8 bottom-0 w-px bg-ui-border" />
-                )}
+          <div className="relative h-96 overflow-y-auto pr-2 custom-scrollbar">
+            {/* Timeline line */}
+            {activities.length > 1 && (
+              <div className="absolute left-4 top-4 bottom-4 w-px bg-ui-border" />
+            )}
 
-                <Flex gap="md" align="start">
-                  <Flex
-                    align="center"
-                    justify="center"
-                    className="shrink-0 w-8 h-8 rounded-full bg-ui-bg-tertiary border border-ui-border relative z-10"
-                  >
-                    <span
-                      className="text-xs font-mono font-bold text-ui-text-secondary"
-                      aria-hidden="true"
-                    >
-                      {getActionLabel(activity.action)}
-                    </span>
-                  </Flex>
-
-                  <div className="flex-1 min-w-0 pb-4">
-                    <div className="text-sm">
-                      <Typography variant="small" as="span" className="font-bold text-ui-text">
-                        {activity.userName}
-                      </Typography>{" "}
-                      <Typography variant="small" as="span" color="secondary">
-                        {activity.action}
-                      </Typography>
+            <Flex direction="column" gap="none">
+              {activities.map((activity: Activity) => (
+                <div
+                  key={activity._id}
+                  className="relative py-3 px-2 -mx-2 rounded-lg transition-colors duration-150 hover:bg-ui-bg-secondary/30"
+                >
+                  <Flex gap="md" align="start">
+                    {/* User avatar */}
+                    <div className="shrink-0 relative z-10 bg-ui-bg rounded-full">
+                      <Avatar name={activity.userName} size="md" variant="brand" />
                     </div>
-                    <div className="mt-1">
-                      <Badge
-                        variant="neutral"
-                        className="font-mono text-caption bg-ui-bg-tertiary/50 border-ui-border/50"
+
+                    <div className="flex-1 min-w-0">
+                      <div className="text-sm">
+                        <Typography
+                          variant="small"
+                          as="span"
+                          className="font-semibold text-ui-text"
+                        >
+                          {activity.userName}
+                        </Typography>{" "}
+                        <Typography variant="small" as="span" className="text-ui-text-secondary">
+                          {activity.action}
+                        </Typography>
+                      </div>
+                      <div className="mt-1.5">
+                        <Badge
+                          variant="neutral"
+                          className="font-mono text-caption bg-ui-bg-tertiary/50 border-ui-border"
+                        >
+                          {activity.issueKey}
+                        </Badge>
+                      </div>
+                      <Flex
+                        gap="xs"
+                        align="center"
+                        className="mt-2 text-caption text-ui-text-tertiary"
                       >
-                        {activity.issueKey}
-                      </Badge>
+                        <span className="font-medium">{activity.projectName}</span>
+                        <span className="text-ui-border-secondary">|</span>
+                        <span>{new Date(activity._creationTime).toLocaleDateString()}</span>
+                      </Flex>
                     </div>
-                    <Flex
-                      gap="xs"
-                      align="center"
-                      className="mt-1.5 text-caption text-ui-text-tertiary uppercase tracking-wider font-bold"
-                    >
-                      <span>{activity.projectName}</span>
-                      <span>•</span>
-                      <span>{new Date(activity._creationTime).toLocaleDateString()}</span>
-                    </Flex>
-                  </div>
-                </Flex>
-              </div>
-            ))}
-          </Flex>
+                  </Flex>
+                </div>
+              ))}
+            </Flex>
+          </div>
         )}
       </CardBody>
     </Card>

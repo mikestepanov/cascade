@@ -85,7 +85,7 @@ export function AdvancedSearchModal({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-4xl">
         <DialogHeader>
-          <DialogTitle>Advanced Search</DialogTitle>
+          <DialogTitle className="tracking-tight">Advanced Search</DialogTitle>
         </DialogHeader>
         <div className="space-y-6">
           {/* Search Input */}

@@ -163,8 +163,8 @@ export function KanbanBoard({ projectId, teamId, sprintId, filters }: KanbanBoar
         </Flex>
         <Flex className="space-x-3 sm:space-x-6 px-4 sm:px-6 pb-6 overflow-x-auto">
           {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="shrink-0 w-72 sm:w-80 bg-ui-bg-secondary rounded-lg">
-              <div className="p-3 sm:p-4 border-b border-ui-border bg-ui-bg rounded-t-lg">
+            <div key={i} className="shrink-0 w-72 sm:w-80 bg-ui-bg-soft rounded-container border border-ui-border">
+              <div className="p-3 sm:p-4 border-b border-ui-border/50 bg-transparent rounded-t-container">
                 <SkeletonText lines={1} className="w-24" />
               </div>
               <div className="p-2 space-y-2 min-h-96">

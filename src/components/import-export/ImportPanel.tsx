@@ -161,7 +161,7 @@ export function ImportPanel({ projectId, onImportComplete }: ImportPanelProps) {
       <Button onClick={handleImport} disabled={!importData || isImporting} className="w-full">
         {isImporting ? (
           <Flex align="center" justify="center" gap="sm">
-            <LoadingSpinner size="sm" color="white" />
+            <LoadingSpinner size="sm" variant="inherit" />
             Importing...
           </Flex>
         ) : (

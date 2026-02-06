@@ -45,7 +45,7 @@ export function MarkdownPreviewModal({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-4xl">
         <DialogHeader>
-          <DialogTitle>Preview Markdown Import</DialogTitle>
+          <DialogTitle className="tracking-tight">Preview Markdown Import</DialogTitle>
           <DialogDescription className="sr-only">
             Preview content before importing
           </DialogDescription>

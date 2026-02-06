@@ -1,46 +1,103 @@
 import { Link } from "@tanstack/react-router";
 import { ROUTES } from "@/config/routes";
+import { cn } from "@/lib/utils";
 import { Flex } from "../ui/Flex";
 import { Typography } from "../ui/Typography";
 import { PlayIcon } from "./icons";
 
 export function HeroSection() {
   return (
-    <section className="px-6 pt-16 pb-24">
-      <div className="max-w-4xl mx-auto text-center">
-        {/* Tag */}
-        <Flex justify="center" className="mb-8">
-          <span className="px-4 py-2 rounded-full border border-ui-border rounded-full text-xs font-medium text-ui-text-tertiary bg-ui-bg-secondary backdrop-blur-sm transition-colors">
+    <section className="relative px-6 pt-20 pb-32 overflow-hidden">
+      {/* Near-black background with gradient overlays */}
+      <div className="absolute inset-0 bg-ui-bg-hero">
+        {/* Radial gradient from center */}
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              "radial-gradient(ellipse 80% 50% at 50% 0%, rgba(99, 102, 241, 0.15), transparent)",
+          }}
+        />
+        {/* Subtle grid pattern overlay */}
+        <div
+          className="absolute inset-0 opacity-5"
+          style={{
+            backgroundImage:
+              "linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px)",
+            backgroundSize: "64px 64px",
+          }}
+        />
+        {/* Top edge glow */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-3xl h-px bg-linear-to-r from-transparent via-landing-accent/50 to-transparent" />
+      </div>
+
+      <div className="relative max-w-4xl mx-auto text-center">
+        {/* Tag - with staggered animation */}
+        <Flex justify="center" className="mb-10 animate-fade-in">
+          <span
+            className={cn(
+              "px-4 py-2 rounded-pill",
+              "border border-ui-border",
+              "text-xs font-medium text-ui-text-tertiary",
+              "bg-ui-bg-soft backdrop-blur-sm",
+              "transition-default hover:border-ui-border-secondary",
+            )}
+          >
             Project Management · Time Tracking
           </span>
         </Flex>
 
-        {/* Headline */}
+        {/* Headline - with tighter tracking for premium feel */}
         <Typography
           variant="h1"
-          className="text-4xl md:text-5xl lg:text-7xl font-bold leading-tight mb-6 tracking-tight text-ui-text"
+          className={cn(
+            "text-4xl md:text-5xl lg:text-7xl font-bold leading-tight mb-6",
+            "tracking-tighter text-white",
+            "animate-slide-up",
+          )}
+          style={{ animationDelay: "0.1s", animationFillMode: "backwards" }}
         >
           Revolutionize Your Workflow.
           <br />
-          <span className="bg-linear-to-r from-cyan-600 via-teal-500 to-emerald-500 bg-clip-text text-transparent">
+          <span className="bg-linear-to-r from-landing-accent via-landing-accent-teal to-status-success-text bg-clip-text text-transparent">
             Harmonize Your Team.
           </span>
         </Typography>
 
-        {/* Subheadline */}
+        {/* Subheadline - with opacity-based secondary text */}
         <Typography
           variant="lead"
-          className="text-ui-text-secondary max-w-2xl mx-auto mb-10 text-lg md:text-xl"
+          className={cn(
+            "text-ui-text-secondary max-w-2xl mx-auto mb-12",
+            "text-lg md:text-xl leading-relaxed",
+            "animate-slide-up",
+          )}
+          style={{ animationDelay: "0.2s", animationFillMode: "backwards" }}
         >
           Experience the future of project management with integrated tracking, automation, and
           collaboration.
         </Typography>
 
-        {/* CTAs */}
-        <Flex direction="column" gap="md" align="center" justify="center" className="sm:flex-row">
+        {/* CTAs - with hover animations */}
+        <Flex
+          direction="column"
+          gap="md"
+          align="center"
+          justify="center"
+          className={cn("sm:flex-row animate-slide-up")}
+          style={{ animationDelay: "0.3s", animationFillMode: "backwards" }}
+        >
           <Link
             to={ROUTES.signup.path}
-            className="px-8 py-3.5 bg-linear-to-r from-cyan-500 to-teal-400 rounded-full text-base font-bold text-white hover:shadow-lg hover:shadow-cyan-500/25 transition-all hover:scale-105 active:scale-95"
+            className={cn(
+              "px-8 py-3.5 rounded-pill",
+              "bg-linear-to-r from-landing-accent to-landing-accent-teal",
+              "text-base font-bold text-white",
+              "shadow-elevated",
+              "transition-all duration-default",
+              "hover:shadow-xl hover:shadow-landing-accent/25",
+              "hover:scale-105 active:scale-95",
+            )}
           >
             Get Started Free
           </Link>
@@ -48,12 +105,26 @@ export function HeroSection() {
             href="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
             target="_blank"
             rel="noopener noreferrer"
-            className="group px-8 py-3.5 bg-transparent border border-ui-border-secondary rounded-full text-base font-medium text-ui-text-secondary hover:border-ui-border hover:text-ui-text transition-all flex items-center justify-center gap-2 hover:bg-ui-bg-secondary"
+            className={cn(
+              "group px-8 py-3.5 rounded-pill",
+              "bg-transparent border border-ui-border-secondary",
+              "text-base font-medium text-ui-text-secondary",
+              "transition-all duration-default",
+              "hover:border-ui-border hover:text-white",
+              "hover:bg-ui-bg-hover",
+              "flex items-center justify-center gap-2",
+            )}
           >
             Watch Demo
-            <PlayIcon className="w-4 h-4 text-cyan-600" />
+            <PlayIcon className="w-4 h-4 text-landing-accent transition-transform duration-default group-hover:translate-x-0.5" />
           </a>
         </Flex>
+
+        {/* Bottom decorative glow */}
+        <div
+          className="absolute -bottom-24 left-1/2 -translate-x-1/2 w-96 h-48 rounded-full blur-glow bg-landing-accent/10 pointer-events-none animate-fade-in"
+          style={{ animationDelay: "0.5s", animationFillMode: "backwards" }}
+        />
       </div>
     </section>
   );

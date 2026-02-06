@@ -229,7 +229,7 @@ export function CreateIssueModal({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-2xl">
         <DialogHeader>
-          <DialogTitle>Create Issue</DialogTitle>
+          <DialogTitle className="tracking-tight">Create Issue</DialogTitle>
           <DialogDescription className="sr-only">Form to create a new issue</DialogDescription>
         </DialogHeader>
         <form

@@ -64,7 +64,11 @@ export function DocumentHeader({
       variant="h1"
       role={document.isOwner ? "button" : undefined}
       tabIndex={document.isOwner ? 0 : undefined}
-      className="text-xl sm:text-2xl font-bold text-ui-text cursor-pointer hover:bg-ui-bg-secondary rounded px-2 py-1 transition-colors"
+      className={cn(
+        "text-xl sm:text-2xl font-semibold text-ui-text tracking-tight",
+        "px-2 py-1 -ml-2 rounded transition-default",
+        document.isOwner && "cursor-pointer hover:bg-ui-bg-hover",
+      )}
       onClick={document.isOwner ? handleTitleEdit : undefined}
       onKeyDown={
         document.isOwner
@@ -82,7 +86,7 @@ export function DocumentHeader({
   );
 
   return (
-    <div className="border-b border-ui-border p-3 sm:p-6">
+    <div className="border-b border-ui-border bg-ui-bg p-4 sm:p-6">
       <Flex
         direction="column"
         align="start"
@@ -98,7 +102,7 @@ export function DocumentHeader({
               onChange={(e) => setTitleValue(e.target.value)}
               onBlur={() => void handleTitleSave()}
               onKeyDown={handleTitleKeyDown}
-              className="text-xl sm:text-2xl font-bold bg-transparent border-none outline-none focus:ring-2 focus:ring-brand-ring rounded px-2 py-1 text-ui-text"
+              className="text-xl sm:text-2xl font-semibold tracking-tight bg-transparent border-none outline-none focus:ring-2 focus:ring-brand-ring rounded px-2 py-1 -ml-2 text-ui-text"
             />
           ) : document.isOwner ? (
             <Tooltip content="Click to edit title">{titleComponent}</Tooltip>
@@ -117,10 +121,10 @@ export function DocumentHeader({
               size="sm"
               onClick={onShowVersionHistory}
               leftIcon={<History className="w-4 h-4" aria-hidden="true" />}
-              className="px-2 sm:px-3 py-1 bg-ui-bg-tertiary text-ui-text hover:bg-ui-bg-secondary min-h-0"
+              className="px-2 sm:px-3 py-1.5 border border-ui-border text-ui-text-secondary hover:text-ui-text hover:bg-ui-bg-hover hover:border-ui-border-secondary transition-default min-h-0"
               aria-label="Version history"
             >
-              <span className="hidden sm:inline">History</span>
+              <span className="hidden sm:inline text-sm">History</span>
               {versionCount !== undefined && versionCount > 0 && (
                 <Badge variant="secondary" className="ml-1">
                   {versionCount}
@@ -137,10 +141,10 @@ export function DocumentHeader({
               onClick={() => void onImportMarkdown()}
               disabled={!editorReady}
               leftIcon={<Upload className="w-4 h-4" aria-hidden="true" />}
-              className="px-2 sm:px-3 py-1 bg-brand-indigo-track text-brand-indigo-text hover:opacity-80 min-h-0"
+              className="px-2 sm:px-3 py-1.5 border border-ui-border text-ui-text-secondary hover:text-brand hover:bg-brand-subtle hover:border-brand-border transition-default min-h-0 disabled:opacity-50"
               aria-label="Import from Markdown"
             >
-              <span className="hidden sm:inline">Import MD</span>
+              <span className="hidden sm:inline text-sm">Import</span>
             </Button>
           </Tooltip>
 
@@ -152,10 +156,10 @@ export function DocumentHeader({
               onClick={() => void onExportMarkdown()}
               disabled={!editorReady}
               leftIcon={<Download className="w-4 h-4" aria-hidden="true" />}
-              className="px-2 sm:px-3 py-1 bg-brand-cyan-track text-brand-cyan-text hover:opacity-80 min-h-0"
+              className="px-2 sm:px-3 py-1.5 border border-ui-border text-ui-text-secondary hover:text-brand hover:bg-brand-subtle hover:border-brand-border transition-default min-h-0 disabled:opacity-50"
               aria-label="Export as Markdown"
             >
-              <span className="hidden sm:inline">Export MD</span>
+              <span className="hidden sm:inline text-sm">Export</span>
             </Button>
           </Tooltip>
 
@@ -165,10 +169,10 @@ export function DocumentHeader({
               size="sm"
               onClick={() => void onTogglePublic()}
               className={cn(
-                "px-2 sm:px-3 py-1 min-h-0",
+                "px-2.5 sm:px-3 py-1.5 min-h-0 text-sm border transition-default",
                 document.isPublic
-                  ? "bg-status-success-bg text-status-success-text hover:opacity-80"
-                  : "bg-ui-bg-tertiary text-ui-text hover:bg-ui-bg-secondary",
+                  ? "border-status-success/30 bg-status-success-bg text-status-success-text hover:bg-status-success-bg/80"
+                  : "border-ui-border text-ui-text-secondary hover:text-ui-text hover:bg-ui-bg-hover hover:border-ui-border-secondary",
               )}
             >
               {document.isPublic ? "Public" : "Private"}
@@ -180,10 +184,10 @@ export function DocumentHeader({
       <Flex
         wrap
         align="center"
-        className="gap-x-2 sm:gap-x-4 gap-y-1 text-xs sm:text-sm text-ui-text-secondary"
+        className="gap-x-2 sm:gap-x-4 gap-y-1 text-xs sm:text-sm text-ui-text-tertiary"
       >
         <span>Created by {document.creatorName}</span>
-        <span className="hidden sm:inline">•</span>
+        <span className="hidden sm:inline text-ui-text-tertiary/50">•</span>
         <span>Last updated {new Date(document.updatedAt).toLocaleDateString()}</span>
       </Flex>
     </div>

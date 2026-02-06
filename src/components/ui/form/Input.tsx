@@ -35,11 +35,12 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           ref={ref}
           id={inputId}
           className={cn(
-            "w-full px-3 py-2 border rounded-md text-sm",
-            "bg-ui-bg",
+            "w-full px-3 py-2.5 border rounded-md text-sm transition-default",
+            "bg-ui-bg-soft",
             "text-ui-text",
             "placeholder-ui-text-tertiary",
-            "focus:outline-none focus:ring-2 focus:ring-ui-border-focus focus:border-transparent",
+            "focus:outline-none focus:ring-2 focus:ring-ui-border-focus focus:border-ui-border-focus",
+            "hover:border-ui-border-secondary",
             "disabled:opacity-50 disabled:cursor-not-allowed",
             error ? "border-ui-border-error" : "border-ui-border",
             className,
