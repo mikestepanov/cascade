@@ -90,7 +90,7 @@ function FilterDropdown<T>({
           <ChevronDown className="ml-1 w-4 h-4" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="start" className={scrollable ? "max-h-64 overflow-y-auto" : ""}>
+      <DropdownMenuContent align="start" className={cn(scrollable && "max-h-64 overflow-y-auto")}>
         {items?.map((item) => (
           <DropdownMenuCheckboxItem
             key={getKey(item)}

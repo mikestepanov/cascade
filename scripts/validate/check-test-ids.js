@@ -110,8 +110,8 @@ export function run() {
           const args = node.arguments;
           if (args.length > 0) {
             const firstArg = args[0];
-            // BAD: getByTestId("some-string")
-            if (ts.isStringLiteral(firstArg)) {
+            // BAD: getByTestId("some-string") or getByTestId(`some-string`)
+            if (ts.isStringLiteral(firstArg) || ts.isNoSubstitutionTemplateLiteral(firstArg)) {
               const { line, character } = sourceFile.getLineAndCharacterOfPosition(node.getStart());
               reportError(
                 filePath,
