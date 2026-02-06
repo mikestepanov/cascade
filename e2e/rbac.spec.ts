@@ -15,6 +15,7 @@
  * - Viewer: e2e-viewer@inbox.mailtrap.io
  */
 
+import { TEST_IDS } from "../src/lib/test-ids";
 import { RBAC_TEST_CONFIG } from "./config";
 import { clientSideNavigate, expect, rbacTest } from "./fixtures";
 
@@ -146,7 +147,7 @@ rbacTest(
     console.log("[DEBUG] Editor Page HTML Snapshot:", html);
 
     // Try multiple selectors
-    const debugEl = editorPage.locator('[data-testid="debug-user-role"]');
+    const debugEl = editorPage.getByTestId(TEST_IDS.DEBUG.USER_ROLE);
     if ((await debugEl.count()) > 0) {
       console.log("[DEBUG] Found via locator:", await debugEl.getAttribute("data-role"));
     } else {

@@ -14,6 +14,7 @@ export const presence = new Presence(
   components.presence as unknown as ConstructorParameters<typeof Presence>[0],
 );
 
+/** Get the authenticated user's ID, or null if not logged in. */
 export const getUserId = query({
   args: {},
   returns: v.union(v.string(), v.null()),
@@ -22,6 +23,7 @@ export const getUserId = query({
   },
 });
 
+/** Send a presence heartbeat for the current user in a room. Validates auth server-side. */
 export const heartbeat = mutation({
   args: {
     roomId: v.string(),
@@ -38,6 +40,7 @@ export const heartbeat = mutation({
   },
 });
 
+/** List active users in a room, enriched with user profile data (name, image, email). */
 export const list = query({
   args: { roomToken: v.string() },
   handler: async (ctx, { roomToken }) => {
@@ -60,6 +63,7 @@ export const list = query({
   },
 });
 
+/** Disconnect a user session from presence tracking. */
 export const disconnect = mutation({
   args: { sessionToken: v.string() },
   handler: async (ctx, { sessionToken }) => {

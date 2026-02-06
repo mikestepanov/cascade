@@ -4,6 +4,7 @@ import { Typography } from "@/components/ui/Typography";
 import { ROUTES } from "@/config/routes";
 import type { useListNavigation } from "@/hooks/useListNavigation";
 import { useOrganization } from "@/hooks/useOrgContext";
+import { TEST_IDS } from "@/lib/test-ids";
 import { cn } from "@/lib/utils";
 import { Badge } from "../ui/Badge";
 import { EmptyState } from "../ui/EmptyState";
@@ -73,7 +74,11 @@ export function MyIssuesList({
   return (
     <Flex direction="column" className="h-full">
       <div className="p-6 pb-2">
-        <Typography variant="h3" className="text-xl font-bold">
+        <Typography
+          variant="h3"
+          className="text-xl font-bold"
+          data-testid={TEST_IDS.DASHBOARD.FEED_HEADING}
+        >
           Feed
         </Typography>
         <Typography variant="small" color="tertiary" className="text-sm mt-1">

@@ -1,5 +1,6 @@
 import type { Locator, Page } from "@playwright/test";
 import { expect } from "@playwright/test";
+import { TEST_IDS } from "../../src/lib/test-ids";
 import { BasePage } from "./base.page";
 
 /**
@@ -138,7 +139,7 @@ export class DashboardPage extends BasePage {
     // Content areas - use last() to get innermost main element (nested layout)
     this.mainContent = page.getByRole("main").last();
     this.sidebar = page.locator("[data-tour='sidebar']");
-    this.loadingSpinner = page.locator(".animate-spin");
+    this.loadingSpinner = page.getByRole("status").or(page.locator("[data-loading-spinner]"));
 
     // Dashboard specific content - match actual UI headings
     this.myIssuesSection = page.getByRole("heading", { name: /feed/i }).first();
@@ -160,7 +161,7 @@ export class DashboardPage extends BasePage {
 
     // Modals - Global Search (not a dialog role, it's a fixed positioned div)
     // The modal contains "Search issues and documents..." placeholder input
-    this.globalSearchModal = page.getByTestId("global-search-modal");
+    this.globalSearchModal = page.getByTestId(TEST_IDS.SEARCH.MODAL);
     this.globalSearchInput = page.getByPlaceholder(/search issues and documents/i);
 
     // Notifications - PopoverContent with "Notifications" h3 heading
@@ -382,7 +383,8 @@ export class DashboardPage extends BasePage {
   async openGlobalSearch() {
     // Use retry pattern - click may not register immediately after page load
     await expect(async () => {
-      await this.globalSearchButton.click();
+      // Use evaluate for reliable React event handling
+      await this.globalSearchButton.evaluate((el: HTMLElement) => el.click());
       await expect(this.globalSearchModal).toBeVisible();
       // Wait for input to be interactive (cmdk library needs time to hydrate)
       await expect(this.globalSearchInput).toBeVisible();

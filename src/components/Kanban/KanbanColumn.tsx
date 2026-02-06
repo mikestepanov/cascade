@@ -8,6 +8,7 @@ import { Typography } from "@/components/ui/Typography";
 import { ANIMATION } from "@/lib/constants";
 import type { IssuePriority, IssueType } from "@/lib/issue-utils";
 import { getWorkflowCategoryColor } from "@/lib/issue-utils";
+import { TEST_IDS } from "@/lib/test-ids";
 import { cn } from "@/lib/utils";
 import type { LabelInfo } from "../../../convex/lib/issueHelpers";
 import { IssueCard } from "../IssueCard";
@@ -92,6 +93,7 @@ export const KanbanColumn = memo(function KanbanColumn({
   return (
     <section
       aria-label={`${state.name} column`}
+      data-testid={TEST_IDS.BOARD.COLUMN}
       data-board-column
       className={cn(
         "flex-shrink-0 w-full lg:w-80 bg-ui-bg-secondary rounded-lg animate-slide-up border-t-4",
@@ -104,13 +106,21 @@ export const KanbanColumn = memo(function KanbanColumn({
       onDrop={handleDrop}
     >
       {/* Column Header */}
-      <div className="p-3 sm:p-4 border-b border-ui-border bg-ui-bg rounded-t-lg">
+      <div
+        data-testid={TEST_IDS.BOARD.COLUMN_HEADER}
+        className="p-3 sm:p-4 border-b border-ui-border bg-ui-bg rounded-t-lg"
+      >
         <Flex align="center" justify="between" gap="sm">
           <Flex align="center" className="space-x-2 min-w-0">
             <Typography variant="h3" className="font-medium text-ui-text truncate">
               {state.name}
             </Typography>
-            <Badge variant="neutral" shape="pill" className="shrink-0">
+            <Badge
+              data-testid={TEST_IDS.BOARD.COLUMN_COUNT}
+              variant="neutral"
+              shape="pill"
+              className="shrink-0"
+            >
               {hiddenCount > 0 ? `${stateIssues.length}/${totalCount}` : stateIssues.length}
             </Badge>
           </Flex>

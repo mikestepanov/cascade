@@ -9,7 +9,7 @@ import { requireOwned } from "./lib/errors";
 import { fetchPaginatedQuery } from "./lib/queryHelpers";
 import { notDeleted, softDeleteFields } from "./lib/softDeleteHelpers";
 
-// Get notifications for current user
+/** Get paginated notifications for the current user, optionally filtered to unread only. */
 export const list = authenticatedQuery({
   args: {
     paginationOpts: paginationOptsValidator,
@@ -54,7 +54,7 @@ export const list = authenticatedQuery({
   },
 });
 
-// Get unread count (capped at 99+ for display)
+/** Get the unread notification count for the current user, capped at 100 for display purposes. */
 export const getUnreadCount = authenticatedQuery({
   args: {},
   handler: async (ctx) => {
@@ -70,7 +70,7 @@ export const getUnreadCount = authenticatedQuery({
   },
 });
 
-// Mark notification as read
+/** Mark a single notification as read. Only the notification owner can perform this action. */
 export const markAsRead = authenticatedMutation({
   args: { id: v.id("notifications") },
   handler: async (ctx, args) => {
@@ -81,7 +81,7 @@ export const markAsRead = authenticatedMutation({
   },
 });
 
-// Mark all as read (with reasonable limit per call)
+/** Mark all unread notifications as read, up to 500 per call. Returns whether more remain. */
 export const markAllAsRead = authenticatedMutation({
   args: {},
   returns: v.object({ marked: v.number(), hasMore: v.boolean() }),
@@ -102,7 +102,7 @@ export const markAllAsRead = authenticatedMutation({
   },
 });
 
-// Delete a notification
+/** Soft-delete a notification. Only the notification owner can perform this action. */
 export const softDeleteNotification = authenticatedMutation({
   args: { id: v.id("notifications") },
   handler: async (ctx, args) => {
@@ -113,7 +113,7 @@ export const softDeleteNotification = authenticatedMutation({
   },
 });
 
-// Internal mutation to create a notification
+/** Create a notification for a user. Skips creation if the actor is the recipient. */
 export const createNotification = internalMutation({
   args: {
     userId: v.id("users"),
@@ -145,7 +145,7 @@ export const createNotification = internalMutation({
   },
 });
 
-// Helper to create notifications for multiple users
+/** Create notifications for multiple users in parallel. Skips the actor if included in the list. */
 export const createBulk = internalMutation({
   args: {
     userIds: v.array(v.id("users")),
@@ -181,7 +181,7 @@ export const createBulk = internalMutation({
   },
 });
 
-// Internal query to get notifications for digest emails
+/** Get recent notifications for a user since a given timestamp, enriched with actor and issue data. Used for digest emails. */
 export const listForDigest = internalQuery({
   args: {
     userId: v.id("users"),

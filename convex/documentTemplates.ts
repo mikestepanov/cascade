@@ -191,7 +191,7 @@ export const createDocumentFromTemplate = authenticatedMutation({
   },
 });
 
-// Initialize built-in templates (run once on deployment)
+/** Initializes built-in document templates on first deployment, skipping if they already exist. */
 export const initializeBuiltInTemplates = mutation({
   args: {},
   handler: async (ctx) => {

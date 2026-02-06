@@ -5,6 +5,7 @@ import { BOUNDED_LIST_LIMIT } from "./lib/boundedQueries";
 import { conflict, forbidden, notFound } from "./lib/errors";
 import { notDeleted } from "./lib/softDeleteHelpers";
 
+/** List all built-in project templates available for new project creation. */
 export const list = query({
   args: {},
   // Note: Returns full projectTemplates documents. Return type validation omitted
@@ -20,6 +21,7 @@ export const list = query({
   },
 });
 
+/** Get a single project template by ID. */
 export const get = query({
   args: { id: v.id("projectTemplates") },
   // Note: Returns full projectTemplates document or null
@@ -28,6 +30,7 @@ export const get = query({
   },
 });
 
+/** Create a new project from a template, including workflow states, labels, and admin membership. */
 export const createFromTemplate = authenticatedMutation({
   args: {
     templateId: v.id("projectTemplates"),
@@ -110,7 +113,7 @@ export const createFromTemplate = authenticatedMutation({
   },
 });
 
-// Initialize built-in templates (would be called once during setup)
+/** Seed the database with built-in project templates (Software, Kanban, Marketing, Design). Idempotent. */
 export const initializeBuiltInTemplates = mutation({
   args: {},
   returns: v.null(),

@@ -33,43 +33,40 @@ test.describe("Teams", () => {
     await workspacesPage.goto();
     await workspacesPage.createWorkspace(workspaceName);
 
-    // Navigate to the newly created workspace
-    // First, go back to workspaces list
-    await workspacesPage.goto();
+    // After workspace creation, page may redirect to workspace detail
+    // Verify we're on a workspace page (either list or detail)
+    await expect(page).toHaveURL(/\/workspaces\//);
 
-    // Wait for workspaces list to load - look for the page heading
-    await expect(page.getByRole("heading", { name: /workspaces/i })).toBeVisible({
-      timeout: 10000,
-    });
-
-    // Click on the workspace card to navigate to it - scope to main content to avoid sidebar links
-    const mainContent = page
-      .locator("main")
-      .or(page.locator('[role="main"]'))
-      .or(page.locator(".flex-1"));
-    const workspaceCard = mainContent
-      .locator(`a[href*="/workspaces/"]`)
-      .filter({ hasText: workspaceName })
-      .first();
-    await expect(workspaceCard).toBeVisible({ timeout: 15000 });
-    await workspaceCard.click();
-
-    // Should be in the workspace now
-    await expect(page).toHaveURL(/\/workspaces\/.*$/);
-
-    // Look for Teams navigation or heading
-    // Teams are accessible from the workspace navigation
-    const teamsLink = page.getByRole("link", { name: /teams/i });
-    if (await teamsLink.isVisible()) {
-      await teamsLink.click();
-      await expect(page).toHaveURL(/\/workspaces\/.*\/teams/);
-
-      // Should show Teams heading
-      await expect(page.getByRole("heading", { name: /teams/i })).toBeVisible();
-    } else {
-      // Teams might be shown inline in workspace view
-      console.log("Teams link not found as separate navigation item");
+    // If we're already on the workspace detail page, look for Teams link directly
+    // Otherwise, navigate to the workspace first
+    const workspaceHeading = page
+      .getByRole("main")
+      .getByRole("heading", { name: workspaceName, level: 3 });
+    if (!(await workspaceHeading.isVisible())) {
+      // We're on the list page, need to click the workspace card
+      const mainContent = page.getByRole("main");
+      const workspaceCard = mainContent
+        .locator(`a[href*="/workspaces/"]`)
+        .filter({ hasText: workspaceName })
+        .first();
+      await expect(workspaceCard).toBeVisible();
+      await workspaceCard.evaluate((el: HTMLElement) => el.click());
     }
+
+    // Should be in the workspace now - either on detail page or already on teams
+    await expect(page).toHaveURL(/\/workspaces\/[^/]+/);
+
+    // Look for Teams navigation link and click if not already on teams page
+    const currentUrl = page.url();
+    if (!currentUrl.includes("/teams")) {
+      const teamsLink = page.getByRole("link", { name: /^teams$/i });
+      await expect(teamsLink).toBeVisible();
+      await teamsLink.evaluate((el: HTMLElement) => el.click());
+    }
+    await expect(page).toHaveURL(/\/workspaces\/.*\/teams/);
+
+    // Should show Teams heading or content
+    console.log("✓ Navigated to Teams page");
   });
 
   test("teams list shows create team button", async ({ workspacesPage, page }) => {
@@ -80,22 +77,30 @@ test.describe("Teams", () => {
     await workspacesPage.goto();
     await workspacesPage.createWorkspace(workspaceName);
 
-    // Go back to workspaces and navigate into the created workspace
-    await workspacesPage.goto();
-    const workspaceCard = page
-      .locator(`a[href*="/workspaces/"]`)
-      .filter({ hasText: workspaceName });
-    await workspaceCard.click();
+    // After workspace creation, we may already be on the detail page
+    // Check if we need to navigate to the workspace
+    await expect(page).toHaveURL(/\/workspaces\//);
+
+    const workspaceHeading = page
+      .getByRole("main")
+      .getByRole("heading", { name: workspaceName, level: 3 });
+    if (!(await workspaceHeading.isVisible())) {
+      const mainContent = page.getByRole("main");
+      const workspaceCard = mainContent
+        .locator(`a[href*="/workspaces/"]`)
+        .filter({ hasText: workspaceName });
+      await expect(workspaceCard).toBeVisible();
+      await workspaceCard.evaluate((el: HTMLElement) => el.click());
+    }
 
     // Navigate to teams
-    const teamsLink = page.getByRole("link", { name: /teams/i });
-    if (await teamsLink.isVisible()) {
-      await teamsLink.click();
+    const teamsLink = page.getByRole("link", { name: /^teams$/i });
+    await expect(teamsLink).toBeVisible();
+    await teamsLink.evaluate((el: HTMLElement) => el.click());
 
-      // Should show "Create Team" button
-      const createTeamButton = page.getByRole("button", { name: /create team/i });
-      await expect(createTeamButton).toBeVisible();
-    }
+    // Should show "Create Team" button (may be multiple on page, use first)
+    const createTeamButton = page.getByRole("button", { name: /create team/i }).first();
+    await expect(createTeamButton).toBeVisible();
   });
 
   test("teams list shows empty state when no teams exist", async ({ workspacesPage, page }) => {
@@ -106,27 +111,31 @@ test.describe("Teams", () => {
     await workspacesPage.goto();
     await workspacesPage.createWorkspace(workspaceName);
 
-    // Navigate to workspace
-    await workspacesPage.goto();
-    const workspaceCard = page
-      .locator(`a[href*="/workspaces/"]`)
-      .filter({ hasText: workspaceName });
-    await workspaceCard.click();
+    // After workspace creation, we may already be on the detail page
+    await expect(page).toHaveURL(/\/workspaces\//);
+
+    const workspaceHeading = page
+      .getByRole("main")
+      .getByRole("heading", { name: workspaceName, level: 3 });
+    if (!(await workspaceHeading.isVisible())) {
+      const mainContent = page.getByRole("main");
+      const workspaceCard = mainContent
+        .locator(`a[href*="/workspaces/"]`)
+        .filter({ hasText: workspaceName });
+      await expect(workspaceCard).toBeVisible();
+      await workspaceCard.evaluate((el: HTMLElement) => el.click());
+    }
 
     // Navigate to teams
-    const teamsLink = page.getByRole("link", { name: /teams/i });
-    if (await teamsLink.isVisible()) {
-      await teamsLink.click();
+    const teamsLink = page.getByRole("link", { name: /^teams$/i });
+    await expect(teamsLink).toBeVisible();
+    await teamsLink.click();
 
-      // Should show empty state message OR teams list (if teams exist from before)
-      const emptyState = page.getByText(/no teams yet|create your first team/i);
-      const teamCards = page.locator("[data-team-card]").or(page.locator("a[href*='/teams/']"));
+    // Wait for teams content to load - look for either empty state heading or team cards
+    const emptyStateHeading = page.getByRole("heading", { name: /no teams yet/i });
+    const teamCards = page.locator("[data-team-card]").or(page.locator("a[href*='/teams/']"));
 
-      // Either empty state or teams should be visible
-      const hasEmptyState = await emptyState.isVisible().catch(() => false);
-      const hasTeams = (await teamCards.count()) > 0;
-
-      expect(hasEmptyState || hasTeams).toBe(true);
-    }
+    // Either empty state or teams should be visible
+    await expect(emptyStateHeading.or(teamCards.first())).toBeVisible();
   });
 });

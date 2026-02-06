@@ -6,7 +6,7 @@
 
 | Priority | Feature | File |
 |----------|---------|------|
-| **P0** | E2E Test Quality Overhaul | [`todos/e2e-quality-overhaul.md`](./todos/e2e-quality-overhaul.md) |
+| **P0** | Quality Overhaul | [`todos/quality-overhaul.md`](./todos/quality-overhaul.md) |
 | **P1** | Multi-Level Views | [`todos/multi-level-views.md`](./todos/multi-level-views.md) |
 | **P2** | Feature Gaps | [`todos/feature-gaps.md`](./todos/feature-gaps.md) |
 | **P2** | Tech Debt | [`todos/tech-debt.md`](./todos/tech-debt.md) |

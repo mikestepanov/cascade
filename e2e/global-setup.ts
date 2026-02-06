@@ -136,7 +136,11 @@ async function setupTestUser(
  * Wait for the Convex Backend (HTTP Actions) to be ready
  * Polling loop for local dev server
  */
-async function waitForBackendReady(clientUrl: string, maxRetries = 60, intervalMs = 1000): Promise<boolean> {
+async function waitForBackendReady(
+  clientUrl: string,
+  maxRetries = 60,
+  intervalMs = 1000,
+): Promise<boolean> {
   // Use a simple known endpoint (or just root) to check connectivity
   // We check BOTH the client URL (3210) and the site URL (3211)
   // If either is up, we assume the backend process is running.
@@ -156,10 +160,11 @@ async function waitForBackendReady(clientUrl: string, maxRetries = 60, intervalM
       // Fallback: Try Client URL (WebSocket/Dashboard) - it serves HTTP too
       const resClient = await fetch(clientUrl).catch(() => null);
       if (resClient && resClient.status !== undefined) {
-        console.log(`✓ Convex Backend (Client) is ready at ${clientUrl} (status: ${resClient.status})`);
+        console.log(
+          `✓ Convex Backend (Client) is ready at ${clientUrl} (status: ${resClient.status})`,
+        );
         return true;
       }
-
     } catch {
       // Ignore errors and retry
     }
