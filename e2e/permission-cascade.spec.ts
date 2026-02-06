@@ -164,25 +164,19 @@ test.describe("Permission Cascade", () => {
     const timestamp = Date.now();
     const workspaceName = `Settings WS ${timestamp}`;
 
-    // Create a workspace
+    // Create a workspace - this navigates to the workspace detail page after creation
     await workspacesPage.goto();
     await workspacesPage.createWorkspace(workspaceName);
 
-    // Go back to workspaces list
-    await workspacesPage.goto();
+    // After creation, we should be on the workspace detail page (may be on /teams tab)
+    await expect(page).toHaveURL(/\/workspaces\/[^/]+/);
 
-    // Find and click on the workspace
-    const workspaceCard = page
-      .locator(`a[href*="/workspaces/"]`)
-      .filter({ hasText: workspaceName });
-    await expect(workspaceCard).toBeVisible();
-    await workspaceCard.click();
+    // Verify the workspace heading is visible
+    const workspaceHeading = page.getByRole("heading", { name: workspaceName, level: 3 });
+    await expect(workspaceHeading).toBeVisible();
+    console.log("✓ On workspace detail page");
 
-    // Should be in workspace now
-    await expect(page).toHaveURL(/\/workspaces\/[^/]+$/);
-    console.log("✓ Navigated to workspace");
-
-    // Look for settings link/button
+    // Look for settings link/button in the workspace tabs
     const settingsLink = page.getByRole("link", { name: /settings/i });
     if (await settingsLink.isVisible().catch(() => false)) {
       await settingsLink.click();

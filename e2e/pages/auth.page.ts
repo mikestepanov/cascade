@@ -149,8 +149,13 @@ export class AuthPage extends BasePage {
   async gotoSignIn() {
     await this.page.goto("/signin", { waitUntil: "commit" });
     await this.signInHeading.waitFor({ state: "visible" });
+    // Wait for hydration before expanding
+    await this.waitForHydration();
     // Expand form using robust click logic
     await this.expandEmailForm();
+    // Verify form is expanded by checking button text shows "Sign in"
+    const submitButton = this.page.getByTestId(TEST_IDS.AUTH.SUBMIT_BUTTON);
+    await expect(submitButton).toHaveText(/Sign in/i);
   }
 
   /**

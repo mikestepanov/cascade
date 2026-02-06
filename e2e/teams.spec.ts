@@ -129,16 +129,13 @@ test.describe("Teams", () => {
     // Navigate to teams
     const teamsLink = page.getByRole("link", { name: /^teams$/i });
     await expect(teamsLink).toBeVisible();
-    await teamsLink.evaluate((el: HTMLElement) => el.click());
+    await teamsLink.click();
 
-    // Should show empty state message OR teams list (if teams exist from before)
-    const emptyState = page.getByText(/no teams yet|create your first team/i);
+    // Wait for teams content to load - look for either empty state heading or team cards
+    const emptyStateHeading = page.getByRole("heading", { name: /no teams yet/i });
     const teamCards = page.locator("[data-team-card]").or(page.locator("a[href*='/teams/']"));
 
     // Either empty state or teams should be visible
-    const hasEmptyState = await emptyState.isVisible().catch(() => false);
-    const hasTeams = (await teamCards.count()) > 0;
-
-    expect(hasEmptyState || hasTeams).toBe(true);
+    await expect(emptyStateHeading.or(teamCards.first())).toBeVisible();
   });
 });
