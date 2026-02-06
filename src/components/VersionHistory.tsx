@@ -139,7 +139,9 @@ export function VersionHistory({
                               Current
                             </span>
                           )}
-                          <span className="text-sm font-medium text-ui-text tracking-tight">{version.title}</span>
+                          <span className="text-sm font-medium text-ui-text tracking-tight">
+                            {version.title}
+                          </span>
                         </Flex>
                         <Flex align="center" gap="md" className="text-sm text-ui-text-tertiary">
                           <Flex align="center" gap="xs">

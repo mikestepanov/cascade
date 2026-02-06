@@ -42,7 +42,11 @@ export function NavHeader() {
         <Flex align="center" gap="md">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-9 w-9 text-ui-text-secondary hover:text-ui-text hover:bg-ui-bg-hover transition-all duration-default">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-9 w-9 text-ui-text-secondary hover:text-ui-text hover:bg-ui-bg-hover transition-all duration-default"
+              >
                 <Sun className="h-icon-theme-toggle w-icon-theme-toggle rotate-0 scale-100 transition-all duration-default" />
                 <Moon className="absolute h-icon-theme-toggle w-icon-theme-toggle rotate-90 scale-0 transition-all duration-default" />
                 <span className="sr-only">Toggle theme</span>
