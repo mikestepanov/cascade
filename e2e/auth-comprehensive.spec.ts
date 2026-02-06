@@ -58,30 +58,46 @@ test.describe("Sign In Form - Elements", () => {
     await expect(authPage.passwordInput).toHaveAttribute("type", "password");
   });
 
-  test("email input validates email format", async ({ authPage }) => {
-    // Wait for hydration before interacting
+  test("email input validates email format", async ({ authPage, page }) => {
     await authPage.waitForHydration();
-    await authPage.expandEmailForm();
+    const submitButton = page.getByTestId(TEST_IDS.AUTH.SUBMIT_BUTTON);
 
-    // Fill form with invalid email and attempt submit
-    await authPage.emailInput.fill("invalid-email");
-    await authPage.passwordInput.fill("password123");
-    await authPage.submitButton.evaluate((el: HTMLElement) => el.click());
+    // Expand form, fill with invalid email, and verify validation in retry block
+    await expect(async () => {
+      const buttonText = await submitButton.textContent();
+      if (buttonText?.toLowerCase().includes("continue with email")) {
+        await submitButton.click();
+        await expect(submitButton).toHaveText(/sign in/i, { timeout: 2000 });
+      }
 
-    // HTML5 validation should trigger
-    const isInvalid = await authPage.emailInput.evaluate(
-      (el: HTMLInputElement) => !el.validity.valid,
-    );
-    expect(isInvalid).toBe(true);
+      // Fill form with invalid email
+      await authPage.emailInput.fill("invalid-email");
+      await authPage.passwordInput.fill("password123");
+      await submitButton.evaluate((el: HTMLElement) => el.click());
+
+      // HTML5 validation should trigger
+      const isInvalid = await authPage.emailInput.evaluate(
+        (el: HTMLInputElement) => !el.validity.valid,
+      );
+      expect(isInvalid).toBe(true);
+    }).toPass({ intervals: [500, 1000, 2000], timeout: 15000 });
   });
 
-  test("password input is masked", async ({ authPage }) => {
-    // Wait for hydration before interacting
+  test("password input is masked", async ({ authPage, page }) => {
     await authPage.waitForHydration();
-    await authPage.expandEmailForm();
+    const submitButton = page.getByTestId(TEST_IDS.AUTH.SUBMIT_BUTTON);
 
-    await authPage.passwordInput.fill("secretpassword");
-    await expect(authPage.passwordInput).toHaveAttribute("type", "password");
+    // Expand form and verify password is masked in retry block
+    await expect(async () => {
+      const buttonText = await submitButton.textContent();
+      if (buttonText?.toLowerCase().includes("continue with email")) {
+        await submitButton.click();
+        await expect(submitButton).toHaveText(/sign in/i, { timeout: 2000 });
+      }
+
+      await authPage.passwordInput.fill("secretpassword");
+      await expect(authPage.passwordInput).toHaveAttribute("type", "password");
+    }).toPass({ intervals: [500, 1000, 2000], timeout: 15000 });
   });
 });
 
