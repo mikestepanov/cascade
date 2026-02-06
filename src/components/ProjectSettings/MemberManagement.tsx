@@ -160,7 +160,12 @@ export function MemberManagement({
                   options={ROLE_OPTIONS}
                 />
                 <Flex gap="sm" className="pt-1">
-                  <Button onClick={handleAddMember} disabled={isAdding} size="sm" isLoading={isAdding}>
+                  <Button
+                    onClick={handleAddMember}
+                    disabled={isAdding}
+                    size="sm"
+                    isLoading={isAdding}
+                  >
                     Add Member
                   </Button>
                   <Button
@@ -189,10 +194,10 @@ export function MemberManagement({
                 key={member._id}
               >
                 <Flex gap="md" align="center">
-                  <Avatar src={member.image} alt={member.name} size="sm" />
+                  <Avatar src={member.image} name={member.name} email={member.email} size="sm" />
                   <div>
                     <Flex gap="sm" align="center">
-                      <Typography variant="small" className="font-medium">
+                      <Typography variant="small" className="font-medium text-ui-text">
                         {member.name}
                       </Typography>
                       {isOwner(member._id) && (
@@ -201,7 +206,7 @@ export function MemberManagement({
                         </Badge>
                       )}
                     </Flex>
-                    <Typography variant="small" color="tertiary">
+                    <Typography variant="small" color="secondary">
                       {member.email || "No email"}
                     </Typography>
                   </div>

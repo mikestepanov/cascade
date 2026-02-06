@@ -40,8 +40,10 @@ export function CalendarHeaderActionsMode(): React.ReactElement {
                 value={modeValue}
                 data-testid={`calendar-mode-${modeValue}`}
                 className={cn(
-                  "w-full rounded-none shadow-none focus-visible:z-10 text-base flex items-center justify-center gap-2 relative border-none",
-                  isSelected && "z-10",
+                  "w-full rounded-none shadow-none focus-visible:z-10 text-base flex items-center justify-center gap-2 relative border-none transition-colors duration-default",
+                  isSelected
+                    ? "bg-ui-bg-tertiary text-ui-text z-10"
+                    : "bg-ui-bg text-ui-text-secondary hover:bg-ui-bg-hover hover:text-ui-text",
                 )}
               >
                 <motion.div

@@ -5,7 +5,9 @@ import { NotFoundPage } from "./NotFoundPage";
 // Mock Link since we're not providing Router context
 vi.mock("@tanstack/react-router", () => ({
   Link: ({ children, to, ...props }: { children: React.ReactNode; to: string }) => (
-    <a href={to} {...props}>{children}</a>
+    <a href={to} {...props}>
+      {children}
+    </a>
   ),
 }));
 

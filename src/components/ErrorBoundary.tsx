@@ -1,5 +1,5 @@
-import { Component, type ReactNode } from "react";
 import { AlertTriangle } from "lucide-react";
+import { Component, type ReactNode } from "react";
 import { Flex } from "@/components/ui/Flex";
 import { Button } from "./ui/Button";
 import { Typography } from "./ui/Typography";
@@ -54,10 +54,7 @@ export class ErrorBoundary extends Component<Props, State> {
             </Flex>
 
             {/* Large error code with tight tracking */}
-            <Typography
-              variant="h1"
-              className="text-8xl font-bold tracking-tightest text-ui-text"
-            >
+            <Typography variant="h1" className="text-8xl font-bold tracking-tightest text-ui-text">
               500
             </Typography>
 

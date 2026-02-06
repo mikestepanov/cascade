@@ -391,7 +391,9 @@ export function TimeEntryModal({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-2xl">
         <DialogHeader>
-          <DialogTitle>{computed.isTimerMode ? "Start Timer" : "Log Time"}</DialogTitle>
+          <DialogTitle className="tracking-tight">
+            {computed.isTimerMode ? "Start Timer" : "Log Time"}
+          </DialogTitle>
         </DialogHeader>
         <form
           onSubmit={(e) => {

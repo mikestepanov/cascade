@@ -28,12 +28,7 @@ function UserRow({
     <tr className="transition-default hover:bg-ui-bg-hover">
       <td className="px-6 py-4 whitespace-nowrap">
         <Flex align="center" gap="md">
-          <Avatar
-            src={user.image}
-            name={user.name}
-            email={user.email}
-            size="sm"
-          />
+          <Avatar src={user.image} name={user.name} email={user.email} size="sm" />
           <Typography variant="small" className="font-medium text-ui-text">
             {user.name || "Anonymous"}
           </Typography>

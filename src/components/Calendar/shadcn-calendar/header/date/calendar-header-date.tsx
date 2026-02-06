@@ -11,7 +11,9 @@ export function CalendarHeaderDate(): React.ReactElement {
       <CalendarHeaderDateIcon />
       <div>
         <div className="flex items-center gap-1.5">
-          <p className="text-lg font-semibold tracking-tight text-ui-text">{format(date, "MMMM yyyy")}</p>
+          <p className="text-lg font-semibold tracking-tight text-ui-text">
+            {format(date, "MMMM yyyy")}
+          </p>
           <CalendarHeaderDateBadge />
         </div>
         <CalendarHeaderDateChevrons />

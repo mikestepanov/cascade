@@ -234,7 +234,7 @@ export function ManualTimeEntryModal({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-2xl">
         <DialogHeader>
-          <DialogTitle>Log Time Manually</DialogTitle>
+          <DialogTitle className="tracking-tight">Log Time Manually</DialogTitle>
         </DialogHeader>
         <form
           onSubmit={(e) => {
