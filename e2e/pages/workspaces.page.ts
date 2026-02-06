@@ -129,7 +129,7 @@ export class WorkspacesPage extends BasePage {
       .locator(`a[href*="/workspaces/"]`)
       .filter({ hasText: name });
     const workspaceHeading = mainContent.getByRole("heading", { name, level: 3 });
-    await expect(newWorkspaceCard.or(workspaceHeading)).toBeVisible({ timeout: 15000 });
+    await expect(newWorkspaceCard.or(workspaceHeading)).toBeVisible();
   }
 
   async expectWorkspacesView() {

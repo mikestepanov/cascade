@@ -90,7 +90,7 @@ test.describe("Onboarding Wizard", () => {
     await page.waitForLoadState("domcontentloaded");
 
     // Wait for dashboard to finish loading — use test ID to avoid matching multiple headings
-    await expect(page.getByTestId(TEST_IDS.DASHBOARD.FEED_HEADING)).toBeVisible({ timeout: 10000 });
+    await expect(page.getByTestId(TEST_IDS.DASHBOARD.FEED_HEADING)).toBeVisible();
 
     // Should navigate to dashboard
     await onboarding.expectDashboard();
@@ -182,7 +182,7 @@ test.describe("Onboarding - Team Member Flow", () => {
     await page.waitForLoadState("domcontentloaded");
 
     // Wait for dashboard to finish loading — use test ID to avoid matching multiple headings
-    await expect(page.getByTestId(TEST_IDS.DASHBOARD.FEED_HEADING)).toBeVisible({ timeout: 10000 });
+    await expect(page.getByTestId(TEST_IDS.DASHBOARD.FEED_HEADING)).toBeVisible();
 
     // Should navigate to dashboard
     await onboarding.expectDashboard();

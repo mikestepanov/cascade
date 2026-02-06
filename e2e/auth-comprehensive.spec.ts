@@ -43,15 +43,15 @@ test.describe("Sign In Form - Elements", () => {
         // Click to expand
         await submitButton.click();
         // Wait for text to change
-        await expect(submitButton).toHaveText(/sign in/i, { timeout: 2000 });
+        await expect(submitButton).toHaveText(/sign in/i);
       }
 
       // Now verify all expanded elements
-      await expect(authPage.emailInput).toBeVisible({ timeout: 1000 });
-      await expect(authPage.passwordInput).toBeVisible({ timeout: 1000 });
-      await expect(submitButton).toHaveText(/sign in/i, { timeout: 1000 });
-      await expect(authPage.forgotPasswordButton).toBeVisible({ timeout: 1000 });
-    }).toPass({ intervals: [500, 1000, 2000], timeout: 15000 });
+      await expect(authPage.emailInput).toBeVisible();
+      await expect(authPage.passwordInput).toBeVisible();
+      await expect(submitButton).toHaveText(/sign in/i);
+      await expect(authPage.forgotPasswordButton).toBeVisible();
+    }).toPass();
 
     // Final assertions for input types (these don't depend on form state)
     await expect(authPage.emailInput).toHaveAttribute("type", "email");
@@ -67,7 +67,7 @@ test.describe("Sign In Form - Elements", () => {
       const buttonText = await submitButton.textContent();
       if (buttonText?.toLowerCase().includes("continue with email")) {
         await submitButton.click();
-        await expect(submitButton).toHaveText(/sign in/i, { timeout: 2000 });
+        await expect(submitButton).toHaveText(/sign in/i);
       }
 
       // Fill form with invalid email
@@ -80,7 +80,7 @@ test.describe("Sign In Form - Elements", () => {
         (el: HTMLInputElement) => !el.validity.valid,
       );
       expect(isInvalid).toBe(true);
-    }).toPass({ intervals: [500, 1000, 2000], timeout: 15000 });
+    }).toPass();
   });
 
   test("password input is masked", async ({ authPage, page }) => {
@@ -92,12 +92,12 @@ test.describe("Sign In Form - Elements", () => {
       const buttonText = await submitButton.textContent();
       if (buttonText?.toLowerCase().includes("continue with email")) {
         await submitButton.click();
-        await expect(submitButton).toHaveText(/sign in/i, { timeout: 2000 });
+        await expect(submitButton).toHaveText(/sign in/i);
       }
 
       await authPage.passwordInput.fill("secretpassword");
       await expect(authPage.passwordInput).toHaveAttribute("type", "password");
-    }).toPass({ intervals: [500, 1000, 2000], timeout: 15000 });
+    }).toPass();
   });
 });
 

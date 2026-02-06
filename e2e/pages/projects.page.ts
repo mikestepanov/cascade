@@ -315,8 +315,7 @@ export class ProjectsPage extends BasePage {
     const tabLocator = tabs[tab];
 
     // Wait for tab to be available - handle potential loading states or animations
-    // Using a more lenient timeout for CI environments where hydration can be slow
-    await expect(tabLocator).toBeVisible({ timeout: 30000 });
+    await expect(tabLocator).toBeVisible();
 
     // Ensure the tab is actually clickable before attempting to click
     // Add a check for navigation container to ensure hydration is complete

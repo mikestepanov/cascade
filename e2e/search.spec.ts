@@ -49,7 +49,7 @@ test.describe("Global Search", () => {
 
     // Wait for search to complete (loading spinner disappears and results appear)
     const searchResults = page.locator("[cmdk-group]");
-    await expect(searchResults).toBeVisible({ timeout: 10000 });
+    await expect(searchResults).toBeVisible();
 
     // Verify the issue appears in results
     const issueResult = page.getByText(uniqueSearchTerm);
@@ -111,7 +111,7 @@ test.describe("Global Search", () => {
     await dashboardPage.globalSearchInput.fill("ab");
 
     // Either results, no results, or loading should appear (not the min char message)
-    await expect(minCharMessage).not.toBeVisible({ timeout: 5000 });
+    await expect(minCharMessage).not.toBeVisible();
     console.log("✓ Minimum character message hidden after 2+ chars");
 
     // Close search
@@ -140,7 +140,7 @@ test.describe("Global Search", () => {
 
     // Wait for results
     const searchResults = page.locator("[cmdk-group]");
-    await expect(searchResults).toBeVisible({ timeout: 10000 });
+    await expect(searchResults).toBeVisible();
 
     // Verify "All" tab is active by default and shows count
     const allTab = page.getByRole("button", { name: /^all/i });
@@ -196,7 +196,7 @@ test.describe("Global Search", () => {
 
     // Wait for results
     const searchResults = page.locator("[cmdk-group]");
-    await expect(searchResults).toBeVisible({ timeout: 10000 });
+    await expect(searchResults).toBeVisible();
 
     // Check that tabs show counts (e.g., "Issues (1)")
     // The count appears as "(N)" after the tab label
