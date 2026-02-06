@@ -316,11 +316,12 @@ export class SettingsPage extends BasePage {
 
     // Scroll into view and wait for it to be stable
     await inviteBtn.scrollIntoViewIfNeeded();
-    // Wait for button to be enabled (stable)
-    await expect(inviteBtn).toBeEnabled();
 
     // Retry pattern handles potential element detachment during re-renders
+    // Press Escape first to ensure any open modals are closed
     await expect(async () => {
+      await this.page.keyboard.press("Escape");
+      await expect(inviteBtn).toBeEnabled();
       await inviteBtn.click();
       await expect(this.inviteUserModal).toBeVisible();
     }).toPass();

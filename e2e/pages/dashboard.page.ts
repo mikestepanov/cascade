@@ -381,13 +381,28 @@ export class DashboardPage extends BasePage {
   }
 
   async openGlobalSearch() {
+    // Ensure page is hydrated first
+    await this.waitForLoad();
+
+    // Wait for search button to be ready
+    await this.globalSearchButton.waitFor({ state: "visible" });
+
     // Use retry pattern - click may not register immediately after page load
     await expect(async () => {
+      // Close any existing modals first by pressing Escape
+      await this.page.keyboard.press("Escape");
+
+      // Click the search button directly (keyboard shortcut conflicts with command palette)
       await this.globalSearchButton.click();
+
+      // Check if modal opened AND input is ready
       await expect(this.globalSearchModal).toBeVisible();
-      // Wait for input to be interactive (cmdk library needs time to hydrate)
       await expect(this.globalSearchInput).toBeVisible();
+      await expect(this.globalSearchInput).toBeEnabled();
     }).toPass();
+
+    // Focus the input to ensure it's ready for typing
+    await this.globalSearchInput.focus();
   }
 
   async closeGlobalSearch() {

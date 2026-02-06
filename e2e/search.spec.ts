@@ -85,8 +85,12 @@ test.describe("Global Search", () => {
     const nonExistentTerm = `NonExistent${Date.now()}XYZ`;
     await dashboardPage.globalSearchInput.fill(nonExistentTerm);
 
-    // Wait for search to complete - use test ID for reliable selection
-    const noResultsMessage = page.getByTestId(TEST_IDS.GLOBAL_SEARCH.NO_RESULTS);
+    // Wait for loading spinner to disappear (search complete)
+    const loadingSpinner = dashboardPage.globalSearchModal.locator(".animate-spin");
+    await expect(loadingSpinner).not.toBeVisible();
+
+    // Wait for "No results found" message - use text content since CommandEmpty may not render with test ID
+    const noResultsMessage = dashboardPage.globalSearchModal.getByText(/no results found/i);
     await expect(noResultsMessage).toBeVisible();
     console.log("✓ 'No results found' message displayed");
 
