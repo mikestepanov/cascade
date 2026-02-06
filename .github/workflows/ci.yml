@@ -190,7 +190,9 @@ jobs:
           CONVEX_AGENT_MODE: anonymous
         run: |
           # Start convex in background and capture output to file
-          npx convex dev --local --until-success > convex.log 2>&1 &
+          # Do NOT use --until-success because it exits after the first success, stopping the server.
+          # We need the server to stay running for the E2E tests.
+          npx convex dev --local > convex.log 2>&1 &
           CONVEX_PID=$!
 
           # Wait for the initial push to complete (look for "Convex functions ready" message)

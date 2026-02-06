@@ -1,9 +1,25 @@
+import { api } from "@convex/_generated/api";
 import type { Doc, Id } from "@convex/_generated/dataModel";
+import { Link } from "@tanstack/react-router";
+import { useQuery } from "convex/react";
+import {
+  Bell,
+  Check,
+  FileText,
+  Flag,
+  MessageCircle,
+  MessageSquare,
+  RefreshCw,
+  Rocket,
+  Trash2,
+  User,
+} from "lucide-react";
 import { memo } from "react";
 import { Button } from "@/components/ui/Button";
 import { Flex } from "@/components/ui/Flex";
 import { Tooltip } from "@/components/ui/Tooltip";
 import { Typography } from "@/components/ui/Typography";
+import { ROUTES } from "@/config/routes";
 import { cn } from "@/lib/utils";
 
 export interface NotificationWithActor extends Doc<"notifications"> {
@@ -14,32 +30,36 @@ interface NotificationItemProps {
   notification: NotificationWithActor;
   onMarkAsRead: (id: Id<"notifications">) => void;
   onDelete: (id: Id<"notifications">) => void;
+  orgSlug?: string;
 }
 
 /**
- * Returns the appropriate emoji icon based on the notification type.
+ * Returns the appropriate Lucide icon based on the notification type.
  */
-function getNotificationIcon(type: string): string {
+function getNotificationIcon(type: string) {
   switch (type) {
     case "issue_assigned":
-      return "👤";
+      return <User className="w-5 h-5 text-brand" />;
     case "issue_mentioned":
-      return "💬";
+      return <MessageCircle className="w-5 h-5 text-accent" />;
     case "issue_commented":
-      return "💭";
+      return <MessageSquare className="w-5 h-5 text-accent" />;
     case "issue_status_changed":
-      return "🔄";
+      return <RefreshCw className="w-5 h-5 text-status-info" />;
     case "sprint_started":
-      return "🚀";
+      return <Rocket className="w-5 h-5 text-status-success" />;
     case "sprint_ended":
-      return "🏁";
+      return <Flag className="w-5 h-5 text-status-warning" />;
+    case "document_shared":
+    case "document_mentioned":
+      return <FileText className="w-5 h-5 text-brand" />;
     default:
-      return "📬";
+      return <Bell className="w-5 h-5 text-ui-text-tertiary" />;
   }
 }
 
 /**
- * Formats a timestamp into a relative time string (e.g., "5m ago") or date string.
+ * Formats a timestamp into a relative time string.
  */
 function formatTime(timestamp: number): string {
   const now = Date.now();
@@ -57,100 +77,134 @@ function formatTime(timestamp: number): string {
 
 /**
  * A memoized component that renders a single notification item.
- * Supports "Mark as read" and "Delete" actions.
+ * Supports navigation to issue/document, and actions (Mark as read, Delete).
  */
 export const NotificationItem = memo(function NotificationItem({
   notification,
   onMarkAsRead,
   onDelete,
+  orgSlug,
 }: NotificationItemProps) {
+  // Fetch issue details if present to resolve key for navigation
+  const issue = useQuery(
+    api.issues.get,
+    notification.issueId ? { id: notification.issueId } : "skip",
+  );
+
+  // Determine navigation target
+  let linkTo: string | undefined;
+  let linkParams: Record<string, string> | undefined;
+
+  if (orgSlug) {
+    if (issue) {
+      // Navigate to issue detail
+      // Using manual path construction or route builder if strict types allowed
+      // ROUTES.issues.detail.path is "/$orgSlug/issues/$key"
+      linkTo = ROUTES.issues.detail.path;
+      linkParams = { orgSlug, key: issue.key };
+    } else if (notification.documentId) {
+      // Navigate to document
+      linkTo = ROUTES.documents.detail.path;
+      linkParams = { orgSlug, id: notification.documentId };
+    }
+  }
+
+  const ContentWrapper = ({ children }: { children: React.ReactNode }) => {
+    if (linkTo && linkParams) {
+      return (
+        <Link
+          to={linkTo}
+          params={linkParams}
+          className="flex-1 min-w-0 group-hover:text-brand transition-colors text-left"
+          onClick={() => {
+            if (!notification.isRead) {
+              onMarkAsRead(notification._id);
+            }
+          }}
+        >
+          {children}
+        </Link>
+      );
+    }
+    return <div className="flex-1 min-w-0 text-left">{children}</div>;
+  };
+
   return (
     <div
       className={cn(
-        "p-4 hover:bg-ui-bg-secondary transition-colors",
-        !notification.isRead && "bg-status-info-bg",
+        "group relative flex items-start gap-3 p-4 border-b border-ui-border last:border-0 hover:bg-ui-bg-secondary transition-colors",
+        !notification.isRead && "bg-brand-subtle/10",
       )}
     >
-      <Flex align="start" gap="md">
-        {/* Icon */}
-        <div className="text-2xl shrink-0">{getNotificationIcon(notification.type)}</div>
+      {/* Icon */}
+      <div className="shrink-0 mt-0.5">{getNotificationIcon(notification.type)}</div>
 
-        {/* Content */}
-        <div className="flex-1 min-w-0">
-          <Flex align="start" justify="between" gap="sm">
-            <div className="flex-1">
-              <Typography className="text-sm font-medium text-ui-text">
-                {notification.title}
-              </Typography>
-              <Typography className="text-sm text-ui-text-secondary mt-1">
-                {notification.message}
-              </Typography>
-              <Flex align="center" gap="sm" className="mt-1">
-                <Typography className="text-xs text-ui-text-tertiary">
-                  {formatTime(notification._creationTime)}
-                </Typography>
-                {notification.actorName && (
-                  <>
-                    <span className="text-xs text-ui-text-tertiary">•</span>
-                    <Typography className="text-xs text-ui-text-tertiary">
-                      by {notification.actorName}
-                    </Typography>
-                  </>
-                )}
-              </Flex>
-            </div>
+      {/* Main Content (Clickable if linked) */}
+      <ContentWrapper>
+        <Typography className="text-sm font-medium text-ui-text group-hover:text-ui-text-primary">
+          {notification.title}
+        </Typography>
+        <Typography className="text-sm text-ui-text-secondary mt-0.5 line-clamp-2">
+          {notification.message}
+        </Typography>
 
-            <Flex gap="xs">
-              {!notification.isRead && (
-                <Tooltip content="Mark as read">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => onMarkAsRead(notification._id)}
-                    className="h-6 w-6 p-0 text-brand hover:bg-brand-subtle hover:text-brand-hover"
-                    aria-label="Mark as read"
-                  >
-                    <svg
-                      aria-hidden="true"
-                      className="w-4 h-4"
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                  </Button>
-                </Tooltip>
-              )}
-              <Tooltip content="Delete">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => onDelete(notification._id)}
-                  className="h-6 w-6 p-0 text-ui-text-tertiary hover:text-status-error hover:bg-status-error-bg"
-                  aria-label="Delete notification"
-                >
-                  <svg
-                    aria-hidden="true"
-                    className="w-4 h-4"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                </Button>
-              </Tooltip>
-            </Flex>
-          </Flex>
-        </div>
+        <Flex align="center" gap="xs" className="mt-1.5">
+          <Typography className="text-xs text-ui-text-tertiary">
+            {formatTime(notification._creationTime)}
+          </Typography>
+          {notification.actorName && (
+            <>
+              <span className="text-xs text-ui-text-tertiary">•</span>
+              <Typography className="text-xs text-ui-text-tertiary">
+                {notification.actorName}
+              </Typography>
+            </>
+          )}
+        </Flex>
+      </ContentWrapper>
+
+      {/* Actions (Separate from link) */}
+      <Flex
+        direction="column"
+        gap="xs"
+        className="shrink-0 opacity-0 group-hover:opacity-100 transition-opacity focus-within:opacity-100"
+      >
+        {!notification.isRead && (
+          <Tooltip content="Mark as read">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-6 w-6 text-brand hover:bg-brand-subtle/20"
+              onClick={(e) => {
+                e.stopPropagation();
+                onMarkAsRead(notification._id);
+              }}
+              aria-label="Mark as read"
+            >
+              <Check className="h-3.5 w-3.5" />
+            </Button>
+          </Tooltip>
+        )}
+        <Tooltip content="Delete">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-6 w-6 text-ui-text-tertiary hover:text-status-error hover:bg-status-error/10"
+            onClick={(e) => {
+              e.stopPropagation();
+              onDelete(notification._id);
+            }}
+            aria-label="Delete notification"
+          >
+            <Trash2 className="h-3.5 w-3.5" />
+          </Button>
+        </Tooltip>
       </Flex>
+
+      {/* Unread Indicator (Visual only) */}
+      {!notification.isRead && (
+        <div className="absolute top-4 right-4 h-2 w-2 rounded-full bg-brand group-hover:hidden" />
+      )}
     </div>
   );
 });
