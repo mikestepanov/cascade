@@ -158,7 +158,7 @@ export function RoadmapView({ projectId, sprintId, canEdit = true }: RoadmapView
                 title={`${issue.title} - Due: ${formatDate(issue.dueDate)}`}
                 aria-label={`View issue ${issue.key}`}
               >
-                <span className="text-xs text-white font-medium truncate">
+                <span className="text-xs text-brand-foreground font-medium truncate">
                   {issue.assignee?.name.split(" ")[0]}
                 </span>
               </button>

@@ -336,7 +336,7 @@ export function LabelsManager({ projectId }: LabelsManagerProps) {
                           >
                             <Flex gap="md" align="center">
                               <span
-                                className="px-3 py-1 rounded-full text-sm font-medium text-white"
+                                className="px-3 py-1 rounded-full text-sm font-medium text-brand-foreground"
                                 style={{ backgroundColor: label.color }}
                               >
                                 {label.name}
@@ -435,7 +435,7 @@ export function LabelsManager({ projectId }: LabelsManagerProps) {
               <div>
                 <div className="block text-sm font-medium text-ui-text mb-2">Preview</div>
                 <span
-                  className="px-3 py-1 rounded-full text-sm font-medium text-white"
+                  className="px-3 py-1 rounded-full text-sm font-medium text-brand-foreground"
                   style={{ backgroundColor: labelForm.formData.color }}
                 >
                   {labelForm.formData.name || "Label name"}

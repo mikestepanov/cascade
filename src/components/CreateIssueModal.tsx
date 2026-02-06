@@ -287,7 +287,7 @@ export function CreateIssueModal({
               type="button"
               onClick={handleGenerateAISuggestions}
               isLoading={isGeneratingAI}
-              className="bg-linear-to-r from-brand to-accent hover:from-brand-hover hover:to-accent-hover text-white border-0"
+              className="bg-linear-to-r from-brand to-accent hover:from-brand-hover hover:to-accent-hover text-brand-foreground border-0"
               leftIcon={<span>✨</span>}
             >
               Get AI Suggestions
@@ -384,7 +384,7 @@ export function CreateIssueModal({
                     onClick={() => toggleLabel(label._id)}
                     aria-pressed={selectedLabels.includes(label._id)}
                     className={cn(
-                      "inline-flex items-center px-3 py-1 rounded-full text-sm font-medium text-white transition-opacity focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand-ring",
+                      "inline-flex items-center px-3 py-1 rounded-full text-sm font-medium text-brand-foreground transition-opacity focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand-ring",
                       selectedLabels.includes(label._id)
                         ? "opacity-100 ring-2 ring-offset-2 ring-brand"
                         : "opacity-60 hover:opacity-80",

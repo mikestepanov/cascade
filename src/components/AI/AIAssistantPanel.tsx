@@ -61,7 +61,7 @@ export function AIAssistantPanel({ projectId, isOpen, onClose }: AIAssistantPane
             <Flex align="center" gap="md">
               <div className="text-2xl">🤖</div>
               <div>
-                <SheetTitle className="text-lg font-semibold text-white">AI Assistant</SheetTitle>
+                <SheetTitle className="text-lg font-semibold text-brand-foreground">AI Assistant</SheetTitle>
                 <SheetDescription className="text-xs text-brand-subtle">
                   {projectId ? "Project-specific context" : "General chat"}
                 </SheetDescription>
@@ -101,7 +101,7 @@ export function AIAssistantPanel({ projectId, isOpen, onClose }: AIAssistantPane
           >
             💡 Suggestions
             {unreadSuggestions > 0 && (
-              <span className="ml-2 text-xs bg-status-error text-white px-2 py-0.5 rounded-full">
+              <span className="ml-2 text-xs bg-status-error text-brand-foreground px-2 py-0.5 rounded-full">
                 {unreadSuggestions}
               </span>
             )}

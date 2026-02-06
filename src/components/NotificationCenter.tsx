@@ -90,7 +90,7 @@ export function NotificationCenter() {
             </svg>
             {/* Unread Badge */}
             {unreadCount != null && unreadCount > 0 && (
-              <span className="absolute top-0 right-0 px-2 py-1 text-xs font-bold leading-none text-white transform translate-x-1/2 -translate-y-1/2 bg-status-error rounded-full">
+              <span className="absolute top-0 right-0 px-2 py-1 text-xs font-bold leading-none text-brand-foreground transform translate-x-1/2 -translate-y-1/2 bg-status-error rounded-full">
                 {unreadCount > 99 ? "99+" : unreadCount}
               </span>
             )}

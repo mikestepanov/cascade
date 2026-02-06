@@ -123,7 +123,7 @@ export function GoogleCalendarIntegration() {
         <Flex justify="between" align="start">
           <Flex gap="lg" align="center">
             <div className="p-3 bg-brand-ring rounded-lg">
-              <Calendar className="h-6 w-6 text-white" />
+              <Calendar className="h-6 w-6 text-brand-foreground" />
             </div>
             <div>
               <Typography variant="h3" className="text-lg font-semibold text-ui-text">

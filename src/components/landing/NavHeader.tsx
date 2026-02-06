@@ -77,7 +77,7 @@ export function NavHeader() {
             </Link>
             <Link
               to={ROUTES.signup.path}
-              className="px-5 py-2.5 bg-linear-to-r from-landing-accent to-landing-accent-teal rounded-full text-sm font-medium text-white hover:shadow-lg hover:shadow-landing-accent/25 transition-all duration-default shadow-sm"
+              className="px-5 py-2.5 bg-linear-to-r from-landing-accent to-landing-accent-teal rounded-full text-sm font-medium text-brand-foreground hover:shadow-lg hover:shadow-landing-accent/25 transition-all duration-default shadow-sm"
             >
               Get Started
             </Link>
@@ -85,7 +85,7 @@ export function NavHeader() {
           <Authenticated>
             <Link
               to={ROUTES.app.path}
-              className="px-5 py-2.5 bg-linear-to-r from-landing-accent to-landing-accent-teal rounded-full text-sm font-medium text-white hover:shadow-lg hover:shadow-landing-accent/25 transition-all duration-default shadow-sm"
+              className="px-5 py-2.5 bg-linear-to-r from-landing-accent to-landing-accent-teal rounded-full text-sm font-medium text-brand-foreground hover:shadow-lg hover:shadow-landing-accent/25 transition-all duration-default shadow-sm"
             >
               Go to App
             </Link>

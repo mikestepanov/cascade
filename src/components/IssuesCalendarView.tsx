@@ -132,7 +132,7 @@ export function IssuesCalendarView({
             className={cn(
               "text-sm font-medium",
               isTodayDate
-                ? "bg-brand text-white w-6 h-6 rounded-full flex items-center justify-center"
+                ? "bg-brand text-brand-foreground w-6 h-6 rounded-full flex items-center justify-center"
                 : "text-ui-text",
             )}
           >

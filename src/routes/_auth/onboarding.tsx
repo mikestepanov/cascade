@@ -118,7 +118,7 @@ function OnboardingPage() {
             justify="center"
             className="h-10 w-10 rounded-xl bg-brand-indigo-bg shadow-lg shadow-brand-indigo-bg/20 transition-transform group-hover:scale-110 active:scale-95"
           >
-            <span className="text-white font-bold text-lg">N</span>
+            <span className="text-brand-foreground font-bold text-lg">N</span>
           </Flex>
           <Typography
             variant="h3"

@@ -25,9 +25,9 @@ export function OfflineTab() {
               className={cn("p-3 rounded-lg", isOnline ? "bg-status-success" : "bg-status-error")}
             >
               {isOnline ? (
-                <Wifi className="h-6 w-6 text-white" />
+                <Wifi className="h-6 w-6 text-brand-foreground" />
               ) : (
-                <WifiOff className="h-6 w-6 text-white" />
+                <WifiOff className="h-6 w-6 text-brand-foreground" />
               )}
             </div>
             <div>

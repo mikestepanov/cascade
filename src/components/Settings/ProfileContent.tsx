@@ -117,7 +117,7 @@ export function ProfileHeader({
           <Flex
             align="center"
             justify="center"
-            className="w-24 h-24 rounded-full bg-brand text-white text-3xl font-bold"
+            className="w-24 h-24 rounded-full bg-brand text-brand-foreground text-3xl font-bold"
           >
             {(user.name || user.email || "?").charAt(0).toUpperCase()}
           </Flex>

@@ -116,7 +116,7 @@ export function ProjectWizard({
                     className={cn(
                       "w-8 h-8 rounded-full text-sm font-medium transition-all duration-default shrink-0",
                       stepNum < step
-                        ? "bg-status-success text-white"
+                        ? "bg-status-success text-brand-foreground"
                         : stepNum === step
                           ? "bg-brand text-brand-foreground ring-4 ring-brand/20"
                           : "bg-ui-bg-tertiary text-ui-text-tertiary",

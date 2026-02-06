@@ -53,7 +53,7 @@ function MessageItem({
       <div
         className={cn(
           "relative max-w-chat-bubble md:max-w-chat-bubble-md rounded-lg px-4 py-3",
-          message.role === "user" ? "bg-brand text-white" : "bg-ui-bg-secondary text-ui-text",
+          message.role === "user" ? "bg-brand text-brand-foreground" : "bg-ui-bg-secondary text-ui-text",
         )}
       >
         {/* Copy button for assistant messages */}

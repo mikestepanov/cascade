@@ -147,7 +147,7 @@ export function EventDetailsModal({ eventId, open, onOpenChange }: EventDetailsM
               <Flex
                 align="center"
                 justify="center"
-                className="w-5 h-5 bg-brand rounded-full text-white text-xs font-bold mt-0.5"
+                className="w-5 h-5 bg-brand rounded-full text-brand-foreground text-xs font-bold mt-0.5"
               >
                 {event.organizerName?.[0]?.toUpperCase()}
               </Flex>

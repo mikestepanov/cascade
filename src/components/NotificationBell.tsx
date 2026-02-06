@@ -97,7 +97,7 @@ export function NotificationBell() {
 
         {/* Unread Badge */}
         {unreadCount !== undefined && unreadCount > 0 && (
-          <span className="absolute top-0 right-0 grid place-items-center w-5 h-5 text-xs font-bold text-white bg-status-error rounded-full">
+          <span className="absolute top-0 right-0 grid place-items-center w-5 h-5 text-xs font-bold text-brand-foreground bg-status-error rounded-full">
             {unreadCount > 9 ? "9+" : unreadCount}
           </span>
         )}

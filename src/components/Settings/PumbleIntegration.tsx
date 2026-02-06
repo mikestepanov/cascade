@@ -58,7 +58,7 @@ export function PumbleIntegration() {
                 className="w-12 h-12 bg-linear-to-br from-accent-ring to-palette-pink rounded-lg"
               >
                 <svg
-                  className="w-6 h-6 text-white"
+                  className="w-6 h-6 text-brand-foreground"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"

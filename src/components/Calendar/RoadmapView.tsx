@@ -152,7 +152,7 @@ export function RoadmapView({ projectId }: RoadmapViewProps) {
               className={cn(
                 "px-2 sm:px-3 py-1.5 text-xs sm:text-sm rounded-l-md",
                 timeScale === "week"
-                  ? "bg-brand text-white"
+                  ? "bg-brand text-brand-foreground"
                   : "bg-ui-bg text-ui-text hover:bg-ui-bg-tertiary",
               )}
             >
@@ -165,7 +165,7 @@ export function RoadmapView({ projectId }: RoadmapViewProps) {
               className={cn(
                 "px-2 sm:px-3 py-1.5 text-xs sm:text-sm border-l border-ui-border",
                 timeScale === "month"
-                  ? "bg-brand text-white"
+                  ? "bg-brand text-brand-foreground"
                   : "bg-ui-bg text-ui-text hover:bg-ui-bg-tertiary",
               )}
             >
@@ -178,7 +178,7 @@ export function RoadmapView({ projectId }: RoadmapViewProps) {
               className={cn(
                 "px-2 sm:px-3 py-1.5 text-xs sm:text-sm rounded-r-md border-l border-ui-border",
                 timeScale === "quarter"
-                  ? "bg-brand text-white"
+                  ? "bg-brand text-brand-foreground"
                   : "bg-ui-bg text-ui-text hover:bg-ui-bg-tertiary",
               )}
             >
@@ -302,7 +302,7 @@ function renderDateBar(
     <div
       className={cn(
         color,
-        "rounded-full h-6 flex items-center justify-center text-white text-xs font-medium overflow-hidden whitespace-nowrap px-2",
+        "rounded-full h-6 flex items-center justify-center text-brand-foreground text-xs font-medium overflow-hidden whitespace-nowrap px-2",
       )}
       style={{
         marginLeft: `${leftPercent}%`,

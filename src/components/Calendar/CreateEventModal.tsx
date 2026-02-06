@@ -163,7 +163,7 @@ export function CreateEventModal({
                         className={cn(
                           "px-3 py-2 rounded-md text-sm font-medium capitalize",
                           eventType === type
-                            ? "bg-brand text-white"
+                            ? "bg-brand text-brand-foreground"
                             : "bg-ui-bg-secondary text-ui-text hover:bg-ui-bg-tertiary",
                         )}
                       >

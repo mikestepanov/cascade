@@ -52,7 +52,7 @@ export function HeroSection() {
           variant="h1"
           className={cn(
             "text-4xl md:text-5xl lg:text-7xl font-bold leading-tight mb-6",
-            "tracking-tighter text-white",
+            "tracking-tighter text-brand-foreground",
             "animate-slide-up",
           )}
           style={{ animationDelay: "0.1s", animationFillMode: "backwards" }}
@@ -92,7 +92,7 @@ export function HeroSection() {
             className={cn(
               "px-8 py-3.5 rounded-pill",
               "bg-linear-to-r from-landing-accent to-landing-accent-teal",
-              "text-base font-bold text-white",
+              "text-base font-bold text-brand-foreground",
               "shadow-elevated",
               "transition-all duration-default",
               "hover:shadow-xl hover:shadow-landing-accent/25",
@@ -110,7 +110,7 @@ export function HeroSection() {
               "bg-transparent border border-ui-border-secondary",
               "text-base font-medium text-ui-text-secondary",
               "transition-all duration-default",
-              "hover:border-ui-border hover:text-white",
+              "hover:border-ui-border hover:text-brand-foreground",
               "hover:bg-ui-bg-hover",
               "flex items-center justify-center gap-2",
             )}

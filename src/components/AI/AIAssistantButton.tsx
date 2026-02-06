@@ -64,7 +64,7 @@ export function AIAssistantButton({
         "fixed",
         positionClasses,
         SIZE_CLASSES[size],
-        "bg-linear-to-r from-brand to-accent text-white rounded-full shadow-lg hover:shadow-xl hover:scale-110 focus:outline-none focus:ring-2 focus:ring-brand-ring focus:ring-offset-2 transition-all duration-200 flex items-center justify-center z-30 group",
+        "bg-linear-to-r from-brand to-accent text-brand-foreground rounded-full shadow-lg hover:shadow-xl hover:scale-110 focus:outline-none focus:ring-2 focus:ring-brand-ring focus:ring-offset-2 transition-all duration-200 flex items-center justify-center z-30 group",
         className,
       )}
       title={tooltipText}
@@ -75,7 +75,7 @@ export function AIAssistantButton({
         <Flex
           align="center"
           justify="center"
-          className="absolute -top-1 -right-1 w-6 h-6 bg-status-error text-white text-xs font-bold rounded-full shadow-md animate-pulse"
+          className="absolute -top-1 -right-1 w-6 h-6 bg-status-error text-brand-foreground text-xs font-bold rounded-full shadow-md animate-pulse"
         >
           {displayCount}
         </Flex>

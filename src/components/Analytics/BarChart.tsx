@@ -33,7 +33,7 @@ export const BarChart = memo(function BarChart({
                 minWidth: item.value > 0 ? "2rem" : "0",
               }}
             >
-              <span className="text-xs font-semibold text-white">{item.value}</span>
+              <span className="text-xs font-semibold text-brand-foreground">{item.value}</span>
             </div>
           </div>
         </Flex>

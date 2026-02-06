@@ -161,7 +161,7 @@ export const IssueCard = memo(function IssueCard({
             <Typography
               key={label.name}
               variant="small"
-              className="px-1.5 py-0.5 font-medium rounded-md text-white border-none"
+              className="px-1.5 py-0.5 font-medium rounded-md text-brand-foreground border-none"
               style={{ backgroundColor: label.color }}
             >
               {label.name}

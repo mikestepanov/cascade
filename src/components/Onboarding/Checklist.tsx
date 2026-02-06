@@ -147,7 +147,7 @@ export function OnboardingChecklist() {
                 className={cn(
                   "flex-shrink-0 w-6 h-6 rounded-full transition-all duration-default",
                   item.completed
-                    ? "bg-status-success text-white"
+                    ? "bg-status-success text-brand-foreground"
                     : "border-2 border-ui-border-secondary text-ui-text-tertiary",
                 )}
               >

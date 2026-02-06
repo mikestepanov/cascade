@@ -94,7 +94,7 @@ export function BurnRateDashboard({ projectId }: BurnRateDashboardProps) {
               className={cn(
                 "px-3 py-1 text-sm font-medium rounded-lg transition-colors",
                 dateRange === range
-                  ? "bg-brand text-white"
+                  ? "bg-brand text-brand-foreground"
                   : "bg-ui-bg-tertiary text-ui-text hover:bg-ui-bg-secondary",
               )}
             >

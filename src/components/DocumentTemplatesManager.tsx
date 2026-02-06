@@ -193,7 +193,7 @@ export function DocumentTemplatesManager({
                 className={cn(
                   "px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors",
                   selectedCategory === cat.value
-                    ? "bg-brand text-white"
+                    ? "bg-brand text-brand-foreground"
                     : "bg-ui-bg-tertiary text-ui-text hover:bg-ui-bg-secondary",
                 )}
               >
