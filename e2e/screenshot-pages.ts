@@ -20,7 +20,7 @@
 
 import * as fs from "node:fs";
 import * as path from "node:path";
-import { chromium, type Page } from "@playwright/test";
+import { chromium, type BrowserContext, type Page } from "@playwright/test";
 // Env loaded via --env-file=.env.local in the npm script
 import { TEST_USERS } from "./config";
 import { type SeedScreenshotResult, testUserService } from "./utils/test-user-service";
@@ -373,22 +373,60 @@ async function run(): Promise<void> {
   console.log(`  Color scheme:  ${COLOR_SCHEME}\n`);
 
   const headless = !process.argv.includes("--headed");
+  const authStatePath = path.join(process.cwd(), "e2e", ".auth", "user-teamlead-0.json");
+  const hasStoredAuth = fs.existsSync(authStatePath);
+
   const browser = await chromium.launch({ headless });
-  const context = await browser.newContext({ viewport: VIEWPORT, colorScheme: COLOR_SCHEME });
-  const page = await context.newPage();
+
+  // First context: no auth, for public pages
+  const publicContext = await browser.newContext({ viewport: VIEWPORT, colorScheme: COLOR_SCHEME });
+  const publicPage = await publicContext.newPage();
 
   // Capture public pages before login
   console.log("--- Pre-login: Public pages ---\n");
-  await takeScreenshot(page, "empty", "landing", "/");
-  await takeScreenshot(page, "empty", "signin", "/signin");
-  await takeScreenshot(page, "empty", "invite-invalid", "/invite/screenshot-test-token");
+  await takeScreenshot(publicPage, "empty", "landing", "/");
+  await takeScreenshot(publicPage, "empty", "signin", "/signin");
+  await takeScreenshot(publicPage, "empty", "invite-invalid", "/invite/screenshot-test-token");
   console.log("");
+  await publicContext.close();
 
-  // Try automatic login first, fall back to manual
+  // Second context: with auth
   let orgSlug: string | null = null;
-  if (CONVEX_URL) {
+  let page: Page;
+  let context: BrowserContext;
+
+  // Try saved auth state first (like regular E2E tests)
+  if (hasStoredAuth) {
+    console.log("  Using saved auth state from .auth/user-teamlead-0.json...");
+    context = await browser.newContext({
+      viewport: VIEWPORT,
+      colorScheme: COLOR_SCHEME,
+      storageState: authStatePath,
+    });
+    page = await context.newPage();
+
+    // Navigate to /app and wait for redirect
+    await page.goto(`${BASE_URL}/app`, { waitUntil: "domcontentloaded" });
+    try {
+      await page.waitForURL((u) => /\/[^/]+\/(dashboard|projects|issues)/.test(new URL(u).pathname), {
+        timeout: 15000,
+      });
+      await page.waitForTimeout(2000);
+      orgSlug = new URL(page.url()).pathname.split("/").filter(Boolean)[0];
+      console.log(`  Logged in via stored auth. Org: ${orgSlug}\n`);
+    } catch {
+      console.log("  Stored auth expired or invalid. Falling back to API login...\n");
+      await context.close();
+    }
+  }
+
+  // Fallback to API login if stored auth didn't work
+  if (!orgSlug && CONVEX_URL) {
+    context = await browser.newContext({ viewport: VIEWPORT, colorScheme: COLOR_SCHEME });
+    page = await context.newPage();
     orgSlug = await autoLogin(page);
   }
+
   if (!orgSlug) {
     // Reopen headed so user can interact
     await browser.close();
