@@ -153,9 +153,7 @@ export class DocumentsPage extends BasePage {
 
   async expectEditorVisible() {
     // Wait for React to be ready (avoid dispatcher errors)
-    // domcontentloaded fires first, then networkidle when all resources loaded
     await this.page.waitForLoadState("domcontentloaded");
-    await this.page.waitForLoadState("networkidle").catch(() => {});
 
     // Check for React error boundary
     const errorBoundary = this.page.locator("text=/Something went wrong/i");

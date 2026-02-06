@@ -178,7 +178,6 @@ export class AuthPage extends BasePage {
    */
   async gotoForgotPassword() {
     await this.page.goto("/forgot-password");
-    await this.page.waitForLoadState("networkidle");
     await this.forgotPasswordHeading.waitFor({ state: "visible" });
     await this.emailInput.waitFor({ state: "visible" });
   }
@@ -397,8 +396,8 @@ export class AuthPage extends BasePage {
   async verifyEmail(code: string) {
     await this.verifyCodeInput.fill(code);
     await this.verifyEmailButton.click({ force: true });
-    // Wait for verification to process - network request completes
-    await this.page.waitForLoadState("networkidle");
+    // Wait for verification to process - wait for DOM update after API call
+    await this.page.waitForLoadState("domcontentloaded");
   }
 
   async resendVerificationCode() {
