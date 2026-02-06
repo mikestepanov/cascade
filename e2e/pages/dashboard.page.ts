@@ -226,8 +226,8 @@ export class DashboardPage extends BasePage {
         finalUrl,
         ". Retrying navigation once...",
       );
-      // Wait for auth state to settle by waiting for load state
-      await this.page.waitForLoadState("networkidle").catch(() => {});
+      // Wait for auth state to settle
+      await this.page.waitForLoadState("domcontentloaded").catch(() => {});
       await this.page.goto(dashboardUrl, { waitUntil: "domcontentloaded" });
       await this.waitForLoad();
       finalUrl = this.page.url(); // Update finalUrl after retry

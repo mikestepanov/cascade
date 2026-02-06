@@ -173,7 +173,7 @@ export class ProjectsPage extends BasePage {
   async goto() {
     // Navigate directly to the projects route
     await this.page.goto(`/${this.orgSlug}/projects`);
-    await this.page.waitForLoadState("networkidle");
+    await this.page.waitForLoadState("domcontentloaded");
     await this.waitForLoad();
   }
 

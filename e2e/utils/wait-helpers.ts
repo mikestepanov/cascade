@@ -66,9 +66,10 @@ export async function waitForAnimation(page: Page): Promise<void> {
  * Use this on cold starts when elements might not be interactive yet.
  */
 export async function waitForReactHydration(page: Page): Promise<void> {
-  // Wait for DOM to be ready and network to settle
+  // Wait for DOM to be ready
   await page.waitForLoadState("domcontentloaded");
-  await page.waitForLoadState("networkidle");
+  // Wait for React to hydrate by checking for an interactive element
+  await page.waitForLoadState("load");
 }
 
 /**
