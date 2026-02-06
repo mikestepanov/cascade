@@ -82,40 +82,44 @@ export class WorkspacesPage extends BasePage {
     const createButton = this.newWorkspaceButton.first();
     await createButton.waitFor({ state: "visible" });
 
-    // Scroll into view and click
-    await createButton.scrollIntoViewIfNeeded();
-    await createButton.click();
+    // Click and retry until modal opens
+    await expect(async () => {
+      await createButton.scrollIntoViewIfNeeded();
+      await createButton.click();
+      // Wait for modal dialog to appear
+      const modal = this.page.getByRole("dialog");
+      await expect(modal).toBeVisible();
+    }).toPass();
 
-    // Wait for modal dialog to appear
-    const modal = this.page.getByRole("dialog");
-    await modal.waitFor({ state: "visible" });
+    // Fill and submit with retry - handles form timing issues
+    await expect(async () => {
+      // Ensure input is ready
+      await expect(this.workspaceNameInput).toBeVisible();
+      await expect(this.workspaceNameInput).toBeEnabled();
 
-    // Wait for input to be visible and editable
-    await this.workspaceNameInput.waitFor({ state: "visible" });
-    await expect(this.workspaceNameInput).toBeEnabled();
+      // Fill with name
+      await this.workspaceNameInput.fill(name);
 
-    // Fill with name
-    await this.workspaceNameInput.fill(name);
+      // Verify the value was filled correctly
+      await expect(this.workspaceNameInput).toHaveValue(name);
 
-    // Verify the value was filled correctly
-    await expect(this.workspaceNameInput).toHaveValue(name);
+      if (description) {
+        await expect(this.workspaceDescriptionInput).toBeVisible();
+        await expect(this.workspaceDescriptionInput).toBeEnabled();
+        await this.workspaceDescriptionInput.fill(description);
+      }
 
-    if (description) {
-      await this.workspaceDescriptionInput.waitFor({ state: "visible" });
-      await expect(this.workspaceDescriptionInput).toBeEnabled();
-      await this.workspaceDescriptionInput.fill(description, { force: true });
-    }
+      // Submit
+      await this.submitWorkspaceButton.click();
 
-    await this.submitWorkspaceButton.click({ force: true });
-
-    // Wait for success toast to appear - this confirms the mutation completed
-    // Use .first() to handle multiple matching elements (toast container + text inside)
-    await expect(
-      this.page
-        .getByText(/workspace created/i)
-        .or(this.page.locator("[data-sonner-toast]"))
-        .first(),
-    ).toBeVisible();
+      // Wait for success toast
+      await expect(
+        this.page
+          .getByText(/workspace created/i)
+          .or(this.page.locator("[data-sonner-toast]"))
+          .first(),
+      ).toBeVisible();
+    }).toPass();
 
     // Wait for modal to close (name input disappears)
     await expect(this.workspaceNameInput).not.toBeVisible();
