@@ -30,6 +30,7 @@ function getConvexSiteUrl(): string {
   if (convexUrl.includes("127.0.0.1:3210") || convexUrl.includes("localhost:3210")) {
     return convexUrl.replace(":3210", ":3211");
   }
+
   // Cloud deployment: .convex.cloud -> .convex.site
   return convexUrl.replace(".convex.cloud", ".convex.site");
 }
