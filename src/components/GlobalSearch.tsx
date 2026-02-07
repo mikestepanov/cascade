@@ -15,7 +15,6 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-  CommandShortcut,
 } from "./ui/command";
 import { Typography } from "./ui/Typography";
 
@@ -144,7 +143,7 @@ function SearchListContent({
     return (
       <div className="p-8 text-center text-ui-text-secondary">
         <div className="inline-block w-6 h-6 border-2 border-brand-ring border-t-transparent rounded-full animate-spin mb-2" />
-        <p className="text-sm">Searching...</p>
+        <Typography variant="p" className="text-sm">Searching...</Typography>
       </div>
     );
   }
@@ -154,7 +153,7 @@ function SearchListContent({
       <CommandEmpty className="p-8" data-testid={TEST_IDS.GLOBAL_SEARCH.NO_RESULTS}>
         <div className="text-center">
           <span className="text-4xl mb-4 block">🔍</span>
-          <p className="font-medium text-ui-text">No results found</p>
+          <Typography variant="p" className="font-medium text-ui-text">No results found</Typography>
         </div>
       </CommandEmpty>
       {filteredResults.length > 0 && (
@@ -237,9 +236,7 @@ function SearchResultItem({ result, onClose }: { result: SearchResult; onClose: 
         <div className="flex-1 min-w-0">
           <Flex align="center" gap="sm" wrap>
             {result.type === "issue" && (
-              <Typography variant="mono" as="span">
-                {result.key}
-              </Typography>
+              <code className="font-mono text-sm">{result.key}</code>
             )}
             <Badge variant="neutral" shape="pill" data-testid={TEST_IDS.SEARCH.RESULT_TYPE}>
               {result.type}
@@ -317,15 +314,10 @@ export function GlobalSearch() {
             d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
           />
         </svg>
-        <Typography variant="muted" as="span">
-          Search...
-        </Typography>
-        <Typography
-          as="kbd"
-          className="hidden sm:inline-block px-2 py-0.5 text-xs text-ui-text-tertiary bg-ui-bg border border-ui-border/50 rounded font-mono"
-        >
+        <span className="text-sm text-ui-text-secondary">Search...</span>
+        <kbd className="hidden sm:inline-block px-2 py-0.5 text-xs text-ui-text-tertiary bg-ui-bg border border-ui-border/50 rounded font-mono">
           ⌘K
-        </Typography>
+        </kbd>
       </Button>
 
       {/* Search Modal */}
@@ -382,23 +374,16 @@ export function GlobalSearch() {
             className="p-3 border-t border-ui-border text-xs text-ui-text-secondary"
           >
             <Flex align="center" gap="lg">
-              <Typography variant="meta" as="span">
-                <CommandShortcut className="bg-ui-bg-tertiary px-2 py-1 rounded">
-                  ↑↓
-                </CommandShortcut>{" "}
-                Navigate
-              </Typography>
-              <Typography variant="meta" as="span">
-                <CommandShortcut className="bg-ui-bg-tertiary px-2 py-1 rounded">
-                  Enter
-                </CommandShortcut>{" "}
-                Open
-              </Typography>
+              <span>
+                <kbd className="bg-ui-bg-tertiary px-2 py-1 rounded font-sans">↑↓</kbd> Navigate
+              </span>
+              <span>
+                <kbd className="bg-ui-bg-tertiary px-2 py-1 rounded font-sans">Enter</kbd> Open
+              </span>
             </Flex>
-            <Typography variant="meta" as="span">
-              <CommandShortcut className="bg-ui-bg-tertiary px-2 py-1 rounded">Esc</CommandShortcut>{" "}
-              Close
-            </Typography>
+            <span>
+              <kbd className="bg-ui-bg-tertiary px-2 py-1 rounded font-sans">Esc</kbd> Close
+            </span>
           </Flex>
         </Command>
       </CommandDialog>

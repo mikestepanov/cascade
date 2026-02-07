@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "./ui/Button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/Dialog";
 import { LoadingSpinner } from "./ui/LoadingSpinner";
+import { Metadata, MetadataItem, MetadataTimestamp } from "./ui/Metadata";
 import { Typography } from "./ui/Typography";
 
 /**
@@ -143,17 +144,12 @@ export function VersionHistory({
                             {version.title}
                           </span>
                         </Flex>
-                        <Flex align="center" gap="md">
-                          <Flex align="center" gap="xs">
-                            <Clock className="w-3.5 h-3.5 text-ui-text-tertiary" />
-                            <Typography variant="meta" as="span">
-                              {formatDate(version._creationTime)}
-                            </Typography>
-                          </Flex>
-                          <Typography variant="meta" as="span">
-                            by {version.createdByName}
-                          </Typography>
-                        </Flex>
+                        <Metadata>
+                          <MetadataItem icon={<Clock className="w-3.5 h-3.5" />}>
+                            {formatDate(version._creationTime)}
+                          </MetadataItem>
+                          <MetadataItem>by {version.createdByName}</MetadataItem>
+                        </Metadata>
                         {version.changeDescription && (
                           <Typography variant="caption" className="mt-2">
                             {version.changeDescription}

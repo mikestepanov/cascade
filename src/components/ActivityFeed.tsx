@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 import { EmptyState } from "./ui/EmptyState";
 import { Flex } from "./ui/Flex";
 import { SkeletonList } from "./ui/Skeleton";
-import { Typography, type TypographyProps } from "./ui/Typography";
+import { Typography } from "./ui/Typography";
 
 interface Activity {
   _id: string;
@@ -52,21 +52,21 @@ export function ActivityFeed({ projectId, limit = 50, compact = false }: Activit
     }
   };
 
-  const getActionColor = (action: string): TypographyProps["color"] => {
+  const getActionColorClass = (action: string): string => {
     switch (action) {
       case "created":
-        return "success";
+        return "text-status-success";
       case "updated":
-        return "primary";
+        return "text-ui-text";
       case "commented":
-        return "accent";
+        return "text-accent";
       case "assigned":
-        return "warning";
+        return "text-status-warning";
       case "linked":
       case "unlinked":
-        return "primary";
+        return "text-ui-text";
       default:
-        return "secondary";
+        return "text-ui-text-secondary";
     }
   };
 
@@ -185,18 +185,14 @@ export function ActivityFeed({ projectId, limit = 50, compact = false }: Activit
               <div className="flex-1 min-w-0">
                 <Typography
                   variant="p"
-                  className={cn(compact ? "text-sm" : "text-base", "mb-0 mt-0")}
+                  className={cn(compact ? "text-sm" : "text-base", "m-0")}
                 >
-                  <Typography variant="label" as="span">
-                    {activity.userName}
-                  </Typography>{" "}
-                  <Typography as="span" color={getActionColor(activity.action)}>
+                  <strong>{activity.userName}</strong>{" "}
+                  <span className={getActionColorClass(activity.action)}>
                     {formatActivityMessage(activity)}
-                  </Typography>
+                  </span>
                   {activity.issueKey && (
-                    <Typography variant="mono" as="span" className="ml-1">
-                      {activity.issueKey}
-                    </Typography>
+                    <code className="ml-1 font-mono text-sm">{activity.issueKey}</code>
                   )}
                 </Typography>
                 {!compact && activity.field && activity.newValue && (

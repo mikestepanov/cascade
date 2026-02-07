@@ -279,16 +279,14 @@ export function LabelsManager({ projectId }: LabelsManagerProps) {
                         ) : (
                           <ChevronDown className="w-4 h-4 text-ui-text-secondary" />
                         )}
-                        <Typography variant="label" as="span">
-                          {group.name}
-                        </Typography>
-                        <Typography variant="meta" as="span">
+                        <strong>{group.name}</strong>
+                        <span className="text-xs text-ui-text-tertiary">
                           ({group.labels.length})
-                        </Typography>
+                        </span>
                         {group.description && (
-                          <Typography variant="meta" as="span" className="hidden sm:inline">
+                          <span className="hidden sm:inline text-xs text-ui-text-tertiary">
                             — {group.description}
-                          </Typography>
+                          </span>
                         )}
                       </Flex>
 
@@ -341,7 +339,7 @@ export function LabelsManager({ projectId }: LabelsManagerProps) {
                               >
                                 {label.name}
                               </span>
-                              <Typography variant="meta" as="span">{label.color}</Typography>
+                              <code className="text-xs text-ui-text-tertiary">{label.color}</code>
                             </Flex>
 
                             <Flex gap="sm">

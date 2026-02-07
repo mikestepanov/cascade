@@ -79,20 +79,12 @@ export function AccountInfo({ user }: { user: ProfileUser & { _creationTime: num
       </Typography>
       <div className="space-y-3">
         <Flex justify="between">
-          <Typography variant="caption" as="span">
-            User ID:
-          </Typography>
-          <Typography variant="mono" as="span">
-            {user._id}
-          </Typography>
+          <span className="text-xs text-ui-text-tertiary">User ID:</span>
+          <code className="font-mono text-sm">{user._id}</code>
         </Flex>
         <Flex justify="between">
-          <Typography variant="caption" as="span">
-            Email Verified:
-          </Typography>
-          <Typography variant="small" as="span">
-            {user.emailVerificationTime ? "Yes" : "No"}
-          </Typography>
+          <span className="text-xs text-ui-text-tertiary">Email Verified:</span>
+          <span className="text-sm">{user.emailVerificationTime ? "Yes" : "No"}</span>
         </Flex>
       </div>
     </div>

@@ -24,11 +24,11 @@ type Issue = FunctionReturnType<typeof api.issues.search>["page"][number];
 function IssueDisplay({ type, issueKey, title }: { type: string; issueKey: string; title: string }) {
   const icon = type === "bug" ? "🐛" : type === "story" ? "📖" : type === "epic" ? "⚡" : "✓";
   return (
-    <span className="flex items-center gap-2 min-w-0">
+    <Flex as="span" align="center" gap="sm" className="min-w-0">
       <span className="shrink-0">{icon}</span>
-      <span className="shrink-0 font-mono text-xs text-ui-text-secondary">{issueKey}</span>
+      <code className="shrink-0 font-mono text-xs text-ui-text-secondary">{issueKey}</code>
       <span className="truncate text-sm text-ui-text">{title}</span>
-    </span>
+    </Flex>
   );
 }
 

@@ -7,6 +7,7 @@ import { Flex } from "@/components/ui/Flex";
 import { cn } from "@/lib/utils";
 import { Button } from "./ui/Button";
 import { LoadingSpinner } from "./ui/LoadingSpinner";
+import { Metadata, MetadataItem, MetadataTimestamp } from "./ui/Metadata";
 import { Typography } from "./ui/Typography";
 
 export function NotificationBell() {
@@ -67,20 +68,6 @@ export function NotificationBell() {
       default:
         return "🔔";
     }
-  };
-
-  const formatTime = (timestamp: number) => {
-    const now = Date.now();
-    const diff = now - timestamp;
-    const seconds = Math.floor(diff / 1000);
-    const minutes = Math.floor(seconds / 60);
-    const hours = Math.floor(minutes / 60);
-    const days = Math.floor(hours / 24);
-
-    if (days > 0) return `${days}d ago`;
-    if (hours > 0) return `${hours}h ago`;
-    if (minutes > 0) return `${minutes}m ago`;
-    return "Just now";
   };
 
   return (
@@ -166,19 +153,12 @@ export function NotificationBell() {
                           <Typography variant="small" color="secondary" className="mt-1">
                             {notification.message}
                           </Typography>
-                          <Flex align="center" gap="sm" className="mt-2">
-                            <Typography variant="meta" as="span">
-                              {formatTime(notification._creationTime)}
-                            </Typography>
+                          <Metadata className="mt-2">
+                            <MetadataTimestamp date={notification._creationTime} />
                             {notification.actorName && (
-                              <>
-                                <Typography variant="meta" as="span">•</Typography>
-                                <Typography variant="meta" as="span">
-                                  by {notification.actorName}
-                                </Typography>
-                              </>
+                              <MetadataItem>by {notification.actorName}</MetadataItem>
                             )}
-                          </Flex>
+                          </Metadata>
                         </div>
                         <button
                           type="button"

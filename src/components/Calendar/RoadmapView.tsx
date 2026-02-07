@@ -156,12 +156,8 @@ export function RoadmapView({ projectId }: RoadmapViewProps) {
                   : "bg-ui-bg text-ui-text hover:bg-ui-bg-tertiary",
               )}
             >
-              <Typography as="span" className="sm:hidden">
-                W
-              </Typography>
-              <Typography as="span" className="hidden sm:inline">
-                Week
-              </Typography>
+              <span className="sm:hidden">W</span>
+              <span className="hidden sm:inline">Week</span>
             </button>
             <button
               type="button"
@@ -173,12 +169,8 @@ export function RoadmapView({ projectId }: RoadmapViewProps) {
                   : "bg-ui-bg text-ui-text hover:bg-ui-bg-tertiary",
               )}
             >
-              <Typography as="span" className="sm:hidden">
-                M
-              </Typography>
-              <Typography as="span" className="hidden sm:inline">
-                Month
-              </Typography>
+              <span className="sm:hidden">M</span>
+              <span className="hidden sm:inline">Month</span>
             </button>
             <button
               type="button"
@@ -190,12 +182,8 @@ export function RoadmapView({ projectId }: RoadmapViewProps) {
                   : "bg-ui-bg text-ui-text hover:bg-ui-bg-tertiary",
               )}
             >
-              <Typography as="span" className="sm:hidden">
-                Q
-              </Typography>
-              <Typography as="span" className="hidden sm:inline">
-                Quarter
-              </Typography>
+              <span className="sm:hidden">Q</span>
+              <span className="hidden sm:inline">Quarter</span>
             </button>
           </Flex>
         </Flex>

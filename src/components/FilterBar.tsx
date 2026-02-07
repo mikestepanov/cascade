@@ -147,9 +147,7 @@ function SavedFiltersDropdown({
             >
               {filter.name}
               {filter.isPublic && (
-                <Typography variant="meta" as="span" className="ml-1">
-                  (public)
-                </Typography>
+                <span className="ml-1 text-xs text-ui-text-tertiary">(public)</span>
               )}
             </button>
             {filter.isOwner && (
@@ -315,9 +313,7 @@ export function FilterBar({ projectId, filters, onFilterChange }: FilterBarProps
           renderItem={(type) => (
             <Flex align="center" gap="sm">
               {getTypeIcon(type)}
-              <Typography variant="small" as="span" className="capitalize">
-                {type}
-              </Typography>
+              <span className="text-sm capitalize">{type}</span>
             </Flex>
           )}
         />
@@ -331,9 +327,7 @@ export function FilterBar({ projectId, filters, onFilterChange }: FilterBarProps
           onToggle={(priority) => toggleArrayFilter("priority", priority)}
           getKey={(priority) => priority}
           renderItem={(priority) => (
-            <Typography variant="small" as="span" className="capitalize">
-              {priority}
-            </Typography>
+            <span className="text-sm capitalize">{priority}</span>
           )}
         />
 
@@ -362,8 +356,7 @@ export function FilterBar({ projectId, filters, onFilterChange }: FilterBarProps
             const label = labels?.find((l) => l.name === name);
             return (
               <Flex align="center" gap="sm">
-                <Typography
-                  as="span"
+                <span
                   className="w-3 h-3 rounded-full shrink-0"
                   style={{ backgroundColor: label?.color }}
                 />

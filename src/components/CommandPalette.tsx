@@ -15,7 +15,6 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-  CommandShortcut,
 } from "./ui/command";
 import { Typography } from "./ui/Typography";
 
@@ -113,26 +112,26 @@ export function CommandPalette({ isOpen, onClose, commands }: CommandPaletteProp
         <Flex
           wrap
           gap="md"
-          className="px-4 py-2 border-t border-ui-border bg-ui-bg-secondary sm:gap-4"
+          className="px-4 py-2 border-t border-ui-border bg-ui-bg-secondary text-xs text-ui-text-tertiary sm:gap-4"
         >
-          <Typography variant="meta" as="span">
-            <CommandShortcut className="bg-ui-bg border border-ui-border px-2 py-1 rounded text-ui-text">
+          <span>
+            <kbd className="bg-ui-bg border border-ui-border px-2 py-1 rounded text-ui-text font-sans">
               ↑↓
-            </CommandShortcut>{" "}
+            </kbd>{" "}
             Navigate
-          </Typography>
-          <Typography variant="meta" as="span">
-            <CommandShortcut className="bg-ui-bg border border-ui-border px-2 py-1 rounded text-ui-text">
+          </span>
+          <span>
+            <kbd className="bg-ui-bg border border-ui-border px-2 py-1 rounded text-ui-text font-sans">
               Enter
-            </CommandShortcut>{" "}
+            </kbd>{" "}
             Select
-          </Typography>
-          <Typography variant="meta" as="span">
-            <CommandShortcut className="bg-ui-bg border border-ui-border px-2 py-1 rounded text-ui-text">
+          </span>
+          <span>
+            <kbd className="bg-ui-bg border border-ui-border px-2 py-1 rounded text-ui-text font-sans">
               Esc
-            </CommandShortcut>{" "}
+            </kbd>{" "}
             Close
-          </Typography>
+          </span>
         </Flex>
       </Command>
     </CommandDialog>

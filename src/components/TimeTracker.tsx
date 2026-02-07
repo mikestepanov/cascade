@@ -37,19 +37,19 @@ function TimeProgress({
     return (
       <div className="space-y-2">
         <Flex align="center" justify="between">
-          <Typography variant="meta" as="span">
+          <span className="text-xs text-ui-text-tertiary">
             {totalLoggedHours.toFixed(1)}h / {estimatedHours}h estimated
-          </Typography>
+          </span>
           {remainingHours !== null && (
-            <Typography
-              variant="meta"
-              as="span"
-              color={isOverEstimate ? "error" : "auto"}
-              className={isOverEstimate ? "font-medium" : ""}
+            <span
+              className={cn(
+                "text-xs",
+                isOverEstimate ? "text-status-error font-medium" : "text-ui-text-tertiary"
+              )}
             >
               {isOverEstimate ? "+" : ""}
               {Math.abs(remainingHours).toFixed(1)}h {isOverEstimate ? "over" : "remaining"}
-            </Typography>
+            </span>
           )}
         </Flex>
         <div className="w-full bg-ui-bg-tertiary rounded-full h-2">
@@ -106,9 +106,12 @@ function TimeEntriesList({
                   </Typography>
                 )}
                 <Flex align="center" gap="sm" className="mt-1">
-                  <Typography variant="meta" as="span">
+                  <time
+                    className="text-xs text-ui-text-tertiary"
+                    dateTime={new Date(entry.date).toISOString()}
+                  >
                     {entryDate}
-                  </Typography>
+                  </time>
                   {entry.activity && <Badge variant="neutral">{entry.activity}</Badge>}
                   {entry.billable && <Badge variant="success">Billable</Badge>}
                 </Flex>

@@ -17,6 +17,7 @@ import {
 import { memo } from "react";
 import { Button } from "@/components/ui/Button";
 import { Flex } from "@/components/ui/Flex";
+import { Metadata, MetadataItem, MetadataTimestamp } from "@/components/ui/Metadata";
 import { Tooltip } from "@/components/ui/Tooltip";
 import { Typography } from "@/components/ui/Typography";
 import { ROUTES } from "@/config/routes";
@@ -56,23 +57,6 @@ function getNotificationIcon(type: string) {
     default:
       return <Bell className="w-5 h-5 text-ui-text-tertiary" />;
   }
-}
-
-/**
- * Formats a timestamp into a relative time string.
- */
-function formatTime(timestamp: number): string {
-  const now = Date.now();
-  const diff = now - timestamp;
-  const minutes = Math.floor(diff / 60000);
-  const hours = Math.floor(diff / 3600000);
-  const days = Math.floor(diff / 86400000);
-
-  if (minutes < 1) return "Just now";
-  if (minutes < 60) return `${minutes}m ago`;
-  if (hours < 24) return `${hours}h ago`;
-  if (days < 7) return `${days}d ago`;
-  return new Date(timestamp).toLocaleDateString();
 }
 
 /**
@@ -144,19 +128,12 @@ export const NotificationItem = memo(function NotificationItem({
           {notification.message}
         </Typography>
 
-        <Flex align="center" gap="xs" className="mt-1.5">
-          <Typography variant="meta" as="span">
-            {formatTime(notification._creationTime)}
-          </Typography>
+        <Metadata className="mt-1.5">
+          <MetadataTimestamp date={notification._creationTime} />
           {notification.actorName && (
-            <>
-              <Typography variant="meta" as="span">•</Typography>
-              <Typography variant="meta" as="span">
-                {notification.actorName}
-              </Typography>
-            </>
+            <MetadataItem>{notification.actorName}</MetadataItem>
           )}
-        </Flex>
+        </Metadata>
       </ContentWrapper>
 
       {/* Actions (Separate from link) */}

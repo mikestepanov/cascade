@@ -53,9 +53,9 @@ function SprintCard({ sprint, canEdit, onStartSprint, onCompleteSprint }: Sprint
             <Badge size="md" className={getStatusColor(sprint.status)}>
               {sprint.status}
             </Badge>
-            <Typography variant="caption" as="span">
+            <span className="text-caption text-ui-text-secondary">
               {sprint.issueCount} issues
-            </Typography>
+            </span>
           </Flex>
           {sprint.goal && (
             <Typography variant="muted" className="mb-2">
@@ -67,12 +67,8 @@ function SprintCard({ sprint, canEdit, onStartSprint, onCompleteSprint }: Sprint
           {sprint.status === "active" && sprint.startDate && sprint.endDate && (
             <div className="mt-3 mb-2">
               <Flex justify="between" className="mb-1">
-                <Typography variant="meta" as="span">
-                  Sprint progress
-                </Typography>
-                <Typography variant="meta" as="span" color="brand">
-                  {Math.round(progress)}%
-                </Typography>
+                <span className="text-xs text-ui-text-tertiary">Sprint progress</span>
+                <span className="text-xs text-brand">{Math.round(progress)}%</span>
               </Flex>
               <div className="h-1.5 bg-ui-bg-tertiary rounded-pill overflow-hidden">
                 <div

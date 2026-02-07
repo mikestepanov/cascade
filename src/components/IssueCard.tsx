@@ -125,9 +125,9 @@ export const IssueCard = memo(function IssueCard({
               {getTypeIcon(issue.type)}
             </span>
           </Tooltip>
-          <Typography variant="mono" as="span" data-testid={TEST_IDS.ISSUE.KEY}>
+          <code data-testid={TEST_IDS.ISSUE.KEY} className="font-mono text-xs">
             {issue.key}
-          </Typography>
+          </code>
         </Flex>
         <Tooltip
           content={`Priority: ${issue.priority.charAt(0).toUpperCase() + issue.priority.slice(1)}`}
@@ -214,9 +214,7 @@ export const IssueCard = memo(function IssueCard({
           )}
         </Flex>
         {issue.storyPoints !== undefined && (
-          <Typography variant="meta" as="span">
-            {issue.storyPoints} pts
-          </Typography>
+          <span className="text-xs text-ui-text-tertiary">{issue.storyPoints} pts</span>
         )}
       </Flex>
     </button>
