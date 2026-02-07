@@ -4,18 +4,24 @@
 
 ## Summary
 
-| Category | Count | Severity |
-|----------|-------|----------|
-| `as="span"` on Typography | 93 | HIGH |
-| `<span className="...">` | 459+ | MEDIUM |
-| Typography className overrides | 97+ | MEDIUM |
-| Repeated patterns to extract | 20+ | HIGH |
-| Semantic HTML violations | 15+ | MEDIUM |
-| Raw flex divs | 12+ | LOW |
-| Complex nested selectors | 1 | 🔴 CRITICAL |
-| Raw `<kbd>` with className | 6+ | MEDIUM |
-| Inline `style={{}}` props | 10+ | MEDIUM |
-| `data-[attribute]` selectors | 3+ | LOW |
+| Category | Original | Remaining | Status |
+|----------|----------|-----------|--------|
+| `as="span"` on Typography | 93 | ~10 | ✅ MOSTLY FIXED |
+| `<span className="...">` | 459+ | ~50 | ✅ MOSTLY FIXED |
+| Typography className overrides | 97+ | ~20 | ✅ MOSTLY FIXED |
+| Repeated patterns to extract | 20+ | 5 | ✅ MOSTLY FIXED |
+| Semantic HTML violations | 15+ | ~5 | ✅ MOSTLY FIXED |
+| Raw flex divs | 12+ | ~5 | ✅ MOSTLY FIXED |
+| Complex nested selectors | 1 | 1 | ⚠️ TODO |
+| Raw `<kbd>` with className | 6+ | 0 | ✅ FIXED |
+| Inline `style={{}}` props | 10+ | ~5 | ⚠️ TODO (LabelBadge) |
+| `data-[attribute]` selectors | 3+ | 3 | LOW PRIORITY |
+| Required asterisk slop | 10+ | 10+ | ⚠️ NEW (use Label required) |
+
+### New Components Created
+- `ShortcutHint` - keyboard shortcut with description
+- `ResponsiveText` - mobile/desktop text variants
+- `Label.required` prop - required field indicator
 
 ---
 

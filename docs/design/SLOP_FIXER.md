@@ -61,7 +61,8 @@ Before creating new components, check these exist:
 12. [Complex Nested Selectors (CRITICAL)](#12-complex-nested-selectors-critical)
 13. [Inline style={{}} Props](#13-inline-style-props)
 14. [Raw HTML Elements with Styling](#14-raw-html-elements-with-styling)
-15. [Decision Matrix](#15-decision-matrix)
+15. [Required Field Indicators](#15-required-field-indicators)
+16. [Decision Matrix](#16-decision-matrix)
 
 ---
 
@@ -1155,7 +1156,71 @@ When a component exists, use it instead of raw HTML with styling.
 
 ---
 
-## 15. Decision Matrix
+## 15. Required Field Indicators
+
+### The Problem
+```tsx
+// Scattered asterisk slop
+<label>
+  Email <span className="text-status-error">*</span>
+</label>
+
+// Or worse
+<label>
+  Email <Typography as="span" className="text-status-error">*</Typography>
+</label>
+```
+
+Required asterisks scattered with inline styling across forms.
+
+### Solution A: Use Label's `required` prop (RECOMMENDED)
+
+```tsx
+// Before
+<label className="block text-sm font-medium">
+  Email <span className="text-status-error">*</span>
+</label>
+
+// After
+<Label required>Email</Label>
+```
+
+The Label component handles:
+- Consistent styling (color, spacing)
+- `aria-hidden="true"` on the asterisk (the input's `required` attribute is what matters for accessibility)
+- No scattered className soup
+
+| Pros | Cons |
+|------|------|
+| Clean, semantic | Must use Label component |
+| Accessible by default | |
+| Consistent across codebase | |
+| No inline styling | |
+
+**When to use:** Always for form labels that need required indicators.
+
+---
+
+### Solution B: For non-Label contexts (rare)
+
+```tsx
+// When Label component can't be used
+<span className="text-sm font-medium">
+  Email
+  <span aria-hidden="true" className="text-status-error ml-0.5">*</span>
+</span>
+```
+
+| Pros | Cons |
+|------|------|
+| Works anywhere | Inline styling |
+| Accessible | Not DRY |
+
+**When to use:** Only when Label component genuinely cannot be used.
+
+---
+
+## 16. Decision Matrix
 
 ### Quick Reference: What Solution to Use
 
@@ -1178,6 +1243,7 @@ When a component exists, use it instead of raw HTML with styling.
 | Inline style repeated 3+ | Extract component | | e.g., LabelBadge |
 | Raw `<kbd>` with className | KeyboardShortcut | | Component exists |
 | Raw `<div className="flex">` | `<Flex>` component | | Validator enforces |
+| Required asterisk `<span>*</span>` | `<Label required>` | | Use Label's prop |
 
 ### Questions to Ask
 
@@ -1222,13 +1288,15 @@ When a component exists, use it instead of raw HTML with styling.
 | `KeyboardShortcut` | `ui/KeyboardShortcut.tsx` | Keyboard keys with `<kbd>` |
 | `ListItem` | `ui/ListItem.tsx` | Structured list items |
 | `UserDisplay` | `ui/UserDisplay.tsx` | Avatar + name + subtitle |
+| `Label` | `ui/Label.tsx` | Form labels with `required` prop |
 
 ### Consider Creating (Low Priority)
 
 | Component | Use For | Instances | Priority |
 |-----------|---------|-----------|----------|
-| `ResponsiveText` | Mobile/desktop variants | 6 | LOW - plain spans work |
+| `ResponsiveText` | Mobile/desktop variants | 6 | ✅ DONE - created |
 | `Tag` | Removable tags | 2+ | MEDIUM - if Badge doesn't fit |
+| `LabelBadge` | Dynamic color labels | 4+ | MEDIUM - for label.color patterns |
 
 ---
 
