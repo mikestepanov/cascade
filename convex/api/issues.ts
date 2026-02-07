@@ -155,7 +155,7 @@ async function authenticateAndRateLimit(
 
   // 2. Enforce Rate Limit (Mutation)
   try {
-    await ctx.runMutation(components.rateLimiter.lib.rateLimit, {
+    const rateLimitResult = await ctx.runMutation(components.rateLimiter.lib.rateLimit, {
       name: `api-key-${auth.keyId}`,
       config: {
         kind: "token bucket",
@@ -164,6 +164,14 @@ async function authenticateAndRateLimit(
         capacity: auth.rateLimit,
       },
     });
+
+    if (!rateLimitResult.ok) {
+      return {
+        auth: null,
+        response: createErrorResponse(429, "Rate limit exceeded"),
+        error: "Rate limit exceeded",
+      };
+    }
   } catch (e: unknown) {
     // Handle rate limit error from component
     if (e instanceof Error && e.message.includes("Rate limit")) {
