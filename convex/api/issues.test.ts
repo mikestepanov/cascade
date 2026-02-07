@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { handler } from "./issues";
+import { issuesApiHandler } from "./issues";
 
 // Mock the API generated file
 vi.mock("../_generated/api", () => ({
@@ -53,7 +53,7 @@ describe("API Issues Handler", () => {
     });
 
     // Call the handler
-    const response = await handler(mockCtx as any, mockRequest);
+    const response = await issuesApiHandler(mockCtx as any, mockRequest);
 
     // Expect 429 response
     expect(response.status).toBe(429);
@@ -101,7 +101,7 @@ describe("API Issues Handler", () => {
     });
 
     // Call the handler
-    const response = await handler(mockCtx as any, mockRequest);
+    const response = await issuesApiHandler(mockCtx as any, mockRequest);
 
     // Expect 200 response
     expect(response.status).toBe(200);
