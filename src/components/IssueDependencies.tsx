@@ -126,7 +126,7 @@ export function IssueDependencies({ issueId, projectId: _workspaceId }: IssueDep
       {/* Outgoing Links */}
       {links && links.outgoing.length > 0 && (
         <div>
-          <Typography variant="h4" className="text-sm font-medium text-ui-text mb-2">
+          <Typography variant="label" className="mb-2">
             Dependencies
           </Typography>
           <div className="space-y-2">
@@ -143,13 +143,13 @@ export function IssueDependencies({ issueId, projectId: _workspaceId }: IssueDep
                   </Badge>
                   {link.issue && (
                     <Flex align="center" gap="sm" className="flex-1 min-w-0">
-                      <Typography as="span" className="text-sm">
+                      <Typography variant="small" as="span">
                         {getTypeIcon(link.issue.type)}
                       </Typography>
-                      <Typography as="span" color="tertiary" className="text-sm font-mono">
+                      <Typography variant="mono" as="span">
                         {link.issue.key}
                       </Typography>
-                      <Typography as="span" className="text-sm truncate">
+                      <Typography variant="small" as="span" className="truncate">
                         {link.issue.title}
                       </Typography>
                     </Flex>
@@ -175,7 +175,7 @@ export function IssueDependencies({ issueId, projectId: _workspaceId }: IssueDep
       {/* Incoming Links */}
       {links && links.incoming.length > 0 && (
         <div>
-          <Typography variant="h4" className="text-sm font-medium text-ui-text mb-2">
+          <Typography variant="label" className="mb-2">
             Referenced By
           </Typography>
           <div className="space-y-2">
@@ -192,13 +192,13 @@ export function IssueDependencies({ issueId, projectId: _workspaceId }: IssueDep
                   </Badge>
                   {link.issue && (
                     <Flex align="center" gap="sm" className="flex-1 min-w-0">
-                      <Typography as="span" className="text-sm">
+                      <Typography variant="small" as="span">
                         {getTypeIcon(link.issue.type)}
                       </Typography>
-                      <Typography as="span" color="tertiary" className="text-sm font-mono">
+                      <Typography variant="mono" as="span">
                         {link.issue.key}
                       </Typography>
-                      <Typography as="span" className="text-sm truncate">
+                      <Typography variant="small" as="span" className="truncate">
                         {link.issue.title}
                       </Typography>
                     </Flex>
@@ -224,9 +224,7 @@ export function IssueDependencies({ issueId, projectId: _workspaceId }: IssueDep
       {/* Empty State */}
       {links && links.outgoing.length === 0 && links.incoming.length === 0 && (
         <div className="text-center py-6">
-          <Typography variant="p" color="secondary" className="text-sm">
-            No dependencies yet
-          </Typography>
+          <Typography variant="caption">No dependencies yet</Typography>
         </div>
       )}
 
@@ -283,13 +281,13 @@ export function IssueDependencies({ issueId, projectId: _workspaceId }: IssueDep
                     )}
                   >
                     <Flex align="center" gap="sm">
-                      <Typography as="span" className="text-sm">
+                      <Typography variant="small" as="span">
                         {getTypeIcon(issue.type)}
                       </Typography>
-                      <Typography as="span" color="tertiary" className="text-sm font-mono">
+                      <Typography variant="mono" as="span">
                         {issue.key}
                       </Typography>
-                      <Typography as="span" className="text-sm truncate">
+                      <Typography variant="small" as="span" className="truncate">
                         {issue.title}
                       </Typography>
                     </Flex>
@@ -300,9 +298,9 @@ export function IssueDependencies({ issueId, projectId: _workspaceId }: IssueDep
 
             {/* Selected Issue */}
             {selectedIssueKey && (
-              <div className="text-sm text-ui-text-secondary">
+              <Typography variant="caption">
                 Selected: <span className="font-medium">{selectedIssueKey}</span>
-              </div>
+              </Typography>
             )}
 
             {/* Actions */}

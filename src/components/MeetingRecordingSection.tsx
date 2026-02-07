@@ -130,10 +130,8 @@ function ScheduledState({ onCancel }: { onCancel: () => void }) {
     <div className="bg-brand-subtle rounded-lg p-4">
       <Flex justify="between" align="center">
         <div>
-          <Typography variant="p" className="font-medium text-ui-text">
-            Bot scheduled to join
-          </Typography>
-          <Typography variant="muted" size="xs">
+          <Typography variant="label">Bot scheduled to join</Typography>
+          <Typography variant="meta">
             "Nixelo Notetaker" will join when the meeting starts
           </Typography>
         </div>
@@ -149,10 +147,10 @@ function ScheduledState({ onCancel }: { onCancel: () => void }) {
 function FailedState({ errorMessage, onRetry }: { errorMessage?: string; onRetry: () => void }) {
   return (
     <div className="bg-status-error-bg rounded-lg p-4">
-      <Typography variant="p" className="font-medium text-status-error">
+      <Typography variant="label" color="error">
         Recording failed
       </Typography>
-      <Typography variant="muted" size="xs" className="mt-1">
+      <Typography variant="meta" className="mt-1">
         {errorMessage || "An error occurred during recording"}
       </Typography>
       <Button onClick={onRetry} variant="secondary" size="sm" className="mt-3">
@@ -169,12 +167,8 @@ function InProgressState({ status }: { status: string }) {
       <Flex gap="md" align="center">
         <LoadingSpinner size="sm" />
         <div>
-          <Typography variant="p" className="font-medium text-ui-text">
-            {message}
-          </Typography>
-          <Typography variant="muted" size="xs">
-            This may take a few minutes
-          </Typography>
+          <Typography variant="label">{message}</Typography>
+          <Typography variant="meta">This may take a few minutes</Typography>
         </div>
       </Flex>
     </div>
@@ -287,7 +281,9 @@ export function MeetingRecordingSection({
       >
         <Flex gap="sm" align="center">
           <Mic className="w-5 h-5 text-ui-text-tertiary" />
-          <span className="text-sm font-semibold text-ui-text">AI Meeting Notes</span>
+          <Typography variant="label" as="span">
+            AI Meeting Notes
+          </Typography>
           {recording && <StatusBadge status={recording.status} />}
         </Flex>
         {isExpanded ? (
@@ -338,7 +334,7 @@ function RecordingResults({ recordingId }: { recordingId: Id<"meetingRecordings"
       {/* Executive Summary */}
       {summary && (
         <div className="bg-ui-bg-secondary rounded-lg p-4">
-          <Typography variant="h4" className="text-sm font-semibold text-ui-text mb-2">
+          <Typography variant="label" className="mb-2">
             Summary
           </Typography>
           <Typography variant="muted">{summary.executiveSummary}</Typography>
@@ -348,14 +344,18 @@ function RecordingResults({ recordingId }: { recordingId: Id<"meetingRecordings"
       {/* Key Points */}
       {summary && summary.keyPoints.length > 0 && (
         <div>
-          <Typography variant="h4" className="text-sm font-semibold text-ui-text mb-2">
+          <Typography variant="label" className="mb-2">
             Key Points
           </Typography>
           <ul className="space-y-1">
             {summary.keyPoints.map((point: string) => (
-              <li key={point} className="text-sm text-ui-text-secondary flex items-start gap-2">
-                <span className="text-brand">•</span>
-                {point}
+              <li key={point} className="flex items-start gap-2">
+                <Typography variant="caption" as="span" color="brand">
+                  •
+                </Typography>
+                <Typography variant="caption" as="span">
+                  {point}
+                </Typography>
               </li>
             ))}
           </ul>
@@ -365,7 +365,7 @@ function RecordingResults({ recordingId }: { recordingId: Id<"meetingRecordings"
       {/* Action Items */}
       {summary && summary.actionItems.length > 0 && (
         <div>
-          <Typography variant="h4" className="text-sm font-semibold text-ui-text mb-2">
+          <Typography variant="label" className="mb-2">
             Action Items
           </Typography>
           <ul className="space-y-2">
@@ -387,9 +387,9 @@ function RecordingResults({ recordingId }: { recordingId: Id<"meetingRecordings"
                     )}
                   </Flex>
                   {item.dueDate && (
-                    <span className="text-xs text-ui-text-tertiary mt-1 block">
+                    <Typography variant="meta" className="mt-1 block">
                       Due: {item.dueDate}
-                    </span>
+                    </Typography>
                   )}
                 </li>
               ),
@@ -401,14 +401,16 @@ function RecordingResults({ recordingId }: { recordingId: Id<"meetingRecordings"
       {/* Decisions */}
       {summary && summary.decisions.length > 0 && (
         <div>
-          <Typography variant="h4" className="text-sm font-semibold text-ui-text mb-2">
+          <Typography variant="label" className="mb-2">
             Decisions Made
           </Typography>
           <ul className="space-y-1">
             {summary.decisions.map((decision: string) => (
-              <li key={decision} className="text-sm text-ui-text-secondary flex items-start gap-2">
+              <li key={decision} className="flex items-start gap-2">
                 <CheckCircle className="w-4 h-4 text-status-success shrink-0 mt-0.5" />
-                {decision}
+                <Typography variant="caption" as="span">
+                  {decision}
+                </Typography>
               </li>
             ))}
           </ul>
@@ -444,14 +446,24 @@ function RecordingResults({ recordingId }: { recordingId: Id<"meetingRecordings"
 
       {/* Stats */}
       {transcript && (
-        <Flex gap="md" className="text-xs text-ui-text-tertiary">
-          <span>{transcript.wordCount.toLocaleString()} words</span>
-          <span>•</span>
-          <span>{recording.duration ? Math.round(recording.duration / 60) : "?"} min</span>
+        <Flex gap="md">
+          <Typography variant="meta" as="span">
+            {transcript.wordCount.toLocaleString()} words
+          </Typography>
+          <Typography variant="meta" as="span">
+            •
+          </Typography>
+          <Typography variant="meta" as="span">
+            {recording.duration ? Math.round(recording.duration / 60) : "?"} min
+          </Typography>
           {transcript.speakerCount && (
             <>
-              <span>•</span>
-              <span>{transcript.speakerCount} speakers</span>
+              <Typography variant="meta" as="span">
+                •
+              </Typography>
+              <Typography variant="meta" as="span">
+                {transcript.speakerCount} speakers
+              </Typography>
             </>
           )}
         </Flex>

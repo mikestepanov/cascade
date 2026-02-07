@@ -107,10 +107,10 @@ export function VersionHistory({
           ) : versions.length === 0 ? (
             <div className="text-center py-12">
               <Clock className="w-12 h-12 text-ui-text-tertiary mx-auto mb-4" />
-              <Typography variant="h3" className="text-lg font-medium text-ui-text mb-2">
+              <Typography variant="h5" className="mb-2">
                 No version history yet
               </Typography>
-              <Typography className="text-sm text-ui-text-secondary">
+              <Typography variant="caption">
                 Versions are automatically saved as you edit. Make some changes to create the first
                 version.
               </Typography>
@@ -143,15 +143,19 @@ export function VersionHistory({
                             {version.title}
                           </span>
                         </Flex>
-                        <Flex align="center" gap="md" className="text-sm text-ui-text-tertiary">
+                        <Flex align="center" gap="md">
                           <Flex align="center" gap="xs">
-                            <Clock className="w-3.5 h-3.5" />
-                            <span>{formatDate(version._creationTime)}</span>
+                            <Clock className="w-3.5 h-3.5 text-ui-text-tertiary" />
+                            <Typography variant="meta" as="span">
+                              {formatDate(version._creationTime)}
+                            </Typography>
                           </Flex>
-                          <span>by {version.createdByName}</span>
+                          <Typography variant="meta" as="span">
+                            by {version.createdByName}
+                          </Typography>
                         </Flex>
                         {version.changeDescription && (
-                          <Typography className="mt-2 text-sm text-ui-text-secondary">
+                          <Typography variant="caption" className="mt-2">
                             {version.changeDescription}
                           </Typography>
                         )}
@@ -178,7 +182,7 @@ export function VersionHistory({
 
         {/* Footer */}
         <div className="pt-4 border-t border-ui-border">
-          <Typography className="text-sm text-ui-text-tertiary">
+          <Typography variant="meta">
             Tip: Versions are saved automatically every minute when you edit. Up to 50 recent
             versions are kept.
           </Typography>

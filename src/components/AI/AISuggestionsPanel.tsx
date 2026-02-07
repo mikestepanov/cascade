@@ -34,8 +34,8 @@ export const AISuggestionsPanel = React.memo(function AISuggestionsPanel({
   if (!projectId) {
     return (
       <Flex align="center" justify="center" className="h-full">
-        <div className="text-center text-ui-text-secondary">
-          <Typography variant="p">Select a project to view AI suggestions</Typography>
+        <div className="text-center">
+          <Typography variant="muted">Select a project to view AI suggestions</Typography>
         </div>
       </Flex>
     );
@@ -105,13 +105,10 @@ export const AISuggestionsPanel = React.memo(function AISuggestionsPanel({
           <Flex align="center" justify="center" className="h-full text-center px-4">
             <div>
               <div className="text-4xl mb-4">🎯</div>
-              <Typography
-                variant="h3"
-                className="text-base sm:text-lg font-semibold text-ui-text mb-2"
-              >
+              <Typography variant="h5" className="mb-2">
                 No Suggestions Yet
               </Typography>
-              <Typography variant="p" className="text-sm sm:text-base text-ui-text-secondary mb-4">
+              <Typography variant="muted" className="mb-4">
                 Click "Generate AI Insights" to analyze your project and get AI-powered
                 recommendations.
               </Typography>
@@ -158,24 +155,28 @@ const SuggestionCard = React.memo(function SuggestionCard({
             <span className="text-xs font-medium px-2 py-1 rounded-full bg-brand-subtle text-brand-active">
               {metadata?.label || suggestion.suggestionType}
             </span>
-            <span className="text-xs text-ui-text-tertiary">
+            <Typography variant="meta" as="span">
               {new Date(suggestion._creationTime).toLocaleDateString()}
-            </span>
+            </Typography>
           </Flex>
           <Typography variant="p" className="whitespace-pre-wrap break-words">
             {suggestion.suggestion}
           </Typography>
           {suggestion.reasoning && (
-            <Typography variant="muted" className="text-sm text-ui-text-secondary mt-2">
+            <Typography variant="caption" className="mt-2">
               <span className="font-medium">Reasoning:</span> {suggestion.reasoning}
             </Typography>
           )}
           {suggestion.confidence !== undefined && (
             <div className="mt-2">
-              <Flex align="center" gap="sm" className="text-xs text-ui-text-tertiary">
-                <span>Confidence:</span>
+              <Flex align="center" gap="sm">
+                <Typography variant="meta" as="span">
+                  Confidence:
+                </Typography>
                 <Progress value={suggestion.confidence * 100} className="flex-1 max-w-25" />
-                <span>{Math.round(suggestion.confidence * 100)}%</span>
+                <Typography variant="meta" as="span">
+                  {Math.round(suggestion.confidence * 100)}%
+                </Typography>
               </Flex>
             </div>
           )}
@@ -200,15 +201,17 @@ const SuggestionCard = React.memo(function SuggestionCard({
             </Flex>
           )}
           {suggestion.accepted && (
-            <Flex align="center" gap="xs" className="mt-3 text-sm text-status-success">
-              <span>✓</span>
-              <span>Accepted</span>
+            <Flex align="center" gap="xs" className="mt-3">
+              <Typography variant="small" as="span" color="success">
+                ✓ Accepted
+              </Typography>
             </Flex>
           )}
           {suggestion.dismissed && (
-            <Flex align="center" gap="xs" className="mt-3 text-sm text-ui-text-tertiary">
-              <span>✗</span>
-              <span>Dismissed</span>
+            <Flex align="center" gap="xs" className="mt-3">
+              <Typography variant="small" as="span" color="tertiary">
+                ✗ Dismissed
+              </Typography>
             </Flex>
           )}
         </div>

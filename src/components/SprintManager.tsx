@@ -49,29 +49,28 @@ function SprintCard({ sprint, canEdit, onStartSprint, onCompleteSprint }: Sprint
       >
         <div className="flex-1 w-full sm:w-auto">
           <Flex wrap align="center" gap="sm" className="sm:gap-3 mb-2">
-            <Typography
-              variant="h3"
-              className="text-base sm:text-lg font-medium text-ui-text tracking-tight"
-            >
-              {sprint.name}
-            </Typography>
+            <Typography variant="h5">{sprint.name}</Typography>
             <Badge size="md" className={getStatusColor(sprint.status)}>
               {sprint.status}
             </Badge>
-            <Typography as="span" className="text-sm text-ui-text-secondary">
+            <Typography variant="caption" as="span">
               {sprint.issueCount} issues
             </Typography>
           </Flex>
           {sprint.goal && (
-            <Typography className="text-ui-text-secondary mb-2">{sprint.goal}</Typography>
+            <Typography variant="muted" className="mb-2">
+              {sprint.goal}
+            </Typography>
           )}
 
           {/* Progress bar for active sprints */}
           {sprint.status === "active" && sprint.startDate && sprint.endDate && (
             <div className="mt-3 mb-2">
               <Flex justify="between" className="mb-1">
-                <Typography className="text-xs text-ui-text-tertiary">Sprint progress</Typography>
-                <Typography className="text-xs text-brand font-medium">
+                <Typography variant="meta" as="span">
+                  Sprint progress
+                </Typography>
+                <Typography variant="meta" as="span" color="brand">
                   {Math.round(progress)}%
                 </Typography>
               </Flex>
@@ -85,7 +84,7 @@ function SprintCard({ sprint, canEdit, onStartSprint, onCompleteSprint }: Sprint
           )}
 
           {sprint.startDate && sprint.endDate && (
-            <Typography className="text-sm text-ui-text-secondary">
+            <Typography variant="caption">
               {formatDate(sprint.startDate)} - {formatDate(sprint.endDate)}
             </Typography>
           )}
@@ -172,9 +171,7 @@ export function SprintManager({ projectId, canEdit = true }: SprintManagerProps)
     return (
       <div>
         <Flex align="center" justify="between" className="mb-6">
-          <Typography variant="h2" className="text-xl font-semibold text-ui-text tracking-tight">
-            Sprint Management
-          </Typography>
+          <Typography variant="h4">Sprint Management</Typography>
         </Flex>
         <div className="space-y-4">
           <SkeletonProjectCard />
@@ -194,9 +191,7 @@ export function SprintManager({ projectId, canEdit = true }: SprintManagerProps)
         gap="md"
         className="sm:flex-row sm:items-center mb-6"
       >
-        <Typography variant="h2" className="text-xl font-semibold text-ui-text tracking-tight">
-          Sprint Management
-        </Typography>
+        <Typography variant="h4">Sprint Management</Typography>
         {canEdit && (
           <Button onClick={() => setShowCreateForm(true)} variant="primary">
             <span className="hidden sm:inline">Create Sprint</span>

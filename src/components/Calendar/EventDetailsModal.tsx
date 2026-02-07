@@ -121,7 +121,7 @@ export function EventDetailsModal({ eventId, open, onOpenChange }: EventDetailsM
             <Flex gap="md" align="start">
               <Calendar className="w-5 h-5 text-ui-text-tertiary mt-0.5" />
               <div>
-                <Typography variant="p" className="font-medium text-ui-text">
+                <Typography variant="label">
                   {formatDate(event.startTime, {
                     weekday: "long",
                     month: "long",
@@ -129,7 +129,7 @@ export function EventDetailsModal({ eventId, open, onOpenChange }: EventDetailsM
                     year: "numeric",
                   })}
                 </Typography>
-                <Typography variant="small" className="text-sm text-ui-text-secondary">
+                <Typography variant="caption">
                   {event.allDay ? (
                     "All day"
                   ) : (
@@ -152,16 +152,10 @@ export function EventDetailsModal({ eventId, open, onOpenChange }: EventDetailsM
                 {event.organizerName?.[0]?.toUpperCase()}
               </Flex>
               <div>
-                <Typography variant="small" className="text-sm text-ui-text-secondary">
-                  Organizer
-                </Typography>
-                <Typography variant="p" className="font-medium text-ui-text">
-                  {event.organizerName}
-                </Typography>
+                <Typography variant="caption">Organizer</Typography>
+                <Typography variant="label">{event.organizerName}</Typography>
                 {event.organizerEmail && (
-                  <Typography variant="small" className="text-sm text-ui-text-secondary">
-                    {event.organizerEmail}
-                  </Typography>
+                  <Typography variant="caption">{event.organizerEmail}</Typography>
                 )}
               </div>
             </Flex>
@@ -169,10 +163,10 @@ export function EventDetailsModal({ eventId, open, onOpenChange }: EventDetailsM
             {/* Description */}
             {event.description && (
               <div className="border-t border-ui-border pt-4">
-                <Typography variant="small" className="text-sm font-medium text-ui-text mb-2">
+                <Typography variant="label" className="mb-2">
                   Description
                 </Typography>
-                <Typography variant="p" className="text-ui-text-secondary whitespace-pre-wrap">
+                <Typography variant="muted" className="whitespace-pre-wrap">
                   {event.description}
                 </Typography>
               </div>
@@ -183,12 +177,8 @@ export function EventDetailsModal({ eventId, open, onOpenChange }: EventDetailsM
               <Flex gap="md" align="start" className="border-t border-ui-border pt-4">
                 <MapPin className="w-5 h-5 text-ui-text-tertiary mt-0.5" />
                 <div>
-                  <Typography variant="small" className="text-sm text-ui-text-secondary">
-                    Location
-                  </Typography>
-                  <Typography variant="p" className="font-medium text-ui-text">
-                    {event.location}
-                  </Typography>
+                  <Typography variant="caption">Location</Typography>
+                  <Typography variant="label">{event.location}</Typography>
                 </div>
               </Flex>
             )}
@@ -198,9 +188,7 @@ export function EventDetailsModal({ eventId, open, onOpenChange }: EventDetailsM
               <Flex gap="md" align="start" className="border-t border-ui-border pt-4">
                 <LinkIcon className="w-5 h-5 text-ui-text-tertiary mt-0.5" />
                 <div>
-                  <Typography variant="small" className="text-sm text-ui-text-secondary">
-                    Meeting Link
-                  </Typography>
+                  <Typography variant="caption">Meeting Link</Typography>
                   <a
                     href={event.meetingUrl}
                     target="_blank"
@@ -216,10 +204,10 @@ export function EventDetailsModal({ eventId, open, onOpenChange }: EventDetailsM
             {/* Notes */}
             {event.notes && (
               <div className="border-t border-ui-border pt-4">
-                <Typography variant="small" className="text-sm font-medium text-ui-text mb-2">
+                <Typography variant="label" className="mb-2">
                   Notes
                 </Typography>
-                <Typography variant="p" className="text-ui-text-secondary whitespace-pre-wrap">
+                <Typography variant="muted" className="whitespace-pre-wrap">
                   {event.notes}
                 </Typography>
               </div>
@@ -230,7 +218,7 @@ export function EventDetailsModal({ eventId, open, onOpenChange }: EventDetailsM
               <div className="border-t border-ui-border pt-4">
                 <Flex gap="sm" align="center">
                   <Clock className="w-4 h-4 text-ui-text-tertiary" />
-                  <Typography as="span" className="text-sm text-ui-text-secondary">
+                  <Typography variant="caption" as="span">
                     Recurring event
                   </Typography>
                 </Flex>
@@ -251,7 +239,7 @@ export function EventDetailsModal({ eventId, open, onOpenChange }: EventDetailsM
             {event.isRequired && attendance && (
               <div className="border-t border-ui-border pt-4">
                 <Flex justify="between" align="center" className="mb-3">
-                  <Typography variant="h4" className="text-sm font-semibold text-ui-text">
+                  <Typography variant="label">
                     Attendance ({attendance.markedCount}/{attendance.totalAttendees} marked)
                   </Typography>
                 </Flex>
@@ -278,7 +266,7 @@ export function EventDetailsModal({ eventId, open, onOpenChange }: EventDetailsM
                         {!attendee.status && <div className="w-4 h-4" />}
 
                         {/* Attendee Name */}
-                        <Typography as="span" className="text-sm font-medium text-ui-text">
+                        <Typography variant="label" as="span">
                           {attendee.userName}
                         </Typography>
                       </Flex>
