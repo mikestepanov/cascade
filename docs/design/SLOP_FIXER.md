@@ -4,18 +4,39 @@
 
 ---
 
+## Important Notes
+
+### Typography Status
+Typography is **appropriate for block-level text** (headings, paragraphs, blockquotes). It is **not appropriate for inline text** within flex layouts, buttons, or metadata displays. For inline text, use:
+- Plain text (inherits parent styles)
+- Semantic HTML (`<time>`, `<kbd>`, `<code>`)
+- Composition components (`Metadata`, `ListItem`, `UserDisplay`)
+
+### Existing Components to Leverage
+Before creating new components, check these exist:
+- `Metadata` / `MetadataItem` / `MetadataTimestamp` - inline metadata with auto-separators
+- `ListItem` - structured list items with icon/title/subtitle/meta slots
+- `UserDisplay` - avatar + name + subtitle
+- `Badge` - status/label badges with variants
+- `KeyboardShortcut` - keyboard key display with `<kbd>` semantic element
+- `CollapsibleHeader` - section headers with icon/badge/chevron
+
+---
+
 ## Table of Contents
 
 1. [Typography `as="span"` Pattern](#1-typography-asspan-pattern)
 2. [Inline `<span className>` Pattern](#2-inline-span-classname-pattern)
 3. [Typography className Overrides](#3-typography-classname-overrides)
 4. [Repeated Metadata Pattern](#4-repeated-metadata-pattern)
-5. [Repeated Shortcut Hint Pattern](#5-repeated-shortcut-hint-pattern)
+5. [Keyboard Shortcut Hints Pattern](#5-keyboard-shortcut-hints-pattern)
 6. [Responsive Text Pattern](#6-responsive-text-pattern)
 7. [Badge-Style Text Pattern](#7-badge-style-text-pattern)
-8. [Timestamp Display Pattern](#8-timestamp-display-pattern)
-9. [Manual Bullet Separators](#9-manual-bullet-separators)
-10. [Decision Matrix](#10-decision-matrix)
+8. [Tag Display Pattern](#8-tag-display-pattern)
+9. [Timestamp Display Pattern](#9-timestamp-display-pattern)
+10. [Manual Bullet Separators](#10-manual-bullet-separators)
+11. [Multiple Issues in One Element](#11-multiple-issues-in-one-element)
+12. [Decision Matrix](#12-decision-matrix)
 
 ---
 
@@ -26,25 +47,36 @@
 <Typography variant="meta" as="span">{text}</Typography>
 ```
 
-Typography is designed for block-level text (headings, paragraphs). Using `as="span"` forces inline rendering, breaking semantic HTML and indicating the wrong component is being used.
+Typography defaults to `<p>` tag. Using `as="span"` forces inline rendering, but this indicates the wrong component is being used.
 
-### Solution A: Remove `as="span"` entirely
+### ⚠️ Warning
+Simply removing `as="span"` will break layout because Typography renders as `<p>` (block element). You must also refactor the parent or use a different approach.
+
+### Solution A: Use Metadata component (RECOMMENDED)
 
 ```tsx
 // Before
-<Typography variant="meta" as="span">{text}</Typography>
+<Flex align="center" gap="xs">
+  <Typography variant="meta" as="span">{time}</Typography>
+  <Typography variant="meta" as="span">•</Typography>
+  <Typography variant="meta" as="span">{author}</Typography>
+</Flex>
 
 // After
-<Typography variant="meta">{text}</Typography>
+<Metadata>
+  <MetadataTimestamp date={time} />
+  <MetadataItem>by {author}</MetadataItem>
+</Metadata>
 ```
 
 | Pros | Cons |
 |------|------|
-| Simplest fix | May break layout if parent expects inline |
-| Semantic HTML restored | Typography renders as `<p>` by default |
-| No new components needed | Might need parent layout adjustment |
+| Eliminates multiple elements at once | Must learn Metadata API |
+| Handles separators automatically | Slightly different visual (verify) |
+| Semantic `<time>` element included | |
+| Already exists, no new code | |
 
-**When to use:** When the text is truly a standalone block element, not inline with other content.
+**When to use:** For any inline metadata (timestamps, author, counts, stats).
 
 ---
 
@@ -67,7 +99,7 @@ Typography is designed for block-level text (headings, paragraphs). Using `as="s
 | Pros | Cons |
 |------|------|
 | Zero wrapper overhead | No direct styling control |
-| Inherits parent styles naturally | Must ensure parent has correct styles |
+| Inherits parent styles naturally | Only works if parent has correct styles |
 | Cleanest possible markup | Not suitable if text needs unique styling |
 
 **When to use:** When text is inside a styled container (Button, Badge, etc.) and should inherit that container's text styles.
@@ -81,7 +113,9 @@ Typography is designed for block-level text (headings, paragraphs). Using `as="s
 <Typography variant="meta" as="span">{time}</Typography>
 
 // After
-<time dateTime={date.toISOString()}>{formatted}</time>
+<time dateTime={date.toISOString()} className="text-xs text-ui-text-secondary">
+  {formatted}
+</time>
 ```
 
 | Pros | Cons |
@@ -90,62 +124,64 @@ Typography is designed for block-level text (headings, paragraphs). Using `as="s
 | Accessibility benefits | More verbose for simple cases |
 | SEO/machine-readable | Must know which semantic element applies |
 
-**Semantic elements to consider:**
+**Semantic elements to use:**
 - `<time>` - timestamps, dates, durations
-- `<kbd>` - keyboard keys
+- `<kbd>` - keyboard keys (use KeyboardShortcut component)
 - `<code>` - inline code
 - `<abbr>` - abbreviations
-- `<cite>` - citations
-- `<mark>` - highlighted text
 - `<strong>` / `<em>` - emphasis
 
 **When to use:** When there's a semantic HTML element that matches the content type.
 
 ---
 
-### Solution D: Use a composition component
+### Solution D: Refactor parent to use block layout
 
 ```tsx
-// Before
-<Flex>
-  <Typography variant="meta" as="span">{time}</Typography>
-  <Typography variant="meta" as="span">•</Typography>
-  <Typography variant="meta" as="span">{author}</Typography>
+// Before - inline layout forcing as="span"
+<Flex align="center">
+  <Typography as="span">{a}</Typography>
+  <Typography as="span">{b}</Typography>
 </Flex>
 
-// After
-<Metadata>
-  <MetadataTimestamp date={time} />
-  <MetadataItem>{author}</MetadataItem>
-</Metadata>
+// After - stack layout, Typography renders as blocks
+<Flex direction="column" gap="xs">
+  <Typography variant="meta">{a}</Typography>
+  <Typography variant="meta">{b}</Typography>
+</Flex>
 ```
 
 | Pros | Cons |
 |------|------|
-| Eliminates multiple instances at once | Requires component to exist |
-| Consistent styling guaranteed | Learning curve for new pattern |
-| Handles edge cases (separators, responsive) | May be overkill for one-off cases |
+| Typography used correctly | Changes layout direction |
+| Semantic block elements | May not fit design |
+| No `as="span"` needed | Requires parent refactoring |
 
-**When to use:** When the same pattern appears 3+ times across the codebase.
+**When to use:** When vertical stacking is acceptable or preferred.
 
 ---
 
-### Solution E: Create a Typography variant
+### Solution E: Remove Typography entirely
 
 ```tsx
-// In Typography component, add inline variant
-<Typography variant="inline-meta">{text}</Typography>
+// Before
+<div className="text-sm">
+  <Typography as="span">{text}</Typography>
+</div>
 
-// Renders as <span> with meta styling
+// After
+<div className="text-sm">
+  {text}
+</div>
 ```
 
 | Pros | Cons |
 |------|------|
-| Keeps Typography system | Adds complexity to Typography |
-| Explicit intent ("inline-meta") | Still using Typography for inline |
-| Easy migration path | Doesn't solve underlying design issue |
+| Simplest fix | No Typography styling |
+| No wrapper overhead | Parent must handle all styling |
+| Clean markup | |
 
-**When to use:** As a temporary migration step, not a final solution.
+**When to use:** When Typography adds no value (parent already styled).
 
 ---
 
@@ -156,7 +192,7 @@ Typography is designed for block-level text (headings, paragraphs). Using `as="s
 <span className="text-xs text-ui-text-secondary ml-1">{text}</span>
 ```
 
-Raw spans with className scatter styling across the codebase, making it hard to maintain consistency.
+Raw spans with className scatter styling across the codebase.
 
 ### Solution A: Plain text (no wrapper)
 
@@ -197,32 +233,13 @@ Raw spans with className scatter styling across the codebase, making it hard to 
 |------|------|
 | Consistent with design system | Must import component |
 | Styling centralized | Component must exist |
-| Easier to update globally | Slight overhead |
+| Easier to update globally | |
 
 **When to use:** When a suitable component already exists.
 
 ---
 
-### Solution C: Create a utility component
-
-```tsx
-// New component: InlineText
-<InlineText size="xs" color="secondary">{text}</InlineText>
-
-// Renders as <span> with consistent styling
-```
-
-| Pros | Cons |
-|------|------|
-| Type-safe props | Yet another component |
-| Consistent API | May encourage more inline text |
-| Centralized styling | Could become a dumping ground |
-
-**When to use:** Only if the pattern is extremely common and no existing component fits.
-
----
-
-### Solution D: Move styling to parent
+### Solution C: Move styling to parent container
 
 ```tsx
 // Before
@@ -237,11 +254,32 @@ Raw spans with className scatter styling across the codebase, making it hard to 
 
 | Pros | Cons |
 |------|------|
-| Encapsulates the pattern | Requires component creation |
+| Encapsulates the pattern | Requires component to exist |
 | Single source of truth | May be too specific |
-| Cleaner usage site | Learning curve |
+| Cleaner usage site | |
 
 **When to use:** When the span pattern is part of a larger repeated structure.
+
+---
+
+### Solution D: Accept minimal styling (LAST RESORT)
+
+```tsx
+// Sometimes acceptable for truly one-off cases
+<span className="font-mono">{code}</span>
+```
+
+| Pros | Cons |
+|------|------|
+| Simple, works | Still inline styling |
+| No abstraction overhead | Sets precedent |
+| | Must document why |
+
+**When to use:** Only for truly one-off cases. Document the reason in a comment.
+
+**Acceptable className patterns:**
+- Single utility: `font-mono`, `truncate`, `capitalize`
+- Never acceptable: Multiple utilities, color + size + spacing combos
 
 ---
 
@@ -252,7 +290,7 @@ Raw spans with className scatter styling across the codebase, making it hard to 
 <Typography variant="h1" className="text-2xl font-bold mb-3">{title}</Typography>
 ```
 
-The variant already defines size/weight, but className overrides it. This indicates either wrong variant or missing variant.
+The variant already defines size/weight, but className overrides it.
 
 ### Solution A: Use correct variant (no className)
 
@@ -261,16 +299,16 @@ The variant already defines size/weight, but className overrides it. This indica
 <Typography variant="h1" className="text-2xl font-bold mb-3">{title}</Typography>
 
 // After
-<Typography variant="h2">{title}</Typography>  // h2 is the right size
+<Typography variant="h2">{title}</Typography>  // h2 might be the right size
 ```
 
 | Pros | Cons |
 |------|------|
 | Clean, no overrides | Must know all variants |
-| Uses design system correctly | May need to check variant definitions |
-| Consistent sizing | Variant might not exist |
+| Uses design system correctly | Variant might not exist |
+| Consistent sizing | |
 
-**When to use:** When a suitable variant exists.
+**When to use:** When a suitable variant exists. Check Typography.tsx for all variants.
 
 ---
 
@@ -290,8 +328,8 @@ The variant already defines size/weight, but className overrides it. This indica
 
 | Pros | Cons |
 |------|------|
-| Spacing is layout concern, not text concern | Extra wrapper element |
-| Consistent spacing via gap tokens | Slightly more verbose |
+| Spacing is layout concern | Extra wrapper element |
+| Consistent via gap tokens | Slightly more verbose |
 | Typography stays clean | Must refactor surrounding code |
 
 **When to use:** When className is only for spacing (margin, padding).
@@ -311,47 +349,55 @@ The variant already defines size/weight, but className overrides it. This indica
 | Pros | Cons |
 |------|------|
 | Uses component API | Prop must exist |
-| Type-safe | May need to add prop to component |
-| Self-documenting | Limited to what component supports |
+| Type-safe | May need to add prop |
+| Self-documenting | |
 
 **When to use:** When Typography has a prop for the override.
 
 ---
 
-### Solution D: Create new variant
+### Solution D: Create new variant (if pattern repeats 3+ times)
 
 ```tsx
-// Before
+// Before (appears 3+ times across codebase)
 <Typography variant="p" className="text-center text-lg italic">{quote}</Typography>
 
-// After
+// After - add variant to Typography component
 <Typography variant="blockquote">{quote}</Typography>
 ```
 
 | Pros | Cons |
 |------|------|
-| Reusable for same pattern | Adds to variant list |
-| Single source of truth | Must update Typography component |
-| Semantic meaning | Overkill for one-off cases |
+| Reusable | Adds to variant list |
+| Single source of truth | Must update Typography |
+| Semantic meaning | Overkill for one-off |
 
 **When to use:** When the same className combo appears 3+ times.
 
 ---
 
-### Solution E: Accept minimal className
+### Solution E: Accept minimal className (document why)
 
 ```tsx
-// Sometimes acceptable
+// Acceptable - single non-size/color utility
 <Typography variant="h1" className="tracking-tight">{title}</Typography>
 ```
 
 | Pros | Cons |
 |------|------|
-| Simple, works | Still has override |
-| Minor adjustment only | Sets precedent for more overrides |
-| No new abstractions | Inconsistent if not all h1s have it |
+| Simple | Still has override |
+| Minor adjustment only | Must be consistent |
 
-**When to use:** For minor, truly one-off adjustments. Document why.
+**Acceptable:**
+- `tracking-tight`, `tracking-tighter` (letter-spacing)
+- `truncate`, `line-clamp-2` (overflow)
+- `capitalize`, `uppercase` (text-transform)
+
+**Not acceptable:**
+- Size overrides: `text-2xl`, `text-lg`
+- Color overrides: `text-ui-text-secondary`
+- Weight overrides: `font-bold`, `font-semibold`
+- Spacing: `mb-4`, `mt-2`
 
 ---
 
@@ -366,9 +412,9 @@ The variant already defines size/weight, but className overrides it. This indica
 </Flex>
 ```
 
-This 3+ element pattern repeats across notifications, versions, comments, etc.
+This 3+ element pattern repeats across notifications, versions, comments.
 
-### Solution A: Use Metadata component (EXISTS)
+### Solution A: Use Metadata component (RECOMMENDED)
 
 ```tsx
 // Before (3+ elements repeated)
@@ -387,16 +433,16 @@ This 3+ element pattern repeats across notifications, versions, comments, etc.
 
 | Pros | Cons |
 |------|------|
-| Component already exists | Must learn component API |
-| Handles separators automatically | Slightly different visual (verify) |
-| Semantic `<time>` element included | May need prop additions |
+| Component already exists | Must learn API |
+| Handles separators automatically | Verify visual match |
+| Semantic `<time>` included | |
 | Single import | |
 
-**When to use:** For any metadata display (timestamps, author, counts, etc.).
+**When to use:** For any metadata display. This is the primary solution.
 
 ---
 
-### Solution B: Simple string join
+### Solution B: Simple string join (plain strings only)
 
 ```tsx
 // Before
@@ -408,7 +454,7 @@ This 3+ element pattern repeats across notifications, versions, comments, etc.
 
 // After
 <span className="text-sm text-ui-text-secondary">
-  {[project, status].join(' • ')}
+  {[project, status].filter(Boolean).join(' • ')}
 </span>
 ```
 
@@ -416,13 +462,14 @@ This 3+ element pattern repeats across notifications, versions, comments, etc.
 |------|------|
 | No component needed | No semantic elements |
 | Very simple | All items same style |
-| Works for simple cases | Can't style items differently |
+| Handles empty values | Less flexible |
+| | No `<time>` for dates |
 
-**When to use:** When all items are plain strings with identical styling.
+**When to use:** Only when all items are plain strings with identical styling AND no timestamps.
 
 ---
 
-## 5. Repeated Shortcut Hint Pattern
+## 5. Keyboard Shortcut Hints Pattern
 
 ### The Problem
 ```tsx
@@ -432,59 +479,58 @@ This 3+ element pattern repeats across notifications, versions, comments, etc.
 </Typography>
 ```
 
-Repeated 6 times across CommandPalette.tsx and GlobalSearch.tsx.
+Repeated 6 times in CommandPalette.tsx and GlobalSearch.tsx.
 
-### Solution A: Create ShortcutHint component
+### Solution A: Use Metadata + KeyboardShortcut (RECOMMENDED)
 
 ```tsx
-// New component
-export function ShortcutHint({ keys, text }: { keys: string; text: string }) {
-  return (
-    <span className="text-xs text-ui-text-secondary">
-      <kbd className="px-2 py-1 bg-ui-bg-tertiary rounded font-mono">{keys}</kbd>
-      {' '}{text}
-    </span>
-  );
-}
+// Before
+<Typography variant="meta" as="span">
+  <CommandShortcut className="...">↑↓</CommandShortcut> Navigate
+</Typography>
+<Typography variant="meta" as="span">
+  <CommandShortcut className="...">Enter</CommandShortcut> Select
+</Typography>
 
-// Usage
-<ShortcutHint keys="↑↓" text="Navigate" />
-<ShortcutHint keys="Enter" text="Select" />
-<ShortcutHint keys="Esc" text="Close" />
+// After
+<Metadata size="sm" gap="lg">
+  <MetadataItem>
+    <KeyboardShortcut shortcut="↑↓" size="sm" /> Navigate
+  </MetadataItem>
+  <MetadataItem>
+    <KeyboardShortcut shortcut="Enter" size="sm" /> Select
+  </MetadataItem>
+</Metadata>
 ```
 
 | Pros | Cons |
 |------|------|
-| Eliminates 6 instances | New component to maintain |
-| Uses semantic `<kbd>` | Very specific use case |
-| Consistent styling | |
-| Self-documenting | |
+| Uses existing components | Slightly more verbose |
+| KeyboardShortcut has semantic `<kbd>` | Must verify visual match |
+| Metadata handles layout | |
+| No new components needed | |
 
-**When to use:** This is the correct solution for this pattern.
+**When to use:** For all keyboard shortcut hints.
 
 ---
 
-### Solution B: Array map
+### Solution B: Direct KeyboardShortcut usage
 
 ```tsx
-const shortcuts = [
-  { keys: '↑↓', text: 'Navigate' },
-  { keys: 'Enter', text: 'Select' },
-  { keys: 'Esc', text: 'Close' },
-];
-
-{shortcuts.map(s => (
-  <ShortcutHint key={s.keys} {...s} />
-))}
+// For simpler cases
+<div className="flex items-center gap-4 text-xs text-ui-text-secondary">
+  <span><KeyboardShortcut shortcut="↑↓" size="sm" /> Navigate</span>
+  <span><KeyboardShortcut shortcut="Enter" size="sm" /> Select</span>
+</div>
 ```
 
 | Pros | Cons |
 |------|------|
-| Data-driven | Still needs ShortcutHint component |
-| Easy to modify | May be overkill for 3 items |
-| Consistent | |
+| Uses semantic `<kbd>` | Manual layout |
+| Simple | Inline spans |
+| | Less consistent |
 
-**When to use:** Combined with Solution A when there are many shortcuts.
+**When to use:** When Metadata feels too heavy.
 
 ---
 
@@ -498,10 +544,39 @@ const shortcuts = [
 
 Repeated 6 times in RoadmapView.tsx for Week/Month/Quarter toggles.
 
-### Solution A: Create ResponsiveText component
+### Context Matters
+These appear inside `<button>` elements. The button already has text styling.
+
+### Solution A: Plain spans with Tailwind (RECOMMENDED)
 
 ```tsx
-// New component
+// Before
+<button>
+  <Typography as="span" className="sm:hidden">W</Typography>
+  <Typography as="span" className="hidden sm:inline">Week</Typography>
+</button>
+
+// After
+<button>
+  <span className="sm:hidden">W</span>
+  <span className="hidden sm:inline">Week</span>
+</button>
+```
+
+| Pros | Cons |
+|------|------|
+| Removes Typography misuse | Still two elements |
+| Button handles text styling | Responsive classes inline |
+| Simple, works | |
+
+**When to use:** When inside a styled container that handles text styling.
+
+---
+
+### Solution B: Create ResponsiveText component (LOWER PRIORITY)
+
+```tsx
+// New component - only if pattern appears 10+ times
 export function ResponsiveText({
   short,
   long,
@@ -521,63 +596,35 @@ export function ResponsiveText({
 
 // Usage
 <ResponsiveText short="W" long="Week" />
-<ResponsiveText short="M" long="Month" />
-<ResponsiveText short="Q" long="Quarter" />
 ```
 
 | Pros | Cons |
 |------|------|
-| Eliminates 6 instances | Two DOM elements per usage |
-| Clear intent | Slight complexity |
-| Reusable across app | |
-| Configurable breakpoint | |
+| Encapsulates pattern | New component for 6 uses |
+| Clear intent | May be premature abstraction |
+| Configurable breakpoint | Two DOM elements still |
 
-**When to use:** Anywhere short/long text variants are needed for responsive.
+**When to use:** Only if pattern appears 10+ times. Currently 6 instances - Solution A is sufficient.
 
 ---
 
-### Solution B: CSS-only with content
+### Solution C: Abbreviation with title
 
 ```tsx
-// CSS
-.responsive-week::before {
-  content: 'W';
-}
-@media (min-width: 640px) {
-  .responsive-week::before {
-    content: 'Week';
-  }
-}
-
-// Usage
-<span className="responsive-week" />
+// Alternative semantic approach
+<abbr title="Week" className="no-underline">
+  <span className="sm:hidden">W</span>
+  <span className="hidden sm:inline">Week</span>
+</abbr>
 ```
 
 | Pros | Cons |
 |------|------|
-| Single DOM element | Content in CSS is anti-pattern |
-| No JS logic | Hard to maintain |
-| | Not accessible (screen readers) |
-| | Can't use variables |
+| Semantic HTML | Still two inner spans |
+| Tooltip on hover | More complex |
+| Accessible | |
 
-**When to use:** Never. This is worse.
-
----
-
-### Solution C: JS-based with hook
-
-```tsx
-const isMobile = useMediaQuery('(max-width: 639px)');
-<span>{isMobile ? 'W' : 'Week'}</span>
-```
-
-| Pros | Cons |
-|------|------|
-| Single DOM element | Requires JS/hydration |
-| Dynamic | Flash of wrong content on SSR |
-| Flexible | Extra hook import |
-
-**When to use:** When you need JS logic anyway, but Solution A is usually better.
+**When to use:** When the short form is a true abbreviation.
 
 ---
 
@@ -592,7 +639,7 @@ const isMobile = useMediaQuery('(max-width: 639px)');
 
 Text styled to look like a badge but not using Badge component.
 
-### Solution A: Use Badge component (EXISTS)
+### Solution A: Use Badge component (RECOMMENDED)
 
 ```tsx
 // Before
@@ -601,14 +648,14 @@ Text styled to look like a badge but not using Badge component.
 </Typography>
 
 // After
-<Badge variant="subtle" size="sm">{text}</Badge>
+<Badge variant="secondary" size="sm">{text}</Badge>
 ```
 
 | Pros | Cons |
 |------|------|
 | Component already exists | Badge may have different sizing |
-| Consistent with design system | May need new Badge variant |
-| All Badge variants available | Visual diff (verify) |
+| Consistent with design system | May need new variant |
+| All variants available | Verify visual match |
 
 **When to use:** Always. If Badge doesn't have the right variant, add it to Badge.
 
@@ -617,10 +664,8 @@ Text styled to look like a badge but not using Badge component.
 ### Solution B: Add Badge variant
 
 ```tsx
-// In Badge component, add variant
-<Badge variant="inline">{text}</Badge>
-
-// Renders smaller, more subtle
+// In Badge component
+<Badge variant="inline">{text}</Badge>  // New variant for smaller, subtler badges
 ```
 
 | Pros | Cons |
@@ -633,7 +678,97 @@ Text styled to look like a badge but not using Badge component.
 
 ---
 
-## 8. Timestamp Display Pattern
+### Solution C: Use in constrained contexts (search results, command items)
+
+```tsx
+// When Badge feels too heavy inside CommandItem
+<span className="px-1.5 py-0.5 text-xs bg-ui-bg-tertiary rounded">
+  {type}
+</span>
+```
+
+| Pros | Cons |
+|------|------|
+| Lightweight | Inline styling |
+| Fits constrained space | Inconsistent with Badge |
+
+**When to use:** Only in tight spaces where Badge is too large. Document why.
+
+---
+
+## 8. Tag Display Pattern
+
+### The Problem
+```tsx
+<Flex as="span" inline className="px-2 py-1 bg-brand-subtle text-brand-hover text-xs rounded">
+  {tag}
+  <Button size="icon" variant="ghost" onClick={onRemove}>×</Button>
+</Flex>
+```
+
+Removable tags with inline styling.
+
+### Solution A: Create/use Tag component
+
+```tsx
+// If Tag component exists
+<Tag onRemove={() => removeTag(tag)}>{tag}</Tag>
+
+// If not, create one
+export function Tag({
+  children,
+  onRemove
+}: {
+  children: React.ReactNode;
+  onRemove?: () => void;
+}) {
+  return (
+    <span className="inline-flex items-center gap-1 px-2 py-1 bg-brand-subtle text-brand text-xs rounded">
+      {children}
+      {onRemove && (
+        <button
+          type="button"
+          onClick={onRemove}
+          className="hover:text-brand-hover"
+          aria-label="Remove"
+        >
+          ×
+        </button>
+      )}
+    </span>
+  );
+}
+```
+
+| Pros | Cons |
+|------|------|
+| Reusable | New component if doesn't exist |
+| Consistent | |
+| Handles remove button | |
+
+**When to use:** For any removable tag/chip pattern.
+
+---
+
+### Solution B: Use Badge with remove
+
+```tsx
+<Badge variant="brand" size="sm">
+  {tag}
+  <button onClick={onRemove} className="ml-1">×</button>
+</Badge>
+```
+
+| Pros | Cons |
+|------|------|
+| Uses existing Badge | Badge may not support remove |
+| Consistent | Less semantic |
+
+**When to use:** If Badge already supports this pattern.
+
+---
+
+## 9. Timestamp Display Pattern
 
 ### The Problem
 ```tsx
@@ -642,7 +777,7 @@ Text styled to look like a badge but not using Badge component.
 
 Timestamps without semantic `<time>` element.
 
-### Solution A: Use MetadataTimestamp (EXISTS)
+### Solution A: Use MetadataTimestamp (RECOMMENDED)
 
 ```tsx
 // Before
@@ -679,46 +814,13 @@ Timestamps without semantic `<time>` element.
 |------|------|
 | Semantic HTML | Manual styling |
 | No component needed | Must remember dateTime format |
-| Flexible | Inconsistent if not careful |
+| Flexible | |
 
 **When to use:** When MetadataTimestamp doesn't fit the context.
 
 ---
 
-### Solution C: Create TimeDisplay component
-
-```tsx
-export function TimeDisplay({
-  date,
-  format = 'relative',
-  className
-}: {
-  date: Date | number;
-  format?: 'relative' | 'date' | 'datetime';
-  className?: string;
-}) {
-  const d = new Date(date);
-  const formatted = formatTime(d, format);
-
-  return (
-    <time dateTime={d.toISOString()} className={className}>
-      {formatted}
-    </time>
-  );
-}
-```
-
-| Pros | Cons |
-|------|------|
-| Flexible styling via className | Yet another component |
-| Always semantic | Similar to MetadataTimestamp |
-| Centralized formatting | May duplicate functionality |
-
-**When to use:** If MetadataTimestamp is too opinionated for your use case.
-
----
-
-## 9. Manual Bullet Separators
+## 10. Manual Bullet Separators
 
 ### The Problem
 ```tsx
@@ -729,7 +831,7 @@ export function TimeDisplay({
 
 Manual bullet/pipe separators between metadata items.
 
-### Solution A: Use Metadata component (EXISTS)
+### Solution A: Use Metadata component (RECOMMENDED)
 
 ```tsx
 // Before
@@ -749,14 +851,14 @@ Manual bullet/pipe separators between metadata items.
 | Pros | Cons |
 |------|------|
 | Handles separators automatically | Must use component |
-| Consistent | Slight learning curve |
-| No manual bullets | |
+| Consistent | |
+| aria-hidden on separators | |
 
 **When to use:** Always for metadata-style lists.
 
 ---
 
-### Solution B: Array join
+### Solution B: Array join (plain strings only)
 
 ```tsx
 // Before
@@ -770,108 +872,126 @@ Manual bullet/pipe separators between metadata items.
 |------|------|
 | No component needed | All same style |
 | Handles empty values | No semantic elements |
-| Simple | Less flexible |
+| Simple | |
 
-**When to use:** For simple, uniform metadata strings.
+**When to use:** For simple, uniform metadata strings without timestamps.
 
 ---
 
-### Solution C: CSS ::before/::after
+## 11. Multiple Issues in One Element
 
+### The Problem
 ```tsx
-// CSS
-.meta-item:not(:first-child)::before {
-  content: '•';
-  margin: 0 0.5rem;
-  color: var(--color-ui-text-tertiary);
-}
-
-// Usage
-<div className="flex">
-  <span className="meta-item">{a}</span>
-  <span className="meta-item">{b}</span>
-</div>
+<Typography variant="h1" className="text-2xl font-bold mb-3 tracking-tight">{title}</Typography>
 ```
 
-| Pros | Cons |
-|------|------|
-| No separator elements | CSS dependency |
-| Clean markup | Harder to customize |
-| Automatic | Screen readers may not handle well |
+This has 3 issues:
+1. Size conflict (variant vs className)
+2. Spacing via className
+3. Arbitrary Tailwind (tracking-tight)
 
-**When to use:** When you want pure CSS solution and accessibility isn't a concern.
+### Solution: Fix in order of severity
+
+**Step 1: Remove size/weight conflicts**
+```tsx
+// Remove text-2xl and font-bold (variant handles these)
+<Typography variant="h1" className="mb-3 tracking-tight">{title}</Typography>
+```
+
+**Step 2: Move spacing to parent**
+```tsx
+<Flex direction="column" gap="md">
+  <Typography variant="h1" className="tracking-tight">{title}</Typography>
+  <Typography variant="p">{description}</Typography>
+</Flex>
+```
+
+**Step 3: Evaluate remaining className**
+```tsx
+// tracking-tight is acceptable (minor adjustment, consistent across all h1s)
+<Typography variant="h1" className="tracking-tight">{title}</Typography>
+
+// OR add to variant if used on all h1s
+```
+
+| Order | Fix | Impact |
+|-------|-----|--------|
+| 1st | Remove size/weight | Eliminates conflict |
+| 2nd | Move spacing to parent | Separates concerns |
+| 3rd | Evaluate remaining | Keep if minor, extract if repeated |
 
 ---
 
-## 10. Decision Matrix
+## 12. Decision Matrix
 
 ### Quick Reference: What Solution to Use
 
-| Pattern | Primary Solution | Fallback |
-|---------|------------------|----------|
-| `as="span"` in block context | Remove it | Use correct variant |
-| `as="span"` for inline | Plain text or Metadata | Semantic HTML |
-| Repeated 3+ elements | Extract component | Use existing component |
-| Typography + spacing className | Move to parent Flex gap | Accept if one-off |
-| Typography + color className | Use color prop | Accept if one-off |
-| Typography + size className | Use correct variant | Create variant |
-| Timestamp in span | MetadataTimestamp | Raw `<time>` |
-| Keyboard shortcut | ShortcutHint (create) | `<kbd>` element |
-| Badge-style text | Badge component | Add Badge variant |
-| Metadata with bullets | Metadata component | Array join |
-| Responsive short/long | ResponsiveText (create) | CSS classes |
+| Pattern | Primary Solution | Fallback | Notes |
+|---------|------------------|----------|-------|
+| `as="span"` for metadata | Metadata component | Semantic HTML | Never just remove |
+| `as="span"` in button/container | Plain text | Remove Typography | Parent handles styling |
+| Repeated 3+ elements | Extract component | Use existing component | Check if exists first |
+| Typography + spacing className | Move to parent Flex gap | | Never on Typography |
+| Typography + color className | Use color prop | | |
+| Typography + size className | Use correct variant | Create variant | Never override |
+| Typography + tracking | Accept with comment | | Minor adjustment |
+| Timestamp in span | MetadataTimestamp | Raw `<time>` | Must have dateTime |
+| Keyboard shortcut | KeyboardShortcut + Metadata | | Semantic `<kbd>` |
+| Badge-style text | Badge component | Add Badge variant | |
+| Metadata with bullets | Metadata component | Array join | |
+| Responsive short/long | Plain spans | ResponsiveText | Low priority |
+| Multiple issues | Fix in order | | Size → Spacing → Rest |
 
 ### Questions to Ask
 
-1. **Does a component already exist?** → Use it
-2. **Is this pattern repeated 3+ times?** → Create component
-3. **Is this truly inline text?** → Plain text (no wrapper)
-4. **Is there semantic HTML for this?** → Use it (`<time>`, `<kbd>`, etc.)
-5. **Is this a one-off?** → Minimal className may be acceptable (document why)
+1. **Does a component already exist for this?** → Use it (Metadata, Badge, KeyboardShortcut, etc.)
+2. **Is this pattern repeated 3+ times?** → Create component or use existing
+3. **Is this inside a styled container?** → Plain text, remove wrapper
+4. **Is there semantic HTML for this?** → Use it (`<time>`, `<kbd>`, `<abbr>`)
+5. **Is this a one-off minor adjustment?** → Accept with comment
 
-### Red Flags (Never Do)
+### Almost Never Do (Exceptions Must Be Documented)
 
 ```tsx
-// NEVER - inline style soup
+// ALMOST NEVER - inline style soup
 <span className="text-xs text-ui-text-secondary ml-1 opacity-70">{text}</span>
+// Exception: Truly one-off with comment explaining why
 
-// NEVER - Typography as generic inline wrapper
+// ALMOST NEVER - Typography for inline
 <Typography as="span" className="...">{text}</Typography>
+// Exception: None. Use Metadata, plain text, or semantic HTML
 
-// NEVER - manual separators repeated
+// ALMOST NEVER - manual separators
 <span>•</span>
+// Exception: Inside existing component that can't use Metadata
 
-// NEVER - timestamps without <time>
+// ALMOST NEVER - timestamps without <time>
 <span>{date.toLocaleDateString()}</span>
+// Exception: None. Always use <time> or MetadataTimestamp
 ```
 
 ---
 
-## Components to Create
+## Components Summary
 
-Based on this analysis, create these components:
+### Use These (Already Exist)
 
-### 1. ShortcutHint
-- Location: `src/components/ui/ShortcutHint.tsx`
-- Usage: Keyboard shortcut hints like "↑↓ Navigate"
-- Instances eliminated: 6
+| Component | Location | Use For |
+|-----------|----------|---------|
+| `Metadata` | `ui/Metadata.tsx` | Inline metadata with separators |
+| `MetadataItem` | `ui/Metadata.tsx` | Single metadata value |
+| `MetadataTimestamp` | `ui/Metadata.tsx` | Dates with `<time>` element |
+| `Badge` | `ui/Badge.tsx` | Status/label badges |
+| `KeyboardShortcut` | `ui/KeyboardShortcut.tsx` | Keyboard keys with `<kbd>` |
+| `ListItem` | `ui/ListItem.tsx` | Structured list items |
+| `UserDisplay` | `ui/UserDisplay.tsx` | Avatar + name + subtitle |
 
-### 2. ResponsiveText
-- Location: `src/components/ui/ResponsiveText.tsx`
-- Usage: Mobile/desktop text variants
-- Instances eliminated: 6
+### Consider Creating (Low Priority)
 
-### Components to Expand Usage
-
-### 1. Metadata / MetadataItem / MetadataTimestamp
-- Already exists at `src/components/ui/Metadata.tsx`
-- Underused in: notifications, versions, comments, headers
-- Instances to convert: 15+
-
-### 2. Badge
-- Already exists at `src/components/ui/Badge.tsx`
-- Add `variant="inline"` if needed
-- Instances to convert: 10+
+| Component | Use For | Instances | Priority |
+|-----------|---------|-----------|----------|
+| `ResponsiveText` | Mobile/desktop variants | 6 | LOW - plain spans work |
+| `Tag` | Removable tags | 2+ | MEDIUM - if Badge doesn't fit |
 
 ---
 
@@ -879,10 +999,13 @@ Based on this analysis, create these components:
 
 For each file with slop:
 
-- [ ] Identify all slop patterns
-- [ ] Categorize by type (use this guide)
+- [ ] Read the file, identify all slop patterns
+- [ ] Check if existing components solve it (Metadata, Badge, KeyboardShortcut)
+- [ ] Categorize by pattern type (use this guide)
 - [ ] Choose solution (primary, then fallback)
+- [ ] If multiple issues in one element, fix in order (size → spacing → rest)
 - [ ] Implement fix
-- [ ] Verify visual parity
+- [ ] Verify visual parity (screenshot before/after if needed)
+- [ ] Verify accessibility (semantic HTML, focus states)
 - [ ] Run `node scripts/validate.js`
-- [ ] Mark file as done in SLOP_AUDIT.md
+- [ ] Update SLOP_AUDIT.md status
