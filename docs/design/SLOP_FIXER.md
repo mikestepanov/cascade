@@ -6,6 +6,28 @@
 
 ## Important Notes
 
+### ⚠️ CRITICAL: Don't Replace Slop with Slop
+
+**This is slop:**
+```tsx
+<Typography variant="meta" as="span" className="text-xs text-ui-text-tertiary">
+  {text}
+</Typography>
+```
+
+**This is ALSO slop:**
+```tsx
+<span className="text-xs text-ui-text-tertiary">{text}</span>
+```
+
+Replacing `Typography as="span"` with bare `<span className="...">` does NOT fix the problem. Both are inline style soup. The goal is to eliminate scattered styling, not move it to a different element.
+
+**Correct approaches:**
+1. Use an existing component (`Badge`, `MetadataItem`, etc.)
+2. Use plain text that inherits parent styles
+3. Use semantic HTML when appropriate (`<time>`, `<code>`, `<kbd>`)
+4. If none apply, the parent container should handle the styling
+
 ### Typography Status
 Typography is **appropriate for block-level text** (headings, paragraphs, blockquotes). It is **not appropriate for inline text** within flex layouts, buttons, or metadata displays. For inline text, use:
 - Plain text (inherits parent styles)
@@ -193,6 +215,28 @@ Simply removing `as="span"` will break layout because Typography renders as `<p>
 ```
 
 Raw spans with className scatter styling across the codebase.
+
+### ⚠️ Common Mistake
+When fixing `Typography as="span"`, do NOT just change to `<span className="...">`. This is the SAME slop with a different element:
+
+```tsx
+// WRONG - Slop in, slop out
+// Before (Typography slop)
+<Typography variant="meta" as="span">{issue.storyPoints} pts</Typography>
+
+// Still wrong (span slop)
+<span className="text-xs text-ui-text-tertiary">{issue.storyPoints} pts</span>
+
+// CORRECT options:
+// 1. Badge for distinct visual items
+<Badge variant="neutral" size="sm">{issue.storyPoints} pts</Badge>
+
+// 2. MetadataItem for inline metadata
+<MetadataItem>{issue.storyPoints} pts</MetadataItem>
+
+// 3. Plain text if parent handles styling
+{issue.storyPoints} pts
+```
 
 ### Solution A: Plain text (no wrapper)
 
