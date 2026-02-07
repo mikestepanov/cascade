@@ -10,6 +10,7 @@ import { Badge } from "./ui/Badge";
 import { Button } from "./ui/Button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "./ui/Dialog";
 import { Tooltip } from "./ui/Tooltip";
+import { Typography } from "./ui/Typography";
 
 interface IssueDetailModalProps {
   issueId: Id<"issues">;
@@ -59,13 +60,15 @@ export function IssueDetailModal({
         <DialogHeader className="px-6 pt-6 pb-0">
           <Flex align="center" justify="between">
             <Flex align="center" className="space-x-3">
-              <span className="text-2xl">{getTypeIcon(issue.type)}</span>
+              <Typography variant="label" className="text-2xl">
+                {getTypeIcon(issue.type)}
+              </Typography>
               <div>
                 <DialogTitle className="flex items-center space-x-2">
                   <Flex align="center" className="gap-1.5">
-                    <span className="text-sm text-ui-text-secondary font-mono tracking-tight">
+                    <Typography variant="muted" className="text-sm font-mono tracking-tight">
                       {issue.key}
-                    </span>
+                    </Typography>
                     <Tooltip content={detail.hasCopied ? "Copied!" : "Copy issue key"}>
                       <Button
                         variant="ghost"

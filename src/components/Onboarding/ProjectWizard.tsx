@@ -4,6 +4,7 @@ import { useMutation } from "convex/react";
 import { useState } from "react";
 import { showError, showSuccess } from "@/lib/toast";
 import { cn } from "@/lib/utils";
+import { Badge } from "../ui/Badge";
 import { Button } from "../ui/Button";
 import { Dialog, DialogContent, DialogFooter } from "../ui/Dialog";
 import { Flex } from "../ui/Flex";
@@ -296,9 +297,9 @@ export function ProjectWizard({
               <Flex direction="column" gap="md">
                 {workflowStates.map((state, index) => (
                   <Flex key={state.id} gap="md" align="center">
-                    <span className="text-ui-text-tertiary font-mono text-sm w-6">
+                    <Typography variant="caption" className="font-mono w-6">
                       {index + 1}.
-                    </span>
+                    </Typography>
                     <input
                       type="text"
                       value={state.name}
@@ -309,22 +310,23 @@ export function ProjectWizard({
                       }}
                       className="flex-1 px-3 py-2 border border-ui-border rounded-md bg-ui-bg text-ui-text"
                     />
-                    <span
-                      className={cn(
-                        "px-3 py-1 rounded-full text-sm font-medium",
+                    <Badge
+                      variant={
                         state.category === "todo"
-                          ? "bg-ui-bg-tertiary text-ui-text"
+                          ? "secondary"
                           : state.category === "inprogress"
-                            ? "bg-brand-indigo-track text-brand-indigo-text"
-                            : "bg-status-success/10 text-status-success",
-                      )}
+                            ? "primary"
+                            : "success"
+                      }
+                      shape="pill"
+                      size="md"
                     >
                       {state.category === "todo"
                         ? "To Do"
                         : state.category === "inprogress"
                           ? "In Progress"
                           : "Done"}
-                    </span>
+                    </Badge>
                   </Flex>
                 ))}
               </Flex>
@@ -363,31 +365,28 @@ export function ProjectWizard({
 
               <div className="bg-ui-bg-secondary rounded-lg p-4 space-y-3">
                 <div>
-                  <span className="text-sm text-ui-text-tertiary">Project Name:</span>
+                  <Typography variant="caption">Project Name:</Typography>
                   <Typography className="font-medium text-ui-text">{projectName}</Typography>
                 </div>
                 <div>
-                  <span className="text-sm text-ui-text-tertiary">Project Key:</span>
+                  <Typography variant="caption">Project Key:</Typography>
                   <Typography className="font-mono font-medium text-ui-text">
                     {projectKey}
                   </Typography>
                 </div>
                 <div>
-                  <span className="text-sm text-ui-text-tertiary">Board Type:</span>
+                  <Typography variant="caption">Board Type:</Typography>
                   <Typography className="font-medium text-ui-text capitalize">
                     {boardType}
                   </Typography>
                 </div>
                 <div>
-                  <span className="text-sm text-ui-text-tertiary">Workflow States:</span>
+                  <Typography variant="caption">Workflow States:</Typography>
                   <Flex wrap gap="sm" className="mt-1">
                     {workflowStates.map((state) => (
-                      <span
-                        key={state.id}
-                        className="px-2 py-1 bg-ui-bg-tertiary rounded text-sm text-ui-text"
-                      >
+                      <Badge key={state.id} variant="secondary">
                         {state.name}
-                      </span>
+                      </Badge>
                     ))}
                   </Flex>
                 </div>

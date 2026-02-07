@@ -268,14 +268,9 @@ export function HourComplianceDashboard() {
                             {record.user?.name || record.user?.email || "Unknown User"}
                           </Typography>
                           <Flex gap="sm" className="mt-1">
-                            <span
-                              className={cn(
-                                "text-xs px-2 py-0.5 rounded",
-                                getStatusColor(record.status),
-                              )}
-                            >
+                            <Badge size="sm" className={cn(getStatusColor(record.status))}>
                               {getStatusLabel(record.status)}
-                            </span>
+                            </Badge>
                             <Badge variant="neutral" className="capitalize">
                               {record.periodType}ly
                             </Badge>
@@ -338,8 +333,10 @@ export function HourComplianceDashboard() {
 
                       {record.reviewNotes && (
                         <div className="mt-3 p-2 bg-accent-subtle rounded text-sm">
-                          <span className="font-medium text-accent-active">Review Notes:</span>{" "}
-                          <span className="text-accent-hover">{record.reviewNotes}</span>
+                          <strong className="text-accent-active">Review Notes:</strong>{" "}
+                          <Typography as="span" variant="small" className="text-accent-hover">
+                            {record.reviewNotes}
+                          </Typography>
                         </div>
                       )}
                     </div>

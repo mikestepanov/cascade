@@ -338,19 +338,20 @@ export function UserManagement() {
                             {invite.email}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm">
-                            <span className="px-2 py-1 rounded text-xs font-medium bg-brand-subtle text-brand-active capitalize">
+                            <Badge
+                              size="sm"
+                              className="capitalize bg-brand-subtle text-brand-active"
+                            >
                               {invite.role}
-                            </span>
+                            </Badge>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm">
-                            <span
-                              className={cn(
-                                "px-2 py-1 rounded text-xs font-medium capitalize",
-                                getStatusBadge(invite.status),
-                              )}
+                            <Badge
+                              size="sm"
+                              className={cn("capitalize", getStatusBadge(invite.status))}
                             >
                               {invite.status}
-                            </span>
+                            </Badge>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-ui-text-secondary">
                             {invite.inviterName}
@@ -386,9 +387,9 @@ export function UserManagement() {
                                 </>
                               )}
                               {invite.status === "accepted" && invite.acceptedByName && (
-                                <span className="text-ui-text-secondary text-xs">
+                                <Typography variant="caption" color="secondary">
                                   Accepted by {invite.acceptedByName}
-                                </span>
+                                </Typography>
                               )}
                             </Flex>
                           </td>

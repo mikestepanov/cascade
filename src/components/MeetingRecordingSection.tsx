@@ -330,8 +330,10 @@ function RecordingResults({ recordingId }: { recordingId: Id<"meetingRecordings"
           <ul className="space-y-1">
             {summary.keyPoints.map((point: string) => (
               <li key={point} className="flex items-start gap-2 text-xs text-ui-text-secondary">
-                <span className="text-brand">•</span>
-                <span>{point}</span>
+                <Typography as="span" className="text-brand">
+                  •
+                </Typography>
+                <Typography as="span">{point}</Typography>
               </li>
             ))}
           </ul>
@@ -355,7 +357,9 @@ function RecordingResults({ recordingId }: { recordingId: Id<"meetingRecordings"
                   className="text-sm bg-status-warning-bg rounded p-2"
                 >
                   <Flex justify="between" align="start">
-                    <span className="text-ui-text">{item.description}</span>
+                    <Typography as="span" className="text-ui-text">
+                      {item.description}
+                    </Typography>
                     {item.assignee && (
                       <Badge size="sm" className="ml-2 shrink-0">
                         {item.assignee}
@@ -384,7 +388,7 @@ function RecordingResults({ recordingId }: { recordingId: Id<"meetingRecordings"
             {summary.decisions.map((decision: string) => (
               <li key={decision} className="flex items-start gap-2 text-xs text-ui-text-secondary">
                 <CheckCircle className="w-4 h-4 text-status-success shrink-0 mt-0.5" />
-                <span>{decision}</span>
+                <Typography as="span">{decision}</Typography>
               </li>
             ))}
           </ul>

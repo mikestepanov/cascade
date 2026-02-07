@@ -7,6 +7,7 @@ import { Tooltip } from "@/components/ui/Tooltip";
 import { getPriorityColor, getTypeIcon } from "@/lib/issue-utils";
 import { cn } from "@/lib/utils";
 import { IssueDetailModal } from "./IssueDetailModal";
+import { Badge } from "./ui/Badge";
 import { Typography } from "./ui/Typography";
 
 interface IssuesCalendarViewProps {
@@ -128,7 +129,8 @@ export function IssuesCalendarView({
         )}
       >
         <Flex align="center" justify="between" className="mb-1">
-          <span
+          <Typography
+            variant="label"
             className={cn(
               "text-sm font-medium",
               isTodayDate
@@ -137,11 +139,11 @@ export function IssuesCalendarView({
             )}
           >
             {day}
-          </span>
+          </Typography>
           {dayIssues.length > 0 && (
-            <span className="text-xs bg-ui-bg-tertiary text-ui-text px-1.5 py-0.5 rounded">
+            <Badge size="sm" variant="neutral">
               {dayIssues.length}
-            </span>
+            </Badge>
           )}
         </Flex>
 
@@ -155,9 +157,9 @@ export function IssuesCalendarView({
               >
                 <Flex align="center" gap="xs">
                   <div className={cn("w-2 h-2 rounded-full", getPriorityColor(issue.priority))} />
-                  <span className="text-xs truncate flex-1">
+                  <Typography variant="muted" className="text-xs truncate flex-1">
                     {getTypeIcon(issue.type)} {issue.title}
-                  </span>
+                  </Typography>
                 </Flex>
               </button>
             </Tooltip>
@@ -279,23 +281,23 @@ export function IssuesCalendarView({
       <Flex align="center" gap="xl" className="mt-4 text-sm">
         <Flex align="center" gap="sm">
           <div className="w-3 h-3 rounded-full bg-status-error" />
-          <span className="text-ui-text-secondary">Highest</span>
+          <Typography variant="muted">Highest</Typography>
         </Flex>
         <Flex align="center" gap="sm">
           <div className="w-3 h-3 rounded-full bg-status-warning" />
-          <span className="text-ui-text-secondary">High</span>
+          <Typography variant="muted">High</Typography>
         </Flex>
         <Flex align="center" gap="sm">
           <div className="w-3 h-3 rounded-full bg-accent-ring" />
-          <span className="text-ui-text-secondary">Medium</span>
+          <Typography variant="muted">Medium</Typography>
         </Flex>
         <Flex align="center" gap="sm">
           <div className="w-3 h-3 rounded-full bg-brand-ring" />
-          <span className="text-ui-text-secondary">Low</span>
+          <Typography variant="muted">Low</Typography>
         </Flex>
         <Flex align="center" gap="sm">
           <div className="w-3 h-3 rounded-full bg-ui-text-secondary" />
-          <span className="text-ui-text-secondary">Lowest</span>
+          <Typography variant="muted">Lowest</Typography>
         </Flex>
       </Flex>
 

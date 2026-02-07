@@ -122,7 +122,9 @@ export function RoadmapView({ projectId, sprintId, canEdit = true }: RoadmapView
           {/* Issue Info */}
           <div className="w-64 shrink-0 pr-4">
             <Flex align="center" gap="sm" className="mb-1">
-              <span className="text-sm">{getTypeIcon(issue.type)}</span>
+              <Typography variant="label" className="text-sm">
+                {getTypeIcon(issue.type)}
+              </Typography>
               <button
                 type="button"
                 onClick={() => setSelectedIssue(issue._id)}
@@ -158,9 +160,12 @@ export function RoadmapView({ projectId, sprintId, canEdit = true }: RoadmapView
                 title={`${issue.title} - Due: ${formatDate(issue.dueDate)}`}
                 aria-label={`View issue ${issue.key}`}
               >
-                <span className="text-xs text-brand-foreground font-medium truncate">
+                <Typography
+                  variant="label"
+                  className="text-xs text-brand-foreground font-medium truncate"
+                >
                   {issue.assignee?.name.split(" ")[0]}
-                </span>
+                </Typography>
               </button>
             )}
 

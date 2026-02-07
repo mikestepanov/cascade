@@ -257,7 +257,9 @@ function MetricCard({ label, value, icon, color }: MetricCardProps) {
     <div className={cn("p-4 border rounded-lg", colorClasses[color])}>
       <Flex align="center" gap="sm" className="mb-2">
         <span className="text-2xl">{icon}</span>
-        <span className="text-xs font-medium text-ui-text-secondary">{label}</span>
+        <Typography variant="caption" className="font-medium">
+          {label}
+        </Typography>
       </Flex>
       <div className="text-2xl font-bold text-ui-text">{value}</div>
     </div>

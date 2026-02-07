@@ -64,7 +64,7 @@ export function DevToolsTab() {
             {isResettingOnboarding ? "Resetting..." : "Reset Onboarding"}
           </Button>
           {currentUser?.email && (
-            <span className="text-sm text-ui-text-tertiary">Current user: {currentUser.email}</span>
+            <Typography variant="caption">Current user: {currentUser.email}</Typography>
           )}
         </Flex>
       </div>
@@ -83,11 +83,15 @@ export function DevToolsTab() {
               <code className="text-ui-text font-mono">{currentUser._id}</code>
             </Flex>
             <Flex gap="sm">
-              <span className="text-ui-text-secondary">Email:</span>
+              <Typography variant="small" color="secondary">
+                Email:
+              </Typography>
               <code className="text-ui-text font-mono">{currentUser.email}</code>
             </Flex>
             <Flex gap="sm">
-              <span className="text-ui-text-secondary">Test User:</span>
+              <Typography variant="small" color="secondary">
+                Test User:
+              </Typography>
               <code className="text-ui-text font-mono">
                 {currentUser.isTestUser ? "Yes" : "No"}
               </code>

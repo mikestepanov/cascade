@@ -85,7 +85,7 @@ export function AutomationRuleCard({ rule, onEdit, onDelete }: AutomationRuleCar
 
           <Flex gap="lg" align="center" className="text-sm">
             <Flex gap="sm" align="center">
-              <span className="text-ui-text-tertiary">When:</span>
+              <Typography variant="muted">When:</Typography>
               <Badge variant="brand" size="md">
                 {getTriggerLabel(rule.trigger)}
                 {rule.triggerValue && ` → ${rule.triggerValue}`}
@@ -93,13 +93,13 @@ export function AutomationRuleCard({ rule, onEdit, onDelete }: AutomationRuleCar
             </Flex>
 
             <Flex gap="sm" align="center">
-              <span className="text-ui-text-tertiary">Then:</span>
+              <Typography variant="muted">Then:</Typography>
               <Badge variant="accent" size="md">
                 {getActionLabel(rule.actionType)}
               </Badge>
             </Flex>
 
-            <div className="text-ui-text-tertiary">Executed: {rule.executionCount} times</div>
+            <Typography variant="muted">Executed: {rule.executionCount} times</Typography>
           </Flex>
         </div>
 

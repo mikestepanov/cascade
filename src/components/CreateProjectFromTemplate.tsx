@@ -7,6 +7,7 @@ import { Flex } from "@/components/ui/Flex";
 import { useOrganization } from "@/hooks/useOrgContext";
 import { TEST_IDS } from "@/lib/test-ids";
 import { cn } from "@/lib/utils";
+import { Badge } from "./ui/Badge";
 import { Button } from "./ui/Button";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "./ui/Dialog";
 import { Input, Select, Textarea } from "./ui/form";
@@ -156,17 +157,12 @@ export function CreateProjectFromTemplate({
                           {template.description}
                         </Typography>
                         <Flex align="center" gap="sm">
-                          <span
-                            className={cn(
-                              "text-xs px-2 py-1 rounded",
-                              getCategoryColor(template.category),
-                            )}
-                          >
+                          <Badge size="sm" className={cn(getCategoryColor(template.category))}>
                             {template.category}
-                          </span>
-                          <span className="text-xs px-2 py-1 rounded bg-ui-bg-tertiary text-ui-text-secondary capitalize">
+                          </Badge>
+                          <Badge size="sm" variant="neutral" className="capitalize">
                             {template.boardType}
-                          </span>
+                          </Badge>
                         </Flex>
                       </div>
                     </Flex>
@@ -259,9 +255,9 @@ export function CreateProjectFromTemplate({
                         clipRule="evenodd"
                       />
                     </svg>
-                    <span className="text-ui-text">
+                    <Typography variant="p" className="text-ui-text">
                       {selectedTemplate.workflowStates.length} workflow states
-                    </span>
+                    </Typography>
                   </Flex>
                   <Flex align="center" gap="sm">
                     <svg
@@ -276,9 +272,9 @@ export function CreateProjectFromTemplate({
                         clipRule="evenodd"
                       />
                     </svg>
-                    <span className="text-ui-text">
+                    <Typography variant="p" className="text-ui-text">
                       {selectedTemplate.defaultLabels.length} pre-configured labels
-                    </span>
+                    </Typography>
                   </Flex>
                   <Flex align="center" gap="sm">
                     <svg
@@ -293,9 +289,9 @@ export function CreateProjectFromTemplate({
                         clipRule="evenodd"
                       />
                     </svg>
-                    <span className="text-ui-text capitalize">
+                    <Typography variant="p" className="text-ui-text capitalize">
                       {selectedTemplate.boardType} board type
-                    </span>
+                    </Typography>
                   </Flex>
                 </div>
               </div>

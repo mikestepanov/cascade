@@ -157,9 +157,12 @@ export function WebhookForm({ projectId, webhook, open, onOpenChange }: WebhookF
           </form.Field>
 
           <div>
-            <div className="block text-sm font-medium text-ui-text mb-2">
-              Events to Subscribe <span className="text-status-error">*</span>
-            </div>
+            <Typography variant="label" className="block text-sm font-medium mb-2">
+              Events to Subscribe{" "}
+              <Typography as="span" className="text-status-error">
+                *
+              </Typography>
+            </Typography>
             <div className="space-y-2 p-3 bg-ui-bg-secondary rounded-lg">
               {AVAILABLE_EVENTS.map((event) => (
                 <Checkbox

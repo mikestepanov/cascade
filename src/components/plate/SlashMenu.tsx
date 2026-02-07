@@ -30,6 +30,7 @@ import {
 } from "@/components/ui/Command";
 import { Flex } from "@/components/ui/Flex";
 import { Popover, PopoverAnchor, PopoverContent } from "@/components/ui/Popover";
+import { Typography } from "@/components/ui/Typography";
 import { NODE_TYPES } from "@/lib/plate/plugins";
 
 interface SlashMenuItem {
@@ -349,8 +350,12 @@ export function SlashMenu() {
                 >
                   <item.icon className="mr-3 h-4 w-4 text-ui-text-secondary" />
                   <Flex direction="column" className="gap-0.5">
-                    <span className="text-sm font-medium text-ui-text">{item.label}</span>
-                    <span className="text-xs text-ui-text-tertiary">{item.description}</span>
+                    <Typography variant="label" className="text-sm font-medium text-ui-text">
+                      {item.label}
+                    </Typography>
+                    <Typography variant="muted" className="text-xs">
+                      {item.description}
+                    </Typography>
                   </Flex>
                 </CommandItem>
               ))}

@@ -360,14 +360,9 @@ export function UserTypeManager() {
                         <Typography variant="h3" className="font-semibold text-ui-text">
                           {config.name}
                         </Typography>
-                        <span
-                          className={cn(
-                            "text-xs px-2 py-0.5 rounded capitalize",
-                            getTypeColor(config.type),
-                          )}
-                        >
+                        <Badge size="sm" className={cn("capitalize", getTypeColor(config.type))}>
                           {config.type}
-                        </span>
+                        </Badge>
                       </div>
                     </Flex>
                   </Flex>
@@ -380,28 +375,36 @@ export function UserTypeManager() {
 
                   <Flex direction="column" gap="sm" className="text-sm">
                     <Flex justify="between">
-                      <span className="text-ui-text-secondary">Max hours/week:</span>
-                      <span className="font-medium text-ui-text">
+                      <Typography variant="small" color="secondary">
+                        Max hours/week:
+                      </Typography>
+                      <Typography variant="small" className="font-medium">
                         {config.defaultMaxHoursPerWeek}h
-                      </span>
+                      </Typography>
                     </Flex>
                     <Flex justify="between">
-                      <span className="text-ui-text-secondary">Max hours/day:</span>
-                      <span className="font-medium text-ui-text">
+                      <Typography variant="small" color="secondary">
+                        Max hours/day:
+                      </Typography>
+                      <Typography variant="small" className="font-medium">
                         {config.defaultMaxHoursPerDay}h
-                      </span>
+                      </Typography>
                     </Flex>
                     <Flex justify="between">
-                      <span className="text-ui-text-secondary">Requires approval:</span>
-                      <span className="font-medium text-ui-text">
+                      <Typography variant="small" color="secondary">
+                        Requires approval:
+                      </Typography>
+                      <Typography variant="small" className="font-medium">
                         {config.defaultRequiresApproval ? "Yes" : "No"}
-                      </span>
+                      </Typography>
                     </Flex>
                     <Flex justify="between">
-                      <span className="text-ui-text-secondary">Can work overtime:</span>
-                      <span className="font-medium text-ui-text">
+                      <Typography variant="small" color="secondary">
+                        Can work overtime:
+                      </Typography>
+                      <Typography variant="small" className="font-medium">
                         {config.defaultCanWorkOvertime ? "Yes" : "No"}
-                      </span>
+                      </Typography>
                     </Flex>
                   </Flex>
 
@@ -501,27 +504,39 @@ export function UserTypeManager() {
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm mt-3">
                         {profile.jobTitle && (
                           <div>
-                            <span className="text-ui-text-tertiary text-xs">Job Title:</span>
-                            <div className="font-medium text-ui-text">{profile.jobTitle}</div>
+                            <Typography variant="caption" color="tertiary">
+                              Job Title:
+                            </Typography>
+                            <Typography variant="small" className="font-medium">
+                              {profile.jobTitle}
+                            </Typography>
                           </div>
                         )}
                         {profile.department && (
                           <div>
-                            <span className="text-ui-text-tertiary text-xs">Department:</span>
-                            <div className="font-medium text-ui-text">{profile.department}</div>
+                            <Typography variant="caption" color="tertiary">
+                              Department:
+                            </Typography>
+                            <Typography variant="small" className="font-medium">
+                              {profile.department}
+                            </Typography>
                           </div>
                         )}
                         <div>
-                          <span className="text-ui-text-tertiary text-xs">Max hours/week:</span>
-                          <div className="font-medium text-ui-text">
+                          <Typography variant="caption" color="tertiary">
+                            Max hours/week:
+                          </Typography>
+                          <Typography variant="small" className="font-medium">
                             {profile.maxHoursPerWeek || "Default"}
-                          </div>
+                          </Typography>
                         </div>
                         <div>
-                          <span className="text-ui-text-tertiary text-xs">Max hours/day:</span>
-                          <div className="font-medium text-ui-text">
+                          <Typography variant="caption" color="tertiary">
+                            Max hours/day:
+                          </Typography>
+                          <Typography variant="small" className="font-medium">
                             {profile.maxHoursPerDay || "Default"}
-                          </div>
+                          </Typography>
                         </div>
                       </div>
                     </div>
@@ -608,7 +623,9 @@ export function UserTypeManager() {
                       onChange={(e) => setConfigRequiresApproval(e.target.checked)}
                       className="w-4 h-4"
                     />
-                    <span className="text-sm">Requires manager approval for time entries</span>
+                    <Typography variant="small">
+                      Requires manager approval for time entries
+                    </Typography>
                   </Flex>
                 </label>
 
@@ -620,7 +637,7 @@ export function UserTypeManager() {
                       onChange={(e) => setConfigCanOvertime(e.target.checked)}
                       className="w-4 h-4"
                     />
-                    <span className="text-sm">Can work overtime hours</span>
+                    <Typography variant="small">Can work overtime hours</Typography>
                   </Flex>
                 </label>
 
@@ -632,7 +649,7 @@ export function UserTypeManager() {
                       onChange={(e) => setConfigCanBilling(e.target.checked)}
                       className="w-4 h-4"
                     />
-                    <span className="text-sm">Can access billing information</span>
+                    <Typography variant="small">Can access billing information</Typography>
                   </Flex>
                 </label>
 
@@ -644,7 +661,7 @@ export function UserTypeManager() {
                       onChange={(e) => setConfigCanManageProjects(e.target.checked)}
                       className="w-4 h-4"
                     />
-                    <span className="text-sm">Can manage projects</span>
+                    <Typography variant="small">Can manage projects</Typography>
                   </Flex>
                 </label>
               </Flex>
@@ -770,7 +787,9 @@ export function UserTypeManager() {
                           onChange={(e) => setProfileHasEquity(e.target.checked)}
                           className="w-4 h-4"
                         />
-                        <span className="text-xs font-medium text-brand-active">Has Equity</span>
+                        <Typography variant="caption" className="font-medium text-brand-active">
+                          Has Equity
+                        </Typography>
                       </Flex>
                     </label>
                   </Flex>
@@ -857,7 +876,9 @@ export function UserTypeManager() {
                       onChange={(e) => setProfileIsActive(e.target.checked)}
                       className="w-4 h-4"
                     />
-                    <span className="text-sm font-medium">Active Employment</span>
+                    <Typography variant="small" className="font-medium">
+                      Active Employment
+                    </Typography>
                   </Flex>
                 </label>
               </Flex>

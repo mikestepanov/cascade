@@ -75,8 +75,7 @@ export function RecentActivity({ activities }: RecentActivityProps) {
 
                     <div className="flex-1 min-w-0">
                       <Typography variant="p" className="text-sm m-0">
-                        <strong>{activity.userName}</strong>{" "}
-                        <span className="text-ui-text-secondary">{activity.action}</span>
+                        <strong>{activity.userName}</strong> {activity.action}
                       </Typography>
                       <div className="mt-1.5">
                         <Badge
