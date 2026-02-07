@@ -98,11 +98,11 @@ export function CommandPalette({ isOpen, onClose, commands }: CommandPaletteProp
                   onSelect={() => handleSelect(cmd)}
                   className="cursor-pointer data-[selected=true]:bg-brand-subtle"
                 >
-                  {cmd.icon && <Typography as="span" className="text-xl mr-2">{cmd.icon}</Typography>}
+                  {cmd.icon && <span className="text-xl mr-2">{cmd.icon}</span>}
                   <div className="flex-1">
-                    <Typography variant="p" className="font-medium text-ui-text">{cmd.label}</Typography>
+                    <Typography variant="label" as="p">{cmd.label}</Typography>
                     {cmd.description && (
-                      <Typography variant="small" className="text-xs text-ui-text-secondary">{cmd.description}</Typography>
+                      <Typography variant="caption">{cmd.description}</Typography>
                     )}
                   </div>
                 </CommandItem>
@@ -113,21 +113,21 @@ export function CommandPalette({ isOpen, onClose, commands }: CommandPaletteProp
         <Flex
           wrap
           gap="md"
-          className="px-4 py-2 border-t border-ui-border bg-ui-bg-secondary text-xs text-ui-text-secondary sm:gap-4"
+          className="px-4 py-2 border-t border-ui-border bg-ui-bg-secondary sm:gap-4"
         >
-          <Typography as="span">
+          <Typography variant="meta" as="span">
             <CommandShortcut className="bg-ui-bg border border-ui-border px-2 py-1 rounded text-ui-text">
               ↑↓
             </CommandShortcut>{" "}
             Navigate
           </Typography>
-          <Typography as="span">
+          <Typography variant="meta" as="span">
             <CommandShortcut className="bg-ui-bg border border-ui-border px-2 py-1 rounded text-ui-text">
               Enter
             </CommandShortcut>{" "}
             Select
           </Typography>
-          <Typography as="span">
+          <Typography variant="meta" as="span">
             <CommandShortcut className="bg-ui-bg border border-ui-border px-2 py-1 rounded text-ui-text">
               Esc
             </CommandShortcut>{" "}

@@ -97,9 +97,9 @@ export function NotificationBell() {
 
         {/* Unread Badge */}
         {unreadCount !== undefined && unreadCount > 0 && (
-          <Typography as="span" className="absolute top-0 right-0 grid place-items-center w-5 h-5 text-xs font-bold text-brand-foreground bg-status-error rounded-full">
+          <span className="absolute top-0 right-0 grid place-items-center w-5 h-5 text-xs font-bold text-brand-foreground bg-status-error rounded-full">
             {unreadCount > 9 ? "9+" : unreadCount}
-          </Typography>
+          </span>
         )}
       </Button>
 
@@ -111,15 +111,13 @@ export function NotificationBell() {
         >
           {/* Header */}
           <Flex align="center" justify="between" className="px-4 py-3 border-b border-ui-border">
-            <Typography variant="h3" className="text-lg font-semibold text-ui-text">
-              Notifications
-            </Typography>
+            <Typography variant="h4">Notifications</Typography>
             {notifications && notifications.length > 0 && (
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => markAllAsRead()}
-                className="text-brand hover:text-brand-hover:text-brand min-h-0 p-0"
+                className="text-brand hover:text-brand min-h-0 p-0"
               >
                 Mark all read
               </Button>
@@ -135,10 +133,10 @@ export function NotificationBell() {
             ) : notifications.length === 0 ? (
               <Flex direction="column" align="center" justify="center" className="py-12 px-4">
                 <div className="text-6xl mb-4">🔔</div>
-                <Typography className="text-ui-text-secondary text-center">
+                <Typography variant="small" color="secondary" className="text-center">
                   No notifications yet
                 </Typography>
-                <Typography className="text-sm text-ui-text-tertiary text-center mt-1">
+                <Typography variant="meta" className="text-center mt-1">
                   We'll notify you when something happens
                 </Typography>
               </Flex>
@@ -162,20 +160,20 @@ export function NotificationBell() {
                           {getNotificationIcon(notification.type)}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <Typography className="text-sm font-medium text-ui-text">
+                          <Typography variant="label" as="p">
                             {notification.title}
                           </Typography>
-                          <Typography className="text-sm text-ui-text-secondary mt-1">
+                          <Typography variant="small" color="secondary" className="mt-1">
                             {notification.message}
                           </Typography>
                           <Flex align="center" gap="sm" className="mt-2">
-                            <Typography as="span" className="text-xs text-ui-text-tertiary">
+                            <Typography variant="meta" as="span">
                               {formatTime(notification._creationTime)}
                             </Typography>
                             {notification.actorName && (
                               <>
-                                <Typography as="span" className="text-xs text-ui-text-tertiary">•</Typography>
-                                <Typography as="span" className="text-xs text-ui-text-tertiary">
+                                <Typography variant="meta" as="span">•</Typography>
+                                <Typography variant="meta" as="span">
                                   by {notification.actorName}
                                 </Typography>
                               </>

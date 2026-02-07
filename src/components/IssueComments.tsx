@@ -98,14 +98,14 @@ export function IssueComments({ issueId, projectId }: IssueCommentsProps) {
                 <div className="flex-1 min-w-0">
                   {/* Author and Date */}
                   <Flex align="center" gap="sm" className="mb-2">
-                    <span className="font-medium tracking-tight text-ui-text">
+                    <Typography variant="label" as="span">
                       {comment.author?.name || "Unknown User"}
-                    </span>
-                    <span className="text-xs text-ui-text-tertiary">
+                    </Typography>
+                    <Typography variant="meta" as="span">
                       {formatRelativeTime(comment._creationTime)}
-                    </span>
+                    </Typography>
                     {comment.updatedAt > comment._creationTime && (
-                      <span className="text-xs text-ui-text-tertiary italic">(edited)</span>
+                      <Typography variant="meta" as="span" className="italic">(edited)</Typography>
                     )}
                   </Flex>
 
@@ -138,9 +138,7 @@ export function IssueComments({ issueId, projectId }: IssueCommentsProps) {
 
       {/* Add Comment */}
       <div className="space-y-3">
-        <Typography variant="h4" className="text-sm font-medium text-ui-text">
-          Add Comment
-        </Typography>
+        <Typography variant="label">Add Comment</Typography>
         <MentionInput
           projectId={projectId}
           value={newComment}

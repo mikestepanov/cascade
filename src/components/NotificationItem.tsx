@@ -97,13 +97,9 @@ export const NotificationItem = memo(function NotificationItem({
 
   if (orgSlug) {
     if (issue) {
-      // Navigate to issue detail
-      // Using manual path construction or route builder if strict types allowed
-      // ROUTES.issues.detail.path is "/$orgSlug/issues/$key"
       linkTo = ROUTES.issues.detail.path;
       linkParams = { orgSlug, key: issue.key };
     } else if (notification.documentId) {
-      // Navigate to document
       linkTo = ROUTES.documents.detail.path;
       linkParams = { orgSlug, id: notification.documentId };
     }
@@ -141,21 +137,21 @@ export const NotificationItem = memo(function NotificationItem({
 
       {/* Main Content (Clickable if linked) */}
       <ContentWrapper>
-        <Typography className="text-sm font-medium text-ui-text group-hover:text-ui-text-primary">
+        <Typography variant="label" as="p" className="group-hover:text-ui-text-primary">
           {notification.title}
         </Typography>
-        <Typography className="text-sm text-ui-text-secondary mt-0.5 line-clamp-2">
+        <Typography variant="small" color="secondary" className="mt-0.5 line-clamp-2">
           {notification.message}
         </Typography>
 
         <Flex align="center" gap="xs" className="mt-1.5">
-          <Typography className="text-xs text-ui-text-tertiary">
+          <Typography variant="meta" as="span">
             {formatTime(notification._creationTime)}
           </Typography>
           {notification.actorName && (
             <>
-              <Typography as="span" className="text-xs text-ui-text-tertiary">•</Typography>
-              <Typography className="text-xs text-ui-text-tertiary">
+              <Typography variant="meta" as="span">•</Typography>
+              <Typography variant="meta" as="span">
                 {notification.actorName}
               </Typography>
             </>

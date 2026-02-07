@@ -121,20 +121,11 @@ export const IssueCard = memo(function IssueCard({
             />
           )}
           <Tooltip content={getTypeLabel(issue.type)}>
-            <Typography
-              as="span"
-              role="img"
-              aria-label={getTypeLabel(issue.type)}
-              className="text-sm cursor-help"
-            >
+            <span role="img" aria-label={getTypeLabel(issue.type)} className="text-sm cursor-help">
               {getTypeIcon(issue.type)}
-            </Typography>
+            </span>
           </Tooltip>
-          <Typography
-            as="span"
-            data-testid={TEST_IDS.ISSUE.KEY}
-            className="text-xs text-ui-text-secondary font-mono"
-          >
+          <Typography variant="mono" as="span" data-testid={TEST_IDS.ISSUE.KEY}>
             {issue.key}
           </Typography>
         </Flex>
@@ -153,10 +144,7 @@ export const IssueCard = memo(function IssueCard({
       </Flex>
 
       {/* Title */}
-      <Typography
-        variant="h4"
-        className="text-xs sm:text-sm font-medium mb-2 line-clamp-2 border-none"
-      >
+      <Typography variant="label" as="p" className="text-xs sm:text-sm mb-2 line-clamp-2">
         {issue.title}
       </Typography>
 
@@ -164,14 +152,13 @@ export const IssueCard = memo(function IssueCard({
       {issue.labels.length > 0 && (
         <Flex wrap gap="xs" className="mb-2">
           {issue.labels.slice(0, 3).map((label) => (
-            <Typography
+            <span
               key={label.name}
-              variant="small"
-              className="px-1.5 py-0.5 font-medium rounded-md text-brand-foreground border-none"
+              className="px-1.5 py-0.5 text-xs font-medium rounded-md text-brand-foreground"
               style={{ backgroundColor: label.color }}
             >
               {label.name}
-            </Typography>
+            </span>
           ))}
           {issue.labels.length > 3 && (
             <Tooltip
@@ -186,11 +173,7 @@ export const IssueCard = memo(function IssueCard({
                 role="button"
                 className="rounded-md focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-brand-ring"
               >
-                <Typography
-                  variant="small"
-                  color="secondary"
-                  className="px-1.5 py-0.5 border-none cursor-help"
-                >
+                <Typography variant="caption" className="px-1.5 py-0.5 cursor-help">
                   +{issue.labels.length - 3}
                 </Typography>
               </span>
@@ -231,12 +214,9 @@ export const IssueCard = memo(function IssueCard({
           )}
         </Flex>
         {issue.storyPoints !== undefined && (
-          <Flex align="center" className="space-x-1 text-xs text-ui-text-secondary">
-            <Typography as="span" className="font-medium">
-              {issue.storyPoints}
-            </Typography>
-            <Typography as="span">pts</Typography>
-          </Flex>
+          <Typography variant="meta" as="span">
+            {issue.storyPoints} pts
+          </Typography>
         )}
       </Flex>
     </button>
