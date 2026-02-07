@@ -58,7 +58,10 @@ Before creating new components, check these exist:
 9. [Timestamp Display Pattern](#9-timestamp-display-pattern)
 10. [Manual Bullet Separators](#10-manual-bullet-separators)
 11. [Multiple Issues in One Element](#11-multiple-issues-in-one-element)
-12. [Decision Matrix](#12-decision-matrix)
+12. [Complex Nested Selectors (CRITICAL)](#12-complex-nested-selectors-critical)
+13. [Inline style={{}} Props](#13-inline-style-props)
+14. [Raw HTML Elements with Styling](#14-raw-html-elements-with-styling)
+15. [Decision Matrix](#15-decision-matrix)
 
 ---
 
@@ -966,7 +969,193 @@ This has 3 issues:
 
 ---
 
-## 12. Decision Matrix
+## 12. Complex Nested Selectors (CRITICAL)
+
+### The Problem
+```tsx
+// Command.tsx - 200+ characters of nested selectors
+className="[&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-ui-text-secondary [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-0..."
+```
+
+This is the **worst slop in the codebase**:
+- Impossible to read or maintain
+- Couples styling to library internals (cmdk)
+- If library changes structure, styling breaks
+- Violates "no arbitrary values" philosophy
+
+### Solution A: Extract to CSS module (RECOMMENDED)
+
+```css
+/* Command.module.css */
+.command [cmdk-group-heading] {
+  padding: 0 0.5rem;
+  font-weight: 500;
+  color: var(--color-ui-text-secondary);
+}
+
+.command [cmdk-group]:not([hidden]) ~ [cmdk-group] {
+  padding-top: 0;
+}
+```
+
+```tsx
+import styles from './Command.module.css';
+
+<Command className={styles.command}>
+```
+
+| Pros | Cons |
+|------|------|
+| Readable | Need CSS module setup |
+| Maintainable | Separate file |
+| Uses CSS variables | |
+
+### Solution B: Create wrapper components
+
+```tsx
+// Instead of styling cmdk internals, wrap them
+<CommandGroup heading={<CommandHeading>Group</CommandHeading>}>
+  <CommandItem>...</CommandItem>
+</CommandGroup>
+```
+
+| Pros | Cons |
+|------|------|
+| Full control | More components |
+| Type-safe | More code |
+| Encapsulated | |
+
+### Solution C: Accept with heavy documentation
+
+```tsx
+/**
+ * CMDK STYLING - DO NOT MODIFY WITHOUT TESTING
+ * These selectors target cmdk internal elements.
+ * If cmdk updates, these may break.
+ * See: https://github.com/pacocoursey/cmdk
+ */
+className="[&_[cmdk-group-heading]]:..."
+```
+
+**When to use:** Only as last resort with extensive documentation.
+
+---
+
+## 13. Inline `style={{}}` Props
+
+### The Problem
+```tsx
+// Repeated 4+ times for label colors
+<span
+  className="px-3 py-1 rounded-full text-sm font-medium"
+  style={{ backgroundColor: label.color }}
+>
+  {label.name}
+</span>
+```
+
+Dynamic inline styles for colors are acceptable in isolation, but **repeated patterns should be components**.
+
+### Solution A: Create LabelBadge component (RECOMMENDED)
+
+```tsx
+// New component
+interface LabelBadgeProps {
+  color: string;
+  children: React.ReactNode;
+  size?: 'sm' | 'md';
+}
+
+export function LabelBadge({ color, children, size = 'md' }: LabelBadgeProps) {
+  return (
+    <span
+      className={cn(
+        "rounded-full font-medium text-brand-foreground",
+        size === 'sm' ? "px-1.5 py-0.5 text-xs" : "px-3 py-1 text-sm"
+      )}
+      style={{ backgroundColor: color }}
+    >
+      {children}
+    </span>
+  );
+}
+
+// Usage
+<LabelBadge color={label.color}>{label.name}</LabelBadge>
+```
+
+| Pros | Cons |
+|------|------|
+| Encapsulates inline style | New component |
+| Consistent across codebase | One-time setup |
+| Size variants built-in | |
+
+### Solution B: Use Badge with style prop
+
+```tsx
+// If Badge supports style prop
+<Badge variant="label" style={{ backgroundColor: label.color }}>
+  {label.name}
+</Badge>
+```
+
+### When inline style is acceptable
+
+```tsx
+// ✅ Acceptable - dynamic positioning that can't be tokenized
+style={{ left: `${percent}%`, width: `${widthPercent}%` }}
+
+// ❌ Not acceptable - repeated pattern without component
+style={{ backgroundColor: label.color }}  // × 4 times
+```
+
+---
+
+## 14. Raw HTML Elements with Styling
+
+### The Problem
+```tsx
+// Raw <kbd> with className soup
+<kbd className="bg-ui-bg border border-ui-border px-2 py-1 rounded text-ui-text font-sans">
+  ↑↓
+</kbd>
+
+// Raw <div> for layout
+<div className="px-4 py-2 border-t border-ui-border bg-ui-bg-secondary">
+  {content}
+</div>
+```
+
+When a component exists, use it instead of raw HTML with styling.
+
+### Solution: Use existing components
+
+```tsx
+// Instead of raw <kbd>
+<KeyboardShortcut keys="↑↓" />
+
+// Instead of raw <div> for layout
+<Flex className="px-4 py-2 border-t border-ui-border bg-ui-bg-secondary">
+  {content}
+</Flex>
+
+// Instead of inline loading spinner
+<LoadingSpinner size="sm" />
+```
+
+### Component checklist
+
+| Raw Element | Use Instead |
+|-------------|-------------|
+| `<kbd className="...">` | `KeyboardShortcut` |
+| `<div className="flex ...">` | `<Flex>` |
+| `<div className="animate-spin...">` | `<LoadingSpinner>` |
+| `<span className="badge-like...">` | `<Badge>` |
+| `<button className="...">` | `<Button>` |
+
+---
+
+## 15. Decision Matrix
 
 ### Quick Reference: What Solution to Use
 
@@ -985,6 +1174,10 @@ This has 3 issues:
 | Metadata with bullets | Metadata component | Array join | |
 | Responsive short/long | Plain spans | ResponsiveText | Low priority |
 | Multiple issues | Fix in order | | Size → Spacing → Rest |
+| Complex nested selectors | CSS module | Document heavily | CRITICAL |
+| Inline style repeated 3+ | Extract component | | e.g., LabelBadge |
+| Raw `<kbd>` with className | KeyboardShortcut | | Component exists |
+| Raw `<div className="flex">` | `<Flex>` component | | Validator enforces |
 
 ### Questions to Ask
 

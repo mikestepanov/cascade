@@ -7,11 +7,15 @@
 | Category | Count | Severity |
 |----------|-------|----------|
 | `as="span"` on Typography | 93 | HIGH |
-| `<span className="...">` | 459 | MEDIUM |
-| Typography className overrides | 50+ | MEDIUM |
+| `<span className="...">` | 459+ | MEDIUM |
+| Typography className overrides | 97+ | MEDIUM |
 | Repeated patterns to extract | 20+ | HIGH |
 | Semantic HTML violations | 15+ | MEDIUM |
-| Raw flex divs | 2 | LOW |
+| Raw flex divs | 12+ | LOW |
+| Complex nested selectors | 1 | 🔴 CRITICAL |
+| Raw `<kbd>` with className | 6+ | MEDIUM |
+| Inline `style={{}}` props | 10+ | MEDIUM |
+| `data-[attribute]` selectors | 3+ | LOW |
 
 ---
 
@@ -209,6 +213,91 @@ Using `as="span"` forces Typography to render as inline `<span>` instead of sema
 |------|------|---------|-----------|
 | board.tsx | 112 | `<div className="flex-1 overflow-hidden">` | `<Flex>` |
 | route.tsx | 90 | `<div className="flex-1 overflow-hidden">` | `<Flex>` |
+| + 10 more | Various | `<div className="px-4 py-2 ...">` | `<Flex>` with props |
+
+---
+
+## 6. Complex Nested Selectors (CRITICAL)
+
+### The Worst Slop in the Codebase
+
+**File:** `src/components/ui/Command.tsx` (line 33)
+
+```tsx
+// 200+ characters of unmaintainable selector chains
+className="[&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-ui-text-secondary [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-0 [&_[cmdk-group]]:px-2 [&_[cmdk-input-wrapper]_svg]:h-5..."
+```
+
+**Why it's critical:**
+- Impossible to read or maintain
+- Couples styling to cmdk library internals
+- Violates design system principles
+- If cmdk changes structure, styling breaks
+
+**Should be:** Extract to CSS module or create wrapper components.
+
+---
+
+## 7. Raw `<kbd>` with className
+
+**Files:** CommandPalette.tsx, GlobalSearch.tsx, Onboarding/MemberOnboarding.tsx
+
+```tsx
+// CURRENT
+<kbd className="bg-ui-bg border border-ui-border px-2 py-1 rounded text-ui-text font-sans">
+  ↑↓
+</kbd>
+
+// SHOULD BE
+<KeyboardShortcut keys="↑↓" />
+```
+
+| File | Count |
+|------|-------|
+| CommandPalette.tsx | 3 |
+| GlobalSearch.tsx | 3 |
+| Onboarding/*.tsx | 2+ |
+
+---
+
+## 8. Inline `style={{}}` Props
+
+**Files:** IssueCard.tsx, LabelsManager.tsx (2x), FilterBar.tsx, RoadmapView.tsx
+
+```tsx
+// CURRENT - repeated 4+ times for label colors
+<span
+  className="px-3 py-1 rounded-full text-sm font-medium"
+  style={{ backgroundColor: label.color }}
+>
+  {label.name}
+</span>
+
+// SHOULD BE
+<LabelBadge color={label.color}>{label.name}</LabelBadge>
+```
+
+| File | Pattern | Count |
+|------|---------|-------|
+| IssueCard.tsx | Label badge | 1 |
+| LabelsManager.tsx | Label badge | 2 |
+| FilterBar.tsx | Color indicator | 1 |
+| RoadmapView.tsx | Date bar positioning | 1 |
+
+---
+
+## 9. Framework Attribute Selectors
+
+**Files:** CommandPalette.tsx
+
+```tsx
+// CURRENT
+className="cursor-pointer data-[selected=true]:bg-brand-subtle"
+
+// CONCERN: Couples to cmdk's internal data-selected attribute
+```
+
+Low severity but worth documenting - if cmdk changes attributes, styling breaks.
 
 ---
 
