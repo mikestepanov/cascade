@@ -104,7 +104,7 @@ function InviteRoute() {
           </Typography>
           <Typography variant="p" color="secondary" className="mb-6">
             This invitation has expired. Please contact{" "}
-            <Typography as="span" className="font-medium">{invite.inviterName}</Typography> to send a new invitation.
+            <strong className="font-medium">{invite.inviterName}</strong> to send a new invitation.
           </Typography>
           <Button variant="primary" onClick={goToHome}>
             Go to Home
@@ -187,15 +187,11 @@ function InviteRoute() {
                 You're Invited!
               </Typography>
               <Typography variant="p" color="secondary">
-                <Typography as="span" variant="small">
-                  {invite.inviterName}
-                </Typography>{" "}
+                <strong className="font-semibold text-ui-text">{invite.inviterName}</strong>{" "}
                 {isProjectInvite ? (
                   <>
                     has invited you to join the project{" "}
-                    <Typography as="span" variant="small">
-                      {invite.projectName}
-                    </Typography>
+                    <strong className="font-semibold text-ui-text">{invite.projectName}</strong>
                   </>
                 ) : (
                   "has invited you to join Nixelo"
@@ -271,10 +267,8 @@ function InviteRoute() {
                 <div className="space-y-4">
                   <Typography className="text-sm text-center text-ui-text-secondary mb-4">
                     Sign in or create an account with{" "}
-                    <Typography as="span" variant="small">
-                      {invite.email}
-                    </Typography>{" "}
-                    to accept this invitation
+                    <strong className="font-semibold text-ui-text">{invite.email}</strong> to accept
+                    this invitation
                   </Typography>
                   <SignInForm />
                 </div>

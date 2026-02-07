@@ -26,7 +26,6 @@ import {
 } from "./ui/DropdownMenu";
 import { Flex } from "./ui/Flex";
 import { Checkbox, Input } from "./ui/form";
-import { Typography } from "./ui/Typography";
 
 export interface BoardFilters {
   type?: Exclude<IssueType, "subtask">[];
@@ -326,9 +325,7 @@ export function FilterBar({ projectId, filters, onFilterChange }: FilterBarProps
           selectedValues={filters.priority}
           onToggle={(priority) => toggleArrayFilter("priority", priority)}
           getKey={(priority) => priority}
-          renderItem={(priority) => (
-            <span className="text-sm capitalize">{priority}</span>
-          )}
+          renderItem={(priority) => <span className="text-sm capitalize">{priority}</span>}
         />
 
         {/* Assignee Filter */}

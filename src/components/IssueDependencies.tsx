@@ -21,7 +21,15 @@ type IssueLinkWithDetails = FunctionReturnType<
 type Issue = FunctionReturnType<typeof api.issues.search>["page"][number];
 
 /** Reusable issue display: icon + key + title */
-function IssueDisplay({ type, issueKey, title }: { type: string; issueKey: string; title: string }) {
+function IssueDisplay({
+  type,
+  issueKey,
+  title,
+}: {
+  type: string;
+  issueKey: string;
+  title: string;
+}) {
   const icon = type === "bug" ? "🐛" : type === "story" ? "📖" : type === "epic" ? "⚡" : "✓";
   return (
     <Flex as="span" align="center" gap="sm" className="min-w-0">
@@ -112,7 +120,6 @@ export function IssueDependencies({ issueId, projectId: _workspaceId }: IssueDep
       }
     }
   };
-
 
   return (
     <div className="space-y-4">
@@ -268,11 +275,7 @@ export function IssueDependencies({ issueId, projectId: _workspaceId }: IssueDep
                       selectedIssueKey === issue._id && "bg-brand-subtle",
                     )}
                   >
-                    <IssueDisplay
-                      type={issue.type}
-                      issueKey={issue.key}
-                      title={issue.title}
-                    />
+                    <IssueDisplay type={issue.type} issueKey={issue.key} title={issue.title} />
                   </button>
                 ))}
               </div>

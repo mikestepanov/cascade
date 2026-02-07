@@ -220,9 +220,7 @@ export const AIChat = React.memo(function AIChat({
                         style={{ animationDelay: "300ms" }}
                       />
                     </Flex>
-                    <Typography variant="caption" as="span">
-                      AI is thinking...
-                    </Typography>
+                    <span className="text-xs text-ui-text-secondary">AI is thinking...</span>
                   </Flex>
                 </div>
               </Flex>

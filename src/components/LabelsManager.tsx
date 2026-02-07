@@ -16,7 +16,6 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "
 import { EmptyState } from "./ui/EmptyState";
 import { Flex } from "./ui/Flex";
 import { Input, Select } from "./ui/form";
-import { Typography } from "./ui/Typography";
 
 interface LabelsManagerProps {
   projectId: Id<"projects">;

@@ -130,9 +130,7 @@ export const NotificationItem = memo(function NotificationItem({
 
         <Metadata className="mt-1.5">
           <MetadataTimestamp date={notification._creationTime} />
-          {notification.actorName && (
-            <MetadataItem>{notification.actorName}</MetadataItem>
-          )}
+          {notification.actorName && <MetadataItem>{notification.actorName}</MetadataItem>}
         </Metadata>
       </ContentWrapper>
 

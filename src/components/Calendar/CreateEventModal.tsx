@@ -288,21 +288,21 @@ export function CreateEventModal({
                 {/* All Day Toggle */}
                 <form.Field name="allDay">
                   {(field) => (
-                    <div>
-                      <label>
-                        <Flex gap="sm" align="center" className="cursor-pointer">
-                          <input
-                            type="checkbox"
-                            checked={field.state.value as boolean}
-                            onChange={(e) => field.handleChange(e.target.checked)}
-                            className="w-4 h-4 text-brand rounded focus:ring-2 focus:ring-brand-ring"
-                          />
-                          <Typography as="span" className="text-sm text-ui-text">
-                            All day event
-                          </Typography>
-                        </Flex>
+                    <Flex gap="sm" align="center" className="cursor-pointer">
+                      <input
+                        id="event-all-day"
+                        type="checkbox"
+                        checked={field.state.value as boolean}
+                        onChange={(e) => field.handleChange(e.target.checked)}
+                        className="w-4 h-4 text-brand rounded focus:ring-2 focus:ring-brand-ring"
+                      />
+                      <label
+                        htmlFor="event-all-day"
+                        className="text-sm text-ui-text cursor-pointer"
+                      >
+                        All day event
                       </label>
-                    </div>
+                    </Flex>
                   )}
                 </form.Field>
 
@@ -311,19 +311,21 @@ export function CreateEventModal({
                   <form.Field name="isRequired">
                     {(field) => (
                       <div>
-                        <label>
-                          <Flex gap="sm" align="center" className="cursor-pointer">
-                            <input
-                              type="checkbox"
-                              checked={field.state.value as boolean}
-                              onChange={(e) => field.handleChange(e.target.checked)}
-                              className="w-4 h-4 text-brand rounded focus:ring-2 focus:ring-brand-ring"
-                            />
-                            <Typography as="span" className="text-sm text-ui-text">
-                              Required attendance (track who attends)
-                            </Typography>
-                          </Flex>
-                        </label>
+                        <Flex gap="sm" align="center" className="cursor-pointer">
+                          <input
+                            id="event-is-required"
+                            type="checkbox"
+                            checked={field.state.value as boolean}
+                            onChange={(e) => field.handleChange(e.target.checked)}
+                            className="w-4 h-4 text-brand rounded focus:ring-2 focus:ring-brand-ring"
+                          />
+                          <label
+                            htmlFor="event-is-required"
+                            className="text-sm text-ui-text cursor-pointer"
+                          >
+                            Required attendance (track who attends)
+                          </label>
+                        </Flex>
                         {isRequired && (
                           <Typography variant="muted" className="text-xs mt-1 ml-6">
                             Admins can mark who attended, was tardy, or missed this meeting

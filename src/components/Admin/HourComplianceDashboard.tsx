@@ -2,6 +2,7 @@ import { api } from "@convex/_generated/api";
 import type { Id } from "@convex/_generated/dataModel";
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
+import { Badge } from "@/components/ui/Badge";
 import { Typography } from "@/components/ui/Typography";
 import { showError, showSuccess } from "@/lib/toast";
 import { cn } from "@/lib/utils";
@@ -275,22 +276,10 @@ export function HourComplianceDashboard() {
                             >
                               {getStatusLabel(record.status)}
                             </span>
-                            <Typography
-                              variant="meta"
-                              as="span"
-                              className="px-2 py-0.5 bg-ui-bg-tertiary rounded capitalize"
-                            >
+                            <Badge variant="neutral" className="capitalize">
                               {record.periodType}ly
-                            </Typography>
-                            {record.reviewedBy && (
-                              <Typography
-                                variant="meta"
-                                as="span"
-                                className="px-2 py-0.5 bg-accent-subtle text-accent-hover rounded"
-                              >
-                                Reviewed
-                              </Typography>
-                            )}
+                            </Badge>
+                            {record.reviewedBy && <Badge variant="accent">Reviewed</Badge>}
                           </Flex>
                         </div>
                       </Flex>

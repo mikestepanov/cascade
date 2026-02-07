@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "./ui/Button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/Dialog";
 import { LoadingSpinner } from "./ui/LoadingSpinner";
-import { Metadata, MetadataItem, MetadataTimestamp } from "./ui/Metadata";
+import { Metadata, MetadataItem } from "./ui/Metadata";
 import { Typography } from "./ui/Typography";
 
 /**

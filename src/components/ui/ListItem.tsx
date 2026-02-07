@@ -1,4 +1,4 @@
-import * as React from "react";
+import type * as React from "react";
 import { createContext, useContext } from "react";
 import { cn } from "@/lib/utils";
 
@@ -103,7 +103,7 @@ export function ListItem({
           interactive && "cursor-pointer hover:bg-ui-bg-hover transition-colors",
           selected && "bg-ui-bg-secondary",
           disabled && "opacity-50 pointer-events-none",
-          className
+          className,
         )}
         {...props}
       >
@@ -141,7 +141,7 @@ export function ListItemIcon({ className, children, ...props }: ListItemIconProp
       className={cn(
         "shrink-0 flex items-center justify-center text-ui-text-secondary",
         sizeClass,
-        className
+        className,
       )}
       {...props}
     >
@@ -188,7 +188,7 @@ export function ListItemTitle({
         sizeClass,
         mono && "font-mono text-ui-text-secondary",
         truncate && "truncate",
-        className
+        className,
       )}
       {...props}
     >
@@ -215,12 +215,7 @@ export function ListItemSubtitle({
 
   return (
     <span
-      className={cn(
-        "text-ui-text-secondary",
-        sizeClass,
-        truncate && "truncate",
-        className
-      )}
+      className={cn("text-ui-text-secondary", sizeClass, truncate && "truncate", className)}
       {...props}
     >
       {children}
@@ -237,10 +232,7 @@ export function ListItemMeta({ className, children, ...props }: ListItemMetaProp
   const sizeClass = size === "sm" ? "text-xs" : "text-xs";
 
   return (
-    <div
-      className={cn("shrink-0 text-ui-text-tertiary", sizeClass, className)}
-      {...props}
-    >
+    <div className={cn("shrink-0 text-ui-text-tertiary", sizeClass, className)} {...props}>
       {children}
     </div>
   );
@@ -264,7 +256,7 @@ export function ListItemActions({
       className={cn(
         "shrink-0 flex items-center gap-1",
         showOnHover && "opacity-0 group-hover:opacity-100 transition-opacity",
-        className
+        className,
       )}
       {...props}
     >

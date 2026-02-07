@@ -1,5 +1,5 @@
 import * as CollapsiblePrimitive from "@radix-ui/react-collapsible";
-import * as React from "react";
+import type * as React from "react";
 import { ChevronDown } from "@/lib/icons";
 import { cn } from "@/lib/utils";
 
@@ -39,7 +39,7 @@ function CollapsibleTrigger({
         "transition-all duration-200 ease-out hover:bg-ui-bg-hover rounded-md px-2 py-1.5",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-ring focus-visible:ring-offset-2 ring-offset-ui-bg",
         "disabled:pointer-events-none disabled:opacity-50",
-        className
+        className,
       )}
       {...props}
     />

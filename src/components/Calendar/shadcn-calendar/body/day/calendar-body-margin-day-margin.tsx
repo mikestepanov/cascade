@@ -1,6 +1,5 @@
 import { format } from "date-fns";
 import { Flex } from "@/components/ui/Flex";
-import { Typography } from "@/components/ui/Typography";
 import { cn } from "@/lib/utils";
 
 export const hours = Array.from({ length: 24 }, (_, i) => i);
@@ -17,12 +16,12 @@ export function CalendarBodyMarginDayMargin({
         {hours.map((hour) => (
           <div key={hour} className="relative h-32 first:mt-0">
             {hour !== 0 && (
-              <Typography
-                as="span"
+              <time
+                dateTime={`${String(hour).padStart(2, "0")}:00`}
                 className="absolute text-xs text-ui-text-secondary -top-2.5 left-2"
               >
                 {format(new Date().setHours(hour, 0, 0, 0), "h a")}
-              </Typography>
+              </time>
             )}
           </div>
         ))}

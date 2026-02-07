@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/Button";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Flex } from "@/components/ui/Flex";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
+import { Metadata, MetadataItem, MetadataTimestamp } from "@/components/ui/Metadata";
 import { Typography } from "@/components/ui/Typography";
 import { ROUTES } from "@/config/routes";
 import { useOrganization } from "@/hooks/useOrgContext";
@@ -100,17 +101,10 @@ function DocumentsListPage() {
                   </Flex>
 
                   {/* Metadata */}
-                  <Flex align="center" gap="sm">
-                    <Typography variant="meta" as="span">
-                      by {doc.creatorName}
-                    </Typography>
-                    <Typography variant="meta" as="span">
-                      •
-                    </Typography>
-                    <Typography variant="meta" as="span">
-                      {formatRelativeDate(doc.updatedAt)}
-                    </Typography>
-                  </Flex>
+                  <Metadata>
+                    <MetadataItem>by {doc.creatorName}</MetadataItem>
+                    <MetadataTimestamp date={doc.updatedAt} />
+                  </Metadata>
                 </Flex>
               </div>
             </Link>
@@ -119,19 +113,4 @@ function DocumentsListPage() {
       )}
     </Flex>
   );
-}
-
-function formatRelativeDate(timestamp: number): string {
-  const now = Date.now();
-  const diff = now - timestamp;
-  const minutes = Math.floor(diff / (1000 * 60));
-  const hours = Math.floor(diff / (1000 * 60 * 60));
-  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-
-  if (minutes < 1) return "just now";
-  if (minutes < 60) return `${minutes}m ago`;
-  if (hours < 24) return `${hours}h ago`;
-  if (days < 7) return `${days}d ago`;
-
-  return new Date(timestamp).toLocaleDateString();
 }

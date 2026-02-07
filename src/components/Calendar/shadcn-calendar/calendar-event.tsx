@@ -1,6 +1,5 @@
 import { format, isSameDay, isSameMonth } from "date-fns";
 import { AnimatePresence, MotionConfig, motion } from "framer-motion";
-import { Flex } from "@/components/ui/Flex";
 import { Typography } from "@/components/ui/Typography";
 import { cn } from "@/lib/utils";
 import { getEventColorClasses } from "../calendar-colors";
@@ -147,13 +146,13 @@ export function CalendarEvent({
               {event.title}
             </Typography>
             <Typography variant="small" className={cn("text-sm", month && "text-xs")}>
-              <Typography as="span">{format(event.start, "h:mm a")}</Typography>
-              <Typography as="span" className={cn("mx-1", month && "hidden")}>
+              <time dateTime={event.start.toISOString()}>{format(event.start, "h:mm a")}</time>
+              <span className={cn("mx-1", month && "hidden")} aria-hidden="true">
                 -
-              </Typography>
-              <Typography as="span" className={cn(month && "hidden")}>
+              </span>
+              <time dateTime={event.end.toISOString()} className={cn(month && "hidden")}>
                 {format(event.end, "h:mm a")}
-              </Typography>
+              </time>
             </Typography>
           </motion.div>
         </motion.div>

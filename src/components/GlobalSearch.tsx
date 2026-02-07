@@ -16,6 +16,7 @@ import {
   CommandItem,
   CommandList,
 } from "./ui/command";
+import { KeyboardShortcut, ShortcutHint } from "./ui/KeyboardShortcut";
 import { Typography } from "./ui/Typography";
 
 type SearchResult =
@@ -143,7 +144,9 @@ function SearchListContent({
     return (
       <div className="p-8 text-center text-ui-text-secondary">
         <div className="inline-block w-6 h-6 border-2 border-brand-ring border-t-transparent rounded-full animate-spin mb-2" />
-        <Typography variant="p" className="text-sm">Searching...</Typography>
+        <Typography variant="p" className="text-sm">
+          Searching...
+        </Typography>
       </div>
     );
   }
@@ -153,7 +156,9 @@ function SearchListContent({
       <CommandEmpty className="p-8" data-testid={TEST_IDS.GLOBAL_SEARCH.NO_RESULTS}>
         <div className="text-center">
           <span className="text-4xl mb-4 block">🔍</span>
-          <Typography variant="p" className="font-medium text-ui-text">No results found</Typography>
+          <Typography variant="p" className="font-medium text-ui-text">
+            No results found
+          </Typography>
         </div>
       </CommandEmpty>
       {filteredResults.length > 0 && (
@@ -235,9 +240,7 @@ function SearchResultItem({ result, onClose }: { result: SearchResult; onClose: 
         {/* Content */}
         <div className="flex-1 min-w-0">
           <Flex align="center" gap="sm" wrap>
-            {result.type === "issue" && (
-              <code className="font-mono text-sm">{result.key}</code>
-            )}
+            {result.type === "issue" && <code className="font-mono text-sm">{result.key}</code>}
             <Badge variant="neutral" shape="pill" data-testid={TEST_IDS.SEARCH.RESULT_TYPE}>
               {result.type}
             </Badge>
@@ -315,9 +318,7 @@ export function GlobalSearch() {
           />
         </svg>
         <span className="text-sm text-ui-text-secondary">Search...</span>
-        <kbd className="hidden sm:inline-block px-2 py-0.5 text-xs text-ui-text-tertiary bg-ui-bg border border-ui-border/50 rounded font-mono">
-          ⌘K
-        </kbd>
+        <KeyboardShortcut shortcut="⌘+K" className="hidden sm:inline-flex" />
       </Button>
 
       {/* Search Modal */}
@@ -374,16 +375,10 @@ export function GlobalSearch() {
             className="p-3 border-t border-ui-border text-xs text-ui-text-secondary"
           >
             <Flex align="center" gap="lg">
-              <span>
-                <kbd className="bg-ui-bg-tertiary px-2 py-1 rounded font-sans">↑↓</kbd> Navigate
-              </span>
-              <span>
-                <kbd className="bg-ui-bg-tertiary px-2 py-1 rounded font-sans">Enter</kbd> Open
-              </span>
+              <ShortcutHint keys="↑↓">Navigate</ShortcutHint>
+              <ShortcutHint keys="Enter">Open</ShortcutHint>
             </Flex>
-            <span>
-              <kbd className="bg-ui-bg-tertiary px-2 py-1 rounded font-sans">Esc</kbd> Close
-            </span>
+            <ShortcutHint keys="Esc">Close</ShortcutHint>
           </Flex>
         </Command>
       </CommandDialog>

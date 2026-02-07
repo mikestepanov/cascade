@@ -12,6 +12,7 @@ import { Badge } from "../ui/Badge";
 import { Button } from "../ui/Button";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "../ui/Dialog";
 import { Flex } from "../ui/Flex";
+import { MetadataItem } from "../ui/Metadata";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/Select";
 import { Typography } from "../ui/Typography";
 import { getEventBadgeClass } from "./calendar-colors";
@@ -216,12 +217,7 @@ export function EventDetailsModal({ eventId, open, onOpenChange }: EventDetailsM
             {/* Recurring */}
             {event.isRecurring && (
               <div className="border-t border-ui-border pt-4">
-                <Flex gap="sm" align="center">
-                  <Clock className="w-4 h-4 text-ui-text-tertiary" />
-                  <Typography variant="caption" as="span">
-                    Recurring event
-                  </Typography>
-                </Flex>
+                <MetadataItem icon={<Clock className="w-4 h-4" />}>Recurring event</MetadataItem>
               </div>
             )}
 
@@ -266,9 +262,9 @@ export function EventDetailsModal({ eventId, open, onOpenChange }: EventDetailsM
                         {!attendee.status && <div className="w-4 h-4" />}
 
                         {/* Attendee Name */}
-                        <Typography variant="label" as="span">
+                        <MetadataItem className="text-ui-text font-medium">
                           {attendee.userName}
-                        </Typography>
+                        </MetadataItem>
                       </Flex>
 
                       {/* Status Dropdown */}

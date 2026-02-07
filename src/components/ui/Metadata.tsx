@@ -69,18 +69,12 @@ export function Metadata({
   const validChildren = React.Children.toArray(children).filter(Boolean);
   const childrenWithSeparators = validChildren.flatMap((child, index) => {
     if (index === 0) return [child];
-    return [
-      <MetadataSeparator key={`sep-${index}`}>{separator}</MetadataSeparator>,
-      child,
-    ];
+    return [<MetadataSeparator key={`sep-${index}`}>{separator}</MetadataSeparator>, child];
   });
 
   return (
     <MetadataContext.Provider value={{ size, separator }}>
-      <div
-        className={cn("flex items-center flex-wrap", gapClass, className)}
-        {...props}
-      >
+      <div className={cn("flex items-center flex-wrap", gapClass, className)} {...props}>
         {childrenWithSeparators}
       </div>
     </MetadataContext.Provider>
@@ -120,7 +114,7 @@ export function MetadataItem({
         "inline-flex items-center gap-1 text-ui-text-tertiary",
         sizeClass,
         hideClass,
-        className
+        className,
       )}
       {...props}
     >

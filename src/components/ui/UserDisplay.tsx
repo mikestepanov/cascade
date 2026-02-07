@@ -1,4 +1,4 @@
-import * as React from "react";
+import type * as React from "react";
 import { cn } from "@/lib/utils";
 import { Avatar, type AvatarProps } from "./Avatar";
 
@@ -97,26 +97,19 @@ export function UserDisplay({
         config.gap,
         direction === "vertical" && "flex-col items-start",
         interactive && "cursor-pointer hover:bg-ui-bg-hover rounded-md transition-colors",
-        className
+        className,
       )}
       {...props}
     >
-      {!hideAvatar && (
-        <Avatar
-          name={name}
-          email={email}
-          src={image}
-          size={resolvedAvatarSize}
-        />
-      )}
+      {!hideAvatar && <Avatar name={name} email={email} src={image} size={resolvedAvatarSize} />}
 
-      <div className={cn(
-        "flex flex-col min-w-0",
-        direction === "vertical" && "items-center text-center"
-      )}>
-        <span className={cn("text-ui-text truncate", config.nameClass)}>
-          {name}
-        </span>
+      <div
+        className={cn(
+          "flex flex-col min-w-0",
+          direction === "vertical" && "items-center text-center",
+        )}
+      >
+        <span className={cn("text-ui-text truncate", config.nameClass)}>{name}</span>
         {subtitle && (
           <span className={cn("text-ui-text-secondary truncate", config.subtitleClass)}>
             {subtitle}
@@ -124,11 +117,7 @@ export function UserDisplay({
         )}
       </div>
 
-      {meta && (
-        <div className="shrink-0 ml-auto text-ui-text-tertiary text-xs">
-          {meta}
-        </div>
-      )}
+      {meta && <div className="shrink-0 ml-auto text-ui-text-tertiary text-xs">{meta}</div>}
     </div>
   );
 }
@@ -153,15 +142,10 @@ export function UserMention({
 }: UserMentionProps) {
   return (
     <span
-      className={cn(
-        "inline-flex items-center gap-1 font-medium text-ui-text",
-        className
-      )}
+      className={cn("inline-flex items-center gap-1 font-medium text-ui-text", className)}
       {...props}
     >
-      {showAvatar && (
-        <Avatar name={name} src={image} size="xs" className="inline-block" />
-      )}
+      {showAvatar && <Avatar name={name} src={image} size="xs" className="inline-block" />}
       {name}
     </span>
   );

@@ -80,8 +80,12 @@ export function OnboardingChecklist() {
         className="p-4 bg-ui-bg-soft border-b border-ui-border"
       >
         <Flex gap="md" align="center">
-          <Flex align="center" justify="center" className="w-9 h-9 rounded-lg bg-brand-subtle">
-            <Typography as="span" className="text-lg">🚀</Typography>
+          <Flex
+            align="center"
+            justify="center"
+            className="w-9 h-9 rounded-lg bg-brand-subtle text-lg"
+          >
+            🚀
           </Flex>
           <div>
             <Typography variant="h3" className="font-semibold text-ui-text tracking-tight">
@@ -154,7 +158,7 @@ export function OnboardingChecklist() {
                 {item.completed ? (
                   <Check className="w-3.5 h-3.5" />
                 ) : (
-                  <Typography as="span" className="text-xs font-medium">{index + 1}</Typography>
+                  <span className="text-xs font-medium">{index + 1}</span>
                 )}
               </Flex>
               <div className="flex-1 min-w-0">

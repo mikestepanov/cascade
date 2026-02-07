@@ -4,8 +4,10 @@
 
 import type { Doc, Id } from "@convex/_generated/dataModel";
 import React from "react";
+import { Badge } from "../ui/Badge";
 import { Button } from "../ui/Button";
 import { Flex } from "../ui/Flex";
+import { MetadataTimestamp } from "../ui/Metadata";
 import { Progress } from "../ui/progress";
 import { Skeleton } from "../ui/Skeleton";
 import { ToggleGroup, ToggleGroupItem } from "../ui/ToggleGroup";
@@ -155,9 +157,7 @@ const SuggestionCard = React.memo(function SuggestionCard({
             <span className="text-xs font-medium px-2 py-1 rounded-full bg-brand-subtle text-brand-active">
               {metadata?.label || suggestion.suggestionType}
             </span>
-            <Typography variant="meta" as="span">
-              {new Date(suggestion._creationTime).toLocaleDateString()}
-            </Typography>
+            <MetadataTimestamp date={suggestion._creationTime} format="absolute" />
           </Flex>
           <Typography variant="p" className="whitespace-pre-wrap break-words">
             {suggestion.suggestion}
@@ -170,13 +170,11 @@ const SuggestionCard = React.memo(function SuggestionCard({
           {suggestion.confidence !== undefined && (
             <div className="mt-2">
               <Flex align="center" gap="sm">
-                <Typography variant="meta" as="span">
-                  Confidence:
-                </Typography>
+                <span className="text-xs text-ui-text-tertiary">Confidence:</span>
                 <Progress value={suggestion.confidence * 100} className="flex-1 max-w-25" />
-                <Typography variant="meta" as="span">
+                <span className="text-xs text-ui-text-tertiary">
                   {Math.round(suggestion.confidence * 100)}%
-                </Typography>
+                </span>
               </Flex>
             </div>
           )}
@@ -201,18 +199,18 @@ const SuggestionCard = React.memo(function SuggestionCard({
             </Flex>
           )}
           {suggestion.accepted && (
-            <Flex align="center" gap="xs" className="mt-3">
-              <Typography variant="small" as="span" color="success">
+            <div className="mt-3">
+              <Badge variant="success" size="sm">
                 ✓ Accepted
-              </Typography>
-            </Flex>
+              </Badge>
+            </div>
           )}
           {suggestion.dismissed && (
-            <Flex align="center" gap="xs" className="mt-3">
-              <Typography variant="small" as="span" color="tertiary">
+            <div className="mt-3">
+              <Badge variant="neutral" size="sm">
                 ✗ Dismissed
-              </Typography>
-            </Flex>
+              </Badge>
+            </div>
           )}
         </div>
       </Flex>

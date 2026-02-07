@@ -20,7 +20,7 @@ interface RecentActivityProps {
   activities: Activity[] | undefined;
 }
 
-const getActionBadgeVariant = (action: string): "success" | "info" | "warning" | "neutral" => {
+const _getActionBadgeVariant = (action: string): "success" | "info" | "warning" | "neutral" => {
   switch (action) {
     case "created":
       return "success";

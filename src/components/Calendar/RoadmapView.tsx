@@ -8,6 +8,7 @@ import { ChevronLeft, ChevronRight } from "@/lib/icons";
 import { cn } from "@/lib/utils";
 import { Badge } from "../ui/Badge";
 import { Flex } from "../ui/Flex";
+import { ResponsiveText } from "../ui/ResponsiveText";
 
 interface RoadmapViewProps {
   projectId: Id<"projects">;
@@ -156,8 +157,7 @@ export function RoadmapView({ projectId }: RoadmapViewProps) {
                   : "bg-ui-bg text-ui-text hover:bg-ui-bg-tertiary",
               )}
             >
-              <span className="sm:hidden">W</span>
-              <span className="hidden sm:inline">Week</span>
+              <ResponsiveText short="W" long="Week" />
             </button>
             <button
               type="button"
@@ -169,8 +169,7 @@ export function RoadmapView({ projectId }: RoadmapViewProps) {
                   : "bg-ui-bg text-ui-text hover:bg-ui-bg-tertiary",
               )}
             >
-              <span className="sm:hidden">M</span>
-              <span className="hidden sm:inline">Month</span>
+              <ResponsiveText short="M" long="Month" />
             </button>
             <button
               type="button"
@@ -182,8 +181,7 @@ export function RoadmapView({ projectId }: RoadmapViewProps) {
                   : "bg-ui-bg text-ui-text hover:bg-ui-bg-tertiary",
               )}
             >
-              <span className="sm:hidden">Q</span>
-              <span className="hidden sm:inline">Quarter</span>
+              <ResponsiveText short="Q" long="Quarter" />
             </button>
           </Flex>
         </Flex>

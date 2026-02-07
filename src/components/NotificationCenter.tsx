@@ -6,6 +6,7 @@ import { Flex } from "@/components/ui/Flex";
 import { useOrganizationOptional } from "@/hooks/useOrgContext";
 import { showError } from "@/lib/toast";
 import { NotificationItem, type NotificationWithActor } from "./NotificationItem";
+import { Badge } from "./ui/Badge";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/Popover";
 import { Tooltip } from "./ui/Tooltip";
 import { Typography } from "./ui/Typography";
@@ -90,12 +91,14 @@ export function NotificationCenter() {
             </svg>
             {/* Unread Badge */}
             {unreadCount != null && unreadCount > 0 && (
-              <Typography
-                as="span"
-                className="absolute top-0 right-0 px-2 py-1 text-xs font-bold leading-none text-brand-foreground transform translate-x-1/2 -translate-y-1/2 bg-status-error rounded-full"
+              <Badge
+                variant="error"
+                size="sm"
+                shape="pill"
+                className="absolute top-0 right-0 font-bold leading-none transform translate-x-1/2 -translate-y-1/2 border-0"
               >
                 {unreadCount > 99 ? "99+" : unreadCount}
-              </Typography>
+              </Badge>
             )}
           </button>
         </PopoverTrigger>

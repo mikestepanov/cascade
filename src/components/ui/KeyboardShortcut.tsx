@@ -137,3 +137,45 @@ export function ShortcutList({ shortcuts, className = "" }: ShortcutListProps) {
     </Flex>
   );
 }
+
+/**
+ * ShortcutHint - Keyboard shortcut with inline description.
+ *
+ * Replaces the pattern:
+ * ```tsx
+ * // Before (bad)
+ * <span>
+ *   <kbd className="...">↑↓</kbd> Navigate
+ * </span>
+ *
+ * // After (good)
+ * <ShortcutHint keys="↑↓">Navigate</ShortcutHint>
+ * ```
+ */
+interface ShortcutHintProps {
+  /** The keyboard keys to display */
+  keys: string;
+  /** Description text */
+  children: React.ReactNode;
+  /** Size variant */
+  size?: "sm" | "md";
+  /** Visual variant */
+  variant?: "default" | "subtle";
+  /** Additional CSS classes */
+  className?: string;
+}
+
+export function ShortcutHint({
+  keys,
+  children,
+  size = "sm",
+  variant = "subtle",
+  className = "",
+}: ShortcutHintProps) {
+  return (
+    <Flex as="span" inline align="center" gap="xs" className={className}>
+      <KeyboardShortcut shortcut={keys} size={size} variant={variant} />
+      <span>{children}</span>
+    </Flex>
+  );
+}

@@ -7,6 +7,7 @@ import { PageContent, PageHeader, PageLayout } from "@/components/layout";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Flex } from "@/components/ui/Flex";
+import { Metadata, MetadataItem } from "@/components/ui/Metadata";
 import { Typography } from "@/components/ui/Typography";
 import { ROUTES } from "@/config/routes";
 import { useOrganization } from "@/hooks/useOrgContext";
@@ -72,11 +73,7 @@ function WorkspacesList() {
               <Card hoverable className="p-6">
                 <Flex direction="column" gap="md">
                   <Flex align="center" gap="sm">
-                    {workspace.icon && (
-                      <Typography as="span" className="text-3xl">
-                        {workspace.icon}
-                      </Typography>
-                    )}
+                    {workspace.icon && <span className="text-3xl">{workspace.icon}</span>}
                     <Typography variant="h3">{workspace.name}</Typography>
                   </Flex>
 
@@ -86,18 +83,15 @@ function WorkspacesList() {
                     </Typography>
                   )}
 
-                  <Flex gap="md">
-                    <Typography variant="caption" as="span">
+                  <Metadata size="sm">
+                    <MetadataItem>
                       {workspace.teamCount} {workspace.teamCount === 1 ? "team" : "teams"}
-                    </Typography>
-                    <Typography variant="caption" as="span">
-                      •
-                    </Typography>
-                    <Typography variant="caption" as="span">
+                    </MetadataItem>
+                    <MetadataItem>
                       {workspace.projectCount}{" "}
                       {workspace.projectCount === 1 ? "project" : "projects"}
-                    </Typography>
-                  </Flex>
+                    </MetadataItem>
+                  </Metadata>
                 </Flex>
               </Card>
             </Link>

@@ -1,5 +1,4 @@
 import { isSameDay } from "date-fns";
-import { Flex } from "@/components/ui/Flex";
 import { Typography } from "@/components/ui/Typography";
 import { cn } from "@/lib/utils";
 import { DOT_COLOR_CLASSES, type EventColor } from "../../../calendar-colors";

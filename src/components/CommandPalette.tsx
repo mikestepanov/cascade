@@ -16,6 +16,7 @@ import {
   CommandItem,
   CommandList,
 } from "./ui/command";
+import { ShortcutHint } from "./ui/KeyboardShortcut";
 import { Typography } from "./ui/Typography";
 
 export interface CommandAction {
@@ -99,7 +100,9 @@ export function CommandPalette({ isOpen, onClose, commands }: CommandPaletteProp
                 >
                   {cmd.icon && <span className="text-xl mr-2">{cmd.icon}</span>}
                   <div className="flex-1">
-                    <Typography variant="label" as="p">{cmd.label}</Typography>
+                    <Typography variant="label" as="p">
+                      {cmd.label}
+                    </Typography>
                     {cmd.description && (
                       <Typography variant="caption">{cmd.description}</Typography>
                     )}
@@ -114,24 +117,9 @@ export function CommandPalette({ isOpen, onClose, commands }: CommandPaletteProp
           gap="md"
           className="px-4 py-2 border-t border-ui-border bg-ui-bg-secondary text-xs text-ui-text-tertiary sm:gap-4"
         >
-          <span>
-            <kbd className="bg-ui-bg border border-ui-border px-2 py-1 rounded text-ui-text font-sans">
-              ↑↓
-            </kbd>{" "}
-            Navigate
-          </span>
-          <span>
-            <kbd className="bg-ui-bg border border-ui-border px-2 py-1 rounded text-ui-text font-sans">
-              Enter
-            </kbd>{" "}
-            Select
-          </span>
-          <span>
-            <kbd className="bg-ui-bg border border-ui-border px-2 py-1 rounded text-ui-text font-sans">
-              Esc
-            </kbd>{" "}
-            Close
-          </span>
+          <ShortcutHint keys="↑↓">Navigate</ShortcutHint>
+          <ShortcutHint keys="Enter">Select</ShortcutHint>
+          <ShortcutHint keys="Esc">Close</ShortcutHint>
         </Flex>
       </Command>
     </CommandDialog>

@@ -7,6 +7,7 @@ import { showError, showSuccess } from "@/lib/toast";
 import { Button } from "../ui/Button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/Dialog";
 import { Flex } from "../ui/Flex";
+import { Metadata, MetadataItem } from "../ui/Metadata";
 import { Typography } from "../ui/Typography";
 
 type WebhookExecution = Doc<"webhookExecutions">;
@@ -103,19 +104,15 @@ export function WebhookLogs({ webhookId, open, onOpenChange }: WebhookLogsProps)
                 >
                   {/* Header */}
                   <Flex justify="between" align="center" className="mb-3">
-                    <Flex gap="md" align="center">
+                    <Metadata gap="md">
                       {getStatusBadge(execution.status)}
-                      <Typography variant="small">{execution.event}</Typography>
+                      <MetadataItem className="text-ui-text">{execution.event}</MetadataItem>
                       {execution.responseStatus && (
-                        <Typography variant="meta" as="span">
-                          HTTP {String(execution.responseStatus)}
-                        </Typography>
+                        <MetadataItem>HTTP {String(execution.responseStatus)}</MetadataItem>
                       )}
-                    </Flex>
-                    <Flex gap="md" align="center">
-                      <Typography variant="meta" as="span">
-                        {formatDate(execution._creationTime)}
-                      </Typography>
+                    </Metadata>
+                    <Metadata gap="md">
+                      <MetadataItem>{formatDate(execution._creationTime)}</MetadataItem>
                       {execution.status === "failed" && (
                         <Button
                           variant="ghost"
@@ -136,7 +133,7 @@ export function WebhookLogs({ webhookId, open, onOpenChange }: WebhookLogsProps)
                       >
                         {selectedExecution === execution._id ? "Hide Details" : "Show Details"}
                       </Button>
-                    </Flex>
+                    </Metadata>
                   </Flex>
 
                   {/* Metadata */}

@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { ROUTES } from "@/config/routes";
 import { cn } from "@/lib/utils";
+import { Badge } from "../ui/Badge";
 import { Flex } from "../ui/Flex";
 import { Typography } from "../ui/Typography";
 import { PlayIcon } from "./icons";
@@ -34,18 +35,17 @@ export function HeroSection() {
       <div className="relative max-w-4xl mx-auto text-center">
         {/* Tag - with staggered animation */}
         <Flex justify="center" className="mb-10 animate-fade-in">
-          <Typography
-            as="span"
+          <Badge
+            variant="outline"
+            shape="pill"
             className={cn(
-              "px-4 py-2 rounded-pill",
-              "border border-ui-border",
-              "text-xs font-medium text-ui-text-tertiary",
+              "px-4 py-2",
               "bg-ui-bg-soft backdrop-blur-sm",
               "transition-default hover:border-ui-border-secondary",
             )}
           >
             Project Management · Time Tracking
-          </Typography>
+          </Badge>
         </Flex>
 
         {/* Headline - with tighter tracking for premium feel */}
@@ -60,12 +60,9 @@ export function HeroSection() {
         >
           Revolutionize Your Workflow.
           <br />
-          <Typography
-            as="span"
-            className="bg-linear-to-r from-landing-accent via-landing-accent-teal to-status-success-text bg-clip-text text-transparent"
-          >
+          <span className="bg-linear-to-r from-landing-accent via-landing-accent-teal to-status-success-text bg-clip-text text-transparent">
             Harmonize Your Team.
-          </Typography>
+          </span>
         </Typography>
 
         {/* Subheadline - with opacity-based secondary text */}

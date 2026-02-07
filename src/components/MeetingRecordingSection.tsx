@@ -5,17 +5,7 @@ import type { ReactNode } from "react";
 import { useState } from "react";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { useConfirmDialog } from "@/hooks/useConfirmDialog";
-import {
-  CheckCircle,
-  ChevronDown,
-  ChevronRight,
-  Clock,
-  FileText,
-  Mic,
-  MicOff,
-  Play,
-  XCircle,
-} from "@/lib/icons";
+import { CheckCircle, Clock, FileText, Mic, MicOff, Play, XCircle } from "@/lib/icons";
 import { showError, showSuccess } from "@/lib/toast";
 import { Badge } from "./ui/Badge";
 import { Button } from "./ui/Button";

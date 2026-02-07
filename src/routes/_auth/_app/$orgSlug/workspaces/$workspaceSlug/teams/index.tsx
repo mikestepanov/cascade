@@ -5,6 +5,7 @@ import { PageContent, PageHeader, PageLayout } from "@/components/layout";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Flex } from "@/components/ui/Flex";
+import { Metadata, MetadataItem } from "@/components/ui/Metadata";
 import { Typography } from "@/components/ui/Typography";
 import { ROUTES } from "@/config/routes";
 import { useOrganization } from "@/hooks/useOrgContext";
@@ -57,11 +58,7 @@ function TeamsList() {
               <Card hoverable className="p-6">
                 <Flex direction="column" gap="md">
                   <Flex align="center" gap="sm">
-                    {team.icon && (
-                      <Typography as="span" className="text-3xl">
-                        {team.icon}
-                      </Typography>
-                    )}
+                    {team.icon && <span className="text-3xl">{team.icon}</span>}
                     <Typography variant="h3">{team.name}</Typography>
                   </Flex>
 
@@ -71,17 +68,14 @@ function TeamsList() {
                     </Typography>
                   )}
 
-                  <Flex gap="md">
-                    <Typography variant="caption" as="span">
+                  <Metadata size="sm">
+                    <MetadataItem>
                       {team.memberCount} {team.memberCount === 1 ? "member" : "members"}
-                    </Typography>
-                    <Typography variant="caption" as="span">
-                      •
-                    </Typography>
-                    <Typography variant="caption" as="span">
+                    </MetadataItem>
+                    <MetadataItem>
                       {team.projectCount} {team.projectCount === 1 ? "project" : "projects"}
-                    </Typography>
-                  </Flex>
+                    </MetadataItem>
+                  </Metadata>
                 </Flex>
               </Card>
             </Link>
