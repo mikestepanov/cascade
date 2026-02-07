@@ -1,4 +1,3 @@
-import { TEST_IDS } from "../src/lib/test-ids";
 import { expect, authenticatedTest as test } from "./fixtures";
 import { testUserService } from "./utils/test-user-service";
 
@@ -67,10 +66,7 @@ test.describe("Global Search", () => {
     await dashboardPage.closeGlobalSearch();
   });
 
-  test("search shows 'No results found' for non-matching query", async ({
-    dashboardPage,
-    page,
-  }) => {
+  test("search shows 'No results found' for non-matching query", async ({ dashboardPage }) => {
     await dashboardPage.goto();
     await dashboardPage.expectLoaded();
 
