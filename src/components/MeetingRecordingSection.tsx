@@ -19,6 +19,7 @@ import {
 import { showError, showSuccess } from "@/lib/toast";
 import { Badge } from "./ui/Badge";
 import { Button } from "./ui/Button";
+import { Collapsible, CollapsibleContent, CollapsibleHeader } from "./ui/Collapsible";
 import { ConfirmDialog } from "./ui/ConfirmDialog";
 import { Flex } from "./ui/Flex";
 import { Metadata, MetadataItem } from "./ui/Metadata";
@@ -275,33 +276,23 @@ export function MeetingRecordingSection({
 
   return (
     <div className="border-t border-ui-border pt-4">
-      <button
-        type="button"
-        onClick={() => setIsExpanded(!isExpanded)}
-        className="w-full flex items-center justify-between text-left"
-      >
-        <Flex gap="sm" align="center">
-          <Mic className="w-5 h-5 text-ui-text-tertiary" />
-          <span className="text-sm font-medium text-ui-text">AI Meeting Notes</span>
-          {recording && <StatusBadge status={recording.status} />}
-        </Flex>
-        {isExpanded ? (
-          <ChevronDown className="w-4 h-4 text-ui-text-tertiary" />
-        ) : (
-          <ChevronRight className="w-4 h-4 text-ui-text-tertiary" />
-        )}
-      </button>
+      <Collapsible open={isExpanded} onOpenChange={setIsExpanded}>
+        <CollapsibleHeader
+          icon={<Mic className="w-5 h-5" />}
+          badge={recording && <StatusBadge status={recording.status} />}
+        >
+          AI Meeting Notes
+        </CollapsibleHeader>
 
-      {isExpanded && (
-        <div className="mt-4 space-y-4">
+        <CollapsibleContent className="space-y-4">
           <RecordingStatusContent
             recording={recording}
             isScheduling={isScheduling}
             onSchedule={handleScheduleRecording}
             onCancel={handleCancelRecording}
           />
-        </div>
-      )}
+        </CollapsibleContent>
+      </Collapsible>
 
       <ConfirmDialog
         isOpen={dialogState.isOpen}
@@ -412,29 +403,18 @@ function RecordingResults({ recordingId }: { recordingId: Id<"meetingRecordings"
 
       {/* Transcript Toggle */}
       {transcript && (
-        <div>
-          <button
-            type="button"
-            onClick={() => setShowTranscript(!showTranscript)}
-            className="flex items-center gap-2 text-sm text-brand hover:text-brand-hover"
-          >
-            <FileText className="w-4 h-4" />
+        <Collapsible open={showTranscript} onOpenChange={setShowTranscript}>
+          <CollapsibleHeader icon={<FileText className="w-4 h-4" />}>
             {showTranscript ? "Hide Transcript" : "Show Full Transcript"}
-            {showTranscript ? (
-              <ChevronDown className="w-4 h-4" />
-            ) : (
-              <ChevronRight className="w-4 h-4" />
-            )}
-          </button>
-
-          {showTranscript && (
-            <div className="mt-2 bg-ui-bg-secondary rounded-lg p-4 max-h-96 overflow-y-auto">
+          </CollapsibleHeader>
+          <CollapsibleContent>
+            <div className="bg-ui-bg-secondary rounded-lg p-4 max-h-96 overflow-y-auto">
               <pre className="text-xs text-ui-text-secondary whitespace-pre-wrap font-sans">
                 {transcript.fullText}
               </pre>
             </div>
-          )}
-        </div>
+          </CollapsibleContent>
+        </Collapsible>
       )}
 
       {/* Stats */}

@@ -108,12 +108,8 @@ function SearchTab({
           : "border-transparent text-ui-text-secondary hover:text-ui-text",
       )}
     >
-      {label}{" "}
-      {showCount && (
-        <Typography variant="meta" as="span">
-          ({count})
-        </Typography>
-      )}
+      {label}
+      {showCount && ` (${count})`}
     </button>
   );
 }
@@ -138,10 +134,8 @@ function SearchListContent({
 }) {
   if (query.length < 2) {
     return (
-      <div className="p-8 text-center text-ui-text-secondary">
-        <Typography variant="p" className="text-sm">
-          Type at least 2 characters to search
-        </Typography>
+      <div className="p-8 text-center text-ui-text-secondary text-sm">
+        Type at least 2 characters to search
       </div>
     );
   }
@@ -150,9 +144,7 @@ function SearchListContent({
     return (
       <div className="p-8 text-center text-ui-text-secondary">
         <div className="inline-block w-6 h-6 border-2 border-brand-ring border-t-transparent rounded-full animate-spin mb-2" />
-        <Typography variant="p" className="text-sm">
-          Searching...
-        </Typography>
+        <p className="text-sm">Searching...</p>
       </div>
     );
   }
@@ -162,9 +154,7 @@ function SearchListContent({
       <CommandEmpty className="p-8" data-testid={TEST_IDS.GLOBAL_SEARCH.NO_RESULTS}>
         <div className="text-center">
           <span className="text-4xl mb-4 block">🔍</span>
-          <Typography variant="p" className="font-medium">
-            No results found
-          </Typography>
+          <p className="font-medium text-ui-text">No results found</p>
         </div>
       </CommandEmpty>
       {filteredResults.length > 0 && (
