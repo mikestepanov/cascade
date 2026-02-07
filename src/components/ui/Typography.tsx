@@ -5,21 +5,19 @@ import { cn } from "@/lib/utils";
 /**
  * Typography component with semantic variants.
  *
- * Variants are designed for actual use cases, not HTML tags:
+ * NOTE: This component is being phased out for inline text. Use:
+ * - `<Metadata>` for timestamps, counts, author info
+ * - `<ListItem>` for list item content
+ * - `<UserDisplay>` for avatar + name patterns
+ *
+ * See docs/DESIGN_PATTERNS.md for migration guide.
+ *
+ * **Keep using Typography for:**
  * - h1-h5: Headings with proper hierarchy
  * - p: Body text with paragraph spacing
- * - lead: Intro/subtitle text (larger, secondary color)
- * - large: Emphasized body text
- * - small: Compact body text
- * - muted: De-emphasized text (tertiary color)
- * - meta: Metadata like timestamps, counts, "3d ago" (xs, tertiary)
- * - caption: Descriptions, helper text (xs, secondary)
- * - label: Form labels (sm, medium weight)
- * - mono: Code-like text, issue keys (xs, monospace)
  * - blockquote: Quoted text with left border
- * - inlineCode: Inline code snippets
  *
- * Use `as` prop only when you need a different HTML element (e.g., span inside p).
+ * Use `as` prop to override the HTML element when needed.
  * Use `color` prop to override the variant's default color.
  */
 const typographyVariants = cva("", {

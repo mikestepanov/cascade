@@ -21,6 +21,7 @@ import { Badge } from "./ui/Badge";
 import { Button } from "./ui/Button";
 import { ConfirmDialog } from "./ui/ConfirmDialog";
 import { Flex } from "./ui/Flex";
+import { Metadata, MetadataItem } from "./ui/Metadata";
 import { Typography } from "./ui/Typography";
 
 // Status badge configuration - extracted to reduce component complexity
@@ -281,9 +282,7 @@ export function MeetingRecordingSection({
       >
         <Flex gap="sm" align="center">
           <Mic className="w-5 h-5 text-ui-text-tertiary" />
-          <Typography variant="label" as="span">
-            AI Meeting Notes
-          </Typography>
+          <span className="text-sm font-medium text-ui-text">AI Meeting Notes</span>
           {recording && <StatusBadge status={recording.status} />}
         </Flex>
         {isExpanded ? (
@@ -349,13 +348,9 @@ function RecordingResults({ recordingId }: { recordingId: Id<"meetingRecordings"
           </Typography>
           <ul className="space-y-1">
             {summary.keyPoints.map((point: string) => (
-              <li key={point} className="flex items-start gap-2">
-                <Typography variant="caption" as="span" color="brand">
-                  •
-                </Typography>
-                <Typography variant="caption" as="span">
-                  {point}
-                </Typography>
+              <li key={point} className="flex items-start gap-2 text-xs text-ui-text-secondary">
+                <span className="text-brand">•</span>
+                <span>{point}</span>
               </li>
             ))}
           </ul>
@@ -406,11 +401,9 @@ function RecordingResults({ recordingId }: { recordingId: Id<"meetingRecordings"
           </Typography>
           <ul className="space-y-1">
             {summary.decisions.map((decision: string) => (
-              <li key={decision} className="flex items-start gap-2">
+              <li key={decision} className="flex items-start gap-2 text-xs text-ui-text-secondary">
                 <CheckCircle className="w-4 h-4 text-status-success shrink-0 mt-0.5" />
-                <Typography variant="caption" as="span">
-                  {decision}
-                </Typography>
+                <span>{decision}</span>
               </li>
             ))}
           </ul>
@@ -446,27 +439,15 @@ function RecordingResults({ recordingId }: { recordingId: Id<"meetingRecordings"
 
       {/* Stats */}
       {transcript && (
-        <Flex gap="md">
-          <Typography variant="meta" as="span">
-            {transcript.wordCount.toLocaleString()} words
-          </Typography>
-          <Typography variant="meta" as="span">
-            •
-          </Typography>
-          <Typography variant="meta" as="span">
+        <Metadata>
+          <MetadataItem>{transcript.wordCount.toLocaleString()} words</MetadataItem>
+          <MetadataItem>
             {recording.duration ? Math.round(recording.duration / 60) : "?"} min
-          </Typography>
+          </MetadataItem>
           {transcript.speakerCount && (
-            <>
-              <Typography variant="meta" as="span">
-                •
-              </Typography>
-              <Typography variant="meta" as="span">
-                {transcript.speakerCount} speakers
-              </Typography>
-            </>
+            <MetadataItem>{transcript.speakerCount} speakers</MetadataItem>
           )}
-        </Flex>
+        </Metadata>
       )}
     </div>
   );

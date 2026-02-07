@@ -5,6 +5,7 @@ import type { FunctionReturnType } from "convex/server";
 import { X } from "lucide-react";
 import { useState } from "react";
 import { Flex } from "@/components/ui/Flex";
+import { ListItem } from "@/components/ui/ListItem";
 import { Tooltip } from "@/components/ui/Tooltip";
 import { showError, showSuccess } from "@/lib/toast";
 import { cn } from "@/lib/utils";
