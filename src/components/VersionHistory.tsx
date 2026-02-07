@@ -6,6 +6,7 @@ import { Flex } from "@/components/ui/Flex";
 import { Clock, History, RotateCcw } from "@/lib/icons";
 import { showError, showSuccess } from "@/lib/toast";
 import { cn } from "@/lib/utils";
+import { Badge } from "./ui/Badge";
 import { Button } from "./ui/Button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/Dialog";
 import { LoadingSpinner } from "./ui/LoadingSpinner";
@@ -136,9 +137,9 @@ export function VersionHistory({
                       <div className="flex-1">
                         <Flex align="center" gap="sm" className="mb-1.5">
                           {isLatest && (
-                            <span className="px-2 py-0.5 text-xs font-medium bg-status-success-bg text-status-success-text rounded-secondary">
+                            <Badge variant="success" size="sm">
                               Current
-                            </span>
+                            </Badge>
                           )}
                           <span className="text-sm font-medium text-ui-text tracking-tight">
                             {version.title}

@@ -149,10 +149,8 @@ export function UserManagement() {
       {/* Header */}
       <Flex justify="between" align="center">
         <div>
-          <Typography variant="h2" className="text-2xl font-bold text-ui-text">
-            User Management
-          </Typography>
-          <Typography variant="p" className="text-ui-text-secondary mt-1">
+          <Typography variant="h3">User Management</Typography>
+          <Typography variant="p" color="secondary" className="mt-1">
             Manage user invitations and platform access
           </Typography>
         </div>
@@ -232,7 +230,7 @@ export function UserManagement() {
                       <SelectItem value="superAdmin">Super Admin</SelectItem>
                     </SelectContent>
                   </Select>
-                  <Typography variant="p" className="mt-1 text-sm text-ui-text-secondary">
+                  <Typography variant="muted" className="mt-1">
                     Super Admins have full system access and can manage all users
                   </Typography>
                 </div>

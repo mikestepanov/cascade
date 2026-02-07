@@ -5,6 +5,7 @@ import type { FunctionReturnType } from "convex/server";
 import { useState } from "react";
 import { showError, showSuccess } from "@/lib/toast";
 import { cn } from "@/lib/utils";
+import { Badge } from "../ui/Badge";
 import { Button } from "../ui/Button";
 import { Card, CardBody, CardHeader } from "../ui/Card";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "../ui/Dialog";
@@ -482,18 +483,16 @@ export function UserTypeManager() {
                             {profile.user?.name || profile.user?.email || "Unknown User"}
                           </Typography>
                           <Flex gap="sm" className="mt-1">
-                            <span
-                              className={cn(
-                                "text-xs px-2 py-0.5 rounded capitalize",
-                                getTypeColor(profile.employmentType),
-                              )}
+                            <Badge
+                              size="sm"
+                              className={cn("capitalize", getTypeColor(profile.employmentType))}
                             >
                               {profile.employmentType}
-                            </span>
+                            </Badge>
                             {!profile.isActive && (
-                              <span className="text-xs px-2 py-0.5 bg-status-error-bg text-status-error-text rounded">
+                              <Badge variant="error" size="sm">
                                 Inactive
-                              </span>
+                              </Badge>
                             )}
                           </Flex>
                         </div>

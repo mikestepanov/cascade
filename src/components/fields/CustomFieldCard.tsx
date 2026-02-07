@@ -3,6 +3,7 @@ import { Badge } from "../ui/Badge";
 import { Button } from "../ui/Button";
 import { Card } from "../ui/Card";
 import { Flex } from "../ui/Flex";
+import { Metadata, MetadataItem } from "../ui/Metadata";
 import { Typography } from "../ui/Typography";
 
 type FieldType = "text" | "number" | "select" | "multiselect" | "date" | "checkbox" | "url";
@@ -59,13 +60,14 @@ export function CustomFieldCard({ field, onEdit, onDelete }: CustomFieldCardProp
               </Typography>
               {field.isRequired && <Badge variant="error">Required</Badge>}
             </Flex>
-            <Flex gap="sm" align="center" className="text-sm text-ui-text-secondary mt-1">
-              <code className="px-2 py-0.5 bg-ui-bg-secondary rounded font-mono text-xs">
-                {field.fieldKey}
-              </code>
-              <span>•</span>
-              <span className="capitalize">{field.fieldType}</span>
-            </Flex>
+            <Metadata size="sm" className="mt-1">
+              <MetadataItem>
+                <code className="px-2 py-0.5 bg-ui-bg-secondary rounded font-mono text-xs">
+                  {field.fieldKey}
+                </code>
+              </MetadataItem>
+              <MetadataItem className="capitalize">{field.fieldType}</MetadataItem>
+            </Metadata>
             {field.description && (
               <Typography variant="muted" className="mt-2">
                 {field.description}

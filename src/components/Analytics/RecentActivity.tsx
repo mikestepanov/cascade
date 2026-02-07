@@ -21,7 +21,7 @@ export function RecentActivity({ activities }: { activities: Activity[] | undefi
 
   return (
     <div className="bg-ui-bg rounded-lg shadow-card border border-ui-border p-6">
-      <Typography variant="h3" className="text-lg font-semibold text-ui-text mb-4">
+      <Typography variant="large" className="mb-4">
         Recent Activity
       </Typography>
       <div className="relative">

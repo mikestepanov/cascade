@@ -76,7 +76,7 @@ function InviteRoute() {
           <div className="p-4 rounded-full bg-status-error-bg w-fit mx-auto mb-6">
             <AlertCircle className="w-12 h-12 text-status-error" />
           </div>
-          <Typography variant="h1" className="text-2xl font-bold mb-3">
+          <Typography variant="h3" className="mb-3">
             Invalid Invitation
           </Typography>
           <Typography variant="p" color="secondary" className="mb-6">
@@ -99,7 +99,7 @@ function InviteRoute() {
           <div className="p-4 rounded-full bg-status-warning-bg w-fit mx-auto mb-6">
             <Clock className="w-12 h-12 text-status-warning-text" />
           </div>
-          <Typography variant="h1" className="text-2xl font-bold mb-3">
+          <Typography variant="h3" className="mb-3">
             Invitation Expired
           </Typography>
           <Typography variant="p" color="secondary" className="mb-6">
@@ -122,7 +122,7 @@ function InviteRoute() {
           <div className="p-4 rounded-full bg-status-success-bg w-fit mx-auto mb-6">
             <CheckCircle className="w-12 h-12 text-status-success" />
           </div>
-          <Typography variant="h1" className="text-2xl font-bold mb-3">
+          <Typography variant="h3" className="mb-3">
             Already Accepted
           </Typography>
           <Typography variant="p" color="secondary" className="mb-6">
@@ -144,7 +144,7 @@ function InviteRoute() {
           <div className="p-4 rounded-full bg-status-error-bg w-fit mx-auto mb-6">
             <AlertCircle className="w-12 h-12 text-status-error" />
           </div>
-          <Typography variant="h1" className="text-2xl font-bold mb-3">
+          <Typography variant="h3" className="mb-3">
             Invitation Revoked
           </Typography>
           <Typography variant="p" color="secondary" className="mb-6">
@@ -183,7 +183,7 @@ function InviteRoute() {
           {/* Invitation Card */}
           <div className="bg-ui-bg rounded-2xl shadow-lg p-8 mb-6">
             <div className="text-center mb-6">
-              <Typography variant="h1" className="text-2xl font-bold mb-2">
+              <Typography variant="h3" className="mb-2">
                 You're Invited!
               </Typography>
               <Typography variant="p" color="secondary">

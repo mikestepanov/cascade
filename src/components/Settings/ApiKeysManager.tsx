@@ -15,6 +15,7 @@ import { Flex } from "../ui/Flex";
 import { Checkbox } from "../ui/form/Checkbox";
 import { Input } from "../ui/form/Input";
 import { LoadingSpinner } from "../ui/LoadingSpinner";
+import { Metadata, MetadataItem, MetadataTimestamp } from "../ui/Metadata";
 import { Tooltip } from "../ui/Tooltip";
 import { Typography } from "../ui/Typography";
 
@@ -205,39 +206,33 @@ function ApiKeyCard({ apiKey, onViewStats }: { apiKey: ApiKey; onViewStats: () =
           {/* Scopes */}
           <Flex className="flex-wrap gap-1 mb-3">
             {apiKey.scopes.map((scope: string) => (
-              <span
-                key={scope}
-                className="px-2 py-0.5 text-xs bg-brand-subtle text-brand-active rounded"
-              >
+              <Badge key={scope} variant="brand" size="sm">
                 {scope}
-              </span>
+              </Badge>
             ))}
           </Flex>
 
           {/* Stats */}
-          <Flex gap="lg" align="center" className="text-xs text-ui-text-secondary">
-            <span>
+          <Metadata size="xs" gap="md">
+            <MetadataItem>
               <strong>{apiKey.usageCount}</strong> API calls
-            </span>
-            <span>•</span>
-            <span>
+            </MetadataItem>
+            <MetadataItem>
               <strong>{apiKey.rateLimit}</strong> req/min
-            </span>
+            </MetadataItem>
             {apiKey.lastUsedAt && (
-              <>
-                <span>•</span>
-                <span>Last used: {new Date(apiKey.lastUsedAt).toLocaleDateString()}</span>
-              </>
+              <MetadataItem>
+                Last used: <MetadataTimestamp date={apiKey.lastUsedAt} format="absolute" />
+              </MetadataItem>
             )}
             {apiKey.expiresAt && (
-              <>
-                <span>•</span>
-                <span className={apiKey.expiresAt < Date.now() ? "text-status-error" : ""}>
-                  Expires: {new Date(apiKey.expiresAt).toLocaleDateString()}
-                </span>
-              </>
+              <MetadataItem
+                className={apiKey.expiresAt < Date.now() ? "text-status-error" : undefined}
+              >
+                Expires: <MetadataTimestamp date={apiKey.expiresAt} format="absolute" />
+              </MetadataItem>
             )}
-          </Flex>
+          </Metadata>
         </div>
 
         {/* Actions */}
@@ -579,17 +574,13 @@ function UsageStatsModal({
                           {log.statusCode}
                         </span>
                       </Flex>
-                      <Flex gap="lg" align="center" className="text-xs text-ui-text-tertiary">
-                        <span>{log.responseTime}ms</span>
-                        <span>•</span>
-                        <span>{new Date(log.createdAt).toLocaleString()}</span>
+                      <Metadata size="xs" gap="md">
+                        <MetadataItem>{log.responseTime}ms</MetadataItem>
+                        <MetadataTimestamp date={log.createdAt} format="absolute" />
                         {log.error && (
-                          <>
-                            <span>•</span>
-                            <span className="text-status-error">{log.error}</span>
-                          </>
+                          <MetadataItem className="text-status-error">{log.error}</MetadataItem>
                         )}
-                      </Flex>
+                      </Metadata>
                     </div>
                   ))}
                 </Flex>

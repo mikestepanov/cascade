@@ -7,6 +7,7 @@ import { z } from "zod";
 import { toggleInArray } from "@/lib/array-utils";
 import { FormInput } from "@/lib/form";
 import { showError, showSuccess } from "@/lib/toast";
+import { Badge } from "../ui/Badge";
 import { Button } from "../ui/Button";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "../ui/Dialog";
 import { Flex } from "../ui/Flex";
@@ -244,13 +245,13 @@ function WebhookCard({ webhook, projects }: WebhookCardProps) {
               {webhook.name}
             </Typography>
             {webhook.isActive ? (
-              <span className="px-2 py-0.5 text-xs font-medium bg-status-success-bg text-status-success-text rounded">
+              <Badge variant="success" size="sm">
                 Active
-              </span>
+              </Badge>
             ) : (
-              <span className="px-2 py-0.5 text-xs font-medium bg-ui-bg-tertiary text-ui-text rounded">
+              <Badge variant="neutral" size="sm">
                 Inactive
-              </span>
+              </Badge>
             )}
           </Flex>
           <Typography className="text-sm text-ui-text-secondary font-mono">{maskedUrl}</Typography>
@@ -265,12 +266,9 @@ function WebhookCard({ webhook, projects }: WebhookCardProps) {
       {/* Events */}
       <Flex className="flex-wrap gap-1.5 mb-3">
         {webhook.events.map((event: string) => (
-          <span
-            key={event}
-            className="px-2 py-0.5 text-xs font-medium bg-accent-subtle text-accent-active rounded"
-          >
+          <Badge key={event} variant="accent" size="sm">
             {event.replace("issue.", "")}
-          </span>
+          </Badge>
         ))}
       </Flex>
 

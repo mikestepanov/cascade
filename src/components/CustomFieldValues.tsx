@@ -4,6 +4,7 @@ import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Flex } from "@/components/ui/Flex";
+import { Badge } from "./ui/Badge";
 import { Button } from "./ui/Button";
 import { Checkbox } from "./ui/form/Checkbox";
 import { Input } from "./ui/form/Input";
@@ -182,12 +183,9 @@ export function CustomFieldValues({ issueId, projectId }: CustomFieldValuesProps
         return (
           <Flex wrap gap="xs">
             {value.split(",").map((option) => (
-              <span
-                key={option.trim()}
-                className="text-xs px-2 py-1 bg-brand-subtle text-brand-active rounded"
-              >
+              <Badge key={option.trim()} variant="brand" size="md">
                 {option.trim()}
-              </span>
+              </Badge>
             ))}
           </Flex>
         );

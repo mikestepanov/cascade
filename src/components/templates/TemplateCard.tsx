@@ -1,5 +1,6 @@
 import type { Id } from "@convex/_generated/dataModel";
 import type { IssuePriority, IssueType } from "@/lib/issue-utils";
+import { Badge } from "../ui/Badge";
 import { Button } from "../ui/Button";
 import { Flex } from "../ui/Flex";
 import { Typography } from "../ui/Typography";
@@ -45,12 +46,12 @@ export function TemplateCard({ template, onEdit, onDelete }: TemplateCardProps) 
             <Typography variant="h4" className="font-medium text-ui-text">
               {template.name}
             </Typography>
-            <span className="text-xs px-2 py-0.5 bg-ui-bg-tertiary text-ui-text rounded capitalize">
+            <Badge variant="neutral" size="sm" className="capitalize">
               {template.type}
-            </span>
-            <span className="text-xs px-2 py-0.5 bg-brand-subtle text-brand-hover rounded capitalize">
+            </Badge>
+            <Badge variant="brand" size="sm" className="capitalize">
               {template.defaultPriority}
-            </span>
+            </Badge>
           </Flex>
           <Typography className="text-sm text-ui-text-secondary mb-1">
             <span className="font-medium">Title:</span> {template.titleTemplate}
@@ -63,12 +64,9 @@ export function TemplateCard({ template, onEdit, onDelete }: TemplateCardProps) 
           {template.defaultLabels && template.defaultLabels.length > 0 && (
             <Flex gap="xs" className="mt-2">
               {template.defaultLabels.map((label) => (
-                <span
-                  key={label}
-                  className="text-xs px-2 py-0.5 bg-ui-bg border border-ui-border rounded"
-                >
+                <Badge key={label} variant="outline" size="sm">
                   {label}
-                </span>
+                </Badge>
               ))}
             </Flex>
           )}

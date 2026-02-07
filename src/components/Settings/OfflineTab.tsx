@@ -2,6 +2,7 @@ import { toast } from "sonner";
 import { RefreshCw, Wifi, WifiOff } from "@/lib/icons";
 import { cn } from "@/lib/utils";
 import { useOfflineSyncStatus, useOnlineStatus } from "../../hooks/useOffline";
+import { Badge } from "../ui/Badge";
 import { Button } from "../ui/Button";
 import { Card } from "../ui/Card";
 import { Flex } from "../ui/Flex";
@@ -152,9 +153,9 @@ export function OfflineTab() {
                       {new Date(item.timestamp).toLocaleString()}
                     </Typography>
                   </div>
-                  <span className="text-xs px-2 py-1 bg-status-warning-bg text-status-warning-text rounded">
+                  <Badge variant="warning" size="md">
                     Pending
-                  </span>
+                  </Badge>
                 </Flex>
               ))}
               {pending.length > 5 && (

@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "./ui/Button";
 import { ConfirmDialog } from "./ui/ConfirmDialog";
 import { Flex } from "./ui/Flex";
+import { Metadata, MetadataTimestamp } from "./ui/Metadata";
 import { Tooltip } from "./ui/Tooltip";
 import { Typography } from "./ui/Typography";
 
@@ -193,9 +194,9 @@ export function FileAttachments({ issueId }: FileAttachmentsProps) {
                   >
                     {attachment.filename}
                   </a>
-                  <Typography variant="muted" size="xs">
-                    {new Date(attachment.uploadedAt).toLocaleDateString()}
-                  </Typography>
+                  <Metadata>
+                    <MetadataTimestamp date={attachment.uploadedAt} format="absolute" />
+                  </Metadata>
                 </div>
               </Flex>
               <Flex align="center" gap="sm" className="shrink-0">

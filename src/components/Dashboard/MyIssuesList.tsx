@@ -10,6 +10,7 @@ import { Badge } from "../ui/Badge";
 import { EmptyState } from "../ui/EmptyState";
 import { Flex } from "../ui/Flex";
 import { LoadMoreButton } from "../ui/LoadMoreButton";
+import { Metadata, MetadataItem } from "../ui/Metadata";
 import { SkeletonList } from "../ui/Skeleton";
 
 type IssueFilter = "assigned" | "created" | "all";
@@ -173,15 +174,10 @@ export function MyIssuesList({
                     >
                       {issue.title}
                     </Typography>
-                    <Flex
-                      gap="xs"
-                      align="center"
-                      className="text-xs text-ui-text-tertiary uppercase tracking-wider font-bold"
-                    >
-                      <span>{issue.projectName}</span>
-                      <span>•</span>
-                      <span>{issue.status}</span>
-                    </Flex>
+                    <Metadata size="xs" gap="xs" className="uppercase tracking-wider font-bold">
+                      <MetadataItem>{issue.projectName}</MetadataItem>
+                      <MetadataItem>{issue.status}</MetadataItem>
+                    </Metadata>
                   </div>
                 </Flex>
               </button>
