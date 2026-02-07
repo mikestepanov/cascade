@@ -14,6 +14,7 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "
 import { Flex } from "../ui/Flex";
 import { Checkbox } from "../ui/form/Checkbox";
 import { Input } from "../ui/form/Input";
+import { Label } from "../ui/Label";
 import { LoadingSpinner } from "../ui/LoadingSpinner";
 import { Metadata, MetadataItem, MetadataTimestamp } from "../ui/Metadata";
 import { Tooltip } from "../ui/Tooltip";
@@ -369,9 +370,9 @@ function GenerateKeyModal({
 
               {/* Scopes */}
               <div>
-                <div className="block text-sm font-medium text-ui-text mb-2">
-                  Permissions (Scopes) <span className="text-status-error">*</span>
-                </div>
+                <Label required className="block mb-2">
+                  Permissions (Scopes)
+                </Label>
                 <div className="space-y-2 max-h-64 overflow-y-auto">
                   {availableScopes.map((scope) => (
                     <label

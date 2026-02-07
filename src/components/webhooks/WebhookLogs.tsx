@@ -4,6 +4,7 @@ import { useMutation, usePaginatedQuery } from "convex/react";
 import type { FunctionReference } from "convex/server";
 import { useState } from "react";
 import { showError, showSuccess } from "@/lib/toast";
+import { Badge } from "../ui/Badge";
 import { Button } from "../ui/Button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/Dialog";
 import { Flex } from "../ui/Flex";
@@ -42,21 +43,21 @@ export function WebhookLogs({ webhookId, open, onOpenChange }: WebhookLogsProps)
     switch (status) {
       case "success":
         return (
-          <span className="px-2 py-1 rounded-full text-xs font-medium bg-status-success/10 text-status-success">
+          <Badge variant="success" shape="pill">
             ✓ Success
-          </span>
+          </Badge>
         );
       case "failed":
         return (
-          <span className="px-2 py-1 rounded-full text-xs font-medium bg-status-error/10 text-status-error">
+          <Badge variant="error" shape="pill">
             ✗ Failed
-          </span>
+          </Badge>
         );
       case "retrying":
         return (
-          <span className="px-2 py-1 rounded-full text-xs font-medium bg-status-warning/10 text-status-warning">
+          <Badge variant="warning" shape="pill">
             ⟳ Retrying
-          </span>
+          </Badge>
         );
       default:
         return null;

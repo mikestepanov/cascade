@@ -154,9 +154,9 @@ const SuggestionCard = React.memo(function SuggestionCard({
         <div className="text-2xl shrink-0">{metadata?.icon || "💡"}</div>
         <div className="flex-1 min-w-0">
           <Flex align="center" gap="sm" className="mb-2">
-            <span className="text-xs font-medium px-2 py-1 rounded-full bg-brand-subtle text-brand-active">
+            <Badge variant="brand" shape="pill">
               {metadata?.label || suggestion.suggestionType}
-            </span>
+            </Badge>
             <MetadataTimestamp date={suggestion._creationTime} format="absolute" />
           </Flex>
           <Typography variant="p" className="whitespace-pre-wrap break-words">

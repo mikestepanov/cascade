@@ -9,6 +9,7 @@ import { Button } from "./ui/Button";
 import { Checkbox } from "./ui/form/Checkbox";
 import { Input } from "./ui/form/Input";
 import { Select } from "./ui/form/Select";
+import { Label } from "./ui/Label";
 import { Typography } from "./ui/Typography";
 
 interface CustomFieldValuesProps {
@@ -153,15 +154,21 @@ export function CustomFieldValues({ issueId, projectId }: CustomFieldValuesProps
 
   const renderFieldValue = (field: CustomField, value?: string) => {
     if (!value) {
-      return <span className="text-ui-text-tertiary italic text-sm">Not set</span>;
+      return (
+        <Typography variant="muted" className="italic">
+          Not set
+        </Typography>
+      );
     }
 
     switch (field.fieldType) {
       case "checkbox":
         return value === "true" ? (
-          <span className="text-status-success">✓ Yes</span>
+          <Badge variant="success" size="sm">
+            ✓ Yes
+          </Badge>
         ) : (
-          <span className="text-ui-text-secondary">✗ No</span>
+          <Typography variant="muted">✗ No</Typography>
         );
 
       case "url":
@@ -213,8 +220,7 @@ export function CustomFieldValues({ issueId, projectId }: CustomFieldValuesProps
             <Flex align="start" justify="between" className="mb-2">
               <div className="flex-1">
                 <Flex align="center" gap="sm">
-                  <div className="text-sm font-medium text-ui-text">{field.name}</div>
-                  {field.isRequired && <span className="text-status-error text-xs">*</span>}
+                  <Label required={field.isRequired}>{field.name}</Label>
                 </Flex>
                 {field.description && (
                   <Typography variant="muted" className="text-xs text-ui-text-tertiary mt-0.5">

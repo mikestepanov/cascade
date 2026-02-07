@@ -9,6 +9,7 @@ import { Button } from "../ui/Button";
 import { Dialog, DialogContent, DialogFooter } from "../ui/Dialog";
 import { Flex } from "../ui/Flex";
 import { Textarea } from "../ui/form";
+import { Label } from "../ui/Label";
 import { Typography } from "../ui/Typography";
 
 interface ProjectWizardProps {
@@ -168,12 +169,9 @@ export function ProjectWizard({
               </Typography>
 
               <div>
-                <label
-                  htmlFor="project-name"
-                  className="block text-sm font-medium text-ui-text mb-1"
-                >
-                  Project Name <span className="text-status-error">*</span>
-                </label>
+                <Label htmlFor="project-name" required className="block mb-1">
+                  Project Name
+                </Label>
                 <input
                   id="project-name"
                   type="text"
@@ -190,12 +188,9 @@ export function ProjectWizard({
               </div>
 
               <div>
-                <label
-                  htmlFor="project-key"
-                  className="block text-sm font-medium text-ui-text mb-1"
-                >
-                  Project Key <span className="text-status-error">*</span>
-                </label>
+                <Label htmlFor="project-key" required className="block mb-1">
+                  Project Key
+                </Label>
                 <input
                   id="project-key"
                   type="text"

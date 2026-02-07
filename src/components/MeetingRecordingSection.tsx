@@ -327,12 +327,9 @@ function RecordingResults({ recordingId }: { recordingId: Id<"meetingRecordings"
           <Typography variant="label" className="mb-2">
             Key Points
           </Typography>
-          <ul className="space-y-1">
+          <ul className="list-disc list-inside space-y-1 marker:text-brand">
             {summary.keyPoints.map((point: string) => (
-              <li key={point} className="flex items-start gap-2 text-xs text-ui-text-secondary">
-                <Typography as="span" className="text-brand">
-                  •
-                </Typography>
+              <li key={point} className="text-xs text-ui-text-secondary">
                 <Typography as="span">{point}</Typography>
               </li>
             ))}

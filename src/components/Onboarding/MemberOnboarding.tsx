@@ -5,6 +5,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Flex } from "@/components/ui/Flex";
 import { Input } from "@/components/ui/Input";
+import { KeyboardShortcut } from "@/components/ui/KeyboardShortcut";
 import { showError, showSuccess } from "@/lib/toast";
 import { Typography } from "../ui/Typography";
 
@@ -260,10 +261,8 @@ export function MemberOnboarding({
       {/* Keyboard shortcuts tip */}
       <div className="bg-ui-bg rounded-xl p-4 text-center">
         <Typography className="text-sm text-ui-text-secondary">
-          <strong>Pro tip:</strong> Press{" "}
-          <kbd className="px-2 py-0.5 rounded bg-ui-bg-tertiary text-xs font-mono">Ctrl+K</kbd> or{" "}
-          <kbd className="px-2 py-0.5 rounded bg-ui-bg-tertiary text-xs font-mono">Cmd+K</kbd> to
-          open the command palette
+          <strong>Pro tip:</strong> Press <KeyboardShortcut shortcut="Ctrl+K" variant="subtle" /> or{" "}
+          <KeyboardShortcut shortcut="Cmd+K" variant="subtle" /> to open the command palette
         </Typography>
       </div>
 

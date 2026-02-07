@@ -12,6 +12,7 @@ import { Button } from "../ui/Button";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "../ui/Dialog";
 import { Flex } from "../ui/Flex";
 import { Checkbox } from "../ui/form/Checkbox";
+import { Label } from "../ui/Label";
 import { Typography } from "../ui/Typography";
 
 type PumbleWebhook = Doc<"pumbleWebhooks">;
@@ -435,9 +436,9 @@ function AddWebhookModal({ open, onOpenChange, projects }: AddWebhookModalProps)
 
           {/* Events */}
           <div>
-            <div className="block text-sm font-medium text-ui-text mb-3">
-              Events to Send <span className="text-status-error">*</span>
-            </div>
+            <Label required className="block mb-3">
+              Events to Send
+            </Label>
             <div className="grid grid-cols-2 gap-3">
               {AVAILABLE_EVENTS.map((event) => (
                 <Checkbox
@@ -577,9 +578,9 @@ function EditWebhookModal({ open, onOpenChange, webhook }: EditWebhookModalProps
 
           {/* Events */}
           <div>
-            <div className="block text-sm font-medium text-ui-text mb-3">
-              Events to Send <span className="text-status-error">*</span>
-            </div>
+            <Label required className="block mb-3">
+              Events to Send
+            </Label>
             <div className="grid grid-cols-2 gap-3">
               {AVAILABLE_EVENTS.map((event) => (
                 <Checkbox
