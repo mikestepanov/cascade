@@ -82,18 +82,18 @@ export function WebhookLogs({ webhookId, open, onOpenChange }: WebhookLogsProps)
         {!executions || executions.length === 0 ? (
           <div className="text-center py-12">
             <div className="text-4xl mb-3">📊</div>
-            <Typography variant="h3" className="text-lg font-medium text-ui-text mb-1">
+            <Typography variant="h5" className="mb-1">
               No delivery logs yet
             </Typography>
-            <Typography className="text-sm text-ui-text-secondary">
+            <Typography variant="caption">
               Webhook deliveries will appear here once triggered
             </Typography>
           </div>
         ) : (
           <div className="space-y-4">
-            <div className="text-sm text-ui-text-secondary mb-4">
+            <Typography variant="caption" className="mb-4">
               Showing {executions.length} most recent deliveries
-            </div>
+            </Typography>
 
             <div className="space-y-3">
               {executions.map((execution) => (
@@ -107,13 +107,13 @@ export function WebhookLogs({ webhookId, open, onOpenChange }: WebhookLogsProps)
                       {getStatusBadge(execution.status)}
                       <Typography variant="small">{execution.event}</Typography>
                       {execution.responseStatus && (
-                        <Typography variant="muted" size="xs" color="secondary">
+                        <Typography variant="meta" as="span">
                           HTTP {String(execution.responseStatus)}
                         </Typography>
                       )}
                     </Flex>
                     <Flex gap="md" align="center">
-                      <Typography variant="muted" size="xs">
+                      <Typography variant="meta" as="span">
                         {formatDate(execution._creationTime)}
                       </Typography>
                       {execution.status === "failed" && (
@@ -141,15 +141,15 @@ export function WebhookLogs({ webhookId, open, onOpenChange }: WebhookLogsProps)
 
                   {/* Metadata */}
                   <div className="grid grid-cols-3 gap-4 mb-2">
-                    <Typography variant="muted" size="xs">
+                    <Typography variant="meta">
                       <span className="font-medium text-ui-text">Attempts:</span>{" "}
                       {execution.attempts}
                     </Typography>
-                    <Typography variant="muted" size="xs">
+                    <Typography variant="meta">
                       <span className="font-medium text-ui-text">Duration:</span>{" "}
                       {formatDuration(execution._creationTime, execution.completedAt)}
                     </Typography>
-                    <Typography variant="muted" size="xs">
+                    <Typography variant="meta">
                       <span className="font-medium text-ui-text">Status:</span>{" "}
                       {String(execution.status)}
                     </Typography>
@@ -170,7 +170,7 @@ export function WebhookLogs({ webhookId, open, onOpenChange }: WebhookLogsProps)
                     <div className="mt-3 pt-3 border-t border-ui-border space-y-3">
                       {/* Request Payload */}
                       <div>
-                        <Typography variant="small" className="mb-1">
+                        <Typography variant="label" className="mb-1">
                           Request Payload:
                         </Typography>
                         <pre className="bg-ui-bg-secondary border border-ui-border rounded p-3 text-xs overflow-x-auto">
@@ -181,7 +181,7 @@ export function WebhookLogs({ webhookId, open, onOpenChange }: WebhookLogsProps)
                       {/* Response Body */}
                       {execution.responseBody && (
                         <div>
-                          <Typography variant="small" className="mb-1">
+                          <Typography variant="label" className="mb-1">
                             Response Body:
                           </Typography>
                           <pre className="bg-ui-bg-secondary border border-ui-border rounded p-3 text-xs overflow-x-auto max-h-48">
