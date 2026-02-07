@@ -184,9 +184,7 @@ describe("EmptyState", () => {
     it("should handle special characters in title", () => {
       render(<EmptyState icon="⚠️" title="Error: <script>alert('xss')</script>" />);
 
-      expect(
-        screen.getByText("Error: <script>alert('xss')</script>"),
-      ).toBeInTheDocument();
+      expect(screen.getByText("Error: <script>alert('xss')</script>")).toBeInTheDocument();
     });
 
     it("should handle special characters in description", () => {
@@ -231,9 +229,7 @@ describe("EmptyState", () => {
     });
 
     it("should apply max-width to description", () => {
-      render(
-        <EmptyState icon="📦" title="Test" description="Description text" />,
-      );
+      render(<EmptyState icon="📦" title="Test" description="Description text" />);
 
       const paragraph = screen.getByText("Description text");
       expect(paragraph).toHaveClass("max-w-sm");
