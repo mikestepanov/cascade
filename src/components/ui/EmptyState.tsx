@@ -56,7 +56,7 @@ export function EmptyState({
       aria-label={title}
     >
       <div className={cn("text-6xl mb-4", iconColorClass)}>{icon}</div>
-      <Typography variant="large" className="mb-1">
+      <Typography variant="large" as="h3" className="mb-1">
         {title}
       </Typography>
       {description && (
