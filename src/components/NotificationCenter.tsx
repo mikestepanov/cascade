@@ -1,7 +1,10 @@
 import { api } from "@convex/_generated/api";
 import type { Id } from "@convex/_generated/dataModel";
 import { useMutation, usePaginatedQuery, useQuery } from "convex/react";
+import { Bell } from "lucide-react";
 import { useCallback, useState } from "react";
+import { Button } from "@/components/ui/Button";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { Flex } from "@/components/ui/Flex";
 import { useOrganizationOptional } from "@/hooks/useOrgContext";
 import { showError } from "@/lib/toast";
@@ -74,20 +77,7 @@ export function NotificationCenter() {
             className="relative p-2 text-ui-text-secondary hover:text-ui-text hover:bg-ui-bg-secondary rounded-lg transition-colors"
             aria-label={dynamicLabel}
           >
-            <svg
-              aria-hidden="true"
-              className="w-6 h-6"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
-              />
-            </svg>
+            <Bell className="w-6 h-6" />
             {/* Unread Badge */}
             {unreadCount != null && unreadCount > 0 && (
               <span className="absolute top-0 right-0 px-2 py-1 text-xs font-bold leading-none text-white transform translate-x-1/2 -translate-y-1/2 bg-status-error rounded-full">
@@ -112,24 +102,22 @@ export function NotificationCenter() {
             Notifications
           </Typography>
           {unreadCount != null && unreadCount > 0 && (
-            <button
-              type="button"
+            <Button
+              variant="ghost"
+              size="sm"
               onClick={handleMarkAllAsRead}
-              disabled={isLoading}
-              className="text-sm text-brand hover:text-brand-hover font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+              isLoading={isLoading}
+              className="text-brand hover:text-brand-hover"
             >
-              {isLoading ? "Marking..." : "Mark all read"}
-            </button>
+              Mark all read
+            </Button>
           )}
         </Flex>
 
         {/* Notifications List */}
         <div className="flex-1 overflow-y-auto">
           {!notifications || notifications.length === 0 ? (
-            <div className="p-8 text-center text-ui-text-secondary">
-              <div className="text-4xl mb-2">📭</div>
-              <Typography>No notifications</Typography>
-            </div>
+            <EmptyState icon="📭" title="No notifications" />
           ) : (
             <div className="divide-y divide-ui-border">
               {notifications.map((notification) => (
