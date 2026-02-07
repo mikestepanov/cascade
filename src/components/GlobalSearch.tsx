@@ -16,7 +16,7 @@ import {
   CommandItem,
   CommandList,
   CommandShortcut,
-} from "./ui/command";
+} from "./ui/Command";
 import { Typography } from "./ui/Typography";
 
 type SearchResult =
