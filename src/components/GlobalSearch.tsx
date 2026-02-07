@@ -110,7 +110,7 @@ function SearchTab({
     >
       {label}{" "}
       {showCount && (
-        <Typography as="span" className="text-xs">
+        <Typography variant="meta" as="span">
           ({count})
         </Typography>
       )}
@@ -247,7 +247,7 @@ function SearchResultItem({ result, onClose }: { result: SearchResult; onClose: 
         <div className="flex-1 min-w-0">
           <Flex align="center" gap="sm" wrap>
             {result.type === "issue" && (
-              <Typography as="span" className="text-xs font-mono text-ui-text-secondary">
+              <Typography variant="mono" as="span">
                 {result.key}
               </Typography>
             )}
@@ -327,7 +327,7 @@ export function GlobalSearch() {
             d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
           />
         </svg>
-        <Typography as="span" className="text-ui-text-tertiary">
+        <Typography variant="muted" as="span">
           Search...
         </Typography>
         <Typography
@@ -392,20 +392,20 @@ export function GlobalSearch() {
             className="p-3 border-t border-ui-border text-xs text-ui-text-secondary"
           >
             <Flex align="center" gap="lg">
-              <Typography as="span">
+              <Typography variant="meta" as="span">
                 <CommandShortcut className="bg-ui-bg-tertiary px-2 py-1 rounded">
                   ↑↓
                 </CommandShortcut>{" "}
                 Navigate
               </Typography>
-              <Typography as="span">
+              <Typography variant="meta" as="span">
                 <CommandShortcut className="bg-ui-bg-tertiary px-2 py-1 rounded">
                   Enter
                 </CommandShortcut>{" "}
                 Open
               </Typography>
             </Flex>
-            <Typography as="span">
+            <Typography variant="meta" as="span">
               <CommandShortcut className="bg-ui-bg-tertiary px-2 py-1 rounded">Esc</CommandShortcut>{" "}
               Close
             </Typography>

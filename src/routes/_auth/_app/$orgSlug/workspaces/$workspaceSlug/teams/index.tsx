@@ -57,7 +57,11 @@ function TeamsList() {
               <Card hoverable className="p-6">
                 <Flex direction="column" gap="md">
                   <Flex align="center" gap="sm">
-                    {team.icon && <Typography as="span" className="text-3xl">{team.icon}</Typography>}
+                    {team.icon && (
+                      <Typography as="span" className="text-3xl">
+                        {team.icon}
+                      </Typography>
+                    )}
                     <Typography variant="h3">{team.name}</Typography>
                   </Flex>
 
@@ -67,12 +71,14 @@ function TeamsList() {
                     </Typography>
                   )}
 
-                  <Flex gap="md" className="text-sm text-ui-text-secondary">
-                    <Typography as="span">
+                  <Flex gap="md">
+                    <Typography variant="caption" as="span">
                       {team.memberCount} {team.memberCount === 1 ? "member" : "members"}
                     </Typography>
-                    <Typography as="span">•</Typography>
-                    <Typography as="span">
+                    <Typography variant="caption" as="span">
+                      •
+                    </Typography>
+                    <Typography variant="caption" as="span">
                       {team.projectCount} {team.projectCount === 1 ? "project" : "projects"}
                     </Typography>
                   </Flex>

@@ -100,10 +100,16 @@ function DocumentsListPage() {
                   </Flex>
 
                   {/* Metadata */}
-                  <Flex align="center" gap="sm" className="text-ui-text-tertiary text-sm">
-                    <Typography as="span">by {doc.creatorName}</Typography>
-                    <Typography as="span" className="text-ui-text-tertiary">•</Typography>
-                    <Typography as="span">{formatRelativeDate(doc.updatedAt)}</Typography>
+                  <Flex align="center" gap="sm">
+                    <Typography variant="meta" as="span">
+                      by {doc.creatorName}
+                    </Typography>
+                    <Typography variant="meta" as="span">
+                      •
+                    </Typography>
+                    <Typography variant="meta" as="span">
+                      {formatRelativeDate(doc.updatedAt)}
+                    </Typography>
                   </Flex>
                 </Flex>
               </div>

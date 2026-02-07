@@ -10,7 +10,6 @@ import type { IssuePriority, IssueType } from "@/lib/issue-utils";
 import { getTypeIcon } from "@/lib/issue-utils";
 import { cn } from "@/lib/utils";
 import { Button } from "./ui/Button";
-import { Typography } from "./ui/Typography";
 import {
   Dialog,
   DialogContent,
@@ -27,6 +26,7 @@ import {
 } from "./ui/DropdownMenu";
 import { Flex } from "./ui/Flex";
 import { Checkbox, Input } from "./ui/form";
+import { Typography } from "./ui/Typography";
 
 export interface BoardFilters {
   type?: Exclude<IssueType, "subtask">[];
@@ -147,7 +147,9 @@ function SavedFiltersDropdown({
             >
               {filter.name}
               {filter.isPublic && (
-                <Typography as="span" className="ml-1 text-xs text-ui-text-tertiary">(public)</Typography>
+                <Typography variant="meta" as="span" className="ml-1">
+                  (public)
+                </Typography>
               )}
             </button>
             {filter.isOwner && (
@@ -313,7 +315,9 @@ export function FilterBar({ projectId, filters, onFilterChange }: FilterBarProps
           renderItem={(type) => (
             <Flex align="center" gap="sm">
               {getTypeIcon(type)}
-              <Typography as="span" className="capitalize">{type}</Typography>
+              <Typography variant="small" as="span" className="capitalize">
+                {type}
+              </Typography>
             </Flex>
           )}
         />
@@ -326,7 +330,11 @@ export function FilterBar({ projectId, filters, onFilterChange }: FilterBarProps
           selectedValues={filters.priority}
           onToggle={(priority) => toggleArrayFilter("priority", priority)}
           getKey={(priority) => priority}
-          renderItem={(priority) => <Typography as="span" className="capitalize">{priority}</Typography>}
+          renderItem={(priority) => (
+            <Typography variant="small" as="span" className="capitalize">
+              {priority}
+            </Typography>
+          )}
         />
 
         {/* Assignee Filter */}

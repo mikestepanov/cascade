@@ -187,17 +187,15 @@ export function ActivityFeed({ projectId, limit = 50, compact = false }: Activit
                   variant="p"
                   className={cn(compact ? "text-sm" : "text-base", "mb-0 mt-0")}
                 >
-                  <Typography as="span" className="font-medium tracking-tight text-ui-text">
+                  <Typography variant="label" as="span">
                     {activity.userName}
                   </Typography>{" "}
                   <Typography as="span" color={getActionColor(activity.action)}>
                     {formatActivityMessage(activity)}
                   </Typography>
                   {activity.issueKey && (
-                    <Typography as="span" className="ml-1">
-                      <Typography as="span" className="font-mono text-sm text-ui-text-secondary">
-                        {activity.issueKey}
-                      </Typography>
+                    <Typography variant="mono" as="span" className="ml-1">
+                      {activity.issueKey}
                     </Typography>
                   )}
                 </Typography>
