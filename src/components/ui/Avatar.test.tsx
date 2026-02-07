@@ -102,7 +102,7 @@ describe("Avatar", () => {
     it("applies brand variant by default", async () => {
       render(<Avatar name="JD" />);
       await waitFor(() => {
-        const fallback = document.querySelector('[class*="bg-brand"]');
+        const fallback = document.querySelector('[class*="bg-ui-bg-soft"]');
         expect(fallback).toBeInTheDocument();
       });
     });
