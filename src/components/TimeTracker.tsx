@@ -37,19 +37,17 @@ function TimeProgress({
     return (
       <div className="space-y-2">
         <Flex align="center" justify="between">
-          <span className="text-xs text-ui-text-tertiary">
+          <Typography variant="caption">
             {totalLoggedHours.toFixed(1)}h / {estimatedHours}h estimated
-          </span>
+          </Typography>
           {remainingHours !== null && (
-            <span
-              className={cn(
-                "text-xs",
-                isOverEstimate ? "text-status-error font-medium" : "text-ui-text-tertiary"
-              )}
+            <Typography
+              variant="caption"
+              className={isOverEstimate ? "text-status-error font-medium" : undefined}
             >
               {isOverEstimate ? "+" : ""}
               {Math.abs(remainingHours).toFixed(1)}h {isOverEstimate ? "over" : "remaining"}
-            </span>
+            </Typography>
           )}
         </Flex>
         <div className="w-full bg-ui-bg-tertiary rounded-full h-2">

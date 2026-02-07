@@ -6,6 +6,7 @@ import type { IssuePriority, IssueType } from "@/lib/issue-utils";
 import { getPriorityColor, getPriorityIcon, getTypeIcon, getTypeLabel } from "@/lib/issue-utils";
 import { TEST_IDS } from "@/lib/test-ids";
 import { cn } from "@/lib/utils";
+import { Badge } from "./ui/Badge";
 import { Tooltip } from "./ui/Tooltip";
 import { Typography } from "./ui/Typography";
 
@@ -214,7 +215,9 @@ export const IssueCard = memo(function IssueCard({
           )}
         </Flex>
         {issue.storyPoints !== undefined && (
-          <span className="text-xs text-ui-text-tertiary">{issue.storyPoints} pts</span>
+          <Badge variant="neutral" size="sm">
+            {issue.storyPoints} pts
+          </Badge>
         )}
       </Flex>
     </button>
