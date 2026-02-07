@@ -354,7 +354,7 @@ describe("IssueDetailModal", () => {
 
     renderModal();
 
-    expect(screen.getByText("Story Points:")).toBeInTheDocument();
+    expect(screen.getByText("Story Points")).toBeInTheDocument();
     expect(screen.getByText("5")).toBeInTheDocument();
   });
 
@@ -364,7 +364,7 @@ describe("IssueDetailModal", () => {
 
     renderModal();
 
-    expect(screen.getByText("Story Points:")).toBeInTheDocument();
+    expect(screen.getByText("Story Points")).toBeInTheDocument();
     expect(screen.getByText("Not set")).toBeInTheDocument();
   });
 
@@ -374,7 +374,7 @@ describe("IssueDetailModal", () => {
 
     renderModal();
 
-    expect(screen.getByText("Story Points:")).toBeInTheDocument();
+    expect(screen.getByText("Story Points")).toBeInTheDocument();
     expect(screen.getByText("3.5")).toBeInTheDocument();
   });
 });
