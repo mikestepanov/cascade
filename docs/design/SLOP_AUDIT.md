@@ -6,17 +6,17 @@
 
 | Category | Original | Remaining | Status |
 |----------|----------|-----------|--------|
-| `as="span"` on Typography | 93 | ~10 | ✅ MOSTLY FIXED |
+| `as="span"` on Typography | 93 | 0 | ✅ FIXED (docs/stories only) |
 | `<span className="...">` | 459+ | ~50 | ✅ MOSTLY FIXED |
 | Typography className overrides | 97+ | ~20 | ✅ MOSTLY FIXED |
-| Repeated patterns to extract | 20+ | 5 | ✅ MOSTLY FIXED |
+| Repeated patterns to extract | 20+ | 0 | ✅ FIXED |
 | Semantic HTML violations | 15+ | ~5 | ✅ MOSTLY FIXED |
 | Raw flex divs | 12+ | ~5 | ✅ MOSTLY FIXED |
 | Complex nested selectors | 1 | 1 | ⚠️ TODO |
 | Raw `<kbd>` with className | 6+ | 0 | ✅ FIXED |
 | Inline `style={{}}` props | 10+ | ~5 | ⚠️ TODO (LabelBadge) |
 | `data-[attribute]` selectors | 3+ | 3 | LOW PRIORITY |
-| Required asterisk slop | 10+ | 10+ | ⚠️ NEW (use Label required) |
+| Required asterisk slop | 10+ | 0 | ✅ FIXED (Label.required) |
 
 ### New Components Created
 - `ShortcutHint` - keyboard shortcut with description
