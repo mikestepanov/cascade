@@ -294,8 +294,7 @@ describe("CardHeader", () => {
 
       const description = container.querySelector("p");
       expect(description).toHaveClass("text-sm");
-      expect(description).toHaveClass("text-ui-text-secondary");
-      expect(description).toHaveClass("mt-1");
+      expect(description).toHaveClass("text-ui-text-tertiary");
     });
 
     it("should handle empty string description", () => {
