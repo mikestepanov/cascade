@@ -24,6 +24,7 @@ vi.mock("../_generated/api", () => ({
 }));
 
 describe("API Issues Handler", () => {
+  // Test case for rate limit exceeded
   it("should return 429 when rate limit is exceeded", async () => {
     const mockCtx = {
       runQuery: vi.fn(),
